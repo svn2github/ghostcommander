@@ -1,0 +1,7 @@
+<EditText xmlns:android="http://schemas.android.com/apk/res/android" 
+	android:id="@+id/editor" 
+	android:layout_width="fill_parent" 
+	android:layout_height="fill_parent"
+	android:gravity="top"
+	android:textColor="#eee"
+	android:background="#000"/>

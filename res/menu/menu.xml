@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/file"
+        android:title="@string/file"
+        android:icon="@drawable/file"
+        android:alphabeticShortcut="f">
+      <menu>
+	    <item android:id="@+id/F4"
+	        android:title="@string/F4"/>
+	    <item android:id="@+id/F5"
+	        android:title="@string/F5"/>
+	    <item android:id="@+id/F6"
+	        android:title="@string/F6"/>
+	    <item android:id="@+id/F7"
+	        android:title="@string/F7"/>
+	    <item android:id="@+id/F8"
+	        android:title="@string/F8"/>
+	    <item android:id="@+id/new_file"
+	        android:title="@string/new_file"/>
+      </menu>
+    </item>
+    
+    <item android:id="@+id/panel"
+        android:title="@string/panel"
+        android:icon="@drawable/panel"
+        android:alphabeticShortcut="p">
+      <menu>
+        <item android:id="@+id/change"
+         android:title="@string/change"/>
+        <item android:id="@+id/refresh"
+         android:title="@string/refresh"
+         android:alphabeticShortcut="r"/>
+        <item android:id="@+id/enter"
+         android:title="@string/enter"
+         android:alphabeticShortcut="d"/>
+        <item android:id="@+id/oth_sh_this"
+         android:title="@string/oth_sh_this"/>
+        <item android:id="@+id/col_sw"
+         android:title="@string/col_sw"/>
+      </menu>
+    </item>
+
+    <item android:id="@+id/app"
+        android:title="@string/app"
+        android:icon="@drawable/app"
+        android:alphabeticShortcut="a">        
+      <menu>
+        <item android:id="@+id/donate"
+            android:title="@string/donate"/>
+        <item android:id="@+id/prefs"
+            android:title="@string/prefs"/>
+	    <item android:id="@+id/F10"
+	        android:title="@string/F10"/>
+      </menu>
+    </item>
+    
+    <item android:id="@+id/info_"
+        android:title="@string/info_"
+        android:icon="@drawable/info"
+        android:alphabeticShortcut="i">
+      <menu>
+        <item android:id="@+id/keys"
+            android:title="@string/keys"/>
+        <item android:id="@+id/about"
+            android:title="@string/about"/>
+      </menu>
+    </item>
+</menu>

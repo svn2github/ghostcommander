@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <TableRow>
+        <!--CheckedTextView android:id="@+id/chk"
+            android:textSize="10sp"
+            android:padding="1dip" 
+            android:text="+"/-->
+        <TextView android:id="@+id/fld_name"
+            android:padding="2dip" />
+        <TextView android:id="@+id/fld_size"
+            android:textSize="9sp"
+            android:padding="3dip"
+            android:gravity="right" />
+        <TextView android:id="@+id/fld_date"
+            android:textSize="9sp"
+            android:padding="2dip" />
+    </TableRow>
+</TableLayout>

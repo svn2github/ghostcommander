@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="sorting">
+        <item>By Name</item>
+        <item>By Size</item>
+        <item>By Date</item>  
+    </string-array>
+    <string-array name="sorting_vals">
+        <item>n</item>
+        <item>s</item>
+        <item>d</item>  
+    </string-array>
+</resources>
