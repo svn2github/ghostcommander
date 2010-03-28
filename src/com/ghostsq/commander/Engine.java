@@ -11,9 +11,13 @@ class Engine extends Thread {
 	Engine( Handler h ) {
 		handler = h;
 	}
-	public void reqStop() {
-		stop = true;
-		interrupt();
+	public boolean reqStop() {
+	    if( isAlive() ) {
+    		stop = true;
+    		interrupt();
+    		return true;
+	    }
+	    return false;
 	}
     protected final void sendProgress( String s, int p ) {
     	sendProgress( s, p, -1 );

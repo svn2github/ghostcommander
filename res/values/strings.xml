@@ -59,6 +59,7 @@
     
     <string name="copy_move_not_alwd">The '%s' is not allowed. Select something first.</string><!-- copy_title/move_title -->
     <string name="copy_move_to">%s %s to:"</string><!-- copy_title/move_title, file name/summary -->
+    <string name="login_title">Login</string>
     <string name="delete_title">Delete</string>
     <string name="delete_err">Nothing to delete</string>
     <string name="delete_q">"Delete %s ?"</string><!-- file name/summary -->

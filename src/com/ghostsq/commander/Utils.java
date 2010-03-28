@@ -103,4 +103,38 @@ public class Utils {
             return "" + Math.round(sz*10 / 1024.)/10. + "K";
         return "" + sz + " ";
     }
+
+	public class Credentials {
+        public String userName = null, userPass = null, userInfo = null;
+        public final void set( String name, String pass ) {
+            userName = name; 
+            userPass = pass;
+        }
+        public final void set( String user_info ) {
+            userInfo = user_info;
+            if( user_info == null || user_info.length() == 0 ) {
+                userName = "anonymous";
+                userPass = "user@host.com";
+            }
+            else {
+                int col_pos = user_info.indexOf( ':' );
+                if( col_pos >= 0 ) {
+                    userPass = user_info.substring( col_pos + 1 );
+                    userName = user_info.substring( 0, col_pos );
+                }
+                else {
+                    userName = user_info;
+                    userPass = null; 
+                }
+            }
+        }
+        public final boolean isNotSet() {
+            return userName == null || userPass == null;
+        }
+        public final boolean isSame( String user_info ) {
+            if( user_info == null && userInfo == null ) return true;
+            if( user_info != null && userInfo != null && user_info.compareTo( userInfo ) == 0 ) return true;
+            return false;
+        }
+    }
 }

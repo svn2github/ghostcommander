@@ -3,7 +3,6 @@ package com.ghostsq.commander;
 import java.lang.System;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -12,31 +11,33 @@ import java.util.Comparator;
 import java.util.Timer;
 import java.util.TimerTask;
 
+
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.CommanderAdapter;
 import com.ghostsq.commander.CommanderAdapterBase;
-import com.ghostsq.commander.FSAdapter.FilePropComparator;
+import com.ghostsq.commander.Utils.Credentials;
 
 import android.net.Uri;
 import android.os.Handler;
-import android.os.Message;
 import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
 
 public class FTPAdapter extends CommanderAdapterBase {
-    private FTP ftp;
     // Java compiler creates a thunk function to access to the private owner class member from a subclass
     // to avoid that all the member accessible from the subclasses are public
+    public  FTP ftp;
     public  Uri uri = null;
-    public  String userName = null, userPass = null; 
     public  FTPItem[] items = null;
     public  Object itemsLock = new Object();
     private Timer  heartBeat;
 
+    
+    public Credentials theUserPass;
+    
     public FTPAdapter() {
+        theUserPass = new Utils().new Credentials();
         ftp = new FTP();
         try {
             heartBeat = new Timer( "FTP Heartbeat", true );
@@ -86,22 +87,10 @@ public class FTPAdapter extends CommanderAdapterBase {
 	                	if( port == -1 ) port = 21;
 	                	String host = uri.getHost();
 	                    if( ftp.connect( host, port ) ) {
-	                        if( userName == null || userPass == null ) {
-    	                        String user_info = uri.getUserInfo();
-    	                        if( user_info == null ) {
-    	                            userName = "anonymous";
-    	                            userPass = "user@host.com";
-    	                        }
-    	                        else {
-    	                        	int col_pos = user_info.indexOf( ':' );
-    	                        	if( col_pos >= 0 ) {
-    	                        	    userPass = user_info.substring( col_pos + 1 );
-    	                        		userName = user_info.substring( 0, col_pos );
-    	                        	}
-    	                        }
-	                        }
-	                        if( ftp.login( userName, userPass ) ) 
-	                            sendProgress( "Connected to\"" + host + "\",  Logged in as \"" + userName + "\"", 3 );
+	                        if( theUserPass.isNotSet() )
+	                            theUserPass.set( uri.getUserInfo() );
+	                        if( !theUserPass.isNotSet() && ftp.login( theUserPass.userName, theUserPass.userPass ) ) 
+	                            sendProgress( "Connected to\"" + host + "\",  Logged in as \"" + theUserPass.userName + "\"", 3 );
 	                        else {
 	                            sendProgress( uri.toString(), Commander.OPERATION_FAILED_LOGIN_REQUIRED );
 	                            return;
@@ -169,18 +158,18 @@ public class FTPAdapter extends CommanderAdapterBase {
 
     @Override
     public void setIdentities( String name, String pass ) {
-        userName = name; 
-        userPass = pass;
+        theUserPass.set( name, pass );
     }
     @Override
     public boolean readSource( Uri tmp_uri ) {
         try {
             boolean need_reconnect = false;
             if( tmp_uri != null ) { 
-                if( uri != null && 0 != tmp_uri.getHost().compareTo( uri.getHost() ) ) {
+                String new_user_info = tmp_uri.getUserInfo();
+                if( !theUserPass.isSame( new_user_info ) || 
+                        ( uri != null && 0 != tmp_uri.getHost().compareTo( uri.getHost() ) ) ) {
                     need_reconnect = true;
-                    userName = null;
-                    userPass = null;
+                    theUserPass.set( new_user_info );
                 }
                 if( uri != null ) 
 	                synchronized( uri ) {

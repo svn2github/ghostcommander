@@ -241,15 +241,26 @@ public class Dialogs implements DialogInterface.OnClickListener {
                         edit.setWidth( owner.getWidth() - 90 );
                     break;
                 }
-                case LOGIN_DIALOG: 
-                    if( cookie != null ) {
-                    TextView prompt = (TextView)dialog.findViewById( R.id.resource_prompt );
-                    if( prompt != null ) {
-                        Uri uri = Uri.parse( cookie );
-                        if( uri != null ) 
-                            prompt.setText( "To login to \"" + uri.getHost() + "\" we need the following:" );
-                    }                    
-                }
+                case LOGIN_DIALOG: {
+                        String host_name = "";
+                        if( cookie != null ) {
+                            Uri uri = Uri.parse( cookie );
+                            if( uri != null ) {
+                                host_name = " - " + uri.getHost();
+                                Utils.Credentials crd = new Utils().new Credentials();
+                                crd.set( uri.getUserInfo() );
+                                EditText n_v = (EditText)dialog.findViewById( R.id.username_edit );
+                                EditText p_v = (EditText)dialog.findViewById( R.id.password_edit );
+                                if( n_v != null )
+                                    n_v.setText( crd.userName != null ? crd.userName : "" );
+                                if( p_v != null )
+                                    p_v.setText( crd.userPass != null ? crd.userPass : "" );
+                            }
+                        }
+                        AlertDialog ad = (AlertDialog)dialog;
+                        ad.setTitle( owner.getString( R.string.login_title ) + host_name );
+                        break;
+                    }
 				case FileCommander.DEL_ACT: {
 					AlertDialog ad = (AlertDialog)dialog;
 		        	ad.setTitle( R.string.delete_title );

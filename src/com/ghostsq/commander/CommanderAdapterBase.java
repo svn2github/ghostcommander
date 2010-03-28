@@ -100,7 +100,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         String name = "?", size = "", date = "";
         name = (item.dir ? "/" : " ") + item.name;
         if( dm ) {
-        	if( item.size > 0 && !item.dir )
+        	if( item.size > 0  )
         		size = Utils.getHumanSize( item.size );
             if( item.date != null ) {
 	            String dateFormat;

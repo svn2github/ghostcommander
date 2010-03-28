@@ -41,7 +41,9 @@ import android.widget.Toast;
  *  11. Do active or passive ftp by the user's choice
  *  -12. Close the app completely on exit
  *  13. Repeat and make case independed quick search
- *  14. Make the ftp adapter to remember item selected and pass its name on the way up  
+ *  14. Make the ftp adapter to remember item selected and pass its name on the way up
+ *  15. store, sort and show calculated folders sizes
+ *  16. show thubnails of pictures  
  * 
  */
 
@@ -498,7 +500,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             }
         case OPERATION_COMPLETED_REFRESH_REQUIRED:
         case OPERATION_COMPLETED:
-            panels.refreshList(progress == OPERATION_COMPLETED_REFRESH_REQUIRED);
+            panels.refreshList( progress == OPERATION_COMPLETED_REFRESH_REQUIRED );
             if( string != null && string.length() > 0 )
                 showInfo( string );
             break;

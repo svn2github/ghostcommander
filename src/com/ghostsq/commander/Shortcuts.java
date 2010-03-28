@@ -187,6 +187,8 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
 		} catch( NoSuchElementException e ) {
 			c.showError( "Error: " + e );
 		}
+		if( shortcutsList.isEmpty() )
+		    shortcutsList.add( "/sdcard" );
     }
 
 	@Override

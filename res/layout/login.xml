@@ -5,16 +5,6 @@
     android:orientation="vertical">
 
     <TextView 
-        android:id="@+id/resource_prompt"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_marginLeft="20dip"
-        android:layout_marginRight="20dip"
-        android:text=""
-        android:gravity="left"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
-
-    <TextView 
         android:id="@+id/username_prompt"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
@@ -22,7 +12,7 @@
         android:layout_marginRight="20dip"
         android:text="@string/username"
         android:gravity="left"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceSmall" />
             
     <EditText
         android:id="@+id/username_edit"
@@ -44,7 +34,7 @@
         android:layout_marginRight="20dip"
         android:text="@string/password"
         android:gravity="left"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceSmall" />
             
     <EditText
         android:id="@+id/password_edit"

@@ -36,7 +36,7 @@ public class FTP {
         	if( outputStream == null || cmndSocket == null || !cmndSocket.isConnected() )
         		return false;
         	debugPrint( ">>> " + cmd );
-//System.err.print( "\nto FTP:" + cmd + "\n" );
+System.err.print( "\n>>> '" + cmd + "'\n" );
             byte[] bytes = cmd.getBytes();
             outputStream.write( bytes );
             outputStream.write( '\n' );
@@ -60,6 +60,9 @@ public class FTP {
     }
     private final boolean isPositiveIntermediate( int response ) {
         return (response >= 300 && response < 400);
+    }
+    private final boolean isNegative( int response ) {
+        return (response >= 400 );
     }
     private final boolean waitForPositiveResponse() {
         String response = null;
@@ -127,7 +130,7 @@ public class FTP {
                        Character.isDigit( buf[2] ) && buf[3] == ' ' ) ); // read until a coded response be found
             String reply = new String( buf, 0, i );
             debugPrint( "<<< " + reply );
-//            System.err.print( "Accepted from server: '" + reply + "'\n" );
+            System.err.print( "\n<<< '" + reply + "'\n" );
             return reply;
         }
         catch( Exception e ) {
@@ -260,20 +263,21 @@ public class FTP {
                     return null;
                 }
                 data_socket = new Socket( InetAddress.getByAddress( addr ), server_port );
+                if( !data_socket.isConnected() )
+                    return null;
             }
 
             /*
-              // Set binary type transfer final String bin_command = "TYPE I";
-              sendCommand( bin_command ); debugPrint( ">>> " + bin_command ); if(
-              !isPositiveCompleteResponse( getServerReply() ) ) { debugPrint(
-              "Could not set transfer type" ); return false; }
-              
               // If we have a restart point, send that information if( restartPoint
               != 0 ) { sendCommand( "REST " + restartPoint ); restartPoint = 0; //
               TODO: Interpret server response here getServerReply(); }
              */
 
             sendCommand( command );
+            
+            if( isNegative( getReplyCode( getReplyLine() ) ) )
+                return null;
+            
             if( data_socket == null && serverSocket != null ) // active mode
             	data_socket = serverSocket.accept(); // will block
 
