@@ -4,7 +4,7 @@
     
     <string name="file">File</string>
     <string name="panel">Panel</string>
-    <string name="info_">Info</string>
+    <string name="list">List</string>
     <string name="app">Application</string>
     
     <string name="F1">1 Help</string>
@@ -26,6 +26,10 @@
     <string name="sz">\" Size</string>
     <string name="refresh">&#xA0; Refresh</string>
     <string name="enter">&#xA0; Change Location</string>
+
+    <string name="sort_by_name">&#xA0; By Name</string>
+    <string name="sort_by_size">&#xA0; By Size</string>
+    <string name="sort_by_date">&#xA0; By Date</string>
         
     <string name="prefs">&amp; Settings</string>
     <string name="about">About</string>
@@ -162,9 +166,9 @@ If you don't agree to the above, stop using this software immediately and uninst
 Shortcuts keys:\n
 left  - Toggle current panel\n
 right - Select the current item\n
-\t(Also to select you can tap on the right half of the item's row)\n
+\t(Also to select, tap on the right half of the item's row)\n
 +,-   - Select or unselect all items in the current folder\n  
-(, )  - Enter the path for left/right panel\n
+(, )  - Enter the location for left/right panel\n
 * - Add the current folder to the favorites\n
 \" - Show the total size of selected files\n
 # - Toggle Side-by-side/Overlapped mode\n

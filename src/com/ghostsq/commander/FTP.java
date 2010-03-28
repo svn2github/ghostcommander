@@ -36,7 +36,7 @@ public class FTP {
         	if( outputStream == null || cmndSocket == null || !cmndSocket.isConnected() )
         		return false;
         	debugPrint( ">>> " + cmd );
-System.err.print( "\n>>> '" + cmd + "'\n" );
+//System.err.print( "\n>>> '" + cmd + "'\n" );
             byte[] bytes = cmd.getBytes();
             outputStream.write( bytes );
             outputStream.write( '\n' );
@@ -130,11 +130,11 @@ System.err.print( "\n>>> '" + cmd + "'\n" );
                        Character.isDigit( buf[2] ) && buf[3] == ' ' ) ); // read until a coded response be found
             String reply = new String( buf, 0, i );
             debugPrint( "<<< " + reply );
-            System.err.print( "\n<<< '" + reply + "'\n" );
+//            System.err.print( "\n<<< '" + reply + "'\n" );
             return reply;
         }
         catch( Exception e ) {
-            System.err.print( "Exception: " + e + " in getReplyLine()\n" );
+            System.err.print( "\nException: " + e + " in getReplyLine()\n" );
             disconnect();
             return null;
 		}
@@ -238,7 +238,7 @@ System.err.print( "\n>>> '" + cmd + "'\n" );
             return a * 256 + b;
         }
         catch( Exception e ) {
-            System.err.print( "Exception: " + e + " while parsing the string '" + s + "'\n" );
+            System.err.print( "\nException: " + e + " while parsing the string '" + s + "'\n" );
         }
         return -1;
     }
@@ -287,7 +287,7 @@ System.err.print( "\n>>> '" + cmd + "'\n" );
             }
             return data_socket;
 		} catch( Exception e ) {
-		    System.err.print( "Exception: " + e + " on executing data command '" + command + "'\n" );
+		    System.err.print( "\nException: " + e + " on executing data command '" + command + "'\n" );
 		}
 		return null;
     }
@@ -302,7 +302,7 @@ System.err.print( "\n>>> '" + cmd + "'\n" );
 	            serverSocket.close();
 		    serverSocket = null;
 		} catch( IOException e ) {
-		    System.err.print( "Exception: " + e + " in cleanUpDataCommand()\n" );
+		    System.err.print( "\nException: " + e + " in cleanUpDataCommand()\n" );
 		}
         return waitForPositiveResponse();
     }

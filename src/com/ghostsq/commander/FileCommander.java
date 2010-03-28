@@ -274,6 +274,15 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         case R.id.enter:
             panels.openGoPanel();
             break;
+        case R.id.by_name:
+            panels.changeSorting( CommanderAdapter.SORT_NAME );
+            break;
+        case R.id.by_size:
+            panels.changeSorting( CommanderAdapter.SORT_SIZE );
+            break;
+        case R.id.by_date:
+            panels.changeSorting( CommanderAdapter.SORT_DATE );
+            break;
         case R.id.refresh:
             panels.refreshList(true);
             break;

@@ -83,10 +83,10 @@ public class FSAdapter extends CommanderAdapterBase {
             	if( !hide || !files_[i].isHidden() )
             		items[n++] = new FileEx( files_[i] ); 
             }       
-
+/*
             FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING );
             Arrays.sort( items, comp );
-                        
+*/                        
             parentLink = dir.getParent() == null ? SLS : "..";
             commander.notifyMe( null, Commander.OPERATION_COMPLETED, 0 );
             return true;
@@ -510,9 +510,13 @@ public class FSAdapter extends CommanderAdapterBase {
     
     @Override
     public int getCount() {
-//        showMessage( "getCount called: " + getCountCounter++ );
         if( items == null )
             return 1;
+        long start = System.currentTimeMillis();
+        FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING );
+        Arrays.sort( items, comp );
+        long end = System.currentTimeMillis();
+        System.err.printf("\nGet count called, resorting took %d ms\n", end - start );
         return items.length + 1;
     }
 

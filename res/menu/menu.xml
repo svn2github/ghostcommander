@@ -20,6 +20,26 @@
 	        android:title="@string/new_file"/>
       </menu>
     </item>
+
+    <item android:id="@+id/list"
+        android:title="@string/list"
+        android:icon="@drawable/sort"
+        android:alphabeticShortcut="i">
+      <menu>
+        <item android:id="@+id/by_name"
+            android:title="@string/sort_by_name"
+            android:alphabeticShortcut="n"/>
+        <item android:id="@+id/by_size"
+            android:title="@string/sort_by_size"
+            android:alphabeticShortcut="s"/>
+        <item android:id="@+id/by_date"
+            android:title="@string/sort_by_date"
+            android:alphabeticShortcut="m"/>
+        <item android:id="@+id/refresh"
+	         android:title="@string/refresh"
+             android:alphabeticShortcut="r"/>
+      </menu>
+    </item>
     
     <item android:id="@+id/panel"
         android:title="@string/panel"
@@ -28,9 +48,6 @@
       <menu>
         <item android:id="@+id/change"
          android:title="@string/change"/>
-        <item android:id="@+id/refresh"
-         android:title="@string/refresh"
-         android:alphabeticShortcut="r"/>
         <item android:id="@+id/enter"
          android:title="@string/enter"
          android:alphabeticShortcut="d"/>
@@ -50,20 +67,12 @@
             android:title="@string/donate"/>
         <item android:id="@+id/prefs"
             android:title="@string/prefs"/>
-	    <item android:id="@+id/F10"
-	        android:title="@string/F10"/>
-      </menu>
-    </item>
-    
-    <item android:id="@+id/info_"
-        android:title="@string/info_"
-        android:icon="@drawable/info"
-        android:alphabeticShortcut="i">
-      <menu>
         <item android:id="@+id/keys"
             android:title="@string/keys"/>
         <item android:id="@+id/about"
             android:title="@string/about"/>
+	    <item android:id="@+id/F10"
+	        android:title="@string/F10"/>
       </menu>
     </item>
 </menu>

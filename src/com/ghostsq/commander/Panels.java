@@ -277,6 +277,11 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         ca.setMode( CommanderAdapter.MODE_HIDDEN, hidden_mode ? CommanderAdapter.SHOW_MODE : CommanderAdapter.HIDE_MODE );
         refreshList( false );
     }
+    public void changeSorting( int sort_mode ) {
+        CommanderAdapter ca = getListAdapter( true );
+        ca.setMode( CommanderAdapter.MODE_SORTING, sort_mode );
+        listViews[current].invalidateViews();
+    }
     public final void refreshList( boolean reread ) {
         CommanderAdapter ca = getListAdapter( true );
         if( ca == null ) return;
