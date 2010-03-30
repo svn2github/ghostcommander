@@ -15,7 +15,7 @@
     <string name="F6">6 Переместить</string>
     <string name="F7">7 Создать папку</string>
     <string name="F8">8 Удалить</string>
-    <string name="F9">9 Меню</string>
+    <string name="F9">9 Настр</string>
     <string name="F10">0 Выйти</string>
     <string name="eq">= То же</string>
     <string name="tgl">&#x21E6; Смена</string>
@@ -25,13 +25,17 @@
     <string name="oth_sh_this">= Та панель тоже что эта</string>
     <string name="change">&lt;- Сменить</string>
     <string name="refresh">Обновить</string>
-    <string name="prefs">&amp; Настройки</string>
+    <string name="prefs">9 Настройки</string>
     <string name="about">Про программу</string>
     <string name="keys">Значения клавиш</string>
     <string name="new_file">Создать новый файл</string>
 
     <string name="go_button">Иди</string>
     <string name="show_size">Размер</string>
+
+    <string name="input_settings">Ввод</string>
+    <string name="arrow_mode">Стрелки Влево/Вправо</string>
+    <string name="summary_arrow_mode">это Переключение и Выделение</string>
 
     <string name="prefs_label">Настройки</string>
     <string name="editor_label">Текстовый редактор</string>
@@ -102,8 +106,8 @@
     <string name="prevent_root">Предупреждать на системных каталогах</string>
     <string name="summary_prevent_root">Выдавать предупреждающее сообщение на попытку перейти в системный каталог</string>
 
-    <string name="left_panel_settings">Левая панель:</string>
-    <string name="right_panel_settings">Правая панель:</string>
+    <string name="left_panel_settings">Опции Левой панели</string>
+    <string name="right_panel_settings">Опции Правой панели</string>
     <string name="detailed_view_SbS">Панели рядом, Детализация </string>
     <string name="summary_detailed_view_SbS">Показывать даты и размеры файлов в режиме когда обе панели видны</string>
     <string name="detailed_view_Ovr">Панели перекрыты, Детализация</string>
@@ -155,9 +159,10 @@
     <string name="keys_text">
     "
 Клавиши:\n
-левая  - Перейти на другую панель\n
-правая - Выбрать текущий файл\n
-\t(Можно также выделять файл кликнув на правую половину строки)\n
+VlDn - Перейти на другую панель\n
+VlUp - Выбрать текущий файл\n
+\nто же стрелки влево/вправо если разрешено в настройках
+\t(Можно также выделять файл коснувшись правую половину строки)\n
 +, -  - Выделить все файлы, Убрать выделение со всех файлов\n 
 (, )  - Ввести путь для левой/правой панели\n
 * - Добавить текущую папку в закладки\n

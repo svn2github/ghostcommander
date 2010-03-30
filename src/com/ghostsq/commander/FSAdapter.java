@@ -512,11 +512,11 @@ public class FSAdapter extends CommanderAdapterBase {
     public int getCount() {
         if( items == null )
             return 1;
-        long start = System.currentTimeMillis();
+//        long start = System.currentTimeMillis();
         FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING );
         Arrays.sort( items, comp );
-        long end = System.currentTimeMillis();
-        System.err.printf("\nGet count called, resorting took %d ms\n", end - start );
+//        long end = System.currentTimeMillis();
+//        System.err.printf("\nGet count called, resorting took %d ms\n", end - start );
         return items.length + 1;
     }
 
@@ -550,6 +550,11 @@ public class FSAdapter extends CommanderAdapterBase {
                         long msFileDate = f.f.lastModified();
                         if( msFileDate != 0 )
                             item.date = new Date( msFileDate );
+                        if( item.name.matches( ".+\\.(jpg|png|gif)$" ) )
+                            item.uri = Uri.parse( "file://" + dirName + SLS + item.name );
+                        else
+                            item.uri = null;                            
+                        
                     } catch( Exception e ) {
                         System.err.print("getView() exception: " + e );
                     }

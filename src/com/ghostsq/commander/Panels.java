@@ -48,7 +48,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     private FileCommander c;
     public  View mainView, toolbar = null;
     private int id;
-    private boolean touchedThere = false, fingerFriendly = false, warnOnRoot = true;
+    private boolean touchedThere = false, fingerFriendly = false, warnOnRoot = true, arrow_mode = false;
     private float downY = 0;
     private StringBuffer quickSearchBuf = null;
     private Toast        quickSearchTip = null;
@@ -64,6 +64,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
         fingerFriendly =  sharedPref.getBoolean( "finger_friendly", true );
         warnOnRoot =  sharedPref.getBoolean( "prevent_root", true );
+        arrow_mode = sharedPref.getBoolean( "arrow_mode", false );
         setFingerFriendly( fingerFriendly );
         if( sharedPref.getBoolean( "show_toolbar", true ) )
             showOrHideToolbar( true );
@@ -258,7 +259,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         }
     }
     private final void applySettings( SharedPreferences sharedPref, CommanderAdapter ca, int which ) {
-    	
+        arrow_mode = sharedPref.getBoolean( "arrow_mode", false );
     	if( id == R.layout.main )
 	        ca.setMode( CommanderAdapter.MODE_WIDTH, sharedPref.getBoolean( "two_lines", false ) ? 
 	        		    CommanderAdapter.NARROW_MODE : CommanderAdapter.WIDE_MODE );
@@ -783,12 +784,14 @@ public class Panels implements AdapterView.OnItemSelectedListener,
 	        case KeyEvent.KEYCODE_DPAD_DOWN:	
 		    	resetQuickSearch();
 		    	return false;
-	        case KeyEvent.KEYCODE_VOLUME_UP:
-	        case KeyEvent.KEYCODE_DPAD_RIGHT:
+            case KeyEvent.KEYCODE_DPAD_RIGHT:
+                if( !arrow_mode ) return false;
+            case KeyEvent.KEYCODE_VOLUME_UP:
 	            checkItem( true );
 	            return true;
+            case KeyEvent.KEYCODE_DPAD_LEFT:
+	            if( !arrow_mode ) return false;
 	        case KeyEvent.KEYCODE_VOLUME_DOWN:
-	        case KeyEvent.KEYCODE_DPAD_LEFT:
 	        case KeyEvent.KEYCODE_TAB:
 	            togglePanels( true );
 	            return true;

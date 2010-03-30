@@ -3,14 +3,21 @@ package com.ghostsq.commander;
 import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
+
+import android.content.ContentResolver;
 import android.content.Context;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TableLayout;
 import android.widget.Toast;
@@ -74,78 +81,121 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     }
     
     public class Item {
-    	public String name = "";
-    	public Date   date = null;
-    	public long   size = -1;
+    	public String  name = "";
+    	public Date    date = null;
+    	public long    size = -1;
     	public boolean dir, sel;
+        public Uri     uri = null;
     }
     
     protected View getView( View convertView, ViewGroup parent, Item item ) {
-        boolean wm = (mode & WIDE_MODE) == WIDE_MODE;
-        boolean dm = ( mode & MODE_DETAILS ) == DETAILED_MODE;
-        View row_view;
-        boolean current_wide = convertView instanceof TableLayout;
-        if( convertView == null || 
-    		( (  wm && !current_wide ) || 
-    		  ( !wm &&  current_wide ) ) ) {
-            row_view = mInflater.inflate( wm ? R.layout.row : R.layout.narrow, parent, false );
-        }
-        else {
-            row_view = convertView;
-            row_view.setBackgroundColor( 0 );
-        }
-        int vpad = ( mode & MODE_FINGERF ) == FAT_MODE ? 8 : 0;
-        row_view.setPadding( 0, vpad, 4, vpad );        
-        
-        String name = "?", size = "", date = "";
-        name = (item.dir ? "/" : " ") + item.name;
-        if( dm ) {
-        	if( item.size > 0  )
-        		size = Utils.getHumanSize( item.size );
-            if( item.date != null ) {
-	            String dateFormat;
-	            if( wm )
-	            	dateFormat = item.date.getYear() + 1900 == Calendar.getInstance().get( Calendar.YEAR ) ?
-	                        "MMM dd hh:mm" : "MMM dd  yyyy";
-	            else
-	            	dateFormat = "yy-MM-dd";
-	            date = (String)DateFormat.format( dateFormat, item.date );
+        try {
+            boolean wm = (mode & WIDE_MODE) == WIDE_MODE;
+            boolean dm = ( mode & MODE_DETAILS ) == DETAILED_MODE;
+            View row_view;
+            boolean current_wide = convertView instanceof TableLayout;
+            if( convertView == null || 
+        		( (  wm && !current_wide ) || 
+        		  ( !wm &&  current_wide ) ) ) {
+                row_view = mInflater.inflate( wm ? R.layout.row : R.layout.narrow, parent, false );
             }
+            else {
+                row_view = convertView;
+                row_view.setBackgroundColor( 0 );
+            }
+            int vpad = ( mode & MODE_FINGERF ) == FAT_MODE ? 8 : 0;
+            row_view.setPadding( 0, vpad, 4, vpad );        
+            
+            String name = "?", size = "", date = "";
+            name = (item.dir ? "/" : " ") + item.name;
+            if( dm ) {
+            	if( item.size > 0  )
+            		size = Utils.getHumanSize( item.size );
+                if( item.date != null ) {
+    	            String dateFormat;
+    	            if( wm )
+    	            	dateFormat = item.date.getYear() + 1900 == Calendar.getInstance().get( Calendar.YEAR ) ?
+    	                        "MMM dd hh:mm" : "MMM dd  yyyy";
+    	            else
+    	            	dateFormat = "yy-MM-dd";
+    	            date = (String)DateFormat.format( dateFormat, item.date );
+                }
+            }
+            int parent_width = parent.getWidth();
+            if( parentWidth != parent_width ) {
+                parentWidth = parent_width;
+                nameWidth = wm || dm ? parent_width * 5 / 8 : parent_width;
+                sizeWidth = parent_width / (wm ? 8 : 4);
+                dateWidth = parent_width / (wm ? 4 : 4);
+            }
+            if( item.sel ) {
+                row_view.setBackgroundColor( 0xFF4169E1 );
+            }
+            /*
+            CheckedTextView chkView = (CheckedTextView)row_view.findViewById( R.id.chk );
+            if( chkView != null ) {
+                chkView.setText( selected ? "+" : " " );
+            }
+            */
+            TextView nameView = (TextView)row_view.findViewById( R.id.fld_name );
+            nameView.setWidth( nameWidth );
+            nameView.setText( nameView != null ? name : "???" );
+            TextView sizeView = (TextView)row_view.findViewById( R.id.fld_size );
+            if( sizeView != null ) {
+                sizeView.setVisibility( dm ? View.VISIBLE : View.GONE );
+                sizeView.setWidth( sizeWidth );
+                sizeView.setText( size );
+            }
+            TextView dateView = (TextView)row_view.findViewById( R.id.fld_date );
+            if( dateView != null ) {
+                sizeView.setVisibility( dm ? View.VISIBLE : View.GONE );
+                dateView.setWidth( dateWidth );
+                dateView.setText( date );
+            }
+    /*
+            if( wm && item.uri != null ) {
+                ContentResolver cr = commander.getContext().getContentResolver();
+                Cursor cursor = MediaStore.Images.Thumbnails.queryMiniThumbnails( cr, 
+                        item.uri, MediaStore.Images.Thumbnails.MICRO_KIND, null );
+                
+                if( cursor == null ) {
+                    System.err.print("\ncursor is null...\n");
+                }
+                else {
+                    System.err.print("\ncursor is NOT null!!!\n");
+                    Long _imageId = null;
+                    cursor.moveToFirst();
+                    while(true) {
+                       for(int i=0;i<cursor.getColumnCount();i++) {
+                          String column_name = cursor.getColumnName(i);
+                          String value = cursor.getString(i);
+                          if( column_name.equals("image_id") ) {
+                             _imageId = Long.parseLong(cursor.getString(i));
+                          }
+                       }
+                       if(cursor.isLast())
+                          break;
+                       else 
+                          cursor.moveToNext();
+                    }
+                }
+                
+                ImageView imgView = (ImageView)row_view.findViewById( R.id.thubnail );
+                if( imgView != null ) {
+                    imgView.setMaxWidth( 100 );
+                    imgView.setMaxHeight( 100 );
+                    //imgView.setImageURI( item.uri );
+                }
+            }
+*/
+            row_view.setTag( null );
+    
+            return row_view;
         }
-        int parent_width = parent.getWidth();
-        if( parentWidth != parent_width ) {
-            parentWidth = parent_width;
-            nameWidth = wm || dm ? parent_width * 5 / 8 : parent_width;
-            sizeWidth = parent_width / (wm ? 8 : 4);
-            dateWidth = parent_width / (wm ? 4 : 4);
+        catch( Exception e ) {
+            System.err.print("\ngetView() exception: " + e ); 
         }
-        if( item.sel ) {
-            row_view.setBackgroundColor( 0xFF4169E1 );
-        }
-        /*
-        CheckedTextView chkView = (CheckedTextView)row_view.findViewById( R.id.chk );
-        if( chkView != null ) {
-            chkView.setText( selected ? "+" : " " );
-        }
-        */
-        TextView nameView = (TextView)row_view.findViewById( R.id.fld_name );
-        nameView.setWidth( nameWidth );
-        nameView.setText( nameView != null ? name : "???" );
-        TextView sizeView = (TextView)row_view.findViewById( R.id.fld_size );
-        if( sizeView != null ) {
-            sizeView.setVisibility( dm ? View.VISIBLE : View.GONE );
-            sizeView.setWidth( sizeWidth );
-            sizeView.setText( size );
-        }
-        TextView dateView = (TextView)row_view.findViewById( R.id.fld_date );
-        if( dateView != null ) {
-            sizeView.setVisibility( dm ? View.VISIBLE : View.GONE );
-            dateView.setWidth( dateWidth );
-            dateView.setText( date );
-        }
-        row_view.setTag( null );
-
-        return row_view;
+        return null; // is it safe?
     }
     public final void showMessage( String s ) {
         Toast.makeText( commander.getContext(), s, Toast.LENGTH_LONG ).show();

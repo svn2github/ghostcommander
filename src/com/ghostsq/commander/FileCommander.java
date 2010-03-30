@@ -50,8 +50,8 @@ import android.widget.Toast;
 public class FileCommander extends Activity implements Commander, View.OnClickListener {
     private final static String TAG = "GhostCommanderActivity";
     private final static int REQUEST_CODE_PREFERENCES = 1;
-    public final static int RENAME_ACT = 1002,  NEWF_ACT = 1014, EDIT_ACT = 1004, COPY_ACT = 1005, 
-                              MOVE_ACT = 1006, MKDIR_ACT = 1007,  DEL_ACT = 1008, DONATE = 3333;
+    public  final static int RENAME_ACT = 1002,  NEWF_ACT = 1014, EDIT_ACT = 1004, COPY_ACT = 1005, 
+                               MOVE_ACT = 1006, MKDIR_ACT = 1007,  DEL_ACT = 1008, DONATE = 3333;
     private final static int SHOW_SIZE = 12, CHANGE_LOCATION = 993;
     private ArrayList<Dialogs> dialogs;
     public  Panels  panels, panelsBak = null;
@@ -99,8 +99,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         dialogs = new ArrayList<Dialogs>(Dialogs.numDialogTypes);
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        panels = new Panels(this, sharedPref.getBoolean("panels_mode", false) ? R.layout.alt : R.layout.main);
-
+        panels = new Panels(this, sharedPref.getBoolean( "panels_mode", false ) ? R.layout.alt : R.layout.main);
     }
 
     @Override
@@ -137,9 +136,11 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         if( isFinishing() && exit )
             System.exit( 0 );
     }
-/* these two methods are not called on screen rotation in v1.5, so all the store/restore is called from pause/start 
+/*
+    //these two methods are not called on screen rotation in v1.5, so all the store/restore is called from pause/start 
     @Override
     protected void onSaveInstanceState( Bundle outState ) {
+        System.err.print("Ghost Commander Saving\n");
         Panels.State s = panels.getState();
         s.store(outState);
         super.onSaveInstanceState(outState);
@@ -147,6 +148,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onRestoreInstanceState( Bundle savedInstanceState ) {
+        System.err.print("Ghost Commander Restoring\n");
         if( savedInstanceState != null ) {
             Panels.State s = panels.new State();
             s.restore(savedInstanceState);
@@ -335,7 +337,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             showInfo(getString(R.string.keys_text));
             return true;
         case '9':
-            openOptionsMenu();
+            openPrefs();
+//            openOptionsMenu();
             return true;
         case '0':
             finish();
@@ -395,7 +398,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             showDialog(DEL_ACT);
             break;
         case R.id.F9:
-            openOptionsMenu();
+            openPrefs();
+            //openOptionsMenu();
             break;
         case R.id.F10:
             finish();

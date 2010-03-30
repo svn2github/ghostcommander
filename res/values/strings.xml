@@ -16,7 +16,7 @@
     <string name="F6">6 Move</string>
     <string name="F7">7 MkDir</string>
     <string name="F8">8 Del</string>
-    <string name="F9">9 Menu</string>
+    <string name="F9">9 Prefs</string>
     <string name="F10">0 Exit</string>
     <string name="col_sw"># Mode</string>
     <string name="oth_sh_this">= Make other as current</string>
@@ -31,13 +31,17 @@
     <string name="sort_by_size">&#xA0; By Size</string>
     <string name="sort_by_date">&#xA0; By Date</string>
         
-    <string name="prefs">&amp; Settings</string>
+    <string name="prefs">9 Settings</string>
     <string name="about">About</string>
-    <string name="keys">Shortcut keys</string>
+    <string name="keys">1 Shortcut keys</string>
     <string name="new_file">Create new file</string>
 
     <string name="go_button">Go</string>
     <string name="show_size">Size Of</string>
+
+    <string name="input_settings">Input</string>
+    <string name="arrow_mode">Arrows command</string>
+    <string name="summary_arrow_mode">Left/Right does toggle/select</string>
 
     <string name="prefs_label">Settings</string>
     <string name="editor_label">Text Editor</string>
@@ -113,8 +117,8 @@
     <string name="prevent_root">Warn on a root folder</string>
     <string name="summary_prevent_root">Issue a warning on go to a device's root folder.</string>
 
-    <string name="left_panel_settings">Left panel:</string>
-    <string name="right_panel_settings">Right panel:</string>
+    <string name="left_panel_settings">Left panel settings</string>
+    <string name="right_panel_settings">Right panel settings</string>
     <string name="detailed_view_SbS">Detailed in Side-by-side mode</string>
     <string name="summary_detailed_view_SbS">Show size and date for files in the Side-by-side mode</string>
     <string name="detailed_view_Ovr">Detailed in Overlapped mode</string>
@@ -164,8 +168,9 @@ If you don't agree to the above, stop using this software immediately and uninst
     <string name="keys_text">
     "
 Shortcuts keys:\n
-left  - Toggle current panel\n
-right - Select the current item\n
+VolumeDn - Toggle the current panel\n
+VolumeUp - Select the current item\n
+left/right arrows do the same if enabled.\n
 \t(Also to select, tap on the right half of the item's row)\n
 +,-   - Select or unselect all items in the current folder\n  
 (, )  - Enter the location for left/right panel\n

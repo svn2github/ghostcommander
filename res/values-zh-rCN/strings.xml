@@ -16,7 +16,7 @@
     <string name="F6">6 移动</string>
     <string name="F7">7 新建目录</string>
     <string name="F8">8 删除</string>
-    <string name="F9">9 菜单</string>
+    <string name="F9">9 设置</string>
     <string name="F10">0 退出</string>
     <string name="col_sw"># 切换模式</string>
     <string name="oth_sh_this">= 设为相同</string>
@@ -28,7 +28,7 @@
     
     <string name="refresh">&#xA0; 刷新</string>  
         
-    <string name="prefs">&amp; 设置</string>
+    <string name="prefs">9 设置</string>
     <string name="about">关于</string>
     <string name="keys">快捷键</string>
     <string name="new_file">创建新文件</string>

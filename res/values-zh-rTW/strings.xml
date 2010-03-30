@@ -16,7 +16,7 @@
     <string name="F6">6 移動</string>
     <string name="F7">7 開啟新檔資料夾</string>
     <string name="F8">8 移除</string>
-    <string name="F9">9 功能表</string>
+    <string name="F9">9 設定</string>
     <string name="F10">0 結束</string>
     <string name="col_sw"># 切換模式</string>
     <string name="oth_sh_this">= 設為相同</string>
@@ -27,7 +27,7 @@
     
     <string name="refresh">&#xA0; 重新整理</string>  
         
-    <string name="prefs">&amp; 設定</string>
+    <string name="prefs">9 設定</string>
     <string name="about">關於</string>
     <string name="keys">快速鍵</string>
     <string name="new_file">建立新檔案</string>
