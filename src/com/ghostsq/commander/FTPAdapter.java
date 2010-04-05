@@ -30,7 +30,6 @@ public class FTPAdapter extends CommanderAdapterBase {
     public  FTP ftp;
     public  Uri uri = null;
     public  FTPItem[] items = null;
-    public  Object itemsLock = new Object();
     private Timer  heartBeat;
 
     
@@ -58,10 +57,14 @@ public class FTPAdapter extends CommanderAdapterBase {
     class ListEngine extends Engine {
         private long    threadStartedAt = 0;
         private boolean needReconnect;
+        private FTPItem[] items_tmp;
         ListEngine( Handler h, boolean need_reconnect_ ) {
         	super( h );
         	needReconnect = need_reconnect_; 
         }
+        public FTPItem[] getItems() {
+            return items_tmp;
+        }       
         private final boolean tooLong() {
             if( threadStartedAt == 0 ) return false;
             boolean yes = System.currentTimeMillis() - threadStartedAt > 4000;
@@ -104,7 +107,7 @@ public class FTPAdapter extends CommanderAdapterBase {
 	                	                 ( 0 == active.compareTo("1")
                  	                    || 0 == active.compareToIgnoreCase( "true" )  
                  	                    || 0 == active.compareToIgnoreCase( "yes" ) ) );  
-	                    FTPItem[] items_tmp;
+	                    
                     	if( path != null )
                     		ftp.setCurrentDir( path );
                     	items_tmp = ftp.getDirList( null );
@@ -114,11 +117,8 @@ public class FTPAdapter extends CommanderAdapterBase {
 	                    		uri = uri.buildUpon().path( path ).build();
 							}
 	                    if( items_tmp != null ) {
-	                    	synchronized( itemsLock ) {
-	                    		items = items_tmp;
-	                    		FTPItemPropComparator comp = new FTPItemPropComparator( mode & MODE_SORTING );
-	                            Arrays.sort( items, comp );
-	                    	}
+                    		FTPItemPropComparator comp = new FTPItemPropComparator( mode & MODE_SORTING );
+                            Arrays.sort( items_tmp, comp );
 	                        parentLink = path == null || path.length() == 0 || path.equals( "/" ) ? "/" : "..";
 	                        sendProgress( tooLong() ? ftp.getLog() : null, Commander.OPERATION_COMPLETED );
 	                        return;
@@ -141,6 +141,30 @@ public class FTPAdapter extends CommanderAdapterBase {
             }
             ftp.disconnect();
             sendProgress( ftp.getLog(), Commander.OPERATION_FAILED );
+        }
+    }
+
+    protected void onComplete( Engine engine ) {
+        if( engine instanceof ListEngine ) {
+            ListEngine list_engine = (ListEngine)engine;
+            items = null;
+            if( ( mode & MODE_HIDDEN ) == HIDE_MODE ) {
+                FTPItem[] tmp_items = list_engine.getItems();
+                if( tmp_items != null ) {
+                    int cnt = 0;
+                    for( int i = 0; i < tmp_items.length; i++ )
+                        if( tmp_items[i].getName().charAt( 0 ) != '.' )
+                            cnt++;
+                    items = new FTPItem[cnt];
+                    int j = 0;
+                    for( int i = 0; i < tmp_items.length; i++ )
+                        if( tmp_items[i].getName().charAt( 0 ) != '.' )
+                            items[j++] = tmp_items[i];
+                }
+            }
+            else
+                items = list_engine.getItems();
+            notifyDataSetChanged();
         }
     }
     
@@ -195,10 +219,6 @@ public class FTPAdapter extends CommanderAdapterBase {
 	            		return false;      
             	}
             }
-            
-        	synchronized( itemsLock ) {
-        		items = null;
-        	}
             worker = new ListEngine( handler, need_reconnect );
             worker.start();
             return true;
@@ -450,7 +470,7 @@ public class FTPAdapter extends CommanderAdapterBase {
 	                path = path.substring( 0, path.lastIndexOf( '/' ) );
 	                if( path.length() == 0 )
 	                	path = "/";
-	                commander.Navigate( uri.buildUpon().path( path ).build(), null );
+	                commander.Navigate( uri.buildUpon().path( path ).build(), uri.getLastPathSegment() );
                 }
             }
             return;
@@ -591,11 +611,7 @@ public class FTPAdapter extends CommanderAdapterBase {
      */
     @Override
     public int getCount() {
-    	if( worker != null )
-    	    System.err.print("getCount() called while the worker thread is busy\n");
-    	synchronized( itemsLock ) {
-    	    return items != null ? items.length + 1 : 1;
-    	}
+   	    return items != null ? items.length + 1 : 1;
     }
 
     @Override
@@ -620,19 +636,17 @@ public class FTPAdapter extends CommanderAdapterBase {
 	            item.name = parentLink;
 	        }
 	        else {
-                synchronized( itemsLock ) {
-    	        	if( items != null && position > 0 && position <= items.length ) {
-    	        		FTPItem curItem;
-    	            		curItem = items[position - 1];
-    		            item.name = curItem.getName();
-    		            item.size = curItem.length();
-    		            item.dir = curItem.isDirectory();
-    		            ListView flv = (ListView)parent;
-    		            SparseBooleanArray cis = flv.getCheckedItemPositions();
-    		            item.sel = cis.get( position );
-    		            item.date = curItem.getDate();
-    	            }
-                }
+	        	if( items != null && position > 0 && position <= items.length ) {
+	        		FTPItem curItem;
+	            		curItem = items[position - 1];
+		            item.name = curItem.getName();
+		            item.size = curItem.length();
+		            item.dir = curItem.isDirectory();
+		            ListView flv = (ListView)parent;
+		            SparseBooleanArray cis = flv.getCheckedItemPositions();
+		            item.sel = cis.get( position );
+		            item.date = curItem.getDate();
+	            }
 	        }
     	}
         return getView( convertView, parent, item );

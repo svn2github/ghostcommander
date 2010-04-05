@@ -114,22 +114,20 @@ public final class R {
         public static final int F9=0x7f07000e;
         public static final int SF4=0x7f070009;
         public static final int about=0x7f07001c;
-        public static final int about_text=0x7f07007e;
-        public static final int alert=0x7f070046;
+        public static final int about_text=0x7f07007f;
+        public static final int alert=0x7f070047;
         public static final int app=0x7f070004;
         public static final int app_name=0x7f070000;
         public static final int arrow_mode=0x7f070022;
-        public static final int binary_file=0x7f070075;
-        public static final int bug_warning=0x7f07007d;
-        public static final int cant_open=0x7f070076;
-        public static final int cant_save=0x7f070077;
-        public static final int cd_prompt=0x7f07003f;
-        /**  file name/summary 
-         */
-        public static final int cd_title=0x7f07003e;
+        public static final int binary_file=0x7f070076;
+        public static final int bug_warning=0x7f07007e;
+        public static final int cant_open=0x7f070077;
+        public static final int cant_save=0x7f070078;
+        public static final int cd_prompt=0x7f070040;
+        public static final int cd_title=0x7f07003f;
         public static final int change=0x7f070013;
         public static final int col_sw=0x7f070010;
-        public static final int confirm=0x7f070044;
+        public static final int confirm=0x7f070045;
         public static final int copy_move_not_alwd=0x7f070036;
         /**  copy_title/move_title 
  copy_title/move_title 
@@ -145,32 +143,38 @@ public final class R {
  copy_title/move_title, file name/summary 
          */
         public static final int delete_title=0x7f070039;
-        public static final int detailed_view_Ovr=0x7f070068;
-        public static final int detailed_view_SbS=0x7f070066;
+        /**  file name/summary 
+ file name/summary 
+ file name/summary 
+ file name/summary 
+         */
+        public static final int deleted=0x7f07003c;
+        public static final int detailed_view_Ovr=0x7f070069;
+        public static final int detailed_view_SbS=0x7f070067;
         public static final int dialog_abort=0x7f070029;
         public static final int dialog_cancel=0x7f070027;
         public static final int dialog_close=0x7f070028;
         public static final int dialog_ignore=0x7f07002b;
         public static final int dialog_ok=0x7f070026;
         public static final int dialog_retry=0x7f07002a;
-        public static final int donate=0x7f07007a;
-        public static final int donate_uri=0x7f07007c;
-        public static final int donation=0x7f07007b;
+        public static final int donate=0x7f07007b;
+        public static final int donate_uri=0x7f07007d;
+        public static final int donation=0x7f07007c;
         public static final int edit_title=0x7f07002c;
-        public static final int editor_activity=0x7f07006e;
+        public static final int editor_activity=0x7f07006f;
         public static final int editor_label=0x7f070025;
         public static final int enter=0x7f070017;
         public static final int eq=0x7f070012;
-        public static final int error=0x7f070042;
+        public static final int error=0x7f070043;
         public static final int file=0x7f070001;
-        public static final int finger_friendly=0x7f070060;
+        public static final int finger_friendly=0x7f070061;
         public static final int go_button=0x7f07001f;
-        public static final int info=0x7f070043;
+        public static final int info=0x7f070044;
         public static final int input_settings=0x7f070021;
         public static final int keys=0x7f07001d;
-        public static final int keys_text=0x7f07007f;
-        public static final int layout_settings=0x7f070049;
-        public static final int left_panel_settings=0x7f070064;
+        public static final int keys_text=0x7f070080;
+        public static final int layout_settings=0x7f07004a;
+        public static final int left_panel_settings=0x7f070065;
         public static final int list=0x7f070003;
         /**  copy_title/move_title, file name/summary 
          */
@@ -178,75 +182,71 @@ public final class R {
         public static final int mkdir_prompt=0x7f070032;
         public static final int mkdir_title=0x7f070031;
         public static final int move_title=0x7f070034;
-        public static final int nav_warn=0x7f070078;
+        public static final int nav_warn=0x7f070079;
         public static final int new_file=0x7f07001e;
         public static final int newf_prompt=0x7f07002d;
         public static final int no_items=0x7f070035;
-        public static final int no_such_file=0x7f070073;
-        public static final int no_such_folder=0x7f070079;
-        public static final int nothing_to_open=0x7f070071;
+        public static final int no_such_file=0x7f070074;
+        public static final int no_such_folder=0x7f07007a;
+        public static final int nothing_to_open=0x7f070072;
         public static final int oth_sh_this=0x7f070011;
         public static final int panel=0x7f070002;
-        public static final int panels_mode=0x7f07004a;
-        public static final int password=0x7f070048;
+        public static final int panels_mode=0x7f07004b;
+        public static final int password=0x7f070049;
         public static final int prefs=0x7f07001b;
         public static final int prefs_label=0x7f070024;
-        public static final int preparing=0x7f07003d;
-        public static final int prevent_root=0x7f070062;
-        public static final int progress=0x7f070045;
+        public static final int preparing=0x7f07003e;
+        public static final int prevent_root=0x7f070063;
+        public static final int progress=0x7f070046;
         public static final int refresh=0x7f070016;
         public static final int rename_err=0x7f070030;
         public static final int rename_prompt=0x7f07002f;
         public static final int rename_title=0x7f07002e;
-        public static final int right_panel_settings=0x7f070065;
-        public static final int save=0x7f070072;
-        public static final int select=0x7f070041;
-        public static final int select_some=0x7f070040;
-        public static final int show_F1=0x7f070052;
-        public static final int show_F10=0x7f07005c;
-        public static final int show_F2=0x7f070053;
-        public static final int show_F3=0x7f070054;
-        public static final int show_F4=0x7f070055;
-        public static final int show_F5=0x7f070057;
-        public static final int show_F6=0x7f070058;
-        public static final int show_F7=0x7f070059;
-        public static final int show_F8=0x7f07005a;
-        public static final int show_F9=0x7f07005b;
-        public static final int show_SF4=0x7f070056;
-        public static final int show_eq=0x7f07005d;
-        public static final int show_hidden=0x7f07006c;
+        public static final int right_panel_settings=0x7f070066;
+        public static final int save=0x7f070073;
+        public static final int select=0x7f070042;
+        public static final int select_some=0x7f070041;
+        public static final int show_F1=0x7f070053;
+        public static final int show_F10=0x7f07005d;
+        public static final int show_F2=0x7f070054;
+        public static final int show_F3=0x7f070055;
+        public static final int show_F4=0x7f070056;
+        public static final int show_F5=0x7f070058;
+        public static final int show_F6=0x7f070059;
+        public static final int show_F7=0x7f07005a;
+        public static final int show_F8=0x7f07005b;
+        public static final int show_F9=0x7f07005c;
+        public static final int show_SF4=0x7f070057;
+        public static final int show_eq=0x7f07005e;
+        public static final int show_hidden=0x7f07006d;
         public static final int show_size=0x7f070020;
-        public static final int show_sz=0x7f07005f;
-        public static final int show_tgl=0x7f07005e;
-        public static final int show_toolbar=0x7f07004e;
+        public static final int show_sz=0x7f070060;
+        public static final int show_tgl=0x7f07005f;
+        public static final int show_toolbar=0x7f07004f;
         public static final int sort_by_date=0x7f07001a;
         public static final int sort_by_name=0x7f070018;
         public static final int sort_by_size=0x7f070019;
-        public static final int sorting=0x7f07006a;
+        public static final int sorting=0x7f07006b;
         public static final int summary_arrow_mode=0x7f070023;
-        public static final int summary_detailed_view_Ovr=0x7f070069;
-        public static final int summary_detailed_view_SbS=0x7f070067;
-        public static final int summary_editor_activity=0x7f07006f;
-        public static final int summary_finger_friendly=0x7f070061;
-        public static final int summary_panels_mode=0x7f07004b;
-        public static final int summary_prevent_root=0x7f070063;
-        public static final int summary_show_hidden=0x7f07006d;
-        public static final int summary_show_toolbar=0x7f07004f;
-        public static final int summary_sorting=0x7f07006b;
-        public static final int summary_toolbar_preference=0x7f070051;
-        public static final int summary_two_lines=0x7f07004d;
+        public static final int summary_detailed_view_Ovr=0x7f07006a;
+        public static final int summary_detailed_view_SbS=0x7f070068;
+        public static final int summary_editor_activity=0x7f070070;
+        public static final int summary_finger_friendly=0x7f070062;
+        public static final int summary_panels_mode=0x7f07004c;
+        public static final int summary_prevent_root=0x7f070064;
+        public static final int summary_show_hidden=0x7f07006e;
+        public static final int summary_show_toolbar=0x7f070050;
+        public static final int summary_sorting=0x7f07006c;
+        public static final int summary_toolbar_preference=0x7f070052;
+        public static final int summary_two_lines=0x7f07004e;
         public static final int sz=0x7f070015;
         public static final int tgl=0x7f070014;
-        public static final int too_big_file=0x7f070074;
-        /**  file name/summary 
- file name/summary 
- file name/summary 
-         */
-        public static final int too_deep_hierarchy=0x7f07003c;
-        public static final int toolbar_preference=0x7f070050;
-        public static final int two_lines=0x7f07004c;
-        public static final int username=0x7f070047;
-        public static final int value_editor_activity=0x7f070070;
+        public static final int too_big_file=0x7f070075;
+        public static final int too_deep_hierarchy=0x7f07003d;
+        public static final int toolbar_preference=0x7f070051;
+        public static final int two_lines=0x7f07004d;
+        public static final int username=0x7f070048;
+        public static final int value_editor_activity=0x7f070071;
     }
     public static final class xml {
         public static final int prefs=0x7f050000;

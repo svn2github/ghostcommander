@@ -53,6 +53,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     private StringBuffer quickSearchBuf = null;
     private Toast        quickSearchTip = null;
     private Shortcuts shorcutsFoldersList;
+    private String lastItemSelected = null;
 
     public Panels( FileCommander c_, int id_ ) {
         current = LEFT;
@@ -289,11 +290,14 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         setPanelTitle( ca.toString(), current );
         if( reread )
             ca.readSource( null );
+        else
+            if( lastItemSelected != null )
+                setSelection( current, lastItemSelected );
         listViews[current].invalidateViews();
+        ca = getListAdapter( false );
+        if( ca == null ) return;
+        setPanelTitle( ca.toString(), opposite() );
         if( id == R.layout.alt ) {
-            ca = getListAdapter( false );
-            if( ca == null ) return;
-            setPanelTitle( ca.toString(), opposite() );
             if( reread )
                 ca.readSource( null );
             listViews[opposite()].invalidateViews();
@@ -411,7 +415,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     }
     private final void NavigateInternal( int which, Uri uri, String posTo ) {
     	c.setProgressBarIndeterminateVisibility( true );
-        setPanelTitle( uri.toString(), which );
+//        setPanelTitle( uri.toString(), which );
         ListView flv = listViews[which];
         flv.clearChoices();
         CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
@@ -462,7 +466,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         }
         ca.readSource( uri );
         if( posTo != null ) {
-        	setSelection( which, posTo );
+            lastItemSelected = posTo;
+            setSelection( which, posTo );
         }
         else
             flv.setSelection( 0 );

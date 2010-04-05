@@ -34,16 +34,15 @@ import android.widget.Toast;
  *  4. FTP move = copy + delete
  *  5. FTP tree size
  *  -6. Progress bar
- *  7. Localize copy and FTP
+ *  7. Localize the copy report and FTP
  *  -8. Add and delete favorites by name, not by current
  *  -9. Select/unselect all files 
  *  -10. Ask password or do not show it
  *  11. Do active or passive ftp by the user's choice
- *  -12. Close the app completely on exit
+ *  -12. Close the app completely on exit - does not work
  *  13. Repeat and make case independed quick search
- *  14. Make the ftp adapter to remember item selected and pass its name on the way up
- *  15. store, sort and show calculated folders sizes
- *  16. show thubnails of pictures  
+ *  -14. Make the ftp adapter to remember item selected and pass its name on the way up
+ *  -15. store, sort and show calculated folders sizes
  * 
  */
 
@@ -52,7 +51,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     private final static int REQUEST_CODE_PREFERENCES = 1;
     public  final static int RENAME_ACT = 1002,  NEWF_ACT = 1014, EDIT_ACT = 1004, COPY_ACT = 1005, 
                                MOVE_ACT = 1006, MKDIR_ACT = 1007,  DEL_ACT = 1008, DONATE = 3333;
-    private final static int SHOW_SIZE = 12, CHANGE_LOCATION = 993;
+    private final static int SHOW_SIZE = 12, CHANGE_LOCATION = 993, MAKE_SAME = 217;
     private ArrayList<Dialogs> dialogs;
     public  Panels  panels, panelsBak = null;
     private boolean exit = false;
@@ -134,7 +133,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         panels.Destroying();
         super.onDestroy();
         if( isFinishing() && exit )
-            System.exit( 0 );
+            System.exit( 0 );  // does not work in API7
     }
 /*
     //these two methods are not called on screen rotation in v1.5, so all the store/restore is called from pause/start 
@@ -165,6 +164,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo)menuInfo;
                 if( acmi.position == 0 ) {
                     menu.add(0, CHANGE_LOCATION, 0, R.string.enter );
+                    menu.add(0, MAKE_SAME, 0, R.string.oth_sh_this );
                     return;
                 }
             }
@@ -210,6 +210,9 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             break;
         case SHOW_SIZE:
             panels.showSizes();
+            break;
+        case MAKE_SAME:
+            panels.makeOtherAsCurrent();
             break;
         }
         return true;
@@ -311,7 +314,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
             panels.applySettings(sharedPref);
             if( panelsBak != null )
-                panels.applySettings(sharedPref);
+                panelsBak.applySettings(sharedPref);
             setMode(sharedPref.getBoolean("panels_mode", false));
             panels.showOrHideToolbar(sharedPref.getBoolean("show_toolbar", true));
         }

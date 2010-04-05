@@ -58,35 +58,31 @@ public class FSAdapter extends CommanderAdapterBase {
     public boolean readSource( Uri d ) {
     	try {
     	    if( worker != null ) worker.reqStop();
-    	    if( d != null )
-    	        dirName =  d.getPath();
-    	    if( dirName == null ) return false;
-            File dir = new File( dirName );
+    	    String dir_name = d != null ? d.getPath() : dirName;  
+    	    if( dir_name == null ) return false;
+            File dir = new File( dir_name );
             File[] files_ = dir.listFiles();
             if( files_ == null ) {
-            	commander.notifyMe( commander.getContext().getString( R.string.no_such_folder, dirName ), 
+            	commander.notifyMe( commander.getContext().getString( R.string.no_such_folder, dir_name ), 
             			            Commander.OPERATION_FAILED, 0 );
                 return false;
             }
+            dirName = dir_name;
             int num_files = files_.length;
-            int n = 0, num = num_files;
+            int num = num_files;
             boolean hide = ( mode & MODE_HIDDEN ) == HIDE_MODE;
             if( hide ) {
-                for( int i = 0; i < num_files; i++ ) {
-                	if( !files_[i].isHidden() ) n++; 
-                }
-                num = n;
-                n = 0;
+                int cnt = 0;
+                for( int i = 0; i < num_files; i++ )
+                	if( !files_[i].isHidden() ) cnt++; 
+                num = cnt;
             }
             items = new FileEx[num];
+            int j = 0;
             for( int i = 0; i < num_files; i++ ) {
             	if( !hide || !files_[i].isHidden() )
-            		items[n++] = new FileEx( files_[i] ); 
+            		items[j++] = new FileEx( files_[i] ); 
             }       
-/*
-            FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING );
-            Arrays.sort( items, comp );
-*/                        
             parentLink = dir.getParent() == null ? SLS : "..";
             commander.notifyMe( null, Commander.OPERATION_COMPLETED, 0 );
             return true;
@@ -254,7 +250,8 @@ public class FSAdapter extends CommanderAdapterBase {
                 }
             }
             readSource( null );
-            commander.notifyMe( "All files were deleted", Commander.OPERATION_COMPLETED_REFRESH_REQUIRED, 0 );
+            commander.notifyMe( commander.getContext().getString( R.string.deleted ), 
+                    Commander.OPERATION_COMPLETED_REFRESH_REQUIRED, 0 );
             return true;
         }
         catch( SecurityException e ) {
@@ -512,11 +509,8 @@ public class FSAdapter extends CommanderAdapterBase {
     public int getCount() {
         if( items == null )
             return 1;
-//        long start = System.currentTimeMillis();
         FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING );
         Arrays.sort( items, comp );
-//        long end = System.currentTimeMillis();
-//        System.err.printf("\nGet count called, resorting took %d ms\n", end - start );
         return items.length + 1;
     }
 

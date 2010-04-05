@@ -33,24 +33,14 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected int    mode = 0;
     protected String parentLink;
     protected Engine worker = null;
-    /*
-    protected Handler handler = new Handler() {
-        public void handleMessage( Message msg ) {
-            int p1 = msg.getData().getInt( NOTIFY_PRG1 );
-            int p2 = msg.getData().getInt( NOTIFY_PRG2, -1 );
-            String str = msg.getData().getString( NOTIFY_STR );
-            commander.notifyMe( str, p1, p2 );
-        }
-    };
-    */
     Handler handler = new Handler() {
         public void handleMessage( Message msg ) {
             int perc1 = msg.getData().getInt( CommanderAdapterBase.NOTIFY_PRG1 );
             int perc2 = msg.getData().getInt( CommanderAdapterBase.NOTIFY_PRG2, -1 );
             String str = msg.getData().getString( CommanderAdapterBase.NOTIFY_STR );
             if( perc1 < 0 ) {
+                onComplete( worker );
                 worker = null;
-                notifyDataSetChanged();
             }
             commander.notifyMe( str, perc1, perc2 );
         }
@@ -80,6 +70,8 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         mode |= mode_;
     }
     
+    protected void onComplete( Engine engine) { // to override who need do something in the UI thread on engine completion
+    }
     public class Item {
     	public String  name = "";
     	public Date    date = null;
@@ -113,11 +105,8 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             		size = Utils.getHumanSize( item.size );
                 if( item.date != null ) {
     	            String dateFormat;
-    	            if( wm )
-    	            	dateFormat = item.date.getYear() + 1900 == Calendar.getInstance().get( Calendar.YEAR ) ?
-    	                        "MMM dd hh:mm" : "MMM dd  yyyy";
-    	            else
-    	            	dateFormat = "yy-MM-dd";
+	            	dateFormat = item.date.getYear() + 1900 == Calendar.getInstance().get( Calendar.YEAR ) ?
+	                        "MMM dd hh:mm" : "MMM dd  yyyy";
     	            date = (String)DateFormat.format( dateFormat, item.date );
                 }
             }
@@ -126,17 +115,11 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 parentWidth = parent_width;
                 nameWidth = wm || dm ? parent_width * 5 / 8 : parent_width;
                 sizeWidth = parent_width / (wm ? 8 : 4);
-                dateWidth = parent_width / (wm ? 4 : 4);
+                dateWidth = parent_width / (wm ? 4 : 2);
             }
             if( item.sel ) {
                 row_view.setBackgroundColor( 0xFF4169E1 );
             }
-            /*
-            CheckedTextView chkView = (CheckedTextView)row_view.findViewById( R.id.chk );
-            if( chkView != null ) {
-                chkView.setText( selected ? "+" : " " );
-            }
-            */
             TextView nameView = (TextView)row_view.findViewById( R.id.fld_name );
             nameView.setWidth( nameWidth );
             nameView.setText( nameView != null ? name : "???" );
@@ -152,42 +135,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 dateView.setWidth( dateWidth );
                 dateView.setText( date );
             }
-    /*
-            if( wm && item.uri != null ) {
-                ContentResolver cr = commander.getContext().getContentResolver();
-                Cursor cursor = MediaStore.Images.Thumbnails.queryMiniThumbnails( cr, 
-                        item.uri, MediaStore.Images.Thumbnails.MICRO_KIND, null );
-                
-                if( cursor == null ) {
-                    System.err.print("\ncursor is null...\n");
-                }
-                else {
-                    System.err.print("\ncursor is NOT null!!!\n");
-                    Long _imageId = null;
-                    cursor.moveToFirst();
-                    while(true) {
-                       for(int i=0;i<cursor.getColumnCount();i++) {
-                          String column_name = cursor.getColumnName(i);
-                          String value = cursor.getString(i);
-                          if( column_name.equals("image_id") ) {
-                             _imageId = Long.parseLong(cursor.getString(i));
-                          }
-                       }
-                       if(cursor.isLast())
-                          break;
-                       else 
-                          cursor.moveToNext();
-                    }
-                }
-                
-                ImageView imgView = (ImageView)row_view.findViewById( R.id.thubnail );
-                if( imgView != null ) {
-                    imgView.setMaxWidth( 100 );
-                    imgView.setMaxHeight( 100 );
-                    //imgView.setImageURI( item.uri );
-                }
-            }
-*/
             row_view.setTag( null );
     
             return row_view;

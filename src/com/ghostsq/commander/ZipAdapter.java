@@ -15,6 +15,7 @@ import java.util.zip.ZipEntry;
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.CommanderAdapter;
 import com.ghostsq.commander.CommanderAdapterBase;
+import com.ghostsq.commander.FTPAdapter.ListEngine;
 
 import android.net.Uri;
 import android.os.Handler;
@@ -31,7 +32,6 @@ public class ZipAdapter extends CommanderAdapterBase {
     public  Uri          uri = null;
     public  ZipFile      zip = null;
     public  ZipEntry[] items = null;
-    public  Object itemsLock = new Object();
 
     public ZipAdapter() {
         parentLink = "..";
@@ -39,8 +39,10 @@ public class ZipAdapter extends CommanderAdapterBase {
 
     public ZipEntry[] GetFolderList( String fld_path ) {
         if( zip == null ) return null;
-        if( fld_path == null ) fld_path = ""; else
-        if( fld_path.charAt( 0 ) == SLC ) fld_path = fld_path.substring( 1 );                                 
+        if( fld_path == null ) fld_path = ""; 
+        else
+            if( fld_path.length() > 0 && fld_path.charAt( 0 ) == SLC ) 
+                fld_path = fld_path.substring( 1 );                                 
         int fld_path_len = fld_path.length();
         if( fld_path_len > 0 && fld_path.charAt( fld_path_len - 1 ) != SLC ) { 
             fld_path = fld_path + SLC;
@@ -86,9 +88,13 @@ public class ZipAdapter extends CommanderAdapterBase {
     }
     
     class ListEngine extends Engine {
+        private ZipEntry[] items_tmp = null;
         ListEngine( Handler h ) {
         	super( h );
         }
+        public ZipEntry[] getItems() {
+            return items_tmp;
+        }       
         @Override
         public void run() {
             try {
@@ -106,16 +112,13 @@ public class ZipAdapter extends CommanderAdapterBase {
                     	    // it happens only when the Uri is built by Uri.Builder
                     	    System.err.print( "Exception:\n" + e + " on uri.getFragment()" );
                     	}
-                    	synchronized( itemsLock ) {
-                    	    items = GetFolderList( cur_path );
-                    	    if( items != null ) { 
-                                ZipItemPropComparator comp = new ZipItemPropComparator( mode & MODE_SORTING );
-                                Arrays.sort( items, comp );
-                                sendProgress( null, Commander.OPERATION_COMPLETED );
-                                return;
-                            }
-                    	}
-                    	
+                	    items_tmp = GetFolderList( cur_path );
+                	    if( items_tmp != null ) { 
+                            ZipItemPropComparator comp = new ZipItemPropComparator( mode & MODE_SORTING );
+                            Arrays.sort( items_tmp, comp );
+                            sendProgress( null, Commander.OPERATION_COMPLETED );
+                            return;
+                	    }
                 	}
                 }
             }
@@ -127,6 +130,27 @@ public class ZipAdapter extends CommanderAdapterBase {
             	super.run();
             }
             sendProgress( "Can't open this ZIP file", Commander.OPERATION_FAILED );
+        }
+    }
+
+    protected void onComplete( Engine engine ) {
+        if( engine instanceof ListEngine ) {
+            ListEngine list_engine = (ListEngine)engine;
+            ZipEntry[] tmp_items = list_engine.getItems();
+            if( tmp_items != null && ( mode & MODE_HIDDEN ) == HIDE_MODE ) {
+                int cnt = 0;
+                for( int i = 0; i < tmp_items.length; i++ )
+                    if( tmp_items[i].getName().charAt( 0 ) != '.' )
+                        cnt++;
+                items = new ZipEntry[cnt];
+                int j = 0;
+                for( int i = 0; i < tmp_items.length; i++ )
+                    if( tmp_items[i].getName().charAt( 0 ) != '.' )
+                        items[j++] = tmp_items[i]; 
+            }
+            else
+                items = tmp_items;
+            notifyDataSetChanged();
         }
     }
     
@@ -161,9 +185,6 @@ public class ZipAdapter extends CommanderAdapterBase {
 	            		return false;      
             	}
             }
-        	synchronized( itemsLock ) {
-        		items = null;
-        	}
             worker = new ListEngine( handler );
             worker.start();
             return true;
@@ -546,20 +567,7 @@ public class ZipAdapter extends CommanderAdapterBase {
      */
     @Override
     public int getCount() {
-    	if( worker != null )
-    	    if( worker.isAlive() ) 
-        	    try {
-        	        System.err.print("getCount() called while the worker thread is busy\n");
-        	        Thread.sleep( 100 );
-        	    }
-        	    catch( Exception e ) {
-        	        System.err.print("Exception: " + e );
-        	    }
-        	else
-        	    worker = null;
-    	synchronized( itemsLock ) {
-    	    return items != null ? items.length + 1 : 1;
-    	}
+   	    return items != null ? items.length + 1 : 1;
     }
 
     @Override
@@ -586,9 +594,7 @@ public class ZipAdapter extends CommanderAdapterBase {
 	        else {
 	        	if( items != null && position > 0 && position <= items.length ) {
 	        		ZipEntry curItem;
-	            	synchronized( itemsLock ) {
-	            		curItem = items[position - 1];
-	            	}
+            		curItem = items[position - 1];
 		            item.name = getLocalName( curItem );
 		            item.size = curItem.getSize();
 		            item.dir = curItem.isDirectory();

@@ -61,6 +61,7 @@
     <string name="delete_title">移除</string>
     <string name="delete_err">沒有要刪的檔案</string>
     <string name="delete_q">"移除 %s ?"</string><!-- file name/summary -->
+    <string name="deleted">刪除</string>
     <string name="too_deep_hierarchy">檔案路徑太深</string>
     
     <string name="cd_title">轉到</string>

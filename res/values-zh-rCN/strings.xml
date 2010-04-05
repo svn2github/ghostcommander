@@ -62,6 +62,7 @@
     <string name="delete_title">删除</string>
     <string name="delete_err">没有要删的文件</string>
     <string name="delete_q">"删除 %s ?"</string><!-- file name/summary -->
+    <string name="deleted">刪除</string>
     <string name="too_deep_hierarchy">文件路径太深</string>
     
     <string name="cd_title">转到</string>

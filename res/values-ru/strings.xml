@@ -63,6 +63,7 @@
     <string name="delete_title">Удаление</string>
     <string name="delete_err">Нечего удалять</string>
     <string name="delete_q">"Удалить %s ?"</string><!-- file name/summary -->
+    <string name="deleted">Удалено</string>
     <string name="cd_title">Смена папки</string>
     <string name="cd_prompt">Сменить текущую папку на:</string>
     <string name="too_deep_hierarchy">Слишком глубокое вложение папок</string>
