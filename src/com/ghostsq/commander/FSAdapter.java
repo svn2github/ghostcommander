@@ -19,9 +19,9 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class FSAdapter extends CommanderAdapterBase {
-    
+
     class FileEx  {
-        public File f = null; 
+        public File f = null;
         public long size = 0;
         public FileEx( String name ) {
             f = new File( name );
@@ -30,10 +30,10 @@ public class FSAdapter extends CommanderAdapterBase {
             f = f_;
         }
     }
-    
+
     private String dirName, parentLink;
     private FileEx[] items;
-    
+
     public FSAdapter( Commander c, Uri d, int mode_ ) {
     	super( c, mode_ );
     	dirName = d == null ? DEFAULT_DIR : d.getPath();
@@ -58,12 +58,12 @@ public class FSAdapter extends CommanderAdapterBase {
     public boolean readSource( Uri d ) {
     	try {
     	    if( worker != null ) worker.reqStop();
-    	    String dir_name = d != null ? d.getPath() : dirName;  
+    	    String dir_name = d != null ? d.getPath() : dirName;
     	    if( dir_name == null ) return false;
             File dir = new File( dir_name );
             File[] files_ = dir.listFiles();
             if( files_ == null ) {
-            	commander.notifyMe( commander.getContext().getString( R.string.no_such_folder, dir_name ), 
+            	commander.notifyMe( commander.getContext().getString( R.string.no_such_folder, dir_name ),
             			            Commander.OPERATION_FAILED, 0 );
                 return false;
             }
@@ -74,15 +74,15 @@ public class FSAdapter extends CommanderAdapterBase {
             if( hide ) {
                 int cnt = 0;
                 for( int i = 0; i < num_files; i++ )
-                	if( !files_[i].isHidden() ) cnt++; 
+                	if( !files_[i].isHidden() ) cnt++;
                 num = cnt;
             }
             items = new FileEx[num];
             int j = 0;
             for( int i = 0; i < num_files; i++ ) {
             	if( !hide || !files_[i].isHidden() )
-            		items[j++] = new FileEx( files_[i] ); 
-            }       
+            		items[j++] = new FileEx( files_[i] );
+            }
             parentLink = dir.getParent() == null ? SLS : "..";
             commander.notifyMe( null, Commander.OPERATION_COMPLETED, 0 );
             return true;
@@ -94,22 +94,23 @@ public class FSAdapter extends CommanderAdapterBase {
 
     @Override
     public void openItem( int position ) {
-        if( position == 0 ) { 
+        if( position == 0 ) {
             File cur_dir_file = new File( dirName );
             String parent_dir = cur_dir_file.getParent();
-            commander.Navigate( Uri.parse( parentLink != SLS ? ( parent_dir != null ? parent_dir : DEFAULT_DIR ) : SLS ), 
+            commander.Navigate( Uri.parse( parentLink != SLS ? ( parent_dir != null ? parent_dir : DEFAULT_DIR ) : SLS ),
                                 cur_dir_file.getName() );
         }
         else {
-            File file = items[position - 1].f; 
+            File file = items[position - 1].f;
             if( file.isDirectory() ) {
                 if( dirName.charAt( dirName.length() - 1 ) != File.separatorChar )
                     dirName += File.separatorChar;
                 commander.Navigate( Uri.parse( dirName + file.getName() + File.separatorChar ), null );
             }
             else {
-                if( Utils.getFileExt( file.getName() ).compareToIgnoreCase( ".zip" ) == 0 ) 
-                    commander.Navigate( (new Uri.Builder()).scheme( "zip" ).authority( "" ).path( file.getAbsolutePath() ).build(), null );            
+                String ext = Utils.getFileExt( file.getName() );
+                if( ext != null && ext.compareToIgnoreCase( ".zip" ) == 0 )
+                    commander.Navigate( (new Uri.Builder()).scheme( "zip" ).authority( "" ).path( file.getAbsolutePath() ).build(), null );
                 else
                     commander.Open( file.getAbsolutePath() );
             }
@@ -130,19 +131,19 @@ public class FSAdapter extends CommanderAdapterBase {
         try {
         	FileEx[] list = bitsToFiles( cis );
         	if( list != null ) {
-        		if( worker != null && worker.reqStop() ) 
+        		if( worker != null && worker.reqStop() )
        		        return;
-        		worker = new CalcSizesEngine( handler, list ); 
+        		worker = new CalcSizesEngine( handler, list );
         		worker.start();
         	}
-		} 
+		}
         catch(Exception e) {
 		}
 	}
 	class CalcSizesEngine extends Engine {
 		private FileEx[] mList;
         protected int  num = 0, dirs = 0, depth = 0;
-        
+
         CalcSizesEngine( Handler h, FileEx[] list ) {
         	super( h );
             mList = list;
@@ -159,7 +160,7 @@ public class FSAdapter extends CommanderAdapterBase {
     				synchronized( items ) {
         	            FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING );
         	            Arrays.sort( items, comp );
-    				}				
+    				}
 				String result;
 				if( mList.length == 1 ) {
 					File f = mList[0].f;
@@ -191,7 +192,7 @@ public class FSAdapter extends CommanderAdapterBase {
     				int l = subfiles.length;
     				FileEx[] subfiles_ex = new FileEx[l];
     				for( int j = 0; j < l; j++ )
-    				    subfiles_ex[j] = new FileEx( subfiles[j] ); 
+    				    subfiles_ex[j] = new FileEx( subfiles[j] );
     				long sz = getSizes( subfiles_ex );
     				if( sz < 0 ) return -1;
     				f.size = sz;
@@ -250,7 +251,7 @@ public class FSAdapter extends CommanderAdapterBase {
                 }
             }
             readSource( null );
-            commander.notifyMe( commander.getContext().getString( R.string.deleted ), 
+            commander.notifyMe( commander.getContext().getString( R.string.deleted ),
                     Commander.OPERATION_COMPLETED_REFRESH_REQUIRED, 0 );
             return true;
         }
@@ -302,7 +303,7 @@ public class FSAdapter extends CommanderAdapterBase {
             if( list == null )
             	commander.showError( "Something wrong with the files " );
             else {
-                if( worker != null && worker.reqStop() ) 
+                if( worker != null && worker.reqStop() )
                     return false;
             	worker = new CopyEngine( handler, list, dirName );
             	worker.start();
@@ -333,7 +334,7 @@ public class FSAdapter extends CommanderAdapterBase {
         long    bytes = 0;
         double  conv;
         File[]  fList = null;
-        
+
         CopyEngine( Handler h, File[] list, String dest ) {
         	super( h, null );
         	fList = list;
@@ -346,7 +347,7 @@ public class FSAdapter extends CommanderAdapterBase {
                 int l = fList.length;
                 FileEx[] x_list = new FileEx[l];
                 for( int j = 0; j < l; j++ )
-                    x_list[j] = new FileEx( fList[j] ); 
+                    x_list[j] = new FileEx( fList[j] );
 				long sum = getSizes( x_list );
 				conv = 100 / (double)sum;
 	            String report = Utils.getCopyReport( copyFiles( fList, mDest ) );
@@ -384,7 +385,7 @@ public class FSAdapter extends CommanderAdapterBase {
                             if( errMsg != null )
                             	break;
                         }
-                        else 
+                        else
                             errMsg = "Unable to create directory '" + outFile.getAbsolutePath() + "' ";
                     }
                     else {
@@ -421,11 +422,11 @@ public class FSAdapter extends CommanderAdapterBase {
                 }
                 finally {
                     try {
-                        if( in != null ) 
-                            in.close(); 
+                        if( in != null )
+                            in.close();
                         if( out != null )
                             out.close();
-                        
+
                     }
                     catch( IOException e ) {
                         errMsg = "Error on file: '" + uri + "'.";
@@ -504,7 +505,7 @@ public class FSAdapter extends CommanderAdapterBase {
     /*
      *  ListAdapter implementation
      */
-    
+
     @Override
     public int getCount() {
         if( items == null )
@@ -547,8 +548,8 @@ public class FSAdapter extends CommanderAdapterBase {
                         if( item.name.matches( ".+\\.(jpg|png|gif)$" ) )
                             item.uri = Uri.parse( "file://" + dirName + SLS + item.name );
                         else
-                            item.uri = null;                            
-                        
+                            item.uri = null;
+
                     } catch( Exception e ) {
                         System.err.print("getView() exception: " + e );
                     }

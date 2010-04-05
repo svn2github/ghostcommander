@@ -3,7 +3,7 @@ package com.ghostsq.commander;
 import java.io.File;
 
 public class Utils {
-	private final static String[][] mimes = {	// should be sorted! 
+	private final static String[][] mimes = {	// should be sorted!
 		{ ".aif", "audio/x-aiff" },
 		{ ".apk", "application/vnd.android.package-archive" },
 		{ ".avi", "video/x-msvideo" },
@@ -14,7 +14,7 @@ public class Utils {
 		{ ".htm", "text/html" },
 		{ ".html","text/html" },
 		{ ".jar", "application/java-archive" },
-		{ ".java","application/octet-stream" },		
+		{ ".java","application/octet-stream" },
 		{ ".jpeg","image/jpeg" },
 		{ ".jpg", "image/jpg" },
 		{ ".mid", "audio/mid" },
@@ -30,36 +30,37 @@ public class Utils {
 		{ ".xml", "text/xml" },
 		{ ".zip", "application/zip" }
 	};
-	
+
 	public final static String getMimeByExt( String ext ) {
-		if( ext == null ) return null;
-		int from = 0, to = mimes.length;
-		for( int l = 0; l < mimes.length; l++ ) {
-			int idx = ( to - from ) / 2 + from;
-			String tmp = mimes[idx][0];
-			if( tmp.compareToIgnoreCase( ext ) == 0 ) return mimes[idx][1];
-			int cp;
-			for( cp = 1; ; cp++ ) {
-				if( cp >= ext.length() ) {
-					to = idx;
-					break;
-				}
-				if( cp >= tmp.length() ) {
-					from = idx;
-					break;
-				}
-				char c0 = ext.charAt( cp );
-				char ct = tmp.charAt( cp );
-				if( c0 < ct ) {
-					to = idx;
-					break;
-				}
-				if( c0 > ct ) {
-					from = idx;
-					break;
-				}
-			}
-		}
+		if( ext != null ) {
+    		int from = 0, to = mimes.length;
+    		for( int l = 0; l < mimes.length; l++ ) {
+    			int idx = ( to - from ) / 2 + from;
+    			String tmp = mimes[idx][0];
+    			if( tmp.compareToIgnoreCase( ext ) == 0 ) return mimes[idx][1];
+    			int cp;
+    			for( cp = 1; ; cp++ ) {
+    				if( cp >= ext.length() ) {
+    					to = idx;
+    					break;
+    				}
+    				if( cp >= tmp.length() ) {
+    					from = idx;
+    					break;
+    				}
+    				char c0 = ext.charAt( cp );
+    				char ct = tmp.charAt( cp );
+    				if( c0 < ct ) {
+    					to = idx;
+    					break;
+    				}
+    				if( c0 > ct ) {
+    					from = idx;
+    					break;
+    				}
+    			}
+    		}
+    	}
 		return "*/*";
 	}
 	public final static String getFileExt( String file_name ) {
@@ -78,7 +79,7 @@ public class Utils {
         }
         return true;
     }
-	public final static File[] getListOfFiles( String[] uris ) { 
+	public final static File[] getListOfFiles( String[] uris ) {
 	    File[] list = new File[uris.length];
 	    for( int i = 0; i < uris.length; i++ ) {
 	    	if( uris[i] == null )
@@ -90,7 +91,7 @@ public class Utils {
 	// TODO: localize
 	public final static String getCopyReport( int total ) {
 		String report = ( total > 0 ? "" + total + " file" +
-			            ( total > 1 ? "s" : "" ) : "Nothing" ) + 
+			            ( total > 1 ? "s" : "" ) : "Nothing" ) +
 			            ( total > 1 ? " were" : " was" ) +" copied.";
 		return report;
 	}
@@ -107,7 +108,7 @@ public class Utils {
 	public class Credentials {
         public String userName = null, userPass = null, userInfo = null;
         public final void set( String name, String pass ) {
-            userName = name; 
+            userName = name;
             userPass = pass;
         }
         public final void set( String user_info ) {
@@ -124,7 +125,7 @@ public class Utils {
                 }
                 else {
                     userName = user_info;
-                    userPass = null; 
+                    userPass = null;
                 }
             }
         }
