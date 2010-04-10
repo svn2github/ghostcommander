@@ -36,8 +36,14 @@
             android:title="@string/sort_by_date"
             android:alphabeticShortcut="m"/>
         <item android:id="@+id/refresh"
-	         android:title="@string/refresh"
+             android:title="@string/refresh"
              android:alphabeticShortcut="r"/>
+        <item android:id="@+id/select_all"
+             android:title="@string/select_all"
+             android:alphabeticShortcut="a"/>
+        <item android:id="@+id/unselect_all"
+             android:title="@string/unselect_all"
+             android:alphabeticShortcut="u"/>
       </menu>
     </item>
     
@@ -60,8 +66,7 @@
 
     <item android:id="@+id/app"
         android:title="@string/app"
-        android:icon="@drawable/app"
-        android:alphabeticShortcut="a">        
+        android:icon="@drawable/app">        
       <menu>
         <item android:id="@+id/donate"
             android:title="@string/donate"/>

@@ -16,9 +16,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class Editor extends Activity {
-	final static int MENU_SAVE = 1;
+	final static int MENU_SAVE = 1, WRAP_TEXT = 2;
 	final static String URI = "URIfileForEdit";
-	
+	private boolean horScroll = true;
 	private String path;
 	
     /** Called when the activity is first created. */
@@ -37,7 +37,8 @@ public class Editor extends Activity {
     }
     @Override
     public boolean onCreateOptionsMenu( Menu menu ) {
-    	menu.add( Menu.NONE, MENU_SAVE, Menu.NONE, getString( R.string.save ) ).setIcon(android.R.drawable.ic_menu_save);
+        menu.add( Menu.NONE, MENU_SAVE, Menu.NONE, getString( R.string.save ) ).setIcon(android.R.drawable.ic_menu_save);
+        menu.add( Menu.NONE, WRAP_TEXT, Menu.NONE, getString( R.string.wrap ) );
 	    return true;
     }
     @Override
@@ -46,6 +47,15 @@ public class Editor extends Activity {
         case MENU_SAVE:
         	Save();
             return true;
+        case WRAP_TEXT: 
+            try {
+                EditText te = (EditText)findViewById( R.id.editor );
+                horScroll = horScroll ? false : true;
+                te.setHorizontallyScrolling( horScroll ); 
+            }
+            catch( Exception e ) {
+                System.err.println("Exception: " + e );
+            } 
         }
         return super.onMenuItemSelected(featureId, item);
     }
@@ -55,20 +65,21 @@ public class Editor extends Activity {
     }
     private final boolean Load()
     {
-    	EditText te = (EditText)findViewById( R.id.editor );
-    	
-        File file = new File( path );
-    	if( !file.exists() ) {
-    		showMessage( getString( R.string.no_such_file, path ) );
-    		return false;
-    	}
-    	if( file.length() > 1000000 ) {
-    		showMessage( getString( R.string.too_big_file, path ) );
-    		return false;
-    	}
          
         BufferedReader reader = null;
         try {
+            EditText te = (EditText)findViewById( R.id.editor );
+            
+            File file = new File( path );
+            if( !file.exists() ) {
+                showMessage( getString( R.string.no_such_file, path ) );
+                return false;
+            }
+            if( file.length() > 1000000 ) {
+                showMessage( getString( R.string.too_big_file, path ) );
+                return false;
+            }
+            
             reader = new BufferedReader(new FileReader(file));
             String text = null, sep = System.getProperty("line.separator");
             boolean binary = false;
@@ -98,13 +109,13 @@ public class Editor extends Activity {
     }
     private final void Save()
     {
-    	EditText te = (EditText)findViewById( R.id.editor );
-    	CharSequence text = te.getText();
     	FileWriter writer = null;
     	try {
+            EditText te = (EditText)findViewById( R.id.editor );
+            CharSequence text = te.getText();
     		writer = new FileWriter( path );
     		writer.write( text.toString() );	// to do: find a more optimal method to write data
-        } catch( IOException e ) {
+        } catch( Exception e ) {
         	showMessage( getString( R.string.cant_save ) + "\n" + e.getMessage() );
         }finally {
             try {

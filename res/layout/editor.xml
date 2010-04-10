@@ -4,4 +4,5 @@
 	android:layout_height="fill_parent"
 	android:gravity="top"
 	android:textColor="#eee"
-	android:background="#000"/>
+	android:background="#000"
+	android:scrollHorizontally="true"/>

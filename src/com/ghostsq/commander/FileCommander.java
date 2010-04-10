@@ -1,5 +1,6 @@
 package com.ghostsq.commander;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -291,6 +292,12 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         case R.id.refresh:
             panels.refreshList(true);
             break;
+        case R.id.select_all:
+            panels.checkAllItems( true );
+            break;
+        case R.id.unselect_all:
+            panels.checkAllItems( false );
+            break;
         case R.id.prefs:
             openPrefs();
             break;
@@ -467,14 +474,14 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     }
 
     @Override
-    public void Open( String uri ) {
+    public void Open( String path ) {
         try {
             Intent i = new Intent( Intent.ACTION_VIEW );
-            String mime = Utils.getMimeByExt( Utils.getFileExt(uri) );
-            i.setDataAndType( Uri.parse("file://" + uri), mime );
+            String mime = Utils.getMimeByExt( Utils.getFileExt( path ) );
+            i.setDataAndType( Uri.fromFile( new File( path ) ), mime );
             startActivity(i);
         } catch( ActivityNotFoundException e ) {
-            showMessage("Application for open '" + uri + "' is not available, ");
+            showMessage("Application for open '" + path + "' is not available, ");
         }
     }
 

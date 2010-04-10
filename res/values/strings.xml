@@ -30,6 +30,8 @@
     <string name="sort_by_name">&#xA0; By Name</string>
     <string name="sort_by_size">&#xA0; By Size</string>
     <string name="sort_by_date">&#xA0; By Date</string>
+    <string name="select_all">+ Select All</string>
+    <string name="unselect_all">- UnSelect All</string>
         
     <string name="prefs">9 Settings</string>
     <string name="about">About</string>
@@ -136,6 +138,7 @@
     
     <string name="nothing_to_open">Nothing to open</string>
     <string name="save">Save</string>
+    <string name="wrap">Wrap long lines</string>
     <string name="no_such_file">No such file \"%s\"</string>
     <string name="too_big_file">The file \"%s\" is too big.</string>
     <string name="binary_file">The file \"%s\" is binary. You can damage it. Edit on your own risk.</string>    

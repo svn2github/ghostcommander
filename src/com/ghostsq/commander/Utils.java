@@ -65,7 +65,7 @@ public class Utils {
 	}
 	public final static String getFileExt( String file_name ) {
 		int dot = file_name.lastIndexOf(".");
-		return dot >= 0 ? file_name.substring( dot ) : null;
+		return dot >= 0 ? file_name.substring( dot ) : "";
 	}
     public final static boolean deleteDirContent( File d ) {
         File[] fl = d.listFiles();
