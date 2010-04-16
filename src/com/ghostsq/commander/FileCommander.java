@@ -274,8 +274,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         case R.id.oth_sh_this:
             panels.makeOtherAsCurrent();
             break;
-        case R.id.change:
-            panels.togglePanels(false);
+        case R.id.ftp:
+            showDialog(Dialogs.FTP_DIALOG);
             break;
         case R.id.enter:
             panels.openGoPanel();
@@ -469,7 +469,6 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
      */
     @Override
     public void Navigate( Uri uri, String posTo ) {
-//        showMessage( uri.toString() );
         panels.Navigate( panels.getCurrent(), uri, posTo );
     }
 

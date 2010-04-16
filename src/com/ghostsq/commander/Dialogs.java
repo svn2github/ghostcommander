@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 public class Dialogs implements DialogInterface.OnClickListener {
 	public final static int ARI_DIALOG = 148, ALERT_DIALOG = 193, CONFIRM_DIALOG = 396, INPUT_DIALOG = 860, 
-					   PROGRESS_DIALOG = 493,  INFO_DIALOG = 864,   ABOUT_DIALOG = 159, LOGIN_DIALOG = 995;
+					   PROGRESS_DIALOG = 493,  INFO_DIALOG = 864,   ABOUT_DIALOG = 159, LOGIN_DIALOG = 995, FTP_DIALOG = 450;
 	public final static int numDialogTypes = 5;
 	protected String toShowInAlertDialog = null, cookie = null;
 	private int 		  dialogId;
@@ -33,61 +33,83 @@ public class Dialogs implements DialogInterface.OnClickListener {
     @Override
 	public void onClick( DialogInterface idialog, int whichButton ) {
 		if( dialogObj == null ) return;
-    	if( whichButton == DialogInterface.BUTTON_POSITIVE ) {
-    		switch( dialogId ) {
-    		case FileCommander.NEWF_ACT:
-        	case FileCommander.RENAME_ACT:
-	    	case FileCommander.MOVE_ACT:
-	    	case FileCommander.COPY_ACT:
-	    	case FileCommander.MKDIR_ACT:
-				EditText edit = (EditText)dialogObj.findViewById( R.id.edit_field );
-				if( edit != null ) {
-					String file_name = edit.getText().toString();
-	            	switch( dialogId ) {
-	            	case FileCommander.RENAME_ACT:
-	            		owner.panels.renameFile( file_name );
-       					break;
-	            	case FileCommander.NEWF_ACT:
-	            		owner.panels.createNewFile( file_name );
-	            		break;
-	    	    	case FileCommander.MOVE_ACT:
-	    	    	case FileCommander.COPY_ACT:
-	    	    		owner.panels.copyFiles( file_name, dialogId == FileCommander.MOVE_ACT );
-	    	    		break;
-	    	    	case FileCommander.MKDIR_ACT:
-	    	    		owner.panels.createFolder( file_name );
-	    	    		break;
-	            	}
-				}
-				break;
-            case FileCommander.DEL_ACT:
-                owner.panels.deleteItems();
-                break;
-            case LOGIN_DIALOG: {
-                    EditText name_edit = (EditText)dialogObj.findViewById( R.id.username_edit );
-                    EditText pass_edit = (EditText)dialogObj.findViewById( R.id.password_edit );
-                    if( name_edit != null && pass_edit != null )
-                        owner.panels.login( cookie, name_edit.getText().toString(), pass_edit.getText().toString() );
-                }
-                break;
-	    	case FileCommander.DONATE: 
-	    		try {
+		try {
+	    	if( whichButton == DialogInterface.BUTTON_POSITIVE ) {
+	    		switch( dialogId ) {
+	    		case FileCommander.NEWF_ACT:
+	        	case FileCommander.RENAME_ACT:
+		    	case FileCommander.MOVE_ACT:
+		    	case FileCommander.COPY_ACT:
+		    	case FileCommander.MKDIR_ACT:
+					EditText edit = (EditText)dialogObj.findViewById( R.id.edit_field );
+					if( edit != null ) {
+						String file_name = edit.getText().toString();
+		            	switch( dialogId ) {
+		            	case FileCommander.RENAME_ACT:
+		            		owner.panels.renameFile( file_name );
+	       					break;
+		            	case FileCommander.NEWF_ACT:
+		            		owner.panels.createNewFile( file_name );
+		            		break;
+		    	    	case FileCommander.MOVE_ACT:
+		    	    	case FileCommander.COPY_ACT:
+		    	    		owner.panels.copyFiles( file_name, dialogId == FileCommander.MOVE_ACT );
+		    	    		break;
+		    	    	case FileCommander.MKDIR_ACT:
+		    	    		owner.panels.createFolder( file_name );
+		    	    		break;
+		            	}
+					}
+					break;
+	            case FileCommander.DEL_ACT:
+	                owner.panels.deleteItems();
+	                break;
+	            case LOGIN_DIALOG: {
+	                    EditText name_edit = (EditText)dialogObj.findViewById( R.id.username_edit );
+	                    EditText pass_edit = (EditText)dialogObj.findViewById( R.id.password_edit );
+	                    if( name_edit != null && pass_edit != null )
+	                        owner.panels.login( cookie, name_edit.getText().toString(), pass_edit.getText().toString() );
+	                }
+	                break;
+	            case FTP_DIALOG: {
+	                EditText name_edit = (EditText)dialogObj.findViewById( R.id.username_edit );
+	                EditText pass_edit = (EditText)dialogObj.findViewById( R.id.password_edit );
+	                EditText server_edit = (EditText)dialogObj.findViewById( R.id.server_edit );
+	                EditText path_edit = (EditText)dialogObj.findViewById( R.id.path_edit );
+	                	
+	                	String user = name_edit.getText().toString();
+	                	String pass = pass_edit.getText().toString();
+	                	String auth = "";
+	                	
+	                	if( user.length() > 0 ) {
+	                		auth += user;
+	                		if( pass.length() > 0 )
+	                			auth += ":" + pass;
+	                		auth += "@";
+	                	}
+	                	auth += server_edit.getText().toString();
+	                	Uri.Builder uri_b = new Uri.Builder().scheme("ftp").encodedAuthority( auth );
+	                	uri_b.path(path_edit.getText().toString());
+		                owner.Navigate( uri_b.build(), null );
+		            }
+		            break;
+		    	case FileCommander.DONATE: 
 		            Intent i = new Intent( Intent.ACTION_VIEW );
 		            i.setData( Uri.parse( owner.getString( R.string.donate_uri ) ) );
 		            owner.startActivity( i );
 	    		}
-	    		catch( Exception e) {
-	    			e.printStackTrace();
-				}
-    		}
-    	}
-    	else
-       	if( whichButton == DialogInterface.BUTTON_NEGATIVE ) {
-       		if( dialogId == PROGRESS_DIALOG ) {
-       			owner.panels.terminateOperation();
-       		}
-       	}
-    	owner.panels.focus();
+	    	}
+	    	else
+	       	if( whichButton == DialogInterface.BUTTON_NEGATIVE ) {
+	       		if( dialogId == PROGRESS_DIALOG ) {
+	       			owner.panels.terminateOperation();
+	       		}
+	       	}
+	    	owner.panels.focus();
+		}
+		catch( Exception e) {
+			e.printStackTrace();
+		}
     }
 	protected Dialog createDialog( int id ) {
 		switch( id ) {
@@ -108,16 +130,27 @@ public class Dialogs implements DialogInterface.OnClickListener {
 		            .create();
 			}
 		case LOGIN_DIALOG:
-            {
-                LayoutInflater factory = LayoutInflater.from( owner );
-                final View textEntryView = factory.inflate( R.layout.login, null );
-                return dialogObj = new AlertDialog.Builder( owner )
-                    .setView(textEntryView)
-                    .setTitle( "Login" )
-                    .setPositiveButton( R.string.dialog_ok, this )
-                    .setNegativeButton( R.string.dialog_cancel, this )
-                    .create();
-            }
+        {
+            LayoutInflater factory = LayoutInflater.from( owner );
+            final View textEntryView = factory.inflate( R.layout.login, null );
+            return dialogObj = new AlertDialog.Builder( owner )
+                .setView(textEntryView)
+                .setTitle( "Login" )
+                .setPositiveButton( R.string.dialog_ok, this )
+                .setNegativeButton( R.string.dialog_cancel, this )
+                .create();
+        }
+		case FTP_DIALOG:
+        {
+            LayoutInflater factory = LayoutInflater.from( owner );
+            final View textEntryView = factory.inflate( R.layout.ftp, null );
+            return dialogObj = new AlertDialog.Builder( owner )
+                .setView(textEntryView)
+                .setTitle( "Login" )
+                .setPositiveButton( R.string.dialog_ok, this )
+                .setNegativeButton( R.string.dialog_cancel, this )
+                .create();
+        }
         case ARI_DIALOG:
         	{
 	            return dialogObj = new AlertDialog.Builder( owner )

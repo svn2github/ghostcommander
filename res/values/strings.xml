@@ -26,6 +26,7 @@
     <string name="sz">\" Size</string>
     <string name="refresh">&#xA0; Refresh</string>
     <string name="enter">&#xA0; Change Location</string>
+    <string name="enter_ftp">&#xA0; FTP helper</string>
 
     <string name="sort_by_name">&#xA0; By Name</string>
     <string name="sort_by_size">&#xA0; By Size</string>
@@ -88,7 +89,9 @@
     <string name="progress">Progress</string>
     <string name="alert">Alert</string>
 
-    <string name="username">Name:</string>
+    <string name="ftp_server">FTP server:</string>
+    <string name="ftp_path">Path on server:</string>
+    <string name="username">User Name:</string>
     <string name="password">Password:</string>
 
     <string name="layout_settings">Configure the layout:</string>

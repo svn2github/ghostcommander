@@ -101,13 +101,17 @@ public class FTPAdapter extends CommanderAdapterBase {
 	                    }
 	                }
 	                if( ftp.isLoggedIn() ) {
+	                	try { // Uri.builder builds incorrect uri?
+		                	String active = uri.getQueryParameter( "a" );
+		                	ftp.setActiveMode( active != null && 
+		                	                 ( 0 == active.compareTo("1")
+	                 	                    || 0 == active.compareToIgnoreCase( "true" )  
+	                 	                    || 0 == active.compareToIgnoreCase( "yes" ) ) );  
+	                	}
+	                	catch( Exception e ) {
+	                		System.err.println("Exception: " + e );
+	                	}
 	                	String path = uri.getPath();
-	                	String active = uri.getQueryParameter( "a" );
-	                	ftp.setActiveMode( active != null && 
-	                	                 ( 0 == active.compareTo("1")
-                 	                    || 0 == active.compareToIgnoreCase( "true" )  
-                 	                    || 0 == active.compareToIgnoreCase( "yes" ) ) );  
-	                    
                     	if( path != null )
                     		ftp.setCurrentDir( path );
                     	items_tmp = ftp.getDirList( null );
