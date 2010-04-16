@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -144,12 +146,16 @@ public class Dialogs implements DialogInterface.OnClickListener {
         {
             LayoutInflater factory = LayoutInflater.from( owner );
             final View textEntryView = factory.inflate( R.layout.ftp, null );
-            return dialogObj = new AlertDialog.Builder( owner )
-                .setView(textEntryView)
-                .setTitle( "Login" )
+            dialogObj = new AlertDialog.Builder( owner )
+                .setView( textEntryView )
+                .setTitle( "FTP" )
                 .setPositiveButton( R.string.dialog_ok, this )
                 .setNegativeButton( R.string.dialog_cancel, this )
                 .create();
+	        Window window = dialogObj.getWindow();
+	        if( window != null )
+	        	window.setLayout(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT);
+	        return dialogObj;
         }
         case ARI_DIALOG:
         	{
@@ -175,14 +181,14 @@ public class Dialogs implements DialogInterface.OnClickListener {
 	                .create();
 	    	}
         case PROGRESS_DIALOG: {
-	        LayoutInflater factory = LayoutInflater.from( owner );
-	        final View progressView = factory.inflate( R.layout.progress, null );
-	        return dialogObj = new AlertDialog.Builder( owner )
-	            .setView( progressView )
-	            .setTitle( R.string.progress )
-	            .setNegativeButton( R.string.dialog_cancel, this )
-	            .setCancelable( false )
-	            .create();
+		        LayoutInflater factory = LayoutInflater.from( owner );
+		        final View progressView = factory.inflate( R.layout.progress, null );
+		        return dialogObj = new AlertDialog.Builder( owner )
+		            .setView( progressView )
+		            .setTitle( R.string.progress )
+		            .setNegativeButton( R.string.dialog_cancel, this )
+		            .setCancelable( false )
+		            .create();
 	        }
         case ALERT_DIALOG: {
             return dialogObj = new AlertDialog.Builder( owner )
