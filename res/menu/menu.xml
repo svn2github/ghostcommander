@@ -74,6 +74,8 @@
             android:title="@string/prefs"/>
         <item android:id="@+id/keys"
             android:title="@string/keys"/>
+        <item android:id="@+id/online"
+            android:title="@string/online_help"/>
         <item android:id="@+id/about"
             android:title="@string/about"/>
 	    <item android:id="@+id/F10"

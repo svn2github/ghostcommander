@@ -172,11 +172,6 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             flv.setOnTouchListener( this );
             flv.setOnKeyListener( this );
             c.registerForContextMenu( flv );
-            FSAdapter la;
-            la = new FSAdapter( c, null, id == R.layout.main ? CommanderAdapter.WIDE_MODE : CommanderAdapter.NARROW_MODE );
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
-            applySettings( sharedPref, la, which );
-            flv.setAdapter( la );
             setPanelTitle( "", which );
         }
     }
@@ -422,8 +417,9 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         String scheme = uri.getScheme();
         if( scheme != null && scheme.compareTo( "ftp" ) == 0 ) {
         	try {
-                if( !( ca instanceof FTPAdapter ) ) {
-                	ca.prepareToDestroy();
+                if( ca == null || !( ca instanceof FTPAdapter ) ) {
+                	if( ca != null )
+                	    ca.prepareToDestroy();
                     ca = new FTPAdapter();
                     ca.Init( c );
                     ca.setMode( CommanderAdapter.WIDE_MODE, 
@@ -440,8 +436,9 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         else 
         if( scheme != null && scheme.compareTo( "zip" ) == 0 ) {
             try {
-                if( !( ca instanceof ZipAdapter ) ) {
-                    ca.prepareToDestroy();
+                if( ca == null || !( ca instanceof ZipAdapter ) ) {
+                    if( ca != null )
+                        ca.prepareToDestroy();
                     ca = new ZipAdapter();
                     ca.Init( c );
                     ca.setMode( CommanderAdapter.WIDE_MODE, 
@@ -456,8 +453,9 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             }
         }
         else {
-            if( !( ca instanceof FSAdapter ) ) {
-            	ca.prepareToDestroy();
+            if( ca == null || !( ca instanceof FSAdapter ) ) {
+                if( ca != null )
+                    ca.prepareToDestroy();
                 ca = new FSAdapter( c, uri, id == R.layout.main ? CommanderAdapter.WIDE_MODE : CommanderAdapter.NARROW_MODE );
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
                 applySettings( sharedPref, ca, which );
@@ -491,6 +489,18 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         getListAdapter( false ).prepareToDestroy();
         getListAdapter( true ).prepareToDestroy();
     }
+
+    public final void tryToSend() {
+        File f = getItemURI();
+        if( f != null ) {
+            Intent sendIntent = new Intent(Intent.ACTION_SEND);
+            String mime_type = Utils.getMimeByExt( Utils.getFileExt( f.getName() ) );
+            System.err.println( "Type to send: " + mime_type );
+            sendIntent.setType( mime_type );
+            sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile( f ) );
+            c.startActivity( Intent.createChooser( sendIntent, "Send:" ) );            
+        }        
+    }    
     
     public final void openForEdit( String file_name ) {
         File f = file_name == null ? getItemURI() : new File( file_name );

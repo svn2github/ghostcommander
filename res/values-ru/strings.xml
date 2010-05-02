@@ -133,8 +133,9 @@
     <string name="no_such_folder">\"%s\" не существует!</string>
 
     <string name="donate">&#xA0; Поддержка</string>
-    <string name="donation">Для поддержание дальнейшей разработки файлового менеджера &#xAB;Ghost Commander&#xBB;, пожалуста рассмотрите 
-        возможность оказания финансовой помощи проекту.\n
+    <string name="online_help">&#xA0; Описание в онлайне (EN)</string>
+    <string name="donation">Выразите свою поддержку дальнейшему развитию
+     файлового менеджера &#xAB;Ghost Commander&#xBB; путем перевода любой суммы при помощи системы PayPal.\n
             Нажмите \"Ok\" для перехода на сайт PayPal.\n
             Нажмите \"Отмена\" чтобы продолжить пользоваться &#xAB;Ghost Commander&#xBB; бесплатно.\n
     </string>

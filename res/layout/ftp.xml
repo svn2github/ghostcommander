@@ -134,5 +134,24 @@
 			        android:textAppearance="?android:attr/textAppearanceMedium" />
 			</LinearLayout>
 		</LinearLayout>
+        <LinearLayout
+            android:gravity="fill_horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dip">
+            <Button 
+                android:text="@string/ftp_connect" 
+                android:id="@+id/connect" 
+                android:layout_width="wrap_content" 
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dip"/>            
+            <Button 
+                android:text="@string/ftp_cancel" 
+                android:id="@+id/cancel" 
+                android:layout_width="wrap_content" 
+                android:layout_height="wrap_content"/>            
+        </LinearLayout>    
+
 </LinearLayout>
 		

@@ -41,6 +41,7 @@
 
     <string name="go_button">Go</string>
     <string name="show_size">Size Of</string>
+    <string name="send_to">Send to</string>
 
     <string name="input_settings">Input</string>
     <string name="arrow_mode">Arrows command</string>
@@ -93,6 +94,9 @@
     <string name="ftp_path">Path on server:</string>
     <string name="username">User Name:</string>
     <string name="password">Password:</string>
+    <string name="ftp_connect">Connect</string>
+    <string name="ftp_cancel">Cancel</string>
+    
 
     <string name="layout_settings">Configure the layout:</string>
     <string name="panels_mode">Side-by-side panels</string>
@@ -151,11 +155,14 @@
     <string name="no_such_folder">\"%s\" is not a valid folder!</string>
 
     <string name="donate">&#xA0; Donate</string>
-    <string name="donation">Please consider making a donation to support further development of the &#xAB;Ghost Commander&#xBB; file manager.\n
-            If you agree to make a donation, tap \"Ok\" to proceed on the secured PayPal site.\n
-            Tap \"Cancel\" to continue enjoy the &#xAB;Ghost Commander&#xBB; file manager for free.\n
+    <string name="online_help">&#xA0; Online Help</string>
+    
+    <string name="donation">By making a donation you will stimulate further development of the &#xAB;Ghost Commander&#xBB; file manager.\n
+Tap \"Ok\" to make a donation of any amount via PayPal.\n
+Or tap \"Cancel\" to continue enjoy the &#xAB;Ghost Commander&#xBB; file manager for free.\n
     </string>
     <string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
+    <string name="help_uri">http://sites.google.com/site/ghostcommander1/info</string>
     
     <string name="bug_warning">!!! Android v1.5 has a BUG! If possible, please update your device to Android v2.0 !!!</string>
     

@@ -49,13 +49,13 @@ import android.widget.Toast;
 
 public class FileCommander extends Activity implements Commander, View.OnClickListener {
     private final static String TAG = "GhostCommanderActivity";
-    private final static int REQUEST_CODE_PREFERENCES = 1;
+    private final static int REQUEST_CODE_PREFERENCES = 1, REQUEST_CODE_FTPFORM = 2;
     public  final static int RENAME_ACT = 1002,  NEWF_ACT = 1014, EDIT_ACT = 1004, COPY_ACT = 1005, 
                                MOVE_ACT = 1006, MKDIR_ACT = 1007,  DEL_ACT = 1008, DONATE = 3333;
-    private final static int SHOW_SIZE = 12, CHANGE_LOCATION = 993, MAKE_SAME = 217;
+    private final static int SHOW_SIZE = 12, CHANGE_LOCATION = 993, MAKE_SAME = 217, SEND_TO = 236;
     private ArrayList<Dialogs> dialogs;
     public  Panels  panels, panelsBak = null;
-    private boolean exit = false;
+    private boolean exit = false, dont_restore = false;
 
     public final void showMemory( String s ) {
         final ActivityManager sys = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
@@ -106,17 +106,21 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     protected void onStart() {
         System.err.print("Ghost Commander Startinging\n");
         super.onStart();
-        SharedPreferences prefs = getPreferences(0);
-        Panels.State s = panels.new State();
-        s.restore(prefs);
-        panels.setState(s);
+        if( dont_restore )
+            dont_restore = false;
+        else {
+            SharedPreferences prefs = getPreferences( MODE_PRIVATE );
+            Panels.State s = panels.new State();
+            s.restore(prefs);
+            panels.setState(s);
+        }
     }
 
     @Override
     protected void onPause() {
         System.err.print("Ghost Commander Pausing\n");
         super.onPause();
-        SharedPreferences.Editor editor = getPreferences(0).edit();
+        SharedPreferences.Editor editor = getPreferences( MODE_PRIVATE ).edit();
         Panels.State s = panels.getState();
         s.store(editor);
         editor.commit();
@@ -174,14 +178,19 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             }
         }
         menu.setHeaderTitle("Operation");
-        menu.add(0, SHOW_SIZE, 0, R.string.show_size);
-        if( num <= 1 ) {
-            menu.add(0, RENAME_ACT, 0, R.string.rename_title);
-            menu.add(0,   EDIT_ACT, 0, R.string.edit_title);
+        boolean fs_adapter = panels.getListAdapter( true ) instanceof FSAdapter;
+        if( fs_adapter ) { 
+            menu.add( 0, SHOW_SIZE, 0, R.string.show_size );
+            menu.add( 0,   SEND_TO, 0, R.string.send_to );
         }
-        menu.add(0, COPY_ACT, 0, R.string.copy_title);
-        menu.add(0, MOVE_ACT, 0, R.string.move_title);
-        menu.add(0,  DEL_ACT, 0, R.string.delete_title);
+        if( num <= 1 ) {
+            menu.add( 0, RENAME_ACT, 0, R.string.rename_title );
+            menu.add( 0,   EDIT_ACT, 0, R.string.edit_title );
+        }
+        menu.add( 0, COPY_ACT, 0, R.string.copy_title );
+        if( fs_adapter )
+            menu.add( 0, MOVE_ACT, 0, R.string.move_title );
+        menu.add( 0,  DEL_ACT, 0, R.string.delete_title );
     }
 
     @Override
@@ -211,6 +220,9 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             break;
         case SHOW_SIZE:
             panels.showSizes();
+            break;
+        case SEND_TO:
+            panels.tryToSend();
             break;
         case MAKE_SAME:
             panels.makeOtherAsCurrent();
@@ -275,7 +287,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             panels.makeOtherAsCurrent();
             break;
         case R.id.ftp:
-            showDialog(Dialogs.FTP_DIALOG);
+            Intent i = new Intent( this, FTPform.class );
+            startActivityForResult( i, REQUEST_CODE_FTPFORM );
             break;
         case R.id.enter:
             panels.openGoPanel();
@@ -310,6 +323,11 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         case R.id.donate:
             showDialog(DONATE);
             break;
+        case R.id.online: {
+                Intent intent = new Intent( Intent.ACTION_VIEW );
+                intent.setData( Uri.parse( getString( R.string.help_uri ) ) );
+                startActivity( intent );
+            }
         }
         return super.onMenuItemSelected(featureId, item);
     }
@@ -324,6 +342,13 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 panelsBak.applySettings(sharedPref);
             setMode(sharedPref.getBoolean("panels_mode", false));
             panels.showOrHideToolbar(sharedPref.getBoolean("show_toolbar", true));
+        }
+        else
+        if( requestCode == REQUEST_CODE_FTPFORM ) {
+            if( resultCode == RESULT_OK ) {
+                dont_restore = true;
+                Navigate( Uri.parse( data.getAction() ), null );
+            }
         }
     }
 

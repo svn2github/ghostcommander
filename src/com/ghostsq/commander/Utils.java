@@ -16,8 +16,9 @@ public class Utils {
 		{ ".jar", "application/java-archive" },
 		{ ".java","application/octet-stream" },
 		{ ".jpeg","image/jpeg" },
-		{ ".jpg", "image/jpg" },
-		{ ".mid", "audio/mid" },
+		{ ".jpg", "image/jpeg" },
+        { ".m3u", "audio/x-mpegurl" },
+        { ".mid", "audio/midi" },
 		{ ".midi","audio/midi" },
 		{ ".mp3", "audio/mp3" },
 		{ ".mpeg","video/mpeg" },
@@ -37,7 +38,8 @@ public class Utils {
     		for( int l = 0; l < mimes.length; l++ ) {
     			int idx = ( to - from ) / 2 + from;
     			String tmp = mimes[idx][0];
-    			if( tmp.compareToIgnoreCase( ext ) == 0 ) return mimes[idx][1];
+    			if( tmp.compareToIgnoreCase( ext ) == 0 ) 
+    			    return mimes[idx][1];
     			int cp;
     			for( cp = 1; ; cp++ ) {
     				if( cp >= ext.length() ) {
