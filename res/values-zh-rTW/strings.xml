@@ -1,179 +1,216 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <string name="app_name">Ghost Commander</string>
+    
     <string name="file">檔案</string>
     <string name="panel">面板</string>
-    <string name="list">列表</string>
+    <string name="list">清單</string>
     <string name="app">套用程式</string>
-
-    <string name="app_name">Ghost Commander</string>
-    <string name="F1">1 幫助</string>
-    <string name="F2">2 更名</string>
+    
+    <string name="F1">1 說明</string>
+    <string name="F2">2 重新命名</string>
     <string name="F3">3 檢視</string>
     <string name="F4">4 編輯</string>
-    <string name="SF4">&#xA0;  建立</string>
+    <string name="SF4">   建立</string>
     <string name="F5">5 複製</string>
     <string name="F6">6 移動</string>
-    <string name="F7">7 開啟新檔資料夾</string>
-    <string name="F8">8 移除</string>
+    <string name="F7">7 新增目錄</string>
+    <string name="F8">8 刪除</string>
     <string name="F9">9 設定</string>
     <string name="F10">0 結束</string>
     <string name="col_sw"># 切換模式</string>
-    <string name="oth_sh_this">= 設為相同</string>
+    <string name="oth_sh_this">= 使其他的與此相同</string>
     <string name="eq">= 設為相同</string>
-    <string name="change">&#x21E6; 切換當前面板</string>
-    <string name="tgl">&#x21E6; 切換當前面板</string>
+    <string name="change">⇦ 切換目前面板</string>
+    <string name="tgl">⇦ 切換目前面板</string>
     <string name="sz">\" 大小</string>
-    
-    <string name="refresh">&#xA0; 重新整理</string>  
+    <string name="refresh">  更新</string>
+    <string name="enter">  變更位置</string>
+    <string name="enter_ftp">  FTP 助理</string>
+
+    <string name="sort_by_name">  根據檔案名</string>
+    <string name="sort_by_size">  根據檔案大小</string>
+    <string name="sort_by_date">  根據修改時間</string>
+    <string name="select_all">+ 全選</string>
+    <string name="unselect_all">- 取消全選</string>
         
     <string name="prefs">9 設定</string>
     <string name="about">關於</string>
-    <string name="keys">快速鍵</string>
+    <string name="keys">便捷鍵</string>
     <string name="new_file">建立新檔案</string>
 
     <string name="go_button">轉到</string>
     <string name="show_size">大小</string>
+    <string name="send_to">傳送到</string>
+
+    <string name="input_settings">輸入</string>
+    <string name="arrow_mode">標記命令</string>
+    <string name="summary_arrow_mode">左/右 進行 切換/選擇</string>
 
     <string name="prefs_label">設定</string>
     <string name="editor_label">文字編輯器</string>
 
-    <string name="dialog_ok">確認</string>
+    <string name="dialog_ok">確定</string>
     <string name="dialog_cancel">取消</string>
     <string name="dialog_close">關閉</string>
 
-    <string name="dialog_abort">取消</string>
+    <string name="dialog_abort">中止</string>
     <string name="dialog_retry">重試</string>
-    <string name="dialog_ignore">略過</string>
+    <string name="dialog_ignore">忽略</string>
     
     <string name="edit_title">編輯</string>
     <string name="newf_prompt">新的檔案名</string>
-    <string name="rename_title">更名</string>
-    <string name="rename_prompt">更名為：</string>
-    <string name="rename_err">沒有要更名的。</string>
-    <string name="mkdir_title">開啟新檔資料夾</string>
-    <string name="mkdir_prompt">建立資料夾：</string>
+    <string name="rename_title">重新命名</string>
+    <string name="rename_prompt">重新命名為:</string>
+    <string name="rename_err">沒有要重新命名的。</string>
+    <string name="mkdir_title">新增目錄</string>
+    <string name="mkdir_prompt">建立目錄:</string>
     <string name="copy_title">複製</string>
     <string name="move_title">移動</string>
     <string name="no_items">沒有有效的檔案來完成此操作。</string>
-    <string name="copy_move_not_alwd">此 '%s' 不被允許。先選擇一些檔案。</string><!-- copy_title/move_title -->
-    <string name="copy_move_to">「%s %s 到：」</string><!-- copy_title/move_title, file name/summary -->
-    <string name="delete_title">移除</string>
+    
+    <string name="copy_move_not_alwd">此 '%s' 不被允許。先選取一些檔案。</string><!-- copy_title/move_title -->
+    <string name="copy_move_to">%s %s 到："</string><!-- copy_title/move_title, file name/summary -->
+    <string name="login_title">登陸</string>
+    <string name="delete_title">刪除</string>
     <string name="delete_err">沒有要刪的檔案</string>
-    <string name="delete_q">"移除 %s ?"</string><!-- file name/summary -->
+    <string name="delete_q">"刪除 %s ?"</string><!-- file name/summary -->
     <string name="deleted">刪除</string>
     <string name="too_deep_hierarchy">檔案路徑太深</string>
+    <string name="preparing">準備中...</string>
     
     <string name="cd_title">轉到</string>
-    <string name="cd_prompt">變更資料夾到：</string>
+    <string name="cd_prompt">變更目錄到：</string>
 
-    <string name="select_some">請選擇一些檔案。</string>
-    <string name="select">選擇</string>
+    <string name="select_some">請選取一些檔案。</string>
+    <string name="select">選取</string>
     <string name="error">錯誤</string>
-    <string name="info">資訊</string>
-    <string name="progress">處理序</string>
+    <string name="info">訊息</string>
     <string name="confirm">確認</string>
-    <string name="alert">警報</string>    
+    <string name="progress">進程</string>
+    <string name="alert">警報</string>
 
-    <string name="layout_settings">組態佈局:</string>
+    <string name="ftp_server">FTP伺服器:</string>
+    <string name="ftp_path">伺服器上的路徑：</string>
+    <string name="username">使用者名：</string>
+    <string name="password">密碼：</string>
+    <string name="ftp_connect">連接</string>
+    <string name="ftp_cancel">取消</string>
+    
+
+    <string name="layout_settings">設定佈局:</string>
     <string name="panels_mode">並排面板模式</string>
-    <string name="summary_panels_mode">在分割的螢幕中顯示兩個並排面板</string>
+    <string name="summary_panels_mode">分割的屏幕中顯示兩個並排面板。</string>
     <string name="two_lines">一排顯示兩行</string>
-    <string name="summary_two_lines">第二行總是顯示檔案內容。</string>
-    
+    <string name="summary_two_lines">第二行總是顯示檔案屬性。</string>
     <string name="show_toolbar">顯示工具列</string>
-    <string name="summary_show_toolbar">顯示或隱藏螢幕底部的按鈕</string>
+    <string name="summary_show_toolbar">顯示或隱藏屏幕底部的按鈕</string>
+    <string name="toolbar_preference">選取顯示哪些按鈕</string>
+    <string name="summary_toolbar_preference">自訂工具列上的命令按鈕</string>
+    <string name="show_F1">顯示 « 1 說明»</string>
+    <string name="show_F2">顯示 « 2 重新命名»</string>
+    <string name="show_F3">顯示 « 3 檢視»</string>
+    <string name="show_F4">顯示 « 4 編輯»</string>
+    <string name="show_SF4">顯示 «   建立»</string>
+    <string name="show_F5">顯示 « 5 複製»</string>
+    <string name="show_F6">顯示 « 6 移動»</string>
+    <string name="show_F7">顯示 « 7 新增目錄»</string>
+    <string name="show_F8">顯示 « 8 刪除»</string>
+    <string name="show_F9">顯示 « 9 選單»</string>
+    <string name="show_F10">顯示 « 0 結束»</string>
+    <string name="show_eq">顯示 « = (設為相同)»</string>
+    <string name="show_tgl">顯示 « ⇦ 變更»</string>
+    <string name="show_sz">顯示 « \" 大小»</string>
 
-    <string name="toolbar_preference">選擇顯示哪些按鈕</string>
-    <string name="summary_toolbar_preference">自訂工具列上的指令按鈕</string>
-    <string name="show_F1">顯示 &#xAB; 1 幫助&#xBB;</string>
-    <string name="show_F2">顯示 &#xAB; 2 更名&#xBB;</string>
-    <string name="show_F3">顯示 &#xAB; 3 檢視&#xBB;</string>
-    <string name="show_F4">顯示 &#xAB; 4 編輯&#xBB;</string>
-    <string name="show_SF4">顯示 &#xAB; &#xA0; 建立&#xBB;</string>
-    <string name="show_F5">顯示 &#xAB; 5 複製&#xBB;</string>
-    <string name="show_F6">顯示 &#xAB; 6 移動&#xBB;</string>
-    <string name="show_F7">顯示 &#xAB; 7 開啟新檔資料夾&#xBB;</string>
-    <string name="show_F8">顯示 &#xAB; 8 移除&#xBB;</string>
-    <string name="show_F9">顯示 &#xAB; 9 功能表&#xBB;</string>
-    <string name="show_F10">顯示 &#xAB; 0 結束&#xBB;</string>
-    <string name="show_eq">顯示 &#xAB; = (設為相同)&#xBB;</string>
-    <string name="show_tgl">顯示 &#xAB; ? 變更&#xBB;</string>
-    <string name="show_sz">顯示 &#xAB; \" 大小&#xBB;</string>
-    
     <string name="finger_friendly">手指觸摸最佳化</string>
     <string name="summary_finger_friendly">增大使用者介面的元素</string>
+    <string name="prevent_root">在root目錄時警告</string>
+    <string name="summary_prevent_root">當轉到設備的root目錄時發出警告。</string>
 
-    <string name="prevent_root">警告 root 資料夾</string>
-    <string name="summary_prevent_root">當轉到裝置的 root 資料夾時發出警告。</string>
-
-    <string name="left_panel_settings">左面板：</string>
-    <string name="right_panel_settings">右面板：</string>
+    <string name="left_panel_settings">左面板設定</string>
+    <string name="right_panel_settings">右面板設定</string>
     <string name="detailed_view_SbS">在並排模式中顯示詳情</string>
-    <string name="summary_detailed_view_SbS">在並排模式中顯示資料夾的大小和日期</string>
+    <string name="summary_detailed_view_SbS">在並排模式中顯示目錄的大小和日期</string>
     <string name="detailed_view_Ovr">在重疊模式中顯示詳情</string>
-    <string name="summary_detailed_view_Ovr">在重疊模式中顯示資料夾的大小和日期</string>
+    <string name="summary_detailed_view_Ovr">在重疊模式中顯示目錄的大小和日期</string>
     <string name="sorting">排序</string>
     <string name="summary_sorting">在清單中如何排序項目</string>
+
     <string name="show_hidden">顯示隱藏檔案</string>
-    <string name="summary_show_hidden">隱藏名字以點開始的檔案</string>
+    <string name="summary_show_hidden">如果不先檢查，那麼點擊檔案後將不顯示</string>
 
-    <string name="editor_activity">編輯行為名稱</string>
-    <string name="summary_editor_activity">編輯操作的行為全類名。包名 = 類名前置詞</string>
+    <string name="editor_activity">編輯動作名稱</string>
+    <string name="summary_editor_activity">編輯操作將啟用完整的類別名。包名 = 類別名前置字元。</string>
     <string name="value_editor_activity">com.ghostsq.commander.Editor</string>
-
-    <string name="nothing_to_open">沒有要開啟舊檔的</string>
-    <string name="save">儲存檔案</string>
+    
+    <string name="nothing_to_open">沒有要開啟的</string>
+    <string name="save">儲存</string>
+    <string name="wrap">自動換行</string>
     <string name="no_such_file">沒有此檔案 \"%s\"</string>
     <string name="too_big_file">檔案 \"%s\" 太大。</string>
-    <string name="binary_file">檔案 "\%s\" 是二進位的。您會破壞它。編輯它您自擔風險。</string>    
-    <string name="cant_open">無法開啟舊檔此檔案。</string>    
-    <string name="cant_save">無法儲存檔案此檔案。</string>    
-    <string name="nav_warn">資料夾 \"%s\" 是系統的。干預他可能會導致失敗。繼續麼?</string>
-    <string name="no_such_folder">\"%s\" 不是有效的資料夾!</string>
+    <string name="binary_file">檔案 \"%s\" 是二進位的。您可能會損壞它。編輯它將由您自擔風險。</string>    
+    <string name="cant_open">無法開啟此檔案。</string>    
+    <string name="cant_save">無法儲存此檔案。</string>
+    <string name="nav_warn">目錄 \"%s\" 是系統目錄。擅改他可能會導致失敗。繼續麼?</string>
+    <string name="no_such_folder">\"%s\" 不是一個有效的目錄!</string>
 
-    <string name="donate">&#xA0; 捐贈</string>
-    <string name="donation">請考慮進行捐贈來支援 &#xAB;Ghost Commander&#xBB; 檔案管理員的機一部發展。\n
-            如果您同意進行捐贈, 按 \"確認\" 來在安全網站 PayPal 上繼續。\n
-            按 \"取消\" 來繼續免費享用 &#xAB;Ghost Commander&#xBB; 檔案管理員。\n
+    <string name="donate">  捐贈</string>
+    <string name="online_help">  連線說明</string>
+    
+    <string name="donation">通過捐贈您將鼓勵說明«Ghost Commander»檔案管理器的進一步開發。\n
+點擊\"確認\"通過PayPal來做一個任意金額的捐贈。\n
+或者點擊\"取消\"繼續免費使用«Ghost Commander» 檔案管理器。\n
     </string>
     <string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
+    <string name="help_uri">http://sites.google.com/site/ghostcommander1/info</string>
     
-    <string name="bug_warning">!!! Android v1.5 有 BUG! 如果可能, 請更您的裝置到 Android v2.0 !!!</string>
-        
+    <string name="bug_warning">!!! Android v1.5 有 BUG! 如果可能，請將您的設備升級到 Android v2.0 !!!</string>
+    
     <string name="about_text">
         Ghost Commander v%s\n
-        一款檔案管理員。\n\n
-        請發送 BUG/建議到\n
+        一款檔案管理器。\n\n
+        請傳送 BUG/建議到\n
         ghost.sq2@gmail.com\n
-        謝謝您。\n\n\n 
-        免責宣告:\n
+        非常感謝。\n
+	安智網中文化（http://goapk.com）\n\n 
+        免責宣告：\n
 使用本軟體，您同意以下:
-本軟體的作者不為任何損壞, 丟失資訊, 間接損壞, 
+本軟體的作者不為任何損壞, 遺失訊息, 間接損壞, 
 或者任何由或可能由使用本軟體引起的問題承擔責任。
 您同意使用此軟體並自擔風險。\n
-如果您不同意上面的, 立即停止使用本軟體並解除安裝它。\n
+如果您不同意上述條件，請立即停止使用本軟體並移除它。\n
     </string>
     <string name="keys_text">
     "
-快速鍵:\n
-左 - 切換當前面板\n
-右 - 選擇當前項目\n
+便捷鍵:\n
+音量下鍵 - 切換目前面板\n
+音量上鍵 - 選取目前項目\n
+左/右 如果可用則標記同樣的。\n
+\t(或者通過點擊項目行的右側來選擇)\n
++,-   - 全選或去掉目前目錄所有檔案的選取\n  
 (, )  - 為左/右面板輸入路徑\n
-* - 新增當前資料夾到收藏\n
-\" - 顯示所選檔案的總大小\n
+* - 新增目前目錄到收藏\n
+\" -顯示所選檔案的總大小\n
 # - 切換並排/重疊模式\n
-= - 讓另一個面板的路徑與當前相同\n
-&amp; - 開啟舊檔偏好\n
-2 - 更名當前檔案\n
-4 - 編輯當前檔案\n
+= - 讓另一個面板的路徑與目前相同\n
+&amp; - 開啟首選項\n
+1 - 本說明介面\n
+2 - 重新命名目前檔案\n
+4 - 編輯目前檔案\n
 5 - 複製所選檔案\n
 6 - 移動所選檔案\n
-7 - 建立新資料夾\n
-8 - 移除檔案你或資料夾\n
+7 - 建立新目錄\n
+8 - 刪除檔案或目錄\n
+9 - 開啟主選單\n
 0 - 結束程式\n
-[A-z] - 快速搜尋\n    
-    \n"
+[A-z] - 快速搜索\n    
+    \n
+輸入類別似如下的位址可以開啟一個匿名的FTP資料夾：\n
+    ftp://host.com/folder\n
+或者，如果您需要提供身份驗證：\n
+    ftp://user@password@host.com/folder\n\n
+目前而言，並不是所有的FTP功能都可用。\n
+      "
     </string>
     
 </resources>
