@@ -154,7 +154,7 @@
     <string name="binary_file">The file \"%s\" is binary. You can damage it. Edit on your own risk.</string>    
     <string name="cant_open">Can not open the file.</string>    
     <string name="cant_save">Can not save the file.</string>
-    <string name="nav_warn">Folder \"%s\" is system. Tampering with it may lead to a failure. Proceed?</string>
+    <string name="nav_warn">Folder \"%s\" is system. Tampering with it may lead to a failure. Proceed? (You can disable this warning in the settings)</string>
     <string name="no_such_folder">\"%s\" is not a valid folder!</string>
 
     <string name="donate">&#xA0; Donate</string>
