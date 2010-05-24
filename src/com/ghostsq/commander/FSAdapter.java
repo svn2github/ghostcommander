@@ -5,13 +5,16 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Arrays;
 import java.util.Comparator;
 
 import android.net.Uri;
 import android.os.Handler;
+import android.text.format.DateFormat;
 import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +34,7 @@ public class FSAdapter extends CommanderAdapterBase {
         }
     }
 
-    private String dirName, parentLink;
+    private String dirName;
     private FileEx[] items;
 
     public FSAdapter( Commander c, Uri d, int mode_ ) {
@@ -58,8 +61,8 @@ public class FSAdapter extends CommanderAdapterBase {
     public boolean readSource( Uri d ) {
     	try {
     	    if( worker != null ) worker.reqStop();
-    	    String dir_name = d != null ? d.getPath() : dirName;
-    	    if( dir_name == null ) return false;
+            String dir_name = d != null ? d.getPath() : dirName;
+            if( dir_name == null ) return false;
             File dir = new File( dir_name );
             File[] files_ = dir.listFiles();
             if( files_ == null ) {
@@ -99,7 +102,7 @@ public class FSAdapter extends CommanderAdapterBase {
             String parent_dir = cur_dir_file.getParent();
             commander.Navigate( Uri.parse( parentLink != SLS ? ( parent_dir != null ? parent_dir : DEFAULT_DIR ) : SLS ),
                                 cur_dir_file.getName() );
-        }
+        }   
         else {
             File file = items[position - 1].f;
             if( file.isDirectory() ) {
@@ -171,9 +174,15 @@ public class FSAdapter extends CommanderAdapterBase {
 						result = "File \"" + f.getAbsolutePath() + "\"";
 				} else
 					result = "" + num + " files";
-				result += ",\n" + Utils.getHumanSize(sum) + "bytes,";
+				result += ",\n" + Utils.getHumanSize(sum) + "bytes";
+				if( sum > 1024 )
+				    result += ",\n( " + sum + "bytes )";
 				if( dirs > 0 )
-					result += "\nin " + dirs + " director" + ( dirs > 1 ? "ies." : "y.");
+					result += ",\nin " + dirs + " director" + ( dirs > 1 ? "ies." : "y.");
+				if( mList.length == 1 ) {
+				    result += ",\nLast modified: " + 
+				        (String)DateFormat.format( "MMM dd yyyy hh:mm:ss", new Date( mList[0].f.lastModified() ) );
+				}
 				sendProgress(result, Commander.OPERATION_COMPLETED);
 			} catch( Exception e ) {
 				sendProgress( e.getMessage(), Commander.OPERATION_FAILED );
@@ -207,7 +216,7 @@ public class FSAdapter extends CommanderAdapterBase {
     		return count;
     	}
     }
-    @Override
+	@Override
     public boolean renameItem( int position, String newName ) {
         if( position <= 0 || position > items.length )
             return false;
@@ -314,17 +323,9 @@ public class FSAdapter extends CommanderAdapterBase {
 		}
 		return false;
     }
-
-    @Override
-    public void terminateOperation() {
-        if( worker != null ) {
-        	//Toast.makeText( commander.getContext(), "Terminating...", Toast.LENGTH_SHORT ).show();
-            worker.reqStop();
-        }
-    }
-
     @Override
 	public void prepareToDestroy() {
+        super.prepareToDestroy();
 		items = null;
 	}
 
@@ -521,11 +522,6 @@ public class FSAdapter extends CommanderAdapterBase {
     }
 
     @Override
-    public long getItemId( int position ) {
-        return position;
-    }
-
-    @Override
     public View getView( int position, View convertView, ViewGroup parent ) {
     	Item item = new Item();
         if( position == 0 ) {
@@ -545,11 +541,6 @@ public class FSAdapter extends CommanderAdapterBase {
                         long msFileDate = f.f.lastModified();
                         if( msFileDate != 0 )
                             item.date = new Date( msFileDate );
-                        if( item.name.matches( ".+\\.(jpg|png|gif)$" ) )
-                            item.uri = Uri.parse( "file://" + dirName + SLS + item.name );
-                        else
-                            item.uri = null;
-
                     } catch( Exception e ) {
                         System.err.print("getView() exception: " + e );
                     }

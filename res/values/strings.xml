@@ -76,7 +76,10 @@
     <string name="delete_err">Nothing to delete</string>
     <string name="delete_q">"Delete %s ?"</string><!-- file name/summary -->
     <string name="deleted">Deleted</string>
+    <string name="done">Done</string>
+    <string name="interrupted">Interrupted</string>
     <string name="too_deep_hierarchy">Too deep file hierarchy</string>
+    <string name="nothing_found">Nothing was found</string>
     <string name="preparing">Preparing...</string>
     
     <string name="cd_title">Go to</string>

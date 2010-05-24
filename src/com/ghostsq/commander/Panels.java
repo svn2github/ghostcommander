@@ -410,7 +410,6 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     }
     private final void NavigateInternal( int which, Uri uri, String posTo ) {
     	c.setProgressBarIndeterminateVisibility( true );
-//        setPanelTitle( uri.toString(), which );
         ListView flv = listViews[which];
         flv.clearChoices();
         CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
@@ -430,7 +429,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                     flv.setOnKeyListener( this );
                 }
 			} catch( Exception e ) {
-				c.showError( "Unable to create com.ghostsq.ftp.FTPAdapter class" );
+			    System.err.println( "Problem with FTPAdapter class" );
 			}
         }
         else 
@@ -449,7 +448,26 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                     flv.setOnKeyListener( this );
                 }
             } catch( Exception e ) {
-                c.showError( "Unable to create com.ghostsq.ftp.FTPAdapter class" );
+                System.err.println( "Problem with ZipAdapter class" );
+            }
+        }
+        else 
+        if( scheme != null && scheme.compareTo( "find" ) == 0 ) {
+            try {
+                if( ca == null || !( ca instanceof FindAdapter ) ) {
+                    if( ca != null )
+                        ca.prepareToDestroy();
+                    ca = new FindAdapter();
+                    ca.Init( c );
+                    ca.setMode( CommanderAdapter.WIDE_MODE, 
+                      id == R.layout.main ? CommanderAdapter.WIDE_MODE : CommanderAdapter.NARROW_MODE );
+                    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
+                    applySettings( sharedPref, ca, which );
+                    flv.setAdapter( (ListAdapter)ca );
+                    flv.setOnKeyListener( this );
+                }
+            } catch( Exception e ) {
+                System.err.println( "Problem with FindAdapter class" );
             }
         }
         else {
@@ -462,7 +480,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 flv.setAdapter( (ListAdapter)ca );
             }
         }
-        ca.readSource( uri );
+        if( !ca.readSource( uri ) )
+            c.setProgressBarIndeterminateVisibility( false );
         if( posTo != null ) {
             lastItemSelected = posTo;
             setSelection( which, posTo );

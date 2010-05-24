@@ -4,20 +4,14 @@ import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
 
-import android.content.ContentResolver;
 import android.content.Context;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.MediaStore;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TableLayout;
 import android.widget.Toast;
@@ -47,6 +41,12 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     };
     
     protected CommanderAdapterBase() {
+        mode = 0;
+        parentWidth = 0;
+        nameWidth = 0;
+        sizeWidth = 0;
+        dateWidth = 0;
+        parentLink = "/";       
     }
     protected CommanderAdapterBase( Commander c, int mode_ ) {
     	Init( c );
@@ -69,17 +69,35 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         mode &= ~mask;
         mode |= mode_;
     }
+    @Override
+    public void terminateOperation() {
+        if( worker != null ) {
+            //Toast.makeText( commander.getContext(), "Terminating...", Toast.LENGTH_SHORT ).show();
+            worker.reqStop();
+        }
+    }
+    @Override
+    public void prepareToDestroy() {
+        if( worker != null ) {
+            if( worker.isAlive() )
+                worker.interrupt();
+            worker = null;
+        }
+    }
     
-    protected void onComplete( Engine engine) { // to override who need do something in the UI thread on engine completion
+    protected void onComplete( Engine engine) { // to override who need do something in the UI thread on an engine completion
     }
     public class Item {
     	public String  name = "";
     	public Date    date = null;
     	public long    size = -1;
     	public boolean dir, sel;
-        public Uri     uri = null;
     }
     
+    @Override
+    public long getItemId( int position ) {
+        return position;
+    }
     protected View getView( View convertView, ViewGroup parent, Item item ) {
         try {
             boolean wm = (mode & WIDE_MODE) == WIDE_MODE;

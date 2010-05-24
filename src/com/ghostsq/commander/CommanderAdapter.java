@@ -36,17 +36,19 @@ public interface CommanderAdapter {
      * @param uri - a folder's URI to initialize. If null passed, just refresh
      */
 	public boolean readSource( Uri uri );
+
 	/**
-	 * @param position
-	 * 		Tries to do something with the item (Outside of an adapter we don't know how to process it).
-	 * 		But an adapter knows, is it a folder and can be opened (it calls Commander.Navigate() in this case)
-	 * 		or processed as default action (then it calls Commander.Open() )
-	 */
-	/**
-	 *  return current adapter's source URI
+	 * @return current adapter's source URI
 	 */
 	public Uri getUri();
-	public void   openItem( int position );
+
+	/**
+     *      Tries to do something with the item (Outside of an adapter we don't know how to process it).
+     *      But an adapter knows, is it a folder and can be opened (it calls Commander.Navigate() in this case)
+     *      or processed as default action (then it calls Commander.Open() )
+	 * @param position index of the item to action
+	 */
+	public void openItem( int position );
 	
 	/**
 	 * @param position

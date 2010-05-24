@@ -590,23 +590,12 @@ public class FTPAdapter extends CommanderAdapterBase {
         return false;
     }
 
-    @Override
-    public void terminateOperation() {
-       if( worker != null ) {
-    	   //Toast.makeText( commander.getContext(), "Terminating...", Toast.LENGTH_SHORT ).show();
-       	   worker.reqStop();
-       }
-    }
 	@Override
 	public void prepareToDestroy() {
 		heartBeat.cancel();
 		heartBeat.purge();
-		if( worker != null ) {
-		    if( worker.isAlive() )
-		        worker.interrupt();
-		    worker = null;
-		}
 		ftp.disconnect();
+        super.prepareToDestroy();
 		items = null;
 	}
 
@@ -623,11 +612,6 @@ public class FTPAdapter extends CommanderAdapterBase {
     	if( worker != null )
     		return null;
     	return items != null && position < items.length ? items[position] : null;
-    }
-
-    @Override
-    public long getItemId( int position ) {
-        return position;
     }
 
     @Override
