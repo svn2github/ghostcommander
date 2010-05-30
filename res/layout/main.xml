@@ -20,8 +20,6 @@
             android:ellipsize="start"
             android:paddingLeft="8dp"
         	android:paddingRight="8dp"/>
-        	<!--             android:scrollHorizontally="true"
-        	 -->
         <TextView android:id="@+id/right_dir"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

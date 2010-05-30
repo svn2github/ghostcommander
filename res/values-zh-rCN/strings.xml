@@ -151,7 +151,7 @@
     <string name="binary_file">文件 \"%s\" 是二进制的。您可能会损坏它。编辑它将由您自担风险。</string>    
     <string name="cant_open">无法打开此文件。</string>    
     <string name="cant_save">无法保存此文件。</string>
-    <string name="nav_warn">目录 \"%s\" 是系统目录。擅改他可能会导致失败。继续么?</string>
+    <string name="nav_warn">目录 是系统目录。擅改他可能会导致失败。继续么?</string>
     <string name="no_such_folder">\"%s\" 不是一个有效的目录!</string>
 
     <string name="donate">  捐赠</string>
@@ -192,7 +192,6 @@
 (, )  - 为左/右面板输入路径\n
 * - 添加当前目录到收藏\n
 \" -显示所选文件的总大小\n
-# - 切换并排/重叠模式\n
 = - 让另一个面板的路径与当前相同\n
 &amp; - 打开首选项\n
 1 - 本帮助界面\n
@@ -209,7 +208,7 @@
 输入类似如下的地址可以打开一个匿名的FTP文件夹：\n
     ftp://host.com/folder\n
 或者，如果您需要提供身份验证：\n
-    ftp://user@password@host.com/folder\n\n
+    ftp://user:password@host.com/folder\n\n
 目前而言，并不是所有的FTP功能都可用。\n
       "
     </string>

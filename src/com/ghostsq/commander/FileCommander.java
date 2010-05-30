@@ -51,7 +51,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     private final static String TAG = "GhostCommanderActivity";
     private final static int REQUEST_CODE_PREFERENCES = 1, REQUEST_CODE_FTPFORM = 2;
     public  final static int RENAME_ACT = 1002,  NEWF_ACT = 1014, EDIT_ACT = 1004, COPY_ACT = 1005, 
-                               MOVE_ACT = 1006, MKDIR_ACT = 1007,  DEL_ACT = 1008, DONATE = 3333;
+                               MOVE_ACT = 1006, MKDIR_ACT = 1007,  DEL_ACT = 1008, FIND_ACT = 1017,  DONATE = 3333;
     private final static int SHOW_SIZE = 12, CHANGE_LOCATION = 993, MAKE_SAME = 217, SEND_TO = 236;
     private ArrayList<Dialogs> dialogs;
     public  Panels  panels, panelsBak = null;
@@ -280,15 +280,32 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             exit = true;
             finish();
             break;
-        case R.id.col_sw:
-            toggleMode();
-            break;
         case R.id.oth_sh_this:
             panels.makeOtherAsCurrent();
             break;
         case R.id.ftp:
             Intent i = new Intent( this, FTPform.class );
             startActivityForResult( i, REQUEST_CODE_FTPFORM );
+            break;
+        case R.id.search: {
+                CommanderAdapter ca = panels.getListAdapter( true );
+                if( ca instanceof FSAdapter || ca instanceof FindAdapter ) {
+                    String cur_s = ca.toString();
+                    if( cur_s != null ) {
+                        Uri cur_uri = Uri.parse( cur_s );
+                        if( cur_uri != null ) {
+                            String cur_path = cur_uri.getPath();
+                            if( cur_path != null ) {
+                                Dialogs dh = obtainDialogsInstance( FIND_ACT );
+                                dh.setCookie( cur_path );
+                                showDialog( FIND_ACT );
+                            }
+                        }
+                    }
+                }
+                else
+                    showError( getString( R.string.find_on_fs_only ) );
+            }
             break;
         case R.id.enter:
             panels.openGoPanel();
@@ -359,9 +376,6 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         char c = (char)event.getUnicodeChar();
         panels.resetQuickSearch();
         switch( c ) {
-        case '#':
-            toggleMode();
-            return true;
         case '=':
             panels.makeOtherAsCurrent();
             return true;

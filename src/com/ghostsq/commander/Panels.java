@@ -191,10 +191,12 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     }
     private final void highlightTitle( int which, boolean on ) {
         TextView title = (TextView)c.findViewById( titlesIds[which] );
-        if( title != null )
-            title.setBackgroundColor( on ? 0xFF4169E1 : 0xFF555555 ); // TODO: use ColorStateList
+        if( title != null ) {
+            title.setBackgroundColor( on ? 0xFF4169E1 : 0xFF555566 ); // TODO: use ColorStateList
+            title.setTextColor( on ? 0xFFEEEEEE : 0xFF999999 );
+        }
         else
-        	c.showMessage("title not found");
+        	System.err.println( "title view was not found!" );
     }
 
     public final int getSelection() {
@@ -306,7 +308,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 TextView title = (TextView)c.findViewById( titlesIds[p] );
                 if( title != null ) {
                     if( finger_friendly )
-                        title.setPadding( 8, 8, 8, 8 );
+                        title.setPadding( 8, 6, 8, 6 );
                     else
                         title.setPadding( 8, 1, 8, 1 );
                 }
@@ -376,20 +378,28 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     		which = which_;
     		uri   = uri_;
     		posTo = posTo_;
-            new AlertDialog.Builder( c )
+    		LayoutInflater factory = LayoutInflater.from( c );
+    		new AlertDialog.Builder( c )
 	            .setIcon( android.R.drawable.ic_dialog_alert )
 	            .setTitle( R.string.confirm )
-	            .setMessage( c.getString( R.string.nav_warn, uri ) )
+	            .setView( factory.inflate( R.layout.rootmpw, null ) )
+	            //.setMessage( c.getString( R.string.nav_warn, uri ) )
 	            .setPositiveButton( R.string.dialog_ok, this )
-	            .setNegativeButton( R.string.dialog_cancel, this )
+                .setNeutralButton( R.string.dialog_cancel, this )
+	            .setNegativeButton( R.string.dialog_exit, this )
 	            .show();
     	}
         @Override
     	public void onClick( DialogInterface idialog, int whichButton ) {
-        	if( whichButton == DialogInterface.BUTTON_POSITIVE )
-        		NavigateInternal(  which, uri, posTo );
-        	else
-        		NavigateInternal(  which, sdcard, null );
+            if( whichButton == DialogInterface.BUTTON_POSITIVE ) {
+                warnOnRoot = false;
+                NavigateInternal( which, uri, posTo );
+            }
+            else if( whichButton == DialogInterface.BUTTON_NEUTRAL ) {
+                NavigateInternal( which, sdcard, null );                
+            }
+            else
+                c.finish();
         	idialog.dismiss();
         }
     }

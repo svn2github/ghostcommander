@@ -10,12 +10,14 @@ import com.ghostsq.commander.FSAdapter.FileEx;
 import com.ghostsq.commander.FSAdapter.FilePropComparator;
 import com.ghostsq.commander.FTPAdapter.ListEngine;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class FindAdapter extends CommanderAdapterBase {
     private Uri uri;
@@ -205,7 +207,7 @@ public class FindAdapter extends CommanderAdapterBase {
                             Commander.OPERATION_FAILED );
                     return;
                 }
-                sendProgress( commander.getContext().getString( R.string.done ), Commander.OPERATION_COMPLETED);
+                sendProgress( null, Commander.OPERATION_COMPLETED );
             } catch( Exception e ) {
                 sendProgress( e.getMessage(), Commander.OPERATION_FAILED );
             }
@@ -260,6 +262,9 @@ public class FindAdapter extends CommanderAdapterBase {
                     items_a.toArray( items );
                 }
                 notifyDataSetChanged();
+                Context context = commander.getContext();
+                Toast.makeText( context, context.getString( R.string.search_done ), 
+                        Toast.LENGTH_LONG).show();
             }
         } catch( Exception e ) {
             e.printStackTrace();

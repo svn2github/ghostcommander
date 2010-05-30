@@ -113,7 +113,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 row_view = convertView;
                 row_view.setBackgroundColor( 0 );
             }
-            int vpad = ( mode & MODE_FINGERF ) == FAT_MODE ? 8 : 0;
+            int vpad = wm && ( mode & MODE_FINGERF ) == FAT_MODE ? 8 : 0;
             row_view.setPadding( 0, vpad, 4, vpad );        
             
             String name = "?", size = "", date = "";

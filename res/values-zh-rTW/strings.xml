@@ -151,7 +151,7 @@
     <string name="binary_file">檔案 \"%s\" 是二進位的。您可能會損壞它。編輯它將由您自擔風險。</string>    
     <string name="cant_open">無法開啟此檔案。</string>    
     <string name="cant_save">無法儲存此檔案。</string>
-    <string name="nav_warn">目錄 \"%s\" 是系統目錄。擅改他可能會導致失敗。繼續麼?</string>
+    <string name="nav_warn">目錄 是系統目錄。擅改他可能會導致失敗。繼續麼?</string>
     <string name="no_such_folder">\"%s\" 不是一個有效的目錄!</string>
 
     <string name="donate">  捐贈</string>
@@ -191,7 +191,6 @@
 (, )  - 為左/右面板輸入路徑\n
 * - 新增目前目錄到收藏\n
 \" -顯示所選檔案的總大小\n
-# - 切換並排/重疊模式\n
 = - 讓另一個面板的路徑與目前相同\n
 &amp; - 開啟首選項\n
 1 - 本說明介面\n
@@ -208,7 +207,7 @@
 輸入類別似如下的位址可以開啟一個匿名的FTP資料夾：\n
     ftp://host.com/folder\n
 或者，如果您需要提供身份驗證：\n
-    ftp://user@password@host.com/folder\n\n
+    ftp://user:password@host.com/folder\n\n
 目前而言，並不是所有的FTP功能都可用。\n
       "
     </string>

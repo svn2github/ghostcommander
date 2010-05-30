@@ -7,8 +7,13 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 //import android.view.MenuInflater; //to do: add Save as, Save and close items
 import android.view.MenuItem;
@@ -16,10 +21,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class Editor extends Activity {
-	final static int MENU_SAVE = 1, WRAP_TEXT = 2;
+	final static int MENU_SAVE = 1, MENU_UNDO = 2, WRAP_TEXT = 3;
 	final static String URI = "URIfileForEdit";
 	private boolean horScroll = true;
 	private String path;
+	private static boolean reminded = false;
 	
     /** Called when the activity is first created. */
     @Override
@@ -29,23 +35,32 @@ public class Editor extends Activity {
         Uri file_to_edit_URI = getIntent().getData();
         if( file_to_edit_URI != null ) {
         	path = file_to_edit_URI.getEncodedPath();
-        	if( !Load() )
-        		finish();
+        	if( Load() ) {
+        	    if( !reminded )
+        	        showMessage( getString( R.string.remind_to_save ) );
+        	    reminded = true; 
+        	}
+        	else
+        	    finish();
         }
         else
         	showMessage( getString( R.string.nothing_to_open ) );
     }
     @Override
     public boolean onCreateOptionsMenu( Menu menu ) {
-        menu.add( Menu.NONE, MENU_SAVE, Menu.NONE, getString( R.string.save ) ).setIcon(android.R.drawable.ic_menu_save);
-        menu.add( Menu.NONE, WRAP_TEXT, Menu.NONE, getString( R.string.wrap ) );
+        menu.add( Menu.NONE, MENU_SAVE, Menu.NONE, getString( R.string.save ) ).setIcon(android.R.drawable.ic_menu_save );
+        menu.add( Menu.NONE, MENU_UNDO, Menu.NONE, getString( R.string.revert ) ).setIcon(android.R.drawable.ic_menu_revert );
+        menu.add( Menu.NONE, WRAP_TEXT, Menu.NONE, getString( R.string.wrap ) ).setIcon(android.R.drawable.ic_media_previous );
 	    return true;
     }
     @Override
     public boolean onMenuItemSelected( int featureId, MenuItem item ) {
         switch( item.getItemId() ) {
         case MENU_SAVE:
-        	Save();
+            Save();
+            return true;
+        case MENU_UNDO:
+            Load();
             return true;
         case WRAP_TEXT: 
             try {
@@ -65,11 +80,10 @@ public class Editor extends Activity {
     }
     private final boolean Load()
     {
-         
         BufferedReader reader = null;
         try {
             EditText te = (EditText)findViewById( R.id.editor );
-            
+            te.setText( "" );
             File file = new File( path );
             if( !file.exists() ) {
                 showMessage( getString( R.string.no_such_file, path ) );
@@ -112,6 +126,7 @@ public class Editor extends Activity {
     	FileWriter writer = null;
     	try {
             EditText te = (EditText)findViewById( R.id.editor );
+            
             CharSequence text = te.getText();
     		writer = new FileWriter( path );
     		writer.write( text.toString() );	// to do: find a more optimal method to write data

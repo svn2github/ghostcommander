@@ -15,10 +15,10 @@
     <string name="F6">6 Переместить</string>
     <string name="F7">7 Создать папку</string>
     <string name="F8">8 Удалить</string>
-    <string name="F9">9 Настр</string>
+    <string name="F9">9 Настр.</string>
     <string name="F10">0 Выйти</string>
     <string name="eq">= То же</string>
-    <string name="tgl">&#x21E6; Смена</string>
+    <string name="tgl">&#x21E6; Сменить</string>
     <string name="sz">\" Размер</string>
     
     <string name="col_sw"># Переключить режим</string>
@@ -43,6 +43,7 @@
     <string name="dialog_ok">Ok</string>
     <string name="dialog_cancel">Отмена</string>
     <string name="dialog_close">Закрыть</string>
+    <string name="dialog_exit">Выйти</string>
 
     <string name="dialog_abort">Abort</string>
     <string name="dialog_retry">Retry</string>
@@ -123,36 +124,41 @@
     <string name="value_editor_activity">com.ghostsq.commander.Editor</string>
 
     <string name="nothing_to_open">Не ясно что редактировать</string>
+    <string name="remind_to_save">Не забудьте сохранить изменения через меню</string>
     <string name="save">Сохранить</string>
+    <string name="revert">Восстановить</string>
+    <string name="wrap">Длинные строки</string>
+    
     <string name="no_such_file">Нет такого файла \"%s\"</string>
     <string name="too_big_file">Файл \"%s\" длишком большой.</string>
     <string name="binary_file">Файл \"%s\" не текстовый. Редактирование приведёт к его искажению.</string>    
     <string name="cant_open">Не могу прочитать файл.</string>    
     <string name="cant_save">Не могу сохранить файл.</string>    
-    <string name="nav_warn">Каталог \"%s\" системный. Порча данных в нём может привести к поломке устройства в целом. Продолжить?</string>
+    <string name="nav_warn">Каталог в который вы хотите перейти - системный. Необдуманные действия в нём могут привести к поломке устройства в целом. Продолжить?</string>
+    <string name="nav_warn_cmt">Это предупреждение отключается в настройках</string>
+    
     <string name="no_such_folder">\"%s\" не существует!</string>
 
     <string name="donate">&#xA0; Поддержка</string>
     <string name="online_help">&#xA0; Описание в онлайне (EN)</string>
     <string name="donation">Выразите свою поддержку дальнейшему развитию
-     файлового менеджера &#xAB;Ghost Commander&#xBB; путем перевода любой суммы при помощи системы PayPal.\n
+     файлового менеджера &#xAB;Ghost Commander&#xBB; путем перевода любой суммы на счёт системы PayPal.\n
             Нажмите \"Ok\" для перехода на сайт PayPal.\n
             Нажмите \"Отмена\" чтобы продолжить пользоваться &#xAB;Ghost Commander&#xBB; бесплатно.\n
     </string>
     <string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
     
-    <string name="bug_warning">!!! Android v1.5 имеет баг! Имеет смысл перейти на Android v2.0 !!!</string>
+    <string name="bug_warning">!!! Android v1.5 имеет баг! Имеет смысл перейти на Android v2.x !!!</string>
 
     
     <string name="about_text">
         Ghost Commander v%s\n
         Файловый менеджер.\n\n
-        Пишите, если есть что сказать, на\n
-        ghost.sq2@gmail.com\n
-        Спасибо.\n\n\n 
-        Отречение от ответственности:\n
+        Пишите ваши замечания на\n
+        ghost.sq2@gmail.com\n\n\n\n 
+        Отказ от ответственности:\n
 Используя данный программный продукт вы тем самым соглашаетесь со следущим:
-Автор данной программы не несет никакой ответственности за любые возможные повреждения
+Автор данной программы не несет абсолютно никакой ответственности за любые возможные повреждения
 и/или потерю информации вызванные прямо или косвенно использованием данной программы.
 Если вы не согласны с вышеизложеным, немедленно прекратите использование
 данного программного продукта и деинсталлируйте его. 
@@ -169,7 +175,6 @@ VlUp - Выбрать текущий файл\n
 (, )  - Ввести путь для левой/правой панели\n
 * - Добавить текущую папку в закладки\n
 \" - Показать размер выбранных элементов\n
-# - Режим панелей: рядом или перекрыть\n
 = - перейти в другой панели на ту же папку что и здесь\n
 &amp; - Настройки программы\n
 1 - Показать этот текст\n
@@ -186,7 +191,7 @@ VlUp - Выбрать текущий файл\n
 Чтобы открыть анонимный FTP каталог, вводите путь по образцу:\n
     ftp://host.com/folder\n
 Если надо предоставить имя/пароль, то:\n
-    ftp://user@password@host.com/folder\n\n
+    ftp://user:password@host.com/folder\n\n
 Не все возможности программы в данный момент работают с FTP.\n
     
     "

@@ -27,6 +27,7 @@
     <string name="refresh">&#xA0; Refresh</string>
     <string name="enter">&#xA0; Change Location</string>
     <string name="enter_ftp">&#xA0; FTP helper</string>
+    <string name="search_file">&#xA0; Search file</string>
 
     <string name="sort_by_name">&#xA0; By Name</string>
     <string name="sort_by_size">&#xA0; By Size</string>
@@ -50,9 +51,12 @@
     <string name="prefs_label">Settings</string>
     <string name="editor_label">Text Editor</string>
 
+    <string name="dialog_yes">Yes</string>
+    <string name="dialog_no">No</string>
     <string name="dialog_ok">Ok</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_close">Close</string>
+    <string name="dialog_exit">Exit</string>
 
     <string name="dialog_abort">Abort</string>
     <string name="dialog_retry">Retry</string>
@@ -65,9 +69,13 @@
     <string name="rename_err">Nothing to rename.</string>
     <string name="mkdir_title">MkDir</string>
     <string name="mkdir_prompt">Create directory:</string>
+    <string name="search_title">Search</string>
+    <string name="search_prompt">File name:</string>
     <string name="copy_title">Copy</string>
     <string name="move_title">Move</string>
     <string name="no_items">There are no valid files to complete the operation.</string>
+    <string name="find_on_fs_only">The search feature works only with the local file system.</string>
+    
     
     <string name="copy_move_not_alwd">The '%s' is not allowed. Select something first.</string><!-- copy_title/move_title -->
     <string name="copy_move_to">%s %s to:"</string><!-- copy_title/move_title, file name/summary -->
@@ -76,6 +84,7 @@
     <string name="delete_err">Nothing to delete</string>
     <string name="delete_q">"Delete %s ?"</string><!-- file name/summary -->
     <string name="deleted">Deleted</string>
+    <string name="search_done">Search&apos;s completed</string>
     <string name="done">Done</string>
     <string name="interrupted">Interrupted</string>
     <string name="too_deep_hierarchy">Too deep file hierarchy</string>
@@ -147,14 +156,17 @@
     <string name="value_editor_activity">com.ghostsq.commander.Editor</string>
     
     <string name="nothing_to_open">Nothing to open</string>
+    <string name="remind_to_save">Don&apos;t forget to Save your changes in the menu</string>
     <string name="save">Save</string>
+    <string name="revert">Revert</string>
     <string name="wrap">Wrap long lines</string>
     <string name="no_such_file">No such file \"%s\"</string>
     <string name="too_big_file">The file \"%s\" is too big.</string>
     <string name="binary_file">The file \"%s\" is binary. You can damage it. Edit on your own risk.</string>    
     <string name="cant_open">Can not open the file.</string>    
     <string name="cant_save">Can not save the file.</string>
-    <string name="nav_warn">Folder \"%s\" is system. Tampering with it may lead to a failure. Proceed? (You can disable this warning in the settings)</string>
+    <string name="nav_warn">You&apos;re opening a system folder. Tampering with it may lead to a failure. Proceed at this time?</string>
+    <string name="nav_warn_cmt">( You can permanently disable this warning in the application settings )</string>
     <string name="no_such_folder">\"%s\" is not a valid folder!</string>
 
     <string name="donate">&#xA0; Donate</string>
@@ -167,7 +179,7 @@ Or tap \"Cancel\" to continue enjoy the &#xAB;Ghost Commander&#xBB; file manager
     <string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
     <string name="help_uri">http://sites.google.com/site/ghostcommander1/info</string>
     
-    <string name="bug_warning">!!! Android v1.5 has a BUG! If possible, please update your device to Android v2.0 !!!</string>
+    <string name="bug_warning">!!! Android v1.5 has a BUG! If possible, please update your device to Android v2.x !!!</string>
     
     <string name="about_text">
         Ghost Commander v%s\n
@@ -180,7 +192,7 @@ By using this software, you agree with the following:
 The author of this software is not responsible for any kind of damage, loss of information, 
 consequential damages, or any issues that are or  could be caused by the use of this software.
 You agree to use this software at your own risk.\n
-If you don't agree to the above, stop using this software immediately and uninstall it.\n
+If you don&apos;t agree to the above, stop using this software immediately and uninstall it.\n
     </string>
     <string name="keys_text">
     "
@@ -193,7 +205,6 @@ left/right arrows do the same if enabled.\n
 (, )  - Enter the location for left/right panel\n
 * - Add the current folder to the favorites\n
 \" - Show the total size of selected files\n
-# - Toggle Side-by-side/Overlapped mode\n
 = - Make other panel show the same folder as the current\n
 &amp; - Open the preferences\n
 1 - This help\n
@@ -210,9 +221,7 @@ left/right arrows do the same if enabled.\n
 To open an anonymous FTP folder, enter path like:\n
     ftp://host.com/folder\n
 Or, if you need to provide some identities:\n
-    ftp://user@password@host.com/folder\n\n
-Currently, not all the features compatible with FTP.\n
-      "
+    ftp://user:password@host.com/folder\n\n"
     </string>
     
 </resources>
