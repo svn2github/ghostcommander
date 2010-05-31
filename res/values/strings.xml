@@ -6,19 +6,19 @@
     <string name="panel">Panel</string>
     <string name="list">List</string>
     <string name="app">Application</string>
+    <string name="help">Help</string>
     
     <string name="F1">1 Help</string>
     <string name="F2">2 Rename</string>
     <string name="F3">3 View</string>
     <string name="F4">4 Edit</string>
-    <string name="SF4">&#xA0;  Create</string>
+    <string name="SF4">&#xA0; Create</string>
     <string name="F5">5 Copy</string>
     <string name="F6">6 Move</string>
     <string name="F7">7 MkDir</string>
     <string name="F8">8 Del</string>
     <string name="F9">9 Prefs</string>
     <string name="F10">0 Exit</string>
-    <string name="col_sw"># Mode</string>
     <string name="oth_sh_this">= Make other as current</string>
     <string name="eq">= Same</string>
     <string name="change">&#x21E6; Toggle</string>
@@ -26,8 +26,9 @@
     <string name="sz">\" Size</string>
     <string name="refresh">&#xA0; Refresh</string>
     <string name="enter">&#xA0; Change Location</string>
+    <string name="add_fav">* Add the current to the favorites</string>
     <string name="enter_ftp">&#xA0; FTP helper</string>
-    <string name="search_file">&#xA0; Search file</string>
+    <string name="search_file">/ Search file</string>
 
     <string name="sort_by_name">&#xA0; By Name</string>
     <string name="sort_by_size">&#xA0; By Size</string>
@@ -36,7 +37,7 @@
     <string name="unselect_all">- UnSelect All</string>
         
     <string name="prefs">9 Settings</string>
-    <string name="about">About</string>
+    <string name="about">&#xA0; About</string>
     <string name="keys">1 Shortcut keys</string>
     <string name="new_file">Create new file</string>
 

@@ -55,12 +55,14 @@
         <item android:id="@+id/enter"
          android:title="@string/enter"
          android:alphabeticShortcut="d"/>
+        <item android:id="@+id/add_fav"
+         android:title="@string/add_fav"/>
+        <item android:id="@+id/oth_sh_this"
+         android:title="@string/oth_sh_this"/>
         <item android:id="@+id/search"
          android:title="@string/search_file"/>
         <item android:id="@+id/ftp"
          android:title="@string/enter_ftp"/>
-        <item android:id="@+id/oth_sh_this"
-         android:title="@string/oth_sh_this"/>
       </menu>
     </item>
 
@@ -72,14 +74,21 @@
             android:title="@string/donate"/>
         <item android:id="@+id/prefs"
             android:title="@string/prefs"/>
+        <item android:id="@+id/F10"
+            android:title="@string/F10"/>
+      </menu>
+    </item>
+
+    <item android:id="@+id/help"
+        android:title="@string/help"
+        android:icon="@drawable/info">        
+      <menu>
         <item android:id="@+id/keys"
             android:title="@string/keys"/>
         <item android:id="@+id/online"
             android:title="@string/online_help"/>
         <item android:id="@+id/about"
             android:title="@string/about"/>
-	    <item android:id="@+id/F10"
-	        android:title="@string/F10"/>
       </menu>
     </item>
 </menu>
