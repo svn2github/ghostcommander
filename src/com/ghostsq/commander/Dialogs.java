@@ -174,6 +174,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
             return dialogObj = new AlertDialog.Builder( owner )
                 .setIcon( android.R.drawable.ic_dialog_alert )
                 .setTitle( R.string.confirm )
+                .setMessage( "" )
                 .setPositiveButton( R.string.dialog_ok, this )
                 .setNegativeButton( R.string.dialog_cancel, this )
                 .create();
