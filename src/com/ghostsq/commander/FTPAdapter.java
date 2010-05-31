@@ -55,7 +55,6 @@ public class FTPAdapter extends CommanderAdapterBase {
     }
     
     class ListEngine extends Engine {
-        private long    threadStartedAt = 0;
         private boolean needReconnect;
         private FTPItem[] items_tmp;
         ListEngine( Handler h, boolean need_reconnect_ ) {
@@ -65,13 +64,6 @@ public class FTPAdapter extends CommanderAdapterBase {
         public FTPItem[] getItems() {
             return items_tmp;
         }       
-        private final boolean tooLong() {
-            if( threadStartedAt == 0 ) return false;
-            boolean yes = System.currentTimeMillis() - threadStartedAt > 4000;
-            threadStartedAt = 0;
-            return yes;
-        }
-        
         @Override
         public void run() {
             try {
@@ -124,7 +116,7 @@ public class FTPAdapter extends CommanderAdapterBase {
                     		FTPItemPropComparator comp = new FTPItemPropComparator( mode & MODE_SORTING );
                             Arrays.sort( items_tmp, comp );
 	                        parentLink = path == null || path.length() == 0 || path.equals( "/" ) ? "/" : "..";
-	                        sendProgress( tooLong() ? ftp.getLog() : null, Commander.OPERATION_COMPLETED );
+	                        sendProgress( tooLong( 4 ) ? ftp.getLog() : null, Commander.OPERATION_COMPLETED );
 	                        return;
 	                    }
 	                }

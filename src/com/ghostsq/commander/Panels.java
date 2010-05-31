@@ -490,6 +490,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 flv.setAdapter( (ListAdapter)ca );
             }
         }
+        setPanelTitle( "", which );
         if( !ca.readSource( uri ) )
             c.setProgressBarIndeterminateVisibility( false );
         if( posTo != null ) {

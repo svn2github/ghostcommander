@@ -287,25 +287,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             Intent i = new Intent( this, FTPform.class );
             startActivityForResult( i, REQUEST_CODE_FTPFORM );
             break;
-        case R.id.search: {
-                CommanderAdapter ca = panels.getListAdapter( true );
-                if( ca instanceof FSAdapter || ca instanceof FindAdapter ) {
-                    String cur_s = ca.toString();
-                    if( cur_s != null ) {
-                        Uri cur_uri = Uri.parse( cur_s );
-                        if( cur_uri != null ) {
-                            String cur_path = cur_uri.getPath();
-                            if( cur_path != null ) {
-                                Dialogs dh = obtainDialogsInstance( FIND_ACT );
-                                dh.setCookie( cur_path );
-                                showDialog( FIND_ACT );
-                            }
-                        }
-                    }
-                }
-                else
-                    showError( getString( R.string.find_on_fs_only ) );
-            }
+        case R.id.search: 
+            showSearchDialog();
             break;
         case R.id.enter:
             panels.openGoPanel();
@@ -332,10 +315,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             openPrefs();
             break;
         case R.id.about:
-            showAboutDialog();
+            showDialog( Dialogs.ABOUT_DIALOG );
             break;
         case R.id.keys:
-            showInfo(getString(R.string.keys_text));
+            showInfo( getString(R.string.keys_text) );
             break;
         case R.id.donate:
             showDialog(DONATE);
@@ -382,6 +365,9 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         case '&':
             openPrefs();
             return true;
+        case '/':
+            showSearchDialog();
+            return true;
         case '1':
             showInfo(getString(R.string.keys_text));
             return true;
@@ -401,6 +387,9 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         case KeyEvent.KEYCODE_ENVELOPE:
             panels.refreshList(true);
             break;
+        case KeyEvent.KEYCODE_SEARCH:
+            showSearchDialog();
+            return false;
         }
         return super.onKeyDown(keyCode, event);
     }
@@ -492,17 +481,28 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         startActivityForResult(launchPreferencesIntent, REQUEST_CODE_PREFERENCES);
     }
 
-    private final void showAboutDialog() {
-        try {
-            PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
-            Dialogs dh = obtainDialogsInstance(Dialogs.ABOUT_DIALOG);
-            dh.setMessageToBeShown(getString(R.string.about_text, pi.versionName), null);
-            showDialog(Dialogs.ABOUT_DIALOG);
-        } catch( NameNotFoundException e ) {
-            Log.e(TAG, "Package name not found", e);
+    private final void showSearchDialog() {
+        CommanderAdapter ca = panels.getListAdapter( true );
+        if( ca instanceof FSAdapter || ca instanceof FindAdapter ) {
+            String cur_s = ca.toString();
+            if( cur_s != null ) {
+                Uri cur_uri = Uri.parse( cur_s );
+                if( cur_uri != null ) {
+                    String cur_path = cur_uri.getPath();
+                    if( cur_path != null ) {
+                        Dialogs dh = obtainDialogsInstance( FIND_ACT );
+                        dh.setCookie( cur_path );
+                        showDialog( FIND_ACT );
+                        return;
+                    }
+                }
+            }
+            showMessage( "Error" );
         }
-    }
-
+        else
+            showError( getString( R.string.find_on_fs_only ) );
+    }    
+    
     /*
      * Commander interface implementation
      */

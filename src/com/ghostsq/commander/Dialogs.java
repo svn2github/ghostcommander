@@ -4,7 +4,10 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class Dialogs implements DialogInterface.OnClickListener {
+    private final static String TAG = "GhostCommanderActivity";
     public final static int ARI_DIALOG = 148, ALERT_DIALOG = 193, CONFIRM_DIALOG = 396, INPUT_DIALOG = 860, PROGRESS_DIALOG = 493,
             INFO_DIALOG = 864, ABOUT_DIALOG = 159, LOGIN_DIALOG = 995, FTP_DIALOG = 450;
     public final static int numDialogTypes = 5;
@@ -70,7 +74,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                                 Uri.Builder uri_b = new Uri.Builder()
                                     .scheme( "find" )
                                     .path( cookie )
-                                    .query( "q=" + file_name );
+                                    .encodedQuery( "q=" + file_name );
                                 owner.Navigate( uri_b.build(), null );
                             }
                             break;
@@ -167,24 +171,39 @@ public class Dialogs implements DialogInterface.OnClickListener {
         case CONFIRM_DIALOG:
         case FileCommander.DEL_ACT:
         case FileCommander.DONATE: {
-            return dialogObj = new AlertDialog.Builder( owner ).setIcon( android.R.drawable.ic_dialog_alert )
-                    .setTitle( R.string.confirm ).setMessage( owner.getString( R.string.bug_warning ) )
-                    .setPositiveButton( R.string.dialog_ok, this ).setNegativeButton( R.string.dialog_cancel, this ).create();
+            return dialogObj = new AlertDialog.Builder( owner )
+                .setIcon( android.R.drawable.ic_dialog_alert )
+                .setTitle( R.string.confirm )
+                .setPositiveButton( R.string.dialog_ok, this )
+                .setNegativeButton( R.string.dialog_cancel, this )
+                .create();
         }
         case PROGRESS_DIALOG: {
             LayoutInflater factory = LayoutInflater.from( owner );
             final View progressView = factory.inflate( R.layout.progress, null );
-            return dialogObj = new AlertDialog.Builder( owner ).setView( progressView ).setTitle( R.string.progress )
-                    .setNegativeButton( R.string.dialog_cancel, this ).setCancelable( false ).create();
+            return dialogObj = new AlertDialog.Builder( owner )
+                .setView( progressView )
+                .setTitle( R.string.progress )
+                .setNegativeButton( R.string.dialog_cancel, this )
+                .setCancelable( false )
+                .create();
         }
         case ALERT_DIALOG: {
-            return dialogObj = new AlertDialog.Builder( owner ).setIcon( android.R.drawable.ic_dialog_alert )
-                    .setTitle( R.string.alert ).setMessage( "" ).setPositiveButton( R.string.dialog_ok, null ).create();
+            return dialogObj = new AlertDialog.Builder( owner )
+                .setIcon( android.R.drawable.ic_dialog_alert )
+                .setTitle( R.string.alert )
+                .setMessage( "" )
+                .setPositiveButton( R.string.dialog_ok, null )
+                .create();
         }
         case ABOUT_DIALOG:
         case INFO_DIALOG: {
-            return dialogObj = new AlertDialog.Builder( owner ).setIcon( android.R.drawable.ic_dialog_info )
-                    .setTitle( R.string.info ).setMessage( "" ).setPositiveButton( R.string.dialog_ok, null ).create();
+            return dialogObj = new AlertDialog.Builder( owner )
+                .setIcon( android.R.drawable.ic_dialog_info )
+                .setTitle( R.string.info )
+                .setMessage( toShowInAlertDialog == null ? "" : toShowInAlertDialog )
+                .setPositiveButton( R.string.dialog_ok, null )
+                .create();
         }
         }
         return null;
@@ -308,11 +327,19 @@ public class Dialogs implements DialogInterface.OnClickListener {
             case FileCommander.DONATE:
                 ( (AlertDialog)dialog ).setMessage( owner.getString( R.string.donation ) );
                 break;
-            case INFO_DIALOG:
             case ABOUT_DIALOG:
+                try {
+                    AlertDialog ad = (AlertDialog)dialog;
+                    PackageInfo pi = owner.getPackageManager().getPackageInfo( owner.getPackageName(), 0);
+                    ad.setMessage( owner.getString(R.string.about_text, pi.versionName) );
+                } catch( NameNotFoundException e ) {
+                    Log.e( TAG, "Package name not found", e);
+                }
+                break;
+            case INFO_DIALOG:
             case ALERT_DIALOG: {
-                AlertDialog ad = (AlertDialog)dialog;
                 if( toShowInAlertDialog != null ) {
+                    AlertDialog ad = (AlertDialog)dialog;
                     ad.setMessage( toShowInAlertDialog );
                     toShowInAlertDialog = null;
                 }

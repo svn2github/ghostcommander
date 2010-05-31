@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 import com.ghostsq.commander.CommanderAdapterBase.Item;
 import com.ghostsq.commander.FSAdapter.FileEx;
@@ -33,33 +34,78 @@ public class FindAdapter extends CommanderAdapterBase {
     }
 
     @Override
+    public void setMode( int mask, int mode_ ) {
+        super.setMode( mask, mode_ );
+        mode &= ~MODE_WIDTH;
+    }
+    @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
-        // TODO Auto-generated method stub
-        return false;
+        if( move && to instanceof FSAdapter ) {
+/*
+            try {
+                String dest_folder = to.toString();
+                String[] files_to_move = bitsToNames( cis );
+                if( files_to_move == null )
+                    return false;
+                return moveFiles( files_to_move, dest_folder );
+            }
+            catch( SecurityException e ) {
+                commander.showError( "Unable to move a file because of security reasons: " + e );
+                return false;
+            }
+*/
+            return false;
+        }
+        else {
+            return to.receiveItems( bitsToNames( cis ), move );
+        }
     }
 
     @Override
     public boolean createFile( String fileURI ) {
-        // TODO Auto-generated method stub
+        commander.showError( commander.getContext().getString( R.string.not_supported ) );
         return false;
     }
 
     @Override
     public void createFolder( String string ) {
-        // TODO Auto-generated method stub
-
+        commander.showError( commander.getContext().getString( R.string.not_supported ) );
     }
 
     @Override
     public boolean deleteItems( SparseBooleanArray cis ) {
-        // TODO Auto-generated method stub
+        try {
+            int cnt = 0;
+            for( int i = 0; i < cis.size(); i++ ) {
+                if( cis.valueAt( i ) ) {
+                    int pos = cis.keyAt( i ) - 1;
+                    if( pos >= 0 ) {
+                        File f = items[pos];
+                        if( f.isDirectory() ) 
+                            cnt += Utils.deleteDirContent( f );
+                        if( f.delete() )
+                            cnt++;
+                    }
+                }
+            }
+            commander.notifyMe( commander.getContext().getString( R.string.deleted, cnt ),
+                    Commander.OPERATION_COMPLETED_REFRESH_REQUIRED, 0 );
+            return true;
+        }
+        catch( SecurityException e ) {
+            commander.showError( "Unable to delete: " + e );
+        }
         return false;
     }
 
     @Override
     public String getItemName( int position, boolean full ) {
-        // TODO Auto-generated method stub
-        return null;
+        if( position == 0 )
+            return parentLink;
+        if( position < 0 || position > items.length || items == null )
+            return null;
+        else
+            return items[position - 1].getAbsolutePath();
     }
 
     @Override
@@ -68,7 +114,7 @@ public class FindAdapter extends CommanderAdapterBase {
     }
     @Override
     public String toString() {
-        return uri.toString();
+        return uri != null ? Uri.decode( uri.toString() ) : "";
     }
 
     @Override
@@ -98,11 +144,15 @@ public class FindAdapter extends CommanderAdapterBase {
     @Override
     public boolean readSource( Uri uri_ ) {
         try {
-            if( uri_ != null && uri_.getScheme().compareTo( "find" ) == 0 ) {
-                String  path = uri_.getPath();
-                String match = uri_.getQueryParameter( "q" );
+            if( worker != null ) worker.reqStop();
+            if( uri_ != null )
+                uri = uri_;
+            if( uri == null )
+                return false;
+            if( uri.getScheme().compareTo( "find" ) == 0 ) {
+                String  path = uri.getPath();
+                String match = uri.getQueryParameter( "q" );
                 if( path != null && path.length() > 0 && match != null && match.length() > 0  ) {
-                    uri = uri_;
                     worker = new SearchEngine( handler, match, path );
                     worker.start();
                     return true;
@@ -111,32 +161,38 @@ public class FindAdapter extends CommanderAdapterBase {
         } catch( Exception e ) {
             System.err.println( "FindAdapter.readSource() exception: " + e );
         }
-        System.err.println( "FindAdapter unable to read by the URI '" + ( uri_ == null ? "null" : uri_.toString() ) + "'" );
+        System.err.println( "FindAdapter unable to read by the URI '" + ( uri == null ? "null" : uri.toString() ) + "'" );
+        uri = null;
         return false;
     }
 
     @Override
     public boolean receiveItems( String[] fileURIs, boolean move ) {
-        // TODO Auto-generated method stub
+        commander.notifyMe( commander.getContext().getString( R.string.not_supported ), Commander.OPERATION_FAILED, 0 );
         return false;
     }
 
     @Override
     public boolean renameItem( int position, String newName ) {
-        // TODO Auto-generated method stub
-        return false;
+        if( position <= 0 || position > items.length )
+            return false;
+        try {
+            return items[position - 1].renameTo( new File( newName ) );
+        }
+        catch( Exception e ) {
+            commander.showError( "Exception: " + e );
+            return false;
+        }
     }
 
     @Override
     public void reqItemsSize( SparseBooleanArray cis ) {
-        // TODO Auto-generated method stub
-
+        commander.notifyMe( commander.getContext().getString( R.string.not_supported ), Commander.OPERATION_FAILED, 0 );
     }
 
     @Override
     public void setIdentities( String name, String pass ) {
-        // TODO Auto-generated method stub
-
+        commander.showError( commander.getContext().getString( R.string.not_supported ) );
     }
 
     @Override
@@ -183,31 +239,26 @@ public class FindAdapter extends CommanderAdapterBase {
     }
 
     class SearchEngine extends Engine {
-        private String match, path; 
+        private String[] cards;
+        private String path; 
         private ArrayList<File> result;
         private int depth = 0;
         
-        SearchEngine( Handler h, String match_, String path_ ) {
+        SearchEngine( Handler h, String match, String path_ ) {
             super( h );
-            match = match_;
+            cards = match.split( "\\*" );
             path = path_;
         }
-        
         public ArrayList<File> getItems() {
             return result;
         }       
-        
         @Override
         public void run() {
             try {
                 result = new ArrayList<File>();
                 searchInFolder( new File( path ) );
-                if( result.size() == 0 ) {
-                    sendProgress( commander.getContext().getString( R.string.nothing_found ), 
-                            Commander.OPERATION_FAILED );
-                    return;
-                }
-                sendProgress( null, Commander.OPERATION_COMPLETED );
+                sendProgress( tooLong( 8 ) ? commander.getContext().getString( R.string.search_done ) : null, 
+                        Commander.OPERATION_COMPLETED );
             } catch( Exception e ) {
                 sendProgress( e.getMessage(), Commander.OPERATION_FAILED );
             }
@@ -219,11 +270,14 @@ public class FindAdapter extends CommanderAdapterBase {
                 if( dir_path.compareTo( "/dev" ) == 0 ) return;
                 if( dir_path.compareTo( "/proc" ) == 0 ) return;
                 File[] subfiles = dir.listFiles();
+                if( subfiles == null )
+                    return;
                 for( int i = 0; i < subfiles.length; i++ ) {
                     if( stop || isInterrupted() ) 
                         throw new Exception( commander.getContext().getString( R.string.interrupted ) );
                     File f = subfiles[i];
-                    if( f.getName().indexOf( match ) >= 0 ) { // TODO: support the wildcards
+                    
+                    if( wildCardMatch( f.getName() ) ) {
                         result.add( f );
                     }
                     if( f.isDirectory() ) {
@@ -236,6 +290,16 @@ public class FindAdapter extends CommanderAdapterBase {
             } catch( Exception e ) {
                 System.err.println( "exception: " + e );
             }
+        }
+        private boolean wildCardMatch( String text ) {
+            int pos = 0;
+            for( String card : cards ) {
+                int idx = text.indexOf( card, pos );
+                if( idx < 0 )
+                    return false;
+                pos = idx + card.length();
+            }
+            return true;
         }
     }
     protected void onComplete( Engine engine ) {
@@ -262,9 +326,6 @@ public class FindAdapter extends CommanderAdapterBase {
                     items_a.toArray( items );
                 }
                 notifyDataSetChanged();
-                Context context = commander.getContext();
-                Toast.makeText( context, context.getString( R.string.search_done ), 
-                        Toast.LENGTH_LONG).show();
             }
         } catch( Exception e ) {
             e.printStackTrace();

@@ -8,6 +8,7 @@ class Engine extends Thread {
 	private   Handler handler;
 	protected boolean stop = false;
 	protected String  errMsg = null;
+	protected long threadStartedAt = 0;
 	Engine( Handler h ) {
 		handler = h;
 	}
@@ -44,5 +45,11 @@ class Engine extends Thread {
             sendProgress( errMsg + "\n" + report, Commander.OPERATION_FAILED );
         else
             sendProgress( report, Commander.OPERATION_COMPLETED_REFRESH_REQUIRED );
+    }
+    protected final boolean tooLong( int sec ) {
+        if( threadStartedAt == 0 ) return false;
+        boolean yes = System.currentTimeMillis() - threadStartedAt > sec * 1000;
+        threadStartedAt = 0;
+        return yes;
     }
 }

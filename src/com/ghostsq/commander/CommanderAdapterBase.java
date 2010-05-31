@@ -8,6 +8,8 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.text.format.DateFormat;
+import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,7 @@ import android.widget.TableLayout;
 import android.widget.Toast;
 
 public abstract class CommanderAdapterBase extends BaseAdapter implements CommanderAdapter {
+    private final static String TAG = "CommanderAdapterBase";
 	protected final static String NOTIFY_STR = "str", NOTIFY_PRG1 = "prg1", NOTIFY_PRG2 = "prg2"; 
 	
     protected Commander commander = null;
@@ -79,8 +82,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     @Override
     public void prepareToDestroy() {
         if( worker != null ) {
-            if( worker.isAlive() )
-                worker.interrupt();
+            worker.reqStop();
             worker = null;
         }
     }
@@ -117,7 +119,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             row_view.setPadding( 0, vpad, 4, vpad );        
             
             String name = "?", size = "", date = "";
-            name = (item.dir ? "/" : " ") + item.name;
+            if( item.name.charAt( 0 ) == '/' && item.dir )
+                name = item.name + "/";
+            else
+                name = (item.dir ? "/" : " ") + item.name;
             if( dm ) {
             	if( item.size > 0  )
             		size = Utils.getHumanSize( item.size );
@@ -161,6 +166,23 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             System.err.print("\ngetView() exception: " + e ); 
         }
         return null; // is it safe?
+    }
+    protected String[] bitsToNames( SparseBooleanArray cis ) {
+        try {
+            int counter = 0;
+            for( int i = 0; i < cis.size(); i++ )
+                if( cis.valueAt( i ) )
+                    counter++;
+            String[] uris = new String[counter];
+            int j = 0;
+            for( int i = 0; i < cis.size(); i++ )
+                if( cis.valueAt( i ) )
+                    uris[j++] = getItemName( cis.keyAt( i ), true );
+            return uris;
+        } catch( Exception e ) {
+            Log.e( TAG, "bitsToNames()", e );
+        }
+        return null;
     }
     public final void showMessage( String s ) {
         Toast.makeText( commander.getContext(), s, Toast.LENGTH_LONG ).show();

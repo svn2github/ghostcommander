@@ -26,7 +26,7 @@
     <string name="change">&lt;- Сменить</string>
     <string name="refresh">Обновить</string>
     <string name="prefs">9 Настройки</string>
-    <string name="about">Про программу</string>
+    <string name="about">О программе</string>
     <string name="keys">Значения клавиш</string>
     <string name="new_file">Создать новый файл</string>
 
@@ -56,6 +56,8 @@
     <string name="rename_err">Нечего переименовывать</string>
     <string name="mkdir_title">Новая папка</string>
     <string name="mkdir_prompt">Имя новой папки</string>
+    <string name="search_title">Поиск</string>
+    <string name="search_prompt">Имя файла:</string>
     <string name="copy_title">Копирование</string>
     <string name="move_title">Перемещение</string>
     <string name="no_items">Не с чем совершить данную операцию.</string>    
@@ -64,10 +66,11 @@
     <string name="delete_title">Удаление</string>
     <string name="delete_err">Нечего удалять</string>
     <string name="delete_q">"Удалить %s ?"</string><!-- file name/summary -->
-    <string name="deleted">Удалено</string>
+    <string name="deleted">%d файлов удалено</string>
     <string name="cd_title">Смена папки</string>
     <string name="cd_prompt">Сменить текущую папку на:</string>
     <string name="too_deep_hierarchy">Слишком глубокое вложение папок</string>
+    <string name="search_done">Поиск завершен</string>
 
     <string name="select">Выбрать</string>
     <string name="error">Ошибка</string>
@@ -167,8 +170,8 @@
     <string name="keys_text">
     "
 Клавиши:\n
-VlDn - Перейти на другую панель\n
-VlUp - Выбрать текущий файл\n
+VolDn - Перейти на другую панель\n
+VolUp - Выбрать текущий файл\n
 \nто же стрелки влево/вправо если разрешено в настройках
 \t(Можно также выделять файл коснувшись правую половину строки)\n
 +, -  - Выделить все файлы, Убрать выделение со всех файлов\n 
@@ -176,7 +179,6 @@ VlUp - Выбрать текущий файл\n
 * - Добавить текущую папку в закладки\n
 \" - Показать размер выбранных элементов\n
 = - перейти в другой панели на ту же папку что и здесь\n
-&amp; - Настройки программы\n
 1 - Показать этот текст\n
 2 - Переименовать текущий файл\n
 4 - Редактировать текущий файл\n
@@ -184,7 +186,7 @@ VlUp - Выбрать текущий файл\n
 6 - Переместить файлы папки\n
 7 - Создать папку\n
 8 - Удалить выделенное\n
-9 - Показать меню.
+9 - Настройки программы.
 0 - Выйти из программы\n
 [A-z] - Быстрый поиск файла\n    
     \n

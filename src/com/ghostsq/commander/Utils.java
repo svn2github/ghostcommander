@@ -69,17 +69,18 @@ public class Utils {
 		int dot = file_name.lastIndexOf(".");
 		return dot >= 0 ? file_name.substring( dot ) : "";
 	}
-    public final static boolean deleteDirContent( File d ) {
+    public final static int deleteDirContent( File d ) {
+        int cnt = 0;
         File[] fl = d.listFiles();
         if( fl != null ) {
             for( File f : fl ) {
                 if( f.isDirectory() )
-                    deleteDirContent( f );
-                if( !f.delete() )
-                    return false;
+                    cnt += deleteDirContent( f );
+                if( f.delete() )
+                    cnt++;
             }
         }
-        return true;
+        return cnt;
     }
 	public final static File[] getListOfFiles( String[] uris ) {
 	    File[] list = new File[uris.length];

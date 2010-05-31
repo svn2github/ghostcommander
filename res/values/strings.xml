@@ -83,8 +83,8 @@
     <string name="delete_title">Delete</string>
     <string name="delete_err">Nothing to delete</string>
     <string name="delete_q">"Delete %s ?"</string><!-- file name/summary -->
-    <string name="deleted">Deleted</string>
-    <string name="search_done">Search&apos;s completed</string>
+    <string name="deleted">%d files were deleted</string>
+    <string name="search_done">Search has completed</string>
     <string name="done">Done</string>
     <string name="interrupted">Interrupted</string>
     <string name="too_deep_hierarchy">Too deep file hierarchy</string>
@@ -94,7 +94,8 @@
     <string name="cd_title">Go to</string>
     <string name="cd_prompt">Change directory to:</string>
 
-    <string name="select_some">Select  something first.</string>
+    <string name="not_supported">Operation is not supported.</string>
+    <string name="select_some">Select something first.</string>
     <string name="select">Select</string>
     <string name="error">Error</string>
     <string name="info">Information</string>
@@ -156,7 +157,7 @@
     <string name="value_editor_activity">com.ghostsq.commander.Editor</string>
     
     <string name="nothing_to_open">Nothing to open</string>
-    <string name="remind_to_save">Don&apos;t forget to Save your changes in the menu</string>
+    <string name="remind_to_save">Don&apos;t forget to Save your changes (using the menu)</string>
     <string name="save">Save</string>
     <string name="revert">Revert</string>
     <string name="wrap">Wrap long lines</string>
@@ -166,13 +167,13 @@
     <string name="cant_open">Can not open the file.</string>    
     <string name="cant_save">Can not save the file.</string>
     <string name="nav_warn">You&apos;re opening a system folder. Tampering with it may lead to a failure. Proceed at this time?</string>
-    <string name="nav_warn_cmt">( You can permanently disable this warning in the application settings )</string>
+    <string name="nav_warn_cmt">(You can permanently disable this warning in the application settings )\nClick "Cancel" to safely go to the /sdcard folder. Click "Exit" to close the application.</string>
     <string name="no_such_folder">\"%s\" is not a valid folder!</string>
 
     <string name="donate">&#xA0; Donate</string>
     <string name="online_help">&#xA0; Online Help</string>
     
-    <string name="donation">By making a donation you will stimulate further development of the &#xAB;Ghost Commander&#xBB; file manager.\n
+    <string name="donation">By making a donation of any amount you will stimulate further development of the &#xAB;Ghost Commander&#xBB; file manager.\n
 Tap \"Ok\" to make a donation of any amount via PayPal.\n
 Or tap \"Cancel\" to continue enjoy the &#xAB;Ghost Commander&#xBB; file manager for free.\n
     </string>
@@ -199,14 +200,13 @@ If you don&apos;t agree to the above, stop using this software immediately and u
 Shortcuts keys:\n
 VolumeDn - Toggle the current panel\n
 VolumeUp - Select the current item\n
-left/right arrows do the same if enabled.\n
-\t(Also to select, tap on the right half of the item's row)\n
+\t(left/right arrows do the same if enabled in the settings.\n
+\t Also to select an item, tap on the right half of the item's row.)\n
 +,-   - Select or unselect all items in the current folder\n  
 (, )  - Enter the location for left/right panel\n
 * - Add the current folder to the favorites\n
 \" - Show the total size of selected files\n
 = - Make other panel show the same folder as the current\n
-&amp; - Open the preferences\n
 1 - This help\n
 2 - Rename current file\n
 4 - Edit current file\n
@@ -214,7 +214,7 @@ left/right arrows do the same if enabled.\n
 6 - Move selected files\n
 7 - Create a new folder\n
 8 - Delete files or folders\n
-9 - Open the main menu\n
+9 - Open the preferences\n
 0 - Close the program\n
 [A-z] - Quick search\n    
     \n

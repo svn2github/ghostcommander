@@ -152,7 +152,8 @@ public class FTP {
         return true;
     }
     public final void disconnect() {
-        if( outputStream != null ) {
+        //if( outputStream != null )  // ??? why? 
+        {
             try {
                 if( loggedIn )
                     logout( true );

@@ -15,6 +15,7 @@ import java.util.Comparator;
 import android.net.Uri;
 import android.os.Handler;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class FSAdapter extends CommanderAdapterBase {
+    private final static String TAG = "FSAdapter";
 
     class FileEx  {
         public File f = null;
@@ -247,20 +249,20 @@ public class FSAdapter extends CommanderAdapterBase {
     @Override
     public boolean deleteItems( SparseBooleanArray cis ) {
         try {
+            int cnt = 0;
             for( int i = 0; i < cis.size(); i++ ) {
                 if( cis.valueAt( i ) ) {
                     int pos = cis.keyAt( i ) - 1;
                     if( pos >= 0 ) {
                         File f = items[pos].f;
-                        if( f.isDirectory() && !Utils.deleteDirContent( f ) )
-                            return false;
-                        if( !f.delete() )
-                            return false;
+                        if( f.isDirectory() ) 
+                            cnt += Utils.deleteDirContent( f );
+                        if( f.delete() )
+                            cnt++;
                     }
                 }
             }
-            readSource( null );
-            commander.notifyMe( commander.getContext().getString( R.string.deleted ),
+            commander.notifyMe( commander.getContext().getString( R.string.deleted, cnt ),
                     Commander.OPERATION_COMPLETED_REFRESH_REQUIRED, 0 );
             return true;
         }
@@ -465,23 +467,6 @@ public class FSAdapter extends CommanderAdapterBase {
         }
         return true;
     }
-    private final String[] bitsToNames( SparseBooleanArray cis ) {
-        try {
-            int counter = 0;
-            for( int i = 0; i < cis.size(); i++ )
-                if( cis.valueAt( i ) )
-                    counter++;
-            String[] uris = new String[counter];
-            int j = 0;
-            for( int i = 0; i < cis.size(); i++ )
-                if( cis.valueAt( i ) )
-                    uris[j++] = getItemName( cis.keyAt( i ), true );
-            return uris;
-        } catch( Exception e ) {
-            commander.showError( "bitsToNames()'s : " + e );
-        }
-        return null;
-    }
     private final FileEx[] bitsToFiles( SparseBooleanArray cis ) {
         try {
             int counter = 0;
@@ -498,7 +483,7 @@ public class FSAdapter extends CommanderAdapterBase {
                 }
             return res;
         } catch( Exception e ) {
-            commander.showError( "bitsToFiles()'s : " + e );
+            Log.e( TAG, "bitsToFiles()", e );
         }
         return null;
     }
