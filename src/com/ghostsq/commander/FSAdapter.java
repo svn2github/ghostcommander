@@ -104,7 +104,7 @@ public class FSAdapter extends CommanderAdapterBase {
             String parent_dir = cur_dir_file.getParent();
             commander.Navigate( Uri.parse( parentLink != SLS ? ( parent_dir != null ? parent_dir : DEFAULT_DIR ) : SLS ),
                                 cur_dir_file.getName() );
-        }   
+        }
         else {
             File file = items[position - 1].f;
             if( file.isDirectory() ) {
@@ -183,7 +183,7 @@ public class FSAdapter extends CommanderAdapterBase {
 				if( dirs > 0 )
 					result += ",\nin " + dirs + " director" + ( dirs > 1 ? "ies." : "y.");
 				if( mList.length == 1 ) {
-				    result += ",\nLast modified: " + 
+				    result += ",\nLast modified: " +
 				        (String)DateFormat.format( "MMM dd yyyy hh:mm:ss", new Date( mList[0].f.lastModified() ) );
 				}
 				sendProgress(result, Commander.OPERATION_COMPLETED);
@@ -249,28 +249,58 @@ public class FSAdapter extends CommanderAdapterBase {
 
     @Override
     public boolean deleteItems( SparseBooleanArray cis ) {
-        try {
-            int cnt = 0;
-            for( int i = 0; i < cis.size(); i++ ) {
-                if( cis.valueAt( i ) ) {
-                    int pos = cis.keyAt( i ) - 1;
-                    if( pos >= 0 ) {
-                        File f = items[pos].f;
-                        if( f.isDirectory() ) 
-                            cnt += Utils.deleteDirContent( f );
-                        if( f.delete() )
-                            cnt++;
-                    }
-                }
-            }
-            commander.notifyMe( commander.getContext().getString( R.string.deleted, cnt ),
-                    Commander.OPERATION_COMPLETED_REFRESH_REQUIRED, 0 );
-            return true;
-        }
-        catch( SecurityException e ) {
-            commander.showError( "Unable to delete: " + e );
-        }
+    	try {
+        	FileEx[] list = bitsToFiles( cis );
+        	if( list != null ) {
+        		if( worker != null && worker.reqStop() )
+       		        return false;
+        		commander.notifyMe( null, Commander.OPERATION_STARTED, 0 );
+        		worker = new CalcSizesEngine( handler, list );
+        		worker.start();
+        	}
+		} catch( Exception e ) {
+		    commander.notifyMe( e.getMessage(), Commander.OPERATION_FAILED, 0 );
+		}
         return false;
+    }
+
+	class DeleteEngine extends Engine {
+		private File[] mList;
+
+        DeleteEngine( Handler h, FileEx[] list ) {
+        	super( h );
+            mList = new File[list.length];
+            for( int i = 0; i < list.length; i++ )
+                mList[i] = list[i].f;
+        }
+        @Override
+        public void run() {
+            try {
+                int cnt = deleteFiles( mList );
+                if( cnt > 0 )
+                    sendProgress( commander.getContext().getString( R.string.deleted, cnt ),
+                            Commander.OPERATION_COMPLETED_REFRESH_REQUIRED, 0 );
+                else
+                    sendProgress( "Nothing was deleted", Commander.OPERATION_FAILED ); // when that can be?
+            }
+            catch( Exception e ) {
+                sendProgress( e.getMessage(), Commander.OPERATION_FAILED );
+            }
+        }
+        private final int deleteFiles( File[] l ) throws Exception {
+    	    if( l == null ) return 0;
+            int cnt = 0;
+            for( int i = 0; i < l.length; i++ ) {
+                if( stop || isInterrupted() )
+                    throw new Exception( "Interrupted" );
+                File f = l[i];
+                if( f.isDirectory() )
+                    cnt += deleteFiles( f.listFiles() );
+                if( f.delete() )
+                    cnt++;
+            }
+            return cnt;
+        }
     }
 
     @Override
