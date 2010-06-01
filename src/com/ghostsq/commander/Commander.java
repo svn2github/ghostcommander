@@ -16,8 +16,11 @@ public interface Commander {
      *   OPERATION_FAILED_LOGIN_REQUIRED       show user/pass dialog and pass the identity to the adapter with 
      *                                           the string as passed in the first parameter
      */
-	final static int OPERATION_FAILED = -1, OPERATION_COMPLETED = -2, OPERATION_COMPLETED_REFRESH_REQUIRED = -3,
-	                 OPERATION_FAILED_LOGIN_REQUIRED = -4;
+	final static int OPERATION_STARTED = -1, 
+	                 OPERATION_FAILED = -2, 
+	                 OPERATION_COMPLETED = -3, 
+	                 OPERATION_COMPLETED_REFRESH_REQUIRED = -4,
+	                 OPERATION_FAILED_LOGIN_REQUIRED = -5;
 	/**
 	 * try to avoid this call. The adapter should be as UI-free as possible
 	 * @return current UI context

@@ -530,6 +530,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     public void notifyMe( String string, int progress, int progressSec ) {
+        if( progress == Commander.OPERATION_STARTED ) {
+            setProgressBarIndeterminateVisibility( true );
+            return;
+        }
         boolean dialog_enabled = false;
         Dialogs dh = getDialogsInstance(Dialogs.PROGRESS_DIALOG);
         if( dh != null ) {
@@ -547,7 +551,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 showMessage(string);
             return;
         }
-        setProgressBarIndeterminateVisibility(false);
+        setProgressBarIndeterminateVisibility( false );
         switch( progress ) {
         case OPERATION_FAILED:
             showError("Failed" + ( string != null && string.length() > 0 ? ":\n" + string : "." ));

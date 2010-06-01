@@ -350,7 +350,6 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         highlightCurrentTitle();
     }
     public final void showSizes() {
-    	c.setProgressBarIndeterminateVisibility( true );
         getListAdapter( true ).reqItemsSize( getSelectedOrChecked() );
 	}
     public final void checkItem( boolean next ) {
@@ -419,7 +418,6 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     	NavigateInternal( which, uri, posTo );
     }
     private final void NavigateInternal( int which, Uri uri, String posTo ) {
-    	c.setProgressBarIndeterminateVisibility( true );
         ListView flv = listViews[which];
         flv.clearChoices();
         CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
@@ -490,9 +488,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 flv.setAdapter( (ListAdapter)ca );
             }
         }
-        setPanelTitle( "", which );
-        if( !ca.readSource( uri ) )
-            c.setProgressBarIndeterminateVisibility( false );
+        setPanelTitle( c.getString( R.string.wait ), which );
+        ca.readSource( uri );
         if( posTo != null ) {
             lastItemSelected = posTo;
             setSelection( which, posTo );
@@ -655,7 +652,6 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         getListAdapter( false ).terminateOperation();
     }
     public final void copyFiles( String dest, boolean move ) {
-    	c.setProgressBarIndeterminateVisibility( true );
         CommanderAdapter dest_adapter = getListAdapter( false );
         Uri dest_uri = Uri.parse( dest );
         if( dest_uri != null && dest_uri.compareTo( dest_adapter.getUri() ) != 0 )

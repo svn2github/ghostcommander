@@ -4,10 +4,11 @@
     android:layout_height="fill_parent">
 
     <TableRow>
-        <!--CheckedTextView android:id="@+id/chk"
-            android:textSize="10sp"
-            android:padding="1dip" 
-            android:text="+"/-->
+        <ImageView android:id="@+id/fld_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/text"
+            android:padding="2dip"/>
         <TextView android:id="@+id/fld_name"
             android:padding="2dip" />
         <TextView android:id="@+id/fld_size"

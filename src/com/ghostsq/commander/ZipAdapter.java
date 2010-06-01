@@ -185,6 +185,7 @@ public class ZipAdapter extends CommanderAdapterBase {
 	            		return false;      
             	}
             }
+            commander.notifyMe( null, Commander.OPERATION_STARTED, 0 );
             worker = new ListEngine( handler );
             worker.start();
             return true;
@@ -210,6 +211,7 @@ public class ZipAdapter extends CommanderAdapterBase {
 		        	if( !checkReadyness() ) return false;
 		        	ZipEntry[] subItems = bitsToItems( cis );
 		        	if( subItems != null ) {
+		        	    commander.notifyMe( null, Commander.OPERATION_STARTED, 0 );
 		                worker = new CopyFromEngine( handler, subItems, dest );
 		                worker.start();
 		                return true;
@@ -354,6 +356,7 @@ public class ZipAdapter extends CommanderAdapterBase {
         	if( !checkReadyness() ) return false;
         	ZipEntry[] subItems = bitsToItems( cis );
         	if( subItems != null ) {
+        	    commander.notifyMe( null, Commander.OPERATION_STARTED, 0 );
                 worker = new DelEngine( handler, subItems );
                 worker.start();
 	            return true;
@@ -483,6 +486,7 @@ public class ZipAdapter extends CommanderAdapterBase {
             	commander.notifyMe( "Something wrong with the files", Commander.OPERATION_FAILED, 0 );
             	return false;
             }
+            commander.notifyMe( null, Commander.OPERATION_STARTED, 0 );
             worker = new CopyToEngine( handler, list, move );
             worker.start();
             return true;

@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.text.format.DateFormat;
@@ -14,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TableLayout;
 import android.widget.Toast;
@@ -26,7 +28,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected static final String SLS = File.separator;
     protected static final String DEFAULT_DIR = "/sdcard";
     protected LayoutInflater mInflater = null;
-    protected int    parentWidth, nameWidth, sizeWidth, dateWidth;
+    protected int    parentWidth, imgWidth, nameWidth, sizeWidth, dateWidth;
     protected int    mode = 0;
     protected String parentLink;
     protected Engine worker = null;
@@ -136,16 +138,26 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             int parent_width = parent.getWidth();
             if( parentWidth != parent_width ) {
                 parentWidth = parent_width;
-                nameWidth = wm || dm ? parent_width * 5 / 8 : parent_width;
+                imgWidth = parent_width / 8;
+                nameWidth = wm || dm ? parent_width * 4 / 8 : parent_width;
                 sizeWidth = parent_width / (wm ? 8 : 4);
                 dateWidth = parent_width / (wm ? 4 : 2);
             }
             if( item.sel ) {
                 row_view.setBackgroundColor( 0xFF4169E1 );
             }
+            ImageView imgView = (ImageView)row_view.findViewById( R.id.fld_icon );
+            if( imgView != null ) {
+                ??????????????
+                imgView.setAdjustViewBounds(true);
+                imgView.setMaxWidth( imgWidth );
+                imgView.setImageResource( R.id.text );
+            }
             TextView nameView = (TextView)row_view.findViewById( R.id.fld_name );
-            nameView.setWidth( nameWidth );
-            nameView.setText( nameView != null ? name : "???" );
+            if( nameView != null ) {
+                nameView.setWidth( nameWidth );
+                nameView.setText( name != null ? name : "???" );
+            }
             TextView sizeView = (TextView)row_view.findViewById( R.id.fld_size );
             if( sizeView != null ) {
                 sizeView.setVisibility( dm ? View.VISIBLE : View.GONE );

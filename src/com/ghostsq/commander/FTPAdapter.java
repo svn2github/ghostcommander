@@ -116,7 +116,7 @@ public class FTPAdapter extends CommanderAdapterBase {
                     		FTPItemPropComparator comp = new FTPItemPropComparator( mode & MODE_SORTING );
                             Arrays.sort( items_tmp, comp );
 	                        parentLink = path == null || path.length() == 0 || path.equals( "/" ) ? "/" : "..";
-	                        sendProgress( tooLong( 4 ) ? ftp.getLog() : null, Commander.OPERATION_COMPLETED );
+	                        sendProgress( tooLong( 8 ) ? ftp.getLog() : null, Commander.OPERATION_COMPLETED );
 	                        return;
 	                    }
 	                }
@@ -215,6 +215,7 @@ public class FTPAdapter extends CommanderAdapterBase {
 	            		return false;      
             	}
             }
+            commander.notifyMe( null, Commander.OPERATION_STARTED, 0 );
             worker = new ListEngine( handler, need_reconnect );
             worker.start();
             return true;
@@ -240,6 +241,7 @@ public class FTPAdapter extends CommanderAdapterBase {
 		        	if( !checkReadyness() ) return false;
 		        	FTPItem[] subItems = bitsToItems( cis );
 		        	if( subItems != null ) {
+		        	    commander.notifyMe( null, Commander.OPERATION_STARTED, 0 );
 		                worker = new CopyFromEngine( handler, subItems, dest );
 		                worker.start();
 		                return true;
@@ -367,6 +369,7 @@ public class FTPAdapter extends CommanderAdapterBase {
         	if( !checkReadyness() ) return false;
         	FTPItem[] subItems = bitsToItems( cis );
         	if( subItems != null ) {
+        	    commander.notifyMe( null, Commander.OPERATION_STARTED, 0 );
                 worker = new DelEngine( handler, subItems );
                 worker.start();
 	            return true;
@@ -499,6 +502,7 @@ public class FTPAdapter extends CommanderAdapterBase {
             	commander.notifyMe( "Something wrong with the files", Commander.OPERATION_FAILED, 0 );
             	return false;
             }
+            commander.notifyMe( null, Commander.OPERATION_STARTED, 0 );
             worker = new CopyToEngine( handler, list, move );
             worker.start();
             return true;

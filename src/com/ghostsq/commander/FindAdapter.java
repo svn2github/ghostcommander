@@ -153,6 +153,7 @@ public class FindAdapter extends CommanderAdapterBase {
                 String  path = uri.getPath();
                 String match = uri.getQueryParameter( "q" );
                 if( path != null && path.length() > 0 && match != null && match.length() > 0  ) {
+                    commander.notifyMe( null, Commander.OPERATION_STARTED, 0 );
                     worker = new SearchEngine( handler, match, path );
                     worker.start();
                     return true;

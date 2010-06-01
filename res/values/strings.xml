@@ -52,6 +52,8 @@
     <string name="prefs_label">Settings</string>
     <string name="editor_label">Text Editor</string>
 
+    <string name="wait">wait...</string>
+
     <string name="dialog_yes">Yes</string>
     <string name="dialog_no">No</string>
     <string name="dialog_ok">Ok</string>
@@ -205,6 +207,7 @@ VolumeUp - Select the current item\n
 \t Also to select an item, tap on the right half of the item's row.)\n
 +,-   - Select or unselect all items in the current folder\n  
 (, )  - Enter the location for left/right panel\n
+\t(Also - long press on the panel's title)
 * - Add the current folder to the favorites\n
 \" - Show the total size of selected files\n
 = - Make other panel show the same folder as the current\n

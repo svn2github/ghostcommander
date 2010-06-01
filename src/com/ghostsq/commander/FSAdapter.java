@@ -138,6 +138,7 @@ public class FSAdapter extends CommanderAdapterBase {
         	if( list != null ) {
         		if( worker != null && worker.reqStop() )
        		        return;
+        		commander.notifyMe( null, Commander.OPERATION_STARTED, 0 );
         		worker = new CalcSizesEngine( handler, list );
         		worker.start();
         	}
@@ -316,6 +317,7 @@ public class FSAdapter extends CommanderAdapterBase {
             else {
                 if( worker != null && worker.reqStop() )
                     return false;
+                commander.notifyMe( null, Commander.OPERATION_STARTED, 0 );
             	worker = new CopyEngine( handler, list, dirName );
             	worker.start();
 	            return true;
