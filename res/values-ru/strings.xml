@@ -32,6 +32,9 @@
 
     <string name="go_button">Иди</string>
     <string name="show_size">Размер</string>
+    <string name="send_to">Послать</string>
+    <string name="open_with">Открыть</string>
+    
 
     <string name="input_settings">Ввод</string>
     <string name="arrow_mode">Стрелки Влево/Вправо</string>
@@ -85,6 +88,8 @@
     <string name="two_lines">Вывод в две строки</string>
     <string name="summary_two_lines">Атрибуты файлов всегда показывать на новой строке</string>
     
+    <string name="show_icons">Иконки файлов</string>
+    <string name="summary_show_icons">Показывать иконки для файлов</string>
     <string name="show_toolbar">Панель кнопок</string>
     <string name="summary_show_toolbar">Показывать панель с кнопками файловых операций</string>
     
@@ -107,7 +112,6 @@
     
     <string name="finger_friendly">Управление палцем</string>
     <string name="summary_finger_friendly">Увеличить элементы интерфейса для управления пальцем</string>
-
     <string name="prevent_root">Предупреждать на системных каталогах</string>
     <string name="summary_prevent_root">Выдавать предупреждающее сообщение на попытку перейти в системный каталог</string>
 

@@ -7,8 +7,7 @@
         <ImageView android:id="@+id/fld_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/text"
-            android:padding="2dip"/>
+            android:padding="1dip"/>
         <TextView android:id="@+id/fld_name"
             android:padding="2dip" />
         <TextView android:id="@+id/fld_size"

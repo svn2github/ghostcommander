@@ -5,7 +5,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.text.format.DateFormat;
@@ -14,6 +13,7 @@ import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -117,14 +117,12 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 row_view = convertView;
                 row_view.setBackgroundColor( 0 );
             }
-            int vpad = wm && ( mode & MODE_FINGERF ) == FAT_MODE ? 8 : 0;
+            boolean icons = ( mode & MODE_ICONS ) == ICON_MODE;
+            boolean fat = wm && ( mode & MODE_FINGERF ) == FAT_MODE;
+            int vpad = fat ? ( icons ? 2 : 8 ) : 0;
             row_view.setPadding( 0, vpad, 4, vpad );        
             
-            String name = "?", size = "", date = "";
-            if( item.name.charAt( 0 ) == '/' && item.dir )
-                name = item.name + "/";
-            else
-                name = (item.dir ? "/" : " ") + item.name;
+            String name = item.name, size = "", date = "";
             if( dm ) {
             	if( item.size > 0  )
             		size = Utils.getHumanSize( item.size );
@@ -138,7 +136,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             int parent_width = parent.getWidth();
             if( parentWidth != parent_width ) {
                 parentWidth = parent_width;
-                imgWidth = parent_width / 8;
+                imgWidth = parent_width / ( fat ? 8 : 16 );
                 nameWidth = wm || dm ? parent_width * 4 / 8 : parent_width;
                 sizeWidth = parent_width / (wm ? 8 : 4);
                 dateWidth = parent_width / (wm ? 4 : 2);
@@ -148,10 +146,14 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             }
             ImageView imgView = (ImageView)row_view.findViewById( R.id.fld_icon );
             if( imgView != null ) {
-                ??????????????
-                imgView.setAdjustViewBounds(true);
-                imgView.setMaxWidth( imgWidth );
-                imgView.setImageResource( R.id.text );
+                if( icons ) {
+                    imgView.setVisibility( View.VISIBLE );
+                    imgView.setAdjustViewBounds(true);
+                    imgView.setMaxWidth( imgWidth );
+                    imgView.setImageResource( item.dir ? R.drawable.folder : getIconId( name ) );
+                }
+                else
+                    imgView.setVisibility( View.GONE );
             }
             TextView nameView = (TextView)row_view.findViewById( R.id.fld_name );
             if( nameView != null ) {
@@ -179,6 +181,26 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         }
         return null; // is it safe?
     }
+    
+    protected int getIconId( String file ) {
+        MimeTypeMap mime_map = MimeTypeMap.getSingleton();
+        if( mime_map == null )
+            return R.drawable.unkn;
+        String mime = null;
+        String ext = Utils.getFileExt( file );
+        if( ext != null && ext.length() > 0 )
+            mime = mime_map.getMimeTypeFromExtension( ext.substring( 1 ) );
+        if( mime == null )
+            return R.drawable.unkn; 
+        String type = mime.substring( 0, mime.indexOf( '/' ) );
+        if( type.compareTo( "text" ) == 0 )  return R.drawable.text; 
+        if( type.compareTo( "image" ) == 0 ) return R.drawable.image; 
+        if( type.compareTo( "audio" ) == 0 ) return R.drawable.audio; 
+        if( type.compareTo( "video" ) == 0 ) return R.drawable.video; 
+        if( type.compareTo( "application" ) == 0 ) return R.drawable.application; 
+        return R.drawable.unkn;
+    }
+    
     protected String[] bitsToNames( SparseBooleanArray cis ) {
         try {
             int counter = 0;

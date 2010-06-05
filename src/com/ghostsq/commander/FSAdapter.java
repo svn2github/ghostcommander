@@ -5,9 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.nio.channels.FileChannel;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -20,7 +18,6 @@ import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
 
 public class FSAdapter extends CommanderAdapterBase {
     private final static String TAG = "FSAdapter";
@@ -171,19 +168,18 @@ public class FSAdapter extends CommanderAdapterBase {
 				if( mList.length == 1 ) {
 					File f = mList[0].f;
 					if( f.isDirectory() )
-						result = "Folder \"" + f.getAbsolutePath() + "\",\n "
-								+ num + " files";
+						result = "Folder \"" + f.getAbsolutePath() + "\":\n" + num + " files,";
 					else
-						result = "File \"" + f.getAbsolutePath() + "\"";
+						result = "File \"" + f.getAbsolutePath() + "\":";
 				} else
-					result = "" + num + " files";
-				result += ",\n" + Utils.getHumanSize(sum) + "bytes";
+					result = "" + num + " files:";
+				result += "\n" + Utils.getHumanSize(sum) + "bytes";
 				if( sum > 1024 )
-				    result += ",\n( " + sum + "bytes )";
+				    result += "\n ( " + sum + " bytes )";
 				if( dirs > 0 )
 					result += ",\nin " + dirs + " director" + ( dirs > 1 ? "ies." : "y.");
 				if( mList.length == 1 ) {
-				    result += ",\nLast modified: " +
+				    result += "\nLast modified:\n  " +
 				        (String)DateFormat.format( "MMM dd yyyy hh:mm:ss", new Date( mList[0].f.lastModified() ) );
 				}
 				sendProgress(result, Commander.OPERATION_COMPLETED);
@@ -255,7 +251,7 @@ public class FSAdapter extends CommanderAdapterBase {
         		if( worker != null && worker.reqStop() )
        		        return false;
         		commander.notifyMe( null, Commander.OPERATION_STARTED, 0 );
-        		worker = new CalcSizesEngine( handler, list );
+        		worker = new DeleteEngine( handler, list );
         		worker.start();
         	}
 		} catch( Exception e ) {
@@ -543,14 +539,15 @@ public class FSAdapter extends CommanderAdapterBase {
     	Item item = new Item();
         if( position == 0 ) {
             item.name = parentLink;
+            item.dir = true;
         }
         else {
         	if( items != null && position-1 < items.length ) {
         	    synchronized( items ) {
                     FileEx f = items[position - 1];
                     try {
-                        item.name = f.f.getName();
                         item.dir  = f.f.isDirectory();
+                        item.name = item.dir ? SLS + f.f.getName() : f.f.getName();
                         item.size = item.dir ? f.size : f.f.length();
                         ListView flv = (ListView)parent;
                         SparseBooleanArray cis = flv.getCheckedItemPositions();

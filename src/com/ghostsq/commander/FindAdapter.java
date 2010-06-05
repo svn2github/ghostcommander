@@ -219,8 +219,8 @@ public class FindAdapter extends CommanderAdapterBase {
                 synchronized( items ) {
                     File f = items[position - 1];
                     try {
-                        item.name = f.getAbsolutePath();
                         item.dir  = f.isDirectory();
+                        item.name = item.dir ? f.getAbsolutePath() + SLS: f.getAbsolutePath();
                         item.size = item.dir ? 0 : f.length();
                         ListView flv = (ListView)parent;
                         SparseBooleanArray cis = flv.getCheckedItemPositions();

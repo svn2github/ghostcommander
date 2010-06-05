@@ -574,7 +574,6 @@ public class ZipAdapter extends CommanderAdapterBase {
     public View getView( int position, View convertView, ViewGroup parent ) {
     	Item item = new Item();
     	item.name = "";
-    	//if( worker == null ) 
     	{
 	        if( position == 0 ) {
 	            item.name = parentLink;
@@ -583,9 +582,9 @@ public class ZipAdapter extends CommanderAdapterBase {
 	        	if( items != null && position > 0 && position <= items.length ) {
 	        		ZipEntry curItem;
             		curItem = items[position - 1];
-		            item.name = getLocalName( curItem );
+                    item.dir = curItem.isDirectory();
+		            item.name = item.dir ? SLS + getLocalName( curItem ) : getLocalName( curItem );
 		            item.size = curItem.getSize();
-		            item.dir = curItem.isDirectory();
 		            ListView flv = (ListView)parent;
 		            SparseBooleanArray cis = flv.getCheckedItemPositions();
 		            item.sel = cis.get( position );

@@ -43,7 +43,8 @@
 
     <string name="go_button">Go</string>
     <string name="show_size">Size Of</string>
-    <string name="send_to">Send to</string>
+    <string name="send_to">Send to...</string>
+    <string name="open_with">Open With...</string>
 
     <string name="input_settings">Input</string>
     <string name="arrow_mode">Arrows command</string>
@@ -119,6 +120,8 @@
     <string name="summary_panels_mode">Show both panels side-by-side in a split screen.</string>
     <string name="two_lines">Two lines in a row</string>
     <string name="summary_two_lines">Always show file attributes on the second line.</string>
+    <string name="show_icons">File Icons</string>
+    <string name="summary_show_icons">Show the File Type Icon for each file</string>
     <string name="show_toolbar">Show Toolbar</string>
     <string name="summary_show_toolbar">Show or hide those buttons in the bottom of the screen</string>
     <string name="toolbar_preference">Choose which buttons to show</string>

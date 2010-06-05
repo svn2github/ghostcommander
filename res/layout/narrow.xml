@@ -2,9 +2,14 @@
 <RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent" 
         android:layout_height="wrap_content">
+        <ImageView android:id="@+id/fld_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="1dip"/>
         <TextView android:id="@+id/fld_name"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
+	        android:layout_toRightOf="@id/fld_icon"
             android:padding="1dip"/>
         <TextView android:id="@+id/fld_date"
             android:layout_alignParentRight="true"

@@ -24,6 +24,7 @@ import android.view.KeyEvent;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
@@ -51,8 +52,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     private final static String TAG = "GhostCommanderActivity";
     private final static int REQUEST_CODE_PREFERENCES = 1, REQUEST_CODE_FTPFORM = 2;
     public  final static int RENAME_ACT = 1002,  NEWF_ACT = 1014, EDIT_ACT = 1004, COPY_ACT = 1005, 
-                               MOVE_ACT = 1006, MKDIR_ACT = 1007,  DEL_ACT = 1008, FIND_ACT = 1017,  DONATE = 3333;
-    private final static int SHOW_SIZE = 12, CHANGE_LOCATION = 993, MAKE_SAME = 217, SEND_TO = 236;
+                               MOVE_ACT = 1006, MKDIR_ACT = 1007,  DEL_ACT = 1008, FIND_ACT = 1017, DONATE = 3333;
+    private final static int SHOW_SIZE = 12, CHANGE_LOCATION = 993, MAKE_SAME = 217, SEND_TO = 236, OPEN_WITH = 903;
     private ArrayList<Dialogs> dialogs;
     public  Panels  panels, panelsBak = null;
     private boolean exit = false, dont_restore = false;
@@ -178,10 +179,14 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             }
         }
         menu.setHeaderTitle("Operation");
-        boolean fs_adapter = panels.getListAdapter( true ) instanceof FSAdapter;
+        CommanderAdapter ca = panels.getListAdapter( true );
+        boolean fs_adapter = ca instanceof FSAdapter || ca instanceof FindAdapter;
         if( fs_adapter ) { 
             menu.add( 0, SHOW_SIZE, 0, R.string.show_size );
-            menu.add( 0,   SEND_TO, 0, R.string.send_to );
+            if( num <= 1 ) {
+                menu.add( 0,   SEND_TO, 0, R.string.send_to );
+                menu.add( 0, OPEN_WITH, 0, R.string.open_with );
+            }
         }
         if( num <= 1 ) {
             menu.add( 0, RENAME_ACT, 0, R.string.rename_title );
@@ -223,6 +228,9 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             break;
         case SEND_TO:
             panels.tryToSend();
+            break;
+        case OPEN_WITH:
+            panels.tryToOpen();
             break;
         case MAKE_SAME:
             panels.makeOtherAsCurrent();
@@ -515,7 +523,12 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     public void Open( String path ) {
         try {
             Intent i = new Intent( Intent.ACTION_VIEW );
-            String mime = Utils.getMimeByExt( Utils.getFileExt( path ) );
+            String mime = null;
+            MimeTypeMap mime_map = MimeTypeMap.getSingleton();
+            if( mime_map != null )
+                mime = mime_map.getMimeTypeFromExtension( MimeTypeMap.getFileExtensionFromUrl( path ) );
+            if( mime == null )
+                mime = "*/*";
             i.setDataAndType( Uri.fromFile( new File( path ) ), mime );
             startActivity(i);
         } catch( ActivityNotFoundException e ) {

@@ -12,6 +12,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -20,6 +21,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListAdapter;
@@ -39,6 +41,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                                                      View.OnLongClickListener, 
                                                      View.OnTouchListener,
                                                      View.OnKeyListener {
+    private final static String TAG = "Panels";
     public  final static int LEFT = 0, RIGHT = 1;
     private final int titlesIds[] = {R.id.left_dir, R.id.right_dir};
     private final int  listsIds[] = {R.id.left_list, R.id.right_list};
@@ -261,6 +264,9 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     	if( id == R.layout.main )
 	        ca.setMode( CommanderAdapter.MODE_WIDTH, sharedPref.getBoolean( "two_lines", false ) ? 
 	        		    CommanderAdapter.NARROW_MODE : CommanderAdapter.WIDE_MODE );
+
+        ca.setMode( CommanderAdapter.MODE_ICONS, sharedPref.getBoolean( "show_icons", true ) ? 
+                CommanderAdapter.ICON_MODE : CommanderAdapter.TEXT_MODE );
     	
         String sfx = id == R.layout.main ? "_Ovr" : "_SbS";
         boolean detail_mode = sharedPref.getBoolean( which == LEFT ? "left_detailed" + sfx : "right_detailed" + sfx, true );        
@@ -520,12 +526,31 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     public final void tryToSend() {
         File f = getItemURI();
         if( f != null ) {
-            Intent sendIntent = new Intent(Intent.ACTION_SEND);
-            String mime_type = Utils.getMimeByExt( Utils.getFileExt( f.getName() ) );
-            System.err.println( "Type to send: " + mime_type );
-            sendIntent.setType( mime_type );
+            String mime = null;
+            MimeTypeMap mime_map = MimeTypeMap.getSingleton();
+            if( mime_map != null )
+                mime = mime_map.getMimeTypeFromExtension( MimeTypeMap.getFileExtensionFromUrl( f.getAbsolutePath() ) );
+            if( mime == null )
+                c.showMessage( "Unable to send file" );
+            Intent sendIntent = new Intent( Intent.ACTION_SEND );
+            Log.i( TAG, "Type file to send: " + mime );
+            sendIntent.setType( mime );
             sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile( f ) );
             c.startActivity( Intent.createChooser( sendIntent, "Send:" ) );            
+        }        
+    }    
+    public final void tryToOpen() {
+        File f = getItemURI();
+        if( f != null ) {
+            Intent intent = new Intent( Intent.ACTION_VIEW );
+            String mime = null;
+            MimeTypeMap mime_map = MimeTypeMap.getSingleton();
+            if( mime_map != null )
+                mime = mime_map.getMimeTypeFromExtension( MimeTypeMap.getFileExtensionFromUrl( f.getAbsolutePath() ) );
+            if( mime == null )
+                mime = "*/*";
+            intent.setDataAndType( Uri.fromFile( f ), mime );
+            c.startActivity( Intent.createChooser( intent, "Open with..." ) );            
         }        
     }    
     

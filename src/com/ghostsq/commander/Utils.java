@@ -3,68 +3,6 @@ package com.ghostsq.commander;
 import java.io.File;
 
 public class Utils {
-	private final static String[][] mimes = {	// should be sorted!
-		{ ".aif", "audio/x-aiff" },
-		{ ".apk", "application/vnd.android.package-archive" },
-		{ ".avi", "video/x-msvideo" },
-		{ ".bmp", "image/bmp" },
-		{ ".csv", "text/csv" },
-		{ ".gif", "image/gif" },
-		{ ".gz",  "application/gzip" },
-		{ ".htm", "text/html" },
-		{ ".html","text/html" },
-		{ ".jar", "application/java-archive" },
-		{ ".java","application/octet-stream" },
-		{ ".jpeg","image/jpeg" },
-		{ ".jpg", "image/jpeg" },
-        { ".m3u", "audio/x-mpegurl" },
-        { ".mid", "audio/midi" },
-		{ ".midi","audio/midi" },
-		{ ".mp3", "audio/mp3" },
-		{ ".mpeg","video/mpeg" },
-		{ ".ogg", "audio/x-ogg" },
-		{ ".php", "text/php " },
-		{ ".png", "image/png" },
-		{ ".rar", "application/x-rar-compressed" },
-		{ ".txt", "text/plain" },
-		{ ".wav", "audio/wav" },
-		{ ".xml", "text/xml" },
-		{ ".zip", "application/zip" }
-	};
-
-	public final static String getMimeByExt( String ext ) {
-		if( ext != null ) {
-    		int from = 0, to = mimes.length;
-    		for( int l = 0; l < mimes.length; l++ ) {
-    			int idx = ( to - from ) / 2 + from;
-    			String tmp = mimes[idx][0];
-    			if( tmp.compareToIgnoreCase( ext ) == 0 ) 
-    			    return mimes[idx][1];
-    			int cp;
-    			for( cp = 1; ; cp++ ) {
-    				if( cp >= ext.length() ) {
-    					to = idx;
-    					break;
-    				}
-    				if( cp >= tmp.length() ) {
-    					from = idx;
-    					break;
-    				}
-    				char c0 = ext.charAt( cp );
-    				char ct = tmp.charAt( cp );
-    				if( c0 < ct ) {
-    					to = idx;
-    					break;
-    				}
-    				if( c0 > ct ) {
-    					from = idx;
-    					break;
-    				}
-    			}
-    		}
-    	}
-		return "*/*";
-	}
 	public final static String getFileExt( String file_name ) {
 		int dot = file_name.lastIndexOf(".");
 		return dot >= 0 ? file_name.substring( dot ) : "";

@@ -614,7 +614,6 @@ public class FTPAdapter extends CommanderAdapterBase {
     public View getView( int position, View convertView, ViewGroup parent ) {
     	Item item = new Item();
     	item.name = "???";
-    	//if( worker == null ) 
     	{
 	        if( position == 0 ) {
 	            item.name = parentLink;
@@ -622,10 +621,10 @@ public class FTPAdapter extends CommanderAdapterBase {
 	        else {
 	        	if( items != null && position > 0 && position <= items.length ) {
 	        		FTPItem curItem;
-	            		curItem = items[position - 1];
-		            item.name = curItem.getName();
+            		curItem = items[position - 1];
+                    item.dir = curItem.isDirectory();
+		            item.name = item.dir ? SLS + curItem.getName() : curItem.getName();
 		            item.size = curItem.length();
-		            item.dir = curItem.isDirectory();
 		            ListView flv = (ListView)parent;
 		            SparseBooleanArray cis = flv.getCheckedItemPositions();
 		            item.sel = cis.get( position );

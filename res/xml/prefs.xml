@@ -70,6 +70,11 @@
                 android:summary="@string/summary_panels_mode" 
                 android:defaultValue="false"/>
         <CheckBoxPreference
+                android:key="show_icons"
+                android:title="@string/show_icons"
+                android:summary="@string/summary_show_icons"
+                android:defaultValue="true"/>
+        <CheckBoxPreference
                 android:key="two_lines"
                 android:title="@string/two_lines"
                 android:summary="@string/summary_two_lines"
