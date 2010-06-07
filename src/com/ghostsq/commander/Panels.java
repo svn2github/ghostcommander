@@ -199,9 +199,11 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             title.setTextColor( on ? 0xFFEEEEEE : 0xFF999999 );
         }
         else
-        	System.err.println( "title view was not found!" );
+            Log.e( TAG, "title view was not found!" );
     }
-
+    public final void addCurrentToFavorites() {
+        shorcutsFoldersList.addToFavorites( getFolderUri( true ) );
+    }
     public final int getSelection() {
         int pos = listViews[current].getSelectedItemPosition();
         return pos < 0 ? currentPositions[current] : pos;
@@ -274,6 +276,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                     CommanderAdapter.DETAILED_MODE : CommanderAdapter.SIMPLE_MODE );
         String sort = sharedPref.getString( which == LEFT ? "left_sorting" : "right_sorting", "n" );
         ca.setMode( CommanderAdapter.MODE_SORTING, sort.compareTo( "s" ) == 0 ? CommanderAdapter.SORT_SIZE : 
+                                                   sort.compareTo( "e" ) == 0 ? CommanderAdapter.SORT_EXT : 
                                                    sort.compareTo( "d" ) == 0 ? CommanderAdapter.SORT_DATE : 
                                                                                 CommanderAdapter.SORT_NAME );
         ca.setMode( CommanderAdapter.MODE_FINGERF, fingerFriendly ? CommanderAdapter.FAT_MODE : CommanderAdapter.SLIM_MODE );
@@ -285,7 +288,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     public void changeSorting( int sort_mode ) {
         CommanderAdapter ca = getListAdapter( true );
         ca.setMode( CommanderAdapter.MODE_SORTING, sort_mode );
-        listViews[current].invalidateViews();
+        refreshList( true );
     }
     public final void refreshList( boolean reread ) {
         CommanderAdapter ca = getListAdapter( true );
@@ -443,7 +446,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                     flv.setOnKeyListener( this );
                 }
 			} catch( Exception e ) {
-			    System.err.println( "Problem with FTPAdapter class" );
+			    Log.e( TAG, "Problem with FTPAdapter class", e );
 			}
         }
         else 
@@ -462,7 +465,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                     flv.setOnKeyListener( this );
                 }
             } catch( Exception e ) {
-                System.err.println( "Problem with ZipAdapter class" );
+                Log.e( TAG, "Problem with ZipAdapter class", e );
             }
         }
         else 
@@ -481,7 +484,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                     flv.setOnKeyListener( this );
                 }
             } catch( Exception e ) {
-                System.err.println( "Problem with FindAdapter class" );
+                Log.e( TAG, "Problem with FindAdapter class", e );
             }
         }
         else {
@@ -543,13 +546,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         File f = getItemURI();
         if( f != null ) {
             Intent intent = new Intent( Intent.ACTION_VIEW );
-            String mime = null;
-            MimeTypeMap mime_map = MimeTypeMap.getSingleton();
-            if( mime_map != null )
-                mime = mime_map.getMimeTypeFromExtension( MimeTypeMap.getFileExtensionFromUrl( f.getAbsolutePath() ) );
-            if( mime == null )
-                mime = "*/*";
-            intent.setDataAndType( Uri.fromFile( f ), mime );
+            intent.setDataAndType( Uri.fromFile( f ), "*/*" );
             c.startActivity( Intent.createChooser( intent, "Open with..." ) );            
         }        
     }    
@@ -822,7 +819,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
 	        	showSizes();
 	            return true;
 	        case '*':
-	        	shorcutsFoldersList.addToFavorites( getFolderUri( true ) );
+	            addCurrentToFavorites();
 	            return true;
 	        case '2':
 	            c.showDialog( FileCommander.RENAME_ACT );

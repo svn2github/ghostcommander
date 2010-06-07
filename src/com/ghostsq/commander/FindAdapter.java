@@ -3,6 +3,7 @@ package com.ghostsq.commander;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.regex.Pattern;
 
@@ -35,8 +36,8 @@ public class FindAdapter extends CommanderAdapterBase {
 
     @Override
     public void setMode( int mask, int mode_ ) {
+        mode_ &= ~MODE_WIDTH;
         super.setMode( mask, mode_ );
-        mode &= ~MODE_WIDTH;
     }
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
@@ -326,10 +327,35 @@ public class FindAdapter extends CommanderAdapterBase {
                     items = new File[items_a.size()]; 
                     items_a.toArray( items );
                 }
+                FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING );
+                Arrays.sort( items, comp );
                 notifyDataSetChanged();
             }
         } catch( Exception e ) {
             e.printStackTrace();
+        }
+    }
+    public class FilePropComparator implements Comparator<File> {
+        int type;
+
+        public FilePropComparator( int type_ ) {
+            type = type_;
+        }
+        public int compare( File f1, File f2 ) {
+            boolean f1IsDir = f1.isDirectory();
+            boolean f2IsDir = f2.isDirectory();
+            if( f1IsDir != f2IsDir )
+                return f1IsDir ? -1 : 1;
+            if( type == SORT_NAME )
+                return f1.compareTo( f2 );
+            if( type == SORT_EXT )
+                return Utils.getFileExt( f1.getName() ).compareTo( Utils.getFileExt( f2.getName() ) );
+            if( type == SORT_SIZE ) {
+                return (int)(f1.length() - f2.length());
+            }
+            if( type == SORT_DATE )
+                return (int)(f1.lastModified() - f2.lastModified() );
+            return 0;
         }
     }
 }

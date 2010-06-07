@@ -556,7 +556,7 @@ public class FSAdapter extends CommanderAdapterBase {
                         if( msFileDate != 0 )
                             item.date = new Date( msFileDate );
                     } catch( Exception e ) {
-                        System.err.print("getView() exception: " + e );
+                        Log.e( TAG, "getView() exception ", e );
                     }
                 }
             }
@@ -579,6 +579,8 @@ public class FSAdapter extends CommanderAdapterBase {
                 return f1IsDir ? -1 : 1;
             if( type == SORT_NAME )
                 return f1.f.compareTo( f2.f );
+            if( type == SORT_EXT )
+                return Utils.getFileExt( f1.f.getName() ).compareTo( Utils.getFileExt( f2.f.getName() ) );
             if( type == SORT_SIZE ) {
                 return f1IsDir ? (int)(f1.size - f2.size )
                                : (int)(f1.f.length() - f2.f.length());

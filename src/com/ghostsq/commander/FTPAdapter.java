@@ -19,12 +19,14 @@ import com.ghostsq.commander.Utils.Credentials;
 
 import android.net.Uri;
 import android.os.Handler;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
 public class FTPAdapter extends CommanderAdapterBase {
+    private final static String TAG = "FTPAdapter";
     // Java compiler creates a thunk function to access to the private owner class member from a subclass
     // to avoid that all the member accessible from the subclasses are public
     public  FTP ftp;
@@ -101,7 +103,7 @@ public class FTPAdapter extends CommanderAdapterBase {
 	                 	                    || 0 == active.compareToIgnoreCase( "yes" ) ) );  
 	                	}
 	                	catch( Exception e ) {
-	                		System.err.println("Exception: " + e );
+	                	    Log.e( TAG, "Exception on setActiveMode()", e );
 	                	}
 	                	String path = uri.getPath();
                     	if( path != null )
@@ -677,6 +679,8 @@ public class FTPAdapter extends CommanderAdapterBase {
                 return f1IsDir ? -1 : 1;
             if( type == SORT_NAME )
                 return f1.compareTo( f2 );
+            if( type == SORT_EXT )
+                return Utils.getFileExt( f1.getName() ).compareTo( Utils.getFileExt( f2.getName() ) );
             if( type == SORT_SIZE )
                 return (int)(f1.length() - f2.length());
             if( type == SORT_DATE )

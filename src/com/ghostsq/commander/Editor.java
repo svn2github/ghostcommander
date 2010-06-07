@@ -2,25 +2,22 @@ package com.ghostsq.commander;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.Menu;
-//import android.view.MenuInflater; //to do: add Save as, Save and close items
+import android.view.Window;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class Editor extends Activity {
+    private final static String TAG = "EditorActivity";
 	final static int MENU_SAVE = 1, MENU_UNDO = 2, WRAP_TEXT = 3;
 	final static String URI = "URIfileForEdit";
 	private boolean horScroll = true;
@@ -31,11 +28,18 @@ public class Editor extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        boolean ct_enabled = requestWindowFeature( Window.FEATURE_CUSTOM_TITLE );
         setContentView(R.layout.editor);
+        if( ct_enabled )
+            getWindow().setFeatureInt( Window.FEATURE_CUSTOM_TITLE, R.layout.edititle );
         Uri file_to_edit_URI = getIntent().getData();
         if( file_to_edit_URI != null ) {
         	path = file_to_edit_URI.getEncodedPath();
         	if( Load() ) {
+                final TextView file_name_tv = (TextView)findViewById( R.id.file_name );
+                if( file_name_tv!= null )
+                    file_name_tv.setText( " - " + path );
         	    if( !reminded )
         	        showMessage( getString( R.string.remind_to_save ) );
         	    reminded = true; 

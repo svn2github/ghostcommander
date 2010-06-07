@@ -637,6 +637,8 @@ public class ZipAdapter extends CommanderAdapterBase {
                 return f1IsDir ? -1 : 1;
             if( type == SORT_NAME )
                 return f1.getName().compareTo( f2.getName() );
+            if( type == SORT_EXT )
+                return Utils.getFileExt( f1.getName() ).compareTo( Utils.getFileExt( f2.getName() ) );
             if( type == SORT_SIZE )
                 return (int)(f1.getSize() - f2.getSize());
             if( type == SORT_DATE )

@@ -105,7 +105,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onStart() {
-        System.err.print("Ghost Commander Startinging\n");
+        Log.i( TAG, "Ghost Commander Starting\n");
         super.onStart();
         if( dont_restore )
             dont_restore = false;
@@ -119,7 +119,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onPause() {
-        System.err.print("Ghost Commander Pausing\n");
+        Log.i( TAG, "Ghost Commander Pausing\n");
         super.onPause();
         SharedPreferences.Editor editor = getPreferences( MODE_PRIVATE ).edit();
         Panels.State s = panels.getState();
@@ -129,13 +129,13 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onStop() {
-        System.err.print("Ghost Commander Stopping\n");
+        Log.i( TAG, "Ghost Commander Stopping\n");
         super.onStop();
     }
 
     @Override
     protected void onDestroy() {
-        System.err.print("Ghost Commander Destroying\n");
+        Log.i( TAG, "Ghost Commander Destroying\n");
         panels.Destroying();
         super.onDestroy();
         if( isFinishing() && exit )
@@ -145,7 +145,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     //these two methods are not called on screen rotation in v1.5, so all the store/restore is called from pause/start 
     @Override
     protected void onSaveInstanceState( Bundle outState ) {
-        System.err.print("Ghost Commander Saving\n");
+        Log.i( TAG, "Ghost Commander Saving\n");
         Panels.State s = panels.getState();
         s.store(outState);
         super.onSaveInstanceState(outState);
@@ -153,7 +153,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onRestoreInstanceState( Bundle savedInstanceState ) {
-        System.err.print("Ghost Commander Restoring\n");
+        Log.i( TAG, "Ghost Commander Restoring\n");
         if( savedInstanceState != null ) {
             Panels.State s = panels.new State();
             s.restore(savedInstanceState);
@@ -175,7 +175,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 }
             }
             catch( ClassCastException e ) {
-                System.err.print( "onCreateContextMenu() cast exception\n" );
+                Log.e( TAG, "onCreateContextMenu() cast exception\n", e );
             }
         }
         menu.setHeaderTitle("Operation");
@@ -185,7 +185,6 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             menu.add( 0, SHOW_SIZE, 0, R.string.show_size );
             if( num <= 1 ) {
                 menu.add( 0,   SEND_TO, 0, R.string.send_to );
-                menu.add( 0, OPEN_WITH, 0, R.string.open_with );
             }
         }
         if( num <= 1 ) {
@@ -196,6 +195,11 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         if( fs_adapter )
             menu.add( 0, MOVE_ACT, 0, R.string.move_title );
         menu.add( 0,  DEL_ACT, 0, R.string.delete_title );
+        if( fs_adapter ) { 
+            if( num <= 1 ) {
+                menu.add( 0, OPEN_WITH, 0, R.string.open_with );
+            }
+        }
     }
 
     @Override
@@ -301,8 +305,14 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         case R.id.enter:
             panels.openGoPanel();
             break;
+        case R.id.add_fav:
+            panels.addCurrentToFavorites();
+            break;
         case R.id.by_name:
             panels.changeSorting( CommanderAdapter.SORT_NAME );
+            break;
+        case R.id.by_ext:
+            panels.changeSorting( CommanderAdapter.SORT_EXT );
             break;
         case R.id.by_size:
             panels.changeSorting( CommanderAdapter.SORT_SIZE );
@@ -345,11 +355,11 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         super.onActivityResult(requestCode, resultCode, data);
         if( requestCode == REQUEST_CODE_PREFERENCES ) {
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-            panels.applySettings(sharedPref);
+            panels.applySettings( sharedPref );
             if( panelsBak != null )
-                panelsBak.applySettings(sharedPref);
-            setMode(sharedPref.getBoolean("panels_mode", false));
-            panels.showOrHideToolbar(sharedPref.getBoolean("show_toolbar", true));
+                panelsBak.applySettings( sharedPref );
+            setMode( sharedPref.getBoolean( "panels_mode", false ) );
+            panels.showOrHideToolbar( sharedPref.getBoolean("show_toolbar", true ) );
         }
         else
         if( requestCode == REQUEST_CODE_FTPFORM ) {
@@ -523,12 +533,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     public void Open( String path ) {
         try {
             Intent i = new Intent( Intent.ACTION_VIEW );
-            String mime = null;
-            MimeTypeMap mime_map = MimeTypeMap.getSingleton();
-            if( mime_map != null )
-                mime = mime_map.getMimeTypeFromExtension( MimeTypeMap.getFileExtensionFromUrl( path ) );
-            if( mime == null )
-                mime = "*/*";
+            String mime = Utils.getMimeByExt( Utils.getFileExt( path ) );
             i.setDataAndType( Uri.fromFile( new File( path ) ), mime );
             startActivity(i);
         } catch( ActivityNotFoundException e ) {

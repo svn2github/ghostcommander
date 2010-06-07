@@ -20,7 +20,7 @@ public interface CommanderAdapter {
 	                      MODE_DETAILS = 0x02, SIMPLE_MODE = 0x0, DETAILED_MODE = 0x2,
 	                      MODE_FINGERF = 0x04,   SLIM_MODE = 0x0,      FAT_MODE = 0x4,
                           MODE_HIDDEN  = 0x08,   SHOW_MODE = 0x0,     HIDE_MODE = 0x8,
-                          MODE_SORTING = 0x30,   SORT_NAME = 0x00,    SORT_SIZE = 0x10, SORT_DATE = 0x20,
+                          MODE_SORTING = 0x30,   SORT_NAME = 0x00,    SORT_SIZE = 0x10, SORT_DATE = 0x20, SORT_EXT = 0x30,
                             MODE_ICONS = 0x40,   ICON_MODE = 0x0,     TEXT_MODE = 0x40;
     /**
      * @param mask - see bits above 

@@ -28,7 +28,8 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected static final String SLS = File.separator;
     protected static final String DEFAULT_DIR = "/sdcard";
     protected LayoutInflater mInflater = null;
-    protected int    parentWidth, imgWidth, nameWidth, sizeWidth, dateWidth;
+    private   int    parentWidth, imgWidth, nameWidth, sizeWidth, dateWidth;
+    private   boolean dirty = true;
     protected int    mode = 0;
     protected String parentLink;
     protected Engine worker = null;
@@ -73,6 +74,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     public void setMode( int mask, int mode_ ) {
         mode &= ~mask;
         mode |= mode_;
+        dirty = true;
     }
     @Override
     public void terminateOperation() {
@@ -122,7 +124,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             int vpad = fat ? ( icons ? 2 : 8 ) : 0;
             row_view.setPadding( 0, vpad, 4, vpad );        
             
-            String name = item.name, size = "", date = "";
+            String name = item.dir ? item.name : " " + item.name, size = "", date = "";
             if( dm ) {
             	if( item.size > 0  )
             		size = Utils.getHumanSize( item.size );
@@ -134,21 +136,23 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 }
             }
             int parent_width = parent.getWidth();
-            if( parentWidth != parent_width ) {
+            if( dirty || parentWidth != parent_width ) {
                 parentWidth = parent_width;
-                imgWidth = parent_width / ( fat ? 8 : 16 );
-                nameWidth = wm || dm ? parent_width * 4 / 8 : parent_width;
+                imgWidth = icons ? parent_width / ( fat || !wm ? 8 : 16 ) : 0;
+                nameWidth = ( wm && dm ? parent_width * 5 / 8 : parent_width ) - imgWidth;
                 sizeWidth = parent_width / (wm ? 8 : 4);
                 dateWidth = parent_width / (wm ? 4 : 2);
+                dirty = false;
             }
             if( item.sel ) {
                 row_view.setBackgroundColor( 0xFF4169E1 );
             }
+
             ImageView imgView = (ImageView)row_view.findViewById( R.id.fld_icon );
             if( imgView != null ) {
                 if( icons ) {
                     imgView.setVisibility( View.VISIBLE );
-                    imgView.setAdjustViewBounds(true);
+                    imgView.setAdjustViewBounds( true );
                     imgView.setMaxWidth( imgWidth );
                     imgView.setImageResource( item.dir ? R.drawable.folder : getIconId( name ) );
                 }
