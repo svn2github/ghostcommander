@@ -105,7 +105,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onStart() {
-        Log.i( TAG, "Ghost Commander Starting\n");
+        Log.i( TAG, "Starting\n");
         super.onStart();
         if( dont_restore )
             dont_restore = false;
@@ -119,7 +119,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onPause() {
-        Log.i( TAG, "Ghost Commander Pausing\n");
+        Log.i( TAG, "Pausing\n");
         super.onPause();
         SharedPreferences.Editor editor = getPreferences( MODE_PRIVATE ).edit();
         Panels.State s = panels.getState();
@@ -129,13 +129,13 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onStop() {
-        Log.i( TAG, "Ghost Commander Stopping\n");
+        Log.i( TAG, "Stopping\n");
         super.onStop();
     }
 
     @Override
     protected void onDestroy() {
-        Log.i( TAG, "Ghost Commander Destroying\n");
+        Log.i( TAG, "Destroying\n");
         panels.Destroying();
         super.onDestroy();
         if( isFinishing() && exit )

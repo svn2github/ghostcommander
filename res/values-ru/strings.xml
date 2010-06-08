@@ -25,15 +25,25 @@
     <string name="oth_sh_this">= Та панель тоже что эта</string>
     <string name="change">&lt;- Сменить</string>
     <string name="refresh">Обновить</string>
+    <string name="enter">&#xA0; Ввести адрес или URL</string>
+    <string name="add_fav">* Добавить текущий каталог в фавориты</string>
     <string name="prefs">9 Настройки</string>
     <string name="about">О программе</string>
     <string name="keys">Значения клавиш</string>
-    <string name="new_file">Создать новый файл</string>
+    <string name="new_file">Создать текстовый файл</string>
 
+    <string name="sort_by_name">&#xA0; По имени</string>
+    <string name="sort_by_ext" >&#xA0; По расширению</string>
+    <string name="sort_by_size">&#xA0; По размеру</string>
+    <string name="sort_by_date">&#xA0; По дате</string>
+    <string name="select_all">+ Выделить все</string>
+    <string name="unselect_all">- Снять выделение</string>
+
+    <string name="wait"> жди... </string>
     <string name="go_button">Иди</string>
-    <string name="show_size">Размер</string>
-    <string name="send_to">Послать</string>
-    <string name="open_with">Открыть</string>
+    <string name="show_size">Вычислить Размер</string>
+    <string name="send_to">Послать...</string>
+    <string name="open_with">Открыть с...</string>
     
 
     <string name="input_settings">Ввод</string>
@@ -176,7 +186,7 @@
 Клавиши:\n
 VolDn - Перейти на другую панель\n
 VolUp - Выбрать текущий файл\n
-\nто же стрелки влево/вправо если разрешено в настройках
+\nто же: стрелки влево/вправо если разрешено в настройках
 \t(Можно также выделять файл коснувшись правую половину строки)\n
 +, -  - Выделить все файлы, Убрать выделение со всех файлов\n 
 (, )  - Ввести путь для левой/правой панели\n

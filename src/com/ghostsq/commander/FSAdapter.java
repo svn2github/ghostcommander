@@ -86,6 +86,10 @@ public class FSAdapter extends CommanderAdapterBase {
             		items[j++] = new FileEx( files_[i] );
             }
             parentLink = dir.getParent() == null ? SLS : "..";
+
+            FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING );
+            Arrays.sort( items, comp );
+
             commander.notifyMe( null, Commander.OPERATION_COMPLETED, 0 );
             return true;
 		} catch( Exception e ) {
@@ -524,8 +528,6 @@ public class FSAdapter extends CommanderAdapterBase {
     public int getCount() {
         if( items == null )
             return 1;
-        FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING );
-        Arrays.sort( items, comp );
         return items.length + 1;
     }
 

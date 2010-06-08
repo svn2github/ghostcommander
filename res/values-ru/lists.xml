@@ -2,11 +2,13 @@
 <resources>
     <string-array name="sorting">
         <item>По имени</item>
+        <item>По расширению</item>
         <item>По размеру</item>
         <item>По дате</item>  
     </string-array>
     <string-array name="sorting_vals">
         <item>n</item>
+        <item>e</item>
         <item>s</item>
         <item>d</item>  
     </string-array>

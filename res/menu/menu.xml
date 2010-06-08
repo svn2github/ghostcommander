@@ -29,6 +29,9 @@
         <item android:id="@+id/by_name"
             android:title="@string/sort_by_name"
             android:alphabeticShortcut="n"/>
+        <item android:id="@+id/by_ext"
+            android:title="@string/sort_by_ext"
+            android:alphabeticShortcut="e"/>
         <item android:id="@+id/by_size"
             android:title="@string/sort_by_size"
             android:alphabeticShortcut="s"/>

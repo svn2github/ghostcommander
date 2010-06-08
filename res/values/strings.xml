@@ -19,18 +19,19 @@
     <string name="F8">8 Del</string>
     <string name="F9">9 Prefs</string>
     <string name="F10">0 Exit</string>
-    <string name="oth_sh_this">= Make other as current</string>
+    <string name="oth_sh_this">= Make the other panel same as current</string>
     <string name="eq">= Same</string>
     <string name="change">&#x21E6; Toggle</string>
     <string name="tgl">&#x21E6; Toggle</string>
     <string name="sz">\" Size</string>
     <string name="refresh">&#xA0; Refresh</string>
     <string name="enter">&#xA0; Change Location</string>
-    <string name="add_fav">* Add the current to the favorites</string>
+    <string name="add_fav">* Favorite the current folder</string>
     <string name="enter_ftp">&#xA0; FTP helper</string>
     <string name="search_file">/ Search file</string>
 
     <string name="sort_by_name">&#xA0; By Name</string>
+    <string name="sort_by_ext" >&#xA0; By Extension</string>
     <string name="sort_by_size">&#xA0; By Size</string>
     <string name="sort_by_date">&#xA0; By Date</string>
     <string name="select_all">+ Select All</string>
@@ -39,21 +40,21 @@
     <string name="prefs">9 Settings</string>
     <string name="about">&#xA0; About</string>
     <string name="keys">1 Shortcut keys</string>
-    <string name="new_file">Create new file</string>
+    <string name="new_file">Create a new file</string>
 
     <string name="go_button">Go</string>
-    <string name="show_size">Size Of</string>
+    <string name="show_size">Calculate Size</string>
     <string name="send_to">Send to...</string>
     <string name="open_with">Open With...</string>
 
     <string name="input_settings">Input</string>
-    <string name="arrow_mode">Arrows command</string>
-    <string name="summary_arrow_mode">Left/Right does toggle/select</string>
+    <string name="arrow_mode">Arrow commands</string>
+    <string name="summary_arrow_mode">Left/Right arrow does toggle/select</string>
 
     <string name="prefs_label">Settings</string>
     <string name="editor_label">Text Editor</string>
 
-    <string name="wait">wait...</string>
+    <string name="wait"> wait... </string>
 
     <string name="dialog_yes">Yes</string>
     <string name="dialog_no">No</string>
@@ -88,18 +89,18 @@
     <string name="delete_err">Nothing to delete</string>
     <string name="delete_q">"Delete %s ?"</string><!-- file name/summary -->
     <string name="deleted">%d files were deleted</string>
-    <string name="search_done">Search has completed</string>
+    <string name="search_done">Search complete</string>
     <string name="done">Done</string>
     <string name="interrupted">Interrupted</string>
-    <string name="too_deep_hierarchy">Too deep file hierarchy</string>
-    <string name="nothing_found">Nothing was found</string>
+    <string name="too_deep_hierarchy">The file hierarchy is too deep</string>
+    <string name="nothing_found">No files found</string>
     <string name="preparing">Preparing...</string>
     
     <string name="cd_title">Go to</string>
     <string name="cd_prompt">Change directory to:</string>
 
     <string name="not_supported">Operation is not supported.</string>
-    <string name="select_some">Select something first.</string>
+    <string name="select_some">No selection made</string>
     <string name="select">Select</string>
     <string name="error">Error</string>
     <string name="info">Information</string>
@@ -123,7 +124,7 @@
     <string name="show_icons">File Icons</string>
     <string name="summary_show_icons">Show the File Type Icon for each file</string>
     <string name="show_toolbar">Show Toolbar</string>
-    <string name="summary_show_toolbar">Show or hide those buttons in the bottom of the screen</string>
+    <string name="summary_show_toolbar">Show or hide buttons at the bottom of the screen</string>
     <string name="toolbar_preference">Choose which buttons to show</string>
     <string name="summary_toolbar_preference">Customize the set of command buttons in the Toolbar</string>
     <string name="show_F1">Show &#xAB; 1 Help&#xBB;</string>
@@ -137,14 +138,14 @@
     <string name="show_F8">Show &#xAB; 8 Del&#xBB;</string>
     <string name="show_F9">Show &#xAB; 9 Menu&#xBB;</string>
     <string name="show_F10">Show &#xAB; 0 Exit&#xBB;</string>
-    <string name="show_eq">Show &#xAB; = (Make same)&#xBB;</string>
+    <string name="show_eq">Show &#xAB; = Make both panels same&#xBB;</string>
     <string name="show_tgl">Show &#xAB; &#x21E6; Change&#xBB;</string>
     <string name="show_sz">Show &#xAB; \" Size&#xBB;</string>
 
     <string name="finger_friendly">Finger friendly</string>
-    <string name="summary_finger_friendly">Enlarge the user interface elements</string>
+    <string name="summary_finger_friendly">Enlarge user interface elements</string>
     <string name="prevent_root">Warn on a root folder</string>
-    <string name="summary_prevent_root">Issue a warning on go to a device's root folder.</string>
+    <string name="summary_prevent_root">Issue a warning when going to a device's root folder.</string>
 
     <string name="left_panel_settings">Left panel settings</string>
     <string name="right_panel_settings">Right panel settings</string>
@@ -156,10 +157,10 @@
     <string name="summary_sorting">How to sort the items in the list</string>
 
     <string name="show_hidden">Show hidden files</string>
-    <string name="summary_show_hidden">If not checked, files started with dot won't be shown</string>
+    <string name="summary_show_hidden">If not checked, files beginning with a dot won't be shown</string>
 
     <string name="editor_activity">Editor Activity Name</string>
-    <string name="summary_editor_activity">EDIT action's Activity full class name. Package name = class name prefix.</string>
+    <string name="summary_editor_activity">EDIT action Activity's full class name. Package name = class name prefix.</string>
     <string name="value_editor_activity">com.ghostsq.commander.Editor</string>
     
     <string name="nothing_to_open">Nothing to open</string>
@@ -180,13 +181,12 @@
     <string name="online_help">&#xA0; Online Help</string>
     
     <string name="donation">By making a donation of any amount you will stimulate further development of the &#xAB;Ghost Commander&#xBB; file manager.\n
-Tap \"Ok\" to make a donation of any amount via PayPal.\n
+Tap \"Ok\" to make a donation via PayPal.\n
 Or tap \"Cancel\" to continue enjoy the &#xAB;Ghost Commander&#xBB; file manager for free.\n
     </string>
     <string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
     <string name="help_uri">http://sites.google.com/site/ghostcommander1/info</string>
     
-    <string name="bug_warning">!!! Android v1.5 has a BUG! If possible, please update your device to Android v2.x !!!</string>
     
     <string name="about_text">
         Ghost Commander v%s\n
@@ -197,7 +197,7 @@ Or tap \"Cancel\" to continue enjoy the &#xAB;Ghost Commander&#xBB; file manager
         DISCLAIMER:\n
 By using this software, you agree with the following:
 The author of this software is not responsible for any kind of damage, loss of information, 
-consequential damages, or any issues that are or  could be caused by the use of this software.
+consequential damages, or any issues that are, or could be caused by the use of this software.
 You agree to use this software at your own risk.\n
 If you don&apos;t agree to the above, stop using this software immediately and uninstall it.\n
     </string>
@@ -207,22 +207,22 @@ Shortcuts keys:\n
 VolumeDn - Toggle the current panel\n
 VolumeUp - Select the current item\n
 \t(left/right arrows do the same if enabled in the settings.\n
-\t Also to select an item, tap on the right half of the item's row.)\n
+\t Also, to select an item, tap on the right half of the item's row.)\n
 +,-   - Select or unselect all items in the current folder\n  
 (, )  - Enter the location for left/right panel\n
 \t(Also - long press on the panel's title)
-* - Add the current folder to the favorites\n
+* - Add the current folder to favorites\n
 \" - Show the total size of selected files\n
-= - Make other panel show the same folder as the current\n
-1 - This help\n
+= - Make the other panel show the same folder as the current\n
+1 - Help\n
 2 - Rename current file\n
 4 - Edit current file\n
 5 - Copy selected files\n
 6 - Move selected files\n
 7 - Create a new folder\n
 8 - Delete files or folders\n
-9 - Open the preferences\n
-0 - Close the program\n
+9 - Open preferences\n
+0 - Close program\n
 [A-z] - Quick search\n    
     \n
 To open an anonymous FTP folder, enter path like:\n

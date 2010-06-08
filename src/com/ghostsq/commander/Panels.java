@@ -1,6 +1,7 @@
 package com.ghostsq.commander;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -55,8 +56,9 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     private float downY = 0;
     private StringBuffer quickSearchBuf = null;
     private Toast        quickSearchTip = null;
-    private Shortcuts shorcutsFoldersList;
-    private String lastItemSelected = null;
+    private Shortcuts  shorcutsFoldersList;
+    private String     lastItemSelected = null;
+    private String[] listOfItemsChecked = null;
 
     public Panels( FileCommander c_, int id_ ) {
         current = LEFT;
@@ -283,7 +285,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
 
         boolean hidden_mode = sharedPref.getBoolean( ( which == LEFT ? "left" : "right" ) + "_show_hidden", true );
         ca.setMode( CommanderAdapter.MODE_HIDDEN, hidden_mode ? CommanderAdapter.SHOW_MODE : CommanderAdapter.HIDE_MODE );
-        refreshList( false );
+        refreshList( true );
     }
     public void changeSorting( int sort_mode ) {
         CommanderAdapter ca = getListAdapter( true );
@@ -291,6 +293,14 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         refreshList( true );
     }
     public final void refreshList( boolean reread ) {
+        ListView flv = listViews[current];
+        if( reread ) {
+            storeSelections();
+            flv.clearChoices();
+        }
+        else
+            reStoreSelections();
+        
         CommanderAdapter ca = getListAdapter( true );
         if( ca == null ) return;
         setPanelTitle( ca.toString(), current );
@@ -299,7 +309,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         else
             if( lastItemSelected != null )
                 setSelection( current, lastItemSelected );
-        listViews[current].invalidateViews();
+        flv.invalidateViews();
         ca = getListAdapter( false );
         if( ca == null ) return;
         setPanelTitle( ca.toString(), opposite() );
@@ -893,6 +903,55 @@ public class Panels implements AdapterView.OnItemSelectedListener,
      * Persistent state
      */
 
+    
+    public void storeSelections() {
+        try {
+            ListView flv = listViews[current];
+            SparseBooleanArray cis = flv.getCheckedItemPositions();
+            CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
+            int counter = 0;
+            for( int i = 0; i < cis.size(); i++ )
+                if( cis.valueAt( i ) && cis.keyAt( i ) > 0)
+                    counter++;
+            listOfItemsChecked = null;
+            if( counter > 0 ) {
+                listOfItemsChecked = new String[counter];
+                int j = 0;
+                for( int i = 0; i < cis.size(); i++ )
+                    if( cis.valueAt( i ) ) {
+                        int k = cis.keyAt( i );
+                        if( k > 0 )
+                            listOfItemsChecked[j++] = ca.getItemName( k, true );
+                    }
+            }
+        } catch( Exception e ) {
+            Log.e( TAG, "storeSelections()", e );
+        }
+    }
+    
+    public void reStoreSelections() {
+        try {
+            if( listOfItemsChecked == null || listOfItemsChecked.length == 0 )
+                return;
+            ListView flv = listViews[current];
+            ListAdapter      la = flv.getAdapter();
+            CommanderAdapter ca = (CommanderAdapter)la;
+            int n_items = la.getCount();
+            for( int i = 1; i < n_items; i++ ) {
+                String item_name = ca.getItemName( i, true );
+                for( int j = 0; j < listOfItemsChecked.length; j++ ) {
+                    if( listOfItemsChecked[j].compareTo( item_name ) == 0 ) {
+                        flv.setItemChecked( i, true );
+                        break;
+                    }
+                }
+            }
+        } catch( Exception e ) {
+            Log.e( TAG, "reStoreSelections()", e );
+        }
+        listOfItemsChecked = null;
+    }
+    
     class State {
     	private final static String LP = "LEFT_URI", RP = "RIGHT_URI";
     	private final static String LI = "LEFT_ITEM", RI = "RIGHT_ITEM";
