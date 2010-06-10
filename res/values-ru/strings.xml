@@ -208,7 +208,6 @@ VolUp - Выбрать текущий файл\n
     ftp://host.com/folder\n
 Если надо предоставить имя/пароль, то:\n
     ftp://user:password@host.com/folder\n\n
-Не все возможности программы в данный момент работают с FTP.\n
     
     "
     </string>

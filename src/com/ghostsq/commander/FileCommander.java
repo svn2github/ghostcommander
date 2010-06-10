@@ -321,7 +321,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             panels.changeSorting( CommanderAdapter.SORT_DATE );
             break;
         case R.id.refresh:
-            panels.refreshList(true);
+            panels.refreshLists();
             break;
         case R.id.select_all:
             panels.checkAllItems( true );
@@ -402,9 +402,6 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         case KeyEvent.KEYCODE_DEL:
             panels.getListAdapter(true).openItem(0);
             return false;
-        case KeyEvent.KEYCODE_ENVELOPE:
-            panels.refreshList(true);
-            break;
         case KeyEvent.KEYCODE_SEARCH:
             showSearchDialog();
             return false;
@@ -573,21 +570,23 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         switch( progress ) {
         case OPERATION_FAILED:
             showError("Failed" + ( string != null && string.length() > 0 ? ":\n" + string : "." ));
-            break;
+            return;
         case OPERATION_FAILED_LOGIN_REQUIRED: 
             if( string != null ) {
                 dh = obtainDialogsInstance(Dialogs.LOGIN_DIALOG);
                 dh.setMessageToBeShown( null, string );
                 showDialog( Dialogs.LOGIN_DIALOG );
-                break;
             }
+            return;
         case OPERATION_COMPLETED_REFRESH_REQUIRED:
+            panels.refreshLists();
+            break;
         case OPERATION_COMPLETED:
-            panels.refreshList( progress == OPERATION_COMPLETED_REFRESH_REQUIRED );
-            if( string != null && string.length() > 0 )
-                showInfo( string );
+            panels.recoverAfterRefresh();
             break;
         }
+        if( string != null && string.length() > 0 )
+            showInfo( string );
     }
 
     @Override

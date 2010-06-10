@@ -41,6 +41,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                                                      View.OnClickListener, 
                                                      View.OnLongClickListener, 
                                                      View.OnTouchListener,
+                                                     View.OnFocusChangeListener,
                                                      View.OnKeyListener {
     private final static String TAG = "Panels";
     public  final static int LEFT = 0, RIGHT = 1;
@@ -48,6 +49,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     private final int  listsIds[] = {R.id.left_list, R.id.right_list};
     private int currentPositions[] = {-1, -1};
     private ListView   listViews[] = {null, null};
+    private String[] listOfItemsChecked = null;
     private int current = LEFT;
     private FileCommander c;
     public  View mainView, toolbar = null;
@@ -57,8 +59,6 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     private StringBuffer quickSearchBuf = null;
     private Toast        quickSearchTip = null;
     private Shortcuts  shorcutsFoldersList;
-    private String     lastItemSelected = null;
-    private String[] listOfItemsChecked = null;
 
     public Panels( FileCommander c_, int id_ ) {
         current = LEFT;
@@ -155,6 +155,14 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         flv.requestFocus();
         flv.requestFocusFromTouch();  
     }
+    // View.OnFocusChangeListener implementation
+    @Override
+    public void onFocusChange( View v, boolean f ) {
+        if( f && listViews[current] != v ) {
+            togglePanels( false );
+        }
+    }
+    
     public final int getCurrent() {
         return current;
     }
@@ -174,6 +182,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             flv.setChoiceMode( ListView.CHOICE_MODE_MULTIPLE );
             flv.setOnItemSelectedListener( this );
             flv.setOnItemClickListener( this );
+            flv.setOnFocusChangeListener( this );
             flv.setOnTouchListener( this );
             flv.setOnKeyListener( this );
             c.registerForContextMenu( flv );
@@ -190,6 +199,19 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             title.setText( s );
         }
     }
+    private final void refreshPanelTitles() {
+        try {
+            CommanderAdapter cur_ca = getListAdapter( true );
+            CommanderAdapter opp_ca = getListAdapter( false );
+            if( cur_ca != null )
+                setPanelTitle( cur_ca.toString(), current );
+            if( opp_ca != null )
+            setPanelTitle( opp_ca.toString(), opposite() );
+            highlightCurrentTitle();
+        } catch( Exception e ) {
+            Log.e( TAG, "refreshPanelTitle()", e );
+        }
+    }
     private final void highlightCurrentTitle() {
     	highlightTitle( opposite(), false );
     	highlightTitle( current, true );
@@ -197,7 +219,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     private final void highlightTitle( int which, boolean on ) {
         TextView title = (TextView)c.findViewById( titlesIds[which] );
         if( title != null ) {
-            title.setBackgroundColor( on ? 0xFF4169E1 : 0xFF555566 ); // TODO: use ColorStateList
+            title.setBackgroundColor( on ? 0xFF4169E1 : 0xFF555556 ); // TODO: use ColorStateList
             title.setTextColor( on ? 0xFFEEEEEE : 0xFF999999 );
         }
         else
@@ -285,38 +307,44 @@ public class Panels implements AdapterView.OnItemSelectedListener,
 
         boolean hidden_mode = sharedPref.getBoolean( ( which == LEFT ? "left" : "right" ) + "_show_hidden", true );
         ca.setMode( CommanderAdapter.MODE_HIDDEN, hidden_mode ? CommanderAdapter.SHOW_MODE : CommanderAdapter.HIDE_MODE );
-        refreshList( true );
+        refreshLists();
     }
     public void changeSorting( int sort_mode ) {
         CommanderAdapter ca = getListAdapter( true );
         ca.setMode( CommanderAdapter.MODE_SORTING, sort_mode );
-        refreshList( true );
+        refreshList( current );
     }
-    public final void refreshList( boolean reread ) {
-        ListView flv = listViews[current];
-        if( reread ) {
-            storeSelections();
-            flv.clearChoices();
-        }
-        else
-            reStoreSelections();
-        
-        CommanderAdapter ca = getListAdapter( true );
-        if( ca == null ) return;
-        setPanelTitle( ca.toString(), current );
-        if( reread )
+    public final void refreshLists() {
+        refreshList( current );
+        if( id == R.layout.alt )
+            refreshList( opposite() );
+    }
+    public final void refreshList( int which ) {
+        try {
+            ListView flv = listViews[which];
+            CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
+            if( ca == null ) return;
+            if( which == current ) {
+                storeChoosedItems();
+                flv.clearChoices();
+            }
             ca.readSource( null );
-        else
-            if( lastItemSelected != null )
-                setSelection( current, lastItemSelected );
-        flv.invalidateViews();
-        ca = getListAdapter( false );
-        if( ca == null ) return;
-        setPanelTitle( ca.toString(), opposite() );
-        if( id == R.layout.alt ) {
-            if( reread )
-                ca.readSource( null );
-            listViews[opposite()].invalidateViews();
+            flv.invalidateViews();
+        } catch( Exception e ) {
+            Log.e( TAG, "refreshList()", e );
+        }
+    }
+    public final void recoverAfterRefresh() {
+        try {
+            ListView flv = listViews[current];
+            reStoreChoosedItems();
+            if( !flv.isInTouchMode() && currentPositions[current] > 0 ) {
+                Log.i( TAG, "stored pos: " + currentPositions[current] );
+                flv.setSelection( currentPositions[current] );
+            }
+            refreshPanelTitles();
+        } catch( Exception e ) {
+            Log.e( TAG, "refreshList()", e );
         }
     }
     public void setFingerFriendly( boolean finger_friendly ) {
@@ -348,8 +376,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     }
     public final void togglePanels( boolean refresh ) {
     	setPanelCurrent( opposite() );
-        if( refresh )
-            refreshList( true );
+    	if( refresh && id == R.layout.main )
+            refreshList( current );
     }
     public final void setPanelCurrent( int which ) {
         ViewFlipper mFlipper = ((ViewFlipper)c.findViewById( R.id.flipper ));
@@ -439,6 +467,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     private final void NavigateInternal( int which, Uri uri, String posTo ) {
         ListView flv = listViews[which];
         flv.clearChoices();
+        flv.invalidateViews();
         CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
         String scheme = uri.getScheme();
         if( scheme != null && scheme.compareTo( "ftp" ) == 0 ) {
@@ -510,7 +539,6 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         setPanelTitle( c.getString( R.string.wait ), which );
         ca.readSource( uri );
         if( posTo != null ) {
-            lastItemSelected = posTo;
             setSelection( which, posTo );
         }
         else
@@ -699,7 +727,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         if( getListAdapter( true ).copyItems( getSelectedOrChecked(), dest_adapter, move ) )
             listViews[current].clearChoices();
         if( move )
-            refreshList( true );
+            refreshLists();
     }
 	public void createNewFile( String fileName ) {
 		String local_name = fileName;
@@ -709,14 +737,14 @@ public class Panels implements AdapterView.OnItemSelectedListener,
 			fileName = dirName + ( dirName.charAt( dirName.length()-1 ) == '/' ? "" : "/" ) + fileName;
 		}
 		if( ca.createFile( fileName ) ) {
-			refreshList( true );
+			refreshLists();
 			setSelection( current, local_name );
 			openForEdit( fileName );
 		}
 	}
     public final void createFolder( String new_name ) {
         getListAdapter( true ).createFolder( new_name );
-        refreshList( true );
+        refreshLists();
     }
     public final void deleteItems() {
     	c.showDialog( Dialogs.PROGRESS_DIALOG );
@@ -727,7 +755,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         CommanderAdapter adapter = getListAdapter( true );
         int pos = getSelection();
         if( pos >= 0 && adapter.renameItem( pos, new_name ) )
-            refreshList( true );
+            refreshLists();
         else
             c.showMessage( "Can't rename file" );
     }
@@ -747,7 +775,6 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     @Override
     public void onNothingSelected( AdapterView<?> arg0 ) {
     	resetQuickSearch();
-        // showMessage( "Nothing selected state" );
     }
     /**
      * An AdapterView.OnItemClickListener implementation 
@@ -759,7 +786,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         if( listViews[current] != parent ) {
             togglePanels( false );
             if( listViews[current] != parent )
-            	c.showError( "panels problem. current=" + current + ", parent=" + parent.getId() );
+            	Log.e( TAG, "onItem()Click. current=" + current + ", parent=" + parent.getId() );
         }
         	
         ListView flv = listViews[current];
@@ -886,8 +913,10 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     	case R.id.right_dir:
     		shorcutsFoldersList.closeGoPanel();
 	        int which = view_id == titlesIds[LEFT] ? LEFT : RIGHT;
-	        if( which == current )
-	            refreshList( true );
+	        if( which == current ) {
+	            focus();
+	            refreshList( current );
+	        }
 	        else
 	            togglePanels( true );
     	}
@@ -904,7 +933,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
      */
 
     
-    public void storeSelections() {
+    public void storeChoosedItems() {
         try {
             ListView flv = listViews[current];
             SparseBooleanArray cis = flv.getCheckedItemPositions();
@@ -925,11 +954,11 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                     }
             }
         } catch( Exception e ) {
-            Log.e( TAG, "storeSelections()", e );
+            Log.e( TAG, "storeChoosedItems()", e );
         }
     }
     
-    public void reStoreSelections() {
+    public void reStoreChoosedItems() {
         try {
             if( listOfItemsChecked == null || listOfItemsChecked.length == 0 )
                 return;
@@ -947,7 +976,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 }
             }
         } catch( Exception e ) {
-            Log.e( TAG, "reStoreSelections()", e );
+            Log.e( TAG, "reStoreChoosedItems()", e );
         }
         listOfItemsChecked = null;
     }
