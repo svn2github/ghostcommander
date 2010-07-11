@@ -155,7 +155,9 @@
     <string name="summary_detailed_view_Ovr">Show size and date for files in the Overlapped mode</string>
     <string name="sorting">Sorting</string>
     <string name="summary_sorting">How to sort the items in the list</string>
-
+    <string name="sort_case">Ignore case in sorting</string>
+    <string name="summary_sort_case">If not checked the sorting will be case sensitive</string>
+    
     <string name="show_hidden">Show hidden files</string>
     <string name="summary_show_hidden">If not checked, files beginning with a dot won't be shown</string>
 

@@ -21,7 +21,8 @@ public interface CommanderAdapter {
 	                      MODE_FINGERF = 0x04,   SLIM_MODE = 0x0,      FAT_MODE = 0x4,
                           MODE_HIDDEN  = 0x08,   SHOW_MODE = 0x0,     HIDE_MODE = 0x8,
                           MODE_SORTING = 0x30,   SORT_NAME = 0x00,    SORT_SIZE = 0x10, SORT_DATE = 0x20, SORT_EXT = 0x30,
-                            MODE_ICONS = 0x40,   ICON_MODE = 0x0,     TEXT_MODE = 0x40;
+                            MODE_CASE  = 0x40,   CASE_SENS = 0x0,   CASE_IGNORE = 0x40,
+                            MODE_ICONS = 0x80,   ICON_MODE = 0x0,     TEXT_MODE = 0x80;
     /**
      * @param mask - see bits above 
      * @param mode - see bits above 

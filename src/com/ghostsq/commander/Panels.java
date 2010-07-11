@@ -293,7 +293,10 @@ public class Panels implements AdapterView.OnItemSelectedListener,
 
         ca.setMode( CommanderAdapter.MODE_ICONS, sharedPref.getBoolean( "show_icons", true ) ? 
                 CommanderAdapter.ICON_MODE : CommanderAdapter.TEXT_MODE );
-    	
+
+        ca.setMode( CommanderAdapter.MODE_CASE, sharedPref.getBoolean( "case_ignore", false ) ? 
+                CommanderAdapter.CASE_IGNORE : CommanderAdapter.CASE_SENS );
+
         String sfx = id == R.layout.main ? "_Ovr" : "_SbS";
         boolean detail_mode = sharedPref.getBoolean( which == LEFT ? "left_detailed" + sfx : "right_detailed" + sfx, true );        
         ca.setMode( CommanderAdapter.MODE_DETAILS, detail_mode ? 
@@ -567,16 +570,17 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     public final void tryToSend() {
         File f = getItemURI();
         if( f != null ) {
+/*            
             String mime = null;
             MimeTypeMap mime_map = MimeTypeMap.getSingleton();
             if( mime_map != null )
                 mime = mime_map.getMimeTypeFromExtension( MimeTypeMap.getFileExtensionFromUrl( f.getAbsolutePath() ) );
-            if( mime == null )
-                c.showMessage( "Unable to send file" );
+*/
+            String mime = Utils.getMimeByExt( Utils.getFileExt( f.getName() ) );
             Intent sendIntent = new Intent( Intent.ACTION_SEND );
             Log.i( TAG, "Type file to send: " + mime );
-            sendIntent.setType( mime );
-            sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile( f ) );
+            sendIntent.setType( mime == null ? "*/*" : mime );
+            sendIntent.putExtra( Intent.EXTRA_STREAM, Uri.fromFile( f ) );
             c.startActivity( Intent.createChooser( sendIntent, "Send:" ) );            
         }        
     }    

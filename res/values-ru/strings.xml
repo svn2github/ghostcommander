@@ -133,6 +133,9 @@
     <string name="summary_detailed_view_Ovr">Даты и размеры файлов в режиме когда панели друг под другом</string>
     <string name="sorting">Сортировка</string>
     <string name="summary_sorting">Как сортировать файлы при отображении</string>
+    <string name="sort_case">Игнорировать регистр</string>
+    <string name="summary_sort_case">Сортировать имена файлов без учета регистра</string>
+    
     <string name="show_hidden">Показывать скрытые файлы</string>
     <string name="summary_show_hidden">Файлы начинающиеся на точку показывать наравне с остальными</string>
 

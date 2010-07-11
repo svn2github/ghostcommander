@@ -114,7 +114,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                     	}
                 	    items_tmp = GetFolderList( cur_path );
                 	    if( items_tmp != null ) { 
-                            ZipItemPropComparator comp = new ZipItemPropComparator( mode & MODE_SORTING );
+                            ZipItemPropComparator comp = new ZipItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
                             Arrays.sort( items_tmp, comp );
                             sendProgress( null, Commander.OPERATION_COMPLETED );
                             return;
@@ -625,9 +625,10 @@ public class ZipAdapter extends CommanderAdapterBase {
     }
     public class ZipItemPropComparator implements Comparator<ZipEntry> {
         int type;
-
-        public ZipItemPropComparator( int type_ ) {
+        boolean case_ignore;
+        public ZipItemPropComparator( int type_, boolean case_ignore_ ) {
             type = type_;
+            case_ignore = case_ignore_;
         }
 		@Override
 		public int compare( ZipEntry f1, ZipEntry f2 ) {
@@ -635,15 +636,21 @@ public class ZipAdapter extends CommanderAdapterBase {
             boolean f2IsDir = f2.isDirectory();
             if( f1IsDir != f2IsDir )
                 return f1IsDir ? -1 : 1;
-            if( type == SORT_NAME )
-                return f1.getName().compareTo( f2.getName() );
-            if( type == SORT_EXT )
-                return Utils.getFileExt( f1.getName() ).compareTo( Utils.getFileExt( f2.getName() ) );
-            if( type == SORT_SIZE )
-                return (int)(f1.getSize() - f2.getSize());
-            if( type == SORT_DATE )
-                return (int)(f1.getTime() - f2.getTime());
-            return 0;
+            int ext_cmp = 0;
+            switch( type ) {
+            case SORT_EXT:
+                ext_cmp = Utils.getFileExt( f1.getName() ).compareTo( Utils.getFileExt( f2.getName() ) );
+                break;
+            case SORT_SIZE:
+                ext_cmp = f1.getSize() - f2.getSize() < 0 ? -1 : 1;
+                break;
+            case SORT_DATE:
+                ext_cmp = f1.getTime() - f2.getTime() < 0 ? -1 : 1;
+                break;
+            }
+            if( ext_cmp != 0 )
+                return ext_cmp;
+            return f1.getName().compareTo( f2.getName() );
 		}
     }
 }

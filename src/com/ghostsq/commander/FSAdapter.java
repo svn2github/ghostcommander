@@ -87,7 +87,7 @@ public class FSAdapter extends CommanderAdapterBase {
             }
             parentLink = dir.getParent() == null ? SLS : "..";
 
-            FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING );
+            FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
             Arrays.sort( items, comp );
 
             commander.notifyMe( null, Commander.OPERATION_COMPLETED, 0 );
@@ -165,7 +165,7 @@ public class FSAdapter extends CommanderAdapterBase {
 				}
 				if( (mode & MODE_SORTING) == SORT_SIZE )
     				synchronized( items ) {
-        	            FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING );
+        	            FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
         	            Arrays.sort( items, comp );
     				}
 				String result;
@@ -569,27 +569,35 @@ public class FSAdapter extends CommanderAdapterBase {
     }
 
     public class FilePropComparator implements Comparator<FileEx> {
-        int type;
+        int     type;
+        boolean case_ignore;
 
-        public FilePropComparator( int type_ ) {
+        public FilePropComparator( int type_, boolean case_ignore_ ) {
             type = type_;
+            case_ignore = case_ignore_;
         }
         public int compare( FileEx f1, FileEx f2 ) {
             boolean f1IsDir = f1.f.isDirectory();
             boolean f2IsDir = f2.f.isDirectory();
             if( f1IsDir != f2IsDir )
                 return f1IsDir ? -1 : 1;
-            if( type == SORT_NAME )
-                return f1.f.compareTo( f2.f );
-            if( type == SORT_EXT )
-                return Utils.getFileExt( f1.f.getName() ).compareTo( Utils.getFileExt( f2.f.getName() ) );
-            if( type == SORT_SIZE ) {
-                return f1IsDir ? (int)(f1.size - f2.size )
-                               : (int)(f1.f.length() - f2.f.length());
+            int ext_cmp = 0;
+            switch( type ) { 
+            case SORT_EXT:
+                ext_cmp = case_ignore ? Utils.getFileExt( f1.f.getName() ).compareToIgnoreCase( Utils.getFileExt( f2.f.getName() ) ) 
+                                      : Utils.getFileExt( f1.f.getName() ).compareTo( Utils.getFileExt( f2.f.getName() ) );
+                break;
+            case SORT_SIZE:
+                ext_cmp = ( f1IsDir ? f1.size - f2.size
+                                    : f1.f.length() - f2.f.length() ) < 0 ? -1 : 1;
+                break;
+            case SORT_DATE:
+                ext_cmp = f1.f.lastModified() - f2.f.lastModified() < 0 ? -1 : 1;
+                break;
             }
-            if( type == SORT_DATE )
-                return (int)(f1.f.lastModified() - f2.f.lastModified() );
-            return 0;
+            if( ext_cmp != 0 )
+                return ext_cmp;
+            return case_ignore ? f1.f.getName().compareToIgnoreCase( f2.f.getName() ) : f1.f.compareTo( f2.f );
         }
     }
 }

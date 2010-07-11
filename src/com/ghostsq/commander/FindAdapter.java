@@ -327,7 +327,7 @@ public class FindAdapter extends CommanderAdapterBase {
                     items = new File[items_a.size()]; 
                     items_a.toArray( items );
                 }
-                FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING );
+                FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
                 Arrays.sort( items, comp );
                 notifyDataSetChanged();
             }
@@ -337,25 +337,32 @@ public class FindAdapter extends CommanderAdapterBase {
     }
     public class FilePropComparator implements Comparator<File> {
         int type;
+        boolean case_ignore;
 
-        public FilePropComparator( int type_ ) {
+        public FilePropComparator( int type_, boolean case_ignore_ ) {
             type = type_;
+            case_ignore = case_ignore_;
         }
         public int compare( File f1, File f2 ) {
             boolean f1IsDir = f1.isDirectory();
             boolean f2IsDir = f2.isDirectory();
             if( f1IsDir != f2IsDir )
                 return f1IsDir ? -1 : 1;
-            if( type == SORT_NAME )
-                return f1.compareTo( f2 );
-            if( type == SORT_EXT )
-                return Utils.getFileExt( f1.getName() ).compareTo( Utils.getFileExt( f2.getName() ) );
-            if( type == SORT_SIZE ) {
-                return (int)(f1.length() - f2.length());
+            int ext_cmp = 0;
+            switch( type ) {
+            case SORT_EXT:
+                ext_cmp = Utils.getFileExt( f1.getName() ).compareTo( Utils.getFileExt( f2.getName() ) );
+                break;
+            case SORT_SIZE:
+                ext_cmp = f1.length() - f2.length() < 0 ? -1 : 1;
+                break;
+            case SORT_DATE:
+                ext_cmp = f1.lastModified() - f2.lastModified() < 0 ? -1 : 1;
+                break;
             }
-            if( type == SORT_DATE )
-                return (int)(f1.lastModified() - f2.lastModified() );
-            return 0;
+            if( ext_cmp != 0 )
+                return ext_cmp;
+            return f1.compareTo( f2 );            
         }
     }
 }

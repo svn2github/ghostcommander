@@ -115,7 +115,7 @@ public class FTPAdapter extends CommanderAdapterBase {
 	                    		uri = uri.buildUpon().path( path ).build();
 							}
 	                    if( items_tmp != null ) {
-                    		FTPItemPropComparator comp = new FTPItemPropComparator( mode & MODE_SORTING );
+                    		FTPItemPropComparator comp = new FTPItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
                             Arrays.sort( items_tmp, comp );
 	                        parentLink = path == null || path.length() == 0 || path.equals( "/" ) ? "/" : "..";
 	                        sendProgress( tooLong( 8 ) ? ftp.getLog() : null, Commander.OPERATION_COMPLETED );
@@ -667,9 +667,10 @@ public class FTPAdapter extends CommanderAdapterBase {
     }
     public class FTPItemPropComparator implements Comparator<FTPItem> {
         int type;
-
-        public FTPItemPropComparator( int type_ ) {
+        boolean case_ignore;
+        public FTPItemPropComparator( int type_, boolean case_ignore_ ) {
             type = type_;
+            case_ignore = case_ignore_;
         }
 		@Override
 		public int compare( FTPItem f1, FTPItem f2 ) {
@@ -677,15 +678,21 @@ public class FTPAdapter extends CommanderAdapterBase {
             boolean f2IsDir = f2.isDirectory();
             if( f1IsDir != f2IsDir )
                 return f1IsDir ? -1 : 1;
-            if( type == SORT_NAME )
-                return f1.compareTo( f2 );
-            if( type == SORT_EXT )
-                return Utils.getFileExt( f1.getName() ).compareTo( Utils.getFileExt( f2.getName() ) );
-            if( type == SORT_SIZE )
-                return (int)(f1.length() - f2.length());
-            if( type == SORT_DATE )
-                return f1.getDate().compareTo( f2.getDate() );
-            return 0;
+            int ext_cmp = 0;
+            switch( type ) {
+            case SORT_EXT:
+                ext_cmp = Utils.getFileExt( f1.getName() ).compareTo( Utils.getFileExt( f2.getName() ) );
+                break;
+            case SORT_SIZE:
+                ext_cmp = f1.length() - f2.length() < 0 ? -1 : 1;
+                break;
+            case SORT_DATE:
+                ext_cmp = f1.getDate().compareTo( f2.getDate() );
+                break;
+            }
+            if( ext_cmp != 0 )
+                return ext_cmp;
+            return f1.compareTo( f2 );
 		}
     }
 }
