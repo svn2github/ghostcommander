@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Ghost Commander</string>
+    
+    <string name="file">파일</string>
+    <string name="panel">창</string>
+    <string name="list">정렬</string>
+    <string name="app">설정</string>
+    <string name="help">도움</string>
+    
+    <string name="F1">1 도움</string>
+    <string name="F2">2 변경</string>
+    <string name="F3">3 보기</string>
+    <string name="F4">4 편집</string>
+    <string name="SF4">&#xA0; 생성</string>
+    <string name="F5">5 복사</string>
+    <string name="F6">6 이동</string>
+    <string name="F7">7 폴더생성</string>
+    <string name="F8">8 삭제</string>
+    <string name="F9">9 설정</string>
+    <string name="F10">0 끝</string>
+    <string name="oth_sh_this">= 다른 창을 현재 폴더와 같게</string>
+    <string name="eq">= 동일</string>
+    <string name="change">&#x21E6; 토글</string>
+    <string name="tgl">&#x21E6; 토글</string>
+    <string name="sz">\" 크기</string>
+    <string name="refresh">&#xA0; 갱신</string>
+    <string name="enter">&#xA0; 위치변경</string>
+    <string name="add_fav">* 즐겨찾기에 추가</string>
+    <string name="enter_ftp">&#xA0; FTP도움말r</string>
+    <string name="search_file">/ 파일검색</string>
+
+    <string name="sort_by_name">&#xA0; 이름으로</string>
+    <string name="sort_by_ext" >&#xA0; 확장자로</string>
+    <string name="sort_by_size">&#xA0; 크기로</string>
+    <string name="sort_by_date">&#xA0; 날짜로</string>
+    <string name="select_all">+ 전체선택</string>
+    <string name="unselect_all">- 전체선택해제</string>
+        
+    <string name="prefs">9 설정</string>
+    <string name="about">&#xA0; 정보</string>
+    <string name="keys">1 단축키</string>
+    <string name="new_file">파일생성</string>
+
+    <string name="go_button">실행 Go</string>
+    <string name="show_size">상세정보</string>
+    <string name="send_to">보내기...</string>
+    <string name="open_with">열기...</string>
+
+    <string name="input_settings">입력</string>
+    <string name="arrow_mode">방향키 모드</string>
+    <string name="summary_arrow_mode">좌/우 방향키로 토글/선택 기능</string>
+
+    <string name="prefs_label">설정</string>
+    <string name="editor_label">문서편집기</string>
+
+    <string name="wait">대기... </string>
+
+    <string name="dialog_yes">예</string>
+    <string name="dialog_no">아니오</string>
+    <string name="dialog_ok">Ok</string>
+    <string name="dialog_cancel">취소</string>
+    <string name="dialog_close">닫기</string>
+    <string name="dialog_exit">끝</string>
+
+    <string name="dialog_abort">중지</string>
+    <string name="dialog_retry">재시도</string>
+    <string name="dialog_ignore">무시</string>
+    
+    <string name="edit_title">편집</string>
+    <string name="newf_prompt">새 파일이름</string>
+    <string name="rename_title">변경</string>
+    <string name="rename_prompt">변경 :</string>
+    <string name="rename_err">변경대상 없음</string>
+    <string name="mkdir_title">폴더생성</string>
+    <string name="mkdir_prompt">폴서 생성 :</string>
+    <string name="search_title">검색</string>
+    <string name="search_prompt">파일이름 :</string>
+    <string name="copy_title">복사</string>
+    <string name="move_title">이동</string>
+    <string name="no_items">유효한 파일이 없습니다.</string>
+    <string name="find_on_fs_only">검색기능은 로컬 파일시스템에서만 동작합니다.</string>
+    
+    
+    <string name="copy_move_not_alwd">'%s'은 허용되지 않으니 다른 것을 먼저 선택하세요.</string><!-- copy_title/move_title -->
+    <string name="copy_move_to">%s %s to:"</string><!-- copy_title/move_title, file name/summary -->
+    <string name="login_title">로그인 Login</string>
+    <string name="delete_title">삭제</string>
+    <string name="delete_err">삭제할 것이 없음</string>
+    <string name="delete_q">%s 삭제?</string><!-- file name/summary -->
+    <string name="deleted">%s개 파일이 삭제되었읍니다.</string>
+    <string name="search_done">검색완료</string>
+    <string name="done">완료</string>
+    <string name="interrupted">중단됨</string>
+    <string name="too_deep_hierarchy">파일 계층이 너무 깊습니다</string>
+    <string name="nothing_found">파일 없음</string>
+    <string name="preparing">준비중...</string>
+    
+    <string name="cd_title">가기</string>
+    <string name="cd_prompt">폴더 변경 :</string>
+
+    <string name="not_supported">지원되지 않는 동작임.</string>
+    <string name="select_some">선택이 없음</string>
+    <string name="select">선택</string>
+    <string name="error">오류</string>
+    <string name="info">정보</string>
+    <string name="confirm">확인</string>
+    <string name="progress">진행중</string>
+    <string name="alert">경고</string>
+
+    <string name="ftp_server">FTP서버 :</string>
+    <string name="ftp_path">경로 :</string>
+    <string name="username">사용자이름 :</string>
+    <string name="password">패스워드 :</string>
+    <string name="ftp_connect">연결</string>
+    <string name="ftp_cancel">취소</string>
+    
+
+    <string name="layout_settings">배치 설정</string>
+    <string name="panels_mode">나란히 배치</string>
+    <string name="summary_panels_mode">분할화면으로 창을 나란히 보여줌</string>
+    <string name="two_lines">2 줄로 표시</string>
+    <string name="summary_two_lines">파일속성을 항상 아래 줄에 보이기</string>
+    <string name="show_icons">파일 아이콘</string>
+    <string name="summary_show_icons">파일 타입별로 아이콘을 보여줌</string>
+    <string name="show_toolbar">툴바 보이기</string>
+    <string name="summary_show_toolbar">화면 아래의 버튼을 보여줌</string>
+    <string name="toolbar_preference">보여줄 버튼을 선택</string>
+    <string name="summary_toolbar_preference">툴바에서 명령버튼을 개인화</string>
+    <string name="show_F1">&#xAB; 1 도움&#xBB; 보기</string>
+    <string name="show_F2">&#xAB; 2 변경&#xBB; 보기</string>
+    <string name="show_F3">&#xAB; 3 보기&#xBB; 보기</string>
+    <string name="show_F4">&#xAB; 4 편집&#xBB; 보기</string>
+    <string name="show_SF4">&#xAB; &#xA0; 생성&#xBB; 보기</string>
+    <string name="show_F5">&#xAB; 5 복사&#xBB; 보기</string>
+    <string name="show_F6">&#xAB; 6 이동&#xBB; 보기</string>
+    <string name="show_F7">&#xAB; 7 폴더생성&#xBB; 보기</string>
+    <string name="show_F8">&#xAB; 8 삭제&#xBB; 보기</string>
+    <string name="show_F9">&#xAB; 9 설정&#xBB; 보기</string>
+    <string name="show_F10">&#xAB; 0 끝&#xBB; 보기</string>
+    <string name="show_eq">&#xAB; = 두 창을 일치&#xBB; 보기</string>
+    <string name="show_tgl">&#xAB; &#x21E6; 토글&#xBB; 보기</string>
+    <string name="show_sz">&#xAB; \" 크기&#xBB; 보기</string>
+
+    <string name="finger_friendly">손가락 사용 위주</string>
+    <string name="summary_finger_friendly">사용자 입력 확대</string>
+    <string name="prevent_root">루트 폴더 경고</string>
+    <string name="summary_prevent_root">루트 폴더로 이동할 경우 경고 발생</string>
+
+    <string name="left_panel_settings">왼 창 설정</string>
+    <string name="right_panel_settings">오른 창 설정</string>
+    <string name="detailed_view_SbS">상세보기(나란히보기)</string>
+    <string name="summary_detailed_view_SbS">나란히보기에서 파일의 크기와 날짜를 표시</string>
+    <string name="detailed_view_Ovr">상세보기(겹쳐보기)</string>
+    <string name="summary_detailed_view_Ovr">겹쳐보기에서 파일의 크기와 날짜를 표시</string>
+    <string name="sorting">정렬</string>
+    <string name="summary_sorting">정렬하는 방법</string>
+    <string name="sort_case">대소문자 무시</string>
+    <string name="summary_sort_case">체크되지 않으면 대소문자 구별</string>
+    
+    <string name="show_hidden">숨김파일 표시</string>
+    <string name="summary_show_hidden">체크되지 않으면 점(.)으로 시작하는 파일은 표시되지 않음</string>
+
+    <string name="editor_activity">편집기 액티비티 이름</string>
+    <string name="summary_editor_activity">액티비티의 전체 클래스 이름. 패키지 이름운 클래스 이름의 접두어임.</string>
+    <string name="value_editor_activity">com.ghostsq.commander.Editor</string>
+    
+    <string name="nothing_to_open">열 파일 없음</string>
+    <string name="remind_to_save">파일이 변경되었으니 저장하세요.</string>
+    <string name="save">저장</string>
+    <string name="revert">복귀</string>
+    <string name="wrap">긴 줄 바꾸기</string>
+    <string name="no_such_file">파일 없음 : \"%s\"</string>
+    <string name="too_big_file">\"%s\"이 너무 큽니다.</string>
+    <string name="binary_file">\"%s\"은 이진파일이므로 파일이 손상될 수 있습니다.</string>    
+    <string name="cant_open">파일을 열 수 없습니다</string>    
+    <string name="cant_save">파일을 저장할 수 없습니다</string>
+    <string name="nav_warn">시스템 파일을 열고 있습니다. 이것은 시스템 고장을 유발할 수 있습니다. 계속하겠습니까?</string>
+    <string name="nav_warn_cmt">(설정 메뉴에서 경고를 없앨 수 있음)\n/sdcard 폴더로 이동하려면 "취소"를 클릭하세요. 응용을 끝내려면 "끝" 버튼을 클릭하세요.</string>
+    <string name="no_such_folder">\"%s\"은 유효한 폴더가 아닙니다.</string>
+
+    <string name="donate">&#xA0; 기부</string>
+    <string name="online_help">&#xA0; 온라인 도움말</string>
+    
+    <string name="donation">금액에 상관없이 기부를 하시면 고스트 커맨드 (Ghost Command) 파일 관리자를 계속 개발하는데 도움이 될 것입니다.\n
+PayPal을 통해서 기부를 하시려면 "예"를 클릭하시고, 계속 무료로 사용하시려면 "취소"를 클릭하세요. Tap \"Ok\" to make a donation via PayPal.\n
+Or tap \"Cancel\"\n
+    </string>
+    <string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
+    <string name="help_uri">http://sites.google.com/site/ghostcommander1/info</string>
+    
+    
+    <string name="about_text">
+        Ghost Commander v%s\n
+        파일 관리자\n\n
+        버그/제안은 다음 이메일로:\n
+        ghost.sq2@gmail.com\n
+        감사합니다.\n\n\n 
+법적고지:\n
+이 소프트웨어를 사용하는데 있어서,
+이 소프트웨어의 제작자는 어떠한 종류의 손해, 정보의 분실, 이로 인한 간접손해, 
+이의제기 등에 대해서 어떠한 책임도 지지 않으므로 
+사용자의 책임 하에 이 소프트웨어를 사용하는데 동의합니다.
+만약 위와 같은 사항에 동의를 하지 않으면 즉시 이 소프트웨어 사용을 중지하고 제거하십시요.\n
+
+    </string>
+    <string name="keys_text">
+"
+단축키:\n Shortcuts keys:\n
+음량- : 창 토글\n
+음량+ : 현재 아이템을 선택\n
+(설정에서 활성화 되면 ←, → 방향키도 동일한 역활을 합니다. 
+아이템의 오른쪽 반을 클릭하면 아이템이 선택됩니다.)\n
+
++,- : 현재 폴더 전체 선택 혹은 해제\n  
+(,) : 좌/우측 창의 위치 입력 (혹은 창 제목을 길게 누름)\n
+* - : 현재 폴더를 즐겨찾기에 추가\n
+\": ) 선택파일의 전체크기 보기\n
+=) 다른 창의 위치를 현재 창의 위치로 바꿈\n
+1 : 도움말\n
+2 : 현재파일 이름변경\n
+4 : 현재파일 편집\n
+5 : 선택파일 복사\n
+6 : 선택파일 이동\n
+7 : 폴더 생성\n
+8 : 파일/폴더 삭제\n
+9 : 설정하기\n
+0 : 프로그램 종료\n
+[A-z] 빠른 검색\n
+\n
+다음과 같이 경로 입력하여 익명 FTP 접속\n
+    ftp://host.com/folder\n
+다음과 같이 경로 입력하여 계정 FTP 접속\n
+    ftp://user:password@host.com/folder\n\n
+"
+    </string>
+    
+</resources>

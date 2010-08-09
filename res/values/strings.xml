@@ -161,6 +161,14 @@
     <string name="show_hidden">Show hidden files</string>
     <string name="summary_show_hidden">If not checked, files beginning with a dot won't be shown</string>
 
+    <string name="colors">Setup the colors</string>
+    <string name="bgr_color_picker">Background color</string>
+    <string name="summary_bgr_color_picker">Choose a desired color for the background</string>
+    <string name="fgr_color_picker">Foreground color</string>
+    <string name="summary_fgr_color_picker">Choose a desired color for the file names</string>
+    <string name="sel_color_picker">Selected color</string>
+    <string name="summary_sel_color_picker">Choose a desired color for selected files</string>
+
     <string name="editor_activity">Editor Activity Name</string>
     <string name="summary_editor_activity">EDIT action Activity's full class name. Package name = class name prefix.</string>
     <string name="value_editor_activity">com.ghostsq.commander.Editor</string>
@@ -178,6 +186,7 @@
     <string name="nav_warn">You&apos;re opening a system folder. Tampering with it may lead to a failure. Proceed at this time?</string>
     <string name="nav_warn_cmt">(You can permanently disable this warning in the application settings )\nClick "Cancel" to safely go to the /sdcard folder. Click "Exit" to close the application.</string>
     <string name="no_such_folder">\"%s\" is not a valid folder!</string>
+    <string name="fav_added">Folder \"%s\" was added to the favorites</string>
 
     <string name="donate">&#xA0; Donate</string>
     <string name="online_help">&#xA0; Online Help</string>
@@ -205,14 +214,14 @@ If you don&apos;t agree to the above, stop using this software immediately and u
     </string>
     <string name="keys_text">
     "
+To select a file, tap on the right half of the item's row.\n    
+To manually enter the location path (and the favorites), long press on the panel's title\n\n
+    
 Shortcuts keys:\n
-VolumeDn - Toggle the current panel\n
-VolumeUp - Select the current item\n
-\t(left/right arrows do the same if enabled in the settings.\n
-\t Also, to select an item, tap on the right half of the item's row.)\n
+VolumeUp - Select the current item (file)\n
+VolumeDn - Swap the panels\n
 +,-   - Select or unselect all items in the current folder\n  
-(, )  - Enter the location for left/right panel\n
-\t(Also - long press on the panel's title)
+(, )  - Enter the location for left/right panel and favorites\n
 * - Add the current folder to favorites\n
 \" - Show the total size of selected files\n
 = - Make the other panel show the same folder as the current\n

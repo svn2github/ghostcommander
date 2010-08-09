@@ -89,11 +89,25 @@
                 android:title="@string/finger_friendly"
                 android:summary="@string/summary_finger_friendly"
                 android:defaultValue="true"/>
-        <CheckBoxPreference
-                android:key="prevent_root"
-                android:title="@string/prevent_root"
-                android:summary="@string/summary_prevent_root"
-                android:defaultValue="true"/>
+	    <PreferenceScreen
+	                android:key="colors"
+	                android:title="@string/colors">
+            <PreferenceScreen
+                    android:key="bgr_color_picker"
+                    android:title="@string/bgr_color_picker"
+                    android:summary="@string/summary_bgr_color_picker">
+            </PreferenceScreen>
+            <PreferenceScreen
+                    android:key="fgr_color_picker"
+                    android:title="@string/fgr_color_picker"
+                    android:summary="@string/summary_fgr_color_picker">
+            </PreferenceScreen>
+	        <PreferenceScreen
+                    android:key="sel_color_picker"
+                    android:title="@string/sel_color_picker"
+                    android:summary="@string/summary_sel_color_picker">
+	        </PreferenceScreen>
+	    </PreferenceScreen>
         <CheckBoxPreference
                 android:key="show_toolbar"
                 android:title="@string/show_toolbar"
@@ -163,13 +177,17 @@
         </PreferenceScreen>
     </PreferenceCategory>
     <PreferenceCategory
-            android:title="@string/input_settings">
-            <CheckBoxPreference
+        android:title="@string/input_settings">
+        <CheckBoxPreference
                     android:key="arrow_mode"
                     android:title="@string/arrow_mode"
                     android:summary="@string/summary_arrow_mode"
                     android:defaultValue="false"/>
-            
+        <CheckBoxPreference
+                android:key="prevent_root"
+                android:title="@string/prevent_root"
+                android:summary="@string/summary_prevent_root"
+                android:defaultValue="true"/>
     </PreferenceCategory>
     <PreferenceCategory
             android:title="@string/editor_label">
@@ -179,5 +197,4 @@
         android:summary="@string/summary_editor_activity" 
         android:defaultValue="@string/value_editor_activity"/>
     </PreferenceCategory>
-  
 </PreferenceScreen>

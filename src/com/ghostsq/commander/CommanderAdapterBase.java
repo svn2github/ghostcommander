@@ -3,6 +3,7 @@ package com.ghostsq.commander;
 import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import android.content.Context;
 import android.net.Uri;
@@ -30,12 +31,15 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected Commander commander = null;
     protected static final String SLS = File.separator;
     protected static final String DEFAULT_DIR = "/sdcard";
+    private   static boolean long_date = Locale.getDefault().getLanguage().compareTo( "en" ) != 0;
     protected LayoutInflater mInflater = null;
     private   int    parentWidth, imgWidth, nameWidth, sizeWidth, dateWidth;
+    private   int    fg_color, bg_color, sl_color;
     private   boolean dirty = true;
     protected int    mode = 0;
     protected String parentLink;
     protected Engine worker = null;
+    
     Handler handler = new Handler() {
         public void handleMessage( Message msg ) {
             int perc1 = msg.getData().getInt( CommanderAdapterBase.NOTIFY_PRG1 );
@@ -74,9 +78,17 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
 	}
     
     @Override
-    public void setMode( int mask, int mode_ ) {
+    public void setMode( int mask, int val ) {
+        if( ( mask & SET_MODE_COLORS ) != 0 ) {
+            switch( mask & SET_MODE_COLORS ) {
+            case SET_TXT_COLOR: fg_color = val; break;
+            case SET_BGR_COLOR: bg_color = val; break;
+            case SET_SEL_COLOR: sl_color = val; break;
+            }
+            return;
+        }
         mode &= ~mask;
-        mode |= mode_;
+        mode |= val;
         dirty = true;
     }
     @Override
@@ -132,23 +144,29 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             	if( !item.dir  )
             		size = Utils.getHumanSize( item.size );
                 if( item.date != null ) {
-    	            String dateFormat;
-	            	dateFormat = item.date.getYear() + 1900 == Calendar.getInstance().get( Calendar.YEAR ) ?
-	                        "MMM dd hh:mm" : "MMM dd  yyyy";
-    	            date = (String)DateFormat.format( dateFormat, item.date );
+                    if( long_date ) {
+                        java.text.DateFormat locale_date_format = DateFormat.getDateFormat( commander.getContext() );
+                        java.text.DateFormat locale_time_format = DateFormat.getTimeFormat( commander.getContext() );
+                        date = locale_date_format.format( item.date ) + " " + locale_time_format.format( item.date );
+                    } else {
+        	            String dateFormat;
+    	            	dateFormat = item.date.getYear() + 1900 == Calendar.getInstance().get( Calendar.YEAR ) ?
+    	                        "MMM dd hh:mm" : "MMM dd  yyyy";
+        	            date = (String)DateFormat.format( dateFormat, item.date );
+                    }
                 }
             }
             int parent_width = parent.getWidth();
             if( dirty || parentWidth != parent_width ) {
                 parentWidth = parent_width;
                 imgWidth = icons ? parent_width / ( fat || !wm ? 8 : 16 ) : 0;
-                nameWidth = ( wm && dm ? parent_width * 5 / 8 : parent_width ) - imgWidth;
-                sizeWidth = parent_width / (wm ? 8 : 4);
-                dateWidth = parent_width / (wm ? 4 : 2);
+                nameWidth = ( wm && dm ? parent_width * ( long_date ? 9 : 10 ) / 16 : parent_width ) - imgWidth;
+                sizeWidth = parent_width / (wm ? ( long_date ? 9 : 8 ) : 4);
+                dateWidth = wm ? (parent_width - ( imgWidth + nameWidth + sizeWidth )) : parent_width / 2;
                 dirty = false;
             }
             if( item.sel ) {
-                row_view.setBackgroundColor( 0xFF4169E1 );
+                row_view.setBackgroundColor( sl_color );
             }
 
             ImageView imgView = (ImageView)row_view.findViewById( R.id.fld_icon );
@@ -166,18 +184,21 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             if( nameView != null ) {
                 nameView.setWidth( nameWidth );
                 nameView.setText( name != null ? name : "???" );
+                nameView.setTextColor( fg_color );
             }
             TextView sizeView = (TextView)row_view.findViewById( R.id.fld_size );
             if( sizeView != null ) {
                 sizeView.setVisibility( dm ? View.VISIBLE : View.GONE );
                 sizeView.setWidth( sizeWidth );
                 sizeView.setText( size );
+                //sizeView.setTextColor( fg_color );
             }
             TextView dateView = (TextView)row_view.findViewById( R.id.fld_date );
             if( dateView != null ) {
                 sizeView.setVisibility( dm ? View.VISIBLE : View.GONE );
                 dateView.setWidth( dateWidth );
                 dateView.setText( date );
+                //dateView.setTextColor( fg_color );
             }
             row_view.setTag( null );
     

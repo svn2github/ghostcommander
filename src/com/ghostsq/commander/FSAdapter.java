@@ -549,7 +549,13 @@ public class FSAdapter extends CommanderAdapterBase {
                     FileEx f = items[position - 1];
                     try {
                         item.dir  = f.f.isDirectory();
-                        item.name = item.dir ? SLS + f.f.getName() : f.f.getName();
+                        if( item.dir ) {
+                            if( ( mode & MODE_ICONS ) == ICON_MODE )  
+                                item.name = f.f.getName() + SLS;
+                            else
+                                item.name = SLS + f.f.getName();
+                        } else
+                            item.name = f.f.getName();
                         item.size = item.dir ? f.size : f.f.length();
                         ListView flv = (ListView)parent;
                         SparseBooleanArray cis = flv.getCheckedItemPositions();

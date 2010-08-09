@@ -1,8 +1,10 @@
 package com.ghostsq.commander;
 
 import java.io.File;
+import java.security.acl.Owner;
 import java.util.ArrayList;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -226,7 +228,9 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             Log.e( TAG, "title view was not found!" );
     }
     public final void addCurrentToFavorites() {
-        shorcutsFoldersList.addToFavorites( getFolderUri( true ) );
+        String cur_uri = getFolderUri( true );
+        shorcutsFoldersList.addToFavorites( cur_uri );
+        c.showMessage( c.getString( R.string.fav_added, cur_uri ) );
     }
     public final int getSelection() {
         int pos = listViews[current].getSelectedItemPosition();
@@ -243,6 +247,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         for( i = 0; i < num; i++ ) {
         	String item_name = ca.getItemName( i, false );
             if( item_name != null && item_name.compareTo( name ) == 0 ) {
+                if( !flv.requestFocusFromTouch() )
+                    Log.w( TAG, "ListView does not take focus :(" );
                 flv.setSelection( i );
                 currentPositions[which] = i;
                 break;
@@ -271,8 +277,32 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     public final int getWidth() {
         return mainView.getWidth();
     }
+    private final void applyColors() {
+        SharedPreferences color_pref = c.getSharedPreferences( Prefs.COLORS_PREFS, Activity.MODE_PRIVATE );
+        int bg_color = Prefs.getDefaultColor( Prefs.BGR_COLORS );
+        int fg_color = Prefs.getDefaultColor( Prefs.FGR_COLORS );
+        int sl_color = Prefs.getDefaultColor( Prefs.SEL_COLORS );
+        if( color_pref != null ) {
+            bg_color = color_pref.getInt( Prefs.BGR_COLORS, bg_color );
+            fg_color = color_pref.getInt( Prefs.FGR_COLORS, fg_color );
+            sl_color = color_pref.getInt( Prefs.SEL_COLORS, sl_color );
+        }
+        for( int i = LEFT; i <= RIGHT; i++ ) {
+            ListView flv = listViews[i];
+            flv.setBackgroundColor( bg_color );
+            CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
+            if( ca != null ) {
+                ca.setMode( CommanderAdapter.SET_TXT_COLOR, fg_color );
+                ca.setMode( CommanderAdapter.SET_BGR_COLOR, bg_color );
+                ca.setMode( CommanderAdapter.SET_SEL_COLOR, sl_color );
+            }
+            else
+                Log.e( TAG, "CommanderAdapter is not defined" );
+        }
+    }
     public final void applySettings( SharedPreferences sharedPref ) {
         try {
+            applyColors();
         	setFingerFriendly( sharedPref.getBoolean( "finger_friendly", false ) );
         	warnOnRoot =  sharedPref.getBoolean( "prevent_root", true );
             for( int i = LEFT; i <= RIGHT; i++ ) {
@@ -310,6 +340,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
 
         boolean hidden_mode = sharedPref.getBoolean( ( which == LEFT ? "left" : "right" ) + "_show_hidden", true );
         ca.setMode( CommanderAdapter.MODE_HIDDEN, hidden_mode ? CommanderAdapter.SHOW_MODE : CommanderAdapter.HIDE_MODE );
+        
         refreshLists();
     }
     public void changeSorting( int sort_mode ) {
@@ -1044,6 +1075,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     	resetQuickSearch();
         NavigateInternal( LEFT,  Uri.parse(s.left),  s.leftItem );
         NavigateInternal( RIGHT, Uri.parse(s.right), s.rightItem );
+        applyColors();
         setPanelCurrent( s.current );
         shorcutsFoldersList.setFromString( s.favUris );
     }

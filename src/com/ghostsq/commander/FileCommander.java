@@ -24,7 +24,6 @@ import android.view.KeyEvent;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.util.Log;
-import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.Toast;
 

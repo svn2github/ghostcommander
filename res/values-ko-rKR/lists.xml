@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="sorting">
+        <item>이름</item>
+        <item>유형</item>
+        <item>크기</item>
+        <item>날짜</item>  
+    </string-array>
+    <string-array name="sorting_vals">
+        <item>n</item>
+        <item>e</item>
+        <item>s</item>
+        <item>d</item>  
+    </string-array>
+</resources>

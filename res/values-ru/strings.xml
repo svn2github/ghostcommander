@@ -120,7 +120,7 @@
     <string name="show_tgl">Show &#xAB; &#x21E6; Перейти&#xBB;</string>
     <string name="show_sz">Show &#xAB; \" Размер&#xBB;</string>
     
-    <string name="finger_friendly">Управление палцем</string>
+    <string name="finger_friendly">Управление пальцем</string>
     <string name="summary_finger_friendly">Увеличить элементы интерфейса для управления пальцем</string>
     <string name="prevent_root">Предупреждать на системных каталогах</string>
     <string name="summary_prevent_root">Выдавать предупреждающее сообщение на попытку перейти в системный каталог</string>
@@ -138,6 +138,14 @@
     
     <string name="show_hidden">Показывать скрытые файлы</string>
     <string name="summary_show_hidden">Файлы начинающиеся на точку показывать наравне с остальными</string>
+
+    <string name="colors">Настройка цветов</string>
+    <string name="bgr_color_picker">Цвет фона</string>
+    <string name="summary_bgr_color_picker">Выбор цвета для фона панелей</string>
+    <string name="fgr_color_picker">Цвет текста</string>
+    <string name="summary_fgr_color_picker">Выбор цвета для имен файлов</string>
+    <string name="sel_color_picker">Цвет Выделения</string>
+    <string name="summary_sel_color_picker">Выбор цвета для выделеных файлов</string>
 
     <string name="editor_activity">Activity для редактирования</string>
     <string name="summary_editor_activity">Полное имя Activity класса. Имя пакета = префикс полного имени класса.</string>
@@ -158,6 +166,7 @@
     <string name="nav_warn_cmt">Это предупреждение отключается в настройках</string>
     
     <string name="no_such_folder">\"%s\" не существует!</string>
+    <string name="fav_added">Folder \"%s\" добавлен</string>
 
     <string name="donate">&#xA0; Поддержка</string>
     <string name="online_help">&#xA0; Описание в онлайне (EN)</string>
@@ -186,13 +195,14 @@
     </string>
     <string name="keys_text">
     "
+Для выделения файла - коснитесь правую половину строки.
+Для ввода пути и списка закладок коснитесь на 1сек. заголовка нужной панели\n\n    
+    
 Клавиши:\n
-VolDn - Перейти на другую панель\n
 VolUp - Выбрать текущий файл\n
-\nто же: стрелки влево/вправо если разрешено в настройках
-\t(Можно также выделять файл коснувшись правую половину строки)\n
+VolDn - Перейти на другую панель\n
 +, -  - Выделить все файлы, Убрать выделение со всех файлов\n 
-(, )  - Ввести путь для левой/правой панели\n
+(, )  - Ввести путь для левой/правой панели и закладки\n
 * - Добавить текущую папку в закладки\n
 \" - Показать размер выбранных элементов\n
 = - перейти в другой панели на ту же папку что и здесь\n
