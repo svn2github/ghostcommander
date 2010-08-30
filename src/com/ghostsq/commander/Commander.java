@@ -27,11 +27,9 @@ public interface Commander {
 	 */
 	public Context getContext();
 	/**
-     * @param string current status description
-	 * @param prg1 of MAX, or OPERATION_xxx (see above). To set MAX, call with SET_MAX as the first param 
-	 * @param prg2 of MAX, pass -1 to make it not changed
+	 * procedure completion notification. see the Notify object below
 	 */
-	void notifyMe( String string, int prg1, int prg2 );
+	void notifyMe( Notify obj );
 	/**
 	 * @param err_msg message to show in an alert dialog
 	 */
@@ -54,4 +52,32 @@ public interface Commander {
 	 * @param uri to open by sending an Intent
 	 */
 	public void    Open( String uri );
+	
+    /**
+     * @param string current status description
+     * @param prg1 of MAX, or OPERATION_xxx (see above). To set MAX, call with SET_MAX as the first param 
+     * @param prg2 of MAX, pass -1 to make it not changed
+     * @param cookie 
+     */
+	class Notify {
+	    public String string, cookie;
+	    public int status = 0, substat = 0;
+        public Notify( int status_ ) {
+            status = status_;
+        }
+        public Notify( String string_, int status_ ) {
+            string = string_;
+            status = status_;
+        }
+        public Notify( String string_, int status_, int substat_ ) {
+            string = string_;
+            status = status_;
+            substat = substat_;
+        }
+        public Notify( String string_, int status_, String cookie_ ) {
+            string = string_;
+            status = status_;
+            cookie = cookie_;
+        }
+	}
 }

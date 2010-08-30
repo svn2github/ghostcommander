@@ -146,6 +146,8 @@
     <string name="summary_fgr_color_picker">Выбор цвета для имен файлов</string>
     <string name="sel_color_picker">Цвет Выделения</string>
     <string name="summary_sel_color_picker">Выбор цвета для выделеных файлов</string>
+    <string name="ttl_color_picker">Цвет заголовка</string>
+    <string name="summary_ttl_color_picker">Выбор цвета для заголовка панелей</string>
 
     <string name="editor_activity">Activity для редактирования</string>
     <string name="summary_editor_activity">Полное имя Activity класса. Имя пакета = префикс полного имени класса.</string>

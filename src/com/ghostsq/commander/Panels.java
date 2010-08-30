@@ -1,9 +1,6 @@
 package com.ghostsq.commander;
 
 import java.io.File;
-import java.security.acl.Owner;
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -12,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -24,7 +22,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
-import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListAdapter;
@@ -32,7 +29,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
-//import android.content.res.ColorStateList;	// TODO
 
 /**
  * @author zc2
@@ -47,17 +43,20 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                                                      View.OnKeyListener {
     private final static String TAG = "Panels";
     public  final static int LEFT = 0, RIGHT = 1;
-    private final int titlesIds[] = {R.id.left_dir, R.id.right_dir};
-    private final int  listsIds[] = {R.id.left_list, R.id.right_list};
-    private int currentPositions[] = {-1, -1};
-    private ListView   listViews[] = {null, null};
+    private final int titlesIds[] = { R.id.left_dir,  R.id.right_dir };
+    private final int  listsIds[] = { R.id.left_list, R.id.right_list };
+    private int currentPositions[] = { -1, -1 };
+    private ListView   listViews[] = { null, null };
     private String[] listOfItemsChecked = null;
     private int current = LEFT;
     private FileCommander c;
     public  View mainView, toolbar = null;
     private int id;
-    private boolean touchedThere = false, fingerFriendly = false, warnOnRoot = true, arrow_mode = false;
-    private float downY = 0;
+    private int titleColor = Prefs.getDefaultColor( Prefs.TTL_COLORS ), 
+                  fgrColor = Prefs.getDefaultColor( Prefs.FGR_COLORS ),
+                  selColor = Prefs.getDefaultColor( Prefs.SEL_COLORS );
+    private boolean disableClick = false, fingerFriendly = false, warnOnRoot = true, arrow_mode = false;
+    private float downX = 0, downY = 0;
     private StringBuffer quickSearchBuf = null;
     private Toast        quickSearchTip = null;
     private Shortcuts  shorcutsFoldersList;
@@ -172,7 +171,6 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         return ( current == LEFT  && q == LEFT ) ||
                ( current == RIGHT && q == RIGHT );
     }
-    
     public final int getId() {
         return id;
     }
@@ -181,6 +179,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         listViews[which] = flv;
         if( flv != null ) {
             flv.setItemsCanFocus( false );
+            flv.setFocusableInTouchMode( true );
             flv.setChoiceMode( ListView.CHOICE_MODE_MULTIPLE );
             flv.setOnItemSelectedListener( this );
             flv.setOnItemClickListener( this );
@@ -215,14 +214,27 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         }
     }
     private final void highlightCurrentTitle() {
+        View title_bar = mainView.findViewById( R.id.titles );
+        if( title_bar != null )
+            title_bar.setBackgroundColor( titleColor );
     	highlightTitle( opposite(), false );
     	highlightTitle( current, true );
     }
     private final void highlightTitle( int which, boolean on ) {
-        TextView title = (TextView)c.findViewById( titlesIds[which] );
+        TextView title = (TextView)mainView.findViewById( titlesIds[which] );
         if( title != null ) {
-            title.setBackgroundColor( on ? 0xFF4169E1 : 0xFF555556 ); // TODO: use ColorStateList
-            title.setTextColor( on ? 0xFFEEEEEE : 0xFF999999 );
+            title.setBackgroundColor( on ? selColor : selColor & 0x0FFFFFFF );
+            if( on )
+                title.setTextColor( fgrColor );
+            else {
+                float[] fgr_hsv = new float[3];
+                Color.colorToHSV( fgrColor, fgr_hsv );
+                float[] ttl_hsv = new float[3];
+                Color.colorToHSV( titleColor, ttl_hsv );
+                fgr_hsv[1] *= 0.5;
+                fgr_hsv[2] = ( fgr_hsv[2] + ttl_hsv[2] ) / 2;
+                title.setTextColor( Color.HSVToColor( fgr_hsv ) );
+            }
         }
         else
             Log.e( TAG, "title view was not found!" );
@@ -237,10 +249,20 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         return pos < 0 ? currentPositions[current] : pos;
     }
     public final void setSelection( int i ) {
-        listViews[current].setSelection( i ); // loses it anyway
-        currentPositions[current] = i;
+        setSelection( current, i, 0 );
     }
-    private final void setSelection( int which, String name ) {
+    public final void setSelection( int which, int i, int y_ ) {
+        final ListView final_flv = listViews[current];  
+        final int position = i, y = y_;
+        final_flv.post(new Runnable() {
+            public void run()
+            {
+                final_flv.setSelectionFromTop( position, y );
+            }
+        });                     
+        currentPositions[which] = i;
+    }
+    public final void setSelection( int which, String name ) {
     	ListView flv = listViews[which];
     	CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
         int i, num = ((ListAdapter)ca).getCount();
@@ -249,8 +271,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             if( item_name != null && item_name.compareTo( name ) == 0 ) {
                 if( !flv.requestFocusFromTouch() )
                     Log.w( TAG, "ListView does not take focus :(" );
-                flv.setSelection( i );
-                currentPositions[which] = i;
+                setSelection( which, i, flv.getHeight() / 2 );
                 break;
             }
         }
@@ -280,25 +301,28 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     private final void applyColors() {
         SharedPreferences color_pref = c.getSharedPreferences( Prefs.COLORS_PREFS, Activity.MODE_PRIVATE );
         int bg_color = Prefs.getDefaultColor( Prefs.BGR_COLORS );
-        int fg_color = Prefs.getDefaultColor( Prefs.FGR_COLORS );
-        int sl_color = Prefs.getDefaultColor( Prefs.SEL_COLORS );
+            fgrColor = Prefs.getDefaultColor( Prefs.FGR_COLORS );
+            selColor = Prefs.getDefaultColor( Prefs.SEL_COLORS );
+          titleColor = Prefs.getDefaultColor( Prefs.TTL_COLORS );
         if( color_pref != null ) {
             bg_color = color_pref.getInt( Prefs.BGR_COLORS, bg_color );
-            fg_color = color_pref.getInt( Prefs.FGR_COLORS, fg_color );
-            sl_color = color_pref.getInt( Prefs.SEL_COLORS, sl_color );
+            fgrColor = color_pref.getInt( Prefs.FGR_COLORS,  fgrColor );
+            selColor = color_pref.getInt( Prefs.SEL_COLORS,  selColor );
+          titleColor = color_pref.getInt( Prefs.TTL_COLORS,titleColor );
         }
         for( int i = LEFT; i <= RIGHT; i++ ) {
             ListView flv = listViews[i];
             flv.setBackgroundColor( bg_color );
+            flv.setCacheColorHint( bg_color );
             CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
             if( ca != null ) {
-                ca.setMode( CommanderAdapter.SET_TXT_COLOR, fg_color );
-                ca.setMode( CommanderAdapter.SET_BGR_COLOR, bg_color );
-                ca.setMode( CommanderAdapter.SET_SEL_COLOR, sl_color );
+                ca.setMode( CommanderAdapter.SET_TXT_COLOR, fgrColor );
+                ca.setMode( CommanderAdapter.SET_SEL_COLOR, selColor );
             }
             else
                 Log.e( TAG, "CommanderAdapter is not defined" );
         }
+        highlightCurrentTitle();
     }
     public final void applySettings( SharedPreferences sharedPref ) {
         try {
@@ -340,8 +364,6 @@ public class Panels implements AdapterView.OnItemSelectedListener,
 
         boolean hidden_mode = sharedPref.getBoolean( ( which == LEFT ? "left" : "right" ) + "_show_hidden", true );
         ca.setMode( CommanderAdapter.MODE_HIDDEN, hidden_mode ? CommanderAdapter.SHOW_MODE : CommanderAdapter.HIDE_MODE );
-        
-        refreshLists();
     }
     public void changeSorting( int sort_mode ) {
         CommanderAdapter ca = getListAdapter( true );
@@ -362,19 +384,24 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 storeChoosedItems();
                 flv.clearChoices();
             }
-            ca.readSource( null );
+            ca.readSource( null, null );
             flv.invalidateViews();
         } catch( Exception e ) {
             Log.e( TAG, "refreshList()", e );
         }
     }
-    public final void recoverAfterRefresh() {
+    public final void recoverAfterRefresh( String item_name, int which_panel ) {
         try {
-            ListView flv = listViews[current];
-            reStoreChoosedItems();
-            if( !flv.isInTouchMode() && currentPositions[current] > 0 ) {
-                Log.i( TAG, "stored pos: " + currentPositions[current] );
-                flv.setSelection( currentPositions[current] );
+            if( item_name != null && which_panel >= 0 ) {
+                setSelection( which_panel, item_name );
+            }
+            else {
+                ListView flv = listViews[current];
+                reStoreChoosedItems();
+                if( !flv.isInTouchMode() && currentPositions[current] > 0 ) {
+                    Log.i( TAG, "stored pos: " + currentPositions[current] );
+                    flv.setSelection( currentPositions[current] );
+                }
             }
             refreshPanelTitles();
         } catch( Exception e ) {
@@ -570,13 +597,14 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 flv.setAdapter( (ListAdapter)ca );
             }
         }
+        applyColors();
         setPanelTitle( c.getString( R.string.wait ), which );
-        ca.readSource( uri );
+        ca.readSource( uri, null ); //current + posTo
         if( posTo != null ) {
             setSelection( which, posTo );
         }
         else
-            flv.setSelection( 0 );
+            setSelection( which, 0, 0 );
     }
     public void login( String to, String name, String pass ) {
         CommanderAdapter ca = getListAdapter( true );
@@ -828,8 +856,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         if( position == 0 )
             flv.setItemChecked( 0, false );
         
-        if( touchedThere ) {
-            touchedThere = false;
+        if( disableClick ) {
+            disableClick = false;
         }
         else {
             ((CommanderAdapter)listViews[current].getAdapter()).openItem( position );
@@ -845,14 +873,28 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     	resetQuickSearch();
 	    if( v instanceof ListView ) {
 	    	shorcutsFoldersList.closeGoPanel();
-	        final int act = event.getAction();
-	        if( act == MotionEvent.ACTION_DOWN ) {
-	            downY = event.getY();
-	            touchedThere = event.getX() > v.getWidth() / 2;
-	        }
-	        else if( act == MotionEvent.ACTION_UP ) {
-	            if( Math.abs( downY - event.getY() ) > 10. )
-	                touchedThere = false;
+	        switch( event.getAction() ) {
+	        case MotionEvent.ACTION_DOWN: {
+                    downX = event.getX();
+                    downY = event.getY();
+    	            disableClick = event.getX() > v.getWidth() / 2;
+    	            break;
+    	        }
+	        case MotionEvent.ACTION_UP: {
+    	            if( Math.abs( downY - event.getY() ) > 10. || 
+    	                Math.abs( downX - event.getX() ) > 10. )
+    	                disableClick = false;
+    	            break;
+    	        }
+/*
+	        case MotionEvent.ACTION_MOVE:
+	            if( Math.abs( downX - event.getX() ) > 100 && 
+	                Math.abs( downY - event.getY() ) < 20. ) { 
+	                c.showMessage( "sweep!" );
+	            }
+                disableClick = true;
+	            break;
+*/
 	        }
 	    }
         return false;

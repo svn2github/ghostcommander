@@ -89,8 +89,8 @@ public class FindAdapter extends CommanderAdapterBase {
                     }
                 }
             }
-            commander.notifyMe( commander.getContext().getString( R.string.deleted, cnt ),
-                    Commander.OPERATION_COMPLETED_REFRESH_REQUIRED, 0 );
+            commander.notifyMe( new Commander.Notify( commander.getContext().getString( R.string.deleted, cnt ),
+                    Commander.OPERATION_COMPLETED_REFRESH_REQUIRED ) );
             return true;
         }
         catch( SecurityException e ) {
@@ -143,7 +143,7 @@ public class FindAdapter extends CommanderAdapterBase {
     }
 
     @Override
-    public boolean readSource( Uri uri_ ) {
+    public boolean readSource( Uri uri_, String pass_back_on_done ) {
         try {
             if( worker != null ) worker.reqStop();
             if( uri_ != null )
@@ -154,7 +154,7 @@ public class FindAdapter extends CommanderAdapterBase {
                 String  path = uri.getPath();
                 String match = uri.getQueryParameter( "q" );
                 if( path != null && path.length() > 0 && match != null && match.length() > 0  ) {
-                    commander.notifyMe( null, Commander.OPERATION_STARTED, 0 );
+                    commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
                     worker = new SearchEngine( handler, match, path );
                     worker.start();
                     return true;
@@ -170,7 +170,8 @@ public class FindAdapter extends CommanderAdapterBase {
 
     @Override
     public boolean receiveItems( String[] fileURIs, boolean move ) {
-        commander.notifyMe( commander.getContext().getString( R.string.not_supported ), Commander.OPERATION_FAILED, 0 );
+        commander.notifyMe( new Commander.Notify( commander.getContext().getString( R.string.not_supported ), 
+                                Commander.OPERATION_FAILED ) );
         return false;
     }
 
@@ -189,7 +190,8 @@ public class FindAdapter extends CommanderAdapterBase {
 
     @Override
     public void reqItemsSize( SparseBooleanArray cis ) {
-        commander.notifyMe( commander.getContext().getString( R.string.not_supported ), Commander.OPERATION_FAILED, 0 );
+        commander.notifyMe( new Commander.Notify( commander.getContext().getString( R.string.not_supported ), 
+                                Commander.OPERATION_FAILED ) );
     }
 
     @Override

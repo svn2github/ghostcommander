@@ -102,11 +102,16 @@
                     android:title="@string/fgr_color_picker"
                     android:summary="@string/summary_fgr_color_picker">
             </PreferenceScreen>
-	        <PreferenceScreen
+            <PreferenceScreen
                     android:key="sel_color_picker"
                     android:title="@string/sel_color_picker"
                     android:summary="@string/summary_sel_color_picker">
-	        </PreferenceScreen>
+            </PreferenceScreen>
+            <PreferenceScreen
+                    android:key="ttl_color_picker"
+                    android:title="@string/ttl_color_picker"
+                    android:summary="@string/summary_ttl_color_picker">
+            </PreferenceScreen>
 	    </PreferenceScreen>
         <CheckBoxPreference
                 android:key="show_toolbar"

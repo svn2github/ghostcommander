@@ -57,7 +57,7 @@ public class FSAdapter extends CommanderAdapterBase {
     public void setIdentities( String name, String pass ) {
     }
     @Override
-    public boolean readSource( Uri d ) {
+    public boolean readSource( Uri d, String pass_back_on_done ) {
     	try {
     	    if( worker != null ) worker.reqStop();
             String dir_name = d != null ? d.getPath() : dirName;
@@ -65,8 +65,8 @@ public class FSAdapter extends CommanderAdapterBase {
             File dir = new File( dir_name );
             File[] files_ = dir.listFiles();
             if( files_ == null ) {
-            	commander.notifyMe( commander.getContext().getString( R.string.no_such_folder, dir_name ),
-            			            Commander.OPERATION_FAILED, 0 );
+            	commander.notifyMe( new Commander.Notify( commander.getContext().getString( R.string.no_such_folder, dir_name ),
+            			            Commander.OPERATION_FAILED ) );
                 return false;
             }
             dirName = dir_name;
@@ -90,7 +90,7 @@ public class FSAdapter extends CommanderAdapterBase {
             FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
             Arrays.sort( items, comp );
 
-            commander.notifyMe( null, Commander.OPERATION_COMPLETED, 0 );
+            commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pass_back_on_done ) );
             return true;
 		} catch( Exception e ) {
 			e.printStackTrace();
@@ -139,7 +139,7 @@ public class FSAdapter extends CommanderAdapterBase {
         	if( list != null ) {
         		if( worker != null && worker.reqStop() )
        		        return;
-        		commander.notifyMe( null, Commander.OPERATION_STARTED, 0 );
+        		commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
         		worker = new CalcSizesEngine( handler, list );
         		worker.start();
         	}
@@ -254,12 +254,12 @@ public class FSAdapter extends CommanderAdapterBase {
         	if( list != null ) {
         		if( worker != null && worker.reqStop() )
        		        return false;
-        		commander.notifyMe( null, Commander.OPERATION_STARTED, 0 );
+        		commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
         		worker = new DeleteEngine( handler, list );
         		worker.start();
         	}
 		} catch( Exception e ) {
-		    commander.notifyMe( e.getMessage(), Commander.OPERATION_FAILED, 0 );
+		    commander.notifyMe( new Commander.Notify( e.getMessage(), Commander.OPERATION_FAILED ) );
 		}
         return false;
     }
@@ -347,7 +347,7 @@ public class FSAdapter extends CommanderAdapterBase {
             else {
                 if( worker != null && worker.reqStop() )
                     return false;
-                commander.notifyMe( null, Commander.OPERATION_STARTED, 0 );
+                commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
             	worker = new CopyEngine( handler, list, dirName );
             	worker.start();
 	            return true;

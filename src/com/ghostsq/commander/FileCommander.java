@@ -3,6 +3,8 @@ package com.ghostsq.commander;
 import java.io.File;
 import java.util.ArrayList;
 
+import com.ghostsq.commander.Commander.Notify;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Dialog;
@@ -211,7 +213,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             Log.e(TAG, "Can't cast MenuInfo to AdapterView.AdapterContextMenuInfo", e);
             return true;
         }
-        panels.setSelection(info.position);
+        panels.setSelection( info.position );
         int item_id = item.getItemId();
         switch( item_id ) {
         case CHANGE_LOCATION:
@@ -543,8 +545,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     }
 
     @Override
-    public void notifyMe( String string, int progress, int progressSec ) {
-        if( progress == Commander.OPERATION_STARTED ) {
+    public void notifyMe( Notify progress ) {
+        if( progress.status == Commander.OPERATION_STARTED ) {
             setProgressBarIndeterminateVisibility( true );
             return;
         }
@@ -554,26 +556,26 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             Dialog d = dh.getDialog();
             if( d != null && d.isShowing() ) {
                 dialog_enabled = true;
-                if( progress < 0 )
+                if( progress.status < 0 )
                     d.cancel();
                 else
-                    dh.setMessage(string, progress, progressSec);
+                    dh.setMessage( progress.string, progress.status, progress.substat );
             }
         }
-        if( progress >= 0 ) {
-            if( !dialog_enabled && progressSec < 0 )
-                showMessage(string);
+        if( progress.status >= 0 ) {
+            if( !dialog_enabled && progress.substat < 0 )
+                showMessage( progress.string );
             return;
         }
         setProgressBarIndeterminateVisibility( false );
-        switch( progress ) {
+        switch( progress.status ) {
         case OPERATION_FAILED:
-            showError("Failed" + ( string != null && string.length() > 0 ? ":\n" + string : "." ));
+            showError("Failed" + ( progress.string != null && progress.string.length() > 0 ? ":\n" + progress.string : "." ));
             return;
         case OPERATION_FAILED_LOGIN_REQUIRED: 
-            if( string != null ) {
+            if( progress.string != null ) {
                 dh = obtainDialogsInstance(Dialogs.LOGIN_DIALOG);
-                dh.setMessageToBeShown( null, string );
+                dh.setMessageToBeShown( null, progress.string );
                 showDialog( Dialogs.LOGIN_DIALOG );
             }
             return;
@@ -581,11 +583,17 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             panels.refreshLists();
             break;
         case OPERATION_COMPLETED:
-            panels.recoverAfterRefresh();
+            if( progress.cookie != null && progress.cookie.length() > 0 ) {
+                int which_panel = progress.cookie.charAt( 0 ) == '1' ? 1 : 0;
+                String item_name = progress.cookie.substring( 1 );
+                panels.recoverAfterRefresh( item_name, which_panel );
+            }
+            else
+                panels.recoverAfterRefresh( null, -1 );
             break;
         }
-        if( string != null && string.length() > 0 )
-            showInfo( string );
+        if( progress.string != null && progress.string.length() > 0 )
+            showInfo( progress.string );
     }
 
     @Override
@@ -604,8 +612,12 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     public void showInfo( String msg ) {
-        Dialogs dh = obtainDialogsInstance(Dialogs.INFO_DIALOG);
-        dh.setMessageToBeShown(msg, null);
-        showDialog( Dialogs.INFO_DIALOG );
+        if( msg.length() < 50 )
+            showMessage( msg );
+        else {
+            Dialogs dh = obtainDialogsInstance(Dialogs.INFO_DIALOG);
+            dh.setMessageToBeShown(msg, null);
+            showDialog( Dialogs.INFO_DIALOG );
+        }
     }
 }

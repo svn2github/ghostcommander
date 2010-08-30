@@ -23,8 +23,7 @@ public interface CommanderAdapter {
                           MODE_SORTING = 0x30,   SORT_NAME = 0x00,    SORT_SIZE = 0x10, SORT_DATE = 0x20, SORT_EXT = 0x30,
                             MODE_CASE  = 0x40,   CASE_SENS = 0x0,   CASE_IGNORE = 0x40,
                             MODE_ICONS = 0x80,   ICON_MODE = 0x0,     TEXT_MODE = 0x80,
-                       SET_MODE_COLORS = 0xF0000000, 
-                         SET_TXT_COLOR = 0x10000000, SET_BGR_COLOR = 0x20000000, SET_SEL_COLOR = 0x30000000;
+                       SET_MODE_COLORS = 0xF0000000, SET_TXT_COLOR = 0x10000000, SET_SEL_COLOR = 0x20000000;
     /**
      * @param mask - see bits above 
      * @param mode - see bits above 
@@ -38,8 +37,9 @@ public interface CommanderAdapter {
     
     /**
      * @param uri - a folder's URI to initialize. If null passed, just refresh
+     * @param pass_back_on_done - the file name to select
      */
-	public boolean readSource( Uri uri );
+	public boolean readSource( Uri uri, String pass_back_on_done );
 
 	/**
 	 * @return current adapter's source URI

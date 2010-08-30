@@ -167,7 +167,10 @@
     <string name="fgr_color_picker">Foreground color</string>
     <string name="summary_fgr_color_picker">Choose a desired color for the file names</string>
     <string name="sel_color_picker">Selected color</string>
-    <string name="summary_sel_color_picker">Choose a desired color for selected files</string>
+    <string name="summary_sel_color_picker">Choose a desired color for selected files and the panel\'s title</string>
+    <string name="ttl_color_picker">Title color</string>
+    <string name="summary_ttl_color_picker">Panel title background color</string>
+    <string name="pick_color">Set color</string>
 
     <string name="editor_activity">Editor Activity Name</string>
     <string name="summary_editor_activity">EDIT action Activity's full class name. Package name = class name prefix.</string>

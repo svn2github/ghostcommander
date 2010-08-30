@@ -7,12 +7,13 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 
 public class Prefs extends PreferenceActivity implements Preference.OnPreferenceClickListener,
-                                                  ColorPickerDialog.OnColorChangedListener  
+                                                          RGBPickerDialog.ColorChangeListener  
 {
     public static final String COLORS_PREFS = "colors"; 
     public static final String BGR_COLORS = "bgr_color_picker"; 
     public static final String FGR_COLORS = "fgr_color_picker"; 
     public static final String SEL_COLORS = "sel_color_picker"; 
+    public static final String TTL_COLORS = "ttl_color_picker"; 
     private SharedPreferences color_pref = null;
     private String color_pref_key = null;
     
@@ -32,6 +33,9 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
         color_picker_pref = (Preference)findPreference( SEL_COLORS );
         if( color_picker_pref != null )
             color_picker_pref.setOnPreferenceClickListener( this );
+        color_picker_pref = (Preference)findPreference( TTL_COLORS );
+        if( color_picker_pref != null )
+            color_picker_pref.setOnPreferenceClickListener( this );
     }
 
     @Override
@@ -39,7 +43,7 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
         color_pref = getSharedPreferences( COLORS_PREFS, Activity.MODE_PRIVATE );
         color_pref_key = preference.getKey();
         int color = color_pref.getInt( color_pref_key, getDefaultColor( color_pref_key ) );
-        new ColorPickerDialog( this, this, color ).show();
+        new RGBPickerDialog( this, this, color ).show();
         return false;
     }
 
@@ -54,9 +58,10 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
         }
     }
     public static int getDefaultColor( String key ) {
-        if( key.equals( BGR_COLORS ) ) return 0xFF000000;
-        if( key.equals( FGR_COLORS ) ) return 0xFFFFFFFF;
+        if( key.equals( BGR_COLORS ) ) return 0xFF191919;
+        if( key.equals( FGR_COLORS ) ) return 0xFFF0F0F0;
         if( key.equals( SEL_COLORS ) ) return 0xFF4169E1;
+        if( key.equals( TTL_COLORS ) ) return 0xFF555555;
         return 0;
     }
 }

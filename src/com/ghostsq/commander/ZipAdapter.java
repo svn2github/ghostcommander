@@ -170,7 +170,7 @@ public class ZipAdapter extends CommanderAdapterBase {
     public void setIdentities( String name, String pass ) {
     }
     @Override
-    public boolean readSource( Uri tmp_uri ) {
+    public boolean readSource( Uri tmp_uri, String p ) {
         try {
             if( tmp_uri != null )
            	    uri = tmp_uri;
@@ -185,7 +185,7 @@ public class ZipAdapter extends CommanderAdapterBase {
 	            		return false;      
             	}
             }
-            commander.notifyMe( null, Commander.OPERATION_STARTED, 0 );
+            commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
             worker = new ListEngine( handler );
             worker.start();
             return true;
@@ -194,12 +194,12 @@ public class ZipAdapter extends CommanderAdapterBase {
         	commander.showError( "Exception: " + e );
         	e.printStackTrace();
         }
-        commander.notifyMe( "Fail", Commander.OPERATION_FAILED, 0 );
+        commander.notifyMe( new Commander.Notify( "Fail", Commander.OPERATION_FAILED ) );
         return false;
     }
 	@Override
 	public void reqItemsSize( SparseBooleanArray cis ) {
-		commander.notifyMe( "Not supported.", Commander.OPERATION_FAILED, 0 );
+		commander.notifyMe( new Commander.Notify( "Not supported.", Commander.OPERATION_FAILED ) );
 	}
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
@@ -211,14 +211,14 @@ public class ZipAdapter extends CommanderAdapterBase {
 		        	if( !checkReadyness() ) return false;
 		        	ZipEntry[] subItems = bitsToItems( cis );
 		        	if( subItems != null ) {
-		        	    commander.notifyMe( null, Commander.OPERATION_STARTED, 0 );
+		        	    commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
 		                worker = new CopyFromEngine( handler, subItems, dest );
 		                worker.start();
 		                return true;
 		        	}
 	        	}
         	}
-        	commander.notifyMe( "Failed to proceed.", Commander.OPERATION_FAILED, 0 );
+        	commander.notifyMe( new Commander.Notify( "Failed to proceed.", Commander.OPERATION_FAILED ) );
         }
         catch( Exception e ) {
             commander.showError( "Exception: " + e.getMessage() );
@@ -340,17 +340,17 @@ public class ZipAdapter extends CommanderAdapterBase {
 	    
 	@Override
 	public boolean createFile( String fileURI ) {
-		commander.notifyMe( "Operation not supported", Commander.OPERATION_FAILED, 0 );
+		commander.notifyMe( new Commander.Notify( "Operation not supported", Commander.OPERATION_FAILED ) );
 		return false;
 	}
     @Override
     public void createFolder( String string ) {
-        commander.notifyMe( "Not supported", Commander.OPERATION_FAILED, 0 );
+        commander.notifyMe( new Commander.Notify( "Not supported", Commander.OPERATION_FAILED ) );
     }
 
     @Override
     public boolean deleteItems( SparseBooleanArray cis ) {
-        commander.notifyMe( "Not supported", Commander.OPERATION_FAILED, 0 );
+        commander.notifyMe( new Commander.Notify( "Not supported", Commander.OPERATION_FAILED ) );
 /*
         try {
         	if( !checkReadyness() ) return false;
@@ -472,7 +472,7 @@ public class ZipAdapter extends CommanderAdapterBase {
 
     @Override
     public boolean receiveItems( String[] uris, boolean move ) {
-        commander.notifyMe( "Not supported", Commander.OPERATION_FAILED, 0 );
+        commander.notifyMe( new Commander.Notify( "Not supported", Commander.OPERATION_FAILED ) );
 
 /*
     	try {
@@ -615,7 +615,7 @@ public class ZipAdapter extends CommanderAdapterBase {
     private final boolean checkReadyness()   
     {
         if( worker != null ) {
-        	commander.notifyMe( "busy!", Commander.OPERATION_FAILED, 0 );
+        	commander.notifyMe( new Commander.Notify( "busy!", Commander.OPERATION_FAILED ) );
         	return false;
         }
     	return true;

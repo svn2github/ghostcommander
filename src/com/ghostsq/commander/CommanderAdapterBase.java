@@ -34,7 +34,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     private   static boolean long_date = Locale.getDefault().getLanguage().compareTo( "en" ) != 0;
     protected LayoutInflater mInflater = null;
     private   int    parentWidth, imgWidth, nameWidth, sizeWidth, dateWidth;
-    private   int    fg_color, bg_color, sl_color;
+    private   int    fg_color, sl_color;
     private   boolean dirty = true;
     protected int    mode = 0;
     protected String parentLink;
@@ -49,7 +49,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 onComplete( worker );
                 worker = null;
             }
-            commander.notifyMe( str, perc1, perc2 );
+            commander.notifyMe( new Commander.Notify( str, perc1, perc2 ) );
         }
     };
     
@@ -82,7 +82,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         if( ( mask & SET_MODE_COLORS ) != 0 ) {
             switch( mask & SET_MODE_COLORS ) {
             case SET_TXT_COLOR: fg_color = val; break;
-            case SET_BGR_COLOR: bg_color = val; break;
             case SET_SEL_COLOR: sl_color = val; break;
             }
             return;
@@ -132,7 +131,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             }
             else {
                 row_view = convertView;
-                row_view.setBackgroundColor( 0 );
+                row_view.setBackgroundColor( 0 ); // transparent
             }
             boolean icons = ( mode & MODE_ICONS ) == ICON_MODE;
             boolean fat = wm && ( mode & MODE_FINGERF ) == FAT_MODE;
@@ -141,7 +140,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             
             String name = item.dir ? item.name : " " + item.name, size = "", date = "";
             if( dm ) {
-            	if( !item.dir  )
+            	if( !item.dir && item.size >= 0 )
             		size = Utils.getHumanSize( item.size );
                 if( item.date != null ) {
                     if( long_date ) {
@@ -165,9 +164,8 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 dateWidth = wm ? (parent_width - ( imgWidth + nameWidth + sizeWidth )) : parent_width / 2;
                 dirty = false;
             }
-            if( item.sel ) {
-                row_view.setBackgroundColor( sl_color );
-            }
+            if( item.sel )
+                row_view.setBackgroundColor( sl_color & 0xCFFFFFFF  );
 
             ImageView imgView = (ImageView)row_view.findViewById( R.id.fld_icon );
             if( imgView != null ) {
@@ -191,14 +189,14 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 sizeView.setVisibility( dm ? View.VISIBLE : View.GONE );
                 sizeView.setWidth( sizeWidth );
                 sizeView.setText( size );
-                //sizeView.setTextColor( fg_color );
+                sizeView.setTextColor( fg_color );
             }
             TextView dateView = (TextView)row_view.findViewById( R.id.fld_date );
             if( dateView != null ) {
                 sizeView.setVisibility( dm ? View.VISIBLE : View.GONE );
                 dateView.setWidth( dateWidth );
                 dateView.setText( date );
-                //dateView.setTextColor( fg_color );
+                dateView.setTextColor( fg_color );
             }
             row_view.setTag( null );
     

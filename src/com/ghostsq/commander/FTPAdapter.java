@@ -183,7 +183,7 @@ public class FTPAdapter extends CommanderAdapterBase {
         theUserPass.set( name, pass );
     }
     @Override
-    public boolean readSource( Uri tmp_uri ) {
+    public boolean readSource( Uri tmp_uri, String pass_back_on_done ) {
         try {
             boolean need_reconnect = false;
             if( tmp_uri != null ) { 
@@ -217,7 +217,7 @@ public class FTPAdapter extends CommanderAdapterBase {
 	            		return false;      
             	}
             }
-            commander.notifyMe( null, Commander.OPERATION_STARTED, 0 );
+            commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
             worker = new ListEngine( handler, need_reconnect );
             worker.start();
             return true;
@@ -226,12 +226,12 @@ public class FTPAdapter extends CommanderAdapterBase {
         	commander.showError( "Exception: " + e );
         	e.printStackTrace();
         }
-        commander.notifyMe( ftp.getLog(), Commander.OPERATION_FAILED, 0 );
+        commander.notifyMe( new Commander.Notify( ftp.getLog(), Commander.OPERATION_FAILED ) );
         return false;
     }
 	@Override
 	public void reqItemsSize( SparseBooleanArray cis ) {
-		commander.notifyMe( "Not supported.", Commander.OPERATION_FAILED, 0 );
+		commander.notifyMe( new Commander.Notify( "Not supported.", Commander.OPERATION_FAILED ) );
 	}
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
@@ -243,14 +243,14 @@ public class FTPAdapter extends CommanderAdapterBase {
 		        	if( !checkReadyness() ) return false;
 		        	FTPItem[] subItems = bitsToItems( cis );
 		        	if( subItems != null ) {
-		        	    commander.notifyMe( null, Commander.OPERATION_STARTED, 0 );
+		        	    commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
 		                worker = new CopyFromEngine( handler, subItems, dest );
 		                worker.start();
 		                return true;
 		        	}
 	        	}
         	}
-        	commander.notifyMe( "Failed to proceed.", Commander.OPERATION_FAILED, 0 );
+        	commander.notifyMe( new Commander.Notify( "Failed to proceed.", Commander.OPERATION_FAILED ) );
         }
         catch( Exception e ) {
             commander.showError( "Exception: " + e.getMessage() );
@@ -354,7 +354,8 @@ public class FTPAdapter extends CommanderAdapterBase {
 	    
 	@Override
 	public boolean createFile( String fileURI ) {
-		commander.notifyMe( "Operation not supported on a FTP folder.", Commander.OPERATION_FAILED, 0 );
+		commander.notifyMe( new Commander.Notify( "Operation not supported on a FTP folder.", 
+		                        Commander.OPERATION_FAILED ) );
 		return false;
 	}
     @Override
@@ -371,7 +372,7 @@ public class FTPAdapter extends CommanderAdapterBase {
         	if( !checkReadyness() ) return false;
         	FTPItem[] subItems = bitsToItems( cis );
         	if( subItems != null ) {
-        	    commander.notifyMe( null, Commander.OPERATION_STARTED, 0 );
+        	    commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
                 worker = new DelEngine( handler, subItems );
                 worker.start();
 	            return true;
@@ -496,20 +497,20 @@ public class FTPAdapter extends CommanderAdapterBase {
     	try {
     		if( !checkReadyness() ) return false;
             if( uris == null || uris.length == 0 ) {
-            	commander.notifyMe( "Nothing to copy", Commander.OPERATION_FAILED, 0 );
+            	commander.notifyMe( new Commander.Notify( "Nothing to copy", Commander.OPERATION_FAILED ) );
             	return false;
             }
             File[] list = Utils.getListOfFiles( uris );
             if( list == null ) {
-            	commander.notifyMe( "Something wrong with the files", Commander.OPERATION_FAILED, 0 );
+            	commander.notifyMe( new Commander.Notify( "Something wrong with the files", Commander.OPERATION_FAILED ) );
             	return false;
             }
-            commander.notifyMe( null, Commander.OPERATION_STARTED, 0 );
+            commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
             worker = new CopyToEngine( handler, list, move );
             worker.start();
             return true;
 		} catch( Exception e ) {
-			commander.notifyMe( "Exception: " + e.getMessage(), Commander.OPERATION_FAILED, 0 );
+			commander.notifyMe( new Commander.Notify( "Exception: " + e.getMessage(), Commander.OPERATION_FAILED ) );
 		}
 		return false;
     }
@@ -656,11 +657,11 @@ public class FTPAdapter extends CommanderAdapterBase {
     private final boolean checkReadyness()   
     {
         if( worker != null ) {
-        	commander.notifyMe( "ftp adapter is busy!", Commander.OPERATION_FAILED, 0 );
+        	commander.notifyMe( new Commander.Notify( "ftp adapter is busy!", Commander.OPERATION_FAILED ) );
         	return false;
         }
         if( !ftp.isLoggedIn() ) {
-        	commander.notifyMe( "Not logged in!", Commander.OPERATION_FAILED, 0 );
+        	commander.notifyMe( new Commander.Notify( "Not logged in!", Commander.OPERATION_FAILED ) );
         	return false;
         }
     	return true;
