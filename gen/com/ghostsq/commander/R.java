@@ -161,17 +161,18 @@ public final class R {
         public static final int arrow_mode=0x7f07002a;
         public static final int bgr_color_picker=0x7f07008c;
         public static final int binary_file=0x7f07009f;
-        public static final int bug_warning=0x7f0700ae;
+        public static final int bug_warning=0x7f0700af;
         public static final int cant_open=0x7f0700a0;
         public static final int cant_save=0x7f0700a1;
         public static final int cd_prompt=0x7f070053;
         public static final int cd_title=0x7f070052;
         public static final int change=0x7f070013;
-        public static final int col_sw=0x7f0700ad;
+        public static final int col_sw=0x7f0700ae;
         public static final int colors=0x7f07008b;
         public static final int confirm=0x7f070059;
         public static final int copy_move_not_alwd=0x7f070045;
         /**  copy_title/move_title 
+ copy_title/move_title 
  copy_title/move_title 
  copy_title/move_title 
  copy_title/move_title 
@@ -185,6 +186,7 @@ public final class R {
          */
         public static final int delete_title=0x7f070048;
         /**  file name/summary 
+ file name/summary 
  file name/summary 
  file name/summary 
  file name/summary 
@@ -233,7 +235,9 @@ public final class R {
         public static final int layout_settings=0x7f070062;
         public static final int left_panel_settings=0x7f07007f;
         public static final int list=0x7f070003;
+        public static final int lista=0x7f0700ad;
         /**  copy_title/move_title, file name/summary 
+ copy_title/move_title, file name/summary 
  copy_title/move_title, file name/summary 
  copy_title/move_title, file name/summary 
  copy_title/move_title, file name/summary 
