@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="sorting">
+        <item>Név</item>
+        <item>Kiterjesztés</item>
+        <item>Méret</item>
+        <item>Dátum</item>  
+    </string-array>
+    <string-array name="sorting_vals">
+        <item>n</item>
+        <item>e</item>
+        <item>s</item>
+        <item>d</item>  
+    </string-array>
+</resources>

@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Ghost Commander</string>
+    
+    <string name="file">Fájl</string>
+    <string name="panel">Panel</string>
+    <string name="lista">List</string>
+    <string name="app">Alkalmazás</string>
+    <string name="help">Súgó</string>
+    
+    <string name="F1">1 Súgó</string>
+    <string name="F2">2 Átnevez</string>
+    <string name="F3">3 Néz</string>
+    <string name="F4">4 Szerk.</string>
+    <string name="SF4">&#xA0; Létrehoz</string>
+    <string name="F5">5 Másol</string>
+    <string name="F6">6 Mozgat</string>
+    <string name="F7">7 Könyvt.lh</string>
+    <string name="F8">8 Töröl</string>
+    <string name="F9">9 Tulajd.</string>
+    <string name="F10">0 Kilép</string>
+    <string name="oth_sh_this">= Másik panel igazítása a jelenlegihez</string>
+    <string name="eq">= Ugyanaz</string>
+    <string name="change">&#x21E6; Vált</string>
+    <string name="tgl">&#x21E6; Vált</string>
+    <string name="sz">\" Méret</string>
+    <string name="refresh">&#xA0; Frissít</string>
+    <string name="enter">&#xA0; Mappa változtatása</string>
+    <string name="add_fav">* Jelenlegi mappa kedvenccé tétele</string>
+    <string name="enter_ftp">&#xA0; FTP kapcsolat</string>
+    <string name="search_file">/ Fájl keresése</string>
+
+    <string name="sort_by_name">&#xA0; Név</string>
+    <string name="sort_by_ext" >&#xA0; Kiterjesztés</string>
+    <string name="sort_by_size">&#xA0; méret</string>
+    <string name="sort_by_date">&#xA0; Dátum</string>
+    <string name="select_all">+ Mindet kijelöl</string>
+    <string name="unselect_all">- Kijelölés törlése</string>
+        
+    <string name="prefs">9 Beállítások</string>
+    <string name="about">&#xA0; Névjegy</string>
+    <string name="keys">1 Gyorsbillentyűk</string>
+    <string name="new_file">Fájl létrehozása</string>
+
+    <string name="go_button">Ugrás</string>
+    <string name="show_size">Méret számolása</string>
+    <string name="send_to">Küldés...</string>
+    <string name="open_with">Megnyitás...</string>
+
+    <string name="input_settings">Bevitel</string>
+    <string name="arrow_mode">Nyíl utasítások</string>
+    <string name="summary_arrow_mode">Bal/jobb nyíl Vált/kijelöl</string>
+
+    <string name="prefs_label">Beállítások</string>
+    <string name="editor_label">Szövegszerkesztő</string>
+
+    <string name="wait"> Várjon... </string>
+
+    <string name="dialog_yes">Igen</string>
+    <string name="dialog_no">Nem</string>
+    <string name="dialog_ok">Ok</string>
+    <string name="dialog_cancel">Mégsem</string>
+    <string name="dialog_close">Bezár</string>
+    <string name="dialog_exit">Kilép</string>
+
+    <string name="dialog_abort">Megszakít</string>
+    <string name="dialog_retry">Újra</string>
+    <string name="dialog_ignore">Mellőz</string>
+    
+    <string name="edit_title">Szerkeszt</string>
+    <string name="newf_prompt">Új fájl neve</string>
+    <string name="rename_title">Átnevez</string>
+    <string name="rename_prompt">Átnevez:</string>
+    <string name="rename_err">Nem átnevezhető.</string>
+    <string name="mkdir_title">Könyvt. létreh.</string>
+    <string name="mkdir_prompt">Könyvtár létrehozása:</string>
+    <string name="search_title">Keres</string>
+    <string name="search_prompt">Fájlnév:</string>
+    <string name="copy_title">Másol</string>
+    <string name="move_title">Mozgat</string>
+    <string name="no_items">A művelethez nem állnak rendelkezésre fájlok.</string>
+    <string name="find_on_fs_only">A keresés csak a helyi fájlrendszerben működik.</string>
+    
+    
+    <string name="copy_move_not_alwd">A '%s' Nem megengedett. Jelöljön ki valamit.</string><!-- copy_title/move_title -->
+    <string name="copy_move_to">%s %s:"</string><!-- copy_title/move_title, file name/summary -->
+    <string name="login_title">Bejelentkezés</string>
+    <string name="delete_title">Töröl</string>
+    <string name="delete_err">Nem törölhető</string>
+    <string name="delete_q">"Törli %s ?"</string><!-- file name/summary -->
+    <string name="deleted">%d törölve</string>
+    <string name="search_done">Keresés kész</string>
+    <string name="done">Kész</string>
+    <string name="interrupted">Megszakítva</string>
+    <string name="too_deep_hierarchy">A fájlrendszer túl mély</string>
+    <string name="nothing_found">Nem található fájl.</string>
+    <string name="preparing">Előkészítés...</string>
+    
+    <string name="cd_title">Ugrás</string>
+    <string name="cd_prompt">Könyvtár váltása:</string>
+
+    <string name="not_supported">A művelet nem támogatott.</string>
+    <string name="select_some">Nem történt kiválasztás</string>
+    <string name="select">Kiválaszt</string>
+    <string name="error">Hiba</string>
+    <string name="info">Információ</string>
+    <string name="confirm">Jóváhagy</string>
+    <string name="progress">Folyamat</string>
+    <string name="alert">Riasztás</string>
+
+    <string name="ftp_server">FTP szerver:</string>
+    <string name="ftp_path">FTP útvonal:</string>
+    <string name="username">Felhasználó:</string>
+    <string name="password">Jelszó:</string>
+    <string name="ftp_connect">Kapcsolódás</string>
+    <string name="ftp_cancel">Mégsem</string>
+    
+
+    <string name="layout_settings">Elrendezés beállítása:</string>
+    <string name="panels_mode">Párhuzamos panelek</string>
+    <string name="summary_panels_mode">Mindkét panel mutatása osztott képernyőn.</string>
+    <string name="two_lines">Két sorba</string>
+    <string name="summary_two_lines">Mindig mutassa az attribútumot a második sorban.</string>
+    <string name="show_icons">Fájl ikonok</string>
+    <string name="summary_show_icons">Mutassa a fájltípus ikonját</string>
+    <string name="show_toolbar">Eszközök mutatása</string>
+    <string name="summary_show_toolbar">Mutassa vagy rejtse el a gombokat a képernyő alján</string>
+    <string name="toolbar_preference">Válassza ki a kijelzendő gombokat</string>
+    <string name="summary_toolbar_preference">Parancsgombok testreszabása az eszközsoron</string>
+    <string name="show_F1">&#xAB; 1 Súgó&#xBB;</string>
+    <string name="show_F2">&#xAB; 2 Átnevez&#xBB;</string>
+    <string name="show_F3"> &#xAB; 3 Megnéz&#xBB;</string>
+    <string name="show_F4">&#xAB; 4 Szerkeszt&#xBB;</string>
+    <string name="show_SF4"> &#xAB; &#xA0; Létrehoz&#xBB;</string>
+    <string name="show_F5">&#xAB; 5 Másol&#xBB;</string>
+    <string name="show_F6">&#xAB; 6 Mozgat&#xBB;</string>
+    <string name="show_F7">&#xAB; 7 Könyvt. létrehozása&#xBB;</string>
+    <string name="show_F8">&#xAB; 8 Töröl&#xBB;</string>
+    <string name="show_F9">&#xAB; 9 Menü&#xBB;</string>
+    <string name="show_F10">&#xAB; 0 Kilép&#xBB;</string>
+    <string name="show_eq">&#xAB; = Panel másolása&#xBB;</string>
+    <string name="show_tgl">&#xAB; &#x21E6; Váltás&#xBB;</string>
+    <string name="show_sz"> &#xAB; \" Méret&#xBB;</string>
+
+    <string name="finger_friendly">Ujjbarát kijelző</string>
+    <string name="summary_finger_friendly">Felhasználói gombok növelése</string>
+    <string name="prevent_root">Root figyelmeztetés</string>
+    <string name="summary_prevent_root">Figyelmeztessen ha a Root mappába lép.</string>
+
+    <string name="left_panel_settings">Bal panel beállítása</string>
+    <string name="right_panel_settings">Jobb panel beállítása</string>
+    <string name="detailed_view_SbS">Részletezés ha kétoldalas</string>
+    <string name="summary_detailed_view_SbS">Mutassa a méretet és a dátumot, ha mindkét panel látszik</string>
+    <string name="detailed_view_Ovr">Részletezés ha egyoldalas</string>
+    <string name="summary_detailed_view_Ovr">Mutassa a méretet és a dátumot, ha egy panel látszik</string>
+    <string name="sorting">Rendezés</string>
+    <string name="summary_sorting">Elemek rendezése a listában</string>
+    <string name="sort_case">Kis/nagybetűk</string>
+    <string name="summary_sort_case">Ha nincs kijelölve, a kis/nagybetű számít.</string>
+    
+    <string name="show_hidden">Rejtett fájlok mutatása</string>
+    <string name="summary_show_hidden">Ha be van jelölve  .-al kezdődö nevek kihagyásra kerülnek</string>
+
+    <string name="colors">Színbeállítás</string>
+    <string name="bgr_color_picker">Háttérszín</string>
+    <string name="summary_bgr_color_picker">Válasszon ki egy háttérszínt</string>
+    <string name="fgr_color_picker">Fájlnév színe</string>
+    <string name="summary_fgr_color_picker">Válasszon ki egy színt a fájlneveknek</string>
+    <string name="sel_color_picker">Kijelölés színe</string>
+    <string name="summary_sel_color_picker">Válasszon ki egy színt a panel vagy fájl kijelöléshez</string>
+    <string name="ttl_color_picker">Címsor színe</string>
+    <string name="summary_ttl_color_picker">Panelcím háttérszíne</string>
+    <string name="pick_color">Szín beállítása</string>
+
+    <string name="editor_activity">Szerkesztő tevékenység neve</string>
+    <string name="summary_editor_activity">EDIT action Activity's full class name. Package name = class name prefix.</string>
+    <string name="value_editor_activity">com.ghostsq.commander.Editor</string>
+    
+    <string name="nothing_to_open">Nincs mit megnyitni</string>
+    <string name="remind_to_save">Ne felejtse elmenteni a változásokat (Menü gomb)</string>
+    <string name="save">Ment</string>
+    <string name="revert">Visszavon</string>
+    <string name="wrap">Tördelés</string>
+    <string name="no_such_file">Nincs ilyen fájl \"%s\"</string>
+    <string name="too_big_file">A fájl \"%s\" túl nagy.</string>
+    <string name="binary_file">A fájl \"%s\" bináris. Tönkreteheti. Saját felelősségre szerkessze.</string>    
+    <string name="cant_open">Nem megnyitható.</string>    
+    <string name="cant_save">Nem menthető a fájl.</string>
+    <string name="nav_warn">Rendszerkönyvtár megnyitása. Változtatások hibához vezethetnek. Biztos benne?</string>
+    <string name="nav_warn_cmt">(Ki tudja kapcsolni ezt a figyelmeztetést a beállításokban )\nKattintson a  "Mégsem" gombra az /sdcard mappába lépéshez. Kattintson a "Kilépés"-re Az alkalmazás bezárásához.</string>
+    <string name="no_such_folder">\"%s\" Nem ltező mappa!</string>
+    <string name="fav_added">A mappa \"%s\" hozzáadva a kedvencekhez</string>
+
+    <string name="donate">&#xA0; Támogatás</string>
+    <string name="online_help">&#xA0; Online Súgó</string>
+    
+    <string name="donation">Bármilyen összegű támogatással a &#xAB;Ghost Commander&#xBB;  fejlesztéséhez; járul hozzá.\n
+Kattintson az  \"Ok\"-ra A PayPal-os támogatáshoz.\n
+Vagy kattintson a \"Mégsem\"-re a &#xAB;Ghost Commander&#xBB; folytatásáhozdíjmentesen.\n
+    </string>
+    <string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
+    <string name="help_uri">http://sites.google.com/site/ghostcommander1/info</string>
+    
+    
+    <string name="about_text">
+        Ghost Commander v%s\n
+        A Fájl menedzser.\n\n
+	Magyarra fordította: Attilaszu\n\n
+        Kérjük továbbítsa a hibákat/javaslatokat\n
+        ghost.sq2@gmail.com\n
+        Köszönjük.\n\n\n 
+        Nyilatkozat:\nA szoftver használatával egyetért az alábbiakkal:
+A szoftver szerzője nem felelős semmilyen kárért, információvesztésért, járulékos károkért, vagy bármiért ami a szoftver használatakor keletkezett.Ön a saját felelősségére használja a programot.\n
+Ha nem ért egyet a fentiekkel, kérjük fejezze be a használatot, és törölje a programot.\n
+    </string>
+    <string name="keys_text">
+    "
+Egy fájl kiválasztásához kattintson a sor jobb oldalára.\n    Hogy manuálisan írja be az útvonalat, vagy a kedvenceket, nyomja meg hosszan a panel címsorát.\n\n
+    Gyorsgombok:\nHangerőFel - Aktuális elem kijelölése\n
+HangerőLe - Panelek cseréje\n
++,-   - Az aktuális mappában kijelöl mindent/vagy törli a kijelölést\n  
+(, )  - Üsse be az útvonalat a bal vagy jobb panelen\n
+* - Jelenlegi mappa hozzáadása a kedvencekhez\n
+\" - Kiválasztott fájlok összméretének kijelzése\n
+= - A másik panelen ugyanat mutatja mint a jelenlegin\n
+1 - Súgó\n
+2 - Jelenlegi fájl átnevezése\n
+4 - Jelenlegi fájl szerkesztése\n
+5 - Kijelölt fájlok másolása\n
+6 - Kijelölt fájlok mozgatása\n
+7 - Új mappa hozzáadása\n
+8 - Fájlok vagy mappák törlése\n
+9 - Beállítások megnyitása\n
+0 - Program bezárása\n
+[A-z] - Gyorskeresés\n    
+    \nAnoním FTP mappa megnyitásához a következő módon írja be az útvonalat:\n
+    ftp://host.com/folder\n
+Vagy ha azonosíítani kell magát akkor így:\n
+    ftp://user:password@host.com/folder\n\n"
+    </string>
+    
+</resources>
