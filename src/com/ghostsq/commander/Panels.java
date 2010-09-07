@@ -532,10 +532,10 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
         String scheme = uri.getScheme();
         if( scheme != null && scheme.compareTo( "ftp" ) == 0 ) {
-        	try {
+            try {
                 if( ca == null || !( ca instanceof FTPAdapter ) ) {
-                	if( ca != null )
-                	    ca.prepareToDestroy();
+                    if( ca != null )
+                        ca.prepareToDestroy();
                     ca = new FTPAdapter();
                     ca.Init( c );
                     ca.setMode( CommanderAdapter.WIDE_MODE, 
@@ -545,9 +545,28 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                     flv.setAdapter( (ListAdapter)ca );
                     flv.setOnKeyListener( this );
                 }
-			} catch( Exception e ) {
-			    Log.e( TAG, "Problem with FTPAdapter class", e );
-			}
+            } catch( Exception e ) {
+                Log.e( TAG, "Problem with FTPAdapter class", e );
+            }
+        }
+        else 
+        if( scheme != null && scheme.compareTo( "smb" ) == 0 ) {
+            try {
+                if( ca == null || !( ca instanceof SMBAdapter ) ) {
+                    if( ca != null )
+                        ca.prepareToDestroy();
+                    ca = new SMBAdapter();
+                    ca.Init( c );
+                    ca.setMode( CommanderAdapter.WIDE_MODE, 
+                      id == R.layout.main ? CommanderAdapter.WIDE_MODE : CommanderAdapter.NARROW_MODE );
+                    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
+                    applySettings( sharedPref, ca, which );
+                    flv.setAdapter( (ListAdapter)ca );
+                    flv.setOnKeyListener( this );
+                }
+            } catch( Exception e ) {
+                Log.e( TAG, "Problem with SMBAdapter class", e );
+            }
         }
         else 
         if( scheme != null && scheme.compareTo( "zip" ) == 0 ) {

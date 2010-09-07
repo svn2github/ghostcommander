@@ -4,6 +4,10 @@ import java.io.File;
 
 import android.webkit.MimeTypeMap;
 
+/**
+ * @author zc2
+ *
+ */
 public class Utils {
 	private final static String[][] mimes = {	// should be sorted!
         { ".3gpp","audio/3gpp" },
@@ -117,7 +121,7 @@ public class Utils {
         return "" + sz + " ";
     }
 
-	public class Credentials {
+/*	public class Credentials {
         public String userName = null, userPass = null, userInfo = null;
         public final void set( String name, String pass ) {
             userName = name;
@@ -150,4 +154,5 @@ public class Utils {
             return false;
         }
     }
-}
+*/
+	}

@@ -1,5 +1,7 @@
 package com.ghostsq.commander;
 
+import org.apache.http.auth.UsernamePasswordCredentials;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -299,14 +301,14 @@ public class Dialogs implements DialogInterface.OnClickListener {
                     Uri uri = Uri.parse( cookie );
                     if( uri != null ) {
                         host_name = " - " + uri.getHost();
-                        Utils.Credentials crd = new Utils().new Credentials();
-                        crd.set( uri.getUserInfo() );
+                        String user_info = uri.getUserInfo();
+                        UsernamePasswordCredentials crd = new UsernamePasswordCredentials( user_info == null ? "" : user_info );
                         EditText n_v = (EditText)dialog.findViewById( R.id.username_edit );
                         EditText p_v = (EditText)dialog.findViewById( R.id.password_edit );
                         if( n_v != null )
-                            n_v.setText( crd.userName != null ? crd.userName : "" );
+                            n_v.setText( crd.getUserName() != null ? crd.getUserName() : "" );
                         if( p_v != null )
-                            p_v.setText( crd.userPass != null ? crd.userPass : "" );
+                            p_v.setText( crd.getPassword() != null ? crd.getPassword() : "" );
                     }
                 }
                 AlertDialog ad = (AlertDialog)dialog;

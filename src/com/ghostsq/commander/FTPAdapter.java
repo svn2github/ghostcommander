@@ -11,11 +11,9 @@ import java.util.Comparator;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.CommanderAdapter;
 import com.ghostsq.commander.CommanderAdapterBase;
-import com.ghostsq.commander.Utils.Credentials;
 
 import android.net.Uri;
 import android.os.Handler;
@@ -34,11 +32,9 @@ public class FTPAdapter extends CommanderAdapterBase {
     public  FTPItem[] items = null;
     private Timer  heartBeat;
 
-    
-    public Credentials theUserPass;
+    public FTPCredentials theUserPass = null;
     
     public FTPAdapter() {
-        theUserPass = new Utils().new Credentials();
         ftp = new FTP();
         try {
             heartBeat = new Timer( "FTP Heartbeat", true );
@@ -84,10 +80,10 @@ public class FTPAdapter extends CommanderAdapterBase {
 	                	if( port == -1 ) port = 21;
 	                	String host = uri.getHost();
 	                    if( ftp.connect( host, port ) ) {
-	                        if( theUserPass.isNotSet() )
-	                            theUserPass.set( uri.getUserInfo() );
-	                        if( !theUserPass.isNotSet() && ftp.login( theUserPass.userName, theUserPass.userPass ) ) 
-	                            sendProgress( "Connected to\"" + host + "\",  Logged in as \"" + theUserPass.userName + "\"", 3 );
+	                        if( theUserPass == null || theUserPass.isNotSet() )
+	                            theUserPass = new FTPCredentials( uri.getUserInfo() );
+	                        if( ftp.login( theUserPass.getUserName(), theUserPass.getPassword() ) ) 
+	                            sendProgress( "Connected to\"" + host + "\",  Logged in as \"" + theUserPass.getUserName() + "\"", 3 );
 	                        else {
 	                            sendProgress( uri.toString(), Commander.OPERATION_FAILED_LOGIN_REQUIRED );
 	                            return;
@@ -180,7 +176,7 @@ public class FTPAdapter extends CommanderAdapterBase {
 
     @Override
     public void setIdentities( String name, String pass ) {
-        theUserPass.set( name, pass );
+        theUserPass = new FTPCredentials( name, pass );
     }
     @Override
     public boolean readSource( Uri tmp_uri, String pass_back_on_done ) {
@@ -188,10 +184,10 @@ public class FTPAdapter extends CommanderAdapterBase {
             boolean need_reconnect = false;
             if( tmp_uri != null ) { 
                 String new_user_info = tmp_uri.getUserInfo();
-                if( !theUserPass.isSame( new_user_info ) || 
+                if( theUserPass == null ||  
+                   !theUserPass.equals( new FTPCredentials( new_user_info ) ) || 
                         ( uri != null && 0 != tmp_uri.getHost().compareTo( uri.getHost() ) ) ) {
                     need_reconnect = true;
-                    theUserPass.set( new_user_info );
                 }
                 if( uri != null ) 
 	                synchronized( uri ) {
@@ -695,5 +691,36 @@ public class FTPAdapter extends CommanderAdapterBase {
                 return ext_cmp;
             return f1.compareTo( f2 );
 		}
+    }
+
+    public class FTPCredentials extends org.apache.http.auth.UsernamePasswordCredentials {
+        public FTPCredentials( String userName, String password ) {
+            super( userName, password );
+        }
+        public FTPCredentials( String newUserInfo ) {
+            super( newUserInfo == null ? ":" : newUserInfo );
+        }
+        public String getUserName() {
+            String u = super.getUserName();
+            return u == null || u.length() == 0 ? "anonymous" : u;
+        }
+        public String getPassword() {
+            String u = super.getUserName();
+            return u == null || u.length() == 0 ? "user@host.com" : super.getPassword();
+        }
+        public final boolean isNotSet() {
+            String u = super.getUserName();
+            if( u == null || u.length() == 0 ) return true;
+            String p = super.getPassword();
+            if( p == null ) return true;
+            return false;
+        }
+        /*
+        public final boolean isSame( String user_info ) {
+            if( user_info == null && userInfo == null ) return true;
+            if( user_info != null && userInfo != null && user_info.compareTo( userInfo ) == 0 ) return true;
+            return false;
+        }
+        */
     }
 }
