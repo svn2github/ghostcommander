@@ -92,6 +92,7 @@
 	    <PreferenceScreen
 	                android:key="colors"
 	                android:title="@string/colors">
+                    android:summary="@string/summary_colors">
             <PreferenceScreen
                     android:key="bgr_color_picker"
                     android:title="@string/bgr_color_picker"
@@ -113,6 +114,14 @@
                     android:summary="@string/summary_ttl_color_picker">
             </PreferenceScreen>
 	    </PreferenceScreen>
+        <ListPreference
+                android:key="language"
+                android:title="@string/language"
+                android:summary="@string/summary_language"
+                android:entries="@array/language"
+                android:entryValues="@array/language_vals"
+                android:dialogTitle="@string/language" 
+                android:defaultValue=""/>                
         <CheckBoxPreference
                 android:key="show_toolbar"
                 android:title="@string/show_toolbar"

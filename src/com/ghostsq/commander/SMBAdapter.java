@@ -8,6 +8,7 @@ import java.util.Date;
 import jcifs.smb.SmbAuthException;
 import jcifs.smb.SmbFile;
 import android.net.Uri;
+import android.net.UrlQuerySanitizer;
 import android.os.Handler;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -76,21 +77,37 @@ public class SMBAdapter extends CommanderAdapterBase {
         if( engine instanceof ListEngine ) {
             ListEngine list_engine = (ListEngine)engine;
             SmbFile[] tmp_items = list_engine.getItems();
-            if( tmp_items != null && ( mode & MODE_HIDDEN ) == HIDE_MODE ) {
+            
+            if( tmp_items != null ) {
                 int cnt = 0;
                 for( int i = 0; i < tmp_items.length; i++ )
-                    if( tmp_items[i].getName().charAt( 0 ) != '.' )
+                    if( toShow( tmp_items[i] ) )
                         cnt++;
                 items = new SmbFile[cnt];
                 int j = 0;
                 for( int i = 0; i < tmp_items.length; i++ )
-                    if( tmp_items[i].getName().charAt( 0 ) != '.' )
+                    if( toShow( tmp_items[i] ) )
                         items[j++] = tmp_items[i]; 
             }
             else
                 items = tmp_items;
             notifyDataSetChanged();
         }
+    }
+    
+    protected final boolean toShow( SmbFile f ) {
+        
+        try {
+            if( ( mode & MODE_HIDDEN ) == HIDE_MODE ) { 
+                if( f.getName().charAt( 0 ) == '.' ) return false;
+                if( ( f.getAttributes() & SmbFile.ATTR_HIDDEN ) != 0 ) return false;
+            }
+            int type = f.getType();
+            if( type == SmbFile.TYPE_PRINTER || type == SmbFile.TYPE_NAMED_PIPE ) return false;
+        } catch( SmbException e ) {
+            Log.e( TAG, "Exception", e );
+        }
+        return true;
     }
     
     @Override
@@ -110,8 +127,8 @@ public class SMBAdapter extends CommanderAdapterBase {
                 }
             }
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            
-            String smb_url = uri.toString();
+            UrlQuerySanitizer urlqs = new UrlQuerySanitizer();
+            String smb_url = urlqs.unescape( uri.toString() );
             if( credentials != null ) {
                 String u = credentials.getUserName(); 
                 String p = credentials.getPassword();

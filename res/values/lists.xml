@@ -12,4 +12,22 @@
         <item>s</item>
         <item>d</item>  
     </string-array>
+    <string-array name="language">
+        <item>Default</item>
+        <item>English</item>
+        <item>Russian</item>
+        <item>Chinese</item>
+        <item>Taiwanese</item>
+        <item>Korean</item>  
+        <item>Hungarian</item>  
+    </string-array>
+    <string-array name="language_vals">
+        <item></item>
+        <item>en</item>
+        <item>ru</item>
+        <item>zh_cn</item>
+        <item>zh_tw</item>
+        <item>ko</item>  
+        <item>hu</item>  
+    </string-array>
 </resources>

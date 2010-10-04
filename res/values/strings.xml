@@ -162,6 +162,7 @@
     <string name="summary_show_hidden">If not checked, files beginning with a dot won't be shown</string>
 
     <string name="colors">Setup the colors</string>
+    <string name="summary_colors">Customize the the colors of the background, selection, etc.</string>
     <string name="bgr_color_picker">Background color</string>
     <string name="summary_bgr_color_picker">Choose a desired color for the background</string>
     <string name="fgr_color_picker">Foreground color</string>
@@ -171,6 +172,9 @@
     <string name="ttl_color_picker">Title color</string>
     <string name="summary_ttl_color_picker">Panel title background color</string>
     <string name="pick_color">Set color</string>
+
+    <string name="language">Interface Language</string>
+    <string name="summary_language">Override the system language default</string>    
 
     <string name="editor_activity">Editor Activity Name</string>
     <string name="summary_editor_activity">EDIT action Activity's full class name. Package name = class name prefix.</string>

@@ -149,6 +149,8 @@
     <string name="ttl_color_picker">Цвет заголовка</string>
     <string name="summary_ttl_color_picker">Выбор цвета для заголовка панелей</string>
 
+    <string name="summary_language">Изменить язык программы на отличный от системного</string>    
+
     <string name="editor_activity">Activity для редактирования</string>
     <string name="summary_editor_activity">Полное имя Activity класса. Имя пакета = префикс полного имени класса.</string>
     <string name="value_editor_activity">com.ghostsq.commander.Editor</string>

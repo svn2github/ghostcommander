@@ -105,9 +105,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 LayoutInflater inflater = (LayoutInflater)c.getContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
                 toolbar = inflater.inflate( R.layout.toolbar, (ViewGroup)mainView, true ).findViewById( R.id.toolbar );
             }
-            else
-                toolbar.setVisibility( View.VISIBLE );
             if( toolbar != null ) {
+                toolbar.setVisibility( View.INVISIBLE );
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
                 Button b = null;
                 final int button_ids[] = {R.id.F1, R.id.F2, R.id.F4, R.id.SF4, R.id.F5, R.id.F6, R.id.F7, R.id.F8, R.id.F9, R.id.F10, R.id.eq, R.id.tgl, R.id.sz};
@@ -137,6 +136,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                         b.setVisibility( sharedPref.getBoolean( pref_id, def ) ? View.VISIBLE : View.GONE );
                     }
                 }
+                toolbar.setVisibility( View.VISIBLE );
             }
         }
         else {

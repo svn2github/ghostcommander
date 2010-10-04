@@ -2,6 +2,7 @@ package com.ghostsq.commander;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import com.ghostsq.commander.Commander.Notify;
 
@@ -15,8 +16,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
 import android.view.ContextMenu;
 import android.view.View;
 import android.view.Menu;
@@ -58,6 +58,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     private ArrayList<Dialogs> dialogs;
     public  Panels  panels, panelsBak = null;
     private boolean exit = false, dont_restore = false;
+    private String lang = "";
 
     public final void showMemory( String s ) {
         final ActivityManager sys = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
@@ -98,9 +99,11 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate(savedInstanceState);
+        
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         dialogs = new ArrayList<Dialogs>(Dialogs.numDialogTypes);
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        changeLanguage( sharedPref.getString( "language", "" ) );
         panels = new Panels(this, sharedPref.getBoolean( "panels_mode", false ) ? R.layout.alt : R.layout.main);
     }
 
@@ -356,6 +359,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         super.onActivityResult(requestCode, resultCode, data);
         if( requestCode == REQUEST_CODE_PREFERENCES ) {
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+            changeLanguage( sharedPref.getString( "language", "" ) );
+
             panels.applySettings( sharedPref );
             if( panelsBak != null )
                 panelsBak.applySettings( sharedPref );
@@ -618,6 +623,26 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             Dialogs dh = obtainDialogsInstance(Dialogs.INFO_DIALOG);
             dh.setMessageToBeShown(msg, null);
             showDialog( Dialogs.INFO_DIALOG );
+        }
+    }
+
+    final void changeLanguage( String lang_ ) {
+        if( !lang.equalsIgnoreCase( lang_ ) ) {
+            Log.i( TAG, "Changing lang to " + lang_ );
+            lang = lang_;
+            Locale locale;
+            String country = lang.length() > 3 ? lang.substring( 3 ) : null;
+            if( country != null ) {
+                Log.i( TAG, "Changing country to " + country );
+                locale = new Locale( lang.substring( 0, 2 ), country );
+            }
+            else
+                locale = new Locale( lang );
+            Locale.setDefault( locale );
+            Log.i( TAG, "Now the locale is " + Locale.getDefault().toString() );
+            Configuration config = new Configuration();
+            config.locale = locale;
+            getResources().updateConfiguration( config, null );
         }
     }
 }
