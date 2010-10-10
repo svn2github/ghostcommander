@@ -3,7 +3,7 @@
     <string name="app_name">Ghost Commander</string>
     
     <string name="file">파일</string>
-    <string name="panel">창</string>
+    <string name="location">주소</string>
     <string name="list">정렬</string>
     <string name="app">설정</string>
     <string name="help">도움</string>

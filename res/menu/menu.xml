@@ -50,8 +50,8 @@
       </menu>
     </item>
     
-    <item android:id="@+id/panel"
-        android:title="@string/panel"
+    <item android:id="@+id/location"
+        android:title="@string/location"
         android:icon="@drawable/panel"
         android:alphabeticShortcut="p">
       <menu>

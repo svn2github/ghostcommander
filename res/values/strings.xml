@@ -3,7 +3,7 @@
     <string name="app_name">Ghost Commander</string>
     
     <string name="file">File</string>
-    <string name="panel">Panel</string>
+    <string name="location">Location</string>
     <string name="list">List</string>
     <string name="app">Application</string>
     <string name="help">Help</string>
@@ -55,6 +55,7 @@
     <string name="editor_label">Text Editor</string>
 
     <string name="wait"> wait... </string>
+    <string name="fail"> (failed) </string>
 
     <string name="dialog_yes">Yes</string>
     <string name="dialog_no">No</string>
@@ -114,7 +115,7 @@
     <string name="password">Password:</string>
     <string name="ftp_connect">Connect</string>
     <string name="ftp_cancel">Cancel</string>
-    
+    <string name="ftp_connected">Connected to \"%s\",\n Logged in as \"%s\"</string>    
 
     <string name="layout_settings">Configure the layout:</string>
     <string name="panels_mode">Side-by-side panels</string>
@@ -174,7 +175,8 @@
     <string name="pick_color">Set color</string>
 
     <string name="language">Interface Language</string>
-    <string name="summary_language">Override the system language default</string>    
+    <string name="summary_language">Override the system language default</string>
+    <string name="restart_to_apply_lang">Please restart application to apply the new selected language</string>        
 
     <string name="editor_activity">Editor Activity Name</string>
     <string name="summary_editor_activity">EDIT action Activity's full class name. Package name = class name prefix.</string>

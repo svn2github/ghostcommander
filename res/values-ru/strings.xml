@@ -3,7 +3,7 @@
     <string name="app_name">Ghost Commander</string>
 
     <string name="file">Файл</string>
-    <string name="panel">Панель</string>
+    <string name="location">Адрес</string>
     <string name="list">Список</string>
     <string name="app">Приложение</string>
 
@@ -92,6 +92,14 @@
     <string name="confirm">Подтверждение</string>
     <string name="alert">Внимание</string>
 
+    <string name="ftp_server">FTP сервер:</string>
+    <string name="ftp_path">путь внутри сервера:</string>
+    <string name="username">Логин:</string>
+    <string name="password">Пароль:</string>
+    <string name="ftp_connect">Соеденить</string>
+    <string name="ftp_cancel">Отмена</string>
+    <string name="ftp_connected">Подключились к \"%s\",\n как пользователь \"%s\"</string>    
+
     <string name="layout_settings">Настройки внешнего вида:</string>
     <string name="panels_mode">Две панели рядом</string>
     <string name="summary_panels_mode">Показывать обе панели разом на одном экране</string>
@@ -149,7 +157,8 @@
     <string name="ttl_color_picker">Цвет заголовка</string>
     <string name="summary_ttl_color_picker">Выбор цвета для заголовка панелей</string>
 
-    <string name="summary_language">Изменить язык программы на отличный от системного</string>    
+    <string name="summary_language">Изменить язык программы на отличный от системного</string>
+    <string name="restart_to_apply_lang">Перезапустите приложение для полной смены языка интерфейса</string>    
 
     <string name="editor_activity">Activity для редактирования</string>
     <string name="summary_editor_activity">Полное имя Activity класса. Имя пакета = префикс полного имени класса.</string>

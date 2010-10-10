@@ -3,8 +3,8 @@
     <string name="app_name">Ghost Commander</string>
     
     <string name="file">Fájl</string>
-    <string name="panel">Panel</string>
-    <string name="lista">List</string>
+    <string name="location">Cím</string>
+    <string name="list">Lista</string>
     <string name="app">Alkalmazás</string>
     <string name="help">Súgó</string>
     
