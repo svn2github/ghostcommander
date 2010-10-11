@@ -4,8 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import com.ghostsq.commander.Commander.Notify;
-
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Dialog;
@@ -359,8 +357,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         super.onActivityResult(requestCode, resultCode, data);
         if( requestCode == REQUEST_CODE_PREFERENCES ) {
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-            changeLanguage( sharedPref.getString( "language", "" ) );
-
+            if( !lang.equalsIgnoreCase( sharedPref.getString( "language", "" ) ) )
+                showInfo( getString( R.string.restart_to_apply_lang ) );
             panels.applySettings( sharedPref );
             if( panelsBak != null )
                 panelsBak.applySettings( sharedPref );
@@ -575,6 +573,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         setProgressBarIndeterminateVisibility( false );
         switch( progress.status ) {
         case OPERATION_FAILED:
+            if( progress.cookie != null && progress.cookie.length() > 0 ) {
+                int which_panel = progress.cookie.charAt( 0 ) == '1' ? 1 : 0;
+                panels.setPanelTitle( getString( R.string.fail ), which_panel );
+            }
             showError("Failed" + ( progress.string != null && progress.string.length() > 0 ? ":\n" + progress.string : "." ));
             return;
         case OPERATION_FAILED_LOGIN_REQUIRED: 

@@ -1,7 +1,5 @@
 package com.ghostsq.commander;
 
-import com.ghostsq.commander.Panels.State;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;

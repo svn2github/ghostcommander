@@ -28,9 +28,19 @@ class Engine extends Thread {
         Bundle b = new Bundle();
         b.putInt( CommanderAdapterBase.NOTIFY_PRG1, p1 );
         if( p2 >= 0 )
-        	b.putInt( CommanderAdapterBase.NOTIFY_PRG2, p2 );
+            b.putInt( CommanderAdapterBase.NOTIFY_PRG2, p2 );
         if( s != null )
-        	b.putString( CommanderAdapterBase.NOTIFY_STR, s );
+            b.putString( CommanderAdapterBase.NOTIFY_STR, s );
+        msg.setData( b );
+        handler.sendMessage( msg );
+    }
+    protected final void sendProgress( String s, int p, String cookie ) {
+        Message msg = handler.obtainMessage();
+        Bundle b = new Bundle();
+        b.putInt( CommanderAdapterBase.NOTIFY_PRG1, p );
+        b.putString( CommanderAdapterBase.NOTIFY_COOKIE, cookie );
+        if( s != null )
+            b.putString( CommanderAdapterBase.NOTIFY_STR, s );
         msg.setData( b );
         handler.sendMessage( msg );
     }

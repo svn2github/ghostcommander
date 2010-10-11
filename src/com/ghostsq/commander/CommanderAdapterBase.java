@@ -26,10 +26,10 @@ import android.widget.Toast;
 
 public abstract class CommanderAdapterBase extends BaseAdapter implements CommanderAdapter {
     private final static String TAG = "CommanderAdapterBase";
-	protected final static String NOTIFY_STR = "str", NOTIFY_PRG1 = "prg1", NOTIFY_PRG2 = "prg2"; 
-	
+	protected final static String NOTIFY_STR = "str", NOTIFY_PRG1 = "prg1", NOTIFY_PRG2 = "prg2", NOTIFY_COOKIE = "cookie"; 
     protected Commander commander = null;
     protected static final String SLS = File.separator;
+    protected static final char SLC = File.separator.charAt( 0 );
     protected static final String DEFAULT_DIR = "/sdcard";
     private   static boolean long_date = Locale.getDefault().getLanguage().compareTo( "en" ) != 0;
     protected LayoutInflater mInflater = null;
@@ -45,11 +45,15 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             int perc1 = msg.getData().getInt( CommanderAdapterBase.NOTIFY_PRG1 );
             int perc2 = msg.getData().getInt( CommanderAdapterBase.NOTIFY_PRG2, -1 );
             String str = msg.getData().getString( CommanderAdapterBase.NOTIFY_STR );
+            String cookie = msg.getData().getString( CommanderAdapterBase.NOTIFY_COOKIE );
             if( perc1 < 0 ) {
                 onComplete( worker );
                 worker = null;
             }
-            commander.notifyMe( new Commander.Notify( str, perc1, perc2 ) );
+            Commander.Notify n_obj = cookie == null || cookie.length() == 0 ?
+                 new Commander.Notify( str, perc1, perc2 ) :
+                 new Commander.Notify( str, perc1, cookie );
+            commander.notifyMe( n_obj );
         }
     };
     
@@ -59,7 +63,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         nameWidth = 0;
         sizeWidth = 0;
         dateWidth = 0;
-        parentLink = "/";       
+        parentLink = SLS;       
     }
     protected CommanderAdapterBase( Commander c, int mode_ ) {
     	Init( c );
@@ -68,7 +72,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         nameWidth = 0;
         sizeWidth = 0;
         dateWidth = 0;
-        parentLink = "/";    	
+        parentLink = SLS;    	
     }
 
     @Override
@@ -105,8 +109,9 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         }
     }
     
-    protected void onComplete( Engine engine) { // to override who need do something in the UI thread on an engine completion
+    protected void onComplete( Engine engine ) { // to override who need do something in the UI thread on an engine completion
     }
+    
     public class Item {
     	public String  name = "";
     	public Date    date = null;
@@ -118,6 +123,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     public long getItemId( int position ) {
         return position;
     }
+
     protected View getView( View convertView, ViewGroup parent, Item item ) {
         try {
             boolean wm = (mode & WIDE_MODE) == WIDE_MODE;
@@ -208,7 +214,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         return null; // is it safe?
     }
     
-    protected int getIconId( String file ) {
+    protected final static int getIconId( String file ) {
         MimeTypeMap mime_map = MimeTypeMap.getSingleton();
         if( mime_map == null )
             return R.drawable.unkn;
@@ -227,7 +233,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         return R.drawable.unkn;
     }
     
-    protected String[] bitsToNames( SparseBooleanArray cis ) {
+    protected final String[] bitsToNames( SparseBooleanArray cis ) {
         try {
             int counter = 0;
             for( int i = 0; i < cis.size(); i++ )

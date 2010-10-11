@@ -15,6 +15,7 @@ import com.ghostsq.commander.FTPAdapter.ListEngine;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class FindAdapter extends CommanderAdapterBase {
+    public final static String TAG = "FindAdapter";
     private Uri uri;
     private File[] items;
 
@@ -155,15 +157,15 @@ public class FindAdapter extends CommanderAdapterBase {
                 String match = uri.getQueryParameter( "q" );
                 if( path != null && path.length() > 0 && match != null && match.length() > 0  ) {
                     commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-                    worker = new SearchEngine( handler, match, path );
+                    worker = new SearchEngine( handler, match, path, pass_back_on_done );
                     worker.start();
                     return true;
                 }
             }
         } catch( Exception e ) {
-            System.err.println( "FindAdapter.readSource() exception: " + e );
+            Log.e( TAG, "FindAdapter.readSource() exception: ", e );
         }
-        System.err.println( "FindAdapter unable to read by the URI '" + ( uri == null ? "null" : uri.toString() ) + "'" );
+        Log.e( TAG, "FindAdapter unable to read by the URI '" + ( uri == null ? "null" : uri.toString() ) + "'" );
         uri = null;
         return false;
     }
@@ -232,7 +234,7 @@ public class FindAdapter extends CommanderAdapterBase {
                         if( msFileDate != 0 )
                             item.date = new Date( msFileDate );
                     } catch( Exception e ) {
-                        System.err.print("getView() exception: " + e );
+                        Log.e( TAG, "getView() exception: ", e );
                     }
                 }
             }
@@ -247,24 +249,23 @@ public class FindAdapter extends CommanderAdapterBase {
         private String path; 
         private ArrayList<File> result;
         private int depth = 0;
+        private String pass_back_on_done;
         
-        SearchEngine( Handler h, String match, String path_ ) {
+        SearchEngine( Handler h, String match, String path_, String pass_back_on_done_ ) {
             super( h );
             cards = match.split( "\\*" );
             path = path_;
+            pass_back_on_done = pass_back_on_done_;
         }
-        public ArrayList<File> getItems() {
-            return result;
-        }       
         @Override
         public void run() {
             try {
                 result = new ArrayList<File>();
                 searchInFolder( new File( path ) );
                 sendProgress( tooLong( 8 ) ? commander.getContext().getString( R.string.search_done ) : null, 
-                        Commander.OPERATION_COMPLETED );
+                        Commander.OPERATION_COMPLETED, pass_back_on_done );
             } catch( Exception e ) {
-                sendProgress( e.getMessage(), Commander.OPERATION_FAILED );
+                sendProgress( e.getMessage(), Commander.OPERATION_FAILED, pass_back_on_done );
             }
         }
         protected final void searchInFolder( File dir ) throws Exception {
@@ -292,10 +293,10 @@ public class FindAdapter extends CommanderAdapterBase {
                     }
                 }
             } catch( Exception e ) {
-                System.err.println( "exception: " + e );
+                Log.e( TAG, "Exception on search: ", e );
             }
         }
-        private boolean wildCardMatch( String text ) {
+        private final boolean wildCardMatch( String text ) {
             int pos = 0;
             for( String card : cards ) {
                 int idx = text.indexOf( card, pos );
@@ -305,32 +306,35 @@ public class FindAdapter extends CommanderAdapterBase {
             }
             return true;
         }
+        public final File[] getItems( int mode ) {
+            File[] filtered_sorted;
+            if( ( mode & MODE_HIDDEN ) == HIDE_MODE ) {
+                int cnt = 0;
+                for( int i = 0; i < result.size(); i++ )
+                    if( result.get(i).getName().charAt( 0 ) != '.' )
+                        cnt++;
+                filtered_sorted = new File[cnt];
+                int j = 0;
+                for( int i = 0; i < result.size(); i++ ) {
+                    File f = result.get(i);
+                    if( f.getName().charAt( 0 ) != '.' )
+                        items[j++] = f;
+                }
+            }
+            else {
+                filtered_sorted = new File[result.size()]; 
+                result.toArray( items );
+            }
+            FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
+            Arrays.sort( items, comp );
+           return filtered_sorted;
+        }       
     }
     protected void onComplete( Engine engine ) {
         try {
             if( engine instanceof SearchEngine ) {
                 SearchEngine list_engine = (SearchEngine)engine;
-                items = null;
-                ArrayList<File> items_a = list_engine.getItems();
-                if( ( mode & MODE_HIDDEN ) == HIDE_MODE ) {
-                    int cnt = 0;
-                    for( int i = 0; i < items_a.size(); i++ )
-                        if( items_a.get(i).getName().charAt( 0 ) != '.' )
-                            cnt++;
-                    items = new File[cnt];
-                    int j = 0;
-                    for( int i = 0; i < items_a.size(); i++ ) {
-                        File f = items_a.get(i);
-                        if( f.getName().charAt( 0 ) != '.' )
-                            items[j++] = f;
-                    }
-                }
-                else {
-                    items = new File[items_a.size()]; 
-                    items_a.toArray( items );
-                }
-                FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
-                Arrays.sort( items, comp );
+                items = list_engine.getItems( mode );
                 notifyDataSetChanged();
             }
         } catch( Exception e ) {

@@ -99,7 +99,8 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
 	public View getView( int position, View convertView, ViewGroup parent ) {
 		TextView tv = convertView != null ? (TextView)convertView : new TextView( c );
 		tv.setPadding( 4, 4, 4, 4 );
-		tv.setText( shortcutsList.get( position ) );
+		String screened = Utils.screenPwd( shortcutsList.get( position ) );
+		tv.setText( screened == null ? "" : screened );
 		return tv;
 	}
 
@@ -132,7 +133,9 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
     	closeGoPanel();
 		TextView edit = (TextView)goPanel.findViewById( R.id.uri_edit );
 		String new_dir = edit.getText().toString().trim();
+		
 		if( toChange >= 0 && new_dir.length() > 0 ) {
+//		    new_dir = searchForNotScreenedURI( new_dir );
 			if( toChange != p.getCurrent() )
 				p.togglePanels( false );
 			p.Navigate( toChange, Uri.parse( new_dir ), null );
@@ -140,6 +143,9 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
 		toChange = -1;
 		p.focus();
     }    
+//    private final String searchForNotScreenedURI( String new_dir )
+    
+    
     public final void addToFavorites( String uri ) {
         	removeFromFavorites( uri );
         	shortcutsList.add( uri );

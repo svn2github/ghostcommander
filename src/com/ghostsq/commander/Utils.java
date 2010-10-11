@@ -1,13 +1,9 @@
 package com.ghostsq.commander;
 
 import java.io.File;
-
+import android.net.Uri;
 import android.webkit.MimeTypeMap;
 
-/**
- * @author zc2
- *
- */
 public class Utils {
 	private final static String[][] mimes = {	// should be sorted!
         { ".3gpp","audio/3gpp" },
@@ -121,38 +117,19 @@ public class Utils {
         return "" + sz + " ";
     }
 
-/*	public class Credentials {
-        public String userName = null, userPass = null, userInfo = null;
-        public final void set( String name, String pass ) {
-            userName = name;
-            userPass = pass;
-        }
-        public final void set( String user_info ) {
-            userInfo = user_info;
-            if( user_info == null || user_info.length() == 0 ) {
-                userName = "anonymous";
-                userPass = "user@host.com";
-            }
-            else {
-                int col_pos = user_info.indexOf( ':' );
-                if( col_pos >= 0 ) {
-                    userPass = user_info.substring( col_pos + 1 );
-                    userName = user_info.substring( 0, col_pos );
-                }
-                else {
-                    userName = user_info;
-                    userPass = null;
-                }
-            }
-        }
-        public final boolean isNotSet() {
-            return userName == null || userPass == null;
-        }
-        public final boolean isSame( String user_info ) {
-            if( user_info == null && userInfo == null ) return true;
-            if( user_info != null && userInfo != null && user_info.compareTo( userInfo ) == 0 ) return true;
-            return false;
-        }
+    public final static String screenPwd( String uri_str ) {
+        return screenPwd( Uri.parse( uri_str ) );
     }
-*/
+    public final static String screenPwd( Uri u ) {
+        if( u == null ) return null;
+        String ui = u.getUserInfo();
+        if( ui == null || ui.length() == 0 ) return u.toString();
+        int pw_pos = ui.indexOf( ':' );
+        if( pw_pos < 0 ) return u.toString();
+        ui = ui.substring( 0, pw_pos+1 ) + "xxxx";
+        String host = u.getHost();
+        int port = u.getPort();
+        String authority = ui + "@" + host + (port >= 0 ? port : ""); 
+	    return u.buildUpon().encodedAuthority( authority ).build().toString();
 	}
+}

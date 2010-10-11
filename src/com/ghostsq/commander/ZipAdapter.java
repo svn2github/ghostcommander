@@ -37,7 +37,7 @@ public class ZipAdapter extends CommanderAdapterBase {
         parentLink = "..";
     }
 
-    public ZipEntry[] GetFolderList( String fld_path ) {
+    public final ZipEntry[] GetFolderList( String fld_path ) {
         if( zip == null ) return null;
         if( fld_path == null ) fld_path = ""; 
         else
@@ -89,8 +89,10 @@ public class ZipAdapter extends CommanderAdapterBase {
     
     class ListEngine extends Engine {
         private ZipEntry[] items_tmp = null;
-        ListEngine( Handler h ) {
+        public  String pass_back_on_done;
+        ListEngine( Handler h, String pass_back_on_done_ ) {
         	super( h );
+        	pass_back_on_done = pass_back_on_done_;
         }
         public ZipEntry[] getItems() {
             return items_tmp;
@@ -116,7 +118,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                 	    if( items_tmp != null ) { 
                             ZipItemPropComparator comp = new ZipItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
                             Arrays.sort( items_tmp, comp );
-                            sendProgress( null, Commander.OPERATION_COMPLETED );
+                            sendProgress( null, Commander.OPERATION_COMPLETED, pass_back_on_done );
                             return;
                 	    }
                 	}
@@ -129,7 +131,7 @@ public class ZipAdapter extends CommanderAdapterBase {
             finally {
             	super.run();
             }
-            sendProgress( "Can't open this ZIP file", Commander.OPERATION_FAILED );
+            sendProgress( "Can't open this ZIP file", Commander.OPERATION_FAILED, pass_back_on_done );
         }
     }
 
@@ -170,7 +172,7 @@ public class ZipAdapter extends CommanderAdapterBase {
     public void setIdentities( String name, String pass ) {
     }
     @Override
-    public boolean readSource( Uri tmp_uri, String p ) {
+    public boolean readSource( Uri tmp_uri, String pass_back_on_done ) {
         try {
             if( tmp_uri != null )
            	    uri = tmp_uri;
@@ -186,7 +188,7 @@ public class ZipAdapter extends CommanderAdapterBase {
             	}
             }
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            worker = new ListEngine( handler );
+            worker = new ListEngine( handler, pass_back_on_done );
             worker.start();
             return true;
         }

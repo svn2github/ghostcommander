@@ -24,7 +24,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 public class FTPAdapter extends CommanderAdapterBase {
-    private final static String TAG = "FTPAdapter";
+    public final static String TAG = "FTPAdapter";
     // Java compiler creates a thunk function to access to the private owner class member from a subclass
     // to avoid that all the member accessible from the subclasses are public
     public  FTP ftp;
@@ -55,9 +55,11 @@ public class FTPAdapter extends CommanderAdapterBase {
     class ListEngine extends Engine {
         private boolean needReconnect;
         private FTPItem[] items_tmp;
-        ListEngine( Handler h, boolean need_reconnect_ ) {
+        public  String pass_back_on_done;
+        ListEngine( Handler h, boolean need_reconnect_, String pass_back_on_done_ ) {
         	super( h );
-        	needReconnect = need_reconnect_; 
+        	needReconnect = need_reconnect_;
+        	pass_back_on_done = pass_back_on_done_;
         }
         public FTPItem[] getItems() {
             return items_tmp;
@@ -82,8 +84,8 @@ public class FTPAdapter extends CommanderAdapterBase {
 	                    if( ftp.connect( host, port ) ) {
 	                        if( theUserPass == null || theUserPass.isNotSet() )
 	                            theUserPass = new FTPCredentials( uri.getUserInfo() );
-	                        if( ftp.login( theUserPass.getUserName(), theUserPass.getPassword() ) ) 
-	                            sendProgress( "Connected to\"" + host + "\",  Logged in as \"" + theUserPass.getUserName() + "\"", 3 );
+	                        if( ftp.login( theUserPass.getUserName(), theUserPass.getPassword() ) )
+	                            sendProgress( commander.getContext().getString( R.string.ftp_connected,  host, theUserPass.getUserName() ), 3 );
 	                        else {
 	                            sendProgress( uri.toString(), Commander.OPERATION_FAILED_LOGIN_REQUIRED );
 	                            return;
@@ -113,8 +115,8 @@ public class FTPAdapter extends CommanderAdapterBase {
 	                    if( items_tmp != null ) {
                     		FTPItemPropComparator comp = new FTPItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
                             Arrays.sort( items_tmp, comp );
-	                        parentLink = path == null || path.length() == 0 || path.equals( "/" ) ? "/" : "..";
-	                        sendProgress( tooLong( 8 ) ? ftp.getLog() : null, Commander.OPERATION_COMPLETED );
+	                        parentLink = path == null || path.length() == 0 || path.equals( SLS ) ? SLS : "..";
+	                        sendProgress( tooLong( 8 ) ? ftp.getLog() : null, Commander.OPERATION_COMPLETED, pass_back_on_done );
 	                        return;
 	                    }
 	                }
@@ -134,7 +136,7 @@ public class FTPAdapter extends CommanderAdapterBase {
             	super.run();
             }
             ftp.disconnect();
-            sendProgress( ftp.getLog(), Commander.OPERATION_FAILED );
+            sendProgress( ftp.getLog(), Commander.OPERATION_FAILED, pass_back_on_done );
         }
     }
 
@@ -214,7 +216,7 @@ public class FTPAdapter extends CommanderAdapterBase {
             	}
             }
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            worker = new ListEngine( handler, need_reconnect );
+            worker = new ListEngine( handler, need_reconnect, pass_back_on_done );
             worker.start();
             return true;
         }
@@ -316,7 +318,7 @@ public class FTPAdapter extends CommanderAdapterBase {
 		                    	errMsg = "Failed to get the file list of the subfolder '" + pathName + "'.\n FTP log:\n\n" + ftp.getLog();
 		                    	break;
 		                    }
-	        				counter += copyFiles( subItems, pathName + "/" );
+	        				counter += copyFiles( subItems, pathName + SLS );
 	        				if( errMsg != null ) break;
 	        			}
 	        			else {
@@ -409,7 +411,7 @@ public class FTPAdapter extends CommanderAdapterBase {
 	        			if( f.isDirectory() ) {
 	        				sendProgress( "Removing folder '" + pathName + "'...", i * 100 / list.length );
 		                    FTPItem[] subItems = ftp.getDirList( pathName );
-	        				counter += delFiles( subItems, pathName + "/" );
+	        				counter += delFiles( subItems, pathName + SLS );
 	        				if( errMsg != null ) break;
 	        	        	synchronized( ftp ) {
 	        	        		ftp.clearLog();
@@ -447,8 +449,8 @@ public class FTPAdapter extends CommanderAdapterBase {
             if( full ) {
                 String path = toString();
                 if( path != null && path.length() > 0 ) {
-                    if( path.charAt( path.length() - 1 ) != '/' )
-                        path += "/";
+                    if( path.charAt( path.length() - 1 ) != SLC )
+                        path += SLS;
                     return path + items[position-1].getName();
                 }
             }
@@ -459,15 +461,15 @@ public class FTPAdapter extends CommanderAdapterBase {
     @Override
     public void openItem( int position ) {
         if( position == 0 ) { // ..
-            if( uri != null && parentLink != "/" ) {
+            if( uri != null && parentLink != SLS ) {
             	String path = uri.getPath();
                 int len_ = path.length()-1;
                 if( len_ > 0 ) {
-	                if( path.charAt( len_ ) == '/' )
+	                if( path.charAt( len_ ) == SLC )
 	                	path = path.substring( 0, len_ );
-	                path = path.substring( 0, path.lastIndexOf( '/' ) );
+	                path = path.substring( 0, path.lastIndexOf( SLC ) );
 	                if( path.length() == 0 )
-	                	path = "/";
+	                	path = SLS;
 	                commander.Navigate( uri.buildUpon().path( path ).build(), uri.getLastPathSegment() );
                 }
             }
@@ -480,10 +482,10 @@ public class FTPAdapter extends CommanderAdapterBase {
         if( item.isDirectory() ) {
         	String cur = uri.getPath();
             if( cur == null || cur.length() == 0 ) 
-                cur = "/";
+                cur = SLS;
             else
-            	if( cur.charAt( cur.length()-1 ) != '/' )
-            		cur += "/";
+            	if( cur.charAt( cur.length()-1 ) != SLC )
+            		cur += SLS;
             commander.Navigate( uri.buildUpon().path( cur + item.getName() ).build(), null );
         }
     }

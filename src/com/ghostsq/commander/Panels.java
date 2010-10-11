@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
 import android.graphics.Color;
 import android.net.Uri;
+import android.net.UrlQuerySanitizer;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -191,13 +192,14 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         }
     }
 
-    private final void setPanelTitle( String s, int which ) {
+    public final void setPanelTitle( String s, int which ) {
         TextView title = (TextView)c.findViewById( titlesIds[which] );
         if( title != null ) {
         	int p_width = mainView.getWidth();
         	if( p_width > 0 )
         		title.setMaxWidth( p_width / 2 );
-            title.setText( s );
+            UrlQuerySanitizer urlqs = new UrlQuerySanitizer();
+            title.setText( urlqs.unescape( Utils.screenPwd( s ) ) );
         }
     }
     private final void refreshPanelTitles() {
@@ -392,8 +394,11 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     }
     public final void recoverAfterRefresh( String item_name, int which_panel ) {
         try {
-            if( item_name != null && which_panel >= 0 ) {
-                setSelection( which_panel, item_name );
+            if( which_panel >= 0 ) {
+                if( item_name != null && item_name.length() > 0 )
+                    setSelection( which_panel, item_name );
+                else
+                    setSelection( which_panel, 0, 0 );
             }
             else {
                 ListView flv = listViews[current];
@@ -618,12 +623,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         }
         applyColors();
         setPanelTitle( c.getString( R.string.wait ), which );
-        ca.readSource( uri, null ); //current + posTo
-        if( posTo != null ) {
-            setSelection( which, posTo );
-        }
-        else
-            setSelection( which, 0, 0 );
+        ca.readSource( uri, "" + current + ( posTo == null ? "" : posTo ) );
     }
     public void login( String to, String name, String pass ) {
         CommanderAdapter ca = getListAdapter( true );

@@ -32,10 +32,11 @@ public class SMBAdapter extends CommanderAdapterBase {
     class ListEngine extends Engine {
         private String smb_url = null; 
         private SmbFile[] items_tmp = null;
-        
-        ListEngine( Handler h, String url ) {
+        public  String pass_back_on_done;
+        ListEngine( Handler h, String url, String pass_back_on_done_ ) {
             super( h );
             smb_url = url;
+            pass_back_on_done = pass_back_on_done_;
         }
         public SmbFile[] getItems() {
             return items_tmp;
@@ -43,11 +44,11 @@ public class SMBAdapter extends CommanderAdapterBase {
         @Override
         public void run() {
             if( uri == null ) {
-                sendProgress( "Nothing to read", Commander.OPERATION_FAILED );
+                sendProgress( "Nothing to read", Commander.OPERATION_FAILED, pass_back_on_done );
                 return;
             }
             try {
-                if( smb_url.charAt( smb_url.length() - 1 ) != '/' )
+                if( smb_url.charAt( smb_url.length() - 1 ) != SLC )
                     smb_url += SLS;
                 SmbFile f = new SmbFile( smb_url );
                 items_tmp = f.listFiles();
@@ -56,17 +57,16 @@ public class SMBAdapter extends CommanderAdapterBase {
                 
                 parentLink = uri.getPath().length() <= 1 ? SLS : "..";
                 
-                Log.i( TAG, "got the files list" );
-                sendProgress( null, Commander.OPERATION_COMPLETED );
+                sendProgress( null, Commander.OPERATION_COMPLETED, pass_back_on_done );
                 return;
             } catch( MalformedURLException e ) {
-                sendProgress( "Malformed URL: " + e.getMessage(), Commander.OPERATION_FAILED );
+                sendProgress( "Malformed URL: " + e.getMessage(), Commander.OPERATION_FAILED, pass_back_on_done );
             } catch( SmbAuthException e ) {
                 sendProgress( uri.toString(), Commander.OPERATION_FAILED_LOGIN_REQUIRED );
             } catch( SmbException e ) {
-                sendProgress( "Samba Exception: " + e.getMessage(), Commander.OPERATION_FAILED );
+                sendProgress( "Samba Exception: " + e.getMessage(), Commander.OPERATION_FAILED, pass_back_on_done );
             } catch( Exception e ) {
-                sendProgress( "Unknown Exception: " + e.getMessage(), Commander.OPERATION_FAILED );
+                sendProgress( "Unknown Exception: " + e.getMessage(), Commander.OPERATION_FAILED, pass_back_on_done );
             } finally {
                 super.run();
             }
@@ -94,9 +94,7 @@ public class SMBAdapter extends CommanderAdapterBase {
             notifyDataSetChanged();
         }
     }
-    
     protected final boolean toShow( SmbFile f ) {
-        
         try {
             if( ( mode & MODE_HIDDEN ) == HIDE_MODE ) { 
                 if( f.getName().charAt( 0 ) == '.' ) return false;
@@ -111,7 +109,7 @@ public class SMBAdapter extends CommanderAdapterBase {
     }
     
     @Override
-    public boolean readSource( Uri tmp_uri, String passBackOnDone ) {
+    public boolean readSource( Uri tmp_uri, String pass_back_on_done ) {
         try {
             if( tmp_uri != null )
                 uri = tmp_uri;
@@ -140,7 +138,7 @@ public class SMBAdapter extends CommanderAdapterBase {
                 credentials = null;
                 uri = Uri.parse( smb_url );
             }
-            worker = new ListEngine( handler, smb_url );
+            worker = new ListEngine( handler, smb_url, pass_back_on_done );
             worker.start();
             return true;
         }
@@ -197,16 +195,16 @@ public class SMBAdapter extends CommanderAdapterBase {
     @Override
     public void openItem( int position ) {
         if( position == 0 ) { // ..
-            if( uri != null && parentLink != "/" ) {
+            if( uri != null && parentLink != SLS ) {
                 String path = uri.getPath();
                 int len_ = path.length()-1;
                 if( len_ > 0 ) {
-                    if( path.charAt( len_ ) == '/' )
+                    if( path.charAt( len_ ) == SLC )
                         path = path.substring( 0, len_ );
-                    path = path.substring( 0, path.lastIndexOf( '/' ) );
+                    path = path.substring( 0, path.lastIndexOf( SLC ) );
                     if( path.length() == 0 )
-                        path = "/";
-                    commander.Navigate( uri.buildUpon().path( path ).build(), uri.getLastPathSegment() );
+                        path = SLS;
+                    commander.Navigate( uri.buildUpon().path( path ).build(), uri.getLastPathSegment() + SLS );
                 }
             }
             return;
@@ -219,10 +217,10 @@ public class SMBAdapter extends CommanderAdapterBase {
             if( item.isDirectory() ) {
                 String cur = uri.getPath();
                 if( cur == null || cur.length() == 0 ) 
-                    cur = "/";
+                    cur = SLS;
                 else
-                    if( cur.charAt( cur.length()-1 ) != '/' )
-                        cur += "/";
+                    if( cur.charAt( cur.length()-1 ) != SLC )
+                        cur += SLS;
                 commander.Navigate( uri.buildUpon().path( cur + item.getName() ).build(), null );
             }
         } catch( SmbException e ) {

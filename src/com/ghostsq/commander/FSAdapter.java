@@ -60,15 +60,34 @@ public class FSAdapter extends CommanderAdapterBase {
     public boolean readSource( Uri d, String pass_back_on_done ) {
     	try {
     	    if( worker != null ) worker.reqStop();
-            String dir_name = d != null ? d.getPath() : dirName;
-            if( dir_name == null ) return false;
-            File dir = new File( dir_name );
-            File[] files_ = dir.listFiles();
-            if( files_ == null ) {
-            	commander.notifyMe( new Commander.Notify( commander.getContext().getString( R.string.no_such_folder, dir_name ),
-            			            Commander.OPERATION_FAILED ) );
-                return false;
+            File[] files_ = null; 
+            String dir_name = null;
+            File dir = null;
+            String err_msg = null;
+            
+            while( true ) {
+                if( d != null )
+                    dir_name = d.getPath();
+                else
+                    dir_name = dirName;
+                if( dir_name == null ) {
+                    commander.notifyMe( new Commander.Notify( "Fatal error", Commander.OPERATION_FAILED ) );
+                    Log.e( TAG, "Unable to obtain folder of the folder name" );
+                    return false;
+                }
+                dir = new File( dir_name );
+                files_ = dir.listFiles();
+                if( files_ != null ) break;
+                if( err_msg == null )
+                    err_msg = commander.getContext().getString( R.string.no_such_folder, dir_name );
+                d = Uri.parse( dir.getParent() );
+                if( d == null ) {
+                    commander.notifyMe( new Commander.Notify( "Fatal error", Commander.OPERATION_FAILED ) );
+                    Log.e( TAG, "Unable to calculate the parent folder of the folder '" + dir_name + "'" );
+                    return false;
+                }
             }
+            
             dirName = dir_name;
             int num_files = files_.length;
             int num = num_files;
@@ -90,6 +109,8 @@ public class FSAdapter extends CommanderAdapterBase {
             FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
             Arrays.sort( items, comp );
 
+            if( err_msg != null )
+                commander.notifyMe( new Commander.Notify( err_msg, Commander.OPERATION_FAILED ) );
             commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pass_back_on_done ) );
             return true;
 		} catch( Exception e ) {
@@ -111,7 +132,9 @@ public class FSAdapter extends CommanderAdapterBase {
             if( file.isDirectory() ) {
                 if( dirName.charAt( dirName.length() - 1 ) != File.separatorChar )
                     dirName += File.separatorChar;
-                commander.Navigate( Uri.parse( dirName + file.getName() + File.separatorChar ), null );
+                
+                String full_path = ( dirName + file.getName() + File.separatorChar ).replaceAll( "#", "%23" );
+                commander.Navigate( Uri.parse( full_path ), null );
             }
             else {
                 String ext = Utils.getFileExt( file.getName() );
