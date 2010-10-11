@@ -90,12 +90,12 @@
     <string name="progress">进程</string>
     <string name="alert">警报</string>
 
-    <string name="ftp_server">FTP服务器:</string>
-    <string name="ftp_path">服务器上的路径：</string>
+    <string name="server">服务器:</string>
+    <string name="path">服务器上的路径：</string>
     <string name="username">用户名：</string>
     <string name="password">密码：</string>
-    <string name="ftp_connect">连接</string>
-    <string name="ftp_cancel">取消</string>
+    <string name="connect">连接</string>
+    <string name="cancel">取消</string>
     
 
     <string name="layout_settings">配置布局:</string>

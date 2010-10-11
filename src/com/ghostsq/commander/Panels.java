@@ -624,6 +624,13 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         applyColors();
         setPanelTitle( c.getString( R.string.wait ), which );
         ca.readSource( uri, "" + current + ( posTo == null ? "" : posTo ) );
+/*  
+        if( posTo != null ) {
+            setSelection( which, posTo );
+        }
+        else
+            setSelection( which, 0, 0 );
+*/
     }
     public void login( String to, String name, String pass ) {
         CommanderAdapter ca = getListAdapter( true );

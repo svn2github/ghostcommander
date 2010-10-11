@@ -307,27 +307,28 @@ public class FindAdapter extends CommanderAdapterBase {
             return true;
         }
         public final File[] getItems( int mode ) {
-            File[] filtered_sorted;
+            if( result == null ) return null;
+            File[] output_array;
             if( ( mode & MODE_HIDDEN ) == HIDE_MODE ) {
                 int cnt = 0;
                 for( int i = 0; i < result.size(); i++ )
                     if( result.get(i).getName().charAt( 0 ) != '.' )
                         cnt++;
-                filtered_sorted = new File[cnt];
+                output_array = new File[cnt];
                 int j = 0;
                 for( int i = 0; i < result.size(); i++ ) {
                     File f = result.get(i);
                     if( f.getName().charAt( 0 ) != '.' )
-                        items[j++] = f;
+                        output_array[j++] = f;
                 }
             }
             else {
-                filtered_sorted = new File[result.size()]; 
-                result.toArray( items );
+                output_array = new File[result.size()]; 
+                result.toArray( output_array );
             }
             FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
-            Arrays.sort( items, comp );
-           return filtered_sorted;
+            Arrays.sort( output_array, comp );
+            return output_array;
         }       
     }
     protected void onComplete( Engine engine ) {

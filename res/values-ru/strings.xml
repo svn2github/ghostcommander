@@ -25,8 +25,8 @@
     <string name="oth_sh_this">= Та панель тоже что эта</string>
     <string name="change">&lt;- Сменить</string>
     <string name="refresh">Обновить</string>
-    <string name="enter">&#xA0; Ввести адрес или URL</string>
-    <string name="add_fav">* Добавить текущий каталог в фавориты</string>
+    <string name="enter">&#xA0; Ввести адрес или URI</string>
+    <string name="add_fav">* Закладка на тек.адрес</string>
     <string name="prefs">9 Настройки</string>
     <string name="about">О программе</string>
     <string name="keys">Значения клавиш</string>
@@ -92,13 +92,17 @@
     <string name="confirm">Подтверждение</string>
     <string name="alert">Внимание</string>
 
-    <string name="ftp_server">FTP сервер:</string>
-    <string name="ftp_path">путь внутри сервера:</string>
+    <string name="server">Сервер:</string>
+    <string name="path">Путь на сервере:</string>
     <string name="username">Логин:</string>
     <string name="password">Пароль:</string>
-    <string name="ftp_connect">Соеденить</string>
-    <string name="ftp_cancel">Отмена</string>
-    <string name="ftp_connected">Подключились к \"%s\",\n как пользователь \"%s\"</string>    
+    <string name="connect">Соеденить</string>
+    <string name="cancel">Отмена</string>
+    <string name="ftp_connected">Подключились к FTP \"%s\",\n как пользователь \"%s\"</string>
+
+    <string name="enter_ftp">&#xA0; FTP подключение</string>
+    <string name="enter_smb">&#xA0; Samba (Windows network)</string>
+    <string name="search_file">/ Поиск файла</string>
 
     <string name="layout_settings">Настройки внешнего вида:</string>
     <string name="panels_mode">Две панели рядом</string>

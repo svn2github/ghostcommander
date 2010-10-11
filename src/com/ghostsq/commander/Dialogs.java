@@ -21,7 +21,7 @@ import android.widget.TextView;
 public class Dialogs implements DialogInterface.OnClickListener {
     private final static String TAG = "GhostCommanderActivity";
     public final static int ARI_DIALOG = 148, ALERT_DIALOG = 193, CONFIRM_DIALOG = 396, INPUT_DIALOG = 860, PROGRESS_DIALOG = 493,
-            INFO_DIALOG = 864, ABOUT_DIALOG = 159, LOGIN_DIALOG = 995, FTP_DIALOG = 450;
+            INFO_DIALOG = 864, ABOUT_DIALOG = 159, LOGIN_DIALOG = 995;
     public final static int numDialogTypes = 5;
     protected String toShowInAlertDialog = null, cookie = null;
     private int dialogId;
@@ -93,28 +93,6 @@ public class Dialogs implements DialogInterface.OnClickListener {
                         owner.panels.login( cookie, name_edit.getText().toString(), pass_edit.getText().toString() );
                 }
                     break;
-                case FTP_DIALOG: {
-                    EditText name_edit = (EditText)dialogObj.findViewById( R.id.username_edit );
-                    EditText pass_edit = (EditText)dialogObj.findViewById( R.id.password_edit );
-                    EditText server_edit = (EditText)dialogObj.findViewById( R.id.server_edit );
-                    EditText path_edit = (EditText)dialogObj.findViewById( R.id.path_edit );
-
-                    String user = name_edit.getText().toString();
-                    String pass = pass_edit.getText().toString();
-                    String auth = "";
-
-                    if( user.length() > 0 ) {
-                        auth += user;
-                        if( pass.length() > 0 )
-                            auth += ":" + pass;
-                        auth += "@";
-                    }
-                    auth += server_edit.getText().toString();
-                    Uri.Builder uri_b = new Uri.Builder().scheme( "ftp" ).encodedAuthority( auth );
-                    uri_b.path( path_edit.getText().toString() );
-                    owner.Navigate( uri_b.build(), null );
-                }
-                    break;
                 case FileCommander.DONATE:
                     Intent i = new Intent( Intent.ACTION_VIEW );
                     i.setData( Uri.parse( owner.getString( R.string.donate_uri ) ) );
@@ -154,16 +132,6 @@ public class Dialogs implements DialogInterface.OnClickListener {
             final View textEntryView = factory.inflate( R.layout.login, null );
             return dialogObj = new AlertDialog.Builder( owner ).setView( textEntryView ).setTitle( "Login" )
                     .setPositiveButton( R.string.dialog_ok, this ).setNegativeButton( R.string.dialog_cancel, this ).create();
-        }
-        case FTP_DIALOG: {
-            LayoutInflater factory = LayoutInflater.from( owner );
-            final View textEntryView = factory.inflate( R.layout.ftp, null );
-            dialogObj = new AlertDialog.Builder( owner ).setView( textEntryView ).setTitle( "FTP" )
-                    .setPositiveButton( R.string.dialog_ok, this ).setNegativeButton( R.string.dialog_cancel, this ).create();
-            Window window = dialogObj.getWindow();
-            if( window != null )
-                window.setLayout( ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT );
-            return dialogObj;
         }
         case ARI_DIALOG: {
             return dialogObj = new AlertDialog.Builder( owner ).setIcon( android.R.drawable.ic_dialog_alert )

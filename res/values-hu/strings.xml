@@ -28,6 +28,7 @@
     <string name="enter">&#xA0; Mappa változtatása</string>
     <string name="add_fav">* Jelenlegi mappa kedvenccé tétele</string>
     <string name="enter_ftp">&#xA0; FTP kapcsolat</string>
+    <string name="enter_smb">&#xA0; Samba kapcsolat</string>    
     <string name="search_file">/ Fájl keresése</string>
 
     <string name="sort_by_name">&#xA0; Név</string>
@@ -108,14 +109,13 @@
     <string name="progress">Folyamat</string>
     <string name="alert">Riasztás</string>
 
-    <string name="ftp_server">FTP szerver:</string>
-    <string name="ftp_path">FTP útvonal:</string>
+    <string name="server">Szerver:</string>
+    <string name="path">útvonal:</string>
     <string name="username">Felhasználó:</string>
     <string name="password">Jelszó:</string>
-    <string name="ftp_connect">Kapcsolódás</string>
-    <string name="ftp_cancel">Mégsem</string>
+    <string name="connect">Kapcsolódás</string>
+    <string name="cancel">Mégsem</string>
     
-
     <string name="layout_settings">Elrendezés beállítása:</string>
     <string name="panels_mode">Párhuzamos panelek</string>
     <string name="summary_panels_mode">Mindkét panel mutatása osztott képernyőn.</string>

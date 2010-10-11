@@ -297,9 +297,17 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         case R.id.oth_sh_this:
             panels.makeOtherAsCurrent();
             break;
-        case R.id.ftp:
-            Intent i = new Intent( this, FTPform.class );
-            startActivityForResult( i, REQUEST_CODE_FTPFORM );
+        case R.id.ftp: {
+                Intent i = new Intent( this, ServerForm.class );
+                i.putExtra( "schema", "ftp" );
+                startActivityForResult( i, REQUEST_CODE_FTPFORM );
+            }
+            break;
+        case R.id.smb: {
+                Intent i = new Intent( this, ServerForm.class );
+                i.putExtra( "schema", "smb" );
+                startActivityForResult( i, REQUEST_CODE_FTPFORM );
+            }
             break;
         case R.id.search: 
             showSearchDialog();

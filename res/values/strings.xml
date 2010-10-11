@@ -28,6 +28,7 @@
     <string name="enter">&#xA0; Change Location</string>
     <string name="add_fav">* Favorite the current folder</string>
     <string name="enter_ftp">&#xA0; FTP helper</string>
+    <string name="enter_smb">&#xA0; Samba (Windows network)</string>
     <string name="search_file">/ Search file</string>
 
     <string name="sort_by_name">&#xA0; By Name</string>
@@ -109,12 +110,12 @@
     <string name="progress">Progress</string>
     <string name="alert">Alert</string>
 
-    <string name="ftp_server">FTP server:</string>
-    <string name="ftp_path">Path on server:</string>
+    <string name="server">Server:</string>
+    <string name="path">Path on server:</string>
     <string name="username">User Name:</string>
     <string name="password">Password:</string>
-    <string name="ftp_connect">Connect</string>
-    <string name="ftp_cancel">Cancel</string>
+    <string name="connect">Connect</string>
+    <string name="cancel">Cancel</string>
     <string name="ftp_connected">Connected to \"%s\",\n Logged in as \"%s\"</string>    
 
     <string name="layout_settings">Configure the layout:</string>

@@ -5,23 +5,27 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class FTPform extends Activity implements View.OnClickListener {
+public class ServerForm extends Activity implements View.OnClickListener {
+    private static final String TAG = "ServerForm";
+    private String schema;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         try {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.ftp);
+            super.onCreate( savedInstanceState );
+            schema = getIntent().getStringExtra( "schema" );
+            setContentView( R.layout.server );
             Button connectButton = (Button)findViewById( R.id.connect );
             connectButton.setOnClickListener( this );
             Button cancelButton = (Button)findViewById( R.id.cancel );
             cancelButton.setOnClickListener( this );
         }
         catch( Exception e ) {
-            System.err.println("FTPform.onCreate() Exception: " + e );
+            Log.e( TAG, "onCreate() Exception: ", e );
         }       
     }
     
@@ -38,7 +42,7 @@ public class FTPform extends Activity implements View.OnClickListener {
             name_edit.setText( prefs.getString( "USER", "" ) );            
         }
         catch( Exception e ) {
-            System.err.println("FTPform.onStart() exception: " + e);
+            Log.e( TAG, "onStart() Exception: ", e );
         }
         
     }
@@ -57,7 +61,7 @@ public class FTPform extends Activity implements View.OnClickListener {
             editor.commit();
         }
         catch( Exception e ) {
-            System.err.println("FTPform.onPause() exception: " + e);
+            Log.e( TAG, "onPause() Exception: ", e );
         }
     }
         
@@ -73,7 +77,7 @@ public class FTPform extends Activity implements View.OnClickListener {
             super.onSaveInstanceState(outState);
         }
         catch( Exception e ) {
-            System.err.println("FTPform.onSaveInstanceState() exception: " + e);
+            Log.e( TAG, "onSaveInstanceState() Exception: ", e );
         }
     }
 
@@ -89,7 +93,7 @@ public class FTPform extends Activity implements View.OnClickListener {
             super.onRestoreInstanceState(savedInstanceState);
         }
         catch( Exception e ) {
-            System.err.println("FTPform.onRestoreInstanceState() exception: " + e);
+            Log.e( TAG, "onRestoreInstanceState() Exception: ", e );
         }
     }
 
@@ -113,7 +117,7 @@ public class FTPform extends Activity implements View.OnClickListener {
                     auth += "@";
                 }
                 auth += server_edit.getText().toString();
-                Uri.Builder uri_b = new Uri.Builder().scheme("ftp").encodedAuthority( auth );
+                Uri.Builder uri_b = new Uri.Builder().scheme( schema ).encodedAuthority( auth );
                 uri_b.path(path_edit.getText().toString());
                 setResult( RESULT_OK, (new Intent()).setAction( uri_b.build().toString() ) );
             }
@@ -122,7 +126,7 @@ public class FTPform extends Activity implements View.OnClickListener {
             finish();
         }
         catch( Exception e ) {
-            System.err.println("FTPform.onClick() Exception: " + e );
+            Log.e( TAG, "onClick() Exception: ", e );
         }       
     }
 }
