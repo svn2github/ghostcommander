@@ -4,7 +4,7 @@
       android:versionName="1.19a" android:versionCode="59">
     <uses-permission android:name="android.permission.INTERNET" />
     <application android:icon="@drawable/icon" android:label="@string/app_name"
-        android:debuggable="false">
+        android:debuggable="true">
         <activity android:name=".FileCommander" android:label="@string/app_name"
             android:configChanges="orientation|keyboardHidden">
             <intent-filter>

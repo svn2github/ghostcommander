@@ -292,7 +292,7 @@ public class ZipAdapter extends CommanderAdapterBase {
         				}
         				ZipEntry[] subItems = GetFolderList( full_name );
 	                    if( subItems == null ) {
-	                    	errMsg = "Failed to get the file list of the subfolder '" + rel_name + "'.\n FTP log:\n\n";
+	                    	errMsg = "Failed to get the file list of the subfolder '" + rel_name + "'.\n";
 	                    	break;
 	                    }
         				counter += copyFiles( subItems, rel_name );

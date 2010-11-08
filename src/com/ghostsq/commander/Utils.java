@@ -101,12 +101,15 @@ public class Utils {
 	    return list;
 	}
 	// TODO: localize
-	public final static String getCopyReport( int total ) {
-		String report = ( total > 0 ? "" + total + " file" +
-			            ( total > 1 ? "s" : "" ) : "Nothing" ) +
-			            ( total > 1 ? " were" : " was" ) +" copied.";
-		return report;
-	}
+    public final static String getOpReport( int total, String verb ) {
+        String report = ( total > 0 ? "" + total + " file" +
+                        ( total > 1 ? "s" : "" ) : "Nothing" ) +
+                        ( total > 1 ? " were" : " was" ) +" " + verb + ".";
+        return report;
+    }
+    public final static String getCopyReport( int total ) {
+        return getOpReport( total, "copied" );
+    }
 	public final static String getHumanSize( long sz ) {
         if( sz > 1073741824 )
             return "" + Math.round(sz*10 / 1073741824.)/10. + "G";

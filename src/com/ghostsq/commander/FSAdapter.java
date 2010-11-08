@@ -330,11 +330,14 @@ public class FSAdapter extends CommanderAdapterBase {
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
         if( move && to instanceof FSAdapter ) {
             try {
+                commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
                 String dest_folder = to.toString();
                 String[] files_to_move = bitsToNames( cis );
                 if( files_to_move == null )
                 	return false;
-                return moveFiles( files_to_move, dest_folder );
+                boolean ok = moveFiles( files_to_move, dest_folder );
+                commander.notifyMe( new Commander.Notify( Commander.OPERATION_COMPLETED_REFRESH_REQUIRED ) );
+                return ok;
             }
             catch( SecurityException e ) {
                 commander.showError( "Unable to move a file because of security reasons: " + e );

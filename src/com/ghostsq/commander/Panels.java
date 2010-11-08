@@ -805,18 +805,15 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         Uri dest_uri = Uri.parse( dest );
         if( dest_uri != null && dest_uri.compareTo( dest_adapter.getUri() ) != 0 )
             dest_adapter = new FSAdapter( c, dest_uri, 0 ); // TODO: user might enter a ftp or some other url to copy to
-        if( !move ) {
-            try {
-                c.showDialog( Dialogs.PROGRESS_DIALOG );
-            }
-            catch( IllegalArgumentException e ) {
-                c.showMessage( "showDialog() failed, " + e );
-            }
+        try {
+            c.showDialog( Dialogs.PROGRESS_DIALOG );
         }
-        if( getListAdapter( true ).copyItems( getSelectedOrChecked(), dest_adapter, move ) )
-            listViews[current].clearChoices();
-        if( move )
-            refreshLists();
+        catch( IllegalArgumentException e ) {
+            c.showMessage( "showDialog() failed, " + e );
+        }
+        getListAdapter( true ).copyItems( getSelectedOrChecked(), dest_adapter, move );
+        // TODO: getCheckedItemPositions() returns an empty array after a failed operation. why? 
+        listViews[current].clearChoices();
     }
 	public void createNewFile( String fileName ) {
 		String local_name = fileName;

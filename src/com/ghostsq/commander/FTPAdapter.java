@@ -233,7 +233,6 @@ public class FTPAdapter extends CommanderAdapterBase {
 	}
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
-    	
         try {
         	if( to instanceof FSAdapter ) {
 	        	File dest = new File( to.toString() );
@@ -242,7 +241,7 @@ public class FTPAdapter extends CommanderAdapterBase {
 		        	FTPItem[] subItems = bitsToItems( cis );
 		        	if( subItems != null ) {
 		        	    commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-		                worker = new CopyFromEngine( handler, subItems, dest );
+		                worker = new CopyFromEngine( handler, subItems, dest, move );
 		                worker.start();
 		                return true;
 		        	}
@@ -281,15 +280,17 @@ public class FTPAdapter extends CommanderAdapterBase {
   {
 	    private FTPItem[] mList;
 	    private File      dest_folder;
-	    CopyFromEngine( Handler h, FTPItem[] list, File dest ) {
+	    private boolean move;
+	    CopyFromEngine( Handler h, FTPItem[] list, File dest, boolean move_ ) {
 	    	super( h );
 	        mList = list;
 	        dest_folder = dest;
+	        move = move_;
 	    }
 	    @Override
 	    public void run() {
 	    	int total = copyFiles( mList, "" );
-			sendResult( Utils.getCopyReport( total ) );
+			sendResult( Utils.getOpReport( total, move ? "moved" : "copied" ) );
 	        super.run();
 	    }
 	
@@ -303,10 +304,10 @@ public class FTPAdapter extends CommanderAdapterBase {
 	        		}
 	        		FTPItem f = list[i];
 	        		if( f != null ) {
-	        			File dest = new File( dest_folder, path + f.getName() );
-	        			String pathName = path + f.getName();
+                        String pathName = path + f.getName();
+	        			File dest = new File( dest_folder, pathName );
 	        			if( f.isDirectory() ) {
-	        				sendProgress( "Processing folder '" + pathName + "'...", 0 );
+	        				sendProgress( "Creating destination folder '" + pathName + "'...", 0 );
 	        				if( !dest.mkdir() ) {
 	        					if( !dest.exists() || !dest.isDirectory() ) {
 		        					errMsg = "Can't create folder \"" + dest.getCanonicalPath() + "\"";
@@ -320,6 +321,10 @@ public class FTPAdapter extends CommanderAdapterBase {
 		                    }
 	        				counter += copyFiles( subItems, pathName + SLS );
 	        				if( errMsg != null ) break;
+                            if( move && !ftp.rmDir( pathName ) ) {
+                                errMsg = "Failed to remove folder '" + pathName + "'.\n FTP log:\n\n" + ftp.getLog();
+                                break;
+                            }
 	        			}
 	        			else {
 	        				if( dest.exists() && !dest.delete() ) {
@@ -336,6 +341,12 @@ public class FTPAdapter extends CommanderAdapterBase {
 		        					dest.delete();
 		        					break;
 	        	        		}
+	        	        		else if( move ) {
+                                    if( !ftp.delete( pathName ) ) {
+                                        errMsg = "Failed to delete file '" + pathName + "'.\n FTP log:\n\n" + ftp.getLog();
+                                        break;
+                                    }
+        	        		    }
 	        	        	}
 	        			}
 	        			counter++;
@@ -516,11 +527,13 @@ public class FTPAdapter extends CommanderAdapterBase {
     class CopyToEngine extends CopyEngine {
         File[] mList;
         int     basePathLen;
+        boolean move = false;
         
-        CopyToEngine( Handler h, File[] list, boolean move ) { // TODO: delete the source on move
+        CopyToEngine( Handler h, File[] list, boolean move_ ) {
         	super( h );
             mList = list;
             basePathLen = list[0].getParent().length() + 1;
+            move = move_;
         }
 
         @Override
@@ -541,7 +554,7 @@ public class FTPAdapter extends CommanderAdapterBase {
 	        		if( f != null && f.exists() ) {
 	        			if( f.isFile() ) {
 	        				sendProgress( "Uploading file \n'" + f.getName() + "'", 0 );
-	        				String fn = f.getCanonicalPath().substring( basePathLen );
+	        				String fn = f.getAbsolutePath().substring( basePathLen );
 	    					FileInputStream in = new FileInputStream( f );
 	    					setCurFileLength( f.length() );
 	    		        	synchronized( ftp ) {
@@ -557,7 +570,7 @@ public class FTPAdapter extends CommanderAdapterBase {
 	        				sendProgress( "Folder '" + f.getName() + "'...", 0 );
 	        	        	synchronized( ftp ) {
 	        	        		ftp.clearLog();
-	        	        		String toCreate = f.getCanonicalPath().substring( basePathLen );
+	        	        		String toCreate = f.getAbsolutePath().substring( basePathLen );
 		        				if( !ftp.makeDir( toCreate ) ) {
 		        					errMsg = "Failed to create folder  '" + toCreate + "'.\n FTP log:\n\n" + ftp.getLog();
 		        					break;
@@ -567,6 +580,10 @@ public class FTPAdapter extends CommanderAdapterBase {
 	        				if( errMsg != null ) break;
 	        			}
     					counter++;
+                        if( move && !f.delete() ) {
+                            errMsg = "Unable to delete '" + f.getCanonicalPath() + "'.";
+                            break;
+                        }
 	        		}
 	        	}
         	}
@@ -648,7 +665,7 @@ public class FTPAdapter extends CommanderAdapterBase {
                 	subItems[j++] = items[ cis.keyAt( i ) - 1 ];
             return subItems;
 		} catch( Exception e ) {
-			commander.showError( "bitsToNames()'s Exception: " + e.getMessage() );
+		    Log.e( TAG, "bitsToNames()'s Exception: " + e.getMessage() );
 		}
 		return null;
     }
