@@ -87,16 +87,22 @@ public class Dialogs implements DialogInterface.OnClickListener {
                     owner.panels.deleteItems();
                     break;
                 case LOGIN_DIALOG: {
-                    EditText name_edit = (EditText)dialogObj.findViewById( R.id.username_edit );
-                    EditText pass_edit = (EditText)dialogObj.findViewById( R.id.password_edit );
-                    if( name_edit != null && pass_edit != null )
-                        owner.panels.login( cookie, name_edit.getText().toString(), pass_edit.getText().toString() );
-                }
+                        EditText name_edit = (EditText)dialogObj.findViewById( R.id.username_edit );
+                        EditText pass_edit = (EditText)dialogObj.findViewById( R.id.password_edit );
+                        if( name_edit != null && pass_edit != null )
+                            owner.panels.login( cookie, name_edit.getText().toString(), pass_edit.getText().toString() );
+                    }
                     break;
-                case FileCommander.DONATE:
+                case FileCommander.DONATE: {
                     Intent i = new Intent( Intent.ACTION_VIEW );
                     i.setData( Uri.parse( owner.getString( R.string.donate_uri ) ) );
                     owner.startActivity( i );
+                }
+                case FileCommander.SMB_APP: {
+                    Intent i = new Intent( Intent.ACTION_VIEW );
+                    i.setData( Uri.parse( owner.getString( R.string.smb_app_uri ) ) );
+                    owner.startActivity( i );
+                }
                 }
             } else if( whichButton == DialogInterface.BUTTON_NEGATIVE ) {
                 if( dialogId == PROGRESS_DIALOG ) {
@@ -140,6 +146,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
         }
         case CONFIRM_DIALOG:
         case FileCommander.DEL_ACT:
+        case FileCommander.SMB_APP:
         case FileCommander.DONATE: {
             return dialogObj = new AlertDialog.Builder( owner )
                 .setIcon( android.R.drawable.ic_dialog_alert )
@@ -298,6 +305,10 @@ public class Dialogs implements DialogInterface.OnClickListener {
             case FileCommander.DONATE:
                 ( (AlertDialog)dialog ).setMessage( owner.getString( R.string.donation ) );
                 break;
+            case FileCommander.SMB_APP:
+                ( (AlertDialog)dialog ).setMessage( owner.getString( R.string.smb_missed ) );
+                break;
+                
             case ABOUT_DIALOG:
                 try {
                     AlertDialog ad = (AlertDialog)dialog;

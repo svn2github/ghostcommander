@@ -8,6 +8,11 @@ import android.util.SparseBooleanArray;
  *		It may be a FSAdapter - to browse files or any other network adapter and so on (to do)
  */
 public interface CommanderAdapter {
+    /**
+     * @return the implementation type string  
+     */
+    public String getType();
+    
 	/**
 	 * @param c since only the default constructor can be called, have to pass the commander reference here  
 	 */
@@ -28,7 +33,7 @@ public interface CommanderAdapter {
      * @param mask - see bits above 
      * @param mode - see bits above 
      */
-    public void   setMode( int mask, int mode );
+    public void setMode( int mask, int mode );
     
     /**
      * @param name, pass 

@@ -194,8 +194,13 @@
     </string>
     <string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
     
-    <string name="bug_warning">!!! Android v1.5 имеет баг! Имеет смысл перейти на Android v2.x !!!</string>
+    <string name="smb_missed">
+    Не удаётся загрузить Samba адаптер.\n
+    Пожалуста, убедитесь, что пакет\n
+    \"Ghost Commander - Samba plugin\"\n
+    (com.ghostsq.commander.samba.apk) инсталлирован.</string>
 
+    <string name="bug_warning">!!! Android v1.5 имеет баг! Имеет смысл перейти на Android v2.x !!!</string>
     
     <string name="about_text">
         Ghost Commander v%s\n

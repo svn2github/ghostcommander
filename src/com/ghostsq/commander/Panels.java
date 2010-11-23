@@ -1,6 +1,8 @@
 package com.ghostsq.commander;
 
 import java.io.File;
+
+import dalvik.system.DexClassLoader;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -9,10 +11,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
+import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
 import android.net.Uri;
 import android.net.UrlQuerySanitizer;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -557,10 +561,45 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         else 
         if( scheme != null && scheme.compareTo( "smb" ) == 0 ) {
             try {
-                if( ca == null || !( ca instanceof SMBAdapter ) ) {
+                if( ca == null || !ca.getType().equals( "smb" ) ) {
                     if( ca != null )
                         ca.prepareToDestroy();
-                    ca = new SMBAdapter();
+                    try {
+                        File dex_f = c.getDir( "samba", Context.MODE_PRIVATE );
+                        if( dex_f == null || !dex_f.exists() ) {
+                            Log.w( TAG, "app.data storage is not accessable, trying to use the SD card" );
+                            File sd = Environment.getExternalStorageDirectory();
+                            if( sd == null ) return; // nowhere to store the dex :(
+                            dex_f = new File( sd, "temp" );
+                            if( !dex_f.exists() )
+                                dex_f.mkdir();
+                        }
+                        ApplicationInfo smb_ai = c.getPackageManager().getApplicationInfo( "com.ghostsq.commander.samba", 0 );
+                        Log.i( TAG, "smb package is " + smb_ai.sourceDir );
+                        
+                        ClassLoader pcl = getClass().getClassLoader();
+                        DexClassLoader cl = new DexClassLoader( smb_ai.sourceDir,
+                                dex_f.getAbsolutePath(), null, pcl );
+                        //
+                        Class<?> smbAdapterClass = cl.loadClass( "com.ghostsq.commander.samba.SMBAdapter" );
+                        if( smbAdapterClass == null ) {
+                            c.showError( "Can not load the samba class" );
+                            return;
+                        }
+                        ca = (CommanderAdapter)smbAdapterClass.newInstance();
+                    }
+                    catch( Exception e ) {
+                        c.showDialog( FileCommander.SMB_APP );
+                        Log.e( TAG, "Load smb class failed: ", e );
+                        return;
+                    }
+                    catch( Error e ) {
+                        c.showError( "Can not load the samba class - an Error was thrown: " + e );
+                        Log.e( TAG, "Load smb class failed: ", e );
+                        return;
+                    }
+                    
+                    //ca = new SMBAdapter();
                     ca.Init( c );
                     ca.setMode( CommanderAdapter.WIDE_MODE, 
                       id == R.layout.main ? CommanderAdapter.WIDE_MODE : CommanderAdapter.NARROW_MODE );

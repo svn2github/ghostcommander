@@ -41,6 +41,10 @@ public class FSAdapter extends CommanderAdapterBase {
     	dirName = d == null ? DEFAULT_DIR : d.getPath();
         items = null;
     }
+    @Override
+    public String getType() {
+        return "file";
+    }
 
     @Override
     public String toString() {

@@ -35,7 +35,10 @@ public class FindAdapter extends CommanderAdapterBase {
         super( c, mode );
         parentLink = "..";
     }
-
+    @Override
+    public String getType() {
+        return "find";
+    }
     @Override
     public void setMode( int mask, int mode_ ) {
         mode_ &= ~MODE_WIDTH;

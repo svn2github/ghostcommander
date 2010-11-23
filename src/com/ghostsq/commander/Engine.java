@@ -4,12 +4,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
-class Engine extends Thread {
+public class Engine extends Thread {
 	private   Handler handler;
 	protected boolean stop = false;
 	protected String  errMsg = null;
 	protected long threadStartedAt = 0;
-	Engine( Handler h ) {
+	protected Engine( Handler h ) {
 		handler = h;
 	}
 	public boolean reqStop() {

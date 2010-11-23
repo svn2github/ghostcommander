@@ -51,7 +51,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     private final static String TAG = "GhostCommanderActivity";
     private final static int REQUEST_CODE_PREFERENCES = 1, REQUEST_CODE_FTPFORM = 2;
     public  final static int RENAME_ACT = 1002,  NEWF_ACT = 1014, EDIT_ACT = 1004, COPY_ACT = 1005, 
-                               MOVE_ACT = 1006, MKDIR_ACT = 1007,  DEL_ACT = 1008, FIND_ACT = 1017, DONATE = 3333;
+                               MOVE_ACT = 1006, MKDIR_ACT = 1007,  DEL_ACT = 1008, FIND_ACT = 1017, DONATE = 3333,
+                               SMB_APP = 0275;
     private final static int SHOW_SIZE = 12, CHANGE_LOCATION = 993, MAKE_SAME = 217, SEND_TO = 236, OPEN_WITH = 903;
     private ArrayList<Dialogs> dialogs;
     public  Panels  panels, panelsBak = null;

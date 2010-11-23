@@ -40,7 +40,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected String parentLink;
     protected Engine worker = null;
     
-    Handler handler = new Handler() {
+    protected Handler handler = new Handler() {
         public void handleMessage( Message msg ) {
             int perc1 = msg.getData().getInt( CommanderAdapterBase.NOTIFY_PRG1 );
             int perc2 = msg.getData().getInt( CommanderAdapterBase.NOTIFY_PRG2, -1 );

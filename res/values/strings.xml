@@ -112,6 +112,7 @@
 
     <string name="server">Server:</string>
     <string name="path">Path on server:</string>
+    <string name="domain">Domain:</string>
     <string name="username">User Name:</string>
     <string name="password">Password:</string>
     <string name="connect">Connect</string>
@@ -198,16 +199,24 @@
     <string name="no_such_folder">\"%s\" is not a valid folder!</string>
     <string name="fav_added">Folder \"%s\" was added to the favorites</string>
 
+    <string name="smb_missed">
+    Can not load the Samba adapter.\n
+    Please make sure the package\n
+    \"Ghost Commander - Samba plugin\"\n
+    (com.ghostsq.commander.samba) is installed.</string>
+
+    <string name="smb_app_uri">market://search?q=pname:com.ghostsq.commander.samba</string>
+
     <string name="donate">&#xA0; Donate</string>
     <string name="online_help">&#xA0; Online Help</string>
-    
-    <string name="donation">By making a donation of any amount you will stimulate further development of the &#xAB;Ghost Commander&#xBB; file manager.\n
-Tap \"Ok\" to make a donation via PayPal.\n
-Or tap \"Cancel\" to continue enjoy the &#xAB;Ghost Commander&#xBB; file manager for free.\n
+
+    <string name="donation">Do you like this application? Really? How about to make a little donation
+     to stimulate the further development?\n
+Tap \"Ok\" to easily do that via PayPal.\n
+\"Cancel\" to continue enjoy the &#xAB;Ghost Commander&#xBB; file manager for free.\n
     </string>
     <string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
     <string name="help_uri">http://sites.google.com/site/ghostcommander1/info</string>
-    
     
     <string name="about_text">
         Ghost Commander v%s\n

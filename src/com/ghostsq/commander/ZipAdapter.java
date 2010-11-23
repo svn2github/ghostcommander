@@ -36,6 +36,10 @@ public class ZipAdapter extends CommanderAdapterBase {
     public ZipAdapter() {
         parentLink = "..";
     }
+    @Override
+    public String getType() {
+        return "zip";
+    }
 
     public final ZipEntry[] GetFolderList( String fld_path ) {
         if( zip == null ) return null;

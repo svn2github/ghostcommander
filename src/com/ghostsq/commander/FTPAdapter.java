@@ -42,6 +42,10 @@ public class FTPAdapter extends CommanderAdapterBase {
 		} catch( Exception e ) {
 		}
     }
+    @Override
+    public String getType() {
+        return "ftp";
+    }
     class Noop extends TimerTask {
 		@Override
 		public void run() {
