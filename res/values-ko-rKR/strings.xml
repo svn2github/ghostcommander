@@ -83,7 +83,7 @@
     <string name="find_on_fs_only">검색기능은 로컬 파일시스템에서만 동작합니다.</string>
     
     
-    <string name="copy_move_not_alwd">'%s'은 허용되지 않으니 다른 것을 먼저 선택하세요.</string><!-- copy_title/move_title -->
+    <string name="copy_move_not_alwd">\'%s\'은 허용되지 않으니 다른 것을 먼저 선택하세요.</string><!-- copy_title/move_title -->
     <string name="copy_move_to">%s %s to:"</string><!-- copy_title/move_title, file name/summary -->
     <string name="login_title">로그인 Login</string>
     <string name="delete_title">삭제</string>

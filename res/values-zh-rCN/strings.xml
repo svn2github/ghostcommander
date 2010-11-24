@@ -69,7 +69,7 @@
     <string name="move_title">移动</string>
     <string name="no_items">没有有效的文件来完成此操作。</string>
     
-    <string name="copy_move_not_alwd">此 '%s' 不被允许。先选择一些文件。</string><!-- copy_title/move_title -->
+    <string name="copy_move_not_alwd">此 \'%s\' 不被允许。先选择一些文件。</string><!-- copy_title/move_title -->
     <string name="copy_move_to">%s %s 到："</string><!-- copy_title/move_title, file name/summary -->
     <string name="login_title">登陆</string>
     <string name="delete_title">删除</string>

@@ -84,7 +84,7 @@
     <string name="find_on_fs_only">The search feature works only with the local file system.</string>
     
     
-    <string name="copy_move_not_alwd">The '%s' is not allowed. Select something first.</string><!-- copy_title/move_title -->
+    <string name="copy_move_not_alwd">The \'%s\' is not allowed. Select something first.</string><!-- copy_title/move_title -->
     <string name="copy_move_to">%s %s to:"</string><!-- copy_title/move_title, file name/summary -->
     <string name="login_title">Login</string>
     <string name="delete_title">Delete</string>
@@ -148,7 +148,7 @@
     <string name="finger_friendly">Finger friendly</string>
     <string name="summary_finger_friendly">Enlarge user interface elements</string>
     <string name="prevent_root">Warn on a root folder</string>
-    <string name="summary_prevent_root">Issue a warning when going to a device's root folder.</string>
+    <string name="summary_prevent_root">Issue a warning when going to a device\'s root folder.</string>
 
     <string name="left_panel_settings">Left panel settings</string>
     <string name="right_panel_settings">Right panel settings</string>
@@ -162,7 +162,7 @@
     <string name="summary_sort_case">If not checked the sorting will be case sensitive</string>
     
     <string name="show_hidden">Show hidden files</string>
-    <string name="summary_show_hidden">If not checked, files beginning with a dot won't be shown</string>
+    <string name="summary_show_hidden">If not checked, files beginning with a dot won\'t be shown</string>
 
     <string name="colors">Setup the colors</string>
     <string name="summary_colors">Customize the the colors of the background, selection, etc.</string>
@@ -181,11 +181,11 @@
     <string name="restart_to_apply_lang">Please restart application to apply the new selected language</string>        
 
     <string name="editor_activity">Editor Activity Name</string>
-    <string name="summary_editor_activity">EDIT action Activity's full class name. Package name = class name prefix.</string>
+    <string name="summary_editor_activity">EDIT action Activity\'s full class name. Package name = class name prefix.</string>
     <string name="value_editor_activity">com.ghostsq.commander.Editor</string>
     
     <string name="nothing_to_open">Nothing to open</string>
-    <string name="remind_to_save">Don&apos;t forget to Save your changes (using the menu)</string>
+    <string name="remind_to_save">Don\'t forget to Save your changes (using the menu)</string>
     <string name="save">Save</string>
     <string name="revert">Revert</string>
     <string name="wrap">Wrap long lines</string>
@@ -194,7 +194,7 @@
     <string name="binary_file">The file \"%s\" is binary. You can damage it. Edit on your own risk.</string>    
     <string name="cant_open">Can not open the file.</string>    
     <string name="cant_save">Can not save the file.</string>
-    <string name="nav_warn">You&apos;re opening a system folder. Tampering with it may lead to a failure. Proceed at this time?</string>
+    <string name="nav_warn">You\'re opening a system folder. Tampering with it may lead to a failure. Proceed at this time?</string>
     <string name="nav_warn_cmt">(You can permanently disable this warning in the application settings )\nClick "Cancel" to safely go to the /sdcard folder. Click "Exit" to close the application.</string>
     <string name="no_such_folder">\"%s\" is not a valid folder!</string>
     <string name="fav_added">Folder \"%s\" was added to the favorites</string>
@@ -229,12 +229,12 @@ By using this software, you agree with the following:
 The author of this software is not responsible for any kind of damage, loss of information, 
 consequential damages, or any issues that are, or could be caused by the use of this software.
 You agree to use this software at your own risk.\n
-If you don&apos;t agree to the above, stop using this software immediately and uninstall it.\n
+If you don\'t agree to the above, stop using this software immediately and uninstall it.\n
     </string>
     <string name="keys_text">
     "
-To select a file, tap on the right half of the item's row.\n    
-To manually enter the location path (and the favorites), long press on the panel's title\n\n
+To select a file, tap on the right half of the item\'s row.\n    
+To manually enter the location path (and the favorites), long press on the panel\'s title\n\n
     
 Shortcuts keys:\n
 VolumeUp - Select the current item (file)\n
