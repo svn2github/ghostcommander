@@ -94,14 +94,13 @@ public class Dialogs implements DialogInterface.OnClickListener {
                     }
                     break;
                 case FileCommander.DONATE: {
-                    Intent i = new Intent( Intent.ACTION_VIEW );
-                    i.setData( Uri.parse( owner.getString( R.string.donate_uri ) ) );
-                    owner.startActivity( i );
+                    owner.startViewURIActivity( R.string.donate_uri );
                 }
                 case FileCommander.SMB_APP: {
-                    Intent i = new Intent( Intent.ACTION_VIEW );
-                    i.setData( Uri.parse( owner.getString( R.string.smb_app_uri ) ) );
-                    owner.startActivity( i );
+                    owner.startViewURIActivity( R.string.smb_app_uri );
+                }
+                case FileCommander.DBOX_APP: {
+                    owner.startViewURIActivity( R.string.dbox_app_uri );
                 }
                 }
             } else if( whichButton == DialogInterface.BUTTON_NEGATIVE ) {
@@ -147,6 +146,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
         case CONFIRM_DIALOG:
         case FileCommander.DEL_ACT:
         case FileCommander.SMB_APP:
+        case FileCommander.DBOX_APP:
         case FileCommander.DONATE: {
             return dialogObj = new AlertDialog.Builder( owner )
                 .setIcon( android.R.drawable.ic_dialog_alert )
@@ -307,6 +307,9 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 break;
             case FileCommander.SMB_APP:
                 ( (AlertDialog)dialog ).setMessage( owner.getString( R.string.smb_missed ) );
+                break;
+            case FileCommander.DBOX_APP:
+                ( (AlertDialog)dialog ).setMessage( owner.getString( R.string.dbox_missed ) );
                 break;
                 
             case ABOUT_DIALOG:

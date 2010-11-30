@@ -110,7 +110,7 @@ public class Utils {
     public final static String getCopyReport( int total ) {
         return getOpReport( total, "copied" );
     }
-	public final static String getHumanSize( long sz ) {
+    public final static String getHumanSize( long sz ) {
         if( sz > 1073741824 )
             return "" + Math.round(sz*10 / 1073741824.)/10. + "G";
         if( sz > 1048576 )
@@ -118,6 +118,27 @@ public class Utils {
         if( sz > 1024 )
             return "" + Math.round(sz*10 / 1024.)/10. + "K";
         return "" + sz + " ";
+    }
+    public final static long parseHumanSize( String s ) {
+        final char[] sxs = { 'K', 'M', 'G', 'T' };
+        long m = 1024;
+        int  s_pos;
+        s = s.toUpperCase();
+        try {
+            for( int i=0; i < 4; i++ ) {
+                s_pos = s.indexOf( sxs[i] );
+                if( s_pos > 0 ) {
+                    float v = Float.parseFloat( s.substring( 0, s_pos ) );
+                    return (long)(v * m);
+                }
+                m *= 1024;
+            }
+            s_pos = s.indexOf( 'B' );
+            return Long.parseLong( s_pos > 0 ? s.substring( 0, s_pos ) : s );
+        } catch( NumberFormatException e ) {
+            e.printStackTrace();
+        }
+        return 0; 
     }
 
     public final static String screenPwd( String uri_str ) {

@@ -118,7 +118,7 @@ public class FSAdapter extends CommanderAdapterBase {
             commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pass_back_on_done ) );
             return true;
 		} catch( Exception e ) {
-			e.printStackTrace();
+			Log.e( TAG, "readSource() excception", e );
 		}
 		return false;
     }

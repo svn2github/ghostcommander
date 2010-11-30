@@ -204,8 +204,13 @@
     Please make sure the package\n
     \"Ghost Commander - Samba plugin\"\n
     (com.ghostsq.commander.samba) is installed.</string>
-
     <string name="smb_app_uri">market://search?q=pname:com.ghostsq.commander.samba</string>
+    <string name="dbox_missed">
+    Can not load the Dropbox adapter.\n
+    Please make sure the package\n
+    \"Ghost Commander - Dropbox plugin\"\n
+    (com.ghostsq.commander.dropbox) is installed.</string>
+    <string name="dbox_app_uri">market://search?q=pname:com.ghostsq.commander.dropbox</string>
 
     <string name="donate">&#xA0; Donate</string>
     <string name="online_help">&#xA0; Online Help</string>

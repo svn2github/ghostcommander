@@ -49,10 +49,10 @@ import android.widget.Toast;
 
 public class FileCommander extends Activity implements Commander, View.OnClickListener {
     private final static String TAG = "GhostCommanderActivity";
-    private final static int REQUEST_CODE_PREFERENCES = 1, REQUEST_CODE_FTPFORM = 2;
+    private final static int REQUEST_CODE_PREFERENCES = 1, REQUEST_CODE_SRV_FORM = 2;
     public  final static int RENAME_ACT = 1002,  NEWF_ACT = 1014, EDIT_ACT = 1004, COPY_ACT = 1005, 
                                MOVE_ACT = 1006, MKDIR_ACT = 1007,  DEL_ACT = 1008, FIND_ACT = 1017, DONATE = 3333,
-                               SMB_APP = 0275;
+                               SMB_APP = 0275, DBOX_APP = 3592;
     private final static int SHOW_SIZE = 12, CHANGE_LOCATION = 993, MAKE_SAME = 217, SEND_TO = 236, OPEN_WITH = 903;
     private ArrayList<Dialogs> dialogs;
     public  Panels  panels, panelsBak = null;
@@ -301,13 +301,13 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         case R.id.ftp: {
                 Intent i = new Intent( this, ServerForm.class );
                 i.putExtra( "schema", "ftp" );
-                startActivityForResult( i, REQUEST_CODE_FTPFORM );
+                startActivityForResult( i, REQUEST_CODE_SRV_FORM );
             }
             break;
         case R.id.smb: {
                 Intent i = new Intent( this, ServerForm.class );
                 i.putExtra( "schema", "smb" );
-                startActivityForResult( i, REQUEST_CODE_FTPFORM );
+                startActivityForResult( i, REQUEST_CODE_SRV_FORM );
             }
             break;
         case R.id.search: 
@@ -375,7 +375,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             panels.showOrHideToolbar( sharedPref.getBoolean("show_toolbar", true ) );
         }
         else
-        if( requestCode == REQUEST_CODE_FTPFORM ) {
+        if( requestCode == REQUEST_CODE_SRV_FORM ) {
             if( resultCode == RESULT_OK ) {
                 dont_restore = true;
                 Navigate( Uri.parse( data.getAction() ), null );
@@ -655,5 +655,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             config.locale = locale;
             getResources().updateConfiguration( config, null );
         }
+    }
+    final void startViewURIActivity( int res_id ) {
+        Intent i = new Intent( Intent.ACTION_VIEW );
+        i.setData( Uri.parse( getString( res_id ) ) );
+        startActivity( i );
     }
 }

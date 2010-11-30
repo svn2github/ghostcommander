@@ -159,7 +159,7 @@ public final class R {
         public static final int F9=0x7f07000f;
         public static final int SF4=0x7f07000a;
         public static final int about=0x7f070023;
-        public static final int about_text=0x7f0700b5;
+        public static final int about_text=0x7f0700b7;
         public static final int add_fav=0x7f070018;
         public static final int alert=0x7f07005d;
         public static final int app=0x7f070004;
@@ -167,14 +167,14 @@ public final class R {
         public static final int arrow_mode=0x7f07002b;
         public static final int bgr_color_picker=0x7f070091;
         public static final int binary_file=0x7f0700a7;
-        public static final int bug_warning=0x7f0700b8;
+        public static final int bug_warning=0x7f0700ba;
         public static final int cancel=0x7f070064;
         public static final int cant_open=0x7f0700a8;
         public static final int cant_save=0x7f0700a9;
         public static final int cd_prompt=0x7f070055;
         public static final int cd_title=0x7f070054;
         public static final int change=0x7f070013;
-        public static final int col_sw=0x7f0700b7;
+        public static final int col_sw=0x7f0700b9;
         public static final int colors=0x7f07008f;
         public static final int confirm=0x7f07005b;
         public static final int connect=0x7f070063;
@@ -188,6 +188,8 @@ public final class R {
          */
         public static final int copy_move_to=0x7f070048;
         public static final int copy_title=0x7f070043;
+        public static final int dbox_app_uri=0x7f0700b1;
+        public static final int dbox_missed=0x7f0700b0;
         public static final int delete_err=0x7f07004b;
         public static final int delete_q=0x7f07004c;
         /**  copy_title/move_title, file name/summary 
@@ -213,9 +215,9 @@ public final class R {
         public static final int dialog_retry=0x7f070038;
         public static final int dialog_yes=0x7f070031;
         public static final int domain=0x7f070060;
-        public static final int donate=0x7f0700b0;
-        public static final int donate_uri=0x7f0700b3;
-        public static final int donation=0x7f0700b2;
+        public static final int donate=0x7f0700b2;
+        public static final int donate_uri=0x7f0700b5;
+        public static final int donation=0x7f0700b4;
         public static final int done=0x7f07004f;
         public static final int edit_title=0x7f07003a;
         public static final int editor_activity=0x7f07009d;
@@ -234,12 +236,12 @@ public final class R {
         public static final int ftp_connected=0x7f070065;
         public static final int go_button=0x7f070026;
         public static final int help=0x7f070005;
-        public static final int help_uri=0x7f0700b4;
+        public static final int help_uri=0x7f0700b6;
         public static final int info=0x7f07005a;
         public static final int input_settings=0x7f07002a;
         public static final int interrupted=0x7f070050;
         public static final int keys=0x7f070024;
-        public static final int keys_text=0x7f0700b6;
+        public static final int keys_text=0x7f0700b8;
         public static final int language=0x7f07009a;
         public static final int layout_settings=0x7f070066;
         public static final int left_panel_settings=0x7f070083;
@@ -265,7 +267,7 @@ public final class R {
         public static final int not_supported=0x7f070056;
         public static final int nothing_found=0x7f070052;
         public static final int nothing_to_open=0x7f0700a0;
-        public static final int online_help=0x7f0700b1;
+        public static final int online_help=0x7f0700b3;
         public static final int open_with=0x7f070029;
         public static final int oth_sh_this=0x7f070011;
         public static final int panels_mode=0x7f070067;
