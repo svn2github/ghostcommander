@@ -12,14 +12,17 @@ public class Engine extends Thread {
 	protected Engine( Handler h ) {
 		handler = h;
 	}
-	public boolean reqStop() {
-	    if( isAlive() ) {
-    		stop = true;
-    		interrupt();
-    		return true;
-	    }
-	    return false;
-	}
+    public boolean reqStop() {
+        if( isAlive() ) {
+            stop = true;
+            interrupt();
+            return true;
+        }
+        return false;
+    }
+    protected boolean isStopReq() {
+        return stop || isInterrupted();
+    }
     protected final void sendProgress( String s, int p ) {
     	sendProgress( s, p, -1 );
     }
