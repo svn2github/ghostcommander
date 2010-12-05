@@ -3,9 +3,12 @@ package com.ghostsq.commander;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.zip.ZipEntry;
 
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.CommanderAdapter;
@@ -51,37 +54,37 @@ public class RootAdapter extends CommanderAdapterBase {
             		sendProgress( "Wrong URI", Commander.OPERATION_FAILED );
             		return;
             	}
-System.err.print( "start " + System.currentTimeMillis() );
             	String  path = uri.getPath();
                 parentLink = path == null || path.length() == 0 || path.equals( SLS ) ? SLS : "..";
                 Process p = Runtime.getRuntime().exec("su");
                 DataOutputStream os = new DataOutputStream( p.getOutputStream() );
                 DataInputStream  is = new DataInputStream( p.getInputStream() );
                 os.writeBytes("ls -l " + path + "\n"); // execute command
-System.err.print( "executed " + System.currentTimeMillis() );
                 for( int i=0; i< 10; i++ ) {
-                    if( stop || isInterrupted() ) 
+                    if( isStopReq() ) 
                         throw new Exception();
                     if( is.available() > 0 ) break;
                     Thread.sleep( 50 );
                 }
-System.err.print( "respond available " + System.currentTimeMillis() );                
-                if( is.available() <= 0 ) {
-                    sendProgress( "nothing returned", Commander.OPERATION_FAILED, pass_back_on_done );
+                if( is.available() <= 0 ) { // may be an error may be not
+                    sendProgress( null, Commander.OPERATION_FAILED, pass_back_on_done );
                     return;
                 }
-System.err.print( "start reading " + System.currentTimeMillis() );
+//Log.v( TAG,  "start reading     " + System.currentTimeMillis() );
                 ArrayList<LsItem>  array = new ArrayList<LsItem>();
                 while( is.available() > 0 ) {
-                    if( stop || isInterrupted() ) 
+                    if( isStopReq() ) 
                         throw new Exception();
+//Log.v( TAG,  "before readLine() " + System.currentTimeMillis() );
                     String ln = is.readLine();
+//Log.v( TAG,  "after readLine()  " + System.currentTimeMillis() );
                     if( ln == null ) break;
                     LsItem item = new LsItem( ln );
+//Log.v( TAG,  "after create item " + System.currentTimeMillis() );
                     if( item.isValid() )
                         array.add( item );
                 }
-System.err.print( "end reading " + System.currentTimeMillis() );
+//Log.v( TAG,  "end reading       " + System.currentTimeMillis() );
                 os.writeBytes("exit\n");
                 os.flush();
                 p.waitFor();
@@ -89,7 +92,6 @@ System.err.print( "end reading " + System.currentTimeMillis() );
                     sendProgress( "Execution failed", Commander.OPERATION_FAILED, pass_back_on_done );
                     return;
                 }
-System.err.print( "process ended " + System.currentTimeMillis() );
                 items_tmp = new LsItem[array.size()];
                 array.toArray( items_tmp );
                 LsItemPropComparator comp = new LsItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
@@ -109,7 +111,6 @@ System.err.print( "process ended " + System.currentTimeMillis() );
         if( engine instanceof ListEngine ) {
             ListEngine list_engine = (ListEngine)engine;
             items = null;
-System.err.print( "start coping " + System.currentTimeMillis() );
             if( ( mode & MODE_HIDDEN ) == HIDE_MODE ) {
                 LsItem[] tmp_items = list_engine.getItems();
                 if( tmp_items != null ) {
@@ -126,7 +127,6 @@ System.err.print( "start coping " + System.currentTimeMillis() );
             }
             else
                 items = list_engine.getItems();
-System.err.print( "end coping " + System.currentTimeMillis() );
             notifyDataSetChanged();
         }
     }
@@ -154,7 +154,7 @@ System.err.print( "end coping " + System.currentTimeMillis() );
             if( uri == null )
                 return false;
             if( worker != null && worker.reqStop() ) { // that's not good.
-                Thread.sleep( 500 );      // will it end itself?
+                Thread.sleep( 1000 );      // will it end itself?
                 if( worker.isAlive() ) {
                     showMessage( "Another worker thread still alive" );
                     return false;
@@ -199,37 +199,24 @@ System.err.print( "end coping " + System.currentTimeMillis() );
         return false;
     }
 
-    class CopyEngine extends Engine implements FTP.ProgressSink 
-    {
-        private long    curFileLen = 0;
-    	CopyEngine( Handler h ) {
-    		super( h );
-    	}
-    	protected void setCurFileLength( long len ) {
-    		curFileLen = len;
-    	}
-		@Override
-		public boolean completed( long size ) {
-			if( curFileLen > 0 )
-				sendProgress( null, (int)(size * 100 / curFileLen) );
-    		if( stop || isInterrupted() ) {
-    			errMsg = "Canceled";
-    			return false;
-    		}
-    		return true;
-		}
-    }
     
-  class CopyFromEngine extends CopyEngine 
+  class CopyFromEngine extends Engine 
   {
 	    private LsItem[] mList;
-	    private File      dest_folder;
+	    private File     dest_folder;
 	    private boolean move;
+	    private String   src_base_path;
 	    CopyFromEngine( Handler h, LsItem[] list, File dest, boolean move_ ) {
 	    	super( h );
 	        mList = list;
 	        dest_folder = dest;
 	        move = move_;
+	        src_base_path = uri.getPath();
+	        if( src_base_path == null || src_base_path.length() == 0 )
+	            src_base_path = SLS;
+	        else
+	        if( src_base_path.charAt( src_base_path.length()-1 ) != SLC )
+	            src_base_path += SLS;
 	    }
 	    @Override
 	    public void run() {
@@ -241,6 +228,63 @@ System.err.print( "end coping " + System.currentTimeMillis() );
 	    private final int copyFiles( LsItem[] list, String path ) {
 	        int counter = 0;
 	        try {
+                long dir_size = 0, byte_count = 0;
+                for( int i = 0; i < list.length; i++ ) {
+                    LsItem f = list[i];               
+                    if( !f.isDirectory() )
+                        dir_size += f.length();
+                }
+                double conv = 100./(double)dir_size;
+                for( int i = 0; i < list.length; i++ ) {
+                    LsItem f = list[i];
+                    if( f == null ) continue;
+                    String file_name = f.getName();
+                    String rel_name = path + file_name;
+                    String full_name = src_base_path + rel_name;
+                    File   dest_file = new File( dest_folder, path + file_name );
+                    if( f.isDirectory() ) {
+                        sendProgress( "Processing folder '" + rel_name + "'...", 0 );
+                        if( !dest_file.mkdir() ) {
+                            if( !dest_file.exists() || !dest_file.isDirectory() ) {
+                                errMsg = "Can't create folder \"" + dest_file.getCanonicalPath() + "\"";
+                                break;
+                            }
+                        }
+                        LsItem[] subItems = null;//GetFolderList( full_name );
+                        if( subItems == null ) {
+                            errMsg = "Failed to get the file list of the subfolder '" + rel_name + "'.\n";
+                            break;
+                        }
+                        counter += copyFiles( subItems, rel_name );
+                        if( errMsg != null ) break;
+                    }
+                    else {
+                        if( dest_file.exists() && !dest_file.delete() ) {
+                            errMsg = "Please make sure the folder '" + dest_folder.getCanonicalPath() + "' is writable";
+                            break;
+                        }
+                        String to_exec = "cat " + full_name + " >" + dest_file.getAbsolutePath() + "\n";
+                        Log.i( TAG, to_exec );
+    
+                        Process p = Runtime.getRuntime().exec("su");
+                        DataOutputStream os = new DataOutputStream( p.getOutputStream() );
+                        os.writeBytes( to_exec ); // execute command
+                        os.writeBytes("exit\n");
+                        os.flush();
+                        p.waitFor();
+                        if( p.exitValue() == 255 ) {
+                            error( "Coping of file '" + rel_name + "' failed" );
+                            break;
+                        }
+                    }
+                    if( stop || isInterrupted() ) {
+                        error( "Canceled by a request." );
+                        break;
+                    }
+                    if( i >= list.length-1 )
+                        sendProgress( "Unpacked \n'" + rel_name + "'   ", (int)(byte_count * conv) );
+                    counter++;
+                }
 	    	}
 			catch( Exception e ) {
 				e.printStackTrace();
@@ -252,7 +296,7 @@ System.err.print( "end coping " + System.currentTimeMillis() );
 	    
 	@Override
 	public boolean createFile( String fileURI ) {
-		commander.notifyMe( new Commander.Notify( "Operation not supported on a FTP folder.", 
+		commander.notifyMe( new Commander.Notify( "Operation not supported.", 
 		                        Commander.OPERATION_FAILED ) );
 		return false;
 	}
@@ -373,7 +417,7 @@ System.err.print( "end coping " + System.currentTimeMillis() );
 		return false;
     }
     
-    class CopyToEngine extends CopyEngine {
+    class CopyToEngine extends Engine {
         File[] mList;
         int     basePathLen;
         boolean move = false;
@@ -493,36 +537,5 @@ System.err.print( "end coping " + System.currentTimeMillis() );
                 return ext_cmp;
             return f1.compareTo( f2 );
 		}
-    }
-
-    public class FTPCredentials extends org.apache.http.auth.UsernamePasswordCredentials {
-        public FTPCredentials( String userName, String password ) {
-            super( userName, password );
-        }
-        public FTPCredentials( String newUserInfo ) {
-            super( newUserInfo == null ? ":" : newUserInfo );
-        }
-        public String getUserName() {
-            String u = super.getUserName();
-            return u == null || u.length() == 0 ? "anonymous" : u;
-        }
-        public String getPassword() {
-            String u = super.getUserName();
-            return u == null || u.length() == 0 ? "user@host.com" : super.getPassword();
-        }
-        public final boolean isNotSet() {
-            String u = super.getUserName();
-            if( u == null || u.length() == 0 ) return true;
-            String p = super.getPassword();
-            if( p == null ) return true;
-            return false;
-        }
-        /*
-        public final boolean isSame( String user_info ) {
-            if( user_info == null && userInfo == null ) return true;
-            if( user_info != null && userInfo != null && user_info.compareTo( userInfo ) == 0 ) return true;
-            return false;
-        }
-        */
     }
 }
