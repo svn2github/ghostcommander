@@ -1,6 +1,12 @@
 package com.ghostsq.commander;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -566,7 +572,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 int which_panel = progress.cookie.charAt( 0 ) == '1' ? 1 : 0;
                 panels.setPanelTitle( getString( R.string.fail ), which_panel );
             }
-            showError("Failed" + ( progress.string != null && progress.string.length() > 0 ? ":\n" + progress.string : "." ));
+            if( progress.string != null && progress.string.length() > 0 )
+                showError("Failed:\n" + progress.string );
             return;
         case OPERATION_FAILED_LOGIN_REQUIRED: 
             if( progress.string != null ) {
