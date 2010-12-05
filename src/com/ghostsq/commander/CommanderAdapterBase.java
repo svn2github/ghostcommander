@@ -6,10 +6,8 @@ import java.util.Date;
 import java.util.Locale;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.MediaStore;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -18,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TableLayout;
@@ -146,7 +143,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             
             String name = item.dir ? item.name : " " + item.name, size = "", date = "";
             if( dm ) {
-            	if( !item.dir && item.size >= 0 )
+            	if( !item.dir || item.size >= 0 )
             		size = Utils.getHumanSize( item.size );
                 if( item.date != null ) {
                     if( long_date ) {

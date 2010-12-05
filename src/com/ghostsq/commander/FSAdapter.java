@@ -24,7 +24,7 @@ public class FSAdapter extends CommanderAdapterBase {
 
     class FileEx  {
         public File f = null;
-        public long size = 0;
+        public long size = -1;
         public FileEx( String name ) {
             f = new File( name );
         }
@@ -213,7 +213,7 @@ public class FSAdapter extends CommanderAdapterBase {
 				    result += "\nLast modified:\n  " +
 				        (String)DateFormat.format( "MMM dd yyyy hh:mm:ss", new Date( mList[0].f.lastModified() ) );
 				}
-				sendProgress(result, Commander.OPERATION_COMPLETED);
+				sendProgress( result, Commander.OPERATION_COMPLETED );
 			} catch( Exception e ) {
 				sendProgress( e.getMessage(), Commander.OPERATION_FAILED );
 			}

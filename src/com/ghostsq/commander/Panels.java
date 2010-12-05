@@ -407,6 +407,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             else {
                 ListView flv = listViews[current];
                 reStoreChoosedItems();
+                flv.invalidateViews();
                 if( !flv.isInTouchMode() && currentPositions[current] > 0 ) {
                     Log.i( TAG, "stored pos: " + currentPositions[current] );
                     flv.setSelection( currentPositions[current] );
@@ -861,7 +862,9 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     	return checked;
     }
     public final String getFolderUri( boolean active ) {
-        return getListAdapter( active ).toString();
+        CommanderAdapter a = getListAdapter( active );
+        if( a == null ) return "";
+        return a.toString();
     }
     public final String getSelectedItemName() {
         return getListAdapter( true ).getItemName( getSelection(), false );

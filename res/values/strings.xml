@@ -27,8 +27,8 @@
     <string name="refresh">&#xA0; Refresh</string>
     <string name="enter">&#xA0; Change Location</string>
     <string name="add_fav">* Favorite the current folder</string>
-    <string name="enter_ftp">&#xA0; FTP helper</string>
-    <string name="enter_smb">&#xA0; Samba (Windows network)</string>
+    <string name="enter_ftp">&#xA0; Open FTP site</string>
+    <string name="enter_smb">&#xA0; Open Samba (Windows) share</string>
     <string name="search_file">/ Search file</string>
 
     <string name="sort_by_name">&#xA0; By Name</string>
