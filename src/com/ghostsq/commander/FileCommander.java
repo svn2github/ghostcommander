@@ -27,26 +27,6 @@ import android.util.Log;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
-/*
- *  TODO:
- *  -1. Create a new file
- *  -2. FTP copy
- *  -3. FTP delete
- *  4. FTP move = copy + delete
- *  5. FTP tree size
- *  -6. Progress bar
- *  7. Localize the copy report and FTP
- *  -8. Add and delete favorites by name, not by current
- *  -9. Select/unselect all files 
- *  -10. Ask password or do not show it
- *  11. Do active or passive ftp by the user's choice
- *  -12. Close the app completely on exit - does not work
- *  13. Repeat and make case independed quick search
- *  -14. Make the ftp adapter to remember item selected and pass its name on the way up
- *  -15. store, sort and show calculated folders sizes
- * 
- */
-
 public class FileCommander extends Activity implements Commander, View.OnClickListener {
     private final static String TAG = "GhostCommanderActivity";
     private final static int REQUEST_CODE_PREFERENCES = 1, REQUEST_CODE_SRV_FORM = 2;
