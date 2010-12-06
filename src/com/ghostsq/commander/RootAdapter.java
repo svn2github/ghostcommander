@@ -3,12 +3,9 @@ package com.ghostsq.commander;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.zip.ZipEntry;
 
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.CommanderAdapter;
@@ -66,10 +63,8 @@ public class RootAdapter extends CommanderAdapterBase {
                     if( is.available() > 0 ) break;
                     Thread.sleep( 50 );
                 }
-                if( is.available() <= 0 ) { // may be an error may be not
-                    sendProgress( null, Commander.OPERATION_FAILED, pass_back_on_done );
-                    return;
-                }
+                if( is.available() <= 0 ) // may be an error may be not
+                    Log.w( TAG, "No output from the executed command" );
 //Log.v( TAG,  "start reading     " + System.currentTimeMillis() );
                 ArrayList<LsItem>  array = new ArrayList<LsItem>();
                 while( is.available() > 0 ) {
@@ -88,10 +83,8 @@ public class RootAdapter extends CommanderAdapterBase {
                 os.writeBytes("exit\n");
                 os.flush();
                 p.waitFor();
-                if( p.exitValue() == 255 ) {
-                    sendProgress( "Execution failed", Commander.OPERATION_FAILED, pass_back_on_done );
-                    return;
-                }
+                if( p.exitValue() == 255 )
+                    Log.e( TAG, "Process.exitValue() returned 255" );
                 items_tmp = new LsItem[array.size()];
                 array.toArray( items_tmp );
                 LsItemPropComparator comp = new LsItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
@@ -99,7 +92,9 @@ public class RootAdapter extends CommanderAdapterBase {
                 sendProgress( null, Commander.OPERATION_COMPLETED, pass_back_on_done );
             }
             catch( Exception e ) {
-                sendProgress( "Exception: " + e, Commander.OPERATION_FAILED, pass_back_on_done );
+                sendProgress( commander.getContext().getString( R.string.no_root ), 
+                        Commander.OPERATION_FAILED, pass_back_on_done );
+                Log.e( TAG, "ls output is not valid", e );
             }
             finally {
             	super.run();
@@ -266,7 +261,7 @@ public class RootAdapter extends CommanderAdapterBase {
                         String to_exec = "cat " + full_name + " >" + dest_file.getAbsolutePath() + "\n";
                         Log.i( TAG, to_exec );
     
-                        Process p = Runtime.getRuntime().exec("su");
+                        Process p = Runtime.getRuntime().exec( "su" );
                         DataOutputStream os = new DataOutputStream( p.getOutputStream() );
                         os.writeBytes( to_exec ); // execute command
                         os.writeBytes("exit\n");

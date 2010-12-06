@@ -454,7 +454,7 @@ public class FTP {
     	return executeCommand( "DELE " + name );
     }
     
-    public final FTPItem[] getDirList( String path ) {
+    public final LsItem[] getDirList( String path ) {
     	if( !isLoggedIn() )
     		return null;        	
     	String cur_dir = null;
@@ -465,7 +465,7 @@ public class FTP {
         		return null;
         	setCurrentDir( path );
     	}
-    	ArrayList<FTPItem> array = null;
+    	ArrayList<LsItem> array = null;
         try {
             dataSocket = executeDataCommand( "LIST" );
             if( dataSocket == null )
@@ -476,12 +476,12 @@ public class FTP {
                 return null;
             }
             BufferedReader dataReader = new BufferedReader( new InputStreamReader( inDataStream ), 4096 );
-        	array = new ArrayList<FTPItem>(); 
+        	array = new ArrayList<LsItem>(); 
 
         	while( true ) {
         		String dir_line = dataReader.readLine();
         		if( dir_line == null ) break;
-        		FTPItem item = new FTPItem( dir_line );
+        		LsItem item = new LsItem( dir_line );
         		if( item.isValid() )
         			array.add( item );
         	}
@@ -497,7 +497,7 @@ public class FTP {
         	cleanUpDataCommand();
         }
         if( array != null ) {
-	        FTPItem[] result = new FTPItem[array.size()]; 
+            LsItem[] result = new LsItem[array.size()]; 
 	        return array.toArray( result );
         }
         return null;

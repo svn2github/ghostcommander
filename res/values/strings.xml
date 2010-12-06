@@ -211,14 +211,16 @@
     \"Ghost Commander - Dropbox plugin\"\n
     (com.ghostsq.commander.dropbox) is installed.</string>
     <string name="dbox_app_uri">market://search?q=pname:com.ghostsq.commander.dropbox</string>
+    
+    <string name="no_root">It seems your device does not allow you the root (su) access. Sorry.</string>
 
     <string name="donate">&#xA0; Donate</string>
     <string name="online_help">&#xA0; Online Help</string>
 
     <string name="donation">Do you like this application? Really? How about to make a little donation
-     to stimulate the further development?\n
+    of any ammount to support the further development?\n
 Tap \"Ok\" to easily do that via PayPal.\n
-\"Cancel\" to continue enjoy the &#xAB;Ghost Commander&#xBB; file manager for free.\n
+\"Cancel\" to enjoy the &#xAB;Ghost Commander&#xBB; file manager for free.\n
     </string>
     <string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
     <string name="help_uri">http://sites.google.com/site/ghostcommander1/info</string>

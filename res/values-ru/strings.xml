@@ -100,8 +100,8 @@
     <string name="cancel">Отмена</string>
     <string name="ftp_connected">Подключились к FTP \"%s\",\n как пользователь \"%s\"</string>
 
-    <string name="enter_ftp">&#xA0; FTP подключение</string>
-    <string name="enter_smb">&#xA0; Samba (Windows network)</string>
+    <string name="enter_ftp">&#xA0; Открыть FTP сайт</string>
+    <string name="enter_smb">&#xA0; Открыть сетевую папку Windows</string>
     <string name="search_file">/ Поиск файла</string>
 
     <string name="layout_settings">Настройки внешнего вида:</string>
@@ -185,12 +185,13 @@
     <string name="no_such_folder">\"%s\" не существует!</string>
     <string name="fav_added">Folder \"%s\" добавлен</string>
 
-    <string name="donate">&#xA0; Поддержка</string>
+    <string name="no_root">Очевидно ваше устройство не позволяет доступ как root (su).</string>
+
     <string name="online_help">&#xA0; Описание в онлайне (EN)</string>
+
+    <string name="donate">&#xA0; Поддержка</string>
     <string name="donation">Выразите свою поддержку дальнейшему развитию
-     файлового менеджера &#xAB;Ghost Commander&#xBB; путем перевода любой суммы на счёт системы PayPal.\n
-            Нажмите \"Ok\" для перехода на сайт PayPal.\n
-            Нажмите \"Отмена\" чтобы продолжить пользоваться &#xAB;Ghost Commander&#xBB; бесплатно.\n
+      &#xAB;Ghost Commander&#xBB; путем перевода любой суммы разработчику через систему PayPal.\n
     </string>
     <string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
     

@@ -143,7 +143,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             
             String name = item.dir ? item.name : " " + item.name, size = "", date = "";
             if( dm ) {
-            	if( !item.dir || item.size >= 0 )
+            	if( item.size >= 0 )
             		size = Utils.getHumanSize( item.size );
                 if( item.date != null ) {
                     if( long_date ) {
@@ -161,7 +161,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             int parent_width = parent.getWidth();
             if( dirty || parentWidth != parent_width ) {
                 parentWidth = parent_width;
-                imgWidth = icons ? parent_width / ( fat || !wm ? 8 : 16 ) : 0;
+                imgWidth = icons ? ( fat ? 60 : 20 ) : 0;
                 nameWidth = ( wm && dm ? parent_width * ( long_date ? 9 : 10 ) / 16 : parent_width ) - imgWidth;
                 sizeWidth = parent_width / (wm ? ( long_date ? 9 : 8 ) : 4);
                 dateWidth = wm ? (parent_width - ( imgWidth + nameWidth + sizeWidth )) : parent_width / 2;
