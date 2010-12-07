@@ -21,6 +21,7 @@ import android.widget.ListView;
 
 public class RootAdapter extends CommanderAdapterBase {
     public final static String TAG = "RootAdapter";
+    public final static String SC = "sh";
     // Java compiler creates a thunk function to access to the private owner class member from a subclass
     // to avoid that all the member accessible from the subclasses are public
     public  Uri uri = null;
@@ -53,10 +54,12 @@ public class RootAdapter extends CommanderAdapterBase {
             	}
             	String  path = uri.getPath();
                 parentLink = path == null || path.length() == 0 || path.equals( SLS ) ? SLS : "..";
-                Process p = Runtime.getRuntime().exec("su");
+                Process p = Runtime.getRuntime().exec( SC );
                 DataOutputStream os = new DataOutputStream( p.getOutputStream() );
                 DataInputStream  is = new DataInputStream( p.getInputStream() );
+                DataInputStream  es = new DataInputStream( p.getErrorStream() );
                 os.writeBytes("ls -l " + path + "\n"); // execute command
+                os.flush();
                 for( int i=0; i< 10; i++ ) {
                     if( isStopReq() ) 
                         throw new Exception();
@@ -76,7 +79,7 @@ public class RootAdapter extends CommanderAdapterBase {
                     if( ln == null ) break;
                     LsItem item = new LsItem( ln );
 //Log.v( TAG,  "after create item " + System.currentTimeMillis() );
-                    if( item.isValid() )
+                    if( item.isValid() )   // problem - if the item is a symlink - how to know its a dir or a file???
                         array.add( item );
                 }
 //Log.v( TAG,  "end reading       " + System.currentTimeMillis() );
@@ -89,7 +92,10 @@ public class RootAdapter extends CommanderAdapterBase {
                 array.toArray( items_tmp );
                 LsItemPropComparator comp = new LsItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
                 Arrays.sort( items_tmp, comp );
-                sendProgress( null, Commander.OPERATION_COMPLETED, pass_back_on_done );
+                String res_s = null;
+                if( es.available() > 0 )
+                    res_s = es.readLine();
+                sendProgress( res_s, Commander.OPERATION_COMPLETED, pass_back_on_done );
             }
             catch( Exception e ) {
                 sendProgress( commander.getContext().getString( R.string.no_root ), 
@@ -261,9 +267,10 @@ public class RootAdapter extends CommanderAdapterBase {
                         String to_exec = "cat " + full_name + " >" + dest_file.getAbsolutePath() + "\n";
                         Log.i( TAG, to_exec );
     
-                        Process p = Runtime.getRuntime().exec( "su" );
+                        Process p = Runtime.getRuntime().exec( SC );
                         DataOutputStream os = new DataOutputStream( p.getOutputStream() );
                         os.writeBytes( to_exec ); // execute command
+                        os.flush();
                         os.writeBytes("exit\n");
                         os.flush();
                         p.waitFor();
@@ -317,29 +324,62 @@ public class RootAdapter extends CommanderAdapterBase {
     }
 
     class DelEngine extends Engine {
-        LsItem[] mList;
+        private String   src_base_path;
+        private LsItem[] mList;
         
         DelEngine( Handler h, LsItem[] list ) {
         	super( h );
             mList = list;
+            src_base_path = uri.getPath();
+            if( src_base_path == null || src_base_path.length() == 0 )
+                src_base_path = SLS;
+            else
+            if( src_base_path.charAt( src_base_path.length()-1 ) != SLC )
+                src_base_path += SLS;
         }
 
         @Override
         public void run() {
-        	int total = delFiles( mList, "" );
-    		sendResult( total > 0 ? "Deleted files/folders: " + total : "Nothing was deleted" );
-            super.run();
-        }
-
-        private final int delFiles( LsItem[] list, String path ) {
             int counter = 0;
             try {
-        	}
-			catch( Exception e ) {
-				e.printStackTrace();
-				errMsg = "Exception: " + e.getMessage();
-			}
-            return counter;
+                Process p = Runtime.getRuntime().exec( SC );
+                DataOutputStream os = new DataOutputStream( p.getOutputStream() );
+                DataInputStream  es = new DataInputStream( p.getErrorStream() );
+                int num = mList.length;
+                double conv = 100./num;
+                for( int i = 0; i < num; i++ ) {
+                    if( stop || isInterrupted() )
+                        throw new Exception( "Interrupted" );
+                    LsItem f = mList[i];
+                    String full_name = src_base_path + f.getName();
+                    sendProgress( "Deleting " + full_name, (int)(counter * conv) );
+                    String to_exec;
+                    if( f.isDirectory() )
+                        to_exec = "rm -r " + full_name + "\n";
+                    else
+                        to_exec = "rm " + full_name + "\n";
+                    os.writeBytes( to_exec ); // execute command
+                    os.flush();
+                    Thread.sleep( 200 );
+                    if( es.available() > 0 ) {
+                        error( es.readLine() );
+                        break;
+                    }
+                    counter++;
+                }
+                os.writeBytes("exit\n");
+                os.flush();
+                p.waitFor();
+                if( p.exitValue() == 255 )
+                    Log.e( TAG, "Deleting batch failed" );
+                if( es.available() > 0 )
+                    error( "Late error detected:\n" + es.readLine() );
+            }
+            catch( Exception e ) {
+                errMsg = "Exception: " + e;
+            }
+    		sendResult( counter > 0 ? "Deleted files/folders: " + counter : "Nothing was deleted" );
+            super.run();
         }
     }
     

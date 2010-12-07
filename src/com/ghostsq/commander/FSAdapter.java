@@ -317,10 +317,13 @@ public class FSAdapter extends CommanderAdapterBase {
         private final int deleteFiles( File[] l ) throws Exception {
     	    if( l == null ) return 0;
             int cnt = 0;
-            for( int i = 0; i < l.length; i++ ) {
+            int num = l.length;
+            double conv = 100./num; 
+            for( int i = 0; i < num; i++ ) {
                 if( stop || isInterrupted() )
                     throw new Exception( "Interrupted" );
                 File f = l[i];
+                sendProgress( "Deleting " + f.getAbsolutePath(), (int)(cnt * conv) );
                 if( f.isDirectory() )
                     cnt += deleteFiles( f.listFiles() );
                 if( f.delete() )

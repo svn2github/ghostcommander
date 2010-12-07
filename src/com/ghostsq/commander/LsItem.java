@@ -59,6 +59,11 @@ public class LsItem {
                 if( ls_string.charAt( 0 ) == 'd' )
                     directory = true;
                 name = m.group( 3 );
+                if( ls_string.charAt( 0 ) == 'l' ) {    // link
+                    int arr_pos = name.indexOf( " ->" );
+                    if( arr_pos > 0 )
+                        name = name.substring( 0, arr_pos );
+                }
                 String sz_str = m.group( 1 );
                 size = sz_str != null && sz_str.length() > 0 ? Long.parseLong( sz_str ) : -1;
                 String date_s = m.group( 2 ); 
