@@ -30,8 +30,9 @@ public class LsItem {
     private static SimpleDateFormat format_full_date  = new SimpleDateFormat( "yyyy-MM-dd HH:mm", Locale.ENGLISH );
     private static SimpleDateFormat format_msdos_date = new SimpleDateFormat( "MM-dd-yy  HH:mmaa", Locale.ENGLISH );
     
-    private String  name;
+    private String  name, target_name = null;
     private boolean directory = false;
+    private boolean link = false;
     private long    size = 0;
     private Date    date;
     public LsItem( String ls_string ) {
@@ -40,6 +41,8 @@ public class LsItem {
             try {
                 if( ls_string.charAt( 0 ) == 'd' )
                     directory = true;
+                if( ls_string.charAt( 0 ) == 'l' )
+                    link = true;
                 name = m.group( 3 );
                 size = Long.parseLong( m.group( 1 ) );
                 String date_s = m.group( 2 ); 
@@ -60,9 +63,12 @@ public class LsItem {
                     directory = true;
                 name = m.group( 3 );
                 if( ls_string.charAt( 0 ) == 'l' ) {    // link
-                    int arr_pos = name.indexOf( " ->" );
-                    if( arr_pos > 0 )
+                    link = true;
+                    int arr_pos = name.indexOf( " -> " );
+                    if( arr_pos > 0 ) {
                         name = name.substring( 0, arr_pos );
+                        target_name = name.substring( arr_pos + 4 );
+                    }
                 }
                 String sz_str = m.group( 1 );
                 size = sz_str != null && sz_str.length() > 0 ? Long.parseLong( sz_str ) : -1;
@@ -108,6 +114,9 @@ public class LsItem {
     }
     public boolean isDirectory() {
         return directory;
+    }
+    public boolean isLink() {
+        return link;
     }
     public int compareTo( LsItem o ) {
         return getName().compareTo( o.getName() );
