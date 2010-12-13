@@ -52,6 +52,8 @@
 
     <string name="prefs_label">Настройки</string>
     <string name="editor_label">Текстовый редактор</string>
+    <string name="advanced">Дополнительные настройки</string>
+    <string name="summary_advanced">Для продвинутых пользователей</string>
 
     <string name="dialog_ok">Ok</string>
     <string name="dialog_cancel">Отмена</string>
@@ -74,7 +76,9 @@
     <string name="copy_title">Копирование</string>
     <string name="move_title">Перемещение</string>
     <string name="no_items">Не с чем совершить данную операцию.</string>    
-    <string name="copy_move_not_alwd">Операция \"%s\" не допустима. Сперва выберете чего-нибудь.</string><!-- copy_title/move_title -->
+    <string name="copy_move_not_alwd">Неизвестно с чем совершить операцию \"%s\". Сперва выделите файл(ы).</string><!-- copy_title/move_title -->
+    <string name="copy_to_local_only">Поддерживается копирование только в локальную файловую систему!</string>
+    <string name="dest_exist">Нельзя перезаписать уже существующий файл!</string>
     <string name="copy_move_to">%s %s в:"</string><!-- copy_title/move_title, file name/summary -->
     <string name="delete_title">Удаление</string>
     <string name="delete_err">Нечего удалять</string>
@@ -167,6 +171,10 @@
     <string name="editor_activity">Activity для редактирования</string>
     <string name="summary_editor_activity">Полное имя Activity класса. Имя пакета = префикс полного имени класса.</string>
     <string name="value_editor_activity">com.ghostsq.commander.Editor</string>
+    
+    <string name="busybox_location">Местонахождение busybox</string>
+    <string name="summary_busybox_location">Для работы в root режиме нужен busybox. Укажите путь к нему здесь.</string>   
+    
 
     <string name="nothing_to_open">Не ясно что редактировать</string>
     <string name="remind_to_save">Не забудьте сохранить изменения через меню</string>
@@ -244,7 +252,11 @@ VolDn - Перейти на другую панель\n
     ftp://host.com/folder\n
 Если надо предоставить имя/пароль, то:\n
     ftp://user:password@host.com/folder\n\n
-    
+
+Для доступа как root (su) вам надо установить busybox
+и вводить в адресную строку URI в следущей форме:\n
+    root:///path\n
+\n\n
     "
     </string>
     

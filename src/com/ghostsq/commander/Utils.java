@@ -102,7 +102,7 @@ public class Utils {
 	}
 	// TODO: localize
     public final static String getOpReport( int total, String verb ) {
-        String report = ( total > 0 ? "" + total + " file" +
+        String report = ( total > 0 ? "" + total + " item" +
                         ( total > 1 ? "s" : "" ) : "Nothing" ) +
                         ( total > 1 ? " were" : " was" ) +" " + verb + ".";
         return report;

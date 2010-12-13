@@ -103,6 +103,13 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             Panels.State s = panels.new State();
             s.restore(prefs);
             panels.setState(s);
+            final String FT = "first_time";
+            if( prefs.getBoolean( FT, true ) ) {
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putBoolean( FT, false );
+                editor.commit();
+                showInfo( getString( R.string.keys_text) );
+            }
         }
     }
 

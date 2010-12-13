@@ -54,6 +54,9 @@
 
     <string name="prefs_label">Settings</string>
     <string name="editor_label">Text Editor</string>
+    <string name="advanced">Advanced</string>
+    <string name="advanced_settings">Advanced settings</string>
+    <string name="summary_advanced_settings">Extra settings for advanced users</string>
 
     <string name="wait"> wait... </string>
     <string name="fail"> (failed) </string>
@@ -82,9 +85,9 @@
     <string name="move_title">Move</string>
     <string name="no_items">There are no valid files to complete the operation.</string>
     <string name="find_on_fs_only">The search feature works only with the local file system.</string>
-    
-    
     <string name="copy_move_not_alwd">The \'%s\' is not allowed. Select something first.</string><!-- copy_title/move_title -->
+    <string name="copy_to_local_only">It\'s possible to copy to the local filesystem only.</string>    
+    <string name="dest_exist">File already exist. Can not overwrite.</string>    
     <string name="copy_move_to">%s %s to:"</string><!-- copy_title/move_title, file name/summary -->
     <string name="login_title">Login</string>
     <string name="delete_title">Delete</string>
@@ -147,7 +150,7 @@
 
     <string name="finger_friendly">Finger friendly</string>
     <string name="summary_finger_friendly">Enlarge user interface elements</string>
-    <string name="prevent_root">Warn on a root folder</string>
+    <string name="prevent_root">Warn on a leaving the sdcard</string>
     <string name="summary_prevent_root">Issue a warning when going to a device\'s root folder.</string>
 
     <string name="left_panel_settings">Left panel settings</string>
@@ -183,6 +186,9 @@
     <string name="editor_activity">Editor Activity Name</string>
     <string name="summary_editor_activity">EDIT action Activity\'s full class name. Package name = class name prefix.</string>
     <string name="value_editor_activity">com.ghostsq.commander.Editor</string>
+    
+    <string name="busybox_location">Path to busybox</string>
+    <string name="summary_busybox_location">To use in the root mode it needs the busybox executable</string>   
     
     <string name="nothing_to_open">Nothing to open</string>
     <string name="remind_to_save">Don\'t forget to Save your changes (using the menu)</string>
@@ -239,10 +245,9 @@ You agree to use this software at your own risk.\n
 If you don\'t agree to the above, stop using this software immediately and uninstall it.\n
     </string>
     <string name="keys_text">
-    "
-To select a file, tap on the right half of the item\'s row.\n    
-To manually enter the location path (and the favorites), long press on the panel\'s title\n\n
-    
+    "\tHow to use:\n
+To select a file, tap on the right half of the item\'s row.    
+To manually enter the location path (and see the favorites), long press on the panel\'s title\n
 Shortcuts keys:\n
 VolumeUp - Select the current item (file)\n
 VolumeDn - Swap the panels\n
@@ -265,7 +270,12 @@ VolumeDn - Swap the panels\n
 To open an anonymous FTP folder, enter path like:\n
     ftp://host.com/folder\n
 Or, if you need to provide some identities:\n
-    ftp://user:password@host.com/folder\n\n"
+    ftp://user:password@host.com/folder\n\n
+To access as root (su), 
+enter the location URI in the following form:\n
+    root:///path\n
+Make sure the \"busybox\" is installed, and its location is specified in the settings.\n
+    "
     </string>
     
 </resources>

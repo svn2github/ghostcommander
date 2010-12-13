@@ -251,7 +251,10 @@ public class FSAdapter extends CommanderAdapterBase {
         if( position <= 0 || position > items.length )
             return false;
         try {
-            return items[position - 1].f.renameTo( new File( dirName, newName ) );
+            boolean ok = items[position - 1].f.renameTo( new File( dirName, newName ) );
+            commander.notifyMe( new Commander.Notify( null, ok ? Commander.OPERATION_COMPLETED_REFRESH_REQUIRED : 
+                                                                 Commander.OPERATION_FAILED ) );
+            return ok;
         }
         catch( SecurityException e ) {
             commander.showError( "Security Exception: " + e );
@@ -262,7 +265,10 @@ public class FSAdapter extends CommanderAdapterBase {
 	public boolean createFile( String fileURI ) {
 		try {
 			File f = new File( fileURI );
-			return f.createNewFile();
+			boolean ok = f.createNewFile();
+			commander.notifyMe( new Commander.Notify( null, ok ? Commander.OPERATION_COMPLETED_REFRESH_REQUIRED :
+			                                                     Commander.OPERATION_FAILED ) );
+			return ok;     
 		} catch( Exception e ) {
 			commander.showError( "Unable to create file \"" + fileURI + "\", " + e.getMessage() );
 		}
@@ -304,11 +310,7 @@ public class FSAdapter extends CommanderAdapterBase {
         public void run() {
             try {
                 int cnt = deleteFiles( mList );
-                if( cnt > 0 )
-                    sendProgress( commander.getContext().getString( R.string.deleted, cnt ),
-                            Commander.OPERATION_COMPLETED_REFRESH_REQUIRED, 0 );
-                else
-                    sendProgress( "Nothing was deleted", Commander.OPERATION_FAILED ); // when that can be?
+                sendResult( Utils.getOpReport( cnt, "deleted" ) );
             }
             catch( Exception e ) {
                 sendProgress( e.getMessage(), Commander.OPERATION_FAILED );

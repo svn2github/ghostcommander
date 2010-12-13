@@ -115,9 +115,12 @@ public class FTPAdapter extends CommanderAdapterBase {
 	                    	synchronized( uri ) {
 	                    		uri = uri.buildUpon().path( path ).build();
 							}
-	                    if( items_tmp != null ) {
-                    		LsItemPropComparator comp = new LsItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
-                            Arrays.sort( items_tmp, comp );
+	                    if( items_tmp != null  ) {
+	                        if( items_tmp.length > 0 ) {
+    	                        LsItem.LsItemPropComparator comp = 
+    	                            items_tmp[0].new LsItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
+                                Arrays.sort( items_tmp, comp );
+	                        }
 	                        parentLink = path == null || path.length() == 0 || path.equals( SLS ) ? SLS : "..";
 	                        sendProgress( tooLong( 8 ) ? ftp.getLog() : null, Commander.OPERATION_COMPLETED, pass_back_on_done );
 	                        return;
@@ -246,6 +249,7 @@ public class FTPAdapter extends CommanderAdapterBase {
 	}
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
+        String err_msg = null;
         try {
         	if( to instanceof FSAdapter ) {
 	        	File dest = new File( to.toString() );
@@ -259,12 +263,16 @@ public class FTPAdapter extends CommanderAdapterBase {
 		                return true;
 		        	}
 	        	}
+	        	else
+	        	    err_msg = commander.getContext().getString( R.string.dest_exist );
         	}
-        	commander.notifyMe( new Commander.Notify( "Failed to proceed.", Commander.OPERATION_FAILED ) );
+        	else
+        	    err_msg = commander.getContext().getString( R.string.copy_to_local_only );
         }
         catch( Exception e ) {
-            commander.showError( "Exception: " + e.getMessage() );
+            err_msg = "Exception: " + e.getMessage();
         }
+        commander.notifyMe( new Commander.Notify( err_msg, Commander.OPERATION_FAILED ) );
         return false;
     }
 
@@ -417,10 +425,9 @@ public class FTPAdapter extends CommanderAdapterBase {
         @Override
         public void run() {
         	int total = delFiles( mList, "" );
-    		sendResult( total > 0 ? "Deleted files/folders: " + total : "Nothing was deleted" );
+        	sendResult( Utils.getOpReport( total, "deleted" ) );
             super.run();
         }
-
         private final int delFiles( LsItem[] list, String path ) {
             int counter = 0;
             try {
@@ -440,7 +447,7 @@ public class FTPAdapter extends CommanderAdapterBase {
 	        	        	synchronized( ftp ) {
 	        	        		ftp.clearLog();
 	        	        		if( !ftp.rmDir( pathName ) ) {
-		        					errMsg = "Failed to remove folder '" + pathName + "'.\n FTP log:\n\n" + ftp.getLog();
+		        					error( "Failed to remove folder '" + pathName + "'.\n FTP log:\n\n" + ftp.getLog() );
 		        					break;
 	        	        		}
 	        	        	}
@@ -450,7 +457,7 @@ public class FTPAdapter extends CommanderAdapterBase {
 	        	        	synchronized( ftp ) {
 	        	        		ftp.clearLog();
 	        	        		if( !ftp.delete( pathName ) ) {
-		        					errMsg = "Failed to delete file '" + pathName + "'.\n FTP log:\n\n" + ftp.getLog();
+	        	        		    error( "Failed to delete file '" + pathName + "'.\n FTP log:\n\n" + ftp.getLog() );
 		        					break;
 	        	        		}
 	        	        	}
@@ -460,8 +467,8 @@ public class FTPAdapter extends CommanderAdapterBase {
 	        	}
         	}
 			catch( Exception e ) {
-				e.printStackTrace();
-				errMsg = "Exception: " + e.getMessage();
+				Log.e( TAG, "delFiles()", e );
+				error( "Exception: " + e.getMessage() );
 			}
             return counter;
         }
@@ -694,36 +701,6 @@ public class FTPAdapter extends CommanderAdapterBase {
         }
     	return true;
     }
-    public class LsItemPropComparator implements Comparator<LsItem> {
-        int type;
-        boolean case_ignore;
-        public LsItemPropComparator( int type_, boolean case_ignore_ ) {
-            type = type_;
-            case_ignore = case_ignore_;
-        }
-		@Override
-		public int compare( LsItem f1, LsItem f2 ) {
-            boolean f1IsDir = f1.isDirectory();
-            boolean f2IsDir = f2.isDirectory();
-            if( f1IsDir != f2IsDir )
-                return f1IsDir ? -1 : 1;
-            int ext_cmp = 0;
-            switch( type ) {
-            case SORT_EXT:
-                ext_cmp = Utils.getFileExt( f1.getName() ).compareTo( Utils.getFileExt( f2.getName() ) );
-                break;
-            case SORT_SIZE:
-                ext_cmp = f1.length() - f2.length() < 0 ? -1 : 1;
-                break;
-            case SORT_DATE:
-                ext_cmp = f1.getDate().compareTo( f2.getDate() );
-                break;
-            }
-            if( ext_cmp != 0 )
-                return ext_cmp;
-            return f1.compareTo( f2 );
-		}
-    }
 
     public class FTPCredentials extends org.apache.http.auth.UsernamePasswordCredentials {
         public boolean dirty = true;
@@ -748,12 +725,5 @@ public class FTPAdapter extends CommanderAdapterBase {
             if( p == null ) return true;
             return false;
         }
-        /*
-        public final boolean isSame( String user_info ) {
-            if( user_info == null && userInfo == null ) return true;
-            if( user_info != null && userInfo != null && user_info.compareTo( userInfo ) == 0 ) return true;
-            return false;
-        }
-        */
     }
 }

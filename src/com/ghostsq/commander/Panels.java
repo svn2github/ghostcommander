@@ -56,6 +56,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     private int current = LEFT;
     private FileCommander c;
     public  View mainView, toolbar = null;
+    public  ViewFlipper mFlipper;
     private int id;
     private int titleColor = Prefs.getDefaultColor( Prefs.TTL_COLORS ), 
                   fgrColor = Prefs.getDefaultColor( Prefs.FGR_COLORS ),
@@ -72,6 +73,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         id = id_;
         c.setContentView( id );
         mainView = c.findViewById( R.id.main );
+        mFlipper = ((ViewFlipper)c.findViewById( R.id.flipper ));
         
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
         fingerFriendly =  sharedPref.getBoolean( "finger_friendly", true );
@@ -83,6 +85,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         initList( LEFT );
         initList( RIGHT );
         highlightCurrentTitle();
+
+        
         
         TextView left_title = (TextView)c.findViewById( titlesIds[LEFT] );
         if( left_title != null ) {
@@ -451,7 +455,6 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             refreshList( current );
     }
     public final void setPanelCurrent( int which ) {
-        ViewFlipper mFlipper = ((ViewFlipper)c.findViewById( R.id.flipper ));
         if( mFlipper != null ) {
         	if( which == RIGHT ) {
                 mFlipper.setInAnimation(  AnimationUtils.loadAnimation( c, R.anim.left_in ) );
@@ -687,7 +690,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 if( ca == null || !( ca instanceof RootAdapter ) ) {
                     if( ca != null )
                         ca.prepareToDestroy();
-                    ca = new RootAdapter();
+                    ca = new RootAdapter( c, null );
                     ca.Init( c );
                     ca.setMode( CommanderAdapter.WIDE_MODE, 
                       id == R.layout.main ? CommanderAdapter.WIDE_MODE : CommanderAdapter.NARROW_MODE );
@@ -729,6 +732,11 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 flv.setAdapter( (ListAdapter)ca );
             }
         }
+        if( ca == null ) {
+            Log.e( TAG, "failed to create a commander adapter!" );
+            return;
+        }
+        
         applyColors();
         setPanelTitle( c.getString( R.string.wait ), which );
         ca.readSource( uri, "" + current + ( posTo == null ? "" : posTo ) );
@@ -940,7 +948,6 @@ public class Panels implements AdapterView.OnItemSelectedListener,
 	}
     public final void createFolder( String new_name ) {
         getListAdapter( true ).createFolder( new_name );
-        refreshLists();
     }
     public final void deleteItems() {
     	c.showDialog( Dialogs.PROGRESS_DIALOG );
@@ -950,10 +957,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     public final void renameFile( String new_name ) {
         CommanderAdapter adapter = getListAdapter( true );
         int pos = getSelection();
-        if( pos >= 0 && adapter.renameItem( pos, new_name ) )
-            refreshLists();
-        else
-            c.showMessage( "Can't rename file" );
+        if( pos >= 0 )
+            adapter.renameItem( pos, new_name );
     }
 
     // /////////////////////////////////////////////////////////////////////////////////

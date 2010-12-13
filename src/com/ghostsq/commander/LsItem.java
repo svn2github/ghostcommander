@@ -3,6 +3,7 @@ package com.ghostsq.commander;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -18,10 +19,10 @@ public class LsItem {
 //  -rw-rw-rw- 1 system system 93578 Sep 26 00:26 Quote Pro 1.2.4.apk
 //Win2K3 IIS        
 //  -rwxrwxrwx   1 owner    group          314800 Feb 10  2008 classic.jar
-    private static Pattern unix = Pattern.compile( "^[\\-dlrwxs]{10}\\s+\\d+\\s+[^\\s]+\\s+[^\\s]+\\s+(\\d+)\\s+((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\s+\\d{1,2}\\s+(?:\\d{4}|\\d{2}:\\d{2}))\\s+(.+)" );
+    private static Pattern unix = Pattern.compile( "^([\\-dlrwxs]{10}\\s+\\d+\\s+[^\\s]+\\s+[^\\s]+)\\s+(\\d+)\\s+((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\s+\\d{1,2}\\s+(?:\\d{4}|\\d{2}:\\d{2}))\\s+(.+)" );
 // inetutils-ftpd:
 //  drwx------  3 user     80 2009-02-15 12:33 .adobe
-    private static Pattern inet = Pattern.compile( "^[\\-cdlrwxs]{10}\\s+.+\\s+(\\d*)\\s+(\\d{4}-\\d{2}-\\d{2}\\s\\d{2}:\\d{2})\\s+(.+)" );
+    private static Pattern inet = Pattern.compile( "^([\\-cdlrwxs]{10}\\s+.+)\\s+(\\d*)\\s+(\\d{4}-\\d{2}-\\d{2}\\s\\d{2}:\\d{2})\\s+(.+)" );
     // MSDOS style
 //  02-10-08  02:08PM               314800 classic.jar
     private static Pattern msdos = Pattern.compile( "^(\\d{2,4}-\\d{2}-\\d{2,4}\\s+\\d{1,2}:\\d{2}[AP]M)\\s+(\\d+|<DIR>)\\s+(.+)" );
@@ -30,7 +31,7 @@ public class LsItem {
     private static SimpleDateFormat format_full_date  = new SimpleDateFormat( "yyyy-MM-dd HH:mm", Locale.ENGLISH );
     private static SimpleDateFormat format_msdos_date = new SimpleDateFormat( "MM-dd-yy  HH:mmaa", Locale.ENGLISH );
     
-    private String  name, target_name = null;
+    private String  name, link_target_name = null, attr = null;
     private boolean directory = false;
     private boolean link = false;
     private long    size = 0;
@@ -43,14 +44,16 @@ public class LsItem {
                     directory = true;
                 if( ls_string.charAt( 0 ) == 'l' )
                     link = true;
-                name = m.group( 3 );
-                size = Long.parseLong( m.group( 1 ) );
-                String date_s = m.group( 2 ); 
+                name = m.group( 4 );
+                size = Long.parseLong( m.group( 2 ) );
+                String date_s = m.group( 3 ); 
                 boolean cur_year = date_s.indexOf( ':' ) > 0;
                 SimpleDateFormat df = cur_year ? format_date_time : format_date_year;
                 date = df.parse( date_s );
                 if( cur_year )
                     date.setYear( Calendar.getInstance().get( Calendar.YEAR ) - 1900 );
+                attr = m.group( 1 );
+                Log.i( TAG, "Item " + name + ", " + attr );
             } catch( ParseException e ) {
                 e.printStackTrace();
             }
@@ -61,20 +64,21 @@ public class LsItem {
             try {
                 if( ls_string.charAt( 0 ) == 'd' )
                     directory = true;
-                name = m.group( 3 );
+                name = m.group( 4 );
                 if( ls_string.charAt( 0 ) == 'l' ) {    // link
                     link = true;
                     int arr_pos = name.indexOf( " -> " );
                     if( arr_pos > 0 ) {
+                        link_target_name = name.substring( arr_pos + 4 );
                         name = name.substring( 0, arr_pos );
-                        target_name = name.substring( arr_pos + 4 );
                     }
                 }
-                String sz_str = m.group( 1 );
+                String sz_str = m.group( 2 );
                 size = sz_str != null && sz_str.length() > 0 ? Long.parseLong( sz_str ) : -1;
-                String date_s = m.group( 2 ); 
+                String date_s = m.group( 3 ); 
                 SimpleDateFormat df = format_full_date;
                 date = df.parse( date_s );
+                attr = m.group( 1 );                
             } catch( ParseException e ) {
                 e.printStackTrace();
             }
@@ -100,25 +104,58 @@ public class LsItem {
         Log.e( TAG, "\nUnmatched string: " + ls_string + "\n" );
     }
 
-    public String getName() {
+    public final String getName() {
         return name;
     }
-    public Date getDate() {
+    public final Date getDate() {
         return date;
     }
-    public long length() {
+    public final long length() {
         return size;
     }
-    public boolean isValid() {
+    public final boolean isValid() {
         return name != null;
     }
-    public boolean isDirectory() {
+    public final boolean isDirectory() {
         return directory;
     }
-    public boolean isLink() {
-        return link;
+    public final String getLinkTarget() {
+        return link ? link_target_name : null;
     }
-    public int compareTo( LsItem o ) {
+    public final String getAttr() {
+        return attr;
+    }
+    public final int compareTo( LsItem o ) {
         return getName().compareTo( o.getName() );
+    }
+    public class LsItemPropComparator implements Comparator<LsItem> {
+        int type;
+        boolean case_ignore;
+        public LsItemPropComparator( int type_, boolean case_ignore_ ) {
+            type = type_;
+            case_ignore = case_ignore_;
+        }
+        @Override
+        public int compare( LsItem f1, LsItem f2 ) {
+            boolean f1IsDir = f1.isDirectory();
+            boolean f2IsDir = f2.isDirectory();
+            if( f1IsDir != f2IsDir )
+                return f1IsDir ? -1 : 1;
+            int ext_cmp = 0;
+            switch( type ) {
+            case CommanderAdapter.SORT_EXT:
+                ext_cmp = Utils.getFileExt( f1.getName() ).compareTo( Utils.getFileExt( f2.getName() ) );
+                break;
+            case CommanderAdapter.SORT_SIZE:
+                ext_cmp = f1.length() - f2.length() < 0 ? -1 : 1;
+                break;
+            case CommanderAdapter.SORT_DATE:
+                ext_cmp = f1.getDate().compareTo( f2.getDate() );
+                break;
+            }
+            if( ext_cmp != 0 )
+                return ext_cmp;
+            return f1.compareTo( f2 );
+        }
     }
 }

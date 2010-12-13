@@ -3,6 +3,7 @@ package com.ghostsq.commander;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -10,8 +11,12 @@ import java.util.Comparator;
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.CommanderAdapter;
 import com.ghostsq.commander.CommanderAdapterBase;
+import com.ghostsq.commander.LsItem.LsItemPropComparator;
 
 import android.os.Handler;
+import android.preference.PreferenceManager;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -20,21 +25,28 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 public class RootAdapter extends CommanderAdapterBase {
-    public final static String TAG = "RootAdapter";
-    public final static String SC = "sh";
     // Java compiler creates a thunk function to access to the private owner class member from a subclass
     // to avoid that all the member accessible from the subclasses are public
+    public final static String TAG = "RootAdapter";
+    public String sh = "su";
     public  Uri uri = null;
     public  LsItem[] items = null;
+    private int attempts = 0;
 
-    public RootAdapter() {
+    public RootAdapter( Commander c, Uri d ) {
+        super( c, 0 );
     }
 
+    private String getBusyBox() {
+        Context conetxt = commander.getContext();
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( conetxt );
+        return sharedPref.getString( "busybox_path", "busybox" );
+    }
+    
     @Override
     public String getType() {
         return "root";
     }
-
     class ListEngine extends Engine {
         private LsItem[] items_tmp;
         public  String pass_back_on_done;
@@ -54,11 +66,11 @@ public class RootAdapter extends CommanderAdapterBase {
             	}
             	String  path = uri.getPath();
                 parentLink = path == null || path.length() == 0 || path.equals( SLS ) ? SLS : "..";
-                Process p = Runtime.getRuntime().exec( SC );
+                Process p = Runtime.getRuntime().exec( sh );
                 DataOutputStream os = new DataOutputStream( p.getOutputStream() );
                 DataInputStream  is = new DataInputStream( p.getInputStream() );
                 DataInputStream  es = new DataInputStream( p.getErrorStream() );
-                os.writeBytes("ls -l " + path + "\n"); // execute command
+                os.writeBytes( "ls -l " + path + "\n"); // execute command
                 os.flush();
                 for( int i=0; i< 10; i++ ) {
                     if( isStopReq() ) 
@@ -68,30 +80,30 @@ public class RootAdapter extends CommanderAdapterBase {
                 }
                 if( is.available() <= 0 ) // may be an error may be not
                     Log.w( TAG, "No output from the executed command" );
-//Log.v( TAG,  "start reading     " + System.currentTimeMillis() );
                 ArrayList<LsItem>  array = new ArrayList<LsItem>();
                 while( is.available() > 0 ) {
                     if( isStopReq() ) 
                         throw new Exception();
-//Log.v( TAG,  "before readLine() " + System.currentTimeMillis() );
                     String ln = is.readLine();
-//Log.v( TAG,  "after readLine()  " + System.currentTimeMillis() );
                     if( ln == null ) break;
                     LsItem item = new LsItem( ln );
-//Log.v( TAG,  "after create item " + System.currentTimeMillis() );
-                    if( item.isValid() )   // problem - if the item is a symlink - how to know its a dir or a file???
-                        array.add( item );
+                    if( item.isValid() ) {  // problem - if the item is a symlink - how to know its a dir or a file???
+                            array.add( item );
+                    }
                 }
-//Log.v( TAG,  "end reading       " + System.currentTimeMillis() );
                 os.writeBytes("exit\n");
                 os.flush();
                 p.waitFor();
                 if( p.exitValue() == 255 )
                     Log.e( TAG, "Process.exitValue() returned 255" );
-                items_tmp = new LsItem[array.size()];
-                array.toArray( items_tmp );
-                LsItemPropComparator comp = new LsItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
-                Arrays.sort( items_tmp, comp );
+                int sz = array.size();
+                items_tmp = new LsItem[sz];
+                if( sz > 0 ) {
+                    array.toArray( items_tmp );
+                    LsItem.LsItemPropComparator comp = 
+                        items_tmp[0].new LsItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
+                    Arrays.sort( items_tmp, comp );
+                }
                 String res_s = null;
                 if( es.available() > 0 )
                     res_s = es.readLine();
@@ -100,6 +112,7 @@ public class RootAdapter extends CommanderAdapterBase {
             catch( Exception e ) {
                 sendProgress( commander.getContext().getString( R.string.no_root ), 
                         Commander.OPERATION_FAILED, pass_back_on_done );
+                sh = "sh";
                 Log.e( TAG, "ls output is not valid", e );
             }
             finally {
@@ -109,6 +122,7 @@ public class RootAdapter extends CommanderAdapterBase {
     }
     @Override
     protected void onComplete( Engine engine ) {
+        attempts = 0;
         if( engine instanceof ListEngine ) {
             ListEngine list_engine = (ListEngine)engine;
             items = null;
@@ -154,13 +168,21 @@ public class RootAdapter extends CommanderAdapterBase {
                 uri = tmp_uri;
             if( uri == null )
                 return false;
-            if( worker != null && worker.reqStop() ) { // that's not good.
-                Thread.sleep( 1000 );      // will it end itself?
-                if( worker.isAlive() ) {
-                    showMessage( "Another worker thread still alive" );
+            
+            if( worker != null ) {
+                if( attempts++ < 2 ) {
+                    commander.showInfo( "Busy..." );
                     return false;
                 }
+                if( worker.reqStop() ) { // that's not good.
+                    Thread.sleep( 500 );      // will it end itself?
+                    if( worker.isAlive() ) {
+                        showMessage( "A worker thread is still alive and don't want to stop" );
+                        return false;
+                    }
+                }
             }
+            
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
             worker = new ListEngine( handler, pass_back_on_done );
             worker.start();
@@ -180,22 +202,25 @@ public class RootAdapter extends CommanderAdapterBase {
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
         try {
-        	if( to instanceof FSAdapter ) {
-	        	File dest = new File( to.toString() );
-	        	if( dest.exists() && dest.isDirectory() ) {
-		        	LsItem[] subItems = bitsToItems( cis );
-		        	if( subItems != null ) {
-		        	    commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-		                worker = new CopyFromEngine( handler, subItems, dest, move );
-		                worker.start();
-		                return true;
-		        	}
-	        	}
+        	if( to instanceof FSAdapter || to instanceof RootAdapter ) {
+        	    Uri to_uri = to.getUri();
+        	    if( to_uri != null ) {
+        	        String to_path = to_uri.getPath(); 
+    	        	if( to_path != null ) {
+    		        	LsItem[] subItems = bitsToItems( cis );
+    		        	if( subItems != null ) {
+    		        	    commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
+    		                worker = new CopyFromEngine( handler, subItems, to_path, move );
+    		                worker.start();
+    		                return true;
+    		        	}
+    	        	}
+        	    }
         	}
         	commander.notifyMe( new Commander.Notify( "Failed to proceed.", Commander.OPERATION_FAILED ) );
         }
         catch( Exception e ) {
-            commander.showError( "Exception: " + e.getMessage() );
+            commander.showError( "Exception: " + e );
         }
         return false;
     }
@@ -203,13 +228,13 @@ public class RootAdapter extends CommanderAdapterBase {
     
   class CopyFromEngine extends Engine 
   {
-	    private LsItem[] mList;
-	    private File     dest_folder;
-	    private boolean move;
+	    private LsItem[] list;
+	    private String   dest_folder;
+	    private boolean  move;
 	    private String   src_base_path;
-	    CopyFromEngine( Handler h, LsItem[] list, File dest, boolean move_ ) {
+	    CopyFromEngine( Handler h, LsItem[] list_, String dest, boolean move_ ) {
 	    	super( h );
-	        mList = list;
+	        list = list_;
 	        dest_folder = dest;
 	        move = move_;
 	        src_base_path = uri.getPath();
@@ -221,94 +246,116 @@ public class RootAdapter extends CommanderAdapterBase {
 	    }
 	    @Override
 	    public void run() {
-	    	int total = copyFiles( mList, "" );
-			sendResult( Utils.getOpReport( total, move ? "moved" : "copied" ) );
-	        super.run();
-	    }
-	
-	    private final int copyFiles( LsItem[] list, String path ) {
-	        int counter = 0;
-	        try {
-                long dir_size = 0, byte_count = 0;
-                for( int i = 0; i < list.length; i++ ) {
-                    LsItem f = list[i];               
-                    if( !f.isDirectory() )
-                        dir_size += f.length();
-                }
-                double conv = 100./(double)dir_size;
-                for( int i = 0; i < list.length; i++ ) {
+            int counter = 0;
+            try {
+                String bb = getBusyBox();
+                Process p = Runtime.getRuntime().exec( sh );
+                DataOutputStream os = new DataOutputStream( p.getOutputStream() );
+                DataInputStream  es = new DataInputStream( p.getErrorStream() );
+                int num = list.length;
+                double conv = 100./(double)num;
+                for( int i = 0; i < num; i++ ) {
                     LsItem f = list[i];
                     if( f == null ) continue;
                     String file_name = f.getName();
-                    String rel_name = path + file_name;
-                    String full_name = src_base_path + rel_name;
-                    File   dest_file = new File( dest_folder, path + file_name );
-                    if( f.isDirectory() ) {
-                        sendProgress( "Processing folder '" + rel_name + "'...", 0 );
-                        if( !dest_file.mkdir() ) {
-                            if( !dest_file.exists() || !dest_file.isDirectory() ) {
-                                errMsg = "Can't create folder \"" + dest_file.getCanonicalPath() + "\"";
-                                break;
-                            }
-                        }
-                        LsItem[] subItems = null;//GetFolderList( full_name );
-                        if( subItems == null ) {
-                            errMsg = "Failed to get the file list of the subfolder '" + rel_name + "'.\n";
-                            break;
-                        }
-                        counter += copyFiles( subItems, rel_name );
-                        if( errMsg != null ) break;
-                    }
-                    else {
-                        if( dest_file.exists() && !dest_file.delete() ) {
-                            errMsg = "Please make sure the folder '" + dest_folder.getCanonicalPath() + "' is writable";
-                            break;
-                        }
-                        String to_exec = "cat " + full_name + " >" + dest_file.getAbsolutePath() + "\n";
-                        Log.i( TAG, to_exec );
-    
-                        Process p = Runtime.getRuntime().exec( SC );
-                        DataOutputStream os = new DataOutputStream( p.getOutputStream() );
-                        os.writeBytes( to_exec ); // execute command
-                        os.flush();
-                        os.writeBytes("exit\n");
-                        os.flush();
-                        p.waitFor();
-                        if( p.exitValue() == 255 ) {
-                            error( "Coping of file '" + rel_name + "' failed" );
-                            break;
-                        }
-                    }
-                    if( stop || isInterrupted() ) {
-                        error( "Canceled by a request." );
+                    String full_name = src_base_path + file_name;
+                    String to_exec;
+                    String cmd = move ? " mv -f " : ( f.isDirectory() ? " cp -r " : " cp " );
+                    to_exec = bb + cmd + full_name + " " + dest_folder + "\n";
+                    Log.i( TAG, to_exec );
+                    os.writeBytes( to_exec ); // execute command
+                    os.flush();
+                    Thread.sleep( 100 );
+                    if( es.available() > 0 ) {
+                        error( es.readLine() );
                         break;
                     }
-                    if( i >= list.length-1 )
-                        sendProgress( "Unpacked \n'" + rel_name + "'   ", (int)(byte_count * conv) );
+                    if( stop || isInterrupted() ) {
+                        error( "Canceled" );
+                        break;
+                    }
+                    sendProgress( "'" + file_name + "'", (int)(i * conv) );
                     counter++;
                 }
-	    	}
-			catch( Exception e ) {
-				e.printStackTrace();
-				errMsg = "Exception: " + e.getMessage();
-			}
-	        return counter;
+                os.writeBytes("exit\n");
+                os.flush();
+                p.waitFor();
+                if( p.exitValue() == 255 )
+                    error( "Exit code 255" );
+            }
+            catch( Exception e ) {
+                error( "Exception: " + e );
+            }
+	    	sendResult( Utils.getOpReport( counter, move ? "moved" : "copied" ) );
+	        super.run();
 	    }
 	}
 	    
 	@Override
 	public boolean createFile( String fileURI ) {
-		commander.notifyMe( new Commander.Notify( "Operation not supported.", 
+		commander.notifyMe( new Commander.Notify( "Operation is not supported.", 
 		                        Commander.OPERATION_FAILED ) );
 		return false;
 	}
     @Override
-    public void createFolder( String string ) {
+    public void createFolder( String new_name ) {
+        if( uri == null ) return;
+        if( isWorkerStillAlive() )
+            commander.notifyMe( new Commander.Notify( "Busy", Commander.OPERATION_FAILED ) );
+        else {
+            worker = new MkDirEngine( handler, new_name );
+            worker.start();
+        }
+    }
+    
+    class MkDirEngine extends Engine {
+        String full_name;
+        MkDirEngine( Handler h, String new_name ) {
+            super( h );
+            full_name = uri.getPath() + SLS + new_name;
+        }
+        
+        @Override
+        public void run() {
+            try {
+                String bb = getBusyBox();
+                String to_exec = bb + " mkdir " + full_name + "\n";;
+                Log.i( TAG, to_exec );
+                String res_s = null;
+                Process p;
+                p = Runtime.getRuntime().exec( sh );
+                DataOutputStream os = new DataOutputStream( p.getOutputStream() );
+                DataInputStream  es = new DataInputStream( p.getErrorStream() );
+                os.writeBytes( to_exec ); // execute command
+                os.flush();
+                Thread.sleep( 100 );
+                if( es.available() > 0 )
+                    res_s = es.readLine();
+                os.writeBytes("exit\n");
+                os.flush();
+                p.waitFor();
+                if( p.exitValue() == 255 || res_s != null ) {
+                    if( res_s != null )
+                        error( res_s );
+                }
+                else {
+                    sendResult( null );
+                    return;
+                }
+            } catch( Exception e ) {
+                error( "Exception: " + e );
+            }
+            sendResult( "Directory '" + full_name + "' was not created." );
+        }
     }
 
     @Override
     public boolean deleteItems( SparseBooleanArray cis ) {
         try {
+            if( isWorkerStillAlive() ) {
+                commander.notifyMe( new Commander.Notify( "Busy", Commander.OPERATION_FAILED ) );
+                return false;
+            }
         	LsItem[] subItems = bitsToItems( cis );
         	if( subItems != null ) {
         	    commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
@@ -318,7 +365,7 @@ public class RootAdapter extends CommanderAdapterBase {
         	}
         }
         catch( Exception e ) {
-            commander.showError( "Exception: " + e.getMessage() );
+            commander.showError( "Exception: " + e );
         }
         return false;
     }
@@ -342,7 +389,7 @@ public class RootAdapter extends CommanderAdapterBase {
         public void run() {
             int counter = 0;
             try {
-                Process p = Runtime.getRuntime().exec( SC );
+                Process p = Runtime.getRuntime().exec( sh );
                 DataOutputStream os = new DataOutputStream( p.getOutputStream() );
                 DataInputStream  es = new DataInputStream( p.getErrorStream() );
                 int num = mList.length;
@@ -376,9 +423,9 @@ public class RootAdapter extends CommanderAdapterBase {
                     error( "Late error detected:\n" + es.readLine() );
             }
             catch( Exception e ) {
-                errMsg = "Exception: " + e;
+                error( "Exception: " + e );
             }
-    		sendResult( counter > 0 ? "Deleted files/folders: " + counter : "Nothing was deleted" );
+    		sendResult( Utils.getOpReport( counter, "deleted" ) );
             super.run();
         }
     }
@@ -431,59 +478,100 @@ public class RootAdapter extends CommanderAdapterBase {
     }
 
     @Override
-    public boolean receiveItems( String[] uris, boolean move ) {
+    public boolean receiveItems( String[] full_names, boolean move ) {
     	try {
-            if( uris == null || uris.length == 0 ) {
+            if( full_names == null || full_names.length == 0 ) {
             	commander.notifyMe( new Commander.Notify( "Nothing to copy", Commander.OPERATION_FAILED ) );
             	return false;
             }
-            File[] list = Utils.getListOfFiles( uris );
-            if( list == null ) {
-            	commander.notifyMe( new Commander.Notify( "Something wrong with the files", Commander.OPERATION_FAILED ) );
-            	return false;
-            }
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            worker = new CopyToEngine( handler, list, move );
+            worker = new CopyToEngine( handler, full_names, move, uri.getPath(), false );
             worker.start();
             return true;
 		} catch( Exception e ) {
-			commander.notifyMe( new Commander.Notify( "Exception: " + e.getMessage(), Commander.OPERATION_FAILED ) );
+			commander.notifyMe( new Commander.Notify( "Exception: " + e, Commander.OPERATION_FAILED ) );
 		}
 		return false;
     }
     
     class CopyToEngine extends Engine {
-        File[] mList;
-        int     basePathLen;
+        String[] src_full_names;
+        String   dest;
         boolean move = false;
+        boolean quiet;
         
-        CopyToEngine( Handler h, File[] list, boolean move_ ) {
+        CopyToEngine( Handler h, String[] list, boolean move_, String dest_, boolean quiet_ ) {
         	super( h );
-            mList = list;
-            basePathLen = list[0].getParent().length() + 1;
+        	src_full_names = list;
+        	dest = dest_;
             move = move_;
+            quiet = quiet_;
         }
 
         @Override
         public void run() {
-    		sendResult( Utils.getCopyReport( copyFiles( mList ) ) );
-            super.run();
-        }
-
-        private final int copyFiles( File[] list ) {
             int counter = 0;
             try {
-        	}
-			catch( Exception e ) {
-				e.printStackTrace();
-				errMsg = "IOException: " + e.getMessage();
-			}
-            return counter;
+                String bb = getBusyBox();
+                String cmd = move ? " mv " : " cp -r ";
+                Process p = Runtime.getRuntime().exec( sh );
+                DataOutputStream os = new DataOutputStream( p.getOutputStream() );
+                DataInputStream  es = new DataInputStream( p.getErrorStream() );
+                int num = src_full_names.length;
+                double conv = 100./(double)num;
+                for( int i = 0; i < num; i++ ) {
+                    String full_name = src_full_names[i];
+                    if( full_name == null ) continue;
+                    String to_exec;
+                    to_exec = bb + cmd + full_name + " " + dest + "\n";
+                    Log.i( TAG, to_exec );
+                    os.writeBytes( to_exec ); // execute command
+                    os.flush();
+                    Thread.sleep( 100 );
+                    if( es.available() > 0 ) {
+                        error( es.readLine() );
+                        break;
+                    }
+                    if( stop || isInterrupted() ) {
+                        error( "Canceled" );
+                        break;
+                    }
+                    if( !quiet ) sendProgress( "'" + full_name + "'   ", (int)(i * conv) );
+                    counter++;
+                }
+                os.writeBytes("exit\n");
+                os.flush();
+                p.waitFor();
+                if( p.exitValue() == 255 )
+                    error( "Exit code 255" );
+            }
+            catch( Exception e ) {
+                error( "Exception: " + e );
+            }
+            if( quiet )
+                sendResult( null );
+            else
+                sendResult( Utils.getOpReport( counter, move ? "moved" : "copied" ) );
+            super.run();
         }
     }
     
     @Override
     public boolean renameItem( int position, String newName ) {
+        if( position <= 0 || position > items.length )
+            return false;
+        try {
+            LsItem from = items[position - 1];
+            String[] a = new String[1];
+            a[0] = uri.getPath() + SLS + from.getName();
+            String to = uri.getPath() + SLS + newName;
+            commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
+            worker = new CopyToEngine( handler, a, true, to, true );
+            worker.start();
+            return true;
+        } catch( Exception e ) {
+            commander.notifyMe( new Commander.Notify( "Exception: " + e, Commander.OPERATION_FAILED ) );
+        }
         return false;
     }
 
@@ -516,11 +604,16 @@ public class RootAdapter extends CommanderAdapterBase {
             		curItem = items[position - 1];
                     item.dir = curItem.isDirectory();
 		            item.name = item.dir ? SLS + curItem.getName() : curItem.getName();
-		            item.size = curItem.length();
+                    String lnk = curItem.getLinkTarget();
+                    if( lnk != null ) 
+                        item.name += " -> " + lnk; 
+		            
+		            item.size = curItem.isDirectory() ? -1 : curItem.length();
 		            ListView flv = (ListView)parent;
 		            SparseBooleanArray cis = flv.getCheckedItemPositions();
 		            item.sel = cis.get( position );
 		            item.date = curItem.getDate();
+		            item.attr = curItem.getAttr();
 	            }
 	        }
     	}
@@ -539,38 +632,8 @@ public class RootAdapter extends CommanderAdapterBase {
                 	subItems[j++] = items[ cis.keyAt( i ) - 1 ];
             return subItems;
 		} catch( Exception e ) {
-		    Log.e( TAG, "bitsToNames()'s Exception: " + e.getMessage() );
+		    Log.e( TAG, "bitsToNames()'s Exception: " + e );
 		}
 		return null;
-    }
-    public class LsItemPropComparator implements Comparator<LsItem> {
-        int type;
-        boolean case_ignore;
-        public LsItemPropComparator( int type_, boolean case_ignore_ ) {
-            type = type_;
-            case_ignore = case_ignore_;
-        }
-		@Override
-		public int compare( LsItem f1, LsItem f2 ) {
-            boolean f1IsDir = f1.isDirectory();
-            boolean f2IsDir = f2.isDirectory();
-            if( f1IsDir != f2IsDir )
-                return f1IsDir ? -1 : 1;
-            int ext_cmp = 0;
-            switch( type ) {
-            case SORT_EXT:
-                ext_cmp = Utils.getFileExt( f1.getName() ).compareTo( Utils.getFileExt( f2.getName() ) );
-                break;
-            case SORT_SIZE:
-                ext_cmp = f1.length() - f2.length() < 0 ? -1 : 1;
-                break;
-            case SORT_DATE:
-                ext_cmp = f1.getDate().compareTo( f2.getDate() );
-                break;
-            }
-            if( ext_cmp != 0 )
-                return ext_cmp;
-            return f1.compareTo( f2 );
-		}
     }
 }

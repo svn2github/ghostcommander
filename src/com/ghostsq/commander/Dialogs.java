@@ -94,14 +94,17 @@ public class Dialogs implements DialogInterface.OnClickListener {
                     }
                     break;
                 case FileCommander.DONATE: {
-                    owner.startViewURIActivity( R.string.donate_uri );
-                }
+                        owner.startViewURIActivity( R.string.donate_uri );
+                        break;
+                    }
                 case FileCommander.SMB_APP: {
-                    owner.startViewURIActivity( R.string.smb_app_uri );
-                }
+                        owner.startViewURIActivity( R.string.smb_app_uri );
+                        break;
+                    }
                 case FileCommander.DBOX_APP: {
-                    owner.startViewURIActivity( R.string.dbox_app_uri );
-                }
+                        owner.startViewURIActivity( R.string.dbox_app_uri );
+                        break;
+                    }
                 }
             } else if( whichButton == DialogInterface.BUTTON_NEGATIVE ) {
                 if( dialogId == PROGRESS_DIALOG ) {
