@@ -232,7 +232,7 @@ public class FindAdapter extends CommanderAdapterBase {
                         item.size = item.dir ? 0 : f.length();
                         ListView flv = (ListView)parent;
                         SparseBooleanArray cis = flv.getCheckedItemPositions();
-                        item.sel = cis.get( position );
+                        item.sel = cis != null ? cis.get( position ) : false;
                         long msFileDate = f.lastModified();
                         if( msFileDate != 0 )
                             item.date = new Date( msFileDate );

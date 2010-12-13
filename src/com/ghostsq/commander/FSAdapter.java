@@ -594,7 +594,7 @@ public class FSAdapter extends CommanderAdapterBase {
                         item.size = item.dir ? f.size : f.f.length();
                         ListView flv = (ListView)parent;
                         SparseBooleanArray cis = flv.getCheckedItemPositions();
-                        item.sel = cis.get( position );
+                        item.sel = cis != null ? cis.get( position ) : false;
                         long msFileDate = f.f.lastModified();
                         if( msFileDate != 0 )
                             item.date = new Date( msFileDate );

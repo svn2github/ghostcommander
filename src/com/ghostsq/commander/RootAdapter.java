@@ -611,7 +611,7 @@ public class RootAdapter extends CommanderAdapterBase {
 		            item.size = curItem.isDirectory() ? -1 : curItem.length();
 		            ListView flv = (ListView)parent;
 		            SparseBooleanArray cis = flv.getCheckedItemPositions();
-		            item.sel = cis.get( position );
+		            item.sel = cis != null ? cis.get( position ) : false;
 		            item.date = curItem.getDate();
 		            item.attr = curItem.getAttr();
 	            }

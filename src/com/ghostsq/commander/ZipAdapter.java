@@ -593,7 +593,7 @@ public class ZipAdapter extends CommanderAdapterBase {
 		            item.size = curItem.getSize();
 		            ListView flv = (ListView)parent;
 		            SparseBooleanArray cis = flv.getCheckedItemPositions();
-		            item.sel = cis.get( position );
+		            item.sel = cis != null ? cis.get( position ) : false;
 		            long item_time = curItem.getTime();
 		            item.date = item_time > 0 ? new Date( item_time ) : null;
 	            }

@@ -35,10 +35,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-/**
- * @author zc2
- *
- */
 public class Panels implements AdapterView.OnItemSelectedListener, 
                                               AdapterView.OnItemClickListener, 
                                                      View.OnClickListener, 
@@ -61,7 +57,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     private int titleColor = Prefs.getDefaultColor( Prefs.TTL_COLORS ), 
                   fgrColor = Prefs.getDefaultColor( Prefs.FGR_COLORS ),
                   selColor = Prefs.getDefaultColor( Prefs.SEL_COLORS );
-    private boolean disableClick = false, fingerFriendly = false, warnOnRoot = true, arrow_mode = false;
+    private boolean fingerFriendly = false, warnOnRoot = true, arrow_mode = false;
+    private boolean disableOpenSelectOnly = false, disableAllActions = false;
     private float downX = 0, downY = 0;
     private StringBuffer quickSearchBuf = null;
     private Toast        quickSearchTip = null;
@@ -168,7 +165,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     // View.OnFocusChangeListener implementation
     @Override
     public void onFocusChange( View v, boolean f ) {
-        if( f && listViews[current] != v ) {
+        if( id == R.layout.alt && f && listViews[current] != v ) {
             togglePanels( false );
         }
     }
@@ -450,11 +447,13 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         NavigateInternal( opposite(), getListAdapter( true ).getUri(), null );
     }
     public final void togglePanels( boolean refresh ) {
+        Log.v( TAG, "toggle" );
     	setPanelCurrent( opposite() );
     	if( refresh && id == R.layout.main )
             refreshList( current );
     }
     public final void setPanelCurrent( int which ) {
+        Log.v( TAG, "setPanelCurrent " + which );
         if( mFlipper != null ) {
         	if( which == RIGHT ) {
                 mFlipper.setInAnimation(  AnimationUtils.loadAnimation( c, R.anim.left_in ) );
@@ -982,9 +981,12 @@ public class Panels implements AdapterView.OnItemSelectedListener,
      */
     @Override
     public void onItemClick( AdapterView<?> parent, View view, int position, long id ) {
+        
+        Log.v( TAG, "onItemClick" );
+        
     	shorcutsFoldersList.closeGoPanel();
     	resetQuickSearch();
-        if( listViews[current] != parent ) {
+        if( id == R.layout.alt && listViews[current] != parent ) {
             togglePanels( false );
             if( listViews[current] != parent )
             	Log.e( TAG, "onItem()Click. current=" + current + ", parent=" + parent.getId() );
@@ -992,11 +994,17 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         	
         ListView flv = listViews[current];
         if( position == 0 )
-            flv.setItemChecked( 0, false );
+            flv.setItemChecked( 0, false ); // parent item never selected
         
-        if( disableClick ) {
-            disableClick = false;
+        if( disableAllActions ) {
+            disableAllActions = false;
+            disableOpenSelectOnly = false;
+            SparseBooleanArray cis = flv.getCheckedItemPositions();
+            flv.setItemChecked( position, !cis.get( position ) );
+            return;
         }
+        if( disableOpenSelectOnly )
+            disableOpenSelectOnly = false;
         else {
             ((CommanderAdapter)listViews[current].getAdapter()).openItem( position );
             flv.setItemChecked( position, false );
@@ -1015,24 +1023,33 @@ public class Panels implements AdapterView.OnItemSelectedListener,
 	        case MotionEvent.ACTION_DOWN: {
                     downX = event.getX();
                     downY = event.getY();
-    	            disableClick = event.getX() > v.getWidth() / 2;
+                    disableOpenSelectOnly = event.getX() > v.getWidth() / 2;
     	            break;
     	        }
 	        case MotionEvent.ACTION_UP: {
-    	            if( Math.abs( downY - event.getY() ) > 10. || 
-    	                Math.abs( downX - event.getX() ) > 10. )
-    	                disableClick = false;
-    	            break;
+                    int deltaX = (int)(event.getX() - downX);
+                    int deltaY = (int)(event.getY() - downY);
+                    int absDeltaX = Math.abs( deltaX );
+                    int absDeltaY = Math.abs( deltaY );
+                    
+                    if( absDeltaY > 10 || absDeltaX > 10 )
+                        disableOpenSelectOnly = false;
+                    /*
+                    if( id == R.layout.alt ) break;                      // side-by-side panels - no sweeps
+                    if( absDeltaY > absDeltaX || absDeltaX < v.getWidth() / 2 ) break; // vertical or small movement not enough for toggle
+                    if( deltaX > 0 && current == LEFT )  break;
+                    if( deltaX < 0 && current == RIGHT ) break;
+                    togglePanels( false );
+                    disableAllActions = true;
+                    */
+       	            break;
     	        }
-/*
-	        case MotionEvent.ACTION_MOVE:
-	            if( Math.abs( downX - event.getX() ) > 100 && 
-	                Math.abs( downY - event.getY() ) < 20. ) { 
-	                c.showMessage( "sweep!" );
+	        /*
+	        case MotionEvent.ACTION_MOVE: {
+	                disableOpenSelectOnly = true;
+    	            break;
 	            }
-                disableClick = true;
-	            break;
-*/
+	        */
 	        }
 	    }
         return false;
