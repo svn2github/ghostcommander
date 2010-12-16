@@ -64,60 +64,75 @@ public class RootAdapter extends CommanderAdapterBase {
             		sendProgress( "Wrong URI", Commander.OPERATION_FAILED );
             		return;
             	}
-            	String  path = uri.getPath();
-                parentLink = path == null || path.length() == 0 || path.equals( SLS ) ? SLS : "..";
-                Process p = Runtime.getRuntime().exec( sh );
-                DataOutputStream os = new DataOutputStream( p.getOutputStream() );
-                DataInputStream  is = new DataInputStream( p.getInputStream() );
-                DataInputStream  es = new DataInputStream( p.getErrorStream() );
-                os.writeBytes( "ls -l " + path + "\n"); // execute command
-                os.flush();
-                for( int i=0; i< 10; i++ ) {
-                    if( isStopReq() ) 
-                        throw new Exception();
-                    if( is.available() > 0 ) break;
-                    Thread.sleep( 50 );
-                }
-                if( is.available() <= 0 ) // may be an error may be not
-                    Log.w( TAG, "No output from the executed command" );
-                ArrayList<LsItem>  array = new ArrayList<LsItem>();
-                while( is.available() > 0 ) {
-                    if( isStopReq() ) 
-                        throw new Exception();
-                    String ln = is.readLine();
-                    if( ln == null ) break;
-                    LsItem item = new LsItem( ln );
-                    if( item.isValid() ) {  // problem - if the item is a symlink - how to know its a dir or a file???
-                            array.add( item );
-                    }
-                }
-                os.writeBytes("exit\n");
-                os.flush();
-                p.waitFor();
-                if( p.exitValue() == 255 )
-                    Log.e( TAG, "Process.exitValue() returned 255" );
-                int sz = array.size();
-                items_tmp = new LsItem[sz];
-                if( sz > 0 ) {
-                    array.toArray( items_tmp );
-                    LsItem.LsItemPropComparator comp = 
-                        items_tmp[0].new LsItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
-                    Arrays.sort( items_tmp, comp );
-                }
-                String res_s = null;
-                if( es.available() > 0 )
-                    res_s = es.readLine();
-                sendProgress( res_s, Commander.OPERATION_COMPLETED, pass_back_on_done );
+            	getList();
             }
             catch( Exception e ) {
-                sendProgress( commander.getContext().getString( R.string.no_root ), 
-                        Commander.OPERATION_FAILED, pass_back_on_done );
                 sh = "sh";
-                Log.e( TAG, "ls output is not valid", e );
+                // try again
+                try {
+                    getList();
+                    sendProgress( commander.getContext().getString( R.string.no_root ), 
+                            Commander.OPERATION_COMPLETED, pass_back_on_done );
+                }
+                catch( Exception e1 ) {
+                    Log.e( TAG, "Exception even on 'sh' execution", e1 );
+                    sendProgress( commander.getContext().getString( R.string.no_root ), 
+                            Commander.OPERATION_FAILED, pass_back_on_done );
+                }
+            }
+            catch( VerifyError e ) {
+                sendProgress( "VerifyError " + e, Commander.OPERATION_FAILED, pass_back_on_done );
+                Log.e( TAG, "VerifyError: ", e );
             }
             finally {
             	super.run();
             }
+        }
+        private void getList() throws Exception {
+            String  path = uri.getPath();
+            parentLink = path == null || path.length() == 0 || path.equals( SLS ) ? SLS : "..";
+            Process p = Runtime.getRuntime().exec( sh );
+            DataOutputStream os = new DataOutputStream( p.getOutputStream() );
+            DataInputStream  is = new DataInputStream( p.getInputStream() );
+            DataInputStream  es = new DataInputStream( p.getErrorStream() );
+            os.writeBytes( "ls -l " + path + "\n"); // execute command
+            os.flush();
+            for( int i=0; i< 10; i++ ) {
+                if( isStopReq() ) 
+                    throw new Exception();
+                if( is.available() > 0 ) break;
+                Thread.sleep( 50 );
+            }
+            if( is.available() <= 0 ) // may be an error may be not
+                Log.w( TAG, "No output from the executed command" );
+            ArrayList<LsItem>  array = new ArrayList<LsItem>();
+            while( is.available() > 0 ) {
+                if( isStopReq() ) 
+                    throw new Exception();
+                String ln = is.readLine();
+                if( ln == null ) break;
+                LsItem item = new LsItem( ln );
+                if( item.isValid() ) {  // problem - if the item is a symlink - how to know its a dir or a file???
+                        array.add( item );
+                }
+            }
+            os.writeBytes("exit\n");
+            os.flush();
+            p.waitFor();
+            if( p.exitValue() == 255 )
+                Log.e( TAG, "Process.exitValue() returned 255" );
+            int sz = array.size();
+            items_tmp = new LsItem[sz];
+            if( sz > 0 ) {
+                array.toArray( items_tmp );
+                LsItem.LsItemPropComparator comp = 
+                    items_tmp[0].new LsItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
+                Arrays.sort( items_tmp, comp );
+            }
+            String res_s = null;
+            if( es.available() > 0 )
+                res_s = es.readLine();
+            sendProgress( res_s, Commander.OPERATION_COMPLETED, pass_back_on_done );
         }
     }
     @Override

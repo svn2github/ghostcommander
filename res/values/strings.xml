@@ -218,7 +218,7 @@
     (com.ghostsq.commander.dropbox) is installed.</string>
     <string name="dbox_app_uri">market://search?q=pname:com.ghostsq.commander.dropbox</string>
     
-    <string name="no_root">It seems your device does not allow you the root (su) access. Sorry.</string>
+    <string name="no_root">It seems your device does not allow you the root (su) access. </string>
 
     <string name="donate">&#xA0; Donate</string>
     <string name="online_help">&#xA0; Online Help</string>
