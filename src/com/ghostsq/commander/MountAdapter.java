@@ -135,9 +135,8 @@ public class MountAdapter extends CommanderAdapterBase {
                 String ln = is.readLine();
                 if( ln == null ) break;
                 MountItem item = new MountItem( ln );
-                if( item.isValid() ) {
-                        array.add( item );
-                }
+                if( item.isValid() )
+                    array.add( item );
             }
             os.writeBytes("exit\n");
             os.flush();
@@ -146,9 +145,8 @@ public class MountAdapter extends CommanderAdapterBase {
                 Log.e( TAG, "Process.exitValue() returned 255" );
             int sz = array.size();
             items_tmp = new MountItem[sz];
-            if( sz > 0 ) {
+            if( sz > 0 )
                 array.toArray( items_tmp );
-            }
             String res_s = null;
             if( es.available() > 0 )
                 res_s = es.readLine();
