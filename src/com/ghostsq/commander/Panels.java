@@ -714,7 +714,22 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                     flv.setOnKeyListener( this );
                 }
             } catch( Exception e ) {
-                Log.e( TAG, "Problem with the RootAdapter class", e );
+                Log.e( TAG, "Problem with the MountAdapter class", e );
+            }
+        }
+        else 
+        if( scheme != null && scheme.compareTo( "apps" ) == 0 ) {
+            try {
+                if( ca == null || !( ca instanceof AppsAdapter ) ) {
+                    if( ca != null )
+                        ca.prepareToDestroy();
+                    ca = new AppsAdapter( c );
+                    ca.Init( c );
+                    flv.setAdapter( (ListAdapter)ca );
+                    flv.setOnKeyListener( this );
+                }
+            } catch( Exception e ) {
+                Log.e( TAG, "Problem with the AppsAdapter class", e );
             }
         }
         else 

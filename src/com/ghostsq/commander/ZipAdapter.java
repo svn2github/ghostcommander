@@ -15,7 +15,6 @@ import java.util.zip.ZipEntry;
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.CommanderAdapter;
 import com.ghostsq.commander.CommanderAdapterBase;
-import com.ghostsq.commander.FTPAdapter.ListEngine;
 
 import android.net.Uri;
 import android.os.Handler;
