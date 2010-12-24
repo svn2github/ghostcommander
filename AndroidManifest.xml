@@ -7,7 +7,7 @@
       android:sharedUserId="com.ghostsq.commander.userId">
     <uses-permission android:name="android.permission.INTERNET" />
     <application android:icon="@drawable/icon" android:label="@string/app_name"
-        android:debuggable="false" android:process="com.ghostsq.commander">
+        android:debuggable="true" android:process="com.ghostsq.commander">
         <activity 
             android:name=".FileCommander" 
             android:label="@string/app_name"

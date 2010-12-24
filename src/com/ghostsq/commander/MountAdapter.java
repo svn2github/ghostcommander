@@ -19,6 +19,7 @@ import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.CommanderAdapter;
 import com.ghostsq.commander.CommanderAdapterBase;
 import com.ghostsq.commander.LsItem.LsItemPropComparator;
+import com.ghostsq.commander.RootAdapter.MkDirEngine;
 
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -34,27 +35,43 @@ import android.widget.ListView;
 public class MountAdapter extends CommanderAdapterBase {
     // Java compiler creates a thunk function to access to the private owner class member from a subclass
     // to avoid that all the member accessible from the subclasses are public
-    public final static String TAG = "RootAdapter";
+    public final static String TAG = "MountAdapter";
     public String sh = "su";
     public  Uri uri = null;
     private int attempts = 0;
     
     public class MountItem {
-        private String  dev, mntp, type, opts, r1, r2;
+        private String  dev = "", mntp = "", type = "", opts = "", r1 = "", r2 = "";
         public MountItem( String string ) {
             String[] flds = string.split( " " );
-            dev  = flds.length > 0 ? flds[0] : "";
-            mntp = flds.length > 1 ? flds[1] : ""; 
-            type = flds.length > 2 ? flds[2] : ""; 
-            opts = flds.length > 3 ? flds[3] : ""; 
-            r1   = flds.length > 4 ? flds[4] : "";
-            r2   = flds.length > 5 ? flds[5] : "";
+            if( flds.length < 4 ) {
+                dev = "???";
+            }
+            if( flds[1].equals( "on" ) && flds[3].equals( "type" ) ) {
+                dev  = flds.length > 0 ? flds[0] : "";
+                mntp = flds.length > 2 ? flds[2] : ""; 
+                type = flds.length > 4 ? flds[4] : ""; 
+                opts = flds.length > 5 ? flds[5] : "";
+                
+                if( opts.length() > 1 && opts.charAt( 0 ) == '(' && opts.charAt( opts.length()-1 ) == ')' )
+                    opts = opts.substring( 1, opts.length()-1 );
+            } else {
+                dev  = flds.length > 0 ? flds[0] : "";
+                mntp = flds.length > 1 ? flds[1] : ""; 
+                type = flds.length > 2 ? flds[2] : ""; 
+                opts = flds.length > 3 ? flds[3] : ""; 
+                r1   = flds.length > 4 ? flds[4] : "";
+                r2   = flds.length > 5 ? flds[5] : "";
+            }
         }
         public boolean isValid() {
             return dev.length() > 0 && mntp.length() > 0;
         }
         public String getName() {
             return dev + " " + mntp;
+        }
+        public String getOptions() {
+            return opts;
         }
         public String getRest() {
             return type + " " + opts + " " + r1 + " " + r2;
@@ -150,6 +167,8 @@ public class MountAdapter extends CommanderAdapterBase {
             String res_s = null;
             if( es.available() > 0 )
                 res_s = es.readLine();
+            if( res_s != null && res_s.length() > 0 )
+               Log.e( TAG, "Error on the 'ls' command: " + res_s );
             sendProgress( res_s, Commander.OPERATION_COMPLETED, pass_back_on_done );
         }        
         
@@ -188,6 +207,7 @@ public class MountAdapter extends CommanderAdapterBase {
                 return false;
             
             if( worker != null ) {
+                Log.e( TAG, "Worker is busy" );
                 if( attempts++ < 2 ) {
                     commander.showInfo( "Busy..." );
                     return false;
@@ -249,14 +269,71 @@ public class MountAdapter extends CommanderAdapterBase {
         }
         return null;
     }
+
+    class RemountEngine extends Engine {
+        MountItem mount;
+        
+        RemountEngine( Handler h, MountItem m ) {
+            super( h );
+            mount = m;
+        }
+        @Override
+        public void run() {
+            String cmd = null;
+            try {
+                String bb = getBusyBox();
+                Process p = Runtime.getRuntime().exec( sh );
+                DataOutputStream os = new DataOutputStream( p.getOutputStream() );
+                DataInputStream  es = new DataInputStream( p.getErrorStream() );
+                String o = mount.getOptions();
+                if( o.indexOf( "rw" ) >= 0 )
+                    o = o.replace( "rw", "ro" );
+                else
+                if( o.indexOf( "ro" ) >= 0 )
+                    o = o.replace( "ro", "rw" );
+                else {
+                    error( "Don't know what to do." );
+                    return;
+                }
+                cmd = " mount -o remount," + o + " " + mount.getName();
+                String to_exec = bb + cmd + "\n";
+                Log.i( TAG, to_exec );
+                os.writeBytes( to_exec ); // execute the command
+                os.flush();
+                Thread.sleep( 200 );
+                if( es.available() > 0 ) {
+                    String err_msg = es.readLine(); 
+                    error( err_msg );
+                    Log.e( TAG, err_msg );
+                }
+                os.writeBytes("exit\n");
+                os.flush();
+                p.waitFor();
+                if( p.exitValue() == 255 )
+                    Log.e( TAG, "Exit code 255" );
+            }
+            catch( Exception e ) {
+                Log.e( TAG, "On remount, ", e );
+                error( "Exception: " + e );
+            }
+            finally {
+                super.run();
+                sendResult( errMsg != null ? ( cmd == null ? "" : "Were tried to execute: '" + cmd + "'") : "Success!" );
+            }
+        }
+    }
+    
     @Override
     public void openItem( int position ) {
         if( items == null || position < 0 || position > items.length )
             return;
         MountItem item = items[position];
-        
-        // TODO remount rw and back
-    
+        if( isWorkerStillAlive() )
+            commander.notifyMe( new Commander.Notify( "Busy", Commander.OPERATION_FAILED ) );
+        else {
+            worker = new RemountEngine( handler, item );
+            worker.start();
+        }
     }
 
     @Override

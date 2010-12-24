@@ -53,7 +53,7 @@ public class LsItem {
                 if( cur_year )
                     date.setYear( Calendar.getInstance().get( Calendar.YEAR ) - 1900 );
                 attr = m.group( 1 );
-                Log.i( TAG, "Item " + name + ", " + attr );
+                //Log.v( TAG, "Item " + name + ", " + attr );
             } catch( ParseException e ) {
                 e.printStackTrace();
             }
