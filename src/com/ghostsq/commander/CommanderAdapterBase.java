@@ -28,7 +28,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected static final String SLS = File.separator;
     protected static final char SLC = File.separator.charAt( 0 );
     protected static final String DEFAULT_DIR = "/sdcard";
-    private   static boolean long_date = Locale.getDefault().getLanguage().compareTo( "en" ) != 0;
+    private   static final boolean long_date = Locale.getDefault().getLanguage().compareTo( "en" ) != 0;
     protected LayoutInflater mInflater = null;
     private   int    parentWidth, imgWidth, nameWidth, sizeWidth, dateWidth, attrWidth;
     private   int    fg_color, sl_color;
@@ -171,21 +171,52 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 parentWidth = parent_width;
                 imgWidth = icons ? ( fat ? 60 : 20 ) : 0;
                 if( wm ) { // single row
-                    nameWidth = ( dm ? parent_width * ( long_date ? 9 : 10 ) / 16 : parent_width ) - imgWidth;
-                    sizeWidth = parent_width / (long_date ? 9 : 8);
-                    dateWidth = parent_width - ( imgWidth + nameWidth + sizeWidth );
+                    if( dm ) {
+                        if( ( ATTR_ONLY & mode ) != 0 ) {
+                            sizeWidth = 0;
+                            dateWidth = 0;
+                            attrWidth = 140;
+                            nameWidth = parent_width - imgWidth - attrWidth; 
+                        }
+                        else {
+                            sizeWidth = 50;
+                            dateWidth = long_date ? 90 : 80;
+                            attrWidth = SHOW_ATTR == ( MODE_ATTR & mode )  && parent_width >= 320 ? 140 : 0;
+                            nameWidth = parent_width - imgWidth - sizeWidth - dateWidth - attrWidth;
+                            if( nameWidth < parent_width / 3 ) {
+                                sizeWidth = 50;
+                                dateWidth = long_date ? 90 : 80;
+                                attrWidth = 0;
+                                nameWidth = parent_width - imgWidth - sizeWidth - dateWidth;
+                            }
+                        }
+                    }
+                    else {
+                        nameWidth = parent_width - imgWidth;
+                        sizeWidth = 0;
+                        dateWidth = 0;
+                        attrWidth = 0;
+                    }
                 }
                 else {
                     nameWidth = parent_width - imgWidth;
-                    if( parent_width >= 190 ) {
-                        attrWidth = 80;
-                        sizeWidth = 50;
-                        dateWidth = 60;
+                    if( ( ATTR_ONLY & mode ) != 0 ) {
+                        sizeWidth = 0;
+                        dateWidth = 0;
+                        attrWidth = parent_width;
                     }
                     else {
-                        attrWidth = 0;
-                        sizeWidth = parent_width / 4;
-                        dateWidth = parent_width / 2;
+                        if( parent_width >= 230 ) {
+                            sizeWidth = 50;
+                            dateWidth = long_date ? 90 : 70;
+                            attrWidth = SHOW_ATTR == ( MODE_ATTR & mode ) ? 
+                               ( parent_width >= 280 ? 140 : parent_width - dateWidth - sizeWidth ) : 0;
+                        }
+                        else {
+                            attrWidth = 0;
+                            sizeWidth = parent_width / 4;
+                            dateWidth = parent_width / 2;
+                        }
                     }
                 }
                 dirty = false;
@@ -212,14 +243,15 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             }
             TextView attrView = (TextView)row_view.findViewById( R.id.fld_attr );
             if( attrView != null ) {
-                if( dm ) {
-                    nameView.setWidth( attrWidth );
+                if( dm ) { // must be to not ruin the layout
+                    attrView.setWidth( attrWidth );
                     attrView.setVisibility( View.VISIBLE );
                     attrView.setText( attrWidth == 0 || item.attr == null ? "" : item.attr );
                     attrView.setTextColor( fg_color );
+                    //attrView.setBackgroundColor( 0xFFFF0000 );  // DEBUG!!!!!!
                 }
                 else
-                    attrView.setVisibility( View.GONE );
+                    attrView.setVisibility( View.GONE ); 
             }
             TextView dateView = (TextView)row_view.findViewById( R.id.fld_date );
             if( dateView != null ) {
@@ -227,6 +259,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 dateView.setWidth( dateWidth );
                 dateView.setText( date );
                 dateView.setTextColor( fg_color );
+                //dateView.setBackgroundColor( 0xFF00AA00 );  // DEBUG!!!!!!
             }
             TextView sizeView = (TextView)row_view.findViewById( R.id.fld_size );
             if( sizeView != null ) {
@@ -234,6 +267,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 sizeView.setWidth( sizeWidth );
                 sizeView.setText( size );
                 sizeView.setTextColor( fg_color );
+                //sizeView.setBackgroundColor( 0xFF0000FF );  // DEBUG!!!!!!
             }
             row_view.setTag( null );
     

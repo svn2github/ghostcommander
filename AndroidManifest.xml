@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.ghostsq.commander"
       android:versionName="1.21" 
-      android:versionCode="65"
+      android:versionCode="66"
       android:label="@string/app_name"
       android:sharedUserId="com.ghostsq.commander.userId">
     <uses-permission android:name="android.permission.INTERNET" />

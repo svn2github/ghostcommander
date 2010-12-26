@@ -7,15 +7,21 @@
         <ImageView android:id="@+id/fld_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="1dip"/>
+            android:padding="4dip"/>
         <TextView android:id="@+id/fld_name"
-            android:padding="2dip" />
+            android:paddingRight="4dip" />
         <TextView android:id="@+id/fld_size"
             android:textSize="9sp"
-            android:padding="3dip"
-            android:gravity="right" />
+            android:paddingRight="5dip"
+            android:gravity="right" 
+            android:typeface="monospace"/>
         <TextView android:id="@+id/fld_date"
             android:textSize="9sp"
-            android:padding="2dip" />
+            android:paddingRight="4dip" 
+            android:typeface="monospace"/>
+        <TextView android:id="@+id/fld_attr"
+            android:textSize="9sp"
+            android:paddingRight="1dip"
+            android:typeface="monospace"/>
     </TableRow>
 </TableLayout>

@@ -21,13 +21,14 @@ public interface CommanderAdapter {
 	/**
 	 *  Output mode
 	 */
-	public final static int MODE_WIDTH = 0x01, NARROW_MODE = 0x0,     WIDE_MODE = 0x1, 
-	                      MODE_DETAILS = 0x02, SIMPLE_MODE = 0x0, DETAILED_MODE = 0x2,
-	                      MODE_FINGERF = 0x04,   SLIM_MODE = 0x0,      FAT_MODE = 0x4,
-                          MODE_HIDDEN  = 0x08,   SHOW_MODE = 0x0,     HIDE_MODE = 0x8,
-                          MODE_SORTING = 0x30,   SORT_NAME = 0x00,    SORT_SIZE = 0x10, SORT_DATE = 0x20, SORT_EXT = 0x30,
-                            MODE_CASE  = 0x40,   CASE_SENS = 0x0,   CASE_IGNORE = 0x40,
-                            MODE_ICONS = 0x80,   ICON_MODE = 0x0,     TEXT_MODE = 0x80,
+	public final static int MODE_WIDTH = 0x0001, NARROW_MODE = 0x0000,     WIDE_MODE = 0x0001, 
+	                      MODE_DETAILS = 0x0002, SIMPLE_MODE = 0x0000, DETAILED_MODE = 0x0002,
+	                      MODE_FINGERF = 0x0004,   SLIM_MODE = 0x0000,      FAT_MODE = 0x0004,
+                          MODE_HIDDEN  = 0x0008,   SHOW_MODE = 0x0000,     HIDE_MODE = 0x0008,
+                          MODE_SORTING = 0x0030,   SORT_NAME = 0x0000,     SORT_SIZE = 0x0010, SORT_DATE = 0x0020, SORT_EXT = 0x0030,
+                            MODE_CASE  = 0x0040,   CASE_SENS = 0x0000,   CASE_IGNORE = 0x0040,
+                            MODE_ICONS = 0x0080,   ICON_MODE = 0x0000,     TEXT_MODE = 0x0080,
+                             MODE_ATTR = 0x0300,     NO_ATTR = 0x0000,     SHOW_ATTR = 0x0100, ATTR_ONLY = 0x0200,
                        SET_MODE_COLORS = 0xF0000000, SET_TXT_COLOR = 0x10000000, SET_SEL_COLOR = 0x20000000;
     /**
      * @param mask - see bits above 

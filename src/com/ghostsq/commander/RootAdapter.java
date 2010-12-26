@@ -34,7 +34,7 @@ public class RootAdapter extends CommanderAdapterBase {
     private int attempts = 0;
 
     public RootAdapter( Commander c, Uri d ) {
-        super( c, 0 );
+        super( c, SHOW_ATTR );
     }
 
     private String getBusyBox() {

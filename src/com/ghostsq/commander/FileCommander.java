@@ -1,12 +1,6 @@
 package com.ghostsq.commander;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -350,6 +344,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 intent.setData( Uri.parse( getString( R.string.help_uri ) ) );
                 startActivity( intent );
             }
+            break;
         }
         return super.onMenuItemSelected(featureId, item);
     }

@@ -81,7 +81,7 @@ public class MountAdapter extends CommanderAdapterBase {
     public  MountItem[] items = null;
 
     public MountAdapter( Commander c ) {
-        super( c, DETAILED_MODE | NARROW_MODE | TEXT_MODE );
+        super( c, DETAILED_MODE | NARROW_MODE | TEXT_MODE | SHOW_ATTR | ATTR_ONLY );
     }
 
     private String getBusyBox() {

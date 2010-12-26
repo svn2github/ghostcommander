@@ -355,7 +355,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         ca.setMode( CommanderAdapter.MODE_ICONS, sharedPref.getBoolean( "show_icons", true ) ? 
                 CommanderAdapter.ICON_MODE : CommanderAdapter.TEXT_MODE );
 
-        ca.setMode( CommanderAdapter.MODE_CASE, sharedPref.getBoolean( "case_ignore", false ) ? 
+        ca.setMode( CommanderAdapter.MODE_CASE, sharedPref.getBoolean( "case_ignore", true ) ? 
                 CommanderAdapter.CASE_IGNORE : CommanderAdapter.CASE_SENS );
 
         String sfx = id == R.layout.main ? "_Ovr" : "_SbS";
@@ -613,7 +613,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 Log.e( TAG, "Problem with SMBAdapter class", e );
             }
         }
-        else 
+        else
+/*
         if( scheme != null && scheme.compareTo( "dbox" ) == 0 ) {
             try {
                 if( ca == null || !ca.getType().equals( "dropbox" ) ) {
@@ -665,6 +666,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             }
         }
         else 
+*/
         if( scheme != null && scheme.compareTo( "zip" ) == 0 ) {
             try {
                 if( ca == null || !( ca instanceof ZipAdapter ) ) {
@@ -1048,6 +1050,10 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     public boolean onTouch( View v, MotionEvent event ) {
     	resetQuickSearch();
 	    if( v instanceof ListView ) {
+	        
+            if( v == listViews[opposite()])
+                togglePanels( false );
+	        
 	    	shorcutsFoldersList.closeGoPanel();
 	        switch( event.getAction() ) {
 	        case MotionEvent.ACTION_DOWN: {

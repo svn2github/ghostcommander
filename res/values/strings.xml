@@ -249,32 +249,35 @@ If you don\'t agree to the above, stop using this software immediately and unins
 To select a file, tap on the right half of the item\'s row.    
 To manually enter the location path (and see the favorites), long press on the panel\'s title\n
 Shortcuts keys:\n
-VolumeUp - Select the current item (file)\n
-VolumeDn - Swap the panels\n
-+,-   - Select or unselect all items in the current folder\n  
-(, )  - Enter the location for left/right panel and favorites\n
-* - Add the current folder to favorites\n
-\" - Show the total size of selected files\n
-= - Make the other panel show the same folder as the current\n
-1 - Help\n
-2 - Rename current file\n
-4 - Edit current file\n
-5 - Copy selected files\n
-6 - Move selected files\n
-7 - Create a new folder\n
-8 - Delete files or folders\n
-9 - Open preferences\n
-0 - Close program\n
-[A-z] - Quick search\n    
-    \n
+VolumeUp - Select the current item (file)
+VolumeDn - Swap the panels
++,-   - Select or unselect all items in the current folder  
+(, )  - Enter the location for left/right panel and favorites
+* - Add the current folder to favorites
+\" - Show the total size of selected files
+= - Make the other panel show the same folder as the current
+1 - Help
+2 - Rename current file
+4 - Edit current file
+5 - Copy selected files
+6 - Move selected files
+7 - Create a new folder
+8 - Delete files or folders
+9 - Open preferences
+0 - Close program
+[A-z] - Quick search    
+    
 To open an anonymous FTP folder, enter path like:\n
     ftp://host.com/folder\n
 Or, if you need to provide some identities:\n
     ftp://user:password@host.com/folder\n\n
 To access as root (su), 
-enter the location URI in the following form:\n
-    root:///path\n
+enter the location like follows:\n
+    root:///data\n
 Make sure the \"busybox\" is installed, and its location is specified in the settings.\n
+
+To list the mounted devices, type in "mount://"
+Click on a mount record to make it "rw" or back "ro".
     "
     </string>
     

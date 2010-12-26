@@ -68,7 +68,7 @@
                 android:key="case_ignore"
                 android:title="@string/sort_case"
                 android:summary="@string/summary_sort_case" 
-                android:defaultValue="false"/>
+                android:defaultValue="true"/>
         <CheckBoxPreference
                 android:key="panels_mode"
                 android:title="@string/panels_mode"
