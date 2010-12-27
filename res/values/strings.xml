@@ -72,6 +72,7 @@
     <string name="dialog_retry">Retry</string>
     <string name="dialog_ignore">Ignore</string>
     
+    <string name="operation">Operation</string>
     <string name="edit_title">Edit</string>
     <string name="newf_prompt">New file name</string>
     <string name="rename_title">Rename</string>
@@ -147,6 +148,11 @@
     <string name="show_eq">Show &#xAB; = Make both panels same&#xBB;</string>
     <string name="show_tgl">Show &#xAB; &#x21E6; Change&#xBB;</string>
     <string name="show_sz">Show &#xAB; \" Size&#xBB;</string>
+    
+    <string name="show_by_name">Show &#xAB; Sort by Name&#xBB;</string>
+    <string name="show_by_ext" >Show &#xAB; Sort by Extension&#xBB;</string>
+    <string name="show_by_size">Show &#xAB; Sort by Size&#xBB;</string>
+    <string name="show_by_date">Show &#xAB; Sort by Date&#xBB;</string>
 
     <string name="finger_friendly">Finger friendly</string>
     <string name="summary_finger_friendly">Enlarge user interface elements</string>
@@ -273,11 +279,11 @@ Or, if you need to provide some identities:\n
     ftp://user:password@host.com/folder\n\n
 To access as root (su), 
 enter the location like follows:\n
-    root:///data\n
-Make sure the \"busybox\" is installed, and its location is specified in the settings.\n
+    \"root:///data\"\n
+Make sure the \"busybox\" is installed, and/or its location is specified in the settings.\n
 
-To list the mounted devices, type in "mount://"
-Click on a mount record to make it "rw" or back "ro".
+To list the mounted devices, type in \"mount://\"
+Click on a mount record to make it \"rw\" or back \"ro\".
     "
     </string>
     

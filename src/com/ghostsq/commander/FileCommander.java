@@ -29,11 +29,9 @@ import android.widget.Toast;
 
 public class FileCommander extends Activity implements Commander, View.OnClickListener {
     private final static String TAG = "GhostCommanderActivity";
-    private final static int REQUEST_CODE_PREFERENCES = 1, REQUEST_CODE_SRV_FORM = 2;
-    public  final static int RENAME_ACT = 1002,  NEWF_ACT = 1014, EDIT_ACT = 1004, COPY_ACT = 1005, 
-                               MOVE_ACT = 1006, MKDIR_ACT = 1007,  DEL_ACT = 1008, FIND_ACT = 1017, DONATE = 3333,
-                               SMB_APP = 0275, DBOX_APP = 3592;
-    private final static int SHOW_SIZE = 12, CHANGE_LOCATION = 993, MAKE_SAME = 217, SEND_TO = 236, OPEN_WITH = 903;
+    public  final static int REQUEST_CODE_PREFERENCES = 1, REQUEST_CODE_SRV_FORM = 2;
+    public final static int FIND_ACT = 1017, DBOX_APP = 3592;
+    
     private ArrayList<Dialogs> dialogs;
     public  Panels  panels, panelsBak = null;
     private boolean exit = false, dont_restore = false;
@@ -154,41 +152,15 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 */
     @Override
     public void onCreateContextMenu( ContextMenu menu, View v, ContextMenuInfo menuInfo ) {
-        int num = panels.getNumItemsChecked();
-        if( num <= 1 ) {
-            try {
-                AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo)menuInfo;
-                if( acmi.position == 0 ) {
-                    menu.add(0, CHANGE_LOCATION, 0, R.string.enter );
-                    menu.add(0, MAKE_SAME, 0, R.string.oth_sh_this );
-                    return;
-                }
-            }
-            catch( ClassCastException e ) {
-                Log.e( TAG, "onCreateContextMenu() cast exception\n", e );
-            }
+        try {
+            int num = panels.getNumItemsChecked();
+            AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo)menuInfo;
+            menu.setHeaderTitle( getString( R.string.operation ) );
+            CommanderAdapter ca = panels.getListAdapter( true );
+            ca.populateContextMenu( menu, acmi, num );
         }
-        menu.setHeaderTitle("Operation");
-        CommanderAdapter ca = panels.getListAdapter( true );
-        boolean fs_adapter = ca instanceof FSAdapter || ca instanceof FindAdapter;
-        if( fs_adapter ) { 
-            menu.add( 0, SHOW_SIZE, 0, R.string.show_size );
-            if( num <= 1 ) {
-                menu.add( 0,   SEND_TO, 0, R.string.send_to );
-            }
-        }
-        if( num <= 1 ) {
-            menu.add( 0, RENAME_ACT, 0, R.string.rename_title );
-            menu.add( 0,   EDIT_ACT, 0, R.string.edit_title );
-        }
-        menu.add( 0, COPY_ACT, 0, R.string.copy_title );
-        if( fs_adapter )
-            menu.add( 0, MOVE_ACT, 0, R.string.move_title );
-        menu.add( 0,  DEL_ACT, 0, R.string.delete_title );
-        if( fs_adapter ) { 
-            if( num <= 1 ) {
-                menu.add( 0, OPEN_WITH, 0, R.string.open_with );
-            }
+        catch( Exception e ) {
+            Log.e( TAG, "onCreateContextMenu() exception", e );
         }
     }
 
@@ -204,32 +176,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         }
         panels.setSelection( info.position );
         int item_id = item.getItemId();
-        switch( item_id ) {
-        case CHANGE_LOCATION:
-            panels.openGoPanel();
-            break;
-        case COPY_ACT:
-        case MOVE_ACT:
-        case RENAME_ACT:
-        case DEL_ACT:
-            showDialog(item_id);
-            break;
-        case EDIT_ACT:
-            panels.openForEdit(null);
-            break;
-        case SHOW_SIZE:
-            panels.showSizes();
-            break;
-        case SEND_TO:
-            panels.tryToSend();
-            break;
-        case OPEN_WITH:
-            panels.tryToOpen();
-            break;
-        case MAKE_SAME:
-            panels.makeOtherAsCurrent();
-            break;
-        }
+        if( OPEN == item_id ) 
+            panels.openItem( info.position );
+        else
+            doIt( item_id );
         return true;
     }
 
@@ -259,31 +209,126 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     @Override
     public boolean onMenuItemSelected( int featureId, MenuItem item ) {
         panels.resetQuickSearch();
-        switch( item.getItemId() ) {
+        doIt( item.getItemId() );
+        return super.onMenuItemSelected(featureId, item);
+    }
+
+    @Override
+    protected void onActivityResult( int requestCode, int resultCode, Intent data ) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if( requestCode == REQUEST_CODE_PREFERENCES ) {
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+            if( !lang.equalsIgnoreCase( sharedPref.getString( "language", "" ) ) )
+                showInfo( getString( R.string.restart_to_apply_lang ) );
+            panels.applySettings( sharedPref );
+            if( panelsBak != null )
+                panelsBak.applySettings( sharedPref );
+            setMode( sharedPref.getBoolean( "panels_mode", false ) );
+            panels.showToolbar( sharedPref.getBoolean("show_toolbar", true ) );
+        }
+        else
+        if( requestCode == REQUEST_CODE_SRV_FORM ) {
+            if( resultCode == RESULT_OK ) {
+                dont_restore = true;
+                Navigate( Uri.parse( data.getAction() ), null );
+            }
+        }
+    }
+
+    @Override
+    public boolean onKeyDown( int keyCode, KeyEvent event ) {
+        // showMessage( "key:" + keyCode + ", number:" + event.getNumber() +
+        // ", uchar:" + event.getUnicodeChar() );
+        char c = (char)event.getUnicodeChar();
+        panels.resetQuickSearch();
+        switch( c ) {
+        case '=':
+            panels.makeOtherAsCurrent();
+            return true;
+        case '&':
+            openPrefs();
+            return true;
+        case '/':
+            showSearchDialog();
+            return true;
+        case '1':
+            showInfo(getString(R.string.keys_text));
+            return true;
+        case '9':
+            openPrefs();
+            return true;
+        case '0':
+            finish();
+            return true;
+        }
+        switch( keyCode ) {
+        case KeyEvent.KEYCODE_BACK:
+        case KeyEvent.KEYCODE_DEL:
+            panels.getListAdapter(true).openItem(0);
+            return false;
+        case KeyEvent.KEYCODE_SEARCH:
+            showSearchDialog();
+            return false;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyUp( int keyCode, KeyEvent event ) {
+        if( keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN )
+            return true;
+
+        return super.onKeyUp(keyCode, event);
+    }
+
+    /*
+     * @see android.view.View.OnClickListener#onClick(android.view.View)
+     */
+    @Override
+    public void onClick( View button ) {
+        panels.resetQuickSearch();
+        if( button == null )
+            return;
+        doIt( button.getId() );
+    }
+
+    private final void doIt( int id ) {
+        switch( id ) {
+        case R.id.keys:
+        case R.id.F1:
+            showInfo( getString( R.string.keys_text ) );
+            break;
         case R.id.F4:
             panels.openForEdit(null);
             break;
+        case R.id.F2:
         case R.id.new_file:
-            showDialog(NEWF_ACT);
-            break;
+        case R.id.SF4:
         case R.id.F5:
-            showDialog(COPY_ACT);
-            break;
         case R.id.F6:
-            showDialog(MOVE_ACT);
-            break;
         case R.id.F7:
-            showDialog(MKDIR_ACT);
-            break;
         case R.id.F8:
-            showDialog(DEL_ACT);
+        case R.id.donate:
+            showDialog( id );
             break;
-        case R.id.F10:
+        case R.id.prefs:
+        case R.id.F9:
+            openPrefs();
+            break;
+        case R.id.exit:
             exit = true;
+        case R.id.F10:
             finish();
             break;
         case R.id.oth_sh_this:
+        case R.id.eq:
             panels.makeOtherAsCurrent();
+            break;
+        case R.id.tgl:
+            panels.togglePanels(true);
+            break;
+        case R.id.sz:
+            panels.showSizes();
             break;
         case R.id.ftp: {
                 Intent i = new Intent( this, ServerForm.class );
@@ -327,17 +372,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         case R.id.unselect_all:
             panels.checkAllItems( false );
             break;
-        case R.id.prefs:
-            openPrefs();
-            break;
         case R.id.about:
             showDialog( Dialogs.ABOUT_DIALOG );
-            break;
-        case R.id.keys:
-            showInfo( getString(R.string.keys_text) );
-            break;
-        case R.id.donate:
-            showDialog(DONATE);
             break;
         case R.id.online: {
                 Intent intent = new Intent( Intent.ACTION_VIEW );
@@ -345,131 +381,14 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 startActivity( intent );
             }
             break;
-        }
-        return super.onMenuItemSelected(featureId, item);
-    }
-
-    @Override
-    protected void onActivityResult( int requestCode, int resultCode, Intent data ) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if( requestCode == REQUEST_CODE_PREFERENCES ) {
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-            if( !lang.equalsIgnoreCase( sharedPref.getString( "language", "" ) ) )
-                showInfo( getString( R.string.restart_to_apply_lang ) );
-            panels.applySettings( sharedPref );
-            if( panelsBak != null )
-                panelsBak.applySettings( sharedPref );
-            setMode( sharedPref.getBoolean( "panels_mode", false ) );
-            panels.showOrHideToolbar( sharedPref.getBoolean("show_toolbar", true ) );
-        }
-        else
-        if( requestCode == REQUEST_CODE_SRV_FORM ) {
-            if( resultCode == RESULT_OK ) {
-                dont_restore = true;
-                Navigate( Uri.parse( data.getAction() ), null );
-            }
-        }
-    }
-
-    @Override
-    public boolean onKeyDown( int keyCode, KeyEvent event ) {
-        // showMessage( "key:" + keyCode + ", number:" + event.getNumber() +
-        // ", uchar:" + event.getUnicodeChar() );
-        char c = (char)event.getUnicodeChar();
-        panels.resetQuickSearch();
-        switch( c ) {
-        case '=':
-            panels.makeOtherAsCurrent();
-            return true;
-        case '&':
-            openPrefs();
-            return true;
-        case '/':
-            showSearchDialog();
-            return true;
-        case '1':
-            showInfo(getString(R.string.keys_text));
-            return true;
-        case '9':
-            openPrefs();
-//            openOptionsMenu();
-            return true;
-        case '0':
-            finish();
-            return true;
-        }
-        switch( keyCode ) {
-        case KeyEvent.KEYCODE_BACK:
-        case KeyEvent.KEYCODE_DEL:
-            panels.getListAdapter(true).openItem(0);
-            return false;
-        case KeyEvent.KEYCODE_SEARCH:
-            showSearchDialog();
-            return false;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public boolean onKeyUp( int keyCode, KeyEvent event ) {
-        if( keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN )
-            return true;
-
-        return super.onKeyUp(keyCode, event);
-    }
-
-    /*
-     * @see android.view.View.OnClickListener#onClick(android.view.View)
-     */
-    @Override
-    public void onClick( View button ) {
-        panels.resetQuickSearch();
-        if( button == null )
-            return;
-        switch( button.getId() ) {
-        case R.id.F1:
-            showInfo(getString(R.string.keys_text));
+        case SEND_TO:
+            panels.tryToSend();
             break;
-        case R.id.F2:
-            showDialog(RENAME_ACT);
-            break;
-        case R.id.F4:
-            panels.openForEdit(null);
-            break;
-        case R.id.SF4:
-            showDialog(NEWF_ACT);
-            break;
-        case R.id.F5:
-            showDialog(COPY_ACT);
-            break;
-        case R.id.F6:
-            showDialog(MOVE_ACT);
-            break;
-        case R.id.F7:
-            showDialog(MKDIR_ACT);
-            break;
-        case R.id.F8:
-            showDialog(DEL_ACT);
-            break;
-        case R.id.F9:
-            openPrefs();
-            //openOptionsMenu();
-            break;
-        case R.id.F10:
-            finish();
-            break;
-        case R.id.eq:
-            panels.makeOtherAsCurrent();
-            break;
-        case R.id.tgl:
-            panels.togglePanels(true);
-            break;
-        case R.id.sz:
-            panels.showSizes();
+        case OPEN_WITH:
+            panels.tryToOpen();
             break;
         }
     }
-
     private final boolean setMode( boolean side_by_side_mode ) {
         if( ( side_by_side_mode && panels.getId() == R.layout.main ) || 
            ( !side_by_side_mode && panels.getId() == R.layout.alt ) ) {

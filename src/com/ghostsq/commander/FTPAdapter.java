@@ -14,6 +14,7 @@ import java.util.TimerTask;
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.CommanderAdapter;
 import com.ghostsq.commander.CommanderAdapterBase;
+import com.ghostsq.commander.CommanderAdapterBase.Item;
 
 import android.net.Uri;
 import android.os.Handler;
@@ -184,6 +185,12 @@ public class FTPAdapter extends CommanderAdapterBase {
         return uri;
     }
 
+    @Override
+    public boolean isButtonActive( int brId ) {
+        if( brId == R.id.F4 || brId == R.id.sz ) return false;
+        return true;
+    }
+    
     @Override
     public void setIdentities( String name, String pass ) {
         theUserPass = new FTPCredentials( name, pass );
@@ -643,35 +650,26 @@ public class FTPAdapter extends CommanderAdapterBase {
 
     @Override
     public Object getItem( int position ) {
-    	if( worker != null )
-    		return null;
-    	return items != null && position < items.length ? items[position] : null;
+        Item item = new Item();
+        item.name = "???";
+        {
+            if( position == 0 ) {
+                item.name = parentLink;
+            }
+            else {
+                if( items != null && position > 0 && position <= items.length ) {
+                    LsItem curItem;
+                    curItem = items[position - 1];
+                    item.dir = curItem.isDirectory();
+                    item.name = item.dir ? SLS + curItem.getName() : curItem.getName();
+                    item.size = curItem.length();
+                    item.date = curItem.getDate();
+                }
+            }
+        }
+        return item;
     }
 
-    @Override
-    public View getView( int position, View convertView, ViewGroup parent ) {
-    	Item item = new Item();
-    	item.name = "???";
-    	{
-	        if( position == 0 ) {
-	            item.name = parentLink;
-	        }
-	        else {
-	        	if( items != null && position > 0 && position <= items.length ) {
-	        		LsItem curItem;
-            		curItem = items[position - 1];
-                    item.dir = curItem.isDirectory();
-		            item.name = item.dir ? SLS + curItem.getName() : curItem.getName();
-		            item.size = curItem.length();
-		            ListView flv = (ListView)parent;
-		            SparseBooleanArray cis = flv.getCheckedItemPositions();
-		            item.sel = cis != null ? cis.get( position ) : false;
-		            item.date = curItem.getDate();
-	            }
-	        }
-    	}
-        return getView( convertView, parent, item );
-    }
     private final LsItem[] bitsToItems( SparseBooleanArray cis ) {
     	try {
             int counter = 0;

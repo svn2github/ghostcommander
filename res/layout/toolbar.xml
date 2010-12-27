@@ -103,6 +103,35 @@
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content" 
                 android:layout_height="wrap_content"/>         
+ 
+             <Button android:id="@+id/by_name"
+                android:text="@string/sort_by_name"
+                android:focusable="false"
+                android:paddingTop="1dp" 
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content" 
+                android:layout_height="wrap_content"/>         
+             <Button android:id="@+id/by_ext"
+                android:text="@string/sort_by_ext"
+                android:focusable="false"
+                android:paddingTop="1dp" 
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content" 
+                android:layout_height="wrap_content"/>         
+             <Button android:id="@+id/by_size"
+                android:text="@string/sort_by_size"
+                android:focusable="false"
+                android:paddingTop="1dp" 
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content" 
+                android:layout_height="wrap_content"/>         
+             <Button android:id="@+id/by_date"
+                android:text="@string/sort_by_date"
+                android:focusable="false"
+                android:paddingTop="1dp" 
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content" 
+                android:layout_height="wrap_content"/>         
      </LinearLayout>
  </HorizontalScrollView>
  

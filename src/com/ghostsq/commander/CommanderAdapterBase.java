@@ -11,12 +11,15 @@ import android.os.Message;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TableLayout;
 import android.widget.Toast;
@@ -27,7 +30,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected Commander commander = null;
     protected static final String SLS = File.separator;
     protected static final char SLC = File.separator.charAt( 0 );
-    protected static final String DEFAULT_DIR = "/sdcard";
     private   static final boolean long_date = Locale.getDefault().getLanguage().compareTo( "en" ) != 0;
     protected LayoutInflater mInflater = null;
     private   int    parentWidth, imgWidth, nameWidth, sizeWidth, dateWidth, attrWidth;
@@ -127,6 +129,16 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     @Override
     public long getItemId( int position ) {
         return position;
+    }
+
+    @Override
+    public View getView( int position, View convertView, ViewGroup parent ) {
+        Item item = (Item)getItem( position );
+        if( item == null ) return null;
+        ListView flv = (ListView)parent;
+        SparseBooleanArray cis = flv.getCheckedItemPositions();
+        item.sel = cis != null ? cis.get( position ) : false;
+        return getView( convertView, parent, item );
     }
 
     protected View getView( View convertView, ViewGroup parent, Item item ) {
@@ -317,6 +329,44 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         }
         return null;
     }
+
+    @Override
+    public void populateContextMenu( ContextMenu menu, AdapterView.AdapterContextMenuInfo acmi, int num ) {
+        try {
+            Item item = (Item)getItem( acmi.position );
+            boolean file = !item.dir && acmi.position != 0; 
+            if( acmi.position == 0 ) {
+                menu.add(0, R.id.enter, 0, R.string.enter );
+                menu.add(0, R.id.eq, 0, R.string.oth_sh_this );
+                return;
+            }
+            boolean fs_adapter = this instanceof FSAdapter || this instanceof FindAdapter;
+            if( fs_adapter ) { 
+                menu.add( 0, R.id.sz, 0, R.string.show_size );
+                if( num <= 1 && file ) {
+                    menu.add( 0, Commander.SEND_TO, 0, R.string.send_to );
+                    menu.add( 0, R.id.F4, 0, R.string.edit_title );
+                }
+            }
+            if( num <= 1 ) {
+                menu.add( 0, R.id.F2, 0, R.string.rename_title );
+            }
+            menu.add( 0, R.id.F5, 0, R.string.copy_title );
+            if( fs_adapter )
+                menu.add( 0, R.id.F6, 0, R.string.move_title );
+            menu.add( 0, R.id.F8, 0, R.string.delete_title );
+            if( fs_adapter && file && num <= 1 ) 
+                menu.add( 0, Commander.OPEN_WITH, 0, R.string.open_with );
+        } catch( Exception e ) {
+            Log.e( TAG, "populateContextMenu() " + e.getMessage(), e );
+        }
+    }    
+
+    @Override
+    public boolean isButtonActive( int brId ) {
+        return true;
+    }
+    
     public final void showMessage( String s ) {
         Toast.makeText( commander.getContext(), s, Toast.LENGTH_LONG ).show();
     }

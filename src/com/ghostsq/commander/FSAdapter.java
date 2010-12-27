@@ -20,8 +20,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 public class FSAdapter extends CommanderAdapterBase {
-    private final static String TAG = "FSAdapter";
-
+    private   final static String TAG = "FSAdapter";
+    protected final static String DEFAULT_DIR = "/sdcard";
     class FileEx  {
         public File f = null;
         public long size = -1;
@@ -568,19 +568,14 @@ public class FSAdapter extends CommanderAdapterBase {
 
     @Override
     public Object getItem( int position ) {
-        return items != null && position > 0 && position <= items.length ? items[position - 1].f : new Object();
-    }
-
-    @Override
-    public View getView( int position, View convertView, ViewGroup parent ) {
-    	Item item = new Item();
+        Item item = new Item();
         if( position == 0 ) {
             item.name = parentLink;
             item.dir = true;
         }
         else {
-        	if( items != null && position-1 < items.length ) {
-        	    synchronized( items ) {
+            if( items != null && position-1 < items.length ) {
+                synchronized( items ) {
                     FileEx f = items[position - 1];
                     try {
                         item.dir  = f.f.isDirectory();
@@ -592,9 +587,6 @@ public class FSAdapter extends CommanderAdapterBase {
                         } else
                             item.name = f.f.getName();
                         item.size = item.dir ? f.size : f.f.length();
-                        ListView flv = (ListView)parent;
-                        SparseBooleanArray cis = flv.getCheckedItemPositions();
-                        item.sel = cis != null ? cis.get( position ) : false;
                         long msFileDate = f.f.lastModified();
                         if( msFileDate != 0 )
                             item.date = new Date( msFileDate );
@@ -604,9 +596,9 @@ public class FSAdapter extends CommanderAdapterBase {
                 }
             }
             else
-            	item.name = "";
+                item.name = "";
         }
-        return getView( convertView, parent, item );
+        return item;
     }
 
     public class FilePropComparator implements Comparator<FileEx> {

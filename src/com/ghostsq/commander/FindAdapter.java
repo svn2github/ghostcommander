@@ -211,13 +211,6 @@ public class FindAdapter extends CommanderAdapterBase {
 
     @Override
     public Object getItem( int position ) {
-        if( worker != null )
-            return null;
-        return items != null && position < items.length ? items[position] : null;
-    }
-
-    @Override
-    public View getView( int position, View convertView, ViewGroup parent ) {
         Item item = new Item();
         if( position == 0 ) {
             item.name = parentLink;
@@ -230,9 +223,6 @@ public class FindAdapter extends CommanderAdapterBase {
                         item.dir  = f.isDirectory();
                         item.name = item.dir ? f.getAbsolutePath() + SLS: f.getAbsolutePath();
                         item.size = item.dir ? 0 : f.length();
-                        ListView flv = (ListView)parent;
-                        SparseBooleanArray cis = flv.getCheckedItemPositions();
-                        item.sel = cis != null ? cis.get( position ) : false;
                         long msFileDate = f.lastModified();
                         if( msFileDate != 0 )
                             item.date = new Date( msFileDate );
@@ -244,7 +234,7 @@ public class FindAdapter extends CommanderAdapterBase {
             else
                 item.name = "";
         }
-        return getView( convertView, parent, item );
+        return item;
     }
 
     class SearchEngine extends Engine {

@@ -28,8 +28,10 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.ContextMenu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 public class MountAdapter extends CommanderAdapterBase {
@@ -196,6 +198,19 @@ public class MountAdapter extends CommanderAdapterBase {
     }
 
     @Override
+    public void populateContextMenu( ContextMenu menu, AdapterView.AdapterContextMenuInfo acmi, int num ) {
+        if( num <= 1 ) {
+            menu.add( 0, Commander.OPEN, 0, "Remount" );
+        }
+    }    
+    @Override
+    public boolean isButtonActive( int brId ) {
+        if( brId == R.id.F1 ||
+            brId == R.id.F9 ||
+            brId == R.id.F10 ) return true;
+        return false;
+    }
+    @Override
     public void setIdentities( String name, String pass ) {
     }
     @Override
@@ -358,16 +373,11 @@ public class MountAdapter extends CommanderAdapterBase {
 
     @Override
     public Object getItem( int position ) {
-    	return items != null && position < items.length ? items[position] : null;
-    }
-
-    @Override
-    public View getView( int position, View convertView, ViewGroup parent ) {
-    	Item item = new Item();
-    	item.name = "???";
-    	if( items != null && position >= 0 && position <= items.length ) {
-    		MountItem curItem;
-    		curItem = items[position];
+        Item item = new Item();
+        item.name = "???";
+        if( items != null && position >= 0 && position <= items.length ) {
+            MountItem curItem;
+            curItem = items[position];
             item.dir = false;
             item.name = curItem.getName();
             item.size = -1;
@@ -375,6 +385,6 @@ public class MountAdapter extends CommanderAdapterBase {
             item.date = null;
             item.attr = curItem.getRest();
         }
-        return getView( convertView, parent, item );
+        return item;
     }
 }

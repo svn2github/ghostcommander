@@ -2,17 +2,14 @@ package com.ghostsq.commander;
 
 import android.net.Uri;
 import android.util.SparseBooleanArray;
+import android.view.ContextMenu;
+import android.widget.AdapterView;
 
 /**
  *		Interface to abstract list source
  *		It may be a FSAdapter - to browse files or any other network adapter and so on (to do)
  */
 public interface CommanderAdapter {
-    /**
-     * @return the implementation type string  
-     */
-    public String getType();
-    
 	/**
 	 * @param c since only the default constructor can be called, have to pass the commander reference here  
 	 */
@@ -35,7 +32,25 @@ public interface CommanderAdapter {
      * @param mode - see bits above 
      */
     public void setMode( int mask, int mode );
-    
+
+    /**
+     *   @param menu - to call the method .add()
+     *   @param acmi - to know which item is processed
+     *   @param num  - number of items currently checked (selected)
+     */
+    public void populateContextMenu( ContextMenu menu, AdapterView.AdapterContextMenuInfo acmi, int num );
+
+    /**
+     *   @param brId - resource id of a button
+     */
+    public boolean isButtonActive( int brId );
+
+
+    /**
+     * @return the implementation type string  
+     */
+    public String getType();
+
     /**
      * @param name, pass 
      */
@@ -99,6 +114,10 @@ public interface CommanderAdapter {
 
 	public void createFolder( String string );
 
+    /**
+     * @param  cis selected item (files or directories)
+     *         will call Commander.NotifyMe( "requested size info", Commander.OPERATION_COMPLETED ) when done  
+     */
 	public boolean deleteItems( SparseBooleanArray cis );
 	
 	public void terminateOperation();

@@ -14,13 +14,16 @@ public interface Commander {
      *   OPERATION_COMPLETED                   show message if provided)
      *   OPERATION_COMPLETED_REFRESH_REQUIRED  also make the adapter reread
      *   OPERATION_FAILED_LOGIN_REQUIRED       show user/pass dialog and pass the identity to the adapter with 
-     *                                           the string as passed in the first parameter
+     *                                         the string as passed in the first parameter
      */
-	final static int OPERATION_STARTED = -1, 
-	                 OPERATION_FAILED = -2, 
-	                 OPERATION_COMPLETED = -3, 
-	                 OPERATION_COMPLETED_REFRESH_REQUIRED = -4,
-	                 OPERATION_FAILED_LOGIN_REQUIRED = -5;
+	public final static int  OPERATION_STARTED = -1, 
+	                         OPERATION_FAILED = -2, 
+        	                 OPERATION_COMPLETED = -3, 
+        	                 OPERATION_COMPLETED_REFRESH_REQUIRED = -4,
+        	                 OPERATION_FAILED_LOGIN_REQUIRED = -5;
+
+    public final static int  OPEN = 903, OPEN_WITH = 902, SEND_TO = 236;
+	
 	/**
 	 * try to avoid this call. The adapter should be as UI-free as possible
 	 * @return current UI context
@@ -29,7 +32,7 @@ public interface Commander {
 	/**
 	 * procedure completion notification. see the Notify object below
 	 */
-	void notifyMe( Notify obj );
+	public void notifyMe( Notify obj );
 	/**
 	 * @param err_msg message to show in an alert dialog
 	 */

@@ -46,6 +46,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     public  final static int LEFT = 0, RIGHT = 1;
     private final int titlesIds[] = { R.id.left_dir,  R.id.right_dir };
     private final int  listsIds[] = { R.id.left_list, R.id.right_list };
+    protected static final String DEFAULT_LOC = "/sdcard";
+
     private int currentPositions[] = { -1, -1 };
     private ListView   listViews[] = { null, null };
     private String[] listOfItemsChecked = null;
@@ -57,7 +59,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     private int titleColor = Prefs.getDefaultColor( Prefs.TTL_COLORS ), 
                   fgrColor = Prefs.getDefaultColor( Prefs.FGR_COLORS ),
                   selColor = Prefs.getDefaultColor( Prefs.SEL_COLORS );
-    private boolean fingerFriendly = false, warnOnRoot = true, arrow_mode = false;
+    private boolean fingerFriendly = false, warnOnRoot = true, arrow_mode = false, toolbarShown = false;
     private boolean disableOpenSelectOnly = false, disableAllActions = false;
     private float downX = 0, downY = 0;
     private StringBuffer quickSearchBuf = null;
@@ -74,16 +76,15 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
         fingerFriendly =  sharedPref.getBoolean( "finger_friendly", true );
+        setFingerFriendly( fingerFriendly );
         warnOnRoot =  sharedPref.getBoolean( "prevent_root", true );
         arrow_mode = sharedPref.getBoolean( "arrow_mode", false );
-        setFingerFriendly( fingerFriendly );
-        if( sharedPref.getBoolean( "show_toolbar", true ) )
-            showOrHideToolbar( true );
+        
+        toolbarShown = sharedPref.getBoolean( "show_toolbar", true );        
+        
         initList( LEFT );
         initList( RIGHT );
         highlightCurrentTitle();
-
-        
         
         TextView left_title = (TextView)c.findViewById( titlesIds[LEFT] );
         if( left_title != null ) {
@@ -105,49 +106,68 @@ public class Panels implements AdapterView.OnItemSelectedListener,
 		}
         focus();
     }
-    public final void showOrHideToolbar( boolean show ) {
-        if( show ) { 
-            if( toolbar == null ) {
-                LayoutInflater inflater = (LayoutInflater)c.getContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-                toolbar = inflater.inflate( R.layout.toolbar, (ViewGroup)mainView, true ).findViewById( R.id.toolbar );
-            }
-            if( toolbar != null ) {
+    public int getCurrent() {
+        return current;
+    }
+    
+    public final void showToolbar( boolean show ) {
+        toolbarShown = show;
+    }
+    public final void setToolbarButtons( CommanderAdapter ca ) {
+        try {
+            if( toolbarShown ) {
+                if( toolbar == null ) {
+                    LayoutInflater inflater = (LayoutInflater)c.getContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+                    toolbar = inflater.inflate( R.layout.toolbar, (ViewGroup)mainView, true ).findViewById( R.id.toolbar );
+                }
+                if( toolbar == null ) {
+                    Log.e( TAG, "Toolbar infaltion has failed!" );
+                    return;
+                }
                 toolbar.setVisibility( View.INVISIBLE );
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
                 Button b = null;
-                final int button_ids[] = {R.id.F1, R.id.F2, R.id.F4, R.id.SF4, R.id.F5, R.id.F6, R.id.F7, R.id.F8, R.id.F9, R.id.F10, R.id.eq, R.id.tgl, R.id.sz};
-                for( int i = 0; i < button_ids.length; i++ ) {
-                    b = (Button)toolbar.findViewById( button_ids[i] );
+                ViewGroup buttonSet = (ViewGroup)toolbar;
+                for( int i = 0; i < buttonSet.getChildCount(); i++ ) {
+                    b = (Button)buttonSet.getChildAt( i );
                     if( b != null ) {
                         b.setOnClickListener( c );
-                        final String pref_id;
                         boolean def = false;
-                        switch( button_ids[i] ) {
+                        final String pref_id;
+                        final int id = b.getId();
+                        switch( id ) {
                         case R.id.F1: pref_id = "show_F1";  def = true;  break;
                         case R.id.F2: pref_id = "show_F2";  def = true;  break;
-                      //case R.id.F3: pref_id = "show_F3";	def = true;  break;
-                        case R.id.F4: pref_id = "show_F4";  def = true;	 break;
-                        case R.id.SF4:pref_id = "show_SF4";	def = false; break;
-                        case R.id.F5: pref_id = "show_F5";	def = true;  break;
-                        case R.id.F6: pref_id = "show_F6";	def = true;  break;
-                        case R.id.F7: pref_id = "show_F7";	def = true;  break;
-                        case R.id.F8: pref_id = "show_F8";	def = true;  break;
-                        case R.id.F9: pref_id = "show_F9";	def = true;  break;
-                        case R.id.F10:pref_id = "show_F10";	def = true;  break;
-                        case R.id.eq: pref_id = "show_eq";	def = false; break;
-                        case R.id.tgl:pref_id = "show_tgl";	def = false; break;
-                        case R.id.sz: pref_id = "show_sz";	def = false; break;
+                      //case R.id.F3: pref_id = "show_F3";  def = true;  break;
+                        case R.id.F4: pref_id = "show_F4";  def = true;  break;
+                        case R.id.SF4:pref_id = "show_SF4"; def = false; break;
+                        case R.id.F5: pref_id = "show_F5";  def = true;  break;
+                        case R.id.F6: pref_id = "show_F6";  def = true;  break;
+                        case R.id.F7: pref_id = "show_F7";  def = true;  break;
+                        case R.id.F8: pref_id = "show_F8";  def = true;  break;
+                        case R.id.F9: pref_id = "show_F9";  def = true;  break;
+                        case R.id.F10:pref_id = "show_F10"; def = true;  break;
+                        case R.id.eq: pref_id = "show_eq";  def = false; break;
+                        case R.id.tgl:pref_id = "show_tgl"; def = false; break;
+                        case R.id.sz: pref_id = "show_sz";  def = true;  break;
+                        case R.id.by_name: pref_id = "show_by_name"; def = true; break;
+                        case R.id.by_ext:  pref_id = "show_by_ext";  def = true; break;
+                        case R.id.by_size: pref_id = "show_by_size"; def = true; break;
+                        case R.id.by_date: pref_id = "show_by_date"; def = true; break;
                         default: pref_id = "";
                         }
-                        b.setVisibility( sharedPref.getBoolean( pref_id, def ) ? View.VISIBLE : View.GONE );
+                        boolean a = ca.isButtonActive( id );
+                        b.setVisibility( a && sharedPref.getBoolean( pref_id, def ) ? View.VISIBLE : View.GONE );
                     }
                 }
                 toolbar.setVisibility( View.VISIBLE );
             }
-        }
-        else {
-            if( toolbar != null )
-                toolbar.setVisibility( View.GONE );
+            else {
+                if( toolbar != null )
+                    toolbar.setVisibility( View.GONE );
+            }
+        } catch( Exception e ) {
+            Log.e( TAG, "setToolbarButtons() exception", e );
         }
     }
     public final void focus() {
@@ -170,9 +190,6 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         }
     }
     
-    public final int getCurrent() {
-        return current;
-    }
     public final boolean isCurrent( int q ) {
         return ( current == LEFT  && q == LEFT ) ||
                ( current == RIGHT && q == RIGHT );
@@ -468,6 +485,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         current = which;
         focus();
         highlightCurrentTitle();
+        setToolbarButtons( getListAdapter( true ) );
     }
     public final void showSizes() {
         getListAdapter( true ).reqItemsSize( getSelectedOrChecked() );
@@ -488,7 +506,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             flv.setItemChecked( i, set );
     }
     class NavDialog implements OnClickListener {
-        private   final Uri sdcard = Uri.parse("/sdcard");
+        private   final Uri sdcard = Uri.parse(DEFAULT_LOC);
     	protected int    which;
     	protected String posTo;
     	protected Uri    uri;
@@ -527,13 +545,20 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     	String scheme = uri.getScheme(), path = uri.getPath();
     	
     	if( warnOnRoot && ( scheme == null || scheme.compareTo("file") == 0 ) && 
-    	                    ( path == null || !path.startsWith( "/sdcard" ) ) ) {
-    		try {
-        		new NavDialog( c, which, uri, posTo );
-			} catch( Exception e ) {
-				e.printStackTrace();
-			}
-            return;
+    	                    ( path == null || !path.startsWith( DEFAULT_LOC ) ) ) {
+    	    
+            ListView flv = (ListView)listViews[which];
+            if( flv != null ) {
+                CommanderAdapter ca =(CommanderAdapter)flv.getAdapter();
+                if( ca != null && ca.getType().compareTo( "file" ) == 0 && ca.toString().startsWith( DEFAULT_LOC ) ) {
+            		try {
+                		new NavDialog( c, which, uri, posTo );
+        			} catch( Exception e ) {
+        				Log.e( TAG, "Navigate()", e );
+        			}
+                    return;
+                }
+            }
     	}
     	NavigateInternal( which, uri, posTo );
     }
@@ -592,7 +617,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                         ca = (CommanderAdapter)smbAdapterClass.newInstance();
                     }
                     catch( Exception e ) {
-                        c.showDialog( FileCommander.SMB_APP );
+                        c.showDialog( R.id.smb );
                         Log.e( TAG, "Load smb class failed: ", e );
                         return;
                     }
@@ -770,6 +795,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         
         applyColors();
         setPanelTitle( c.getString( R.string.wait ), which );
+        setToolbarButtons( ca );
+        
         ca.readSource( uri, "" + current + ( posTo == null ? "" : posTo ) );
 /*  
         if( posTo != null ) {
@@ -1037,12 +1064,16 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         }
         if( disableOpenSelectOnly )
             disableOpenSelectOnly = false;
-        else {
-            ((CommanderAdapter)listViews[current].getAdapter()).openItem( position );
+        else { 
+            openItem( position );
             flv.setItemChecked( position, false );
         }
     }
-
+    public void openItem( int position ) {
+        ListView flv = listViews[current];
+        ((CommanderAdapter)flv.getAdapter()).openItem( position );
+    }
+    
     /**
      * View.OnTouchListener implementation 
      */
@@ -1127,7 +1158,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
 	            addCurrentToFavorites();
 	            return true;
 	        case '2':
-	            c.showDialog( FileCommander.RENAME_ACT );
+	            c.showDialog( R.id.F2 );
 	            return true;
 	        case '3':
 	        	return true;
@@ -1135,16 +1166,16 @@ public class Panels implements AdapterView.OnItemSelectedListener,
 	            openForEdit( null );
 	            return true;
 	        case '5':
-	        	c.showDialog( FileCommander.COPY_ACT );
+	        	c.showDialog( R.id.F5 );
 	        	return true;
 	        case '6':
-	        	c.showDialog( FileCommander.MOVE_ACT );
+	        	c.showDialog( R.id.F6 );
 	        	return true;
 	        case '7':
-	        	c.showDialog( FileCommander.MKDIR_ACT );
+	        	c.showDialog( R.id.F7 );
 	        	return true;
 	        case '8':
-	        	c.showDialog( FileCommander.DEL_ACT );
+	        	c.showDialog( R.id.F8 );
 	        	return true;
 	        }
 	    	switch( keyCode ) {
@@ -1283,8 +1314,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             e.putString( FU, favUris );
         }
         public void restore( SharedPreferences p ) {
-            left      = p.getString( LP, "/sdcard" );
-            right     = p.getString( RP, "/sdcard" );
+            left      = p.getString( LP, DEFAULT_LOC );
+            right     = p.getString( RP, DEFAULT_LOC );
             leftItem  = p.getString( LI, null );
             rightItem = p.getString( RI, null );
             current   = p.getInt( CP, LEFT );

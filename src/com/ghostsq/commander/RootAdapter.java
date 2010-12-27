@@ -174,6 +174,12 @@ public class RootAdapter extends CommanderAdapterBase {
     }
 
     @Override
+    public boolean isButtonActive( int brId ) {
+        if( brId == R.id.F4 || brId == R.id.sz ) return false;
+        return true;
+    }
+
+    @Override
     public void setIdentities( String name, String pass ) {
     }
     @Override
@@ -600,38 +606,39 @@ public class RootAdapter extends CommanderAdapterBase {
 
     @Override
     public Object getItem( int position ) {
-    	if( worker != null )
-    		return null;
-    	return items != null && position < items.length ? items[position] : null;
+        Item item = new Item();
+        item.name = "???";
+        {
+            if( position == 0 ) {
+                item.name = parentLink;
+            }
+            else {
+                if( items != null && position > 0 && position <= items.length ) {
+                    LsItem curItem;
+                    curItem = items[position - 1];
+                    item.dir = curItem.isDirectory();
+                    item.name = item.dir ? SLS + curItem.getName() : curItem.getName();
+                    String lnk = curItem.getLinkTarget();
+                    if( lnk != null ) 
+                        item.name += " -> " + lnk; 
+                    
+                    item.size = curItem.isDirectory() ? -1 : curItem.length();
+                    item.date = curItem.getDate();
+                    item.attr = curItem.getAttr();
+                }
+            }
+        }
+        return item;
     }
 
     @Override
     public View getView( int position, View convertView, ViewGroup parent ) {
-    	Item item = new Item();
-    	item.name = "???";
-    	{
-	        if( position == 0 ) {
-	            item.name = parentLink;
-	        }
-	        else {
-	        	if( items != null && position > 0 && position <= items.length ) {
-	        		LsItem curItem;
-            		curItem = items[position - 1];
-                    item.dir = curItem.isDirectory();
-		            item.name = item.dir ? SLS + curItem.getName() : curItem.getName();
-                    String lnk = curItem.getLinkTarget();
-                    if( lnk != null ) 
-                        item.name += " -> " + lnk; 
-		            
-		            item.size = curItem.isDirectory() ? -1 : curItem.length();
-		            ListView flv = (ListView)parent;
-		            SparseBooleanArray cis = flv.getCheckedItemPositions();
-		            item.sel = cis != null ? cis.get( position ) : false;
-		            item.date = curItem.getDate();
-		            item.attr = curItem.getAttr();
-	            }
-	        }
-    	}
+        Item item = (Item)getItem( position );
+        if( items != null && position > 0 && position <= items.length ) {
+            ListView flv = (ListView)parent;
+            SparseBooleanArray cis = flv.getCheckedItemPositions();
+            item.sel = cis != null ? cis.get( position ) : false;
+        }
         return getView( convertView, parent, item );
     }
     private final LsItem[] bitsToItems( SparseBooleanArray cis ) {

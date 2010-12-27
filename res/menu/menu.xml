@@ -79,7 +79,7 @@
             android:title="@string/donate"/>
         <item android:id="@+id/prefs"
             android:title="@string/prefs"/>
-        <item android:id="@+id/F10"
+        <item android:id="@+id/exit"
             android:title="@string/F10"/>
       </menu>
     </item>

@@ -49,27 +49,27 @@ public class Dialogs implements DialogInterface.OnClickListener {
         try {
             if( whichButton == DialogInterface.BUTTON_POSITIVE ) {
                 switch( dialogId ) {
-                case FileCommander.NEWF_ACT:
-                case FileCommander.RENAME_ACT:
-                case FileCommander.MOVE_ACT:
-                case FileCommander.COPY_ACT:
-                case FileCommander.MKDIR_ACT:
+                case R.id.F2:
+                case R.id.new_file:
+                case R.id.F5:
+                case R.id.F6:
+                case R.id.F7:
                 case FileCommander.FIND_ACT:                    
                     EditText edit = (EditText)dialogObj.findViewById( R.id.edit_field );
                     if( edit != null ) {
                         String file_name = edit.getText().toString();
                         switch( dialogId ) {
-                        case FileCommander.RENAME_ACT:
+                        case R.id.F2:
                             owner.panels.renameFile( file_name );
                             break;
-                        case FileCommander.NEWF_ACT:
+                        case R.id.new_file:
                             owner.panels.createNewFile( file_name );
                             break;
-                        case FileCommander.MOVE_ACT:
-                        case FileCommander.COPY_ACT:
-                            owner.panels.copyFiles( file_name, dialogId == FileCommander.MOVE_ACT );
+                        case R.id.F6:
+                        case R.id.F5:
+                            owner.panels.copyFiles( file_name, dialogId == R.id.F6 );
                             break;
-                        case FileCommander.MKDIR_ACT:
+                        case R.id.F7:
                             owner.panels.createFolder( file_name );
                             break;
                         case FileCommander.FIND_ACT: {
@@ -83,7 +83,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                         }
                     }
                     break;
-                case FileCommander.DEL_ACT:
+                case R.id.F8:
                     owner.panels.deleteItems();
                     break;
                 case LOGIN_DIALOG: {
@@ -93,18 +93,20 @@ public class Dialogs implements DialogInterface.OnClickListener {
                             owner.panels.login( cookie, name_edit.getText().toString(), pass_edit.getText().toString() );
                     }
                     break;
-                case FileCommander.DONATE: {
+                case R.id.donate: {
                         owner.startViewURIActivity( R.string.donate_uri );
                         break;
                     }
-                case FileCommander.SMB_APP: {
+                case R.id.smb: {
                         owner.startViewURIActivity( R.string.smb_app_uri );
                         break;
                     }
+/*
                 case FileCommander.DBOX_APP: {
                         owner.startViewURIActivity( R.string.dbox_app_uri );
                         break;
                     }
+*/
                 }
             } else if( whichButton == DialogInterface.BUTTON_NEGATIVE ) {
                 if( dialogId == PROGRESS_DIALOG ) {
@@ -120,12 +122,12 @@ public class Dialogs implements DialogInterface.OnClickListener {
     protected Dialog createDialog( int id ) {
         switch( id ) {
         case INPUT_DIALOG:
-        case FileCommander.FIND_ACT:
-        case FileCommander.NEWF_ACT:
-        case FileCommander.RENAME_ACT:
-        case FileCommander.COPY_ACT:
-        case FileCommander.MOVE_ACT:
-        case FileCommander.MKDIR_ACT: {
+        case R.id.F2:
+        case R.id.new_file:
+        case R.id.F5:
+        case R.id.F6:
+        case R.id.F7:
+        case FileCommander.FIND_ACT: {
             LayoutInflater factory = LayoutInflater.from( owner );
             final View textEntryView = factory.inflate( R.layout.input, null );
             return dialogObj = new AlertDialog.Builder( owner )
@@ -147,10 +149,11 @@ public class Dialogs implements DialogInterface.OnClickListener {
                     .setNeutralButton( R.string.dialog_retry, this ).setNegativeButton( R.string.dialog_ignore, this ).create();
         }
         case CONFIRM_DIALOG:
-        case FileCommander.DEL_ACT:
-        case FileCommander.SMB_APP:
+        case R.id.F8:
+        case R.id.donate:
+        case R.id.smb:
         case FileCommander.DBOX_APP:
-        case FileCommander.DONATE: {
+        {
             return dialogObj = new AlertDialog.Builder( owner )
                 .setIcon( android.R.drawable.ic_dialog_alert )
                 .setTitle( R.string.confirm )
@@ -198,7 +201,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
         boolean move = false;
         try {
             switch( id ) {
-            case FileCommander.RENAME_ACT: {
+            case R.id.F2: {
                 dialog.setTitle( R.string.rename_title );
                 TextView prompt = (TextView)dialog.findViewById( R.id.prompt );
                 if( prompt != null )
@@ -215,7 +218,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 }
                 break;
             }
-            case FileCommander.NEWF_ACT: {
+            case R.id.new_file: {
                 dialog.setTitle( R.string.edit_title );
                 TextView prompt = (TextView)dialog.findViewById( R.id.prompt );
                 if( prompt != null )
@@ -238,9 +241,9 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 }
                 break;
             }
-            case FileCommander.MOVE_ACT:
+            case R.id.F6:
                 move = true;
-            case FileCommander.COPY_ACT: {
+            case R.id.F5: {
                 final String op = owner.getString( move ? R.string.move_title : R.string.copy_title );
                 dialog.setTitle( op );
                 TextView prompt = (TextView)dialog.findViewById( R.id.prompt );
@@ -263,7 +266,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 }
                 break;
             }
-            case FileCommander.MKDIR_ACT: {
+            case R.id.F7: {
                 dialog.setTitle( R.string.mkdir_title );
                 TextView prompt = (TextView)dialog.findViewById( R.id.prompt );
                 if( prompt != null )
@@ -293,7 +296,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 ad.setTitle( owner.getString( R.string.login_title ) + host_name );
                 break;
             }
-            case FileCommander.DEL_ACT: {
+            case R.id.F8: {
                 AlertDialog ad = (AlertDialog)dialog;
                 ad.setTitle( R.string.delete_title );
                 String str, summ = owner.panels.getActiveItemsSummary();
@@ -305,10 +308,10 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 ad.setMessage( str );
                 break;
             }
-            case FileCommander.DONATE:
+            case R.id.donate:
                 ( (AlertDialog)dialog ).setMessage( owner.getString( R.string.donation ) );
                 break;
-            case FileCommander.SMB_APP:
+            case R.id.smb:
                 ( (AlertDialog)dialog ).setMessage( owner.getString( R.string.smb_missed ) );
                 break;
             case FileCommander.DBOX_APP:

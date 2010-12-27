@@ -64,6 +64,7 @@
     <string name="dialog_retry">Retry</string>
     <string name="dialog_ignore">Ignore</string>
     
+    <string name="operation">Операция</string>
     <string name="edit_title">Редактор</string>
     <string name="newf_prompt">Имя нового файла</string>
     <string name="rename_title">Переименование</string>
@@ -120,21 +121,25 @@
     <string name="summary_show_toolbar">Показывать панель с кнопками файловых операций</string>
     
     <string name="toolbar_preference">Выбор инструментальных кнопок</string>
-    <string name="summary_toolbar_preference">Настроить, какие кнопки нужно показывать в инструментарии</string>
-    <string name="show_F1">Show &#xAB; 1 ?&#xBB;</string>
-    <string name="show_F2">Show &#xAB; 2 Переименовать&#xBB;</string>
-    <string name="show_F3">Show &#xAB; 3 Просмотреть&#xBB;</string>
-    <string name="show_F4">Show &#xAB; 4 Редактировать&#xBB;</string>
-    <string name="show_SF4">Show &#xAB; &#xA0; Создать&#xBB;</string>
-    <string name="show_F5">Show &#xAB; 5 Копировать&#xBB;</string>
-    <string name="show_F6">Show &#xAB; 6 Переместить&#xBB;</string>
-    <string name="show_F7">Show &#xAB; 7 Создать каталог&#xBB;</string>
-    <string name="show_F8">Show &#xAB; 8 Удалить&#xBB;</string>
-    <string name="show_F9">Show &#xAB; 9 Меню&#xBB;</string>
-    <string name="show_F10">Show &#xAB; 0 Выход&#xBB;</string>
-    <string name="show_eq">Show &#xAB; = (Сделать той же)&#xBB;</string>
-    <string name="show_tgl">Show &#xAB; &#x21E6; Перейти&#xBB;</string>
-    <string name="show_sz">Show &#xAB; \" Размер&#xBB;</string>
+    <string name="summary_toolbar_preference">Настроить, какие кнопки показывать в инструментальной панели операций</string>
+    <string name="show_F1">  &#xAB; 1 ?&#xBB;</string>
+    <string name="show_F2">  &#xAB; 2 Переименовать&#xBB;</string>
+    <string name="show_F3">  &#xAB; 3 Просмотреть&#xBB;</string>
+    <string name="show_F4">  &#xAB; 4 Редактировать&#xBB;</string>
+    <string name="show_SF4">  &#xAB; &#xA0; Создать&#xBB;</string>
+    <string name="show_F5">  &#xAB; 5 Копировать&#xBB;</string>
+    <string name="show_F6">  &#xAB; 6 Переместить&#xBB;</string>
+    <string name="show_F7">  &#xAB; 7 Создать каталог&#xBB;</string>
+    <string name="show_F8">  &#xAB; 8 Удалить&#xBB;</string>
+    <string name="show_F9">  &#xAB; 9 Меню&#xBB;</string>
+    <string name="show_F10">  &#xAB; 0 Выход&#xBB;</string>
+    <string name="show_eq">  &#xAB; = (Сделать той же)&#xBB;</string>
+    <string name="show_tgl">  &#xAB; &#x21E6; Перейти&#xBB;</string>
+    <string name="show_sz">  &#xAB; \" Размер&#xBB;</string>
+    <string name="show_by_name">  &#xAB; по Имени&#xBB;</string>
+    <string name="show_by_ext" >  &#xAB; по Расширению&#xBB;</string>
+    <string name="show_by_size">  &#xAB; по Размеру&#xBB;</string>
+    <string name="show_by_date">  &#xAB; по Дате&#xBB;</string>
     
     <string name="finger_friendly">Управление пальцем</string>
     <string name="summary_finger_friendly">Увеличить элементы интерфейса для управления пальцем</string>
@@ -255,9 +260,10 @@ VolDn - Перейти на другую панель\n
 
 Для доступа как root (su) вам надо установить busybox
 и вводить в адресную строку URI в следущей форме:\n
-    root:///path\n
-\n\n
-    "
+    \"root:///\"\n
+Для смены режима монторования с \"ro\" на \"rw\" и обратно,
+выберете нужное устройство в списке \"mount://\"    
+\n"
     </string>
     
 </resources>

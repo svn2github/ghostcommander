@@ -170,6 +170,14 @@ public class ZipAdapter extends CommanderAdapterBase {
     public Uri getUri() {
         return uri;
     }
+    @Override
+    public boolean isButtonActive( int brId ) {
+        if( brId == R.id.F1 ||
+            brId == R.id.F5 ||
+            brId == R.id.F9 ||
+            brId == R.id.F10 ) return true;
+        return false;
+    }
 
     @Override
     public void setIdentities( String name, String pass ) {
@@ -446,7 +454,8 @@ public class ZipAdapter extends CommanderAdapterBase {
             	                 ( cur.length() == 1 && cur.charAt( 0 ) == SLC ) ) {
             	    File zip_file = new File( uri.getPath() );
             	    String parent_dir = zip_file.getParent();
-            	    commander.Navigate( Uri.parse( parent_dir != null ? parent_dir : DEFAULT_DIR ), zip_file.getName() );
+            	    commander.Navigate( Uri.parse( parent_dir != null ? parent_dir : Panels.DEFAULT_LOC ), 
+            	            zip_file.getName() );
             	}
             	else {
             	    File cur_f = new File( cur );
@@ -571,34 +580,25 @@ public class ZipAdapter extends CommanderAdapterBase {
 
     @Override
     public Object getItem( int position ) {
-    	if( worker != null )
-    		return null;
-    	return items != null && position < items.length ? items[position] : null;
-    }
-    @Override
-    public View getView( int position, View convertView, ViewGroup parent ) {
-    	Item item = new Item();
-    	item.name = "";
-    	{
-	        if( position == 0 ) {
-	            item.name = parentLink;
-	        }
-	        else {
-	        	if( items != null && position > 0 && position <= items.length ) {
-	        		ZipEntry curItem;
-            		curItem = items[position - 1];
+        Item item = new Item();
+        item.name = "";
+        {
+            if( position == 0 ) {
+                item.name = parentLink;
+            }
+            else {
+                if( items != null && position > 0 && position <= items.length ) {
+                    ZipEntry curItem;
+                    curItem = items[position - 1];
                     item.dir = curItem.isDirectory();
-		            item.name = item.dir ? SLS + getLocalName( curItem ) : getLocalName( curItem );
-		            item.size = curItem.getSize();
-		            ListView flv = (ListView)parent;
-		            SparseBooleanArray cis = flv.getCheckedItemPositions();
-		            item.sel = cis != null ? cis.get( position ) : false;
-		            long item_time = curItem.getTime();
-		            item.date = item_time > 0 ? new Date( item_time ) : null;
-	            }
-	        }
-    	}
-        return getView( convertView, parent, item );
+                    item.name = item.dir ? SLS + getLocalName( curItem ) : getLocalName( curItem );
+                    item.size = curItem.getSize();
+                    long item_time = curItem.getTime();
+                    item.date = item_time > 0 ? new Date( item_time ) : null;
+                }
+            }
+        }
+        return item;
     }
     private final ZipEntry[] bitsToItems( SparseBooleanArray cis ) {
     	try {
