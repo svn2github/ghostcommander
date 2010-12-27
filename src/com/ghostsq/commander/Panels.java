@@ -1048,7 +1048,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         if( id == R.layout.alt && listViews[current] != parent ) {
             togglePanels( false );
             if( listViews[current] != parent )
-            	Log.e( TAG, "onItem()Click. current=" + current + ", parent=" + parent.getId() );
+            	Log.e( TAG, "onItemClick. current=" + current + ", parent=" + parent.getId() );
         }
         	
         ListView flv = listViews[current];

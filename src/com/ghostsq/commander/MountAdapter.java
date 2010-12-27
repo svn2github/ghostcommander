@@ -315,7 +315,7 @@ public class MountAdapter extends CommanderAdapterBase {
                 Log.i( TAG, to_exec );
                 os.writeBytes( to_exec ); // execute the command
                 os.flush();
-                Thread.sleep( 200 );
+                Thread.sleep( 500 );
                 if( es.available() > 0 ) {
                     String err_msg = es.readLine(); 
                     error( err_msg );
