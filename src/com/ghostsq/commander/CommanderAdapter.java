@@ -1,5 +1,7 @@
 package com.ghostsq.commander;
 
+import java.util.Date;
+
 import android.net.Uri;
 import android.util.SparseBooleanArray;
 import android.view.ContextMenu;
@@ -10,7 +12,20 @@ import android.widget.AdapterView;
  *		It may be a FSAdapter - to browse files or any other network adapter and so on (to do)
  */
 public interface CommanderAdapter {
-	/**
+
+    /**
+     *   "Object ListAdapter.getItem( int position )" returns an instance of the following class:  
+     */
+    public class Item {
+        public String   name = "";
+        public Date     date = null;
+        public long     size = -1;
+        public boolean dir, sel;
+        public String   attr = "";
+        public Object   origin = null;  
+    }
+    
+    /**
 	 * @param c since only the default constructor can be called, have to pass the commander reference here  
 	 */
 	public void Init( Commander c );

@@ -118,14 +118,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected void onComplete( Engine engine ) { // to override who need do something in the UI thread on an engine completion
     }
     
-    public class Item {
-    	public String  name = "";
-    	public Date    date = null;
-    	public long    size = -1;
-    	public boolean dir, sel;
-        public String  attr = "";
-    }
-    
     @Override
     public long getItemId( int position ) {
         return position;

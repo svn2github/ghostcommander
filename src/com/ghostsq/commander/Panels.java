@@ -300,14 +300,19 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             }
         }
     }
-    public final File getItemURI() {
+    public final File getCurrentFile() {
         try {
-            return (File)((ListAdapter)getListAdapter( true )).getItem( getSelection() );
+            ListAdapter a = (ListAdapter)getListAdapter( true );
+            if( a instanceof FSAdapter ) {
+                CommanderAdapter.Item item = (CommanderAdapter.Item)a.getItem( getSelection() ); 
+                if( item != null && item.origin != null )
+                    return (File)item.origin; 
+            }
         }
-        catch( ClassCastException e ) {
-            c.showMessage( "Can't cast to File " + e );
-            return null;
+        catch( Exception e ) {
+            Log.e( TAG, "getCurrentFile()", e );
         }
+        return null;
     }
     private final int opposite() {
         return current == LEFT ? RIGHT : LEFT;
@@ -827,7 +832,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     }
 
     public final void tryToSend() {
-        File f = getItemURI();
+        File f = getCurrentFile();
         if( f != null ) {
 /*            
             String mime = null;
@@ -844,7 +849,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         }        
     }    
     public final void tryToOpen() {
-        File f = getItemURI();
+        File f = getCurrentFile();
         if( f != null ) {
             Intent intent = new Intent( Intent.ACTION_VIEW );
             intent.setDataAndType( Uri.fromFile( f ), "*/*" );
@@ -853,7 +858,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     }    
     
     public final void openForEdit( String file_name ) {
-        File f = file_name == null ? getItemURI() : new File( file_name );
+        File f = file_name == null ? getCurrentFile() : new File( file_name );
         if( f != null && f.isFile() ) {
         	try {
 	            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );

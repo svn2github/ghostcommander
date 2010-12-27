@@ -576,8 +576,9 @@ public class FSAdapter extends CommanderAdapterBase {
         else {
             if( items != null && position-1 < items.length ) {
                 synchronized( items ) {
-                    FileEx f = items[position - 1];
                     try {
+                        FileEx f = items[position - 1];
+                        item.origin = f.f;
                         item.dir  = f.f.isDirectory();
                         if( item.dir ) {
                             if( ( mode & MODE_ICONS ) == ICON_MODE )  

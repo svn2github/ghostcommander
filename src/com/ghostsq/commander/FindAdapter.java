@@ -5,22 +5,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.regex.Pattern;
-
-import com.ghostsq.commander.CommanderAdapterBase.Item;
-import com.ghostsq.commander.FSAdapter.FileEx;
-import com.ghostsq.commander.FSAdapter.FilePropComparator;
-import com.ghostsq.commander.FTPAdapter.ListEngine;
-
-import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 import android.util.SparseBooleanArray;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ListView;
-import android.widget.Toast;
 
 public class FindAdapter extends CommanderAdapterBase {
     public final static String TAG = "FindAdapter";
