@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.CommanderAdapter;
 import com.ghostsq.commander.CommanderAdapterBase;
+import com.ghostsq.commander.CommanderAdapter.Item;
 import com.ghostsq.commander.LsItem.LsItemPropComparator;
 import com.ghostsq.commander.RootAdapter.MkDirEngine;
 
@@ -96,6 +97,41 @@ public class MountAdapter extends CommanderAdapterBase {
     public String getType() {
         return "mount";
     }
+    
+    abstract class  ExecEngine extends Engine {
+        ExecEngine( Handler h ) {
+            super( h );
+        }
+        protected void execute( String cmd, boolean use_bb, int timeout ) {
+            try {
+                String bb = use_bb ? getBusyBox() + " " : "";
+                Process p = Runtime.getRuntime().exec( sh );
+                DataOutputStream os = new DataOutputStream( p.getOutputStream() );
+                DataInputStream  es = new DataInputStream( p.getErrorStream() );
+                String to_exec = bb + cmd + "\n";
+                Log.v( TAG, "executing '" + to_exec + "'" );
+                os.writeBytes( to_exec ); // execute the command
+                os.flush();
+                Thread.sleep( timeout );
+                if( es.available() > 0 ) {
+                    String err_msg = es.readLine(); 
+                    error( err_msg );
+                    Log.e( TAG, err_msg );
+                }
+                os.writeBytes("exit\n");
+                os.flush();
+                p.waitFor();
+                if( p.exitValue() == 255 )
+                    Log.e( TAG, "Exit code 255" );
+            }
+            catch( Exception e ) {
+                Log.e( TAG, "On execution '" + cmd + "'", e );
+                error( "Exception: " + e );
+            }
+        }
+    }
+    
+    
     class ListEngine extends Engine {
         private MountItem[] items_tmp;
         public  String pass_back_on_done;
@@ -206,6 +242,7 @@ public class MountAdapter extends CommanderAdapterBase {
     @Override
     public boolean isButtonActive( int brId ) {
         if( brId == R.id.F1 ||
+            brId == R.id.F7 ||
             brId == R.id.F9 ||
             brId == R.id.F10 ) return true;
         return false;
@@ -265,11 +302,39 @@ public class MountAdapter extends CommanderAdapterBase {
 		return false;
 	}
 
+    class CreateEngine extends ExecEngine {
+        String pair;
+        CreateEngine( Handler h, String pair_ ) {
+            super( h );
+            pair = pair_;
+        }
+        @Override
+        public void run() {
+            String cmd = null;
+            try {
+                cmd = "mount " + pair;
+                execute( cmd, true, 500 );
+            }
+            catch( Exception e ) {
+                Log.e( TAG, "mount, ", e );
+                error( "Exception: " + e );
+            }
+            finally {
+                super.run();
+                sendResult( errMsg != null ? ( cmd == null ? "" : "Were tried to execute: '" + cmd + "'") : null );
+            }
+        }
+    }
+	
 	@Override
-    public void createFolder( String new_name ) {
-	    commander.notifyMe( new Commander.Notify( "Not supported.", Commander.OPERATION_FAILED ) );
+    public void createFolder( String dev_mp_pair ) {
+        if( isWorkerStillAlive() )
+            commander.notifyMe( new Commander.Notify( "Busy", Commander.OPERATION_FAILED ) );
+        else {
+            worker = new CreateEngine( handler, dev_mp_pair );
+            worker.start();
+        }
 	}
-    
 
     @Override
     public boolean deleteItems( SparseBooleanArray cis ) {
@@ -285,9 +350,8 @@ public class MountAdapter extends CommanderAdapterBase {
         return null;
     }
 
-    class RemountEngine extends Engine {
+    class RemountEngine extends ExecEngine {
         MountItem mount;
-        
         RemountEngine( Handler h, MountItem m ) {
             super( h );
             mount = m;
@@ -296,10 +360,6 @@ public class MountAdapter extends CommanderAdapterBase {
         public void run() {
             String cmd = null;
             try {
-                String bb = getBusyBox();
-                Process p = Runtime.getRuntime().exec( sh );
-                DataOutputStream os = new DataOutputStream( p.getOutputStream() );
-                DataInputStream  es = new DataInputStream( p.getErrorStream() );
                 String o = mount.getOptions();
                 if( o.indexOf( "rw" ) >= 0 )
                     o = o.replace( "rw", "ro" );
@@ -310,22 +370,8 @@ public class MountAdapter extends CommanderAdapterBase {
                     error( "Don't know what to do." );
                     return;
                 }
-                cmd = " mount -o remount," + o + " " + mount.getName();
-                String to_exec = bb + cmd + "\n";
-                Log.i( TAG, to_exec );
-                os.writeBytes( to_exec ); // execute the command
-                os.flush();
-                Thread.sleep( 500 );
-                if( es.available() > 0 ) {
-                    String err_msg = es.readLine(); 
-                    error( err_msg );
-                    Log.e( TAG, err_msg );
-                }
-                os.writeBytes("exit\n");
-                os.flush();
-                p.waitFor();
-                if( p.exitValue() == 255 )
-                    Log.e( TAG, "Exit code 255" );
+                cmd = "mount -o remount," + o + " " + mount.getName();
+                execute( cmd, false, 500 );
             }
             catch( Exception e ) {
                 Log.e( TAG, "On remount, ", e );
@@ -333,7 +379,7 @@ public class MountAdapter extends CommanderAdapterBase {
             }
             finally {
                 super.run();
-                sendResult( errMsg != null ? ( cmd == null ? "" : "Were tried to execute: '" + cmd + "'") : "Success!" );
+                sendResult( errMsg != null ? ( cmd == null ? "" : "Were tried to execute: '" + cmd + "'") : null );
             }
         }
     }
@@ -386,5 +432,11 @@ public class MountAdapter extends CommanderAdapterBase {
             item.attr = curItem.getRest();
         }
         return item;
+    }
+    @Override
+    public View getView( int position, View convertView, ViewGroup parent ) {
+        Item item = (Item)getItem( position );
+        if( item == null ) return null;
+        return getView( convertView, parent, item );
     }
 }
