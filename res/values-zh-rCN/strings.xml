@@ -69,12 +69,12 @@
     <string name="move_title">移动</string>
     <string name="no_items">没有有效的文件来完成此操作。</string>
     
-    <string name="copy_move_not_alwd">此 \'%s\' 不被允许。先选择一些文件。</string><!-- copy_title/move_title -->
-    <string name="copy_move_to">%s %s 到："</string><!-- copy_title/move_title, file name/summary -->
+    <string name="copy_move_not_alwd">此 \'%1$s\' 不被允许。先选择一些文件。</string><!-- copy_title/move_title -->
+    <string name="copy_move_to">%1$s %2$s 到："</string><!-- copy_title/move_title, file name/summary -->
     <string name="login_title">登陆</string>
     <string name="delete_title">删除</string>
     <string name="delete_err">没有要删的文件</string>
-    <string name="delete_q">"删除 %s ?"</string><!-- file name/summary -->
+    <string name="delete_q">"删除 %1$s ?"</string><!-- file name/summary -->
     <string name="deleted">刪除</string>
     <string name="too_deep_hierarchy">文件路径太深</string>
     <string name="preparing">准备中...</string>
@@ -146,13 +146,13 @@
     <string name="nothing_to_open">没有要打开的</string>
     <string name="save">保存</string>
     <string name="wrap">自动换行</string>
-    <string name="no_such_file">没有此文件 \"%s\"</string>
-    <string name="too_big_file">文件 \"%s\" 太大。</string>
-    <string name="binary_file">文件 \"%s\" 是二进制的。您可能会损坏它。编辑它将由您自担风险。</string>    
+    <string name="no_such_file">没有此文件 \"%1$s\"</string>
+    <string name="too_big_file">文件 \"%1$s\" 太大。</string>
+    <string name="binary_file">文件 \"%1$s\" 是二进制的。您可能会损坏它。编辑它将由您自担风险。</string>    
     <string name="cant_open">无法打开此文件。</string>    
     <string name="cant_save">无法保存此文件。</string>
     <string name="nav_warn">目录 是系统目录。擅改他可能会导致失败。继续么?</string>
-    <string name="no_such_folder">\"%s\" 不是一个有效的目录!</string>
+    <string name="no_such_folder">\"%1$s\" 不是一个有效的目录!</string>
 
     <string name="donate">  捐赠</string>
     <string name="online_help">  在线帮助</string>
@@ -167,7 +167,7 @@
     <string name="bug_warning">!!! Android v1.5 有 BUG! 如果可能，请将您的设备升级到 Android v2.0 !!!</string>
     
     <string name="about_text">
-        Ghost Commander v%s\n
+        Ghost Commander v%1$s\n
         一款文件管理器。\n\n
         请发送 BUG/建议到\n
         ghost.sq2@gmail.com\n

@@ -83,13 +83,13 @@
     <string name="find_on_fs_only">A keresés csak a helyi fájlrendszerben működik.</string>
     
     
-    <string name="copy_move_not_alwd">A \'%s\' Nem megengedett. Jelöljön ki valamit.</string><!-- copy_title/move_title -->
-    <string name="copy_move_to">%s %s:"</string><!-- copy_title/move_title, file name/summary -->
+    <string name="copy_move_not_alwd">A \'%1$s\' Nem megengedett. Jelöljön ki valamit.</string><!-- copy_title/move_title -->
+    <string name="copy_move_to">%1$s %2$s:"</string><!-- copy_title/move_title, file name/summary -->
     <string name="login_title">Bejelentkezés</string>
     <string name="delete_title">Töröl</string>
     <string name="delete_err">Nem törölhető</string>
-    <string name="delete_q">"Törli %s ?"</string><!-- file name/summary -->
-    <string name="deleted">%d törölve</string>
+    <string name="delete_q">"Törli %1$s ?"</string><!-- file name/summary -->
+    <string name="deleted">%1$d törölve</string>
     <string name="search_done">Keresés kész</string>
     <string name="done">Kész</string>
     <string name="interrupted">Megszakítva</string>
@@ -181,15 +181,15 @@
     <string name="save">Ment</string>
     <string name="revert">Visszavon</string>
     <string name="wrap">Tördelés</string>
-    <string name="no_such_file">Nincs ilyen fájl \"%s\"</string>
-    <string name="too_big_file">A fájl \"%s\" túl nagy.</string>
-    <string name="binary_file">A fájl \"%s\" bináris. Tönkreteheti. Saját felelősségre szerkessze.</string>    
+    <string name="no_such_file">Nincs ilyen fájl \"%1$s\"</string>
+    <string name="too_big_file">A fájl \"%1$s\" túl nagy.</string>
+    <string name="binary_file">A fájl \"%1$s\" bináris. Tönkreteheti. Saját felelősségre szerkessze.</string>    
     <string name="cant_open">Nem megnyitható.</string>    
     <string name="cant_save">Nem menthető a fájl.</string>
     <string name="nav_warn">Rendszerkönyvtár megnyitása. Változtatások hibához vezethetnek. Biztos benne?</string>
     <string name="nav_warn_cmt">(Ki tudja kapcsolni ezt a figyelmeztetést a beállításokban )\nKattintson a  "Mégsem" gombra az /sdcard mappába lépéshez. Kattintson a "Kilépés"-re Az alkalmazás bezárásához.</string>
-    <string name="no_such_folder">\"%s\" Nem ltező mappa!</string>
-    <string name="fav_added">A mappa \"%s\" hozzáadva a kedvencekhez</string>
+    <string name="no_such_folder">\"%1$s\" Nem ltező mappa!</string>
+    <string name="fav_added">A mappa \"%1$s\" hozzáadva a kedvencekhez</string>
 
     <string name="donate">&#xA0; Támogatás</string>
     <string name="online_help">&#xA0; Online Súgó</string>
@@ -203,7 +203,7 @@ Vagy kattintson a \"Mégsem\"-re a &#xAB;Ghost Commander&#xBB; folytatásáhozd�
     
     
     <string name="about_text">
-        Ghost Commander v%s\n
+        Ghost Commander v%1$s\n
         A Fájl menedzser.\n\n
 	Magyarra fordította: Attilaszu\n\n
         Kérjük továbbítsa a hibákat/javaslatokat\n

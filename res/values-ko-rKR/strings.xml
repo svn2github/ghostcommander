@@ -83,13 +83,13 @@
     <string name="find_on_fs_only">검색기능은 로컬 파일시스템에서만 동작합니다.</string>
     
     
-    <string name="copy_move_not_alwd">\'%s\'은 허용되지 않으니 다른 것을 먼저 선택하세요.</string><!-- copy_title/move_title -->
-    <string name="copy_move_to">%s %s to:"</string><!-- copy_title/move_title, file name/summary -->
+    <string name="copy_move_not_alwd">\'%1$s\'은 허용되지 않으니 다른 것을 먼저 선택하세요.</string><!-- copy_title/move_title -->
+    <string name="copy_move_to">%1$s %2$s to:"</string><!-- copy_title/move_title, file name/summary -->
     <string name="login_title">로그인 Login</string>
     <string name="delete_title">삭제</string>
     <string name="delete_err">삭제할 것이 없음</string>
-    <string name="delete_q">%s 삭제?</string><!-- file name/summary -->
-    <string name="deleted">%s개 파일이 삭제되었읍니다.</string>
+    <string name="delete_q">%1$s 삭제?</string><!-- file name/summary -->
+    <string name="deleted">%1$s개 파일이 삭제되었읍니다.</string>
     <string name="search_done">검색완료</string>
     <string name="done">완료</string>
     <string name="interrupted">중단됨</string>
@@ -183,19 +183,19 @@
     <string name="save">저장</string>
     <string name="revert">복귀</string>
     <string name="wrap">긴 줄 바꾸기</string>
-    <string name="no_such_file">파일 없음 : \"%s\"</string>
-    <string name="too_big_file">\"%s\"이 너무 큽니다.</string>
-    <string name="binary_file">\"%s\"은 이진파일이므로 파일이 손상될 수 있습니다.</string>    
+    <string name="no_such_file">파일 없음 : \"%1$s\"</string>
+    <string name="too_big_file">\"%1$s\"이 너무 큽니다.</string>
+    <string name="binary_file">\"%1$s\"은 이진파일이므로 파일이 손상될 수 있습니다.</string>    
     <string name="cant_open">파일을 열 수 없습니다</string>    
     <string name="cant_save">파일을 저장할 수 없습니다</string>
     <string name="nav_warn">시스템 파일을 열고 있습니다. 이것은 시스템 고장을 유발할 수 있습니다. 계속하겠습니까?</string>
     <string name="nav_warn_cmt">(설정 메뉴에서 경고를 없앨 수 있음)\n/sdcard 폴더로 이동하려면 "취소"를 클릭하세요. 응용을 끝내려면 "끝" 버튼을 클릭하세요.</string>
-    <string name="no_such_folder">\"%s\"은 유효한 폴더가 아닙니다.</string>
+    <string name="no_such_folder">\"%1$s\"은 유효한 폴더가 아닙니다.</string>
 
     <string name="donate">&#xA0; 기부</string>
     <string name="online_help">&#xA0; 온라인 도움말</string>
     
-    <string name="donation">금액에 상관없이 기부를 하시면 고스트 커맨드 (Ghost Command) 파일 관리자를 계속 개발하는데 도움이 될 것입니다.\n
+    <string name="donation">금액에 상관없이 기부를 하시면 고스트 커맨드 (Ghost Commander) 파일 관리자를 계속 개발하는데 도움이 될 것입니다.\n
 PayPal을 통해서 기부를 하시려면 "예"를 클릭하시고, 계속 무료로 사용하시려면 "취소"를 클릭하세요. Tap \"Ok\" to make a donation via PayPal.\n
 Or tap \"Cancel\"\n
     </string>
@@ -204,7 +204,7 @@ Or tap \"Cancel\"\n
     
     
     <string name="about_text">
-        Ghost Commander v%s\n
+        Ghost Commander v%1$s\n
         파일 관리자\n\n
         버그/제안은 다음 이메일로:\n
         ghost.sq2@gmail.com\n

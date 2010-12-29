@@ -77,14 +77,14 @@
     <string name="copy_title">Копирование</string>
     <string name="move_title">Перемещение</string>
     <string name="no_items">Не с чем совершить данную операцию.</string>    
-    <string name="copy_move_not_alwd">Неизвестно с чем совершить операцию \"%s\". Сперва выделите файл(ы).</string><!-- copy_title/move_title -->
+    <string name="copy_move_not_alwd">Неизвестно с чем совершить операцию \"%1$s\". Сперва выделите файл(ы).</string><!-- copy_title/move_title -->
     <string name="copy_to_local_only">Поддерживается копирование только в локальную файловую систему!</string>
     <string name="dest_exist">Нельзя перезаписать уже существующий файл!</string>
-    <string name="copy_move_to">%s %s в:"</string><!-- copy_title/move_title, file name/summary -->
+    <string name="copy_move_to">%1$s %2$s в:"</string><!-- copy_title/move_title, file name/summary -->
     <string name="delete_title">Удаление</string>
     <string name="delete_err">Нечего удалять</string>
-    <string name="delete_q">"Удалить %s ?"</string><!-- file name/summary -->
-    <string name="deleted">%d файлов удалено</string>
+    <string name="delete_q">"Удалить %1$s ?"</string><!-- file name/summary -->
+    <string name="deleted">%1$d файлов удалено</string>
     <string name="cd_title">Смена папки</string>
     <string name="cd_prompt">Сменить текущую папку на:</string>
     <string name="too_deep_hierarchy">Слишком глубокое вложение папок</string>
@@ -103,7 +103,7 @@
     <string name="password">Пароль:</string>
     <string name="connect">Соеденить</string>
     <string name="cancel">Отмена</string>
-    <string name="ftp_connected">Подключились к FTP \"%s\",\n как пользователь \"%s\"</string>
+    <string name="ftp_connected">Подключились к FTP \"%1$s\",\n как пользователь \"%2$s\"</string>
 
     <string name="enter_ftp">&#xA0; Открыть FTP сайт</string>
     <string name="enter_smb">&#xA0; Открыть сетевую папку Windows</string>
@@ -187,16 +187,16 @@
     <string name="revert">Восстановить</string>
     <string name="wrap">Длинные строки</string>
     
-    <string name="no_such_file">Нет такого файла \"%s\"</string>
-    <string name="too_big_file">Файл \"%s\" длишком большой.</string>
-    <string name="binary_file">Файл \"%s\" не текстовый. Редактирование приведёт к его искажению.</string>    
+    <string name="no_such_file">Нет такого файла \"%1$s\"</string>
+    <string name="too_big_file">Файл \"%1$s\" длишком большой.</string>
+    <string name="binary_file">Файл \"%1$s\" не текстовый. Редактирование приведёт к его искажению.</string>    
     <string name="cant_open">Не могу прочитать файл.</string>    
     <string name="cant_save">Не могу сохранить файл.</string>    
     <string name="nav_warn">Каталог в который вы хотите перейти - системный. Необдуманные действия в нём могут привести к поломке устройства в целом. Продолжить?</string>
     <string name="nav_warn_cmt">Это предупреждение отключается в настройках</string>
     
-    <string name="no_such_folder">\"%s\" не существует!</string>
-    <string name="fav_added">Folder \"%s\" добавлен</string>
+    <string name="no_such_folder">\"%1$s\" не существует!</string>
+    <string name="fav_added">Folder \"%1$s\" добавлен</string>
 
     <string name="no_root">Очевидно ваше устройство не позволяет доступ как root (su).</string>
 
@@ -217,7 +217,7 @@
     <string name="bug_warning">!!! Android v1.5 имеет баг! Имеет смысл перейти на Android v2.x !!!</string>
     
     <string name="about_text">
-        Ghost Commander v%s\n
+        Ghost Commander v%1$s\n
         Файловый менеджер.\n\n
         Пишите ваши замечания на\n
         ghost.sq2@gmail.com\n\n\n\n 

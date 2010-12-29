@@ -86,15 +86,15 @@
     <string name="move_title">Move</string>
     <string name="no_items">There are no valid files to complete the operation.</string>
     <string name="find_on_fs_only">The search feature works only with the local file system.</string>
-    <string name="copy_move_not_alwd">The \'%s\' is not allowed. Select something first.</string><!-- copy_title/move_title -->
+    <string name="copy_move_not_alwd">The \'%1$s\' is not allowed. Select something first.</string><!-- copy_title/move_title -->
     <string name="copy_to_local_only">It\'s possible to copy to the local filesystem only.</string>    
     <string name="dest_exist">File already exist. Can not overwrite.</string>    
-    <string name="copy_move_to">%s %s to:"</string><!-- copy_title/move_title, file name/summary -->
+    <string name="copy_move_to">%1$s %2$s to:"</string><!-- copy_title/move_title, file name/summary -->
     <string name="login_title">Login</string>
     <string name="delete_title">Delete</string>
     <string name="delete_err">Nothing to delete</string>
-    <string name="delete_q">"Delete %s ?"</string><!-- file name/summary -->
-    <string name="deleted">%d files were deleted</string>
+    <string name="delete_q">"Delete %1$s ?"</string><!-- file name/summary -->
+    <string name="deleted">%1$d files were deleted</string>
     <string name="search_done">Search complete</string>
     <string name="done">Done</string>
     <string name="interrupted">Interrupted</string>
@@ -121,7 +121,7 @@
     <string name="password">Password:</string>
     <string name="connect">Connect</string>
     <string name="cancel">Cancel</string>
-    <string name="ftp_connected">Connected to \"%s\",\n Logged in as \"%s\"</string>    
+    <string name="ftp_connected">Connected to \"%1$s\",\n Logged in as \"%2$s\"</string>    
 
     <string name="layout_settings">Configure the layout:</string>
     <string name="panels_mode">Side-by-side panels</string>
@@ -201,15 +201,15 @@
     <string name="save">Save</string>
     <string name="revert">Revert</string>
     <string name="wrap">Wrap long lines</string>
-    <string name="no_such_file">No such file \"%s\"</string>
-    <string name="too_big_file">The file \"%s\" is too big.</string>
-    <string name="binary_file">The file \"%s\" is binary. You can damage it. Edit on your own risk.</string>    
+    <string name="no_such_file">No such file \"%1$s\"</string>
+    <string name="too_big_file">The file \"%1$s\" is too big.</string>
+    <string name="binary_file">The file \"%1$s\" is binary. You can damage it. Edit on your own risk.</string>    
     <string name="cant_open">Can not open the file.</string>    
     <string name="cant_save">Can not save the file.</string>
     <string name="nav_warn">You\'re opening a system folder. Tampering with it may lead to a failure. Proceed at this time?</string>
     <string name="nav_warn_cmt">(You can permanently disable this warning in the application settings )\nClick "Cancel" to safely go to the /sdcard folder. Click "Exit" to close the application.</string>
-    <string name="no_such_folder">\"%s\" is not a valid folder!</string>
-    <string name="fav_added">Folder \"%s\" was added to the favorites</string>
+    <string name="no_such_folder">\"%1$s\" is not a valid folder!</string>
+    <string name="fav_added">Folder \"%1$s\" was added to the favorites</string>
 
     <string name="smb_missed">
     Can not load the Samba adapter.\n
@@ -238,7 +238,7 @@ Tap \"Ok\" to easily do that via PayPal.\n
     <string name="help_uri">http://sites.google.com/site/ghostcommander1/info</string>
     
     <string name="about_text">
-        Ghost Commander v%s\n
+        Ghost Commander v%1$s\n
         A File manager.\n\n
         Please email bugs/suggestions to\n
         ghost.sq2@gmail.com\n
