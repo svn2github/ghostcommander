@@ -187,6 +187,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                             attrWidth = SHOW_ATTR == ( MODE_ATTR & mode )  && parent_width >= 320 ? 140 : 0;
                             nameWidth = parent_width - imgWidth - sizeWidth - dateWidth - attrWidth;
                             if( nameWidth < parent_width / 3 ) {
+                                Log.w( TAG, "too few space for item's name: " + nameWidth + " of " + parent_width );
                                 sizeWidth = 50;
                                 dateWidth = long_date ? 90 : 80;
                                 attrWidth = 0;

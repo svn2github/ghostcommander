@@ -276,8 +276,12 @@ public class FSAdapter extends CommanderAdapterBase {
 	}
     @Override
     public void createFolder( String new_name ) {
-        if( !(new File( dirName, new_name )).mkdir() )
-            commander.showError( "Unable to create directory '" + new_name + "' in '" + dirName + "'" );
+        Commander.Notify n;
+        if( (new File( dirName, new_name )).mkdir() )
+            n = new Commander.Notify( null, Commander.OPERATION_COMPLETED_REFRESH_REQUIRED );
+        else
+            n = new Commander.Notify( "Unable to create directory '" + new_name + "' in '" + dirName + "'", Commander.OPERATION_FAILED );
+        commander.notifyMe( n );
     }
 
     @Override
