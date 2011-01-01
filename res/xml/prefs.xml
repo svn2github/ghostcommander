@@ -187,12 +187,12 @@
             <CheckBoxPreference
                     android:key="show_sz"
                     android:title="@string/show_sz"
-                    android:defaultValue="false"/>
+                    android:defaultValue="true"/>
 
             <CheckBoxPreference
                     android:key="show_by_name"
                     android:title="@string/show_by_name"
-                    android:defaultValue="false"/>
+                    android:defaultValue="true"/>
             <CheckBoxPreference
                     android:key="show_by_ext"
                     android:title="@string/show_by_ext"
@@ -200,11 +200,11 @@
             <CheckBoxPreference
                     android:key="show_by_size"
                     android:title="@string/show_by_size"
-                    android:defaultValue="false"/>
+                    android:defaultValue="true"/>
             <CheckBoxPreference
                     android:key="show_by_date"
                     android:title="@string/show_by_date"
-                    android:defaultValue="false"/>
+                    android:defaultValue="true"/>
 
         </PreferenceScreen>
     </PreferenceCategory>

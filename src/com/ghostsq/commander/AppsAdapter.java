@@ -22,8 +22,7 @@ public class AppsAdapter extends CommanderAdapterBase {
     public final PackageManager pm = commander.getContext().getPackageManager();
     
     public AppsAdapter( Commander c ) {
-        super( c, DETAILED_MODE | NARROW_MODE );
-        
+        super( c, DETAILED_MODE | NARROW_MODE | SHOW_ATTR );
     }
     @Override
     public String getType() {

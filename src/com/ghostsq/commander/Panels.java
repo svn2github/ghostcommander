@@ -151,7 +151,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                         case R.id.tgl:pref_id = "show_tgl"; def = false; break;
                         case R.id.sz: pref_id = "show_sz";  def = true;  break;
                         case R.id.by_name: pref_id = "show_by_name"; def = true; break;
-                        case R.id.by_ext:  pref_id = "show_by_ext";  def = true; break;
+                        case R.id.by_ext:  pref_id = "show_by_ext";  def = false; break;
                         case R.id.by_size: pref_id = "show_by_size"; def = true; break;
                         case R.id.by_date: pref_id = "show_by_date"; def = true; break;
                         default: pref_id = "";

@@ -172,30 +172,33 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             int parent_width = parent.getWidth();
             if( dirty || parentWidth != parent_width ) {
                 parentWidth = parent_width;
-                imgWidth = icons ? ( fat ? 60 : 20 ) : 0;
+                imgWidth = icons ? ( fat ? 60 : 40 ) : 0;
                 if( wm ) { // single row
                     if( dm ) {
                         if( ( ATTR_ONLY & mode ) != 0 ) {
                             sizeWidth = 0;
                             dateWidth = 0;
-                            attrWidth = 140;
+                            attrWidth = ( parent_width - imgWidth ) / 2;
                             nameWidth = parent_width - imgWidth - attrWidth; 
                         }
-                        else {
-                            sizeWidth = 50;
-                            dateWidth = long_date ? 90 : 80;
-                            attrWidth = SHOW_ATTR == ( MODE_ATTR & mode )  && parent_width >= 320 ? 140 : 0;
-                            nameWidth = parent_width - imgWidth - sizeWidth - dateWidth - attrWidth;
-                            if( nameWidth < parent_width / 3 ) {
-                                Log.w( TAG, "too few space for item's name: " + nameWidth + " of " + parent_width );
-                                sizeWidth = 50;
-                                dateWidth = long_date ? 90 : 80;
-                                attrWidth = 0;
-                                nameWidth = parent_width - imgWidth - sizeWidth - dateWidth;
-                            }
+                        else if( SHOW_ATTR == ( MODE_ATTR & mode ) && parent_width > 480 ) {
+                            int rest = parent_width - imgWidth;
+                            nameWidth = parent_width > 800 ? rest / 2 : rest / 3;
+                            rest = parent_width - imgWidth - nameWidth; 
+                            sizeWidth = rest / 4;
+                            dateWidth = rest / 4;
+                            attrWidth =  rest / 2;
                         }
-                    }
-                    else {
+                        else {
+                            int rest = parent_width - imgWidth;
+                            nameWidth = parent_width > 560 ? rest * 2 / 3 : rest / 2;
+                            rest = parent_width - imgWidth - nameWidth; 
+                            sizeWidth = rest / 3;
+                            dateWidth = rest * 2 / 3;
+                            attrWidth = 0;
+                        }
+
+                    } else {
                         nameWidth = parent_width - imgWidth;
                         sizeWidth = 0;
                         dateWidth = 0;
@@ -210,21 +213,23 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                         attrWidth = parent_width;
                     }
                     else {
-                        if( parent_width >= 230 ) {
-                            sizeWidth = 50;
-                            dateWidth = long_date ? 90 : 70;
-                            attrWidth = SHOW_ATTR == ( MODE_ATTR & mode ) ? 
-                               ( parent_width >= 280 ? 140 : parent_width - dateWidth - sizeWidth ) : 0;
+                        if( parent_width >= 230 && SHOW_ATTR == ( MODE_ATTR & mode ) ) {
+                            sizeWidth = parent_width / 4;
+                            dateWidth = parent_width / 4;
+                            attrWidth = parent_width / 2;
                         }
                         else {
                             attrWidth = 0;
                             sizeWidth = parent_width / 4;
-                            dateWidth = parent_width / 2;
+                            dateWidth = parent_width / 4;
                         }
                     }
                 }
                 dirty = false;
             }
+            
+            //Log.v( TAG, "p:" + parent_width + ",i:" + imgWidth + ",n:" + nameWidth + ",d:" + dateWidth + ",s:" + sizeWidth + ",a:" + attrWidth );            
+            
             if( item.sel )
                 row_view.setBackgroundColor( sl_color & 0xCFFFFFFF  );
 
@@ -244,6 +249,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 nameView.setWidth( nameWidth );
                 nameView.setText( name != null ? name : "???" );
                 nameView.setTextColor( fg_color );
+                //nameView.setBackgroundColor( 0xFFFF00FF );  // DEBUG!!!!!!
             }
             TextView attrView = (TextView)row_view.findViewById( R.id.fld_attr );
             if( attrView != null ) {
