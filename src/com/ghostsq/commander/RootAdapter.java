@@ -3,32 +3,35 @@ package com.ghostsq.commander;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.CommanderAdapter;
 import com.ghostsq.commander.CommanderAdapterBase;
-import com.ghostsq.commander.LsItem.LsItemPropComparator;
 
 import android.os.Handler;
-import android.preference.PreferenceManager;
+import android.app.AlertDialog;
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.net.Uri;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class RootAdapter extends CommanderAdapterBase {
     // Java compiler creates a thunk function to access to the private owner class member from a subclass
     // to avoid that all the member accessible from the subclasses are public
     public final static String TAG = "RootAdapter";
-    public String sh = "su";
+    public final static int CHMOD_CMD = 36793;
     public  Uri uri = null;
     public  LsItem[] items = null;
     private int attempts = 0;
@@ -37,33 +40,28 @@ public class RootAdapter extends CommanderAdapterBase {
         super( c, SHOW_ATTR );
     }
 
-    private String getBusyBox() {
-        Context conetxt = commander.getContext();
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( conetxt );
-        return sharedPref.getString( "busybox_path", "busybox" );
-    }
-    
     @Override
     public String getType() {
         return "root";
     }
-    class ListEngine extends Engine {
+    class ListEngine extends ExecEngine {
         private LsItem[] items_tmp;
-        public  String pass_back_on_done;
-        ListEngine( Handler h, String pass_back_on_done_ ) {
-        	super( h );
+        private String pass_back_on_done;
+        private Uri src;
+        ListEngine( Context ctx, Handler h, Uri src_, String pass_back_on_done_ ) {
+        	super( ctx, h );
+            src = src_;
         	pass_back_on_done = pass_back_on_done_;
         }
         public LsItem[] getItems() {
             return items_tmp;
         }       
+        public Uri getUri() {
+            return src;
+        }       
         @Override
         public void run() {
             try {
-            	if( uri == null ) {
-            		sendProgress( "Wrong URI", Commander.OPERATION_FAILED );
-            		return;
-            	}
             	getList();
             }
             catch( Exception e ) {
@@ -89,7 +87,8 @@ public class RootAdapter extends CommanderAdapterBase {
             }
         }
         private void getList() throws Exception {
-            String  path = uri.getPath();
+            String path = src.getPath();
+            if( path == null ) path = SLS;
             parentLink = path == null || path.length() == 0 || path.equals( SLS ) ? SLS : "..";
             Process p = Runtime.getRuntime().exec( sh );
             DataOutputStream os = new DataOutputStream( p.getOutputStream() );
@@ -157,6 +156,7 @@ public class RootAdapter extends CommanderAdapterBase {
             }
             else
                 items = list_engine.getItems();
+            uri = list_engine.getUri();
             notifyDataSetChanged();
         }
     }
@@ -185,11 +185,10 @@ public class RootAdapter extends CommanderAdapterBase {
     @Override
     public boolean readSource( Uri tmp_uri, String pass_back_on_done ) {
         try {
-            if( tmp_uri != null )
-                uri = tmp_uri;
-            if( uri == null )
+            if( tmp_uri == null )
+                tmp_uri = uri;
+            if( tmp_uri == null )
                 return false;
-            
             if( worker != null ) {
                 if( attempts++ < 2 ) {
                     commander.showInfo( "Busy..." );
@@ -205,7 +204,7 @@ public class RootAdapter extends CommanderAdapterBase {
             }
             
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            worker = new ListEngine( handler, pass_back_on_done );
+            worker = new ListEngine( commander.getContext(), handler, tmp_uri, pass_back_on_done );
             worker.start();
             return true;
         }
@@ -231,7 +230,7 @@ public class RootAdapter extends CommanderAdapterBase {
     		        	LsItem[] subItems = bitsToItems( cis );
     		        	if( subItems != null ) {
     		        	    commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-    		                worker = new CopyFromEngine( handler, subItems, to_path, move );
+    		                worker = new CopyFromEngine( commander.getContext(), handler, subItems, to_path, move );
     		                worker.start();
     		                return true;
     		        	}
@@ -247,14 +246,14 @@ public class RootAdapter extends CommanderAdapterBase {
     }
 
     
-  class CopyFromEngine extends Engine 
+  class CopyFromEngine extends ExecEngine 
   {
 	    private LsItem[] list;
 	    private String   dest_folder;
 	    private boolean  move;
 	    private String   src_base_path;
-	    CopyFromEngine( Handler h, LsItem[] list_, String dest, boolean move_ ) {
-	    	super( h );
+	    CopyFromEngine( Context ctx, Handler h, LsItem[] list_, String dest, boolean move_ ) {
+	    	super( ctx, h );
 	        list = list_;
 	        dest_folder = dest;
 	        move = move_;
@@ -324,49 +323,27 @@ public class RootAdapter extends CommanderAdapterBase {
         if( isWorkerStillAlive() )
             commander.notifyMe( new Commander.Notify( "Busy", Commander.OPERATION_FAILED ) );
         else {
-            worker = new MkDirEngine( handler, new_name );
+            worker = new MkDirEngine( commander.getContext(), handler, new_name );
             worker.start();
         }
     }
     
-    class MkDirEngine extends Engine {
+    class MkDirEngine extends ExecEngine {
         String full_name;
-        MkDirEngine( Handler h, String new_name ) {
-            super( h );
+        MkDirEngine( Context ctx, Handler h, String new_name ) {
+            super( ctx, h );
             full_name = uri.getPath() + SLS + new_name;
         }
         
         @Override
         public void run() {
             try {
-                String bb = getBusyBox();
-                String to_exec = bb + " mkdir " + full_name + "\n";;
-                Log.i( TAG, to_exec );
-                String res_s = null;
-                Process p;
-                p = Runtime.getRuntime().exec( sh );
-                DataOutputStream os = new DataOutputStream( p.getOutputStream() );
-                DataInputStream  es = new DataInputStream( p.getErrorStream() );
-                os.writeBytes( to_exec ); // execute command
-                os.flush();
-                Thread.sleep( 100 );
-                if( es.available() > 0 )
-                    res_s = es.readLine();
-                os.writeBytes("exit\n");
-                os.flush();
-                p.waitFor();
-                if( p.exitValue() == 255 || res_s != null ) {
-                    if( res_s != null )
-                        error( res_s );
-                }
-                else {
-                    sendResult( null );
-                    return;
-                }
+                String cmd = "mkdir " + full_name;
+                execute( cmd, true, 100 );
             } catch( Exception e ) {
                 error( "Exception: " + e );
             }
-            sendResult( "Directory '" + full_name + "' was not created." );
+            sendResult( errMsg != null ? "Directory '" + full_name + "' was not created." : null );
         }
     }
 
@@ -380,7 +357,7 @@ public class RootAdapter extends CommanderAdapterBase {
         	LsItem[] subItems = bitsToItems( cis );
         	if( subItems != null ) {
         	    commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-                worker = new DelEngine( handler, subItems );
+                worker = new DelEngine( commander.getContext(), handler, subItems );
                 worker.start();
 	            return true;
         	}
@@ -391,12 +368,12 @@ public class RootAdapter extends CommanderAdapterBase {
         return false;
     }
 
-    class DelEngine extends Engine {
+    class DelEngine extends ExecEngine {
         private String   src_base_path;
         private LsItem[] mList;
         
-        DelEngine( Handler h, LsItem[] list ) {
-        	super( h );
+        DelEngine( Context ctx, Handler h, LsItem[] list ) {
+        	super( ctx, h );
             mList = list;
             src_base_path = uri.getPath();
             if( src_base_path == null || src_base_path.length() == 0 )
@@ -506,7 +483,7 @@ public class RootAdapter extends CommanderAdapterBase {
             	return false;
             }
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            worker = new CopyToEngine( handler, full_names, move, uri.getPath(), false );
+            worker = new CopyToEngine( commander.getContext(), handler, full_names, move, uri.getPath(), false );
             worker.start();
             return true;
 		} catch( Exception e ) {
@@ -515,14 +492,14 @@ public class RootAdapter extends CommanderAdapterBase {
 		return false;
     }
     
-    class CopyToEngine extends Engine {
+    class CopyToEngine extends ExecEngine {
         String[] src_full_names;
         String   dest;
         boolean move = false;
         boolean quiet;
         
-        CopyToEngine( Handler h, String[] list, boolean move_, String dest_, boolean quiet_ ) {
-        	super( h );
+        CopyToEngine( Context ctx, Handler h, String[] list, boolean move_, String dest_, boolean quiet_ ) {
+        	super( ctx, h );
         	src_full_names = list;
         	dest = dest_;
             move = move_;
@@ -587,7 +564,7 @@ public class RootAdapter extends CommanderAdapterBase {
             a[0] = uri.getPath() + SLS + from.getName();
             String to = uri.getPath() + SLS + newName;
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            worker = new CopyToEngine( handler, a, true, to, true );
+            worker = new CopyToEngine( commander.getContext(), handler, a, true, to, true );
             worker.start();
             return true;
         } catch( Exception e ) {
@@ -650,12 +627,279 @@ public class RootAdapter extends CommanderAdapterBase {
             LsItem[] subItems = new LsItem[counter];
             int j = 0;
             for( int i = 0; i < cis.size(); i++ )
-                if( cis.valueAt( i ) )
-                	subItems[j++] = items[ cis.keyAt( i ) - 1 ];
+                if( cis.valueAt( i ) ) {
+                    int k = cis.keyAt( i );
+                    if( k > 0 )
+                        subItems[j++] = items[ k - 1 ];
+                }
             return subItems;
 		} catch( Exception e ) {
 		    Log.e( TAG, "bitsToNames()'s Exception: " + e );
 		}
 		return null;
+    }
+    
+    @Override
+    public void populateContextMenu( ContextMenu menu, AdapterView.AdapterContextMenuInfo acmi, int num ) {
+        super.populateContextMenu( menu, acmi, num );
+        try {
+            menu.add( 0, CHMOD_CMD, 0, "chmod" );
+        } catch( Exception e ) {
+            Log.e( TAG, "populateContextMenu() " + e.getMessage(), e );
+        }
+    }    
+
+    @Override
+    public void doIt( int command_id, SparseBooleanArray cis ) {
+        if( CHMOD_CMD == command_id ) {
+            if( isWorkerStillAlive() )
+                return;
+            LsItem[] items_todo = bitsToItems( cis );
+            if( items_todo != null && items_todo.length > 0 && items_todo[0] != null )
+                new ChmodDialog( commander.getContext(), items_todo[0] );
+            else
+                commander.showError( commander.getContext().getString( R.string.select_some ) );
+        }
+    }
+
+    class ChmodDialog implements OnClickListener {
+        private LsItem   item;
+        private boolean  ur,  uw,  ux,  us,  gr,  gw,  gx,  gs,  or,  ow,  ox,  ot;
+        private CheckBox urc, uwc, uxc, usc, grc, gwc, gxc, gsc, orc, owc, oxc, otc;
+        private String   full_file_name;
+        ChmodDialog( Context c, LsItem item_ ) {
+            try {
+                item = item_;
+                String a = item.getAttr();
+                if( a.length() < 10 ) return;
+                full_file_name = (new File( uri.getPath(), item.getName() ) ).getAbsolutePath();                
+                LayoutInflater factory = LayoutInflater.from( c );
+                View cdv = factory.inflate( R.layout.chmod, null );
+                if( cdv != null ) {
+                    TextView fnv = (TextView)cdv.findViewById( R.id.file_name );
+                    fnv.setText( full_file_name );
+                    {
+                        urc = (CheckBox)cdv.findViewById( R.id.UR );
+                        ur = a.charAt( 1 ) == 'r';
+                        if( ur ) urc.setChecked( true );
+                        uwc = (CheckBox)cdv.findViewById( R.id.UW );
+                        uw = a.charAt( 2 ) == 'w';
+                        if( uw ) uwc.setChecked( true );
+                        uxc = (CheckBox)cdv.findViewById( R.id.UX );
+                        usc = (CheckBox)cdv.findViewById( R.id.US );
+                        char uxl = a.charAt( 3 );
+                        if( uxl == 'x' ) {
+                            ux = true;
+                            us = false;
+                        } else 
+                        if( uxl == 's' ) {
+                            ux = true;
+                            us = true;
+                        } else if( uxl == 'S' ) {
+                            ux = false;
+                            us = true;
+                        } else {
+                            ux = false;
+                            us = false;
+                        }
+                        if( ux ) uxc.setChecked( true );
+                        if( us ) usc.setChecked( true );
+                    } {
+                        grc = (CheckBox)cdv.findViewById( R.id.GR );
+                        gr = a.charAt( 4 ) == 'r';
+                        if( gr ) grc.setChecked( true );
+                        gwc = (CheckBox)cdv.findViewById( R.id.GW );
+                        gw = a.charAt( 5 ) == 'w';
+                        if( gw ) gwc.setChecked( true );
+                        gxc = (CheckBox)cdv.findViewById( R.id.GX );
+                        gsc = (CheckBox)cdv.findViewById( R.id.GS );
+                        char gxl = a.charAt( 6 );
+                        if( gxl == 'x' ) {
+                            gx = true;
+                            gs = false;
+                        } else 
+                        if( gxl == 's' ) {
+                            gx = true;
+                            gs = true;
+                        } else 
+                        if( gxl == 'S' ) {
+                            gx = false;
+                            gs = true;
+                        } else {
+                            gx = false;
+                            gs = false;
+                        }
+                        if( gx ) gxc.setChecked( true );
+                        if( gs ) gsc.setChecked( true );
+                    } {
+                        orc = (CheckBox)cdv.findViewById( R.id.OR );
+                        or = a.charAt( 7 ) == 'r';
+                        if( or ) orc.setChecked( true );
+                        owc = (CheckBox)cdv.findViewById( R.id.OW );
+                        ow = a.charAt( 8 ) == 'w';
+                        if( ow ) owc.setChecked( true );
+                        oxc = (CheckBox)cdv.findViewById( R.id.OX );
+                        otc = (CheckBox)cdv.findViewById( R.id.OT );
+                        char otl = a.charAt( 9 );
+                        if( otl == 'x' ) {
+                            ox = true;
+                            ot = false;
+                        } else 
+                        if( otl == 't' ) {
+                            ox = true;
+                            ot = true;
+                        } else 
+                        if( otl == 'T' ) {
+                            ox = false;
+                            ot = true;
+                        } else {
+                            ox = false;
+                            ot = false;
+                        }
+                        if( ox ) oxc.setChecked( true );
+                        if( ot ) otc.setChecked( true );
+                    }
+                    new AlertDialog.Builder( c )
+                        .setTitle( "chmod" )
+                        .setView( cdv )
+                        .setPositiveButton( R.string.dialog_ok, this )
+                        .setNegativeButton( R.string.dialog_cancel, this )
+                        .show();
+                }
+            } catch( Exception e ) {
+                Log.e( TAG, "ChmodDialog()", e );
+            }
+        }
+        @Override
+        public void onClick( DialogInterface idialog, int whichButton ) {
+            if( whichButton == DialogInterface.BUTTON_POSITIVE ) {
+                if( isWorkerStillAlive() )
+                    commander.notifyMe( new Commander.Notify( "Busy", Commander.OPERATION_FAILED ) );
+                else {
+                    StringBuilder a = new StringBuilder();
+                    boolean nur = urc.isChecked(); 
+                    boolean nuw = uwc.isChecked(); 
+                    boolean nux = uxc.isChecked(); 
+                    boolean nus = usc.isChecked(); 
+                    boolean ngr = grc.isChecked(); 
+                    boolean ngw = gwc.isChecked(); 
+                    boolean ngx = gxc.isChecked(); 
+                    boolean ngs = gsc.isChecked(); 
+                    boolean nor = orc.isChecked(); 
+                    boolean now = owc.isChecked(); 
+                    boolean nox = oxc.isChecked(); 
+                    boolean not = otc.isChecked();
+                    
+                    if( nur != ur ) {
+                        a.append( 'u' );
+                        a.append( nur ? '+' : '-' );
+                        a.append( 'r' );  
+                    }
+                    if( nuw != uw ) {
+                        if( a.length() > 0 )
+                            a.append( ',' );
+                        a.append( 'u' );
+                        a.append( nuw ? '+' : '-' );
+                        a.append( 'w' );  
+                    }
+                    if( nux != ux ) {
+                        if( a.length() > 0 )
+                            a.append( ',' );
+                        a.append( 'u' );
+                        a.append( nux ? '+' : '-' );
+                        a.append( 'x' );  
+                    }
+                    if( nus != us ) {
+                        if( a.length() > 0 )
+                            a.append( ',' );
+                        a.append( 'u' );
+                        a.append( nus ? '+' : '-' );
+                        a.append( 's' );  
+                    }
+                    
+                    if( ngr != gr ) {
+                        if( a.length() > 0 )
+                            a.append( ',' );
+                        a.append( 'g' );
+                        a.append( ngr ? '+' : '-' );
+                        a.append( 'r' );  
+                    }
+                    if( ngw != gw ) {
+                        if( a.length() > 0 )
+                            a.append( ',' );
+                        a.append( 'g' );
+                        a.append( ngw ? '+' : '-' );
+                        a.append( 'w' );  
+                    }
+                    if( ngx != gx ) {
+                        if( a.length() > 0 )
+                            a.append( ',' );
+                        a.append( 'g' );
+                        a.append( ngx ? '+' : '-' );
+                        a.append( 'x' );  
+                    }
+                    if( ngs != gs ) {
+                        if( a.length() > 0 )
+                            a.append( ',' );
+                        a.append( 'g' );
+                        a.append( ngs ? '+' : '-' );
+                        a.append( 's' );  
+                    }
+                    
+                    if( nor != or ) {
+                        if( a.length() > 0 )
+                            a.append( ',' );
+                        a.append( 'o' );
+                        a.append( nor ? '+' : '-' );
+                        a.append( 'r' );  
+                    }
+                    if( now != ow ) {
+                        if( a.length() > 0 )
+                            a.append( ',' );
+                        a.append( 'o' );
+                        a.append( now ? '+' : '-' );
+                        a.append( 'w' );  
+                    }
+                    if( nox != ox ) {
+                        if( a.length() > 0 )
+                            a.append( ',' );
+                        a.append( 'o' );
+                        a.append( nox ? '+' : '-' );
+                        a.append( 'x' );  
+                    }
+                    if( not != ot ) {
+                        if( a.length() > 0 )
+                            a.append( ',' );
+                        a.append( not ? '+' : '-' );
+                        a.append( 't' );  
+                    }
+                    if( a.length() > 0 ) {
+                        a.append( " " );
+                        a.append( full_file_name ); 
+                        worker = new ChmodEngine( commander.getContext(), handler, a.toString() );
+                        worker.start();
+                    }
+                }
+            }
+            idialog.dismiss();
+        }
+    }
+
+    class ChmodEngine extends ExecEngine {
+        String params;
+        ChmodEngine( Context ctx, Handler h, String params_ ) {
+            super( ctx, h );
+            params = params_;
+        }
+        @Override
+        public void run() {
+            try {
+                String cmd = "chmod " + params;
+                execute( cmd, true, 100 );
+            } catch( Exception e ) {
+                error( "Exception: " + e );
+            }
+            sendResult( errMsg != null ? "Were tried to 'chmod " + params + "'" : null );
+        }
     }
 }

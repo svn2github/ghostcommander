@@ -364,7 +364,12 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     public boolean isButtonActive( int brId ) {
         return true;
     }
-    
+
+    @Override
+    public void doIt( int command_id, SparseBooleanArray cis ) {
+        // to be implemented in derived classes
+    }
+
     public final void showMessage( String s ) {
         Toast.makeText( commander.getContext(), s, Toast.LENGTH_LONG ).show();
     }

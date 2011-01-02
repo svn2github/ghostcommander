@@ -135,6 +135,15 @@ public interface CommanderAdapter {
      */
 	public boolean deleteItems( SparseBooleanArray cis );
 	
+    /**
+     * @param command_id - command id to execute
+     * @param items - selected or checked items to work with  
+     */
+	public void doIt( int command_id, SparseBooleanArray cis );
+	
+    /**
+     * to be called before the adapter is going to be destroyed
+     */
 	public void terminateOperation();
 	public void prepareToDestroy();
 }

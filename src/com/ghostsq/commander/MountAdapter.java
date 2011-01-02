@@ -39,7 +39,6 @@ public class MountAdapter extends CommanderAdapterBase {
     // Java compiler creates a thunk function to access to the private owner class member from a subclass
     // to avoid that all the member accessible from the subclasses are public
     public final static String TAG = "MountAdapter";
-    public String sh = "su";
     public  Uri uri = null;
     private int attempts = 0;
     
@@ -87,56 +86,16 @@ public class MountAdapter extends CommanderAdapterBase {
         super( c, DETAILED_MODE | NARROW_MODE | TEXT_MODE | SHOW_ATTR | ATTR_ONLY );
     }
 
-    private String getBusyBox() {
-        Context conetxt = commander.getContext();
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( conetxt );
-        return sharedPref.getString( "busybox_path", "busybox" );
-    }
-    
     @Override
     public String getType() {
         return "mount";
     }
     
-    abstract class  ExecEngine extends Engine {
-        ExecEngine( Handler h ) {
-            super( h );
-        }
-        protected void execute( String cmd, boolean use_bb, int timeout ) {
-            try {
-                String bb = use_bb ? getBusyBox() + " " : "";
-                Process p = Runtime.getRuntime().exec( sh );
-                DataOutputStream os = new DataOutputStream( p.getOutputStream() );
-                DataInputStream  es = new DataInputStream( p.getErrorStream() );
-                String to_exec = bb + cmd + "\n";
-                Log.v( TAG, "executing '" + to_exec + "'" );
-                os.writeBytes( to_exec ); // execute the command
-                os.flush();
-                Thread.sleep( timeout );
-                if( es.available() > 0 ) {
-                    String err_msg = es.readLine(); 
-                    error( err_msg );
-                    Log.e( TAG, err_msg );
-                }
-                os.writeBytes("exit\n");
-                os.flush();
-                p.waitFor();
-                if( p.exitValue() == 255 )
-                    Log.e( TAG, "Exit code 255" );
-            }
-            catch( Exception e ) {
-                Log.e( TAG, "On execution '" + cmd + "'", e );
-                error( "Exception: " + e );
-            }
-        }
-    }
-    
-    
-    class ListEngine extends Engine {
+    class ListEngine extends ExecEngine {
         private MountItem[] items_tmp;
         public  String pass_back_on_done;
-        ListEngine( Handler h, String pass_back_on_done_ ) {
-        	super( h );
+        ListEngine( Context ctx, Handler h, String pass_back_on_done_ ) {
+        	super( ctx, h );
         	pass_back_on_done = pass_back_on_done_;
         }
         public MountItem[] getItems() {
@@ -274,7 +233,7 @@ public class MountAdapter extends CommanderAdapterBase {
             }
             
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            worker = new ListEngine( handler, pass_back_on_done );
+            worker = new ListEngine( commander.getContext(), handler, pass_back_on_done );
             worker.start();
             return true;
         }
@@ -304,8 +263,8 @@ public class MountAdapter extends CommanderAdapterBase {
 
     class CreateEngine extends ExecEngine {
         String pair;
-        CreateEngine( Handler h, String pair_ ) {
-            super( h );
+        CreateEngine( Context ctx, Handler h, String pair_ ) {
+            super( ctx, h );
             pair = pair_;
         }
         @Override
@@ -331,7 +290,7 @@ public class MountAdapter extends CommanderAdapterBase {
         if( isWorkerStillAlive() )
             commander.notifyMe( new Commander.Notify( "Busy", Commander.OPERATION_FAILED ) );
         else {
-            worker = new CreateEngine( handler, dev_mp_pair );
+            worker = new CreateEngine( commander.getContext(), handler, dev_mp_pair );
             worker.start();
         }
 	}
@@ -352,8 +311,8 @@ public class MountAdapter extends CommanderAdapterBase {
 
     class RemountEngine extends ExecEngine {
         MountItem mount;
-        RemountEngine( Handler h, MountItem m ) {
-            super( h );
+        RemountEngine( Context ctx, Handler h, MountItem m ) {
+            super( ctx, h );
             mount = m;
         }
         @Override
@@ -392,7 +351,7 @@ public class MountAdapter extends CommanderAdapterBase {
         if( isWorkerStillAlive() )
             commander.notifyMe( new Commander.Notify( "Busy", Commander.OPERATION_FAILED ) );
         else {
-            worker = new RemountEngine( handler, item );
+            worker = new RemountEngine( commander.getContext(), handler, item );
             worker.start();
         }
     }

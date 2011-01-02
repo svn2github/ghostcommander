@@ -24,6 +24,7 @@ import android.view.KeyEvent;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
@@ -166,21 +167,22 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     public boolean onContextItemSelected( MenuItem item ) {
-        panels.resetQuickSearch();
-        AdapterView.AdapterContextMenuInfo info;
         try {
+            panels.resetQuickSearch();
+            AdapterView.AdapterContextMenuInfo info;
             info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
-        } catch( ClassCastException e ) {
-            Log.e(TAG, "Can't cast MenuInfo to AdapterView.AdapterContextMenuInfo", e);
+            if( info == null ) return false;
+            panels.setSelection( info.position );
+            int item_id = item.getItemId();
+            if( OPEN == item_id ) 
+                panels.openItem( info.position );
+            else
+                doIt( item_id );
             return true;
+        } catch( Exception e ) {
+            Log.e(TAG, "onContextItemSelected()", e);
+            return false;
         }
-        panels.setSelection( info.position );
-        int item_id = item.getItemId();
-        if( OPEN == item_id ) 
-            panels.openItem( info.position );
-        else
-            doIt( item_id );
-        return true;
     }
 
     @Override
@@ -209,8 +211,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     @Override
     public boolean onMenuItemSelected( int featureId, MenuItem item ) {
         panels.resetQuickSearch();
-        doIt( item.getItemId() );
-        return super.onMenuItemSelected(featureId, item);
+        boolean processed = super.onMenuItemSelected( featureId, item );
+        if( !processed ) 
+            doIt( item.getItemId() );
+        return true; 
     }
 
     @Override
@@ -387,6 +391,9 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         case OPEN_WITH:
             panels.tryToOpen();
             break;
+        default:
+            CommanderAdapter ca = panels.getListAdapter( true );
+            ca.doIt( id, panels.getSelectedOrChecked() );
         }
     }
     private final boolean setMode( boolean side_by_side_mode ) {

@@ -913,7 +913,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             return null; // the topmost item is also invalid
         return "'" + adapter.getItemName( cur_sel, false ) + "'";
     }
-    private final SparseBooleanArray getSelectedOrChecked() {
+    public final SparseBooleanArray getSelectedOrChecked() {
         ListView flv = listViews[current];
         int num_checked = getNumItemsChecked();
         SparseBooleanArray cis;
