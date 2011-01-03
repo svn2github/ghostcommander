@@ -40,6 +40,9 @@
     <string name="unselect_all">- Снять выделение</string>
 
     <string name="wait"> жди... </string>
+    <string name="fail"> (ошибка) </string>
+    <string name="failed">Ошибка:\n</string>
+    
     <string name="go_button">Иди</string>
     <string name="show_size">Вычислить Размер</string>
     <string name="send_to">Послать...</string>

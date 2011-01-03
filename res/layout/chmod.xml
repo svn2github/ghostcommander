@@ -3,22 +3,20 @@
     android:id="@+id/chmod" 
     android:layout_width="fill_parent" 
     android:layout_height="fill_parent" >
+    <TextView android:id="@+id/file_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingLeft="10dip" 
+        android:paddingRight="10dip"/>
     <TableRow 
-        android:id="@+id/user" 
         android:layout_width="fill_parent" 
         android:layout_height="wrap_content" 
-        android:gravity="center">
+        android:gravity="center"
+        android:paddingTop="0dip" 
+        android:paddingBottom="0dip">
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/file_name"/>
-    </TableRow>
-    <TableRow 
-        android:id="@+id/user" 
-        android:layout_width="fill_parent" 
-        android:layout_height="wrap_content" 
-        android:gravity="center">
-            <TextView
+                android:id="@+id/User"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="User"
@@ -27,7 +25,7 @@
                 android:paddingRight="10dip"/>
             <CheckBox 
                 android:text="r" 
-                android:id="@+id/UR" 
+                android:id="@+id/UR"
                 android:layout_width="wrap_content" 
                 android:layout_height="wrap_content" 
                 android:paddingRight="10dip"/>
@@ -51,10 +49,13 @@
                 android:paddingRight="10dip"/>
     </TableRow>
     <TableRow 
-        android:id="@+id/user" 
         android:layout_width="fill_parent" 
-        android:layout_height="wrap_content" android:gravity="center">
+        android:layout_height="wrap_content" 
+        android:gravity="center"
+        android:paddingTop="0dip" 
+        android:paddingBottom="0dip">
             <TextView
+                android:id="@+id/Group"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Group"
@@ -87,11 +88,11 @@
                 android:paddingRight="10dip"/>
     </TableRow>
     <TableRow 
-        android:id="@+id/user" 
         android:layout_width="fill_parent" 
         android:layout_height="wrap_content" 
         android:gravity="center">
             <TextView
+                android:id="@+id/Other"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Other" 

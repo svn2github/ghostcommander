@@ -501,7 +501,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 panels.setPanelTitle( getString( R.string.fail ), which_panel );
             }
             if( progress.string != null && progress.string.length() > 0 )
-                showError("Failed:\n" + progress.string );
+                showError( getString( R.string.failed ) + progress.string );
             return;
         case OPERATION_FAILED_LOGIN_REQUIRED: 
             if( progress.string != null ) {

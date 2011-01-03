@@ -60,6 +60,7 @@
 
     <string name="wait"> wait... </string>
     <string name="fail"> (failed) </string>
+    <string name="failed">Error:\n</string>
 
     <string name="dialog_yes">Yes</string>
     <string name="dialog_no">No</string>
@@ -194,7 +195,8 @@
     <string name="value_editor_activity">com.ghostsq.commander.Editor</string>
     
     <string name="busybox_location">Path to busybox</string>
-    <string name="summary_busybox_location">To use in the root mode it needs the busybox executable</string>   
+    <string name="summary_busybox_location">To use in the root mode it needs the busybox executable</string>
+    <string name="execute_command">Execute a command</string>   
     
     <string name="nothing_to_open">Nothing to open</string>
     <string name="remind_to_save">Don\'t forget to Save your changes (using the menu)</string>

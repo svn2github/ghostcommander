@@ -9,13 +9,41 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-abstract class ExecEngine extends Engine {
+class ExecEngine extends Engine {
     public final static String TAG = "ExecEngine";
     public       static String sh = "su";
     private Context conetxt;
+    private String  where, command;
+    private boolean use_busybox = false;
+    private int     wait_timeout = 500;
+    private StringBuilder result;
     ExecEngine( Context conetxt_, Handler h ) {
         super( h );
         conetxt = conetxt_;
+        where = null;
+        command = null;
+        result = null;
+    }
+    ExecEngine( Context conetxt_, Handler h, String where_, String command_, boolean use_bb, int timeout ) {
+        super( h );
+        conetxt = conetxt_;
+        where = where_;
+        command = command_;
+        use_busybox = use_bb; 
+        wait_timeout = timeout;
+        result = new StringBuilder( 1024 );
+    }
+
+    @Override
+    public void run() {
+        try {
+            if( command == null ) return; 
+            execute( command, use_busybox, wait_timeout );
+        } catch( Exception e ) {
+            error( "Exception: " + e );
+        }
+        sendResult( result != null && result.length() > 0 ? result.toString() : 
+               ( errMsg != null ? "\nWere tried to execute '" + command + "'" : null ) );
     }
     
     protected String getBusyBox() {
@@ -29,16 +57,34 @@ abstract class ExecEngine extends Engine {
             Process p = Runtime.getRuntime().exec( sh );
             DataOutputStream os = new DataOutputStream( p.getOutputStream() );
             DataInputStream  es = new DataInputStream( p.getErrorStream() );
+            DataInputStream  is = result != null ? new DataInputStream( p.getInputStream() ) : null;
+            
+            if( where != null ) {
+                os.writeBytes( "cd " + where + "\n" ); // execute the command
+                os.flush();
+            }
             String to_exec = bb + cmd + "\n";
             Log.v( TAG, "executing '" + to_exec + "'" );
             os.writeBytes( to_exec ); // execute the command
             os.flush();
             Thread.sleep( timeout );
-            if( es.available() > 0 ) {
-                String err_msg = es.readLine(); 
-                error( err_msg );
-                Log.e( TAG, err_msg );
+
+            while( es.available() > 0 ) {
+                if( isStopReq() ) 
+                    throw new Exception();
+                String ln = es.readLine();
+                if( ln == null ) break;
+                error( ln );
             }
+            if( is != null && result != null )
+                while( is.available() > 0 ) {
+                    if( isStopReq() ) 
+                        throw new Exception();
+                    String ln = is.readLine();
+                    if( ln == null ) break;
+                    result.append( ln );
+                    result.append( "\n" );
+                }
             os.writeBytes("exit\n");
             os.flush();
             p.waitFor();

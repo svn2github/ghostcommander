@@ -24,14 +24,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 
 public class RootAdapter extends CommanderAdapterBase {
     // Java compiler creates a thunk function to access to the private owner class member from a subclass
     // to avoid that all the member accessible from the subclasses are public
     public final static String TAG = "RootAdapter";
-    public final static int CHMOD_CMD = 36793;
+    public final static int CHMOD_CMD = 36793, CMD_CMD = 39716;
     public  Uri uri = null;
     public  LsItem[] items = null;
     private int attempts = 0;
@@ -88,7 +88,10 @@ public class RootAdapter extends CommanderAdapterBase {
         }
         private void getList() throws Exception {
             String path = src.getPath();
-            if( path == null ) path = SLS;
+            if( path == null ) {
+                path = SLS;
+                src = src.buildUpon().encodedPath( path ).build();
+            }
             parentLink = path == null || path.length() == 0 || path.equals( SLS ) ? SLS : "..";
             Process p = Runtime.getRuntime().exec( sh );
             DataOutputStream os = new DataOutputStream( p.getOutputStream() );
@@ -111,8 +114,8 @@ public class RootAdapter extends CommanderAdapterBase {
                 String ln = is.readLine();
                 if( ln == null ) break;
                 LsItem item = new LsItem( ln );
-                if( item.isValid() ) {  // problem - if the item is a symlink - how to know its a dir or a file???
-                        array.add( item );
+                if( item.isValid() ) {  // a problem - if the item is a symlink - how to know it's a dir or a file???
+                    array.add( item );
                 }
             }
             os.writeBytes("exit\n");
@@ -643,7 +646,9 @@ public class RootAdapter extends CommanderAdapterBase {
     public void populateContextMenu( ContextMenu menu, AdapterView.AdapterContextMenuInfo acmi, int num ) {
         super.populateContextMenu( menu, acmi, num );
         try {
-            menu.add( 0, CHMOD_CMD, 0, "chmod" );
+            if( acmi.position > 0 )
+                menu.add( 0, CHMOD_CMD, 0, "chmod" );
+            menu.add( 0, CMD_CMD, 0, commander.getContext().getString( R.string.execute_command ) ); 
         } catch( Exception e ) {
             Log.e( TAG, "populateContextMenu() " + e.getMessage(), e );
         }
@@ -651,255 +656,66 @@ public class RootAdapter extends CommanderAdapterBase {
 
     @Override
     public void doIt( int command_id, SparseBooleanArray cis ) {
-        if( CHMOD_CMD == command_id ) {
+        if( CHMOD_CMD == command_id || CMD_CMD == command_id ) {
             if( isWorkerStillAlive() )
                 return;
             LsItem[] items_todo = bitsToItems( cis );
-            if( items_todo != null && items_todo.length > 0 && items_todo[0] != null )
-                new ChmodDialog( commander.getContext(), items_todo[0] );
-            else
-                commander.showError( commander.getContext().getString( R.string.select_some ) );
+            boolean selected_one = items_todo != null && items_todo.length > 0 && items_todo[0] != null;
+            if( CHMOD_CMD == command_id ) {
+                if( selected_one )
+                    new ChmodDialog( commander.getContext(), items_todo[0], uri, this );
+                else
+                    commander.showError( commander.getContext().getString( R.string.select_some ) );
+            }
+            else if( CMD_CMD == command_id )
+                new CmdDialog( commander.getContext(), selected_one ? items_todo[0] : null, this );
+        }
+    }
+    
+    public void Execute( String command, boolean bb ) {
+        if( isWorkerStillAlive() )
+            commander.notifyMe( new Commander.Notify( "Busy", Commander.OPERATION_FAILED ) );
+        else {
+            worker = new ExecEngine( commander.getContext(), handler, uri.getPath(), command, bb, 500 );
+            worker.start();
         }
     }
 
-    class ChmodDialog implements OnClickListener {
+    class CmdDialog implements OnClickListener {
         private LsItem   item;
-        private boolean  ur,  uw,  ux,  us,  gr,  gw,  gx,  gs,  or,  ow,  ox,  ot;
-        private CheckBox urc, uwc, uxc, usc, grc, gwc, gxc, gsc, orc, owc, oxc, otc;
-        private String   full_file_name;
-        ChmodDialog( Context c, LsItem item_ ) {
+        private RootAdapter owner;
+        private EditText ctv;
+        private CheckBox bbc;
+        CmdDialog( Context c, LsItem item_, RootAdapter owner_ ) {
             try {
+                if( uri == null  ) return;
+                owner = owner_;
                 item = item_;
-                String a = item.getAttr();
-                if( a.length() < 10 ) return;
-                full_file_name = (new File( uri.getPath(), item.getName() ) ).getAbsolutePath();                
                 LayoutInflater factory = LayoutInflater.from( c );
-                View cdv = factory.inflate( R.layout.chmod, null );
+                View cdv = factory.inflate( R.layout.command, null );
                 if( cdv != null ) {
-                    TextView fnv = (TextView)cdv.findViewById( R.id.file_name );
-                    fnv.setText( full_file_name );
-                    {
-                        urc = (CheckBox)cdv.findViewById( R.id.UR );
-                        ur = a.charAt( 1 ) == 'r';
-                        if( ur ) urc.setChecked( true );
-                        uwc = (CheckBox)cdv.findViewById( R.id.UW );
-                        uw = a.charAt( 2 ) == 'w';
-                        if( uw ) uwc.setChecked( true );
-                        uxc = (CheckBox)cdv.findViewById( R.id.UX );
-                        usc = (CheckBox)cdv.findViewById( R.id.US );
-                        char uxl = a.charAt( 3 );
-                        if( uxl == 'x' ) {
-                            ux = true;
-                            us = false;
-                        } else 
-                        if( uxl == 's' ) {
-                            ux = true;
-                            us = true;
-                        } else if( uxl == 'S' ) {
-                            ux = false;
-                            us = true;
-                        } else {
-                            ux = false;
-                            us = false;
-                        }
-                        if( ux ) uxc.setChecked( true );
-                        if( us ) usc.setChecked( true );
-                    } {
-                        grc = (CheckBox)cdv.findViewById( R.id.GR );
-                        gr = a.charAt( 4 ) == 'r';
-                        if( gr ) grc.setChecked( true );
-                        gwc = (CheckBox)cdv.findViewById( R.id.GW );
-                        gw = a.charAt( 5 ) == 'w';
-                        if( gw ) gwc.setChecked( true );
-                        gxc = (CheckBox)cdv.findViewById( R.id.GX );
-                        gsc = (CheckBox)cdv.findViewById( R.id.GS );
-                        char gxl = a.charAt( 6 );
-                        if( gxl == 'x' ) {
-                            gx = true;
-                            gs = false;
-                        } else 
-                        if( gxl == 's' ) {
-                            gx = true;
-                            gs = true;
-                        } else 
-                        if( gxl == 'S' ) {
-                            gx = false;
-                            gs = true;
-                        } else {
-                            gx = false;
-                            gs = false;
-                        }
-                        if( gx ) gxc.setChecked( true );
-                        if( gs ) gsc.setChecked( true );
-                    } {
-                        orc = (CheckBox)cdv.findViewById( R.id.OR );
-                        or = a.charAt( 7 ) == 'r';
-                        if( or ) orc.setChecked( true );
-                        owc = (CheckBox)cdv.findViewById( R.id.OW );
-                        ow = a.charAt( 8 ) == 'w';
-                        if( ow ) owc.setChecked( true );
-                        oxc = (CheckBox)cdv.findViewById( R.id.OX );
-                        otc = (CheckBox)cdv.findViewById( R.id.OT );
-                        char otl = a.charAt( 9 );
-                        if( otl == 'x' ) {
-                            ox = true;
-                            ot = false;
-                        } else 
-                        if( otl == 't' ) {
-                            ox = true;
-                            ot = true;
-                        } else 
-                        if( otl == 'T' ) {
-                            ox = false;
-                            ot = true;
-                        } else {
-                            ox = false;
-                            ot = false;
-                        }
-                        if( ox ) oxc.setChecked( true );
-                        if( ot ) otc.setChecked( true );
-                    }
+                    bbc = (CheckBox)cdv.findViewById( R.id.use_busybox );
+                    ctv = (EditText)cdv.findViewById( R.id.command_text );
+                    ctv.setText( item != null ? item.getName() : "" );
                     new AlertDialog.Builder( c )
-                        .setTitle( "chmod" )
+                        .setTitle( "Run Command" )
                         .setView( cdv )
                         .setPositiveButton( R.string.dialog_ok, this )
                         .setNegativeButton( R.string.dialog_cancel, this )
                         .show();
                 }
             } catch( Exception e ) {
-                Log.e( TAG, "ChmodDialog()", e );
+                Log.e( TAG, "CmdDialog()", e );
             }
         }
         @Override
         public void onClick( DialogInterface idialog, int whichButton ) {
-            if( whichButton == DialogInterface.BUTTON_POSITIVE ) {
-                if( isWorkerStillAlive() )
-                    commander.notifyMe( new Commander.Notify( "Busy", Commander.OPERATION_FAILED ) );
-                else {
-                    StringBuilder a = new StringBuilder();
-                    boolean nur = urc.isChecked(); 
-                    boolean nuw = uwc.isChecked(); 
-                    boolean nux = uxc.isChecked(); 
-                    boolean nus = usc.isChecked(); 
-                    boolean ngr = grc.isChecked(); 
-                    boolean ngw = gwc.isChecked(); 
-                    boolean ngx = gxc.isChecked(); 
-                    boolean ngs = gsc.isChecked(); 
-                    boolean nor = orc.isChecked(); 
-                    boolean now = owc.isChecked(); 
-                    boolean nox = oxc.isChecked(); 
-                    boolean not = otc.isChecked();
-                    
-                    if( nur != ur ) {
-                        a.append( 'u' );
-                        a.append( nur ? '+' : '-' );
-                        a.append( 'r' );  
-                    }
-                    if( nuw != uw ) {
-                        if( a.length() > 0 )
-                            a.append( ',' );
-                        a.append( 'u' );
-                        a.append( nuw ? '+' : '-' );
-                        a.append( 'w' );  
-                    }
-                    if( nux != ux ) {
-                        if( a.length() > 0 )
-                            a.append( ',' );
-                        a.append( 'u' );
-                        a.append( nux ? '+' : '-' );
-                        a.append( 'x' );  
-                    }
-                    if( nus != us ) {
-                        if( a.length() > 0 )
-                            a.append( ',' );
-                        a.append( 'u' );
-                        a.append( nus ? '+' : '-' );
-                        a.append( 's' );  
-                    }
-                    
-                    if( ngr != gr ) {
-                        if( a.length() > 0 )
-                            a.append( ',' );
-                        a.append( 'g' );
-                        a.append( ngr ? '+' : '-' );
-                        a.append( 'r' );  
-                    }
-                    if( ngw != gw ) {
-                        if( a.length() > 0 )
-                            a.append( ',' );
-                        a.append( 'g' );
-                        a.append( ngw ? '+' : '-' );
-                        a.append( 'w' );  
-                    }
-                    if( ngx != gx ) {
-                        if( a.length() > 0 )
-                            a.append( ',' );
-                        a.append( 'g' );
-                        a.append( ngx ? '+' : '-' );
-                        a.append( 'x' );  
-                    }
-                    if( ngs != gs ) {
-                        if( a.length() > 0 )
-                            a.append( ',' );
-                        a.append( 'g' );
-                        a.append( ngs ? '+' : '-' );
-                        a.append( 's' );  
-                    }
-                    
-                    if( nor != or ) {
-                        if( a.length() > 0 )
-                            a.append( ',' );
-                        a.append( 'o' );
-                        a.append( nor ? '+' : '-' );
-                        a.append( 'r' );  
-                    }
-                    if( now != ow ) {
-                        if( a.length() > 0 )
-                            a.append( ',' );
-                        a.append( 'o' );
-                        a.append( now ? '+' : '-' );
-                        a.append( 'w' );  
-                    }
-                    if( nox != ox ) {
-                        if( a.length() > 0 )
-                            a.append( ',' );
-                        a.append( 'o' );
-                        a.append( nox ? '+' : '-' );
-                        a.append( 'x' );  
-                    }
-                    if( not != ot ) {
-                        if( a.length() > 0 )
-                            a.append( ',' );
-                        a.append( not ? '+' : '-' );
-                        a.append( 't' );  
-                    }
-                    if( a.length() > 0 ) {
-                        a.append( " " );
-                        a.append( full_file_name ); 
-                        worker = new ChmodEngine( commander.getContext(), handler, a.toString() );
-                        worker.start();
-                    }
-                }
-            }
+            if( whichButton == DialogInterface.BUTTON_POSITIVE )
+                owner.Execute( ctv.getText().toString(), bbc.isChecked() );
             idialog.dismiss();
         }
+
+
     }
 
-    class ChmodEngine extends ExecEngine {
-        String params;
-        ChmodEngine( Context ctx, Handler h, String params_ ) {
-            super( ctx, h );
-            params = params_;
-        }
-        @Override
-        public void run() {
-            try {
-                String cmd = "chmod " + params;
-                execute( cmd, true, 100 );
-            } catch( Exception e ) {
-                error( "Exception: " + e );
-            }
-            sendResult( errMsg != null ? "Were tried to 'chmod " + params + "'" : null );
-        }
-    }
 }
