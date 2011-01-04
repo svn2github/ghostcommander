@@ -239,7 +239,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                     imgView.setVisibility( View.VISIBLE );
                     imgView.setAdjustViewBounds( true );
                     imgView.setMaxWidth( imgWidth );
-                    imgView.setImageResource( item.dir ? R.drawable.folder : getIconId( name ) );
+                    if( item.thumbnail != null )
+                        imgView.setImageDrawable( item.thumbnail );
+                    else
+                        imgView.setImageResource( item.dir ? R.drawable.folder : getIconId( name ) );
                 }
                 else
                     imgView.setVisibility( View.GONE );

@@ -2,6 +2,7 @@ package com.ghostsq.commander;
 
 import java.util.Date;
 
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.SparseBooleanArray;
 import android.view.ContextMenu;
@@ -22,7 +23,8 @@ public interface CommanderAdapter {
         public long     size = -1;
         public boolean dir, sel;
         public String   attr = "";
-        public Object   origin = null;  
+        public Object   origin = null;
+        public Drawable thumbnail = null;
     }
     
     /**

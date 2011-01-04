@@ -9,15 +9,16 @@ import java.nio.channels.FileChannel;
 import java.util.Date;
 import java.util.Arrays;
 import java.util.Comparator;
-
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.util.SparseBooleanArray;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ListView;
+import android.view.Gravity;
 
 public class FSAdapter extends CommanderAdapterBase {
     private   final static String TAG = "FSAdapter";
@@ -25,6 +26,7 @@ public class FSAdapter extends CommanderAdapterBase {
     class FileEx  {
         public File f = null;
         public long size = -1;
+        public Drawable thumbnail = null;
         public FileEx( String name ) {
             f = new File( name );
         }
@@ -102,11 +104,45 @@ public class FSAdapter extends CommanderAdapterBase {
                 	if( !files_[i].isHidden() ) cnt++;
                 num = cnt;
             }
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            final int thumb_sz = 60;
             items = new FileEx[num];
             int j = 0;
             for( int i = 0; i < num_files; i++ ) {
-            	if( !hide || !files_[i].isHidden() )
-            		items[j++] = new FileEx( files_[i] );
+            	if( !hide || !files_[i].isHidden() ) {
+            	    String fn = files_[i].getAbsolutePath();
+            	    FileEx file_ex = new FileEx( files_[i] );
+            		items[j++] = file_ex;
+            		if( getIconId( fn ) == R.drawable.image ) {
+            		    
+            		    
+                        options.inJustDecodeBounds = true;
+                        options.outWidth = 0;
+                        options.outHeight = 0;
+                        options.inSampleSize = 1;
+                        
+                        
+                        BitmapFactory.decodeFile( fn, options );
+                        if (options.outWidth > 0 && options.outHeight > 0) {
+                            
+                            int greatest = Math.max( options.outWidth, options.outHeight );
+                            int factor = greatest / thumb_sz;
+                            int b;
+                            for( b = 0x8000000; b > 0; b >>= 1 )
+                                if( b < factor ) break;
+                            
+                            options.inSampleSize = b;
+                            options.inJustDecodeBounds = false;
+                            Bitmap bitmap = BitmapFactory.decodeFile( fn, options );
+                            if( bitmap != null ) {
+                                BitmapDrawable drawable = new BitmapDrawable( commander.getContext().getResources(), bitmap );
+                                drawable.setGravity( Gravity.CENTER );
+                                drawable.setBounds( 0, 0, 60, 60 );
+                                file_ex.thumbnail = drawable; 
+                            }
+                        }
+            		}
+            	}
             }
             parentLink = dir.getParent() == null ? SLS : "..";
 
@@ -599,6 +635,7 @@ public class FSAdapter extends CommanderAdapterBase {
                         long msFileDate = f.f.lastModified();
                         if( msFileDate != 0 )
                             item.date = new Date( msFileDate );
+                        item.thumbnail = f.thumbnail;
                     } catch( Exception e ) {
                         Log.e( TAG, "getView() exception ", e );
                     }
