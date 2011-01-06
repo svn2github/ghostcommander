@@ -15,11 +15,12 @@
     <string-array name="language">
         <item>Default</item>
         <item>English</item>
-        <item>Russian</item>
-        <item>Chinese</item>
-        <item>Taiwanese</item>
-        <item>Korean</item>  
-        <item>Hungarian</item>  
+        <item>Русский</item>
+        <item>中文</item>
+        <item>文言</item>
+        <item>한국어</item>  
+        <item>Magyar</item>  
+        <item>Deutsch</item>  
     </string-array>
     <string-array name="language_vals">
         <item></item>
@@ -29,5 +30,6 @@
         <item>zh_tw</item>
         <item>ko</item>  
         <item>hu</item>  
+        <item>de</item>  
     </string-array>
 </resources>

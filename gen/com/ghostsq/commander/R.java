@@ -215,6 +215,7 @@ public final class R {
         public static final int copy_title=0x7f070048;
         /**  copy_title/move_title 
  copy_title/move_title 
+ copy_title/move_title 
          */
         public static final int copy_to_local_only=0x7f07004d;
         public static final int dbox_app_uri=0x7f0700bf;
@@ -225,6 +226,7 @@ public final class R {
          */
         public static final int delete_title=0x7f070051;
         /**  file name/summary 
+ file name/summary 
  file name/summary 
  file name/summary 
  file name/summary 
@@ -280,6 +282,7 @@ public final class R {
         public static final int list=0x7f070003;
         public static final int location=0x7f070002;
         /**  copy_title/move_title, file name/summary 
+ copy_title/move_title, file name/summary 
  copy_title/move_title, file name/summary 
  copy_title/move_title, file name/summary 
  copy_title/move_title, file name/summary 

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Ghost Commander</string>
-    
     <string name="file">Datei</string>
     <string name="location">Ordner</string>
     <string name="list">Fenster</string>
@@ -89,7 +88,7 @@
     <string name="copy_move_not_alwd">\'%s\' ist nicht erlaubt. Nehmen Sie zunächst eine Markierung vor.</string><!-- copy_title/move_title -->
     <string name="copy_to_local_only">Es ist nur möglich auf dieses Gerät zu kopieren.</string>    
     <string name="dest_exist">Datei ist bereits vorhanden. Überschreiben fehlgeschlagen.</string>    
-    <string name="copy_move_to">%s %s nach:&quot;</string><!-- copy_title/move_title, file name/summary -->
+    <string name="copy_move_to">%1$s %2$s nach:&quot;</string><!-- copy_title/move_title, file name/summary -->
     <string name="login_title">Login</string>
     <string name="delete_title">Löschen</string>
     <string name="delete_err">Nichts zum Löschen</string>
@@ -121,7 +120,7 @@
     <string name="password">Passwort:</string>
     <string name="connect">Verbinden</string>
     <string name="cancel">Abbrechen</string>
-    <string name="ftp_connected">Verbunden mit \&quot;%s\&quot;,\n angemeldet als \&quot;%s\&quot;</string>    
+    <string name="ftp_connected">Verbunden mit \&quot;%1$s\&quot;,\n angemeldet als \&quot;%2$s\&quot;</string>    
 
     <string name="layout_settings">Erscheinungsbild einstellen:</string>
     <string name="panels_mode">Zweifenstermodus</string>
@@ -225,8 +224,32 @@
     <string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
     <string name="help_uri">http://sites.google.com/site/ghostcommander1/info</string>
     
-    <string name="about_text">Ghost Commander v%s\nEin Dateimanager.\n\nSollten Sie Fehler entdeckt haben oder Verbesserungsvorschläge haben, wenden Sie sich bitte an:\nghost.sq2@gmail.com\nBitte schreiben Sie in englisch. Danke.\n\n\n
-    Haftungsausschluss:\nMit Nutzung dieser Software erkennen Sie die nachfolgenen Bedingungen an: Der Entwickler dieser Software ist nicht verantwortlich für jegliche Art von Problemen (z.B. Datenverlust, Hardwareschäden, Folgeschäden, ...), die durch die Nutzung dieser Software verursacht werden könnten. Sie erklären sich damit einverstanden diese Software auf eigenes Risiko zu verwenden.\nWenn Sie mit den obigen Bedingungen nicht einverstanden sind, hören Sie sofort auf diese Software zu verwenden und deinstallieren Sie sie.\n</string>
-    <string name="keys_text">Kurzanleitung:\nZum Markieren berühren Sie die rechte Hälfte eines Datei- oder Ordnereintrages im jeweiligen Fenster. Um den Ordner direkt zu öffnen und um die Favoriten anzuzeigen, berühren und halten Sie den Fenstertitel.\nTastenkürzel:\nLautstärke+ - aktuelle Datei oder aktuellen Ordner wählen Lautstärke- - Fenster wechseln +,- - Alles markieren oder Markierung aufheben (, ) - Ordner im rechten oder linken Fenster direkt öffnen und Favoriten anzeigen * - aktuellen Ordner zu den Favoriten hinzufügen \&quot; - Gesamtgrösse der aller markierten Dateien und Ordner anzeigen = - Fenster angleichen 1 - Hilfe 2 - aktuelle Datei umbenennen 4 - Datei bearbeiten 5 - markierte Dateien/ Ordner kopieren  6 - markierte Dateien/ Ordner verschieben 7 - Neuen Ordner erstellen 8 - Dateien und/ oder Verzeichnisse löschen 9 - Einstellungen öffnen 0 - Ghost Commander schliessen [A-z] - Schnellsuche Zum Öffnen einer anonymen FTP-Verbindung, geben Sie die URL z.B. so ein: \nftp://host.com/folder\nZum Öffnen einer FTP-Verbindung mit Zugangsdaten, geben Sie die URL in folgender Form an:\nftp://Benutzername:Passwort@host.com/folder\n\nFür den Rootzugriff geben Sie den Pfad in folgender Form ein:\n \&quot;root:///data\&quot;\nStellen Sie dazu sicher, dass \&quot;Busybox\&quot; installiert ist und dass Sie den Installationspfad in den Einstellungen angegeben haben.\nZur Anzeige der eingehängten Geräte geben Sie \&quot;mount://\&quot; ein. Klicken Sie anschliessend auf einen Eintrag zwischen \&quot;rw\&quot; und \&quot;ro\&quot; umzuschalten. &quot;</string>
+    <string name="about_text">Ghost Commander v%s\nEin Dateimanager.\n\nSollten Sie Fehler entdeckt haben oder Verbesserungsvorschläge haben, wenden Sie sich bitte an:\nghost.sq2@gmail.com\nBitte schreiben Sie in englisch. Danke.\n\n\nHaftungsausschluss:\nMit Nutzung dieser Software erkennen Sie die nachfolgenen Bedingungen an: Der Entwickler dieser Software ist nicht verantwortlich für jegliche Art von Problemen (z.B. Datenverlust, Hardwareschäden, Folgeschäden, ...), die durch die Nutzung dieser Software verursacht werden könnten. Sie erklären sich damit einverstanden diese Software auf eigenes Risiko zu verwenden.\nWenn Sie mit den obigen Bedingungen nicht einverstanden sind, hören Sie sofort auf diese Software zu verwenden und deinstallieren Sie sie.\n</string>
+    <string name="keys_text">Kurzanleitung:\n
+    Zum Markieren berühren Sie die rechte Hälfte eines Datei- oder Ordnereintrages im jeweiligen Fenster. 
+    Um den Ordner direkt zu öffnen und um die Favoriten anzuzeigen, berühren und halten Sie den Fenstertitel.\n\n
+    Tastenkürzel:\n
+    Lautstärke+ – aktuelle Datei oder aktuellen Ordner wählen\n 
+    Lautstärke- – Fenster wechseln \n
+    +,- – Alles markieren oder Markierung aufheben\n 
+    (, ) – Ordner im rechten oder linken Fenster direkt öffnen und Favoriten anzeigen\n 
+    * – aktuellen Ordner zu den Favoriten hinzufügen \n
+    \&quot; – Gesamtgrösse der aller markierten Dateien und Ordner anzeigen\n 
+    = – Fenster angleichen \n
+    1 – Hilfe \n
+    2 – aktuelle Datei umbenennen\n 
+    4 – Datei bearbeiten \n
+    5 – markierte Dateien/ Ordner kopieren\n  
+    6 – markierte Dateien/ Ordner verschieben\n 
+    7 – Neuen Ordner erstellen \n
+    8 – Dateien und/ oder Verzeichnisse löschen\n 
+    9 – Einstellungen öffnen \n
+    0 – Ghost Commander schliessen\n 
+    [A-z] – Schnellsuche\n
+     Zum Öffnen einer anonymen FTP-Verbindung, geben Sie die URL z.B. so ein: \n
+     ftp://host.com/folder\nZum Öffnen einer FTP-Verbindung mit Zugangsdaten, geben Sie die URL in folgender Form an:\n
+     ftp://Benutzername:Passwort@host.com/folder\n
+     Für den Rootzugriff geben Sie den Pfad in folgender Form ein:\n \&quot;root:///data\&quot;\nStellen Sie dazu sicher, dass \&quot;busybox\&quot; installiert ist und dass Sie den Installationspfad in den Einstellungen angegeben haben.\n
+     Zur Anzeige der eingehängten Geräte geben Sie \&quot;mount://\&quot; ein. Klicken Sie anschliessend auf einen Eintrag zwischen \&quot;rw\&quot; und \&quot;ro\&quot; umzuschalten.</string>
     
 </resources>
