@@ -6,7 +6,6 @@
     <string name="list">Fenster</string>
     <string name="app">Anwendung</string>
     <string name="help">Hilfe</string>
-    
     <string name="F1">1 Hilfe</string>
     <string name="F2">2 Umbenennen</string>
     <string name="F3">3 Anzeigen</string>
@@ -25,52 +24,43 @@
     <string name="sz">Grösse</string>
     <string name="refresh">  Aktualisieren</string>
     <string name="enter">  Ordner wechseln</string>
-    <string name="add_fav">* aktuellen Ordner zu Favoriten hinzufügen</string>
+    <string name="add_fav">* aktuellen Ordner zu den Favoriten hintufügen</string>
     <string name="enter_ftp">  FTP verbinden</string>
     <string name="enter_smb">  Windows-Freigabe öffnen</string>
     <string name="search_file">/ Datei suchen</string>
-
     <string name="sort_by_name">  Nach Name</string>
     <string name="sort_by_ext">  Nach Erweiterung</string>
     <string name="sort_by_size">  Nach Grösse</string>
     <string name="sort_by_date">  Nach Datum</string>
     <string name="select_all">+ Alles markieren</string>
     <string name="unselect_all">- Markierung aufheben</string>
-        
     <string name="prefs">9 Einstellungen</string>
     <string name="about">  Über</string>
     <string name="keys">1 Tastenkombinationen</string>
     <string name="new_file">Neue Datei</string>
-
     <string name="go_button">Öffnen</string>
     <string name="show_size">Grösse berechnen</string>
     <string name="send_to">Senden an ...</string>
     <string name="open_with">Öffnen mit ...</string>
-
     <string name="input_settings">Eingabe</string>
-    <string name="arrow_mode">Pfeil-Befehle</string>
+    <string name="arrow_mode">Pfeil-Kommandos</string>
     <string name="summary_arrow_mode">Pfeil rechts/ links wechselt/ markiert</string>
-
     <string name="prefs_label">Einstellungen</string>
     <string name="editor_label">Text Editor</string>
     <string name="advanced">Erweitert</string>
     <string name="advanced_settings">Erweiterte Einstellungen</string>
     <string name="summary_advanced_settings">Einstellungen für fortgeschrittene Benutzer</string>
-
     <string name="wait">Bitte warten ...</string>
     <string name="fail">(fehlgeschlagen)</string>
-
     <string name="dialog_yes">Ja</string>
     <string name="dialog_no">Nein</string>
     <string name="dialog_ok">Ok</string>
     <string name="dialog_cancel">Abbrechen</string>
-    <string name="dialog_close">Schließen</string>
+    <string name="dialog_close">Schliessen</string>
     <string name="dialog_exit">Beenden</string>
-
-    <string name="dialog_abort">Abbrechen</string>
+    <string name="dialog_abort">Abbruch</string>
     <string name="dialog_retry">Wiederholen</string>
     <string name="dialog_ignore">Ignorieren</string>
-    
     <string name="operation">Vorgang</string>
     <string name="edit_title">Bearbeiten</string>
     <string name="newf_prompt">Neuer Dateiname</string>
@@ -80,57 +70,53 @@
     <string name="mkdir_title">Ordner neu</string>
     <string name="mkdir_prompt">Ordnername:</string>
     <string name="search_title">Suchen</string>
-    <string name="search_prompt">Dateiname:</string>
+    <string name="search_prompt">Suchen nach:</string>
     <string name="copy_title">Kopieren</string>
-    <string name="move_title">Bewegen</string>
-    <string name="no_items">Es gibt keine gültigen Dateien um den Vorgang abzuschließen.</string>
-    <string name="find_on_fs_only">Sie können nur Dateien und Verzeichnisse dieses Gerätes durchsuchen.</string>
-    <string name="copy_move_not_alwd">\'%s\' ist nicht erlaubt. Nehmen Sie zunächst eine Markierung vor.</string><!-- copy_title/move_title -->
-    <string name="copy_to_local_only">Es ist nur möglich auf dieses Gerät zu kopieren.</string>    
-    <string name="dest_exist">Datei ist bereits vorhanden. Überschreiben fehlgeschlagen.</string>    
-    <string name="copy_move_to">%1$s %2$s nach:&quot;</string><!-- copy_title/move_title, file name/summary -->
+    <string name="move_title">Verschieben</string>
+    <string name="no_items">Es gibt keine gültigen Dateien um den Vorgang abzuschliessen.</string>
+    <string name="find_on_fs_only">Sie können nur Dateien und Ordner dieses Gerätes durchsuchen.</string>
+    <string name="copy_move_not_alwd">\'%s\' ist nicht erlaubt. Nehmen Sie zunächst eine Markierung vor.</string>
+    <string name="copy_to_local_only">Es ist nur möglich auf dieses Gerät zu kopieren.</string>
+    <string name="dest_exist">Datei ist bereits vorhanden. Überschreiben fehlgeschlagen.</string>
+    <string name="copy_move_to">%1$s %2$s nach:</string>
     <string name="login_title">Login</string>
     <string name="delete_title">Löschen</string>
-    <string name="delete_err">Nichts zum Löschen</string>
-    <string name="delete_q">%s löschen?</string><!-- file name/summary -->
-    <string name="deleted">%d Dateien wurden gelöscht</string>
-    <string name="search_done">Suche fertiggestellt</string>
-    <string name="done">fertig</string>
+    <string name="delete_err">Nichts zum Löschen.</string>
+    <string name="delete_q">%s löschen?</string>
+    <string name="deleted">%d Datei(en) wurden gelöscht.</string>
+    <string name="search_done">Suche fertiggestellt.</string>
+    <string name="done">erledigt</string>
     <string name="interrupted">unterbrochen</string>
-    <string name="too_deep_hierarchy">Zu viele Verzeichnisebenen</string>
-    <string name="nothing_found">Keine Dateien gefunden</string>
+    <string name="too_deep_hierarchy">Zu viele Verzeichnisebenen.</string>
+    <string name="nothing_found">Keine Datei(en) gefunden.</string>
     <string name="preparing">Vorbereitung ...</string>
-    
     <string name="cd_title">Gehe zu</string>
     <string name="cd_prompt">Ordner wechseln nach:</string>
-
     <string name="not_supported">Funktion wird nicht unterstützt.</string>
-    <string name="select_some">Keine Markierungen vorgenommen</string>
+    <string name="select_some">Sie haben keine Markierung(en) vorgenommen.</string>
     <string name="select">Markieren</string>
     <string name="error">Fehler</string>
     <string name="info">Information</string>
     <string name="confirm">Bestätigen</string>
     <string name="progress">Fortschritt</string>
     <string name="alert">Warnung</string>
-
     <string name="server">Server:</string>
     <string name="path">Pfad auf dem Server:</string>
     <string name="domain">Domain:</string>
     <string name="username">Benutzername:</string>
-    <string name="password">Passwort:</string>
+    <string name="password">Kennwort:</string>
     <string name="connect">Verbinden</string>
     <string name="cancel">Abbrechen</string>
-    <string name="ftp_connected">Verbunden mit \&quot;%1$s\&quot;,\n angemeldet als \&quot;%2$s\&quot;</string>    
-
+    <string name="ftp_connected">Verbunden mit \"%1$s\",\n angemeldet als \"%2$s\".</string>
     <string name="layout_settings">Erscheinungsbild einstellen:</string>
     <string name="panels_mode">Zweifenstermodus</string>
-    <string name="summary_panels_mode">Zwei Fenster auf geteiltem Bildschrim anzeigen.</string>
+    <string name="summary_panels_mode">Zwei Fenster auf geteiltem Bildschirm anzeigen.</string>
     <string name="two_lines">Zwei Zeilen in einer Reihe</string>
     <string name="summary_two_lines">Immer Dateiattribute in der zweiten Zeile anzeigen.</string>
     <string name="show_icons">Dateityp-Symbole</string>
-    <string name="summary_show_icons">Dateityp-Symbol für jede Datei anzeigen.</string>
+    <string name="summary_show_icons">Dateityp-Symbole für alle Dateien anzeigen.</string>
     <string name="show_toolbar">Werkzeugleiste anzeigen</string>
-    <string name="summary_show_toolbar">Ein-oder Ausblenden der Werkzeugleiste am unteren Bildschirmrand.</string>
+    <string name="summary_show_toolbar">Ein- oder Ausblenden der Werkzeugleiste am unteren Bildschirmrand.</string>
     <string name="toolbar_preference">Schaltflächen auswählen</string>
     <string name="summary_toolbar_preference">einzelne Schaltflächen der Werkzeugleiste ein- oder ausblenden.</string>
     <string name="show_F1">«1 Hilfe» einblenden</string>
@@ -139,7 +125,7 @@
     <string name="show_F4">«4 Bearbeiten» einblenden</string>
     <string name="show_SF4">«Erstellen» einblenden</string>
     <string name="show_F5">«5 Kopieren» einblenden</string>
-    <string name="show_F6">«6 Bewegen» einblenden</string>
+    <string name="show_F6">«6 Verschieben» einblenden</string>
     <string name="show_F7">«7 Ordner neu» einblenden</string>
     <string name="show_F8">«8 Löschen» einblenden</string>
     <string name="show_F9">«9 Einstellungen» einblenden</string>
@@ -147,109 +133,120 @@
     <string name="show_eq">«= Angleichen» einblenden</string>
     <string name="show_tgl">«⇦ Wechseln» einblenden</string>
     <string name="show_sz">«Grösse» einblenden</string>
-    
     <string name="show_by_name">«Nach Name» einblenden</string>
     <string name="show_by_ext">«Nach Erweiterung» einblenden</string>
     <string name="show_by_size">«Nach Grösse» einblenden</string>
     <string name="show_by_date">«Nach Datum» einblenden</string>
-
     <string name="finger_friendly">Fingerfreundliche Benutzeroberfläche</string>
-    <string name="summary_finger_friendly">Bedienelemente der Benutzeroberfläche werden vergrößert dargestellt.</string>
+    <string name="summary_finger_friendly">Bedienelemente der Benutzeroberfläche werden vergrössert dargestellt.</string>
     <string name="prevent_root">Beim Verlassen der Speicherkarte warnen</string>
     <string name="summary_prevent_root">Es wird eine Warnmeldung angezeigt, wenn Sie in das Stammverzeichnis des Gerätes wechseln wollen.</string>
-
     <string name="left_panel_settings">linkes Fenster</string>
     <string name="right_panel_settings">rechtes Fenster</string>
     <string name="detailed_view_SbS">detaillierte Anzeige im Zweifenstermodus</string>
-    <string name="summary_detailed_view_SbS">Dateigrösse und Dateidatum werden im Zweifenstermodus angezeigt.</string>
+    <string name="summary_detailed_view_SbS">Grösse und Datum werden im Zweifenstermodus angezeigt.</string>
     <string name="detailed_view_Ovr">detaillierte Anzeige im Einfenstermodus</string>
-    <string name="summary_detailed_view_Ovr">Dateigrösse und Dateidatum werden im Einfenstermodus angezeigt.</string>
+    <string name="summary_detailed_view_Ovr">Grösse und Datum werden im Einfenstermodus angezeigt.</string>
     <string name="sorting">Sortierung</string>
-    <string name="summary_sorting">Einstellen, wie die Dateien und Ordner sortiert werden.</string>
-    <string name="sort_case">Groß- und Kleinschreibung bei Sortierung ignorieren</string>
-    <string name="summary_sort_case">Abwählen, um die Groß- und Kleinschreibung bei der Sortierung zu berücksichtigen.</string>
-    
+    <string name="summary_sorting">Einstellen, wie Dateien und Ordner sortiert werden.</string>
+    <string name="sort_case">Gross- und Kleinschreibung bei Sortierung ignorieren</string>
+    <string name="summary_sort_case">Abwählen, um die Gross- und Kleinschreibung bei der Sortierung zu berücksichtigen.</string>
     <string name="show_hidden">Versteckte Dateien anzeigen</string>
     <string name="summary_show_hidden">Dateien, die mit einem Punkt beginnen werden angezeigt.</string>
-
     <string name="colors">Farben einstellen</string>
-    <string name="summary_colors">Hintergrundfarbe, Fordergrundfarbe, ... einstellen</string>
+    <string name="summary_colors">Hintergrundfarbe, Vordergrundfarbe, ... einstellen.</string>
     <string name="bgr_color_picker">Hintergrundfarbe</string>
     <string name="summary_bgr_color_picker">Wählen Sie die gewünschte Farbe für den Hintergrund.</string>
     <string name="fgr_color_picker">Vordergrundfarbe</string>
-    <string name="summary_fgr_color_picker">Wählen Sie die gewünschte Farbe für die Anzeige der Dateinamen.</string>
+    <string name="summary_fgr_color_picker">Wählen Sie die gewünschte Farbe für die Anzeige von Datei- und Ordnernamen.</string>
     <string name="sel_color_picker">Markierungsfarbe</string>
-    <string name="summary_sel_color_picker">Wählen Sie die gewünschte Farbe für markierte Dateien und Fenstertitel</string>
+    <string name="summary_sel_color_picker">Wählen Sie die gewünschte Farbe für markierte Dateien und Ordner sowie für den Fenstertitel.</string>
     <string name="ttl_color_picker">Fenstertitel</string>
     <string name="summary_ttl_color_picker">Wählen Sie die gewünschte Farbe für den Hintergrund der Fenstertitel.</string>
     <string name="pick_color">Farbe einstellen</string>
-
     <string name="language">Sprache wählen (Choose Language)</string>
     <string name="summary_language">Automatische Spracherkennung ausschalten.</string>
-    <string name="restart_to_apply_lang">Bitte starten Sie Ghost Commander neu, um die geänderten Spracheinstellungen zu übernehmen.</string>        
-
+    <string name="restart_to_apply_lang">Bitte starten Sie Ghost Commander neu, um die geänderten Spracheinstellungen zu übernehmen.</string>
     <string name="editor_activity">Name der Editor Activity</string>
-    <string name="summary_editor_activity">Editor Activity bearbeiten. Paketname = Klassennamenpräfix.</string>
+    <string name="summary_editor_activity">Editor Activity bearbeiten. Paketname=Klassennamenpräfix.</string>
     <string name="value_editor_activity">com.ghostsq.commander.Editor</string>
-    
     <string name="busybox_location">Pfad zu Busybox</string>
-    <string name="summary_busybox_location">Zur Nutzung der Root-Funktionen wird Busybox benötigt.</string>   
-    
-    <string name="nothing_to_open">Nichts zu öffnen</string>
-    <string name="remind_to_save">Bitte vergessen Sie nicht die Änderungen über das Menü zu speichern.</string>
+    <string name="summary_busybox_location">Zur Nutzung der Root-Funktionen wird Busybox benötigt.</string>
+    <string name="nothing_to_open">Nichts zu Öffnen</string>
+    <string name="remind_to_save">Bitte vergessen Sie nicht, die Änderungen über das Menü zu speichern.</string>
     <string name="save">Speichern</string>
-    <string name="revert">Verwerfen</string>
+    <string name="revert">Zurück</string>
     <string name="wrap">Zeilenumbruch</string>
-    <string name="no_such_file">Die Datei \&quot;%s\&quot; wurde nicht gefunden.</string>
-    <string name="too_big_file">Die Datei \&quot;%s\&quot; ist zu gross.</string>
-    <string name="binary_file">Die Datei \&quot;%s\&quot; ist binär. Veränderungen können zu Beschädigungen führen. Editieren auf eigene Gefahr.</string>    
-    <string name="cant_open">Datei konnte nicht geöffnet werden.</string>    
+    <string name="no_such_file">Die Datei \"%s\" wurde nicht gefunden.</string>
+    <string name="too_big_file">Die Datei \"%s\" ist zu gross.</string>
+    <string name="binary_file">Die Datei \"%s\" ist binär. Veränderungen können zu Beschädigungen führen. Bearbeiten erfolgt auf eigene Gefahr.</string>
+    <string name="cant_open">Datei konnte nicht geöffnet werden.</string>
     <string name="cant_save">Datei konnte nicht gespeichert werden.</string>
     <string name="nav_warn">Sie sind dabei einen Systemordner zu öffnen. Veränderungen können zu einem Ausfall des Gerätes führen. Wollen Sie wirklich fortfahren?</string>
-    <string name="nav_warn_cmt">(Sie können diese Warnung dauerhaft in den Programmeinstellungen ausschalten.)\nBerühren Sie &quot;Abbrechen&quot;, um sicher zur Speicherkarte zurückzukehren. Berühren Sie die Schaltfläche &quot;Beenden&quot; um Ghost Commander zu schließen.</string>
-    <string name="no_such_folder">\&quot;%s\&quot; ist kein gültiger Ordner!</string>
-    <string name="fav_added">Der Ordner \&quot;%s\&quot; wurde zu den Favoriten hinzugefügt.</string>
-
-    <string name="smb_missed">Das Samba-Plugin wurde nicht gefunden.\nBitte stellen Sie sicher, dass es installiert ist.</string>
+    <string name="nav_warn_cmt">(Sie können diese Warnmeldung in den Einstellungen ausschalten.) Berühren Sie "Abbrechen" , um sicher zur Speicherkarte zurückzukehren. Berühren Sie die Schaltfläche "Beenden" um Ghost Commander zu schliessen. </string>
+    <string name="no_such_folder">\"%s\" ist ein ungültiger Ordner!</string>
+    <string name="fav_added">Der Ordner \"%s\" wurde zu den Favoriten hinzugefügt.</string>
+    <string name="smb_missed">Das Samba-Plugin
+    (com.ghostsq.commander.samba)
+    wurde nicht gefunden. Stellen Sie
+    sicher, dass es installiert ist.</string>
     <string name="smb_app_uri">market://search?q=pname:com.ghostsq.commander.samba</string>
-    <string name="dbox_missed">Das Dropbox-Plugin wurde nicht gefunden.\nBitte stellen Sie sicher, dass es installiert ist.</string>
+    <string name="dbox_missed">Das Dropbox-Plugin
+    (com.ghostsq.commander.dropbox)
+    wurde nicht gefunden. Stellen Sie
+    sicher, dass es installiert ist.</string>
     <string name="dbox_app_uri">market://search?q=pname:com.ghostsq.commander.dropbox</string>
-    
-    <string name="no_root">Der Rootzugriff wurde durch das Gerät verweigert.</string>
-
+    <string name="no_root">Der Rootzugriff (su) wurde verweigert. </string>
     <string name="donate">  Spenden</string>
     <string name="online_help">  Online-Hilfe</string>
-
-    <string name="donation">Gefällt Ihnen diese Anwendung? Wirklich? Wie wäre es dann mit einer kleinen Spende zur Unterstützung weiterer Entwicklungsarbeiten?\n Berühren Sie \&quot;Ok\&quot; um mit Hilfe von Paypal zu spenden (Sie werden dann zur Paypal-Seite weitergeleitet).\nBerühren Sie \&quot;Abbrechen\&quot; um «Ghost Commander» Dateimanager umsonst weiter zu nutzen.\n</string>
+    <string name="donation">Gefällt Ihnen Ghost Commander? Wenn ja, sollten Sie mit
+    einer kleinen Spende die weitere Entwicklung unterstützen.
+    Berühren Sie \"Ok\", um über Paypal zu spenden.
+    Berühren Sie \"Abbrechen\", um Ghost Commander einfach weiter zu nutzen. </string>
     <string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
     <string name="help_uri">http://sites.google.com/site/ghostcommander1/info</string>
-    
-    <string name="about_text">Ghost Commander v%s\nEin Dateimanager.\n\nSollten Sie Fehler entdeckt haben oder Verbesserungsvorschläge haben, wenden Sie sich bitte an:\nghost.sq2@gmail.com\nBitte schreiben Sie in englisch. Danke.\n\n\nHaftungsausschluss:\nMit Nutzung dieser Software erkennen Sie die nachfolgenen Bedingungen an: Der Entwickler dieser Software ist nicht verantwortlich für jegliche Art von Problemen (z.B. Datenverlust, Hardwareschäden, Folgeschäden, ...), die durch die Nutzung dieser Software verursacht werden könnten. Sie erklären sich damit einverstanden diese Software auf eigenes Risiko zu verwenden.\nWenn Sie mit den obigen Bedingungen nicht einverstanden sind, hören Sie sofort auf diese Software zu verwenden und deinstallieren Sie sie.\n</string>
+    <string name="about_text">Ghost Commander v%s\n
+    Ein Dateimanager\n\n
+    Fehler oder Verbesserungsvorschläge, senden Sie bitte an\n
+    ghost.sq2@gmail.com\n
+    Danke\n\n\n
+    Haftungsausschluss:\n
+    Mit Nutzung dieser Software erkennen Sie die folgenden Bedingungen an:
+    Der Entwickler dieser Software ist nicht verantwortlich für jegliche Art von Problemen (Datenverlust, Hardwareschäden, Folgeschäden, ...), die durch die Nutzung dieser Software verursacht werden könnten. Sie nutzen diese Software auf eigene Verantwortung.\n
+    Wenn Sie mit diesen Bedingungen nicht einverstanden sind, hören Sie umgehend auf diese Software zu nutzen und deinstallieren Sie Sie.\n
+    </string>
     <string name="keys_text">Kurzanleitung:\n
-    Zum Markieren berühren Sie die rechte Hälfte eines Datei- oder Ordnereintrages im jeweiligen Fenster. 
-    Um den Ordner direkt zu öffnen und um die Favoriten anzuzeigen, berühren und halten Sie den Fenstertitel.\n\n
+    Zum Markieren berühren Sie die rechte Hälfte eines Datei- oder Ordnereintrages im jeweiligen Fenster.\n
+    Um den Ordner direkt zu öffnen und um die Favoriten anzuzeigen, berühren und halten Sie den Fenstertitel.\n
     Tastenkürzel:\n
-    Lautstärke+ – aktuelle Datei oder aktuellen Ordner wählen\n 
-    Lautstärke- – Fenster wechseln \n
-    +,- – Alles markieren oder Markierung aufheben\n 
-    (, ) – Ordner im rechten oder linken Fenster direkt öffnen und Favoriten anzeigen\n 
-    * – aktuellen Ordner zu den Favoriten hinzufügen \n
-    \&quot; – Gesamtgrösse der aller markierten Dateien und Ordner anzeigen\n 
-    = – Fenster angleichen \n
-    1 – Hilfe \n
-    2 – aktuelle Datei umbenennen\n 
-    4 – Datei bearbeiten \n
-    5 – markierte Dateien/ Ordner kopieren\n  
-    6 – markierte Dateien/ Ordner verschieben\n 
-    7 – Neuen Ordner erstellen \n
-    8 – Dateien und/ oder Verzeichnisse löschen\n 
-    9 – Einstellungen öffnen \n
-    0 – Ghost Commander schliessen\n 
-    [A-z] – Schnellsuche\n
-     Zum Öffnen einer anonymen FTP-Verbindung, geben Sie die URL z.B. so ein: \n
-     ftp://host.com/folder\nZum Öffnen einer FTP-Verbindung mit Zugangsdaten, geben Sie die URL in folgender Form an:\n
-     ftp://Benutzername:Passwort@host.com/folder\n
-     Für den Rootzugriff geben Sie den Pfad in folgender Form ein:\n \&quot;root:///data\&quot;\nStellen Sie dazu sicher, dass \&quot;busybox\&quot; installiert ist und dass Sie den Installationspfad in den Einstellungen angegeben haben.\n
-     Zur Anzeige der eingehängten Geräte geben Sie \&quot;mount://\&quot; ein. Klicken Sie anschliessend auf einen Eintrag zwischen \&quot;rw\&quot; und \&quot;ro\&quot; umzuschalten.</string>
-    
+    Lautstärke+ - aktuelle Datei oder aktuellen Ordner markieren\n
+    Lautstärke- - Fenster wechseln\n
+    +,- - Alles markieren oder Markierung aufheben\n
+    (, ) - Ordner im rechten oder linken Fenster direkt öffnen und Favoriten anzeigen\n
+    * - aktuellen Ordner zu den Favoriten hinzufügen\n
+    \ - Gesamtgrösse aller markierten Dateien und Ordner anzeigen\n
+    = - Fenster angleichen\n
+    1 - Hilfe\n
+    2 - aktuelle Datei umbenennen\n
+    4 - Datei bearbeiten\n
+    5 - markierte Dateien/ Ordner kopieren\n
+    6 - markierte Dateien/ Ordner verschieben\n
+    7 - Neuen Ordner erstellen\n
+    8 - Dateien und/ oder Verzeichnisse löschen\n
+    9 - Einstellungen öffnen\n
+    0 - Ghost Commander schliessen\n
+    [A-z] - Schnellsuche\n\n
+
+    Zum Öffnen einer anonymen FTP-Verbindung, geben Sie die URL z.B. so ein:\n
+    ftp://Server.de/Ordner\n
+    Zum Öffnen einer FTP-Verbindung mit Zugangsdaten, geben Sie die URL in folgender Form an:\n
+    ftp://Benutzername:Kennwort@Server.de/Ordner\n\n
+
+    Für den Rootzugriff geben Sie den Pfad in folgender Form ein:\n
+    root://Ordner\n
+    Stellen Sie dazu sicher, dass Busybox installiert ist und dass Sie den Installationspfad in den Einstellungen angegeben haben.\n\n
+
+    Zur Anzeige der eingehängten Geräte geben Sie\n
+    mount://\n
+    ein. Klicken Sie anschliessend auf einen Eintrag um zwischen "rw" und "ro" umzuschalten.</string>
 </resources>
