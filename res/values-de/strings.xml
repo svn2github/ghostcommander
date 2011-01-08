@@ -12,7 +12,7 @@
     <string name="F4">4 Bearbeiten</string>
     <string name="SF4">  Erstellen</string>
     <string name="F5">5 Kopieren</string>
-    <string name="F6">6 Bewegen</string>
+    <string name="F6">6 Verschieben</string>
     <string name="F7">7 Ordner neu</string>
     <string name="F8">8 Löschen</string>
     <string name="F9">9 Einstellungen</string>
@@ -21,13 +21,13 @@
     <string name="eq">= Angleichen</string>
     <string name="change">⇦ Wechseln</string>
     <string name="tgl">⇦ Wechseln</string>
-    <string name="sz">Grösse</string>
+    <string name="sz">" Grösse</string>
     <string name="refresh">  Aktualisieren</string>
     <string name="enter">  Ordner wechseln</string>
     <string name="add_fav">* aktuellen Ordner zu den Favoriten hintufügen</string>
     <string name="enter_ftp">  FTP verbinden</string>
     <string name="enter_smb">  Windows-Freigabe öffnen</string>
-    <string name="search_file">/ Datei suchen</string>
+    <string name="search_file">/ Suchen</string>
     <string name="sort_by_name">  Nach Name</string>
     <string name="sort_by_ext">  Nach Erweiterung</string>
     <string name="sort_by_size">  Nach Grösse</string>
@@ -65,7 +65,7 @@
     <string name="edit_title">Bearbeiten</string>
     <string name="newf_prompt">Neuer Dateiname</string>
     <string name="rename_title">Umbenennen</string>
-    <string name="rename_prompt">Umbenennen nach:</string>
+    <string name="rename_prompt">Umbenennen in:</string>
     <string name="rename_err">Nichts zum Umbenennen.</string>
     <string name="mkdir_title">Ordner neu</string>
     <string name="mkdir_prompt">Ordnername:</string>
@@ -73,10 +73,10 @@
     <string name="search_prompt">Suchen nach:</string>
     <string name="copy_title">Kopieren</string>
     <string name="move_title">Verschieben</string>
-    <string name="no_items">Es gibt keine gültigen Dateien um den Vorgang abzuschliessen.</string>
+    <string name="no_items">Keine Dateien und/ oder Ordner markiert oder Markierung für gewünschte Operation ungültig.</string>
     <string name="find_on_fs_only">Sie können nur Dateien und Ordner dieses Gerätes durchsuchen.</string>
-    <string name="copy_move_not_alwd">\'%s\' ist nicht erlaubt. Nehmen Sie zunächst eine Markierung vor.</string>
-    <string name="copy_to_local_only">Es ist nur möglich auf dieses Gerät zu kopieren.</string>
+    <string name="copy_move_not_alwd">\'%s\' ist nicht möglich.</string>
+    <string name="copy_to_local_only">Datei- und Ordneroperationen sind nur zu oder von diesem Gerät erlaubt.</string>
     <string name="dest_exist">Datei ist bereits vorhanden. Überschreiben fehlgeschlagen.</string>
     <string name="copy_move_to">%1$s %2$s nach:</string>
     <string name="login_title">Login</string>
@@ -107,8 +107,8 @@
     <string name="password">Kennwort:</string>
     <string name="connect">Verbinden</string>
     <string name="cancel">Abbrechen</string>
-    <string name="ftp_connected">Verbunden mit \"%1$s\",\n angemeldet als \"%2$s\".</string>
-    <string name="layout_settings">Erscheinungsbild einstellen:</string>
+    <string name="ftp_connected">Verbunden mit \"%1$s\"\n angemeldet als \"%2$s\".</string>
+    <string name="layout_settings">Erscheinungsbild</string>
     <string name="panels_mode">Zweifenstermodus</string>
     <string name="summary_panels_mode">Zwei Fenster auf geteiltem Bildschirm anzeigen.</string>
     <string name="two_lines">Zwei Zeilen in einer Reihe</string>
@@ -208,16 +208,15 @@
     <string name="about_text">Ghost Commander v%s\n
     Ein Dateimanager\n\n
     Fehler oder Verbesserungsvorschläge, senden Sie bitte an\n
-    ghost.sq2@gmail.com\n
-    Danke\n\n\n
+    ghost.sq2@gmail.com\n\n\n
     Haftungsausschluss:\n
-    Mit Nutzung dieser Software erkennen Sie die folgenden Bedingungen an:
+    Mit Nutzung dieser Software erkennen Sie die folgenden Bedingungen an.
     Der Entwickler dieser Software ist nicht verantwortlich für jegliche Art von Problemen (Datenverlust, Hardwareschäden, Folgeschäden, ...), die durch die Nutzung dieser Software verursacht werden könnten. Sie nutzen diese Software auf eigene Verantwortung.\n
     Wenn Sie mit diesen Bedingungen nicht einverstanden sind, hören Sie umgehend auf diese Software zu nutzen und deinstallieren Sie Sie.\n
     </string>
-    <string name="keys_text">Kurzanleitung:\n
+    <string name="keys_text">Kurzanleitung:\n\n
     Zum Markieren berühren Sie die rechte Hälfte eines Datei- oder Ordnereintrages im jeweiligen Fenster.\n
-    Um den Ordner direkt zu öffnen und um die Favoriten anzuzeigen, berühren und halten Sie den Fenstertitel.\n
+    Um den Ordner direkt zu öffnen und um die Favoriten anzuzeigen, berühren und halten Sie den Fenstertitel.\n\n
     Tastenkürzel:\n
     Lautstärke+ - aktuelle Datei oder aktuellen Ordner markieren\n
     Lautstärke- - Fenster wechseln\n
