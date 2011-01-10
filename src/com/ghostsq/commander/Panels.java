@@ -365,34 +365,44 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             setPanelCurrent( current );
         }
         catch( Exception e ) {
-            c.showMessage( "Error: " + e );
+            Log.e( TAG, "applySettings()", e );
         }
     }
     private final void applySettings( SharedPreferences sharedPref, CommanderAdapter ca, int which ) {
-        arrow_mode = sharedPref.getBoolean( "arrow_mode", false );
-    	if( id == R.layout.main )
-	        ca.setMode( CommanderAdapter.MODE_WIDTH, sharedPref.getBoolean( "two_lines", false ) ? 
-	        		    CommanderAdapter.NARROW_MODE : CommanderAdapter.WIDE_MODE );
+        try {
+            arrow_mode = sharedPref.getBoolean( "arrow_mode", false );
+            if( id == R.layout.main )
+                ca.setMode( CommanderAdapter.MODE_WIDTH, sharedPref.getBoolean( "two_lines", false ) ? 
+                		    CommanderAdapter.NARROW_MODE : CommanderAdapter.WIDE_MODE );
 
-        ca.setMode( CommanderAdapter.MODE_ICONS, sharedPref.getBoolean( "show_icons", true ) ? 
-                CommanderAdapter.ICON_MODE : CommanderAdapter.TEXT_MODE );
+            ca.setMode( CommanderAdapter.MODE_ICONS, sharedPref.getBoolean( "show_icons", true ) ? 
+                    CommanderAdapter.ICON_MODE : CommanderAdapter.TEXT_MODE );
 
-        ca.setMode( CommanderAdapter.MODE_CASE, sharedPref.getBoolean( "case_ignore", true ) ? 
-                CommanderAdapter.CASE_IGNORE : CommanderAdapter.CASE_SENS );
+            ca.setMode( CommanderAdapter.MODE_CASE, sharedPref.getBoolean( "case_ignore", true ) ? 
+                    CommanderAdapter.CASE_IGNORE : CommanderAdapter.CASE_SENS );
 
-        String sfx = id == R.layout.main ? "_Ovr" : "_SbS";
-        boolean detail_mode = sharedPref.getBoolean( which == LEFT ? "left_detailed" + sfx : "right_detailed" + sfx, true );        
-        ca.setMode( CommanderAdapter.MODE_DETAILS, detail_mode ? 
-                    CommanderAdapter.DETAILED_MODE : CommanderAdapter.SIMPLE_MODE );
-        String sort = sharedPref.getString( which == LEFT ? "left_sorting" : "right_sorting", "n" );
-        ca.setMode( CommanderAdapter.MODE_SORTING, sort.compareTo( "s" ) == 0 ? CommanderAdapter.SORT_SIZE : 
-                                                   sort.compareTo( "e" ) == 0 ? CommanderAdapter.SORT_EXT : 
-                                                   sort.compareTo( "d" ) == 0 ? CommanderAdapter.SORT_DATE : 
-                                                                                CommanderAdapter.SORT_NAME );
-        ca.setMode( CommanderAdapter.MODE_FINGERF, fingerFriendly ? CommanderAdapter.FAT_MODE : CommanderAdapter.SLIM_MODE );
+            String sfx = id == R.layout.main ? "_Ovr" : "_SbS";
+            boolean detail_mode = sharedPref.getBoolean( which == LEFT ? "left_detailed" + sfx : "right_detailed" + sfx, true );        
+            ca.setMode( CommanderAdapter.MODE_DETAILS, detail_mode ? 
+                        CommanderAdapter.DETAILED_MODE : CommanderAdapter.SIMPLE_MODE );
+            String sort = sharedPref.getString( which == LEFT ? "left_sorting" : "right_sorting", "n" );
+            ca.setMode( CommanderAdapter.MODE_SORTING, sort.compareTo( "s" ) == 0 ? CommanderAdapter.SORT_SIZE : 
+                                                       sort.compareTo( "e" ) == 0 ? CommanderAdapter.SORT_EXT : 
+                                                       sort.compareTo( "d" ) == 0 ? CommanderAdapter.SORT_DATE : 
+                                                                                    CommanderAdapter.SORT_NAME );
+            ca.setMode( CommanderAdapter.MODE_FINGERF, fingerFriendly ? CommanderAdapter.FAT_MODE : CommanderAdapter.SLIM_MODE );
 
-        boolean hidden_mode = sharedPref.getBoolean( ( which == LEFT ? "left" : "right" ) + "_show_hidden", true );
-        ca.setMode( CommanderAdapter.MODE_HIDDEN, hidden_mode ? CommanderAdapter.SHOW_MODE : CommanderAdapter.HIDE_MODE );
+            boolean hidden_mode = sharedPref.getBoolean( ( which == LEFT ? "left" : "right" ) + "_show_hidden", true );
+            ca.setMode( CommanderAdapter.MODE_HIDDEN, hidden_mode ? CommanderAdapter.SHOW_MODE : CommanderAdapter.HIDE_MODE );
+
+            int thubnails_size = 0;
+            if( sharedPref.getBoolean( "show_thumbnails", true ) )
+                thubnails_size = Integer.parseInt( sharedPref.getString( "thumbnails_size", "100" ) );
+            ca.setMode( CommanderAdapter.SET_TBN_SIZE, thubnails_size );
+
+        } catch( Exception e ) {
+            Log.e( TAG, "applySettings() inner", e );
+        }
     }
     public void changeSorting( int sort_mode ) {
         CommanderAdapter ca = getListAdapter( true );
@@ -785,12 +795,16 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         }
         else {
             if( ca == null || !( ca instanceof FSAdapter ) ) {
-                if( ca != null )
-                    ca.prepareToDestroy();
-                ca = new FSAdapter( c, uri, id == R.layout.main ? CommanderAdapter.WIDE_MODE : CommanderAdapter.NARROW_MODE );
-                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
-                applySettings( sharedPref, ca, which );
-                flv.setAdapter( (ListAdapter)ca );
+                try {
+                    if( ca != null )
+                        ca.prepareToDestroy();
+                    ca = new FSAdapter( c, uri, id == R.layout.main ? CommanderAdapter.WIDE_MODE : CommanderAdapter.NARROW_MODE );
+                    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
+                    applySettings( sharedPref, ca, which );
+                    flv.setAdapter( (ListAdapter)ca );
+                } catch( Exception e ) {
+                    Log.e( TAG, "Problem with FSAdapter class", e );
+                }
             }
         }
         if( ca == null ) {

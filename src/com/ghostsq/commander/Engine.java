@@ -5,12 +5,12 @@ import android.os.Handler;
 import android.os.Message;
 
 public class Engine extends Thread {
-	private   Handler handler;
+    protected Handler thread_handler;
 	protected boolean stop = false;
 	protected String  errMsg = null;
 	protected long threadStartedAt = 0;
 	protected Engine( Handler h ) {
-		handler = h;
+	    thread_handler = h; // TODO - distinct the member from the parent class
 	}
     public boolean reqStop() {
         if( isAlive() ) {
@@ -27,7 +27,7 @@ public class Engine extends Thread {
     	sendProgress( s, p, -1 );
     }
     protected final void sendProgress( String s, int p1, int p2 ) {
-        Message msg = handler.obtainMessage();
+        Message msg = thread_handler.obtainMessage();
         Bundle b = new Bundle();
         b.putInt( CommanderAdapterBase.NOTIFY_PRG1, p1 );
         if( p2 >= 0 )
@@ -35,17 +35,17 @@ public class Engine extends Thread {
         if( s != null )
             b.putString( CommanderAdapterBase.NOTIFY_STR, s );
         msg.setData( b );
-        handler.sendMessage( msg );
+        thread_handler.sendMessage( msg );
     }
     protected final void sendProgress( String s, int p, String cookie ) {
-        Message msg = handler.obtainMessage();
+        Message msg = thread_handler.obtainMessage();
         Bundle b = new Bundle();
         b.putInt( CommanderAdapterBase.NOTIFY_PRG1, p );
         b.putString( CommanderAdapterBase.NOTIFY_COOKIE, cookie );
         if( s != null )
             b.putString( CommanderAdapterBase.NOTIFY_STR, s );
         msg.setData( b );
-        handler.sendMessage( msg );
+        thread_handler.sendMessage( msg );
     }
     protected final void error( String err ) {
     	if( errMsg == null )

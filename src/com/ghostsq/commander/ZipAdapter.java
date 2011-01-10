@@ -12,6 +12,8 @@ import java.util.Enumeration;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipEntry;
 
+import org.apache.http.util.EncodingUtils;
+
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.CommanderAdapter;
 import com.ghostsq.commander.CommanderAdapterBase;
@@ -19,9 +21,6 @@ import com.ghostsq.commander.CommanderAdapterBase;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.SparseBooleanArray;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ListView;
 
 public class ZipAdapter extends CommanderAdapterBase {
     private static final char   SLC = File.separatorChar;
@@ -61,10 +60,11 @@ public class ZipAdapter extends CommanderAdapterBase {
                 String entry_name = e.getName();
                 if( entry_name == null || fld_path.compareToIgnoreCase(entry_name) == 0 ) 
                     continue;
-                /* there are at least two kinds of zips:
-                 * with dedicated folder entry and without
-                 * the code below should process both
-                 * do not do changes until you understand how does it works
+                /* There are at least two kinds of zips -
+                 * with dedicated folder entry and without one.
+                 * The code below should process both.
+                 * Do not do changes here until you fully 
+                 * understand how does it works.
                  */
                 if( fld_path.regionMatches( true, 0, entry_name, 0, fld_path_len ) ) {
                     int sl_pos = entry_name.indexOf( SLC, fld_path_len );
@@ -591,7 +591,13 @@ public class ZipAdapter extends CommanderAdapterBase {
                     ZipEntry curItem;
                     curItem = items[position - 1];
                     item.dir = curItem.isDirectory();
-                    item.name = item.dir ? SLS + getLocalName( curItem ) : getLocalName( curItem );
+                    /*
+                    byte name_bytes[] = EncodingUtils.getBytes( curItem.getName(), "cp437"); // iso-8859-1
+                    String UTF8_name = new String( name_bytes );
+                    item.name = item.dir ? SLS + UTF8_name : UTF8_name;
+                    */
+                    // item.name = item.dir ? SLS + getLocalName( curItem ) : getLocalName( curItem );
+                    item.name = item.dir ? SLS + curItem.getName() : curItem.getName();
                     item.size = curItem.getSize();
                     long item_time = curItem.getTime();
                     item.date = item_time > 0 ? new Date( item_time ) : null;

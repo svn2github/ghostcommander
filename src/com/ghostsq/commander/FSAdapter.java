@@ -9,12 +9,14 @@ import java.nio.channels.FileChannel;
 import java.util.Date;
 import java.util.Arrays;
 import java.util.Comparator;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.Message;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -77,7 +79,7 @@ public class FSAdapter extends CommanderAdapterBase {
                 else
                     dir_name = dirName;
                 if( dir_name == null ) {
-                    commander.notifyMe( new Commander.Notify( "Fatal error", Commander.OPERATION_FAILED ) );
+                    commander.notifyMe( new Commander.Notify( "invalid path", Commander.OPERATION_FAILED ) );
                     Log.e( TAG, "Unable to obtain folder of the folder name" );
                     return false;
                 }
@@ -88,8 +90,8 @@ public class FSAdapter extends CommanderAdapterBase {
                     err_msg = commander.getContext().getString( R.string.no_such_folder, dir_name );
                 d = Uri.parse( dir.getParent() );
                 if( d == null ) {
-                    commander.notifyMe( new Commander.Notify( "Fatal error", Commander.OPERATION_FAILED ) );
-                    Log.e( TAG, "Unable to calculate the parent folder of the folder '" + dir_name + "'" );
+                    commander.notifyMe( new Commander.Notify( "invalid path", Commander.OPERATION_FAILED ) );
+                    Log.e( TAG, "Wrong folder '" + dir_name + "'" );
                     return false;
                 }
             }
@@ -104,26 +106,59 @@ public class FSAdapter extends CommanderAdapterBase {
                 	if( !files_[i].isHidden() ) cnt++;
                 num = cnt;
             }
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            final int thumb_sz = 60;
             items = new FileEx[num];
             int j = 0;
             for( int i = 0; i < num_files; i++ ) {
-            	if( !hide || !files_[i].isHidden() ) {
-            	    String fn = files_[i].getAbsolutePath();
-            	    FileEx file_ex = new FileEx( files_[i] );
-            		items[j++] = file_ex;
-            		if( getIconId( fn ) == R.drawable.image ) {
-            		    
-            		    
+                if( !hide || !files_[i].isHidden() ) {
+                    FileEx file_ex = new FileEx( files_[i] );
+                    items[j++] = file_ex;
+                }
+            }
+            FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
+            Arrays.sort( items, comp );
+            parentLink = dir.getParent() == null ? SLS : "..";
+
+            if( thumbnail_size_perc > 0 ) {
+                worker = new ThumbnailsEngine( new Handler() {
+                    public void handleMessage( Message msg ) {
+                        notifyDataSetChanged();
+                    } }, items );
+                worker.start();
+            }
+            commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pass_back_on_done ) );
+            return true;
+		} catch( Exception e ) {
+			Log.e( TAG, "readSource() excception", e );
+		}
+		return false;
+    }
+
+    class ThumbnailsEngine extends Engine {
+        private final static int NOTIFY_THUMBNAIL_CHANGED = 653;
+        private FileEx[] mList;
+        protected int  num = 0, dirs = 0, depth = 0;
+
+        ThumbnailsEngine( Handler h, FileEx[] list ) {
+            super( h );
+            mList = list;
+        }
+        @Override
+        public void run() {
+            try {
+                if( mList == null ) return;
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                int thumb_sz = getImgWidth();
+                for( int i = 0; i < mList.length ; i++ ) {
+                    if( isStopReq() ) break;
+                    String fn = mList[i].f.getAbsolutePath();
+                    if( getIconId( fn ) == R.drawable.image ) {
                         options.inJustDecodeBounds = true;
                         options.outWidth = 0;
                         options.outHeight = 0;
                         options.inSampleSize = 1;
                         
-                        
                         BitmapFactory.decodeFile( fn, options );
-                        if (options.outWidth > 0 && options.outHeight > 0) {
+                        if( options.outWidth > 0 && options.outHeight > 0 ) {
                             
                             int greatest = Math.max( options.outWidth, options.outHeight );
                             int factor = greatest / thumb_sz;
@@ -138,27 +173,22 @@ public class FSAdapter extends CommanderAdapterBase {
                                 BitmapDrawable drawable = new BitmapDrawable( commander.getContext().getResources(), bitmap );
                                 drawable.setGravity( Gravity.CENTER );
                                 drawable.setBounds( 0, 0, 60, 60 );
-                                file_ex.thumbnail = drawable; 
+                                mList[i].thumbnail = drawable;
+
+                                Message msg = thread_handler.obtainMessage( NOTIFY_THUMBNAIL_CHANGED );
+                                msg.sendToTarget();
+                                
                             }
                         }
-            		}
-            	}
+                    }
+                }
+                
+            } catch( Exception e ) {
+                sendProgress( e.getMessage(), Commander.OPERATION_FAILED );
             }
-            parentLink = dir.getParent() == null ? SLS : "..";
-
-            FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
-            Arrays.sort( items, comp );
-
-            if( err_msg != null )
-                commander.notifyMe( new Commander.Notify( err_msg, Commander.OPERATION_FAILED ) );
-            commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pass_back_on_done ) );
-            return true;
-		} catch( Exception e ) {
-			Log.e( TAG, "readSource() excception", e );
-		}
-		return false;
+        }
     }
-
+    
     @Override
     public void openItem( int position ) {
         if( position == 0 ) {
@@ -329,8 +359,11 @@ public class FSAdapter extends CommanderAdapterBase {
     	try {
         	FileEx[] list = bitsToFiles( cis );
         	if( list != null ) {
-        		if( worker != null && worker.reqStop() )
+        		if( worker != null && worker.reqStop() ) {
+        		    commander.notifyMe( new Commander.Notify( commander.getContext().getString( R.string.wait ), 
+        		            Commander.OPERATION_FAILED ) );
        		        return false;
+        		}
         		commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
         		worker = new DeleteEngine( handler, list );
         		worker.start();
@@ -424,8 +457,11 @@ public class FSAdapter extends CommanderAdapterBase {
             if( list == null )
             	commander.showError( "Something wrong with the files " );
             else {
-                if( worker != null && worker.reqStop() )
+                if( worker != null && worker.reqStop() ) {
+                    commander.notifyMe( new Commander.Notify( commander.getContext().getString( R.string.wait ), 
+                            Commander.OPERATION_FAILED ) );
                     return false;
+                }
                 commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
             	worker = new CopyEngine( handler, list, dirName );
             	worker.start();

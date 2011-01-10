@@ -148,6 +148,11 @@
     <string name="prevent_root">루트 폴더 경고</string>
     <string name="summary_prevent_root">루트 폴더로 이동할 경우 경고 발생</string>
 
+    <string name="thumbnails">미리보기 이미지</string>
+    <string name="summary_thumbnails"></string>
+    <string name="thumbnails_size">미리보기 이미지 크기</string>
+    <string name="summary_thumbnails_size">아이콘 크기를 백분율로</string>
+
     <string name="left_panel_settings">왼 창 설정</string>
     <string name="right_panel_settings">오른 창 설정</string>
     <string name="detailed_view_SbS">상세보기(나란히보기)</string>

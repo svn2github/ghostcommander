@@ -149,6 +149,11 @@
     <string name="prevent_root">Предупреждать на системных каталогах</string>
     <string name="summary_prevent_root">Выдавать предупреждающее сообщение на попытку перейти в системный каталог</string>
 
+    <string name="thumbnails">Миниатюры</string>
+    <string name="summary_thumbnails">Предпросмотр графических файлов</string>
+    <string name="thumbnails_size">Размер миниатюр</string>
+    <string name="summary_thumbnails_size">В процентах к размеру иконок</string>
+
     <string name="left_panel_settings">Опции Левой панели</string>
     <string name="right_panel_settings">Опции Правой панели</string>
     <string name="detailed_view_SbS">Панели рядом, Детализация </string>

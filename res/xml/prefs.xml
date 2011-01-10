@@ -75,11 +75,6 @@
                 android:summary="@string/summary_panels_mode" 
                 android:defaultValue="false"/>
         <CheckBoxPreference
-                android:key="show_icons"
-                android:title="@string/show_icons"
-                android:summary="@string/summary_show_icons"
-                android:defaultValue="true"/>
-        <CheckBoxPreference
                 android:key="two_lines"
                 android:title="@string/two_lines"
                 android:summary="@string/summary_two_lines"
@@ -89,6 +84,21 @@
                 android:title="@string/finger_friendly"
                 android:summary="@string/summary_finger_friendly"
                 android:defaultValue="true"/>
+        <CheckBoxPreference
+                android:key="show_icons"
+                android:title="@string/show_icons"
+                android:summary="@string/summary_show_icons"
+                android:defaultValue="true"/>
+        <CheckBoxPreference
+                android:key="show_thumbnails"
+                android:title="@string/thumbnails"
+                android:summary="@string/summary_thumbnails"
+                android:defaultValue="true"/>
+        <EditTextPreference 
+            android:key="thumbnails_size" 
+            android:title="@string/thumbnails_size" 
+            android:summary="@string/summary_thumbnails_size" 
+            android:defaultValue="100"/>
 	    <PreferenceScreen
 	                android:key="colors"
 	                android:title="@string/colors">

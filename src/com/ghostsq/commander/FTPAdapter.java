@@ -109,7 +109,7 @@ public class FTPAdapter extends CommanderAdapterBase {
                     	path = ftp.getCurrentDir();
 	                    if( path != null ) 
 	                    	synchronized( uri ) {
-	                    		uri = uri.buildUpon().path( path ).build();
+	                    		uri = uri.buildUpon().encodedPath( path ).build();
 							}
 	                    if( items_tmp != null  ) {
 	                        if( items_tmp.length > 0 ) {
@@ -519,7 +519,7 @@ public class FTPAdapter extends CommanderAdapterBase {
             else
             	if( cur.charAt( cur.length()-1 ) != SLC )
             		cur += SLS;
-            commander.Navigate( uri.buildUpon().path( cur + item.getName() ).build(), null );
+            commander.Navigate( uri.buildUpon().appendEncodedPath( item.getName() ).build(), null );
         }
     }
 
@@ -621,8 +621,12 @@ public class FTPAdapter extends CommanderAdapterBase {
     public boolean renameItem( int position, String newName ) {
         if( items == null || position <= 0 || position > items.length )
             return false;
-        if( ftp != null  && ftp.isLoggedIn() )
-        	return ftp.rename( getItemName( position, false ), newName );
+        if( ftp != null  && ftp.isLoggedIn() ) {
+        	boolean ok = ftp.rename( getItemName( position, false ), newName );
+            commander.notifyMe( new Commander.Notify( null, 
+                ok ? Commander.OPERATION_COMPLETED_REFRESH_REQUIRED : Commander.OPERATION_FAILED ) );
+            return ok;
+        }
         return false;
     }
 

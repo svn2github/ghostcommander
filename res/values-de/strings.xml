@@ -141,6 +141,12 @@
     <string name="summary_finger_friendly">Bedienelemente der Benutzeroberfläche werden vergrössert dargestellt.</string>
     <string name="prevent_root">Beim Verlassen der Speicherkarte warnen</string>
     <string name="summary_prevent_root">Es wird eine Warnmeldung angezeigt, wenn Sie in das Stammverzeichnis des Gerätes wechseln wollen.</string>
+    
+    <string name="thumbnails">Miniaturansicht einschalten</string>
+    <string name="summary_thumbnails">Anstelle der Symbole werden Miniaturansichten für Bilddateien angezeigt.</string>
+    <string name="thumbnails_size">Grösse der Miniaturansichten</string>
+    <string name="summary_thumbnails_size">In Prozent der Symbolgrösse</string>
+
     <string name="left_panel_settings">linkes Fenster</string>
     <string name="right_panel_settings">rechtes Fenster</string>
     <string name="detailed_view_SbS">detaillierte Anzeige im Zweifenstermodus</string>

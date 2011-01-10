@@ -31,9 +31,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected static final char SLC = File.separator.charAt( 0 );
     private   static final boolean long_date = Locale.getDefault().getLanguage().compareTo( "en" ) != 0;
     protected LayoutInflater mInflater = null;
-    private   int    parentWidth, imgWidth, nameWidth, sizeWidth, dateWidth, attrWidth;
+    private   int    parentWidth, imgWidth, icoWidth, nameWidth, sizeWidth, dateWidth, attrWidth;
     private   int    fg_color, sl_color;
     private   boolean dirty = true;
+    protected int    thumbnail_size_perc = 100;
     protected int    mode = 0;
     protected String parentLink;
     protected Engine worker = null;
@@ -58,6 +59,8 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected CommanderAdapterBase() {
         mode = 0;
         parentWidth = 0;
+        icoWidth = 0;
+        imgWidth = 0;
         nameWidth = 0;
         sizeWidth = 0;
         dateWidth = 0;
@@ -68,6 +71,8 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     	Init( c );
         mode = mode_;
         parentWidth = 0;
+        icoWidth = 0;
+        imgWidth = 0;
         nameWidth = 0;
         sizeWidth = 0;
         dateWidth = 0;
@@ -90,6 +95,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             }
             return;
         }
+        if( ( mask & SET_TBN_SIZE ) != 0 ) {
+            thumbnail_size_perc = val;
+            return;
+        }
         mode &= ~mask;
         mode |= val;
         dirty = true;
@@ -97,7 +106,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     @Override
     public void terminateOperation() {
         if( worker != null ) {
-            //Toast.makeText( commander.getContext(), "Terminating...", Toast.LENGTH_SHORT ).show();
             worker.reqStop();
         }
     }
@@ -172,7 +180,8 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             int parent_width = parent.getWidth();
             if( dirty || parentWidth != parent_width ) {
                 parentWidth = parent_width;
-                imgWidth = icons ? ( fat ? 60 : 40 ) : 0;
+                icoWidth = icons ? ( fat ? 60 : 40 ) : 0;
+                imgWidth = thumbnail_size_perc > 0 && thumbnail_size_perc != 100 ? icoWidth * thumbnail_size_perc / 100 : icoWidth;
                 if( wm ) { // single row
                     if( dm ) {
                         if( ( ATTR_ONLY & mode ) != 0 ) {
@@ -238,11 +247,14 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 if( icons ) {
                     imgView.setVisibility( View.VISIBLE );
                     imgView.setAdjustViewBounds( true );
-                    imgView.setMaxWidth( imgWidth );
-                    if( item.thumbnail != null )
+                    if( item.thumbnail != null && thumbnail_size_perc > 0 ) {
+                        imgView.setMaxWidth( imgWidth );
                         imgView.setImageDrawable( item.thumbnail );
-                    else
+                    }
+                    else {
+                        imgView.setMaxWidth( icoWidth );
                         imgView.setImageResource( item.dir ? R.drawable.folder : getIconId( name ) );
+                    }
                 }
                 else
                     imgView.setVisibility( View.GONE );
@@ -311,6 +323,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         if( type.compareTo( "video" ) == 0 ) return R.drawable.video; 
         if( type.compareTo( "application" ) == 0 ) return R.drawable.application; 
         return R.drawable.unkn;
+    }
+    
+    protected final int getImgWidth() {
+        return imgWidth == 0 ? ( thumbnail_size_perc > 0 ? thumbnail_size_perc * 40 / 100 : 0 ) : imgWidth;
     }
     
     protected final String[] bitsToNames( SparseBooleanArray cis ) {

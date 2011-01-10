@@ -43,7 +43,8 @@ public interface CommanderAdapter {
                             MODE_CASE  = 0x0040,   CASE_SENS = 0x0000,   CASE_IGNORE = 0x0040,
                             MODE_ICONS = 0x0080,   ICON_MODE = 0x0000,     TEXT_MODE = 0x0080,
                              MODE_ATTR = 0x0300,     NO_ATTR = 0x0000,     SHOW_ATTR = 0x0100, ATTR_ONLY = 0x0200,
-                       SET_MODE_COLORS = 0xF0000000, SET_TXT_COLOR = 0x10000000, SET_SEL_COLOR = 0x20000000;
+                             SET_MODE_COLORS = 0xF0000000, SET_TXT_COLOR = 0x10000000, SET_SEL_COLOR = 0x20000000,
+                             SET_TBN_SIZE = 0x01000000;
     /**
      * @param mask - see bits above 
      * @param mode - see bits above 
