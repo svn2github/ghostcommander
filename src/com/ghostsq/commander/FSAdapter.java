@@ -117,7 +117,7 @@ public class FSAdapter extends CommanderAdapterBase {
             FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
             Arrays.sort( items, comp );
             parentLink = dir.getParent() == null ? SLS : "..";
-
+            notifyDataSetChanged();
             if( thumbnail_size_perc > 0 ) {
                 worker = new ThumbnailsEngine( new Handler() {
                     public void handleMessage( Message msg ) {
