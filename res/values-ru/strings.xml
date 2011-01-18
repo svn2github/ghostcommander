@@ -8,23 +8,23 @@
     <string name="app">Приложение</string>
 
     <string name="F1">1 Помощь</string>
-    <string name="F2">2 Переименовать</string>
-    <string name="F3">3 Просмотреть</string>
-    <string name="F4">4 Редактировать</string>
-    <string name="F5">5 Копировать</string>
-    <string name="F6">6 Переместить</string>
-    <string name="F7">7 Создать папку</string>
-    <string name="F8">8 Удалить</string>
+    <string name="F2">2 Переименуй</string>
+    <string name="F3">3 Просмотр</string>
+    <string name="F4">4 Редактируй</string>
+    <string name="F5">5 Копируй</string>
+    <string name="F6">6 Перемести</string>
+    <string name="F7">7 Создай папку</string>
+    <string name="F8">8 Удали</string>
     <string name="F9">9 Настр.</string>
-    <string name="F10">0 Выйти</string>
-    <string name="eq">= То же</string>
+    <string name="F10">0 Выход</string>
+    <string name="eq">= Сравняй</string>
     <string name="tgl">&#x21E6; Сменить</string>
     <string name="sz">\" Размер</string>
     
     <string name="col_sw"># Переключить режим</string>
-    <string name="oth_sh_this">= Та панель тоже что эта</string>
-    <string name="change">&lt;- Сменить</string>
-    <string name="refresh">Обновить</string>
+    <string name="oth_sh_this">= Tот же адрес</string>
+    <string name="change">&#xA0; Смени панель</string>
+    <string name="refresh">Обнови</string>
     <string name="enter">&#xA0; Ввести адрес или URI</string>
     <string name="add_fav">* Закладка на тек.адрес</string>
     <string name="prefs">9 Настройки</string>
@@ -36,7 +36,7 @@
     <string name="sort_by_ext" >&#xA0; По расширению</string>
     <string name="sort_by_size">&#xA0; По размеру</string>
     <string name="sort_by_date">&#xA0; По дате</string>
-    <string name="select_all">+ Выделить все</string>
+    <string name="select_all">+ Выдели все</string>
     <string name="unselect_all">- Снять выделение</string>
 
     <string name="wait"> жди... </string>
@@ -44,7 +44,7 @@
     <string name="failed">Ошибка:\n</string>
     
     <string name="go_button">Иди</string>
-    <string name="show_size">Вычислить Размер</string>
+    <string name="show_size">Вычисли Размер</string>
     <string name="send_to">Послать...</string>
     <string name="open_with">Открыть с...</string>
     
@@ -106,7 +106,7 @@
     <string name="password">Пароль:</string>
     <string name="connect">Соеденить</string>
     <string name="cancel">Отмена</string>
-    <string name="ftp_connected">Подключились к FTP \"%1$s\",\n как пользователь \"%2$s\"</string>
+    <string name="ftp_connected">Подключились к FTP \"%1$s\",\n с именем \"%2$s\"</string>
 
     <string name="enter_ftp">&#xA0; Открыть FTP сайт</string>
     <string name="enter_smb">&#xA0; Открыть сетевую папку Windows</string>
@@ -125,18 +125,18 @@
     
     <string name="toolbar_preference">Выбор инструментальных кнопок</string>
     <string name="summary_toolbar_preference">Настроить, какие кнопки показывать в инструментальной панели операций</string>
-    <string name="show_F1">  &#xAB; 1 ?&#xBB;</string>
-    <string name="show_F2">  &#xAB; 2 Переименовать&#xBB;</string>
-    <string name="show_F3">  &#xAB; 3 Просмотреть&#xBB;</string>
-    <string name="show_F4">  &#xAB; 4 Редактировать&#xBB;</string>
+    <string name="show_F1">  &#xAB; 1 Помощь&#xBB;</string>
+    <string name="show_F2">  &#xAB; 2 Переименуй&#xBB;</string>
+    <string name="show_F3">  &#xAB; 3 Просмотр&#xBB;</string>
+    <string name="show_F4">  &#xAB; 4 Редактируй&#xBB;</string>
     <string name="show_SF4">  &#xAB; &#xA0; Создать&#xBB;</string>
-    <string name="show_F5">  &#xAB; 5 Копировать&#xBB;</string>
-    <string name="show_F6">  &#xAB; 6 Переместить&#xBB;</string>
-    <string name="show_F7">  &#xAB; 7 Создать каталог&#xBB;</string>
-    <string name="show_F8">  &#xAB; 8 Удалить&#xBB;</string>
-    <string name="show_F9">  &#xAB; 9 Меню&#xBB;</string>
+    <string name="show_F5">  &#xAB; 5 Копируй&#xBB;</string>
+    <string name="show_F6">  &#xAB; 6 Перемести&#xBB;</string>
+    <string name="show_F7">  &#xAB; 7 Создай каталог&#xBB;</string>
+    <string name="show_F8">  &#xAB; 8 Удали&#xBB;</string>
+    <string name="show_F9">  &#xAB; 9 Настр.&#xBB;</string>
     <string name="show_F10">  &#xAB; 0 Выход&#xBB;</string>
-    <string name="show_eq">  &#xAB; = (Сделать той же)&#xBB;</string>
+    <string name="show_eq">  &#xAB; = Тот же&#xBB;</string>
     <string name="show_tgl">  &#xAB; &#x21E6; Перейти&#xBB;</string>
     <string name="show_sz">  &#xAB; \" Размер&#xBB;</string>
     <string name="show_by_name">  &#xAB; по Имени&#xBB;</string>
@@ -188,7 +188,6 @@
     <string name="busybox_location">Местонахождение busybox</string>
     <string name="summary_busybox_location">Для работы в root режиме нужен busybox. Укажите путь к нему здесь.</string>   
     
-
     <string name="nothing_to_open">Не ясно что редактировать</string>
     <string name="remind_to_save">Не забудьте сохранить изменения через меню</string>
     <string name="save">Сохранить</string>
@@ -197,11 +196,11 @@
     
     <string name="no_such_file">Нет такого файла \"%1$s\"</string>
     <string name="too_big_file">Файл \"%1$s\" длишком большой.</string>
-    <string name="binary_file">Файл \"%1$s\" не текстовый. Редактирование приведёт к его искажению.</string>    
+    <string name="binary_file">Файл \"%1$s\" не текстовый. Редактирование приведёт к его порче.</string>    
     <string name="cant_open">Не могу прочитать файл.</string>    
     <string name="cant_save">Не могу сохранить файл.</string>    
     <string name="nav_warn">Каталог в который вы хотите перейти - системный. Необдуманные действия в нём могут привести к поломке устройства в целом. Продолжить?</string>
-    <string name="nav_warn_cmt">Это предупреждение отключается в настройках</string>
+    <string name="nav_warn_cmt">(Это предупреждение может быть отключено в настройках)</string>
     
     <string name="no_such_folder">\"%1$s\" не существует!</string>
     <string name="fav_added">Folder \"%1$s\" добавлен</string>
@@ -227,14 +226,14 @@
     <string name="about_text">
         Ghost Commander v%1$s\n
         Файловый менеджер.\n\n
-        Пишите ваши замечания на\n
+        Шлите ваши замечания на\n
         ghost.sq2@gmail.com\n\n\n\n 
         Отказ от ответственности:\n
-Используя данный программный продукт вы тем самым соглашаетесь со следущим:
-Автор данной программы не несет абсолютно никакой ответственности за любые возможные повреждения
+Используя данный программу вы тем самым соглашаетесь с нижеследующим:
+Автор программы не несет абсолютно никакой ответственности за любые возможные повреждения
 и/или потерю информации вызванные прямо или косвенно использованием данной программы.
 Если вы не согласны с вышеизложеным, немедленно прекратите использование
-данного программного продукта и деинсталлируйте его. 
+программы и деинсталлируйте её. 
 \n
     </string>
     <string name="keys_text">
@@ -242,7 +241,7 @@
 Для выделения файла - коснитесь правую половину строки.
 Для ввода пути и списка закладок коснитесь на 1сек. заголовка нужной панели\n\n    
     
-Клавиши:\n
+Быстрые клавиши:\n
 VolUp - Выбрать текущий файл\n
 VolDn - Перейти на другую панель\n
 +, -  - Выделить все файлы, Убрать выделение со всех файлов\n 
@@ -266,7 +265,11 @@ VolDn - Перейти на другую панель\n
 Если надо предоставить имя/пароль, то:\n
     ftp://user:password@host.com/folder\n\n
 
-Для доступа как root (su) вам надо установить busybox
+Для доступа к Windows сетевой папке (не забудьте проинсталлировать &#xAB;Ghost Commander - Samba plugin&#xBB;), 
+введите адрес по следущему образу:\n
+    smb://домен;имя:пароль@сервер/папка\n\n
+
+Для работы как root (su) вам надо установить busybox
 и вводить в адресную строку URI в следущей форме:\n
     \"root:///\"\n
 Для смены режима монторования с \"ro\" на \"rw\" и обратно,

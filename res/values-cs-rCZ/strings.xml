@@ -8,15 +8,15 @@
     <string name="app">Aplikace</string>
     <string name="help">Nápověda</string>
     
-    <string name="F1">1 Nápověda</string>
-    <string name="F2">2 Přejmenovat</string>
-    <string name="F3">3 Zobrazit</string>
-    <string name="F4">4 Upravit</string>
-    <string name="SF4">&#xA0; Vytvořit</string>
-    <string name="F5">5 Kopírovat</string>
-    <string name="F6">6 Přesunout</string>
+    <string name="F1">1 Náp.</string>
+    <string name="F2">2 Přejm.</string>
+    <string name="F3">3 Zobraz</string>
+    <string name="F4">4 Uprav</string>
+    <string name="SF4">&#xA0; Vytvoř</string>
+    <string name="F5">5 Kopíruj</string>
+    <string name="F6">6 Přesuň</string>
     <string name="F7">7 VytvSložku</string>
-    <string name="F8">8 Odstranit</string>
+    <string name="F8">8 Odstraň</string>
     <string name="F9">9 Nastavení</string>
     <string name="F10">0 Konec</string>
     <string name="oth_sh_this">= Synchronizovat panely</string>
@@ -116,9 +116,9 @@
     <string name="alert">Upozornění</string>
 
     <string name="server">Server:</string>
-    <string name="path">Cesta na serveru:</string>
+    <string name="path">Složka na serveru:</string>
     <string name="domain">Doména:</string>
-    <string name="username">Jméno uživatele:</string>
+    <string name="username">Jméno uživ.:</string>
     <string name="password">Heslo:</string>
     <string name="connect">Připojit</string>
     <string name="cancel">Zrušit</string>
@@ -135,15 +135,15 @@
     <string name="summary_show_toolbar">Zobrazit nebo schovat tlačítka panelu nástrojů vespodu obrazovky</string>
     <string name="toolbar_preference">Volba zobrazených tlačítka</string>
     <string name="summary_toolbar_preference">Upravit seznam tlačítek panelu nástrojů</string>
-    <string name="show_F1">Zobrazit &#xAB; 1 Nápověda&#xBB;</string>
-    <string name="show_F2">Zobrazit &#xAB; 2 Přejmenovat&#xBB;</string>
-    <string name="show_F3">Zobrazit &#xAB; 3 Zobrazit&#xBB;</string>
-    <string name="show_F4">Zobrazit &#xAB; 4 Upravit&#xBB;</string>
-    <string name="show_SF4">Zobrazit &#xAB; &#xA0; Vytvořit&#xBB;</string>
-    <string name="show_F5">Zobrazit &#xAB; 5 Kopírovat&#xBB;</string>
-    <string name="show_F6">Zobrazit &#xAB; 6 Přesunout&#xBB;</string>
+    <string name="show_F1">Zobrazit &#xAB; 1 Náp.&#xBB;</string>
+    <string name="show_F2">Zobrazit &#xAB; 2 Přejm.&#xBB;</string>
+    <string name="show_F3">Zobrazit &#xAB; 3 Zobraz&#xBB;</string>
+    <string name="show_F4">Zobrazit &#xAB; 4 Uprav&#xBB;</string>
+    <string name="show_SF4">Zobrazit &#xAB; &#xA0; Vytvoř&#xBB;</string>
+    <string name="show_F5">Zobrazit &#xAB; 5 Kopíruj&#xBB;</string>
+    <string name="show_F6">Zobrazit &#xAB; 6 Přesuň&#xBB;</string>
     <string name="show_F7">Zobrazit &#xAB; 7 VytvSložku&#xBB;</string>
-    <string name="show_F8">Zobrazit &#xAB; 8 Odstranit&#xBB;</string>
+    <string name="show_F8">Zobrazit &#xAB; 8 Odstraň&#xBB;</string>
     <string name="show_F9">Zobrazit &#xAB; 9 Nastavení&#xBB;</string>
     <string name="show_F10">Zobrazit &#xAB; 0 Konec&#xBB;</string>
     <string name="show_eq">Zobrazit &#xAB; = Synchronizuj panely&#xBB;</string>
@@ -158,15 +158,15 @@
     <string name="finger_friendly">Přizpůsobení pro dotyk</string>
     <string name="summary_finger_friendly">Zvětšit prvky uživatelského rozhraní</string>
     <string name="prevent_root">Varovat při opuštění SD</string>
-    <string name="summary_prevent_root">Zobrazit varovnou hlášku při přechodu do root \"\\" složky zařízení</string>
+    <string name="summary_prevent_root">Zobrazit varovnou hlášku při přechodu do root \'\\\' složky zařízení</string>
 
     <string name="thumbnails">Povolit miniatury</string>
-    <string name="summary_thumbnails">Zobrazit miniatury obrázků místo obyčejné ikony pro obrázek</string>
+    <string name="summary_thumbnails">Zobrazit miniatury obrázků místo obecné ikony pro obrázek</string>
     <string name="thumbnails_size">Velikost miniatur</string>
     <string name="summary_thumbnails_size">V procentech vůči velikosti ikon</string>
 
     <string name="left_panel_settings">Nastavení levého panelu</string>
-    <string name="right_panel_settings">Nastavené pravého panelu</string>
+    <string name="right_panel_settings">Nastavení pravého panelu</string>
     <string name="detailed_view_SbS">Detaily v módu Dva panely</string>
     <string name="summary_detailed_view_SbS">Zobrazí velikost a datum souborů v módu Dva panely</string>
     <string name="detailed_view_Ovr">Detaily v Překryvném módu</string>
@@ -174,7 +174,7 @@
     <string name="sorting">Řazení</string>
     <string name="summary_sorting">Jak řadit položky v seznamu</string>
     <string name="sort_case">Ignoruj \"A/a\" při řazení</string>
-    <string name="summary_sort_case">Při zatržení se neřeší velikost písmen během řazení dat</string>
+    <string name="summary_sort_case">Pokud zatrženo, neřeší se velikost písmen při řazení dat</string>
     
     <string name="show_hidden">Zobrazit skryté soubory</string>
     <string name="summary_show_hidden">Při zatržení budou zobrazeny skryté soubory začínající \".\" tečkou</string>
@@ -278,12 +278,12 @@ Snížení hlasitosti - Přepínání mezi panely
 0 - Zavřít program
 [A-z] - Rychlé hledání    
     
-Pro anonymní připojení k FTP serveru vložte cestu:\n
+Pro anonymní připojení k FTP serveru vložte adresu:\n
     ftp://ftp.server.cz/slozka\n
 Pro připojení k FTP serveru s přihlášením:\n
     ftp://uzivatel:heslo@ftp.server.cz/slozka\n\n
 Pro přístup jako root (su), 
-vložte cestu následovně:\n
+vložte složku následovně:\n
     \"root:///data\"\n
 Ujistěte se, že je nainstalován \"busybox\", a/nebo cesta k němu je vyplněna v nastavení.\n
 
