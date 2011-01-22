@@ -88,8 +88,7 @@ public class FSAdapter extends CommanderAdapterBase {
                 if( files_ != null ) break;
                 if( err_msg == null )
                     err_msg = commander.getContext().getString( R.string.no_such_folder, dir_name );
-                d = Uri.parse( dir.getParent() );
-                if( d == null ) {
+                if( dir == null || ( d = Uri.parse( dir.getParent() ) ) == null ) {
                     commander.notifyMe( new Commander.Notify( "invalid path", Commander.OPERATION_FAILED ) );
                     Log.e( TAG, "Wrong folder '" + dir_name + "'" );
                     return false;
