@@ -39,7 +39,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     
     private ArrayList<Dialogs> dialogs;
     public  Panels  panels, panelsBak = null;
-    private boolean exit = false, dont_restore = false;
+    private boolean on = false, exit = false, dont_restore = false;
     private String lang = "";
 
     public final void showMemory( String s ) {
@@ -93,6 +93,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     protected void onStart() {
         Log.i( TAG, "Starting\n");
         super.onStart();
+        on = true;
         if( dont_restore )
             dont_restore = false;
         else {
@@ -114,6 +115,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     protected void onPause() {
         Log.i( TAG, "Pausing\n");
         super.onPause();
+        on = false;
         SharedPreferences.Editor editor = getPreferences( MODE_PRIVATE ).edit();
         Panels.State s = panels.getState();
         s.store(editor);
@@ -124,11 +126,13 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     protected void onStop() {
         Log.i( TAG, "Stopping\n");
         super.onStop();
+        on = false;
     }
 
     @Override
     protected void onDestroy() {
         Log.i( TAG, "Destroying\n");
+        on = false;
         panels.Destroying();
         super.onDestroy();
         if( isFinishing() && exit )
@@ -540,6 +544,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     public void showError( String errMsg ) {
+        if( !on ) return;
         Dialogs dh = obtainDialogsInstance(Dialogs.ALERT_DIALOG);
         dh.setMessageToBeShown(errMsg, null);
         showDialog( Dialogs.ALERT_DIALOG );
@@ -547,6 +552,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     public void showInfo( String msg ) {
+        if( !on ) return;
         if( msg.length() < 50 )
             showMessage( msg );
         else {
