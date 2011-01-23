@@ -4,7 +4,11 @@ import java.io.File;
 import java.util.Calendar;
 import java.util.Locale;
 
+import dalvik.system.DexClassLoader;
+
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.text.format.DateFormat;
@@ -27,8 +31,8 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     private final static String TAG = "CommanderAdapterBase";
 	protected final static String NOTIFY_STR = "str", NOTIFY_PRG1 = "prg1", NOTIFY_PRG2 = "prg2", NOTIFY_COOKIE = "cookie"; 
     protected Commander commander = null;
-    protected static final String SLS = File.separator;
-    protected static final char SLC = File.separator.charAt( 0 );
+    public    static final String SLS = File.separator;
+    public    static final char   SLC = File.separator.charAt( 0 );
     private   static final boolean long_date = Locale.getDefault().getLanguage().compareTo( "en" ) != 0;
     protected LayoutInflater mInflater = null;
     private   int    parentWidth, imgWidth, icoWidth, nameWidth, sizeWidth, dateWidth, attrWidth;
@@ -38,6 +42,56 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected int    mode = 0;
     protected String parentLink;
     protected Engine worker = null;
+
+    // URI shemes hash codes
+    private static final int   zip_schema_h =   "zip".hashCode();  
+    private static final int   ftp_schema_h =   "ftp".hashCode();  
+    private static final int  find_schema_h =  "find".hashCode();  
+    private static final int  root_schema_h =  "root".hashCode();  
+    private static final int   mnt_schema_h = "mount".hashCode();  
+    private static final int  apps_schema_h =  "apps".hashCode();  
+    private static final int   smb_schema_h =   "smb".hashCode();
+    private static final int    gd_schema_h =    "gd".hashCode();
+    private static final int gdocs_schema_h = "gdocs".hashCode();
+    // adapters names hash codes
+    private static final int type_h_fs    = "file".hashCode();   
+    private static final int type_h_zip   = zip_schema_h;  
+    private static final int type_h_ftp   = ftp_schema_h; 
+    private static final int type_h_find  = find_schema_h;
+    private static final int type_h_root  = root_schema_h;
+    private static final int type_h_mnt   = mnt_schema_h;
+    private static final int type_h_apps  = apps_schema_h;
+    private static final int type_h_smb   = smb_schema_h;
+    private static final int type_h_gdocs = gdocs_schema_h;
+    
+    // the mapping between the scheme and the adapter type name 
+    // because we could let the user to enter short aliases for the scheme instead
+    final static int GetAdapterTypeHash( String scheme ) {
+        if( scheme == null ) return type_h_fs; 
+        final int scheme_h = scheme.hashCode();
+        if(  zip_schema_h == scheme_h )  return type_h_zip;   
+        if(  ftp_schema_h == scheme_h )  return type_h_ftp;  
+        if( find_schema_h == scheme_h )  return type_h_find;  
+        if( root_schema_h == scheme_h )  return type_h_root;  
+        if(  mnt_schema_h == scheme_h )  return type_h_mnt;  
+        if( apps_schema_h == scheme_h )  return type_h_apps;  
+        if(  smb_schema_h == scheme_h )  return type_h_smb;
+        if(   gd_schema_h == scheme_h )  return type_h_gdocs;
+        if(gdocs_schema_h == scheme_h )  return type_h_gdocs;
+        return type_h_fs;
+    }
+
+    final static CommanderAdapter CreateAdapter( int type_h, Commander c ) {
+        CommanderAdapter ca = null;
+        if( type_h == type_h_fs  )  ca = new FSAdapter( c );    else
+        if( type_h == type_h_zip )  ca = new ZipAdapter( c );   else
+        if( type_h == type_h_ftp )  ca = new FTPAdapter( c );   else
+        if( type_h == type_h_find ) ca = new FindAdapter( c );  else
+        if( type_h == type_h_root ) ca = new RootAdapter( c );  else
+        if( type_h == type_h_mnt  ) ca = new MountAdapter( c ); else
+        if( type_h == type_h_smb  ) ca = c.CreateExternalAdapter( "samba", "SMBAdapter", R.id.smb );
+        return ca;
+    }
     
     protected Handler handler = new Handler() {
         public void handleMessage( Message msg ) {
@@ -57,6 +111,15 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     };
     
     protected CommanderAdapterBase() {
+        // don't forget to call the Init( c ) method  if  the default constructor can be called!
+    }
+    protected CommanderAdapterBase( Commander c, int mode_ ) {
+    	Init( c );
+        mode = mode_;
+    }
+
+    @Override
+	public void Init( Commander c ) {
         mode = 0;
         parentWidth = 0;
         icoWidth = 0;
@@ -66,22 +129,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         dateWidth = 0;
         attrWidth = 0;
         parentLink = SLS;       
-    }
-    protected CommanderAdapterBase( Commander c, int mode_ ) {
-    	Init( c );
-        mode = mode_;
-        parentWidth = 0;
-        icoWidth = 0;
-        imgWidth = 0;
-        nameWidth = 0;
-        sizeWidth = 0;
-        dateWidth = 0;
-        attrWidth = 0;
-        parentLink = SLS;    	
-    }
-
-    @Override
-	public void Init( Commander c ) {
     	commander = c;		
     	mInflater = (LayoutInflater)c.getContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
 	}

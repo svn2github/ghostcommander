@@ -20,7 +20,7 @@ import android.util.Log;
 import android.util.SparseBooleanArray;
 
 public class FTPAdapter extends CommanderAdapterBase {
-    public final static String TAG = "FTPAdapter";
+    private final static String TAG = "FTPAdapter";
     // Java compiler creates a thunk function to access to the private owner class member from a subclass
     // to avoid that all the member accessible from the subclasses are public
     public  FTP ftp;
@@ -29,7 +29,8 @@ public class FTPAdapter extends CommanderAdapterBase {
     private Timer  heartBeat;
     public  FTPCredentials theUserPass = null;
     
-    public FTPAdapter() {
+    public FTPAdapter( Commander c ) {
+        super( c, 0 );
         ftp = new FTP();
         try {
             heartBeat = new Timer( "FTP Heartbeat", true );
@@ -394,7 +395,10 @@ public class FTPAdapter extends CommanderAdapterBase {
     public void createFolder( String string ) {
     	synchronized( ftp ) {
     		ftp.clearLog();
-    		ftp.makeDir( string );
+    		if( ftp.makeDir( string ) )
+    		    commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED_REFRESH_REQUIRED ) );
+    		else
+    		    commander.notifyMe( new Commander.Notify( "Unable to create directory '" + string + "'", Commander.OPERATION_FAILED ) );
 		}
     }
 
@@ -661,7 +665,7 @@ public class FTPAdapter extends CommanderAdapterBase {
                     curItem = items[position - 1];
                     item.dir = curItem.isDirectory();
                     item.name = item.dir ? SLS + curItem.getName() : curItem.getName();
-                    item.size = curItem.length();
+                    item.size = !item.dir || curItem.length() > 0 ? curItem.length() : -1;
                     item.date = curItem.getDate();
                 }
             }

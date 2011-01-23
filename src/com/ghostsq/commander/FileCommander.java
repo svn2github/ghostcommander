@@ -4,16 +4,20 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import dalvik.system.DexClassLoader;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Dialog;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.content.res.Configuration;
 import android.view.ContextMenu;
 import android.view.View;
@@ -551,6 +555,44 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             showDialog( Dialogs.INFO_DIALOG );
         }
     }
+
+    @Override
+    public CommanderAdapter CreateExternalAdapter( String type, String class_name, int dialog_id ) {
+        try {
+            File dex_f = getDir( type, Context.MODE_PRIVATE );
+            if( dex_f == null || !dex_f.exists() ) {
+                Log.w( TAG, "app.data storage is not accessable, trying to use the SD card" );
+                File sd = Environment.getExternalStorageDirectory();
+                if( sd == null ) return null; // nowhere to store the dex :(
+                dex_f = new File( sd, "temp" );
+                if( !dex_f.exists() )
+                    dex_f.mkdir();
+            }
+            ApplicationInfo ai = getPackageManager().getApplicationInfo( "com.ghostsq.commander." + type, 0 );
+            Log.i( TAG, type + " package is " + ai.sourceDir );
+            
+            ClassLoader pcl = getClass().getClassLoader();
+            DexClassLoader cl = new DexClassLoader( ai.sourceDir, dex_f.getAbsolutePath(), null, pcl );
+            //
+            Class<?> adapterClass = cl.loadClass( "com.ghostsq.commander." + type + "." + class_name );
+            if( adapterClass == null )
+                showError( "Can not load the adapter class of " + type );
+            else {
+                CommanderAdapter ca = (CommanderAdapter)adapterClass.newInstance();
+                ca.Init( this );
+                return ca;
+            }
+        }
+        catch( Exception e ) {
+            showDialog( dialog_id );
+            Log.e( TAG, "Load class failed: ", e );
+        }
+        catch( Error e ) {
+            showError( "Can not load the " + type + " class - an Error was thrown: " + e + "\nPlease report to the application develeoper." );
+            Log.e( TAG, "Loading " + type + " class failed: ", e );
+        }
+        return null;
+    }    
 
     final void changeLanguage( String lang_ ) {
         if( !lang.equalsIgnoreCase( lang_ ) ) {

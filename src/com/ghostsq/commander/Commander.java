@@ -30,10 +30,6 @@ public interface Commander {
 	 */
 	public Context getContext();
 	/**
-	 * procedure completion notification. see the Notify object below
-	 */
-	public void notifyMe( Notify obj );
-	/**
 	 * @param err_msg message to show in an alert dialog
 	 */
 	public void    showError( String err_msg );
@@ -51,12 +47,28 @@ public interface Commander {
      * @param positionTo  - Select an item with the given name
      */
 	public void    Navigate( Uri uri, String positionTo );
+	
+	
+    /**
+     * Tries to load an adapter class from foreign package
+     * @param String type       - adapter type, also the suffix of the plugin application 
+     * @param String class_name - the adapter class name to be loaded
+     * @param int    dialog_id  - resource ID to show dialog if the class can't be loaded
+     */
+	public CommanderAdapter CreateExternalAdapter( String type, String class_name, int dialog_id );
+	
 	/**
 	 * @param uri to open by sending an Intent
 	 */
-	public void    Open( String uri );
+	public void Open( String uri );
 	
     /**
+     * procedure completion notification. 
+     * @param Notify obj - see below
+     */
+    public void notifyMe( Notify obj );
+    /**
+     * Adapter's working procedures (both in this thread and the candler of worker threads) should pass this
      * @param string current status description
      * @param prg1 of MAX, or OPERATION_xxx (see above). To set MAX, call with SET_MAX as the first param 
      * @param prg2 of MAX, pass -1 to make it not changed

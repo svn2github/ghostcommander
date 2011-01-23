@@ -28,7 +28,7 @@ public interface CommanderAdapter {
     }
     
     /**
-	 * @param c since only the default constructor can be called, have to pass the commander reference here  
+	 * @param c - only the default constructor can be called of a foreign loaded class, so we pass the reference to commander here  
 	 */
 	public void Init( Commander c );
 	

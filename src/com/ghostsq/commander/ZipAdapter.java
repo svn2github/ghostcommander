@@ -31,7 +31,8 @@ public class ZipAdapter extends CommanderAdapterBase {
     public  ZipFile      zip = null;
     public  ZipEntry[] items = null;
 
-    public ZipAdapter() {
+    public ZipAdapter( Commander c ) {
+        super( c, 0 );
         parentLink = "..";
     }
     @Override

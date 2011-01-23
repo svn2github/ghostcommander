@@ -220,8 +220,13 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         	int p_width = mainView.getWidth();
         	if( p_width > 0 )
         		title.setMaxWidth( p_width / 2 );
-            UrlQuerySanitizer urlqs = new UrlQuerySanitizer();
-            title.setText( urlqs.unescape( Utils.screenPwd( s ) ) );
+            if( s == null ) {
+                title.setText( c.getString( R.string.fail ) );
+            }
+            else {
+                UrlQuerySanitizer urlqs = new UrlQuerySanitizer();
+                title.setText( urlqs.unescape( Utils.screenPwd( s ) ) );
+            }
         }
     }
     private final void refreshPanelTitles() {
@@ -583,13 +588,16 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         flv.invalidateViews();
         CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
         String scheme = uri.getScheme();
-        if( scheme != null && scheme.compareTo( "ftp" ) == 0 ) {
-            try {
-                if( ca == null || !( ca instanceof FTPAdapter ) ) {
-                    if( ca != null )
-                        ca.prepareToDestroy();
-                    ca = new FTPAdapter();
-                    ca.Init( c );
+        int type_h = CommanderAdapterBase.GetAdapterTypeHash( scheme );
+        try {
+            if( ca == null || type_h != ca.getType().hashCode() ) {
+                if( ca != null )
+                    ca.prepareToDestroy();
+                ca = null;
+               ca = CommanderAdapterBase.CreateAdapter( type_h, c );
+                if( ca == null )
+                    Log.e( TAG, "Unknown adapter with type hash " + type_h );
+                else {
                     ca.setMode( CommanderAdapter.WIDE_MODE, 
                       id == R.layout.main ? CommanderAdapter.WIDE_MODE : CommanderAdapter.NARROW_MODE );
                     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
@@ -597,234 +605,18 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                     flv.setAdapter( (ListAdapter)ca );
                     flv.setOnKeyListener( this );
                 }
-            } catch( Exception e ) {
-                Log.e( TAG, "Problem with FTPAdapter class", e );
             }
+        } catch( Exception e ) {
+            Log.e( TAG, "MaybeCreateAdapter() failed", e );
         }
-        else 
-        if( scheme != null && scheme.compareTo( "smb" ) == 0 ) {
-            try {
-                if( ca == null || !ca.getType().equals( "smb" ) ) {
-                    if( ca != null )
-                        ca.prepareToDestroy();
-                    try {
-                        File dex_f = c.getDir( "samba", Context.MODE_PRIVATE );
-                        if( dex_f == null || !dex_f.exists() ) {
-                            Log.w( TAG, "app.data storage is not accessable, trying to use the SD card" );
-                            File sd = Environment.getExternalStorageDirectory();
-                            if( sd == null ) return; // nowhere to store the dex :(
-                            dex_f = new File( sd, "temp" );
-                            if( !dex_f.exists() )
-                                dex_f.mkdir();
-                        }
-                        ApplicationInfo smb_ai = c.getPackageManager().getApplicationInfo( "com.ghostsq.commander.samba", 0 );
-                        Log.i( TAG, "smb package is " + smb_ai.sourceDir );
-                        
-                        ClassLoader pcl = getClass().getClassLoader();
-                        DexClassLoader cl = new DexClassLoader( smb_ai.sourceDir,
-                                dex_f.getAbsolutePath(), null, pcl );
-                        //
-                        Class<?> smbAdapterClass = cl.loadClass( "com.ghostsq.commander.samba.SMBAdapter" );
-                        if( smbAdapterClass == null ) {
-                            c.showError( "Can not load the samba class" );
-                            return;
-                        }
-                        ca = (CommanderAdapter)smbAdapterClass.newInstance();
-                    }
-                    catch( Exception e ) {
-                        c.showDialog( R.id.smb );
-                        Log.e( TAG, "Load smb class failed: ", e );
-                        return;
-                    }
-                    catch( Error e ) {
-                        c.showError( "Can not load the samba class - an Error was thrown: " + e );
-                        Log.e( TAG, "Load smb class failed: ", e );
-                        return;
-                    }
-                    ca.Init( c );
-                    ca.setMode( CommanderAdapter.WIDE_MODE, 
-                      id == R.layout.main ? CommanderAdapter.WIDE_MODE : CommanderAdapter.NARROW_MODE );
-                    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
-                    applySettings( sharedPref, ca, which );
-                    flv.setAdapter( (ListAdapter)ca );
-                    flv.setOnKeyListener( this );
-                }
-            } catch( Exception e ) {
-                Log.e( TAG, "Problem with SMBAdapter class", e );
-            }
-        }
-        else
-/*
-        if( scheme != null && scheme.compareTo( "dbox" ) == 0 ) {
-            try {
-                if( ca == null || !ca.getType().equals( "dropbox" ) ) {
-                    if( ca != null )
-                        ca.prepareToDestroy();
-                    try {
-                        File dex_f = c.getDir( "dropbox", Context.MODE_PRIVATE );
-                        if( dex_f == null || !dex_f.exists() ) {
-                            Log.w( TAG, "app.data storage is not accessable, trying to use the SD card" );
-                            File sd = Environment.getExternalStorageDirectory();
-                            if( sd == null ) return; // nowhere to store the dex :(
-                            dex_f = new File( sd, "temp" );
-                            if( !dex_f.exists() )
-                                dex_f.mkdir();
-                        }
-                        ApplicationInfo dbox_ai = c.getPackageManager().getApplicationInfo( "com.ghostsq.commander.dropbox", 0 );
-                        Log.i( TAG, "dropbox package is " + dbox_ai.sourceDir );
-                        
-                        ClassLoader pcl = getClass().getClassLoader();
-                        DexClassLoader cl = new DexClassLoader( dbox_ai.sourceDir, dex_f.getAbsolutePath(), null, pcl );
-                        //
-                        Class<?> dboxAdapterClass = cl.loadClass( "com.ghostsq.commander.dropbox.DBoxAdapter" );
-                        if( dboxAdapterClass == null ) {
-                            c.showError( "Can not load the dropbox adapter class" );
-                            return;
-                        }
-                        ca = (CommanderAdapter)dboxAdapterClass.newInstance();
-                    }
-                    catch( Exception e ) {
-                        c.showDialog( FileCommander.DBOX_APP );
-                        Log.e( TAG, "Load dropbox class failed: ", e );
-                        return;
-                    }
-                    catch( Error e ) {
-                        c.showError( "Can not load the dbox class - an Error was thrown: " + e );
-                        Log.e( TAG, "Load dbox class failed: ", e );
-                        return;
-                    }
-                    ca.Init( c );
-                    ca.setMode( CommanderAdapter.WIDE_MODE, 
-                      id == R.layout.main ? CommanderAdapter.WIDE_MODE : CommanderAdapter.NARROW_MODE );
-                    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
-                    applySettings( sharedPref, ca, which );
-                    flv.setAdapter( (ListAdapter)ca );
-                    flv.setOnKeyListener( this );
-                }
-            } catch( Exception e ) {
-                Log.e( TAG, "Problem with SMBAdapter class", e );
-            }
-        }
-        else 
-*/
-        if( scheme != null && scheme.compareTo( "zip" ) == 0 ) {
-            try {
-                if( ca == null || !( ca instanceof ZipAdapter ) ) {
-                    if( ca != null )
-                        ca.prepareToDestroy();
-                    ca = new ZipAdapter();
-                    ca.Init( c );
-                    ca.setMode( CommanderAdapter.WIDE_MODE, 
-                      id == R.layout.main ? CommanderAdapter.WIDE_MODE : CommanderAdapter.NARROW_MODE );
-                    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
-                    applySettings( sharedPref, ca, which );
-                    flv.setAdapter( (ListAdapter)ca );
-                    flv.setOnKeyListener( this );
-                }
-            } catch( Exception e ) {
-                Log.e( TAG, "Problem with ZipAdapter class", e );
-            }
-        }
-        else 
-        if( scheme != null && scheme.compareTo( "root" ) == 0 ) {
-            try {
-                if( ca == null || !( ca instanceof RootAdapter ) ) {
-                    if( ca != null )
-                        ca.prepareToDestroy();
-                    ca = new RootAdapter( c, null );
-                    ca.Init( c );
-                    ca.setMode( CommanderAdapter.WIDE_MODE, 
-                      id == R.layout.main ? CommanderAdapter.WIDE_MODE : CommanderAdapter.NARROW_MODE );
-                    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
-                    applySettings( sharedPref, ca, which );
-                    flv.setAdapter( (ListAdapter)ca );
-                    flv.setOnKeyListener( this );
-                }
-            } catch( Exception e ) {
-                Log.e( TAG, "Problem with the RootAdapter class", e );
-            }
-        }
-        else 
-        if( scheme != null && scheme.compareTo( "mount" ) == 0 ) {
-            try {
-                if( ca == null || !( ca instanceof MountAdapter ) ) {
-                    if( ca != null )
-                        ca.prepareToDestroy();
-                    ca = new MountAdapter( c );
-                    ca.Init( c );
-                    flv.setAdapter( (ListAdapter)ca );
-                    flv.setOnKeyListener( this );
-                }
-            } catch( Exception e ) {
-                Log.e( TAG, "Problem with the MountAdapter class", e );
-            }
-        }
-        else 
-        if( scheme != null && scheme.compareTo( "apps" ) == 0 ) {
-            try {
-                if( ca == null || !( ca instanceof AppsAdapter ) ) {
-                    if( ca != null )
-                        ca.prepareToDestroy();
-                    ca = new AppsAdapter( c );
-                    ca.Init( c );
-                    flv.setAdapter( (ListAdapter)ca );
-                    flv.setOnKeyListener( this );
-                }
-            } catch( Exception e ) {
-                Log.e( TAG, "Problem with the AppsAdapter class", e );
-            }
-        }
-        else 
-        if( scheme != null && scheme.compareTo( "find" ) == 0 ) {
-            try {
-                if( ca == null || !( ca instanceof FindAdapter ) ) {
-                    if( ca != null )
-                        ca.prepareToDestroy();
-                    ca = new FindAdapter();
-                    ca.Init( c );
-                    ca.setMode( CommanderAdapter.WIDE_MODE, 
-                      id == R.layout.main ? CommanderAdapter.WIDE_MODE : CommanderAdapter.NARROW_MODE );
-                    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
-                    applySettings( sharedPref, ca, which );
-                    flv.setAdapter( (ListAdapter)ca );
-                    flv.setOnKeyListener( this );
-                }
-            } catch( Exception e ) {
-                Log.e( TAG, "Problem with FindAdapter class", e );
-            }
-        }
-        else {
-            if( ca == null || !( ca instanceof FSAdapter ) ) {
-                try {
-                    if( ca != null )
-                        ca.prepareToDestroy();
-                    ca = new FSAdapter( c, uri, id == R.layout.main ? CommanderAdapter.WIDE_MODE : CommanderAdapter.NARROW_MODE );
-                    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
-                    applySettings( sharedPref, ca, which );
-                    flv.setAdapter( (ListAdapter)ca );
-                } catch( Exception e ) {
-                    Log.e( TAG, "Problem with FSAdapter class", e );
-                }
-            }
-        }
-        if( ca == null ) {
-            Log.e( TAG, "failed to create a commander adapter!" );
-            return;
-        }
-        
+        if( ca == null ) return;
         applyColors();
         setPanelTitle( c.getString( R.string.wait ), which );
         setToolbarButtons( ca );
         
         ca.readSource( uri, "" + current + ( posTo == null ? "" : posTo ) );
-/*  
-        if( posTo != null ) {
-            setSelection( which, posTo );
-        }
-        else
-            setSelection( which, 0, 0 );
-*/
     }
+    
     public void login( String to, String name, String pass ) {
         CommanderAdapter ca = getListAdapter( true );
         if( ca != null && ca.toString().compareTo( to ) == 0 ) {

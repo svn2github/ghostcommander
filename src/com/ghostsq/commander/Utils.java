@@ -142,6 +142,7 @@ public class Utils {
     }
 
     public final static String screenPwd( String uri_str ) {
+        if( uri_str == null ) return null;
         return screenPwd( Uri.parse( uri_str ) );
     }
     public final static String screenPwd( Uri u ) {

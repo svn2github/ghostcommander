@@ -15,12 +15,8 @@ public class FindAdapter extends CommanderAdapterBase {
     private Uri uri;
     private File[] items;
 
-    public FindAdapter() {
-        parentLink = "..";
-    }
-
-    public FindAdapter( Commander c, int mode ) {
-        super( c, mode );
+    public FindAdapter( Commander c ) {
+        super( c, 0 );
         parentLink = "..";
     }
     @Override

@@ -40,6 +40,11 @@ public class FSAdapter extends CommanderAdapterBase {
     private String dirName;
     private FileEx[] items;
 
+    public FSAdapter( Commander c ) {
+        super( c, 0 );
+        dirName = null;
+        items = null;
+    }
     public FSAdapter( Commander c, Uri d, int mode_ ) {
     	super( c, mode_ );
     	dirName = d == null ? DEFAULT_DIR : d.getPath();
@@ -88,13 +93,13 @@ public class FSAdapter extends CommanderAdapterBase {
                 if( files_ != null ) break;
                 if( err_msg == null )
                     err_msg = commander.getContext().getString( R.string.no_such_folder, dir_name );
-                if( dir == null || ( d = Uri.parse( dir.getParent() ) ) == null ) {
+                String parent_path;
+                if( dir == null || ( parent_path = dir.getParent() ) == null || ( d = Uri.parse( parent_path ) ) == null ) {
                     commander.notifyMe( new Commander.Notify( "invalid path", Commander.OPERATION_FAILED ) );
                     Log.e( TAG, "Wrong folder '" + dir_name + "'" );
                     return false;
                 }
             }
-            
             dirName = dir_name;
             int num_files = files_.length;
             int num = num_files;

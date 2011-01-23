@@ -36,10 +36,9 @@ public class RootAdapter extends CommanderAdapterBase {
     public  LsItem[] items = null;
     private int attempts = 0;
 
-    public RootAdapter( Commander c, Uri d ) {
+    public RootAdapter( Commander c ) {
         super( c, SHOW_ATTR );
     }
-
     @Override
     public String getType() {
         return "root";
