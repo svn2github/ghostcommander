@@ -33,7 +33,7 @@ public class ZipAdapter extends CommanderAdapterBase {
 
     public ZipAdapter( Commander c ) {
         super( c, 0 );
-        parentLink = "..";
+        parentLink = PLS;
     }
     @Override
     public String getType() {

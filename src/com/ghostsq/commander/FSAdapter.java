@@ -120,7 +120,7 @@ public class FSAdapter extends CommanderAdapterBase {
             }
             FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
             Arrays.sort( items, comp );
-            parentLink = dir.getParent() == null ? SLS : "..";
+            parentLink = dir.getParent() == null ? SLS : PLS;
             notifyDataSetChanged();
             if( thumbnail_size_perc > 0 ) {
                 worker = new ThumbnailsEngine( new Handler() {
@@ -140,7 +140,7 @@ public class FSAdapter extends CommanderAdapterBase {
     class ThumbnailsEngine extends Engine {
         private final static int NOTIFY_THUMBNAIL_CHANGED = 653;
         private FileEx[] mList;
-        protected int  num = 0, dirs = 0, depth = 0;
+        protected int  num = 0, dirs = 0;
 
         ThumbnailsEngine( Handler h, FileEx[] list ) {
             super( h );
@@ -534,6 +534,9 @@ public class FSAdapter extends CommanderAdapterBase {
                         break; // TODO: ask user about overwrite
                     }
                     if( file.isDirectory() ) {
+                        if( depth++ > 40 )
+                            throw new Exception( commander.getContext().getString( R.string.too_deep_hierarchy ) );
+                        
                         if( outFile.mkdir() ) {
                             copyFiles( file.listFiles(), outFile.getAbsolutePath() );
                             if( errMsg != null )
@@ -541,6 +544,7 @@ public class FSAdapter extends CommanderAdapterBase {
                         }
                         else
                             errMsg = "Unable to create directory '" + outFile.getAbsolutePath() + "' ";
+                        depth--;
                     }
                     else {
                         in  = new FileInputStream( file ).getChannel();

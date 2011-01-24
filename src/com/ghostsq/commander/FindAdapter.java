@@ -17,7 +17,7 @@ public class FindAdapter extends CommanderAdapterBase {
 
     public FindAdapter( Commander c ) {
         super( c, 0 );
-        parentLink = "..";
+        parentLink = PLS;
     }
     @Override
     public String getType() {

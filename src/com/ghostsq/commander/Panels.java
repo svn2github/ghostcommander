@@ -1136,17 +1136,21 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     public State getState() {
         State s = new State();
         s.current = current;
-        CommanderAdapter  left_adapter = (CommanderAdapter)listViews[LEFT].getAdapter();
-        CommanderAdapter right_adapter = (CommanderAdapter)listViews[RIGHT].getAdapter();
-        s.left  =  left_adapter.toString();
-        s.right = right_adapter.toString();
-        s.leftItem  =  left_adapter.getItemName( currentPositions[LEFT],  false );
-        s.rightItem = right_adapter.getItemName( currentPositions[RIGHT], false );
-        s.favUris = "";
+        try {
+            CommanderAdapter  left_adapter = (CommanderAdapter)listViews[LEFT].getAdapter();
+            s.left  =  left_adapter.toString();
+            s.leftItem  =  left_adapter.getItemName( currentPositions[LEFT],  false );
+            CommanderAdapter right_adapter = (CommanderAdapter)listViews[RIGHT].getAdapter();
+            s.right = right_adapter.toString();
+            s.rightItem = right_adapter.getItemName( currentPositions[RIGHT], false );
+        } catch( Exception e ) {
+            Log.e( TAG, "getState()", e );
+        }
         s.favUris = shorcutsFoldersList.getAsString();
         return s;
     }
 	public void setState( State s ) {
+	    if( s == null ) return;
     	resetQuickSearch();
         NavigateInternal( LEFT,  Uri.parse(s.left),  s.leftItem );
         NavigateInternal( RIGHT, Uri.parse(s.right), s.rightItem );

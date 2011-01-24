@@ -575,6 +575,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                     dex_f.mkdir();
             }
             ApplicationInfo ai = getPackageManager().getApplicationInfo( "com.ghostsq.commander." + type, 0 );
+            
             Log.i( TAG, type + " package is " + ai.sourceDir );
             
             ClassLoader pcl = getClass().getClassLoader();

@@ -118,7 +118,7 @@ public class FTPAdapter extends CommanderAdapterBase {
     	                            items_tmp[0].new LsItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
                                 Arrays.sort( items_tmp, comp );
 	                        }
-	                        parentLink = path == null || path.length() == 0 || path.equals( SLS ) ? SLS : "..";
+	                        parentLink = path == null || path.length() == 0 || path.equals( SLS ) ? SLS : PLS;
 	                        sendProgress( tooLong( 8 ) ? ftp.getLog() : null, Commander.OPERATION_COMPLETED, pass_back_on_done );
 	                        return;
 	                    }

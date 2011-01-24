@@ -33,6 +33,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected Commander commander = null;
     public    static final String SLS = File.separator;
     public    static final char   SLC = File.separator.charAt( 0 );
+    public    static final String PLS = "..";
     private   static final boolean long_date = Locale.getDefault().getLanguage().compareTo( "en" ) != 0;
     protected LayoutInflater mInflater = null;
     private   int    parentWidth, imgWidth, icoWidth, nameWidth, sizeWidth, dateWidth, attrWidth;
@@ -300,7 +301,8 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                     }
                     else {
                         imgView.setMaxWidth( icoWidth );
-                        imgView.setImageResource( item.dir ? R.drawable.folder : getIconId( name ) );
+                        imgView.setImageResource( item.dir || item.name.equals( SLS ) || 
+                               item.name.equals( PLS ) ? R.drawable.folder : getIconId( name ) );
                     }
                 }
                 else
