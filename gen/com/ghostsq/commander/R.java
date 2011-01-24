@@ -171,11 +171,15 @@ public final class R {
         public static final int menu=0x7f080000;
     }
     public static final class string {
+        /**  !!! 
+         */
         public static final int F1=0x7f070006;
         public static final int F10=0x7f070010;
         public static final int F2=0x7f070007;
         public static final int F3=0x7f070008;
         public static final int F4=0x7f070009;
+        /**  !!! 
+         */
         public static final int F5=0x7f07000b;
         public static final int F6=0x7f07000c;
         public static final int F7=0x7f07000d;
@@ -191,6 +195,8 @@ public final class R {
         public static final int app=0x7f070004;
         public static final int app_name=0x7f070000;
         public static final int arrow_mode=0x7f07002b;
+        /**  !!! 
+         */
         public static final int bgr_color_picker=0x7f0700a0;
         public static final int binary_file=0x7f0700b9;
         public static final int bug_warning=0x7f0700ce;
@@ -199,12 +205,16 @@ public final class R {
         public static final int cant_open=0x7f0700ba;
         public static final int cant_save=0x7f0700bb;
         public static final int cd_prompt=0x7f07005c;
+        /**  !!! 
+         */
         public static final int cd_title=0x7f07005b;
         public static final int change=0x7f070013;
         public static final int col_sw=0x7f0700cc;
         public static final int colors=0x7f07009e;
         public static final int confirm=0x7f070062;
         public static final int connect=0x7f07006a;
+        /**  !!! 
+         */
         public static final int copy_move_not_alwd=0x7f07004c;
         /**  copy_title/move_title 
  copy_title/move_title 
@@ -223,6 +233,7 @@ public final class R {
         public static final int delete_err=0x7f070052;
         public static final int delete_q=0x7f070053;
         /**  copy_title/move_title, file name/summary 
+ !!! 
          */
         public static final int delete_title=0x7f070051;
         /**  file name/summary 
@@ -242,7 +253,11 @@ public final class R {
         public static final int dialog_close=0x7f070039;
         public static final int dialog_exit=0x7f07003a;
         public static final int dialog_ignore=0x7f07003d;
+        /**  !!! 
+         */
         public static final int dialog_no=0x7f070036;
+        /**  !!! 
+         */
         public static final int dialog_ok=0x7f070037;
         public static final int dialog_retry=0x7f07003c;
         public static final int dialog_yes=0x7f070035;
@@ -273,6 +288,8 @@ public final class R {
         public static final int help_uri=0x7f0700c9;
         public static final int info=0x7f070061;
         public static final int input_settings=0x7f07002a;
+        /**  !!! 
+         */
         public static final int interrupted=0x7f070057;
         public static final int keys=0x7f070024;
         public static final int keys_text=0x7f0700cb;
@@ -302,6 +319,8 @@ public final class R {
         public static final int no_such_folder=0x7f0700be;
         public static final int not_supported=0x7f07005d;
         public static final int nothing_found=0x7f070059;
+        /**  !!! 
+         */
         public static final int nothing_to_open=0x7f0700b2;
         public static final int online_help=0x7f0700c6;
         public static final int open_with=0x7f070029;
@@ -313,6 +332,8 @@ public final class R {
         public static final int pick_color=0x7f0700a8;
         public static final int prefs=0x7f070022;
         public static final int prefs_label=0x7f07002d;
+        /**  !!! 
+         */
         public static final int preparing=0x7f07005a;
         public static final int prevent_root=0x7f07008c;
         public static final int progress=0x7f070063;
@@ -330,8 +351,12 @@ public final class R {
         public static final int search_prompt=0x7f070047;
         public static final int search_title=0x7f070046;
         public static final int sel_color_picker=0x7f0700a4;
+        /**  !!! 
+         */
         public static final int select=0x7f07005f;
         public static final int select_all=0x7f070020;
+        /**  !!! 
+         */
         public static final int select_some=0x7f07005e;
         public static final int send_to=0x7f070028;
         public static final int server=0x7f070065;
@@ -366,6 +391,8 @@ public final class R {
         public static final int sort_case=0x7f07009a;
         public static final int sorting=0x7f070098;
         public static final int summary_advanced=0x7f0700cd;
+        /**  !!! 
+         */
         public static final int summary_advanced_settings=0x7f070031;
         public static final int summary_arrow_mode=0x7f07002c;
         public static final int summary_bgr_color_picker=0x7f0700a1;
@@ -376,6 +403,8 @@ public final class R {
         public static final int summary_editor_activity=0x7f0700ad;
         public static final int summary_fgr_color_picker=0x7f0700a3;
         public static final int summary_finger_friendly=0x7f07008b;
+        /**  !!! 
+         */
         public static final int summary_language=0x7f0700aa;
         public static final int summary_panels_mode=0x7f07006f;
         public static final int summary_prevent_root=0x7f07008d;
@@ -395,13 +424,19 @@ public final class R {
         public static final int thumbnails=0x7f07008e;
         public static final int thumbnails_size=0x7f070090;
         public static final int too_big_file=0x7f0700b8;
+        /**  !!! 
+         */
         public static final int too_deep_hierarchy=0x7f070058;
         public static final int toolbar_preference=0x7f070076;
         public static final int ttl_color_picker=0x7f0700a6;
         public static final int two_lines=0x7f070070;
         public static final int unselect_all=0x7f070021;
+        /**  !!! 
+         */
         public static final int username=0x7f070068;
         public static final int value_editor_activity=0x7f0700ae;
+        /**  !!! 
+         */
         public static final int wait=0x7f070032;
         public static final int wrap=0x7f0700b6;
     }

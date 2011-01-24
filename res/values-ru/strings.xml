@@ -1,229 +1,209 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Ghost Commander</string>
-
-    <string name="file">Файл</string>
-    <string name="location">Адрес</string>
-    <string name="list">Список</string>
-    <string name="app">Приложение</string>
-
-    <string name="F1">1 Помощь</string>
-    <string name="F2">2 Переименуй</string>
-    <string name="F3">3 Просмотр</string>
-    <string name="F4">4 Редактируй</string>
-    <string name="F5">5 Копируй</string>
-    <string name="F6">6 Перемести</string>
-    <string name="F7">7 Создай папку</string>
-    <string name="F8">8 Удали</string>
-    <string name="F9">9 Настр.</string>
-    <string name="F10">0 Выход</string>
-    <string name="eq">= Сравняй</string>
-    <string name="tgl">&#x21E6; Сменить</string>
-    <string name="sz">\" Размер</string>
-    
-    <string name="col_sw"># Переключить режим</string>
-    <string name="oth_sh_this">= Tот же адрес</string>
-    <string name="change">&#xA0; Смени панель</string>
-    <string name="refresh">Обнови</string>
-    <string name="enter">&#xA0; Ввести адрес или URI</string>
-    <string name="add_fav">* Закладка на тек.адрес</string>
-    <string name="prefs">9 Настройки</string>
-    <string name="about">О программе</string>
-    <string name="keys">Значения клавиш</string>
-    <string name="new_file">Создать текстовый файл</string>
-
-    <string name="sort_by_name">&#xA0; По имени</string>
-    <string name="sort_by_ext" >&#xA0; По расширению</string>
-    <string name="sort_by_size">&#xA0; По размеру</string>
-    <string name="sort_by_date">&#xA0; По дате</string>
-    <string name="select_all">+ Выдели все</string>
-    <string name="unselect_all">- Снять выделение</string>
-
-    <string name="wait"> жди... </string>
-    <string name="fail"> (ошибка) </string>
-    <string name="failed">Ошибка:\n</string>
-    
-    <string name="go_button">Иди</string>
-    <string name="show_size">Вычисли Размер</string>
-    <string name="send_to">Послать...</string>
-    <string name="open_with">Открыть с...</string>
-    
-
-    <string name="input_settings">Ввод</string>
-    <string name="arrow_mode">Стрелки Влево/Вправо</string>
-    <string name="summary_arrow_mode">это Переключение и Выделение</string>
-
-    <string name="prefs_label">Настройки</string>
-    <string name="editor_label">Текстовый редактор</string>
-    <string name="advanced">Дополнительные настройки</string>
-    <string name="summary_advanced">Для продвинутых пользователей</string>
-
-    <string name="dialog_ok">Ok</string>
-    <string name="dialog_cancel">Отмена</string>
-    <string name="dialog_close">Закрыть</string>
-    <string name="dialog_exit">Выйти</string>
-
-    <string name="dialog_abort">Abort</string>
-    <string name="dialog_retry">Retry</string>
-    <string name="dialog_ignore">Ignore</string>
-    
-    <string name="operation">Операция</string>
-    <string name="edit_title">Редактор</string>
-    <string name="newf_prompt">Имя нового файла</string>
-    <string name="rename_title">Переименование</string>
-    <string name="rename_prompt">Переименовать в:</string>
-    <string name="rename_err">Нечего переименовывать</string>
-    <string name="mkdir_title">Новая папка</string>
-    <string name="mkdir_prompt">Имя новой папки</string>
-    <string name="search_title">Поиск</string>
-    <string name="search_prompt">Имя файла:</string>
-    <string name="copy_title">Копирование</string>
-    <string name="move_title">Перемещение</string>
-    <string name="no_items">Не с чем совершить данную операцию.</string>    
-    <string name="copy_move_not_alwd">Неизвестно с чем совершить операцию \"%1$s\". Сперва выделите файл(ы).</string><!-- copy_title/move_title -->
-    <string name="copy_to_local_only">Поддерживается копирование только в локальную файловую систему!</string>
-    <string name="dest_exist">Нельзя перезаписать уже существующий файл!</string>
-    <string name="copy_move_to">%1$s %2$s в:"</string><!-- copy_title/move_title, file name/summary -->
-    <string name="delete_title">Удаление</string>
-    <string name="delete_err">Нечего удалять</string>
-    <string name="delete_q">"Удалить %1$s ?"</string><!-- file name/summary -->
-    <string name="deleted">%1$d файлов удалено</string>
-    <string name="cd_title">Смена папки</string>
-    <string name="cd_prompt">Сменить текущую папку на:</string>
-    <string name="too_deep_hierarchy">Слишком глубокое вложение папок</string>
-    <string name="search_done">Поиск завершен</string>
-
-    <string name="select">Выбрать</string>
-    <string name="error">Ошибка</string>
-    <string name="info">Информация</string>
-    <string name="progress">Выполнение</string>
-    <string name="confirm">Подтверждение</string>
-    <string name="alert">Внимание</string>
-
-    <string name="server">Сервер:</string>
-    <string name="path">Путь на сервере:</string>
-    <string name="username">Логин:</string>
-    <string name="password">Пароль:</string>
-    <string name="connect">Соеденить</string>
-    <string name="cancel">Отмена</string>
-    <string name="ftp_connected">Подключились к FTP \"%1$s\",\n с именем \"%2$s\"</string>
-
-    <string name="enter_ftp">&#xA0; Открыть FTP сайт</string>
-    <string name="enter_smb">&#xA0; Открыть сетевую папку Windows</string>
-    <string name="search_file">/ Поиск файла</string>
-
-    <string name="layout_settings">Настройки внешнего вида:</string>
-    <string name="panels_mode">Две панели рядом</string>
-    <string name="summary_panels_mode">Показывать обе панели разом на одном экране</string>
-    <string name="two_lines">Вывод в две строки</string>
-    <string name="summary_two_lines">Атрибуты файлов всегда показывать на новой строке</string>
-    
-    <string name="show_icons">Иконки файлов</string>
-    <string name="summary_show_icons">Показывать иконки для файлов</string>
-    <string name="show_toolbar">Панель кнопок</string>
-    <string name="summary_show_toolbar">Показывать панель с кнопками файловых операций</string>
-    
-    <string name="toolbar_preference">Выбор инструментальных кнопок</string>
-    <string name="summary_toolbar_preference">Настроить, какие кнопки показывать в инструментальной панели операций</string>
-    <string name="show_F1">  &#xAB; 1 Помощь&#xBB;</string>
-    <string name="show_F2">  &#xAB; 2 Переименуй&#xBB;</string>
-    <string name="show_F3">  &#xAB; 3 Просмотр&#xBB;</string>
-    <string name="show_F4">  &#xAB; 4 Редактируй&#xBB;</string>
-    <string name="show_SF4">  &#xAB; &#xA0; Создать&#xBB;</string>
-    <string name="show_F5">  &#xAB; 5 Копируй&#xBB;</string>
-    <string name="show_F6">  &#xAB; 6 Перемести&#xBB;</string>
-    <string name="show_F7">  &#xAB; 7 Создай каталог&#xBB;</string>
-    <string name="show_F8">  &#xAB; 8 Удали&#xBB;</string>
-    <string name="show_F9">  &#xAB; 9 Настр.&#xBB;</string>
-    <string name="show_F10">  &#xAB; 0 Выход&#xBB;</string>
-    <string name="show_eq">  &#xAB; = Тот же&#xBB;</string>
-    <string name="show_tgl">  &#xAB; &#x21E6; Перейти&#xBB;</string>
-    <string name="show_sz">  &#xAB; \" Размер&#xBB;</string>
-    <string name="show_by_name">  &#xAB; по Имени&#xBB;</string>
-    <string name="show_by_ext" >  &#xAB; по Расширению&#xBB;</string>
-    <string name="show_by_size">  &#xAB; по Размеру&#xBB;</string>
-    <string name="show_by_date">  &#xAB; по Дате&#xBB;</string>
-    
-    <string name="finger_friendly">Управление пальцем</string>
-    <string name="summary_finger_friendly">Увеличить элементы интерфейса для управления пальцем</string>
-    <string name="prevent_root">Предупреждать на системных каталогах</string>
-    <string name="summary_prevent_root">Выдавать предупреждающее сообщение на попытку перейти в системный каталог</string>
-
-    <string name="thumbnails">Миниатюры</string>
-    <string name="summary_thumbnails">Предпросмотр графических файлов</string>
-    <string name="thumbnails_size">Размер миниатюр</string>
-    <string name="summary_thumbnails_size">В процентах к размеру иконок</string>
-
-    <string name="left_panel_settings">Опции Левой панели</string>
-    <string name="right_panel_settings">Опции Правой панели</string>
-    <string name="detailed_view_SbS">Панели рядом, Детализация </string>
-    <string name="summary_detailed_view_SbS">Показывать даты и размеры файлов в режиме когда обе панели видны</string>
-    <string name="detailed_view_Ovr">Панели перекрыты, Детализация</string>
-    <string name="summary_detailed_view_Ovr">Даты и размеры файлов в режиме когда панели друг под другом</string>
-    <string name="sorting">Сортировка</string>
-    <string name="summary_sorting">Как сортировать файлы при отображении</string>
-    <string name="sort_case">Игнорировать регистр</string>
-    <string name="summary_sort_case">Сортировать имена файлов без учета регистра</string>
-    
-    <string name="show_hidden">Показывать скрытые файлы</string>
-    <string name="summary_show_hidden">Файлы начинающиеся на точку показывать наравне с остальными</string>
-
-    <string name="colors">Настройка цветов</string>
-    <string name="bgr_color_picker">Цвет фона</string>
-    <string name="summary_bgr_color_picker">Выбор цвета для фона панелей</string>
-    <string name="fgr_color_picker">Цвет текста</string>
-    <string name="summary_fgr_color_picker">Выбор цвета для имен файлов</string>
-    <string name="sel_color_picker">Цвет Выделения</string>
-    <string name="summary_sel_color_picker">Выбор цвета для выделеных файлов</string>
-    <string name="ttl_color_picker">Цвет заголовка</string>
-    <string name="summary_ttl_color_picker">Выбор цвета для заголовка панелей</string>
-
-    <string name="summary_language">Изменить язык программы на отличный от системного</string>
-    <string name="restart_to_apply_lang">Перезапустите приложение для полной смены языка интерфейса</string>    
-
-    <string name="editor_activity">Activity для редактирования</string>
-    <string name="summary_editor_activity">Полное имя Activity класса. Имя пакета = префикс полного имени класса.</string>
-    <string name="value_editor_activity">com.ghostsq.commander.Editor</string>
-    
-    <string name="busybox_location">Местонахождение busybox</string>
-    <string name="summary_busybox_location">Для работы в root режиме нужен busybox. Укажите путь к нему здесь.</string>   
-    
-    <string name="nothing_to_open">Не ясно что редактировать</string>
-    <string name="remind_to_save">Не забудьте сохранить изменения через меню</string>
-    <string name="save">Сохранить</string>
-    <string name="revert">Восстановить</string>
-    <string name="wrap">Длинные строки</string>
-    
-    <string name="no_such_file">Нет такого файла \"%1$s\"</string>
-    <string name="too_big_file">Файл \"%1$s\" длишком большой.</string>
-    <string name="binary_file">Файл \"%1$s\" не текстовый. Редактирование приведёт к его порче.</string>    
-    <string name="cant_open">Не могу прочитать файл.</string>    
-    <string name="cant_save">Не могу сохранить файл.</string>    
-    <string name="nav_warn">Каталог в который вы хотите перейти - системный. Необдуманные действия в нём могут привести к поломке устройства в целом. Продолжить?</string>
-    <string name="nav_warn_cmt">(Это предупреждение может быть отключено в настройках)</string>
-    
-    <string name="no_such_folder">\"%1$s\" не существует!</string>
-    <string name="fav_added">Folder \"%1$s\" добавлен</string>
-
-    <string name="no_root">Очевидно ваше устройство не позволяет доступ как root (su).</string>
-
-    <string name="online_help">&#xA0; Описание в онлайне (EN)</string>
-
-    <string name="donate">&#xA0; Поддержка</string>
-    <string name="donation">Выразите свою поддержку дальнейшему развитию
-      &#xAB;Ghost Commander&#xBB; путем перевода любой суммы разработчику через систему PayPal.\n
-    </string>
-    <string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
-    
-    <string name="smb_missed">
+<string name="app_name">Ghost Commander</string>
+<string name="file">Файл</string>
+<string name="location">Адрес</string>
+<string name="list">Список</string>
+<string name="app">Приложение</string>
+<string name="help">Помощь</string><!-- !!! -->
+<string name="F1">1 Помощь</string>
+<string name="F2">2 Переименуй</string>
+<string name="F3">3 Просмотр</string>
+<string name="F4">4 Редактируй</string>
+<string name="SF4">  Создай</string><!-- !!! -->
+<string name="F5">5 Копируй</string>
+<string name="F6">6 Перемести</string>
+<string name="F7">7 Создай папку</string>
+<string name="F8">8 Удали</string>
+<string name="F9">9 Настр.</string>
+<string name="F10">0 Выход</string>
+<string name="oth_sh_this">= Tот же адрес</string>
+<string name="eq">= Сравняй</string>
+<string name="change">  Смени панель</string>
+<string name="tgl">⇦ Сменить</string>
+<string name="sz">\" Размер</string>
+<string name="refresh">Обнови</string>
+<string name="enter">  Ввести адрес или URI</string>
+<string name="add_fav">* Закладка на тек.адрес</string>
+<string name="enter_ftp">  Открыть FTP сайт</string>
+<string name="enter_smb">  Открыть сетевую папку Windows</string>
+<string name="search_file">/ Поиск файла</string>
+<string name="sort_by_name">  По имени</string>
+<string name="sort_by_ext">  По расширению</string>
+<string name="sort_by_size">  По размеру</string>
+<string name="sort_by_date">  По дате</string>
+<string name="select_all">+ Выдели все</string>
+<string name="unselect_all">- Снять выделение</string>
+<string name="prefs">9 Настройки</string>
+<string name="about">О программе</string>
+<string name="keys">Значения клавиш</string>
+<string name="new_file">Создать текстовый файл</string>
+<string name="go_button">Иди</string>
+<string name="show_size">Вычисли Размер</string>
+<string name="send_to">Послать...</string>
+<string name="open_with">Открыть с...</string>
+<string name="input_settings">Ввод</string>
+<string name="arrow_mode">Стрелки Влево/Вправо</string>
+<string name="summary_arrow_mode">это Переключение и Выделение</string>
+<string name="prefs_label">Настройки</string>
+<string name="editor_label">Текстовый редактор</string>
+<string name="advanced">Дополнительнo</string>
+<string name="advanced_settings">Дополнительные настройки</string><!-- !!! -->
+<string name="summary_advanced_settings">Для опытных пользователей</string><!-- !!! -->
+<string name="wait"> жди... </string>
+<string name="fail"> (ошибка) </string>
+<string name="failed">Ошибка:\n</string>
+<string name="dialog_yes">Да</string><!-- !!! -->
+<string name="dialog_no">Нет</string><!-- !!! -->
+<string name="dialog_ok">Ok</string>
+<string name="dialog_cancel">Отмена</string>
+<string name="dialog_close">Закрыть</string>
+<string name="dialog_exit">Выйти</string>
+<string name="dialog_abort">Abort</string>
+<string name="dialog_retry">Retry</string>
+<string name="dialog_ignore">Ignore</string>
+<string name="operation">Операция</string>
+<string name="edit_title">Редактор</string>
+<string name="newf_prompt">Имя нового файла</string>
+<string name="rename_title">Переименование</string>
+<string name="rename_prompt">Переименовать в:</string>
+<string name="rename_err">Нечего переименовывать</string>
+<string name="mkdir_title">Новая папка</string>
+<string name="mkdir_prompt">Имя новой папки</string>
+<string name="search_title">Поиск</string>
+<string name="search_prompt">Имя файла:</string>
+<string name="copy_title">Копирование</string>
+<string name="move_title">Перемещение</string>
+<string name="no_items">Не с чем совершить данную операцию.</string>
+<string name="find_on_fs_only">Функция поиска пока работает только на локальной файловой системе.</string><!-- !!! -->
+<string name="copy_move_not_alwd">Неизвестно с чем совершить операцию \"%1$s\". Сперва выделите файл(ы).</string>
+<string name="copy_to_local_only">Поддерживается копирование только в локальную файловую систему!</string>
+<string name="dest_exist">Нельзя перезаписать уже существующий файл!</string>
+<string name="copy_move_to">%1$s %2$s в:"</string>
+<string name="login_title">Идентификация</string><!-- !!! -->
+<string name="delete_title">Удаление</string>
+<string name="delete_err">Нечего удалять</string>
+<string name="delete_q">"Удалить %1$s ?"</string>
+<string name="deleted">%1$d файлов удалено</string>
+<string name="search_done">Поиск завершен</string>
+<string name="done">Сделано</string><!-- !!! -->
+<string name="interrupted">Выполнение прервано</string><!-- !!! -->
+<string name="too_deep_hierarchy">Слишком глубокое вложение папок</string>
+<string name="nothing_found">Файлы не найдены</string><!-- !!! -->
+<string name="preparing">Подготовка...</string><!-- !!! -->
+<string name="cd_title">Смена папки</string>
+<string name="cd_prompt">Сменить текущую папку на:</string>
+<string name="not_supported">Операция не поддерживается.</string><!-- !!! -->
+<string name="select_some">Не выбрано ни одного файла</string><!-- !!! -->
+<string name="select">Выбрать</string>
+<string name="error">Ошибка</string>
+<string name="info">Информация</string>
+<string name="confirm">Подтверждение</string>
+<string name="progress">Выполнение</string>
+<string name="alert">Внимание</string>
+<string name="server">Сервер:</string>
+<string name="path">Путь на сервере:</string>
+<string name="domain">Домен:</string><!-- !!! -->
+<string name="username">Логин:</string>
+<string name="password">Пароль:</string>
+<string name="connect">Соеденить</string>
+<string name="cancel">Отмена</string>
+<string name="ftp_connected">Подключились к FTP \"%1$s\",\n с именем \"%2$s\"</string>
+<string name="layout_settings">Настройки внешнего вида:</string>
+<string name="panels_mode">Две панели рядом</string>
+<string name="summary_panels_mode">Показывать обе панели разом на одном экране</string>
+<string name="two_lines">Вывод в две строки</string>
+<string name="summary_two_lines">Атрибуты файлов всегда показывать на новой строке</string>
+<string name="show_icons">Иконки файлов</string>
+<string name="summary_show_icons">Показывать иконки для файлов</string>
+<string name="show_toolbar">Панель кнопок</string>
+<string name="summary_show_toolbar">Показывать панель с кнопками файловых операций</string>
+<string name="toolbar_preference">Выбор инструментальных кнопок</string>
+<string name="summary_toolbar_preference">Настроить, какие кнопки показывать в инструментальной панели операций</string>
+<string name="show_F1">  « 1 Помощь»</string>
+<string name="show_F2">  « 2 Переименуй»</string>
+<string name="show_F3">  « 3 Просмотр»</string>
+<string name="show_F4">  « 4 Редактируй»</string>
+<string name="show_SF4">  «   Создать»</string>
+<string name="show_F5">  « 5 Копируй»</string>
+<string name="show_F6">  « 6 Перемести»</string>
+<string name="show_F7">  « 7 Создай каталог»</string>
+<string name="show_F8">  « 8 Удали»</string>
+<string name="show_F9">  « 9 Настр.»</string>
+<string name="show_F10">  « 0 Выход»</string>
+<string name="show_eq">  « = Тот же»</string>
+<string name="show_tgl">  « ⇦ Перейти»</string>
+<string name="show_sz">  « \" Размер»</string>
+<string name="show_by_name">  « по Имени»</string>
+<string name="show_by_ext">  « по Расширению»</string>
+<string name="show_by_size">  « по Размеру»</string>
+<string name="show_by_date">  « по Дате»</string>
+<string name="finger_friendly">Управление пальцем</string>
+<string name="summary_finger_friendly">Увеличить элементы интерфейса для управления пальцем</string>
+<string name="prevent_root">Предупреждать на системных каталогах</string>
+<string name="summary_prevent_root">Выдавать предупреждающее сообщение на попытку перейти в системный каталог</string>
+<string name="thumbnails">Миниатюры</string>
+<string name="summary_thumbnails">Предпросмотр графических файлов</string>
+<string name="thumbnails_size">Размер миниатюр</string>
+<string name="summary_thumbnails_size">В процентах к размеру иконок</string>
+<string name="left_panel_settings">Опции Левой панели</string>
+<string name="right_panel_settings">Опции Правой панели</string>
+<string name="detailed_view_SbS">Панели рядом, Детализация </string>
+<string name="summary_detailed_view_SbS">Показывать даты и размеры файлов в режиме когда обе панели видны</string>
+<string name="detailed_view_Ovr">Панели перекрыты, Детализация</string>
+<string name="summary_detailed_view_Ovr">Даты и размеры файлов в режиме когда панели друг под другом</string>
+<string name="sorting">Сортировка</string>
+<string name="summary_sorting">Как сортировать файлы при отображении</string>
+<string name="sort_case">Игнорировать регистр</string>
+<string name="summary_sort_case">Сортировать имена файлов без учета регистра</string>
+<string name="show_hidden">Показывать скрытые файлы</string>
+<string name="summary_show_hidden">Файлы начинающиеся на точку показывать наравне с остальными</string>
+<string name="colors">Настройка цветов</string>
+<string name="summary_colors">Установить ваши любимые цвета для текста, фона, и т.д.</string><!-- !!! -->
+<string name="bgr_color_picker">Цвет фона</string>
+<string name="summary_bgr_color_picker">Выбор цвета для фона панелей</string>
+<string name="fgr_color_picker">Цвет текста</string>
+<string name="summary_fgr_color_picker">Выбор цвета для имен файлов</string>
+<string name="sel_color_picker">Цвет Выделения</string>
+<string name="summary_sel_color_picker">Выбор цвета для выделеных файлов</string>
+<string name="ttl_color_picker">Цвет заголовка</string>
+<string name="summary_ttl_color_picker">Выбор цвета для заголовка панелей</string>
+<string name="pick_color">Выбрать цвет</string><!-- !!! -->
+<string name="summary_language">Изменить язык программы на отличный от системного</string>
+<string name="restart_to_apply_lang">Перезапустите приложение для полной смены языка интерфейса</string>
+<string name="editor_activity">Activity для редактирования</string>
+<string name="summary_editor_activity">Полное имя Activity класса. Имя пакета = префикс полного имени класса.</string>
+<string name="value_editor_activity">com.ghostsq.commander.Editor</string>
+<string name="busybox_location">Местонахождение busybox</string>
+<string name="summary_busybox_location">Для работы в root режиме нужен busybox. Укажите путь к нему здесь.</string>
+<string name="execute_command">Исполнить команду</string><!-- !!! -->
+<string name="nothing_to_open">Не ясно что редактировать</string>
+<string name="remind_to_save">Не забудьте сохранить изменения через меню</string>
+<string name="save">Сохранить</string>
+<string name="revert">Восстановить</string>
+<string name="wrap">Длинные строки</string>
+<string name="no_such_file">Нет такого файла \"%1$s\"</string>
+<string name="too_big_file">Файл \"%1$s\" длишком большой.</string>
+<string name="binary_file">Файл \"%1$s\" не текстовый. Редактирование приведёт к его порче.</string>
+<string name="cant_open">Не могу прочитать файл.</string>
+<string name="cant_save">Не могу сохранить файл.</string>
+<string name="nav_warn">Каталог в который вы хотите перейти - системный. Необдуманные действия в нём могут привести к поломке устройства в целом. Продолжить?</string>
+<string name="nav_warn_cmt">(Это предупреждение может быть отключено в настройках)</string>
+<string name="no_such_folder">\"%1$s\" не существует!</string>
+<string name="fav_added">Folder \"%1$s\" добавлен</string>
+<string name="smb_missed">
     Не удаётся загрузить Samba адаптер.\n
     Пожалуста, убедитесь, что пакет\n
     \"Ghost Commander - Samba plugin\"\n
     (com.ghostsq.commander.samba.apk) инсталлирован.</string>
-
-    <string name="bug_warning">!!! Android v1.5 имеет баг! Имеет смысл перейти на Android v2.x !!!</string>
-    
-    <string name="about_text">
+<string name="no_root">Очевидно ваше устройство не позволяет доступ как root (su).</string>
+<string name="donate">  Поддержка</string>
+<string name="online_help">  Описание в онлайне (EN)</string>
+<string name="donation">Выразите свою поддержку дальнейшему развитию
+      «Ghost Commander» путем перевода любой суммы разработчику через систему PayPal.\n
+    </string>
+<string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
+<string name="about_text">
         Ghost Commander v%1$s\n
         Файловый менеджер.\n\n
         Шлите ваши замечания на\n
@@ -236,7 +216,7 @@
 программы и деинсталлируйте её. 
 \n
     </string>
-    <string name="keys_text">
+<string name="keys_text">
     "
 Для выделения файла - коснитесь правую половину строки.
 Для ввода пути и списка закладок коснитесь на 1сек. заголовка нужной панели\n\n    
@@ -265,7 +245,7 @@ VolDn - Перейти на другую панель\n
 Если надо предоставить имя/пароль, то:\n
     ftp://user:password@host.com/folder\n\n
 
-Для доступа к Windows сетевой папке (не забудьте проинсталлировать &#xAB;Ghost Commander - Samba plugin&#xBB;), 
+Для доступа к Windows сетевой папке (не забудьте проинсталлировать «Ghost Commander - Samba plugin»), 
 введите адрес по следущему образу:\n
     smb://домен;имя:пароль@сервер/папка\n\n
 
@@ -276,5 +256,4 @@ VolDn - Перейти на другую панель\n
 выберете нужное устройство в списке \"mount://\"    
 \n"
     </string>
-    
 </resources>

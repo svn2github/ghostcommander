@@ -22,7 +22,8 @@
         <item>한국어</item>  
         <item>Magyar</item>  
         <item>Deutsch</item>  
-        <item>Čeština</item>  
+        <item>Čeština</item>
+        <item>Български</item>
     </string-array>
     <string-array name="language_vals">
         <item></item>
@@ -33,6 +34,7 @@
         <item>ko</item>  
         <item>hu</item>  
         <item>de</item>  
-        <item>cs</item>  
-    </string-array>    
+        <item>cs</item>
+        <item>bg</item>
+    </string-array>
 </resources>
