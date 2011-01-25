@@ -113,7 +113,7 @@
 <string name="panels_mode">Двата панела заедно</string>
 <string name="summary_panels_mode">Показва и двата панела едновременно на один екран</string>
 <string name="two_lines">Изход в два реда</string>
-<string name="summary_two_lines">Атрибутите на файловете винаги се показват на нбов ред</string>
+<string name="summary_two_lines">Атрибутите на файловете винаги се показват на нов ред</string>
 <string name="show_icons">Икони за файлове</string>
 <string name="summary_show_icons">Показва иконите за файловете</string>
 <string name="show_toolbar">Панел с бутони</string>
@@ -135,7 +135,7 @@
 <string name="show_tgl">  « ⇦ Отиди»</string>
 <string name="show_sz">  « \" Размер»</string>
 <string name="show_by_name">  « по име»</string>
-<string name="show_by_ext">  « по расширение»</string>
+<string name="show_by_ext">  « по разширение»</string>
 <string name="show_by_size">  « по размер»</string>
 <string name="show_by_date">  « по дата»</string>
 <string name="finger_friendly">Управление с пръсти</string>
@@ -143,13 +143,13 @@
 <string name="prevent_root">Предупреждавай за системни каталози</string>
 <string name="summary_prevent_root">Издава предупреждаващо съобщение при опит да се отиде в системен каталог</string>
 <string name="thumbnails">Миниатюри</string>
-<string name="summary_thumbnails">Предварителен преглед на графически файлове</string>
+<string name="summary_thumbnails">Предварителен преглед на графични файлове</string>
 <string name="thumbnails_size">Размер на миниатюрите</string>
 <string name="summary_thumbnails_size">В проценти към размера на иконките</string>
 <string name="left_panel_settings">Опции за левия панел</string>
 <string name="right_panel_settings">Опции за десния панел</string>
-<string name="detailed_view_SbS">Панелите заедни, Детайлизация </string>
-<string name="summary_detailed_view_SbS">Показваи датата и размера на файловете в режима когато двата панела се виждат</string>
+<string name="detailed_view_SbS">Панелите заедно, Детайлизация </string>
+<string name="summary_detailed_view_SbS">Показвай датата и размера на файловете в режима когато двата панела се виждат</string>
 <string name="detailed_view_Ovr">Скрити панели, Детайлизация</string>
 <string name="summary_detailed_view_Ovr">Датата и размера на файловете в режима когато двата панела са един върху друг</string>
 <string name="sorting">Подреждане</string>
@@ -172,7 +172,7 @@
 <string name="language">Работен език</string>
 <string name="summary_language">Измени езика на програмата на различен от системния</string>
 <string name="restart_to_apply_lang">Рестартирайте проложението за пълна смяна на езика</string>
-<string name="editor_activity">Activity за редакция</string>
+<string name="editor_activity">Activity клас за редакция</string>
 <string name="summary_editor_activity">Пълното име на Activity класа. Име на пакета = префикс пълното име на класса.</string>
 <string name="value_editor_activity">com.ghostsq.commander.Editor</string>
 <string name="busybox_location">Местонахождение на busybox</string>
