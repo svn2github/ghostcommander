@@ -194,6 +194,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected Dialog onCreateDialog( int id ) {
+        if( !on ) return null;
         Dialogs dh = obtainDialogsInstance(id);
         Dialog d = dh.createDialog(id);
         return d != null ? d : super.onCreateDialog(id);
@@ -201,6 +202,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onPrepareDialog( int id, Dialog dialog ) {
+        if( !on ) return;
         Dialogs dh = getDialogsInstance(id);
         if( dh != null )
             dh.prepareDialog(id, dialog);
@@ -229,8 +231,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         super.onActivityResult(requestCode, resultCode, data);
         if( requestCode == REQUEST_CODE_PREFERENCES ) {
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-            if( !lang.equalsIgnoreCase( sharedPref.getString( "language", "" ) ) )
-                showInfo( getString( R.string.restart_to_apply_lang ) );
+            if( !lang.equalsIgnoreCase( sharedPref.getString( "language", "" ) ) ) {
+                showMessage( getString( R.string.restart_to_apply_lang ) );
+                exit = true;
+            }
             panels.applySettings( sharedPref );
             if( panelsBak != null )
                 panelsBak.applySettings( sharedPref );

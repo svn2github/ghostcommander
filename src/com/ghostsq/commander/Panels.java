@@ -640,13 +640,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     public final void tryToSend() {
         File f = getCurrentFile();
         if( f != null ) {
-/*            
-            String mime = null;
-            MimeTypeMap mime_map = MimeTypeMap.getSingleton();
-            if( mime_map != null )
-                mime = mime_map.getMimeTypeFromExtension( MimeTypeMap.getFileExtensionFromUrl( f.getAbsolutePath() ) );
-*/
-            String mime = Utils.getMimeByExt( Utils.getFileExt( f.getName() ) );
+            String ext = Utils.getFileExt( f.getName() );
+            String mime = ext.equalsIgnoreCase( ".apk" ) ? "*/*" : Utils.getMimeByExt( ext );
             Intent sendIntent = new Intent( Intent.ACTION_SEND );
             Log.i( TAG, "Type file to send: " + mime );
             sendIntent.setType( mime == null ? "*/*" : mime );

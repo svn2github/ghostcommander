@@ -199,7 +199,7 @@ public final class R {
          */
         public static final int bgr_color_picker=0x7f0700a0;
         public static final int binary_file=0x7f0700b9;
-        public static final int bug_warning=0x7f0700ce;
+        public static final int bug_warning=0x7f0700cd;
         public static final int busybox_location=0x7f0700af;
         public static final int cancel=0x7f07006b;
         public static final int cant_open=0x7f0700ba;
@@ -225,19 +225,16 @@ public final class R {
         public static final int copy_title=0x7f070048;
         /**  copy_title/move_title 
  copy_title/move_title 
- copy_title/move_title 
          */
         public static final int copy_to_local_only=0x7f07004d;
         public static final int dbox_app_uri=0x7f0700c3;
         public static final int dbox_missed=0x7f0700c2;
         public static final int delete_err=0x7f070052;
         public static final int delete_q=0x7f070053;
-        /**  copy_title/move_title, file name/summary 
- !!! 
+        /**  !!! 
          */
         public static final int delete_title=0x7f070051;
         /**  file name/summary 
- file name/summary 
  file name/summary 
  file name/summary 
  file name/summary 
@@ -390,7 +387,6 @@ public final class R {
         public static final int sort_by_size=0x7f07001e;
         public static final int sort_case=0x7f07009a;
         public static final int sorting=0x7f070098;
-        public static final int summary_advanced=0x7f0700cd;
         /**  !!! 
          */
         public static final int summary_advanced_settings=0x7f070031;
