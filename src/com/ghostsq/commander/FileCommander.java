@@ -586,6 +586,14 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             DexClassLoader cl = new DexClassLoader( ai.sourceDir, dex_f.getAbsolutePath(), null, pcl );
             //
             Class<?> adapterClass = cl.loadClass( "com.ghostsq.commander." + type + "." + class_name );
+            try {
+                File[] list = dex_f.listFiles();
+                for( int i = 0; i < list.length; i++ )
+                    list[i].delete();
+            }
+            catch( Exception e ) {
+                Log.e( TAG, "Can't remove the plugin's .dex: ", e );
+            }
             if( adapterClass == null )
                 showError( "Can not load the adapter class of " + type );
             else {
