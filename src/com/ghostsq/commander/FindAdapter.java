@@ -28,6 +28,34 @@ public class FindAdapter extends CommanderAdapterBase {
         mode_ &= ~MODE_WIDTH;
         super.setMode( mask, mode_ );
     }
+
+    @Override
+    public boolean readSource( Uri uri_, String pass_back_on_done ) {
+        try {
+            if( worker != null ) worker.reqStop();
+            if( uri_ != null )
+                uri = uri_;
+            if( uri == null )
+                return false;
+            if( uri.getScheme().compareTo( "find" ) == 0 ) {
+                String  path = uri.getPath();
+                String match = uri.getQueryParameter( "q" );
+                if( path != null && path.length() > 0 && match != null && match.length() > 0  ) {
+                    commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
+                    worker = new SearchEngine( handler, match, path, pass_back_on_done );
+                    worker.start();
+                    return true;
+                }
+            }
+        } catch( Exception e ) {
+            Log.e( TAG, "FindAdapter.readSource() exception: ", e );
+        }
+        Log.e( TAG, "FindAdapter unable to read by the URI '" + ( uri == null ? "null" : uri.toString() ) + "'" );
+        uri = null;
+        return false;
+    }
+    
+    
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
         if( move && to instanceof FSAdapter ) {
@@ -94,8 +122,11 @@ public class FindAdapter extends CommanderAdapterBase {
             return parentLink;
         if( position < 0 || position > items.length || items == null )
             return null;
-        else
-            return items[position - 1].getAbsolutePath();
+        else {
+            File f = items[position - 1];
+            if( f == null ) return null;
+            return full ? f.getAbsolutePath() : f.getName();
+        }
     }
 
     @Override
@@ -129,32 +160,6 @@ public class FindAdapter extends CommanderAdapterBase {
                     commander.Open( file.getAbsolutePath() );
             }
         }
-    }
-
-    @Override
-    public boolean readSource( Uri uri_, String pass_back_on_done ) {
-        try {
-            if( worker != null ) worker.reqStop();
-            if( uri_ != null )
-                uri = uri_;
-            if( uri == null )
-                return false;
-            if( uri.getScheme().compareTo( "find" ) == 0 ) {
-                String  path = uri.getPath();
-                String match = uri.getQueryParameter( "q" );
-                if( path != null && path.length() > 0 && match != null && match.length() > 0  ) {
-                    commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-                    worker = new SearchEngine( handler, match, path, pass_back_on_done );
-                    worker.start();
-                    return true;
-                }
-            }
-        } catch( Exception e ) {
-            Log.e( TAG, "FindAdapter.readSource() exception: ", e );
-        }
-        Log.e( TAG, "FindAdapter unable to read by the URI '" + ( uri == null ? "null" : uri.toString() ) + "'" );
-        uri = null;
-        return false;
     }
 
     @Override
@@ -230,7 +235,7 @@ public class FindAdapter extends CommanderAdapterBase {
         
         SearchEngine( Handler h, String match, String path_, String pass_back_on_done_ ) {
             super( h );
-            cards = match.split( "\\*" );
+            cards = Utils.prepareWildcard( match );
             path = path_;
             pass_back_on_done = pass_back_on_done_;
         }
@@ -259,7 +264,7 @@ public class FindAdapter extends CommanderAdapterBase {
                         throw new Exception( commander.getContext().getString( R.string.interrupted ) );
                     File f = subfiles[i];
                     
-                    if( wildCardMatch( f.getName() ) ) {
+                    if( Utils.match( f.getName(), cards ) ) {
                         result.add( f );
                     }
                     if( f.isDirectory() ) {
@@ -272,16 +277,6 @@ public class FindAdapter extends CommanderAdapterBase {
             } catch( Exception e ) {
                 Log.e( TAG, "Exception on search: ", e );
             }
-        }
-        private final boolean wildCardMatch( String text ) {
-            int pos = 0;
-            for( String card : cards ) {
-                int idx = text.indexOf( card, pos );
-                if( idx < 0 )
-                    return false;
-                pos = idx + card.length();
-            }
-            return true;
         }
         public final File[] getItems( int mode ) {
             if( result == null ) return null;

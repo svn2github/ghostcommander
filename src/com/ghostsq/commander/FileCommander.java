@@ -194,7 +194,9 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected Dialog onCreateDialog( int id ) {
-        if( !on ) return null;
+        if( !on ) {
+            Log.e( TAG, "onCreateDialog() is called when the activity is down" );
+        }
         Dialogs dh = obtainDialogsInstance(id);
         Dialog d = dh.createDialog(id);
         return d != null ? d : super.onCreateDialog(id);
@@ -202,7 +204,6 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onPrepareDialog( int id, Dialog dialog ) {
-        if( !on ) return;
         Dialogs dh = getDialogsInstance(id);
         if( dh != null )
             dh.prepareDialog(id, dialog);
@@ -307,7 +308,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         doIt( button.getId() );
     }
 
-    private final void doIt( int id ) {
+    public final void doIt( int id ) {
         switch( id ) {
         case R.id.keys:
         case R.id.F1:
@@ -382,10 +383,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             panels.refreshLists();
             break;
         case R.id.select_all:
-            panels.checkAllItems( true );
+            showDialog( Dialogs.SELECT_DIALOG );
             break;
         case R.id.unselect_all:
-            panels.checkAllItems( false );
+            showDialog( Dialogs.UNSELECT_DIALOG );
             break;
         case R.id.about:
             showDialog( Dialogs.ABOUT_DIALOG );

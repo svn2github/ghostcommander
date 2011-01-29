@@ -35,8 +35,8 @@
     <string name="sort_by_ext" >&#xA0; By Extension</string>
     <string name="sort_by_size">&#xA0; By Size</string>
     <string name="sort_by_date">&#xA0; By Date</string>
-    <string name="select_all">+ Select All</string>
-    <string name="unselect_all">- UnSelect All</string>
+    <string name="select_all">+ Select files</string>
+    <string name="unselect_all">- UnSelect files</string>
         
     <string name="prefs">9 Settings</string>
     <string name="about">&#xA0; About</string>
@@ -72,6 +72,9 @@
     <string name="dialog_abort">Abort</string>
     <string name="dialog_retry">Retry</string>
     <string name="dialog_ignore">Ignore</string>
+
+    <string name="dialog_select">Select</string>
+    <string name="dialog_unselect">Unselect</string>
     
     <string name="operation">Operation</string>
     <string name="edit_title">Edit</string>
@@ -264,7 +267,7 @@ To manually enter the location path (and see the favorites), long press on the p
 Shortcuts keys:\n
 VolumeUp - Select the current item (file)
 VolumeDn - Swap the panels
-+,-   - Select or unselect all items in the current folder  
++, -  - Select or unselect items in the current folder  
 (, )  - Enter the location for left/right panel and favorites
 * - Add the current folder to favorites
 \" - Show the total size of selected files

@@ -32,7 +32,7 @@
     <string name="sort_by_ext">  Nach Erweiterung</string>
     <string name="sort_by_size">  Nach Grösse</string>
     <string name="sort_by_date">  Nach Datum</string>
-    <string name="select_all">+ Alles markieren</string>
+    <string name="select_all">+ Markieren</string>
     <string name="unselect_all">- Markierung aufheben</string>
     <string name="prefs">9 Einstellungen</string>
     <string name="about">  Über</string>
@@ -226,7 +226,7 @@
     Tastenkürzel:\n
     Lautstärke+ - aktuelle Datei oder aktuellen Ordner markieren\n
     Lautstärke- - Fenster wechseln\n
-    +,- - Alles markieren oder Markierung aufheben\n
+    +,- - Markieren oder Markierung aufheben\n
     (, ) - Ordner im rechten oder linken Fenster direkt öffnen und Favoriten anzeigen\n
     * - aktuellen Ordner zu den Favoriten hinzufügen\n
     \ - Gesamtgrösse aller markierten Dateien und Ordner anzeigen\n

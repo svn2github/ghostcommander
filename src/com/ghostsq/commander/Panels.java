@@ -520,10 +520,20 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 flv.setSelectionFromTop( pos + 1, flv.getHeight() / 2 );
         }
     }
-    public final void checkAllItems( boolean set ) {
+    public final void checkItems( boolean set, String mask ) {
+        String[] cards = Utils.prepareWildcard( mask );
         ListView flv = listViews[current];
-        for( int i = 1; i < flv.getCount(); i++ ) 
-            flv.setItemChecked( i, set );
+        CommanderAdapter ca =(CommanderAdapter)flv.getAdapter();
+        for( int i = 1; i < flv.getCount(); i++ ) {
+            if( cards == null )
+                flv.setItemChecked( i, set );
+            else {
+                String i_n = ca.getItemName( i, false );
+                if( i_n == null ) continue;
+                if( Utils.match( i_n, cards ) )
+                    flv.setItemChecked( i, set );
+            }
+        }
     }
     class NavDialog implements OnClickListener {
         private   final Uri sdcard = Uri.parse(DEFAULT_LOC);
@@ -751,7 +761,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
 			int n = ((ListAdapter)a).getCount();
 			for( int i = 1; i < n; i++ ) {
 				String name = a.getItemName( i , false );
-				if( name.startsWith( s ) ) {
+				if( name == null ) continue;
+				if( s.compareToIgnoreCase( name.substring( 0, s.length() ) ) == 0 ) {
 					setSelection( i );
 					return;
 				}
@@ -955,7 +966,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
 	        	return true;
 	        case '+':
 	        case '-':
-	        	checkAllItems( ch == '+' );
+	            c.showDialog( ch == '+' ? Dialogs.SELECT_DIALOG :  Dialogs.UNSELECT_DIALOG );
 	            return true;
 	        case '"':
 	        	showSizes();

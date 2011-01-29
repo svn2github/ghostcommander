@@ -35,8 +35,8 @@
     <string name="sort_by_ext" >&#xA0; Dle Přípony</string>
     <string name="sort_by_size">&#xA0; Dle Velikosti</string>
     <string name="sort_by_date">&#xA0; Dle Data</string>
-    <string name="select_all">+ Označit Vše</string>
-    <string name="unselect_all">- Odznačit Vše</string>
+    <string name="select_all">+ Označit</string>
+    <string name="unselect_all">- Odznačit</string>
         
     <string name="prefs">9 Nastavení</string>
     <string name="about">&#xA0; O programu</string>
@@ -262,7 +262,7 @@ Pro ruční vložení složky či FTP adresy (a pro výpis seznamu Oblíbených)
 Zkratkové klávesy:\n
 Zvýšení hlasitosti - Označení současné položky (souboru)
 Snížení hlasitosti - Přepínání mezi panely
-+,-   - Označit či odznačit všechny položky ve složce  
++,-   - Označit či odznačit položky ve složce  
 (, )  - Vložte umístění pro levý/pravý panel a Oblíbené
 * - Přidání aktuální složky do Oblíbených
 \" - Zobrazí celkovou velikost označených souborů/složek

@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
+import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,9 +17,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class Dialogs implements DialogInterface.OnClickListener {
-    private final static String TAG = "GhostCommanderActivity";
+    private final static String TAG = "Dialogs";
     public final static int ARI_DIALOG = 148, ALERT_DIALOG = 193, CONFIRM_DIALOG = 396, INPUT_DIALOG = 860, PROGRESS_DIALOG = 493,
-            INFO_DIALOG = 864, ABOUT_DIALOG = 159, LOGIN_DIALOG = 995;
+            INFO_DIALOG = 864, ABOUT_DIALOG = 159, LOGIN_DIALOG = 995, SELECT_DIALOG = 239, UNSELECT_DIALOG = 762;
+    
     public final static int numDialogTypes = 5;
     protected String toShowInAlertDialog = null, cookie = null;
     private int dialogId;
@@ -38,86 +40,10 @@ public class Dialogs implements DialogInterface.OnClickListener {
     public Dialog getDialog() {
         return dialogObj;
     }
-
-    @Override
-    public void onClick( DialogInterface idialog, int whichButton ) {
-        if( dialogObj == null )
-            return;
-        try {
-            if( whichButton == DialogInterface.BUTTON_POSITIVE ) {
-                switch( dialogId ) {
-                case R.id.F2:
-                case R.id.new_file:
-                case R.id.F5:
-                case R.id.F6:
-                case R.id.F7:
-                case FileCommander.FIND_ACT:                    
-                    EditText edit = (EditText)dialogObj.findViewById( R.id.edit_field );
-                    if( edit != null ) {
-                        String file_name = edit.getText().toString();
-                        switch( dialogId ) {
-                        case R.id.F2:
-                            owner.panels.renameFile( file_name );
-                            break;
-                        case R.id.new_file:
-                            owner.panels.createNewFile( file_name );
-                            break;
-                        case R.id.F6:
-                        case R.id.F5:
-                            owner.panels.copyFiles( file_name, dialogId == R.id.F6 );
-                            break;
-                        case R.id.F7:
-                            owner.panels.createFolder( file_name );
-                            break;
-                        case FileCommander.FIND_ACT: {
-                                Uri.Builder uri_b = new Uri.Builder()
-                                    .scheme( "find" )
-                                    .path( cookie )
-                                    .encodedQuery( "q=" + file_name );
-                                owner.Navigate( uri_b.build(), null );
-                            }
-                            break;
-                        }
-                    }
-                    break;
-                case R.id.F8:
-                    owner.panels.deleteItems();
-                    break;
-                case LOGIN_DIALOG: {
-                        EditText name_edit = (EditText)dialogObj.findViewById( R.id.username_edit );
-                        EditText pass_edit = (EditText)dialogObj.findViewById( R.id.password_edit );
-                        if( name_edit != null && pass_edit != null )
-                            owner.panels.login( cookie, name_edit.getText().toString(), pass_edit.getText().toString() );
-                    }
-                    break;
-                case R.id.donate: {
-                        owner.startViewURIActivity( R.string.donate_uri );
-                        break;
-                    }
-                case R.id.smb: {
-                        owner.startViewURIActivity( R.string.smb_app_uri );
-                        break;
-                    }
-/*
-                case FileCommander.DBOX_APP: {
-                        owner.startViewURIActivity( R.string.dbox_app_uri );
-                        break;
-                    }
-*/
-                }
-            } else if( whichButton == DialogInterface.BUTTON_NEGATIVE ) {
-                if( dialogId == PROGRESS_DIALOG ) {
-                    owner.panels.terminateOperation();
-                }
-            }
-            owner.panels.focus();
-        } catch( Exception e ) {
-            e.printStackTrace();
-        }
-    }
-
     protected Dialog createDialog( int id ) {
         switch( id ) {
+        case SELECT_DIALOG:
+        case UNSELECT_DIALOG:
         case INPUT_DIALOG:
         case R.id.F2:
         case R.id.new_file:
@@ -127,12 +53,15 @@ public class Dialogs implements DialogInterface.OnClickListener {
         case FileCommander.FIND_ACT: {
             LayoutInflater factory = LayoutInflater.from( owner );
             final View textEntryView = factory.inflate( R.layout.input, null );
-            return dialogObj = new AlertDialog.Builder( owner )
+            dialogObj = new AlertDialog.Builder( owner )
                 .setView( textEntryView )
                 .setTitle( " " )
                 .setPositiveButton( R.string.dialog_ok, this )
                 .setNegativeButton( R.string.dialog_cancel, this )
                 .create();
+            if( dialogObj == null )
+                Log.e( TAG, "Can't create dialog " + id );
+            return dialogObj; 
         }
         case LOGIN_DIALOG: {
             LayoutInflater factory = LayoutInflater.from( owner );
@@ -227,17 +156,6 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 }
                 break;
             }
-            case FileCommander.FIND_ACT: {
-                dialog.setTitle( R.string.search_title );
-                TextView prompt = (TextView)dialog.findViewById( R.id.prompt );
-                if( prompt != null )
-                    prompt.setText( R.string.search_prompt );
-                EditText edit = (EditText)dialog.findViewById( R.id.edit_field );
-                if( edit != null ) {
-                    edit.setWidth( owner.getWidth() - 80 );
-                }
-                break;
-            }
             case R.id.F6:
                 move = true;
             case R.id.F5: {
@@ -271,6 +189,27 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 EditText edit = (EditText)dialog.findViewById( R.id.edit_field );
                 if( edit != null )
                     edit.setWidth( owner.getWidth() - 90 );
+                break;
+            }
+            case FileCommander.FIND_ACT: {
+                dialog.setTitle( R.string.search_title );
+                TextView prompt = (TextView)dialog.findViewById( R.id.prompt );
+                if( prompt != null )
+                    prompt.setText( R.string.search_prompt );
+                break;
+            }
+            case UNSELECT_DIALOG:
+            case SELECT_DIALOG: {
+                dialog.setTitle( id == SELECT_DIALOG ? R.string.dialog_select : R.string.dialog_unselect );
+                TextView prompt = (TextView)dialog.findViewById( R.id.prompt );
+                if( prompt != null )
+                    prompt.setText( "" );
+                EditText edit = (EditText)dialog.findViewById( R.id.edit_field );
+                if( edit != null ) {
+                    Editable edit_text = edit.getText();
+                    if( edit_text.length() == 0 )
+                        edit.setText( "*" );
+                }
                 break;
             }
             case LOGIN_DIALOG: {
@@ -368,5 +307,87 @@ public class Dialogs implements DialogInterface.OnClickListener {
     }
     public void setCookie( String cookie_ ) {
         cookie = cookie_;
+    }
+    @Override
+    public void onClick( DialogInterface idialog, int whichButton ) {
+        if( dialogObj == null )
+            return;
+        try {
+            if( whichButton == DialogInterface.BUTTON_POSITIVE ) {
+                switch( dialogId ) {
+                case R.id.F2:
+                case R.id.new_file:
+                case R.id.F5:
+                case R.id.F6:
+                case R.id.F7:
+                case FileCommander.FIND_ACT:
+                case UNSELECT_DIALOG:
+                case SELECT_DIALOG:
+                    EditText edit = (EditText)dialogObj.findViewById( R.id.edit_field );
+                    if( edit != null ) {
+                        String file_name = edit.getText().toString();
+                        switch( dialogId ) {
+                        case R.id.F2:
+                            owner.panels.renameFile( file_name );
+                            break;
+                        case R.id.new_file:
+                            owner.panels.createNewFile( file_name );
+                            break;
+                        case R.id.F6:
+                        case R.id.F5:
+                            owner.panels.copyFiles( file_name, dialogId == R.id.F6 );
+                            break;
+                        case R.id.F7:
+                            owner.panels.createFolder( file_name );
+                            break;
+                        case FileCommander.FIND_ACT: {
+                                Uri.Builder uri_b = new Uri.Builder()
+                                    .scheme( "find" )
+                                    .path( cookie )
+                                    .encodedQuery( "q=" + file_name );
+                                owner.Navigate( uri_b.build(), null );
+                            }
+                            break;
+                        case UNSELECT_DIALOG:
+                        case SELECT_DIALOG:
+                            owner.panels.checkItems( dialogId == SELECT_DIALOG, file_name );
+                            break;
+                        }
+                    }
+                    break;
+                case R.id.F8:
+                    owner.panels.deleteItems();
+                    break;
+                case LOGIN_DIALOG: {
+                        EditText name_edit = (EditText)dialogObj.findViewById( R.id.username_edit );
+                        EditText pass_edit = (EditText)dialogObj.findViewById( R.id.password_edit );
+                        if( name_edit != null && pass_edit != null )
+                            owner.panels.login( cookie, name_edit.getText().toString(), pass_edit.getText().toString() );
+                    }
+                    break;
+                case R.id.donate: {
+                        owner.startViewURIActivity( R.string.donate_uri );
+                        break;
+                    }
+                case R.id.smb: {
+                        owner.startViewURIActivity( R.string.smb_app_uri );
+                        break;
+                    }
+/*
+                case FileCommander.DBOX_APP: {
+                        owner.startViewURIActivity( R.string.dbox_app_uri );
+                        break;
+                    }
+*/
+                }
+            } else if( whichButton == DialogInterface.BUTTON_NEGATIVE ) {
+                if( dialogId == PROGRESS_DIALOG ) {
+                    owner.panels.terminateOperation();
+                }
+            }
+            owner.panels.focus();
+        } catch( Exception e ) {
+            e.printStackTrace();
+        }
     }
 }

@@ -1,6 +1,9 @@
 package com.ghostsq.commander;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+
 import android.net.Uri;
 import android.webkit.MimeTypeMap;
 
@@ -79,6 +82,21 @@ public class Utils {
 		int dot = file_name.lastIndexOf(".");
 		return dot >= 0 ? file_name.substring( dot ) : "";
 	}
+	
+	public final static String[] prepareWildcard( String wc ) {
+	    return ( "\02" + wc.toLowerCase() + "\03" ).split( "\\*" );
+	}
+	public final static boolean match( String text, String[] cards ) {
+        int pos = 0;
+        String lc_text = "\02" + text.toLowerCase() + "\03";
+        for( String card : cards ) {
+            int idx = lc_text.indexOf( card, pos );
+            if( idx < 0 )
+                return false;
+            pos = idx + card.length();
+        }
+        return true;
+    }
     public final static int deleteDirContent( File d ) {
         int cnt = 0;
         File[] fl = d.listFiles();

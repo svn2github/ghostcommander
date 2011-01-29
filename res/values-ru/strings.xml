@@ -32,7 +32,7 @@
 <string name="sort_by_ext">  По расширению</string>
 <string name="sort_by_size">  По размеру</string>
 <string name="sort_by_date">  По дате</string>
-<string name="select_all">+ Выдели все</string>
+<string name="select_all">+ Выдели файлы</string>
 <string name="unselect_all">- Снять выделение</string>
 <string name="prefs">9 Настройки</string>
 <string name="about">О программе</string>
@@ -224,7 +224,7 @@
 Быстрые клавиши:\n
 VolUp - Выбрать текущий файл\n
 VolDn - Перейти на другую панель\n
-+, -  - Выделить все файлы, Убрать выделение со всех файлов\n 
++, -  - Выделить файлы, Убрать выделение с файлов\n 
 (, )  - Ввести путь для левой/правой панели и закладки\n
 * - Добавить текущую папку в закладки\n
 \" - Показать размер выбранных элементов\n

@@ -32,7 +32,7 @@
 <string name="sort_by_ext">  По разширение</string>
 <string name="sort_by_size">  По размер</string>
 <string name="sort_by_date">  По дата</string>
-<string name="select_all">+ Избери всичко</string>
+<string name="select_all">+ Избери</string>
 <string name="unselect_all">- Демаркирай</string>
 <string name="prefs">9 Настройки</string>
 <string name="about">За програмата</string>
@@ -233,7 +233,7 @@
 Бързи клавиши:\n
 VolUp - Избор на текущия файл\n
 VolDn - отиди в другия панел\n
-+, -  - Избери всички файлове, премахни избора\n 
++, -  - Избери файлове, премахни избора\n 
 (, )  - Въведи път за левия/десния панел\n
 * - Маркирай текушата папка като избрана\n
 \" - Показажи размера на избраните елементи\n
