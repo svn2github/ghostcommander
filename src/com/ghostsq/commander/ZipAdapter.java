@@ -2,7 +2,9 @@ package com.ghostsq.commander;
 
 import java.lang.System;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,6 +13,8 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.http.util.EncodingUtils;
 
@@ -20,9 +24,11 @@ import com.ghostsq.commander.CommanderAdapterBase;
 
 import android.net.Uri;
 import android.os.Handler;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 
 public class ZipAdapter extends CommanderAdapterBase {
+    public final static String TAG = "ZipAdapter";
     private static final char   SLC = File.separatorChar;
     private static final String SLS = File.separator;
     // Java compiler creates a thunk function to access to the private owner class member from a subclass
@@ -38,6 +44,34 @@ public class ZipAdapter extends CommanderAdapterBase {
     @Override
     public String getType() {
         return "zip";
+    }
+    @Override
+    public boolean readSource( Uri tmp_uri, String pass_back_on_done ) {
+        try {
+            if( tmp_uri != null )
+                uri = tmp_uri;
+            if( uri == null )
+                return false;
+            if( worker != null ) { // that's not good.
+                if( worker.isAlive() ) {
+                    showMessage( "Another worker thread still alive" );
+                    worker.interrupt();
+                    Thread.sleep( 500 );      // it has ended itself!
+                    if( worker.isAlive() ) 
+                        return false;      
+                }
+            }
+            commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
+            worker = new ListEngine( handler, pass_back_on_done );
+            worker.start();
+            return true;
+        }
+        catch( Exception e ) {
+            commander.showError( "Exception: " + e );
+            e.printStackTrace();
+        }
+        commander.notifyMe( new Commander.Notify( "Fail", Commander.OPERATION_FAILED ) );
+        return false;
     }
 
     public final ZipEntry[] GetFolderList( String fld_path ) {
@@ -116,7 +150,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                     	}
                     	catch( NullPointerException e ) {
                     	    // it happens only when the Uri is built by Uri.Builder
-                    	    System.err.print( "Exception:\n" + e + " on uri.getFragment()" );
+                    	    Log.e( TAG, "uri.getFragment()", e );
                     	}
                 	    items_tmp = GetFolderList( cur_path );
                 	    if( items_tmp != null ) { 
@@ -182,34 +216,6 @@ public class ZipAdapter extends CommanderAdapterBase {
 
     @Override
     public void setIdentities( String name, String pass ) {
-    }
-    @Override
-    public boolean readSource( Uri tmp_uri, String pass_back_on_done ) {
-        try {
-            if( tmp_uri != null )
-           	    uri = tmp_uri;
-            if( uri == null )
-                return false;
-            if( worker != null ) { // that's not good.
-            	if( worker.isAlive() ) {
-            	    showMessage( "Another worker thread still alive" );
-           			worker.interrupt();
-	            	Thread.sleep( 500 );      // it has ended itself!
-	            	if( worker.isAlive() ) 
-	            		return false;      
-            	}
-            }
-            commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            worker = new ListEngine( handler, pass_back_on_done );
-            worker.start();
-            return true;
-        }
-        catch( Exception e ) {
-        	commander.showError( "Exception: " + e );
-        	e.printStackTrace();
-        }
-        commander.notifyMe( new Commander.Notify( "Fail", Commander.OPERATION_FAILED ) );
-        return false;
     }
 	@Override
 	public void reqItemsSize( SparseBooleanArray cis ) {
@@ -489,33 +495,34 @@ public class ZipAdapter extends CommanderAdapterBase {
     public boolean receiveItems( String[] uris, boolean move ) {
         commander.notifyMe( new Commander.Notify( "Not supported", Commander.OPERATION_FAILED ) );
 
-/*
     	try {
     		if( !checkReadyness() ) return false;
             if( uris == null || uris.length == 0 ) {
-            	commander.notifyMe( "Nothing to copy", Commander.OPERATION_FAILED, 0 );
+            	commander.notifyMe( new Commander.Notify( "Nothing to copy", Commander.OPERATION_FAILED ) );
             	return false;
             }
             File[] list = Utils.getListOfFiles( uris );
             if( list == null ) {
-            	commander.notifyMe( "Something wrong with the files", Commander.OPERATION_FAILED, 0 );
+            	commander.notifyMe( new Commander.Notify( "Something wrong with the files", Commander.OPERATION_FAILED ) );
             	return false;
             }
-            commander.notifyMe( null, Commander.OPERATION_STARTED, 0 );
+            commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
+            
+            zip = null;
+            items = null;
+            
             worker = new CopyToEngine( handler, list, move );
             worker.start();
             return true;
 		} catch( Exception e ) {
-			commander.notifyMe( "Exception: " + e.getMessage(), Commander.OPERATION_FAILED, 0 );
+			commander.notifyMe( new Commander.Notify( "Exception: " + e.getMessage(), Commander.OPERATION_FAILED ) );
 		}
-*/
 		return false;
     }
     
     class CopyToEngine extends CopyEngine {
         File[] mList;
         int     basePathLen;
-        
         CopyToEngine( Handler h, File[] list, boolean move ) { // TODO: delete the source on move
         	super( h );
             mList = list;
@@ -524,9 +531,72 @@ public class ZipAdapter extends CommanderAdapterBase {
 
         @Override
         public void run() {
-    		sendResult( Utils.getCopyReport( copyFiles( mList ) ) );
+            
+            try {
+                File zipFile = new File( uri.getPath() );
+                addFilesToExistingZip( zipFile, mList );
+            } catch( IOException e ) {
+                commander.notifyMe( new Commander.Notify( "Exception: " + e.getMessage(), Commander.OPERATION_FAILED ) );
+            }
+            
+    		sendResult( Utils.getCopyReport( 1 ) );
             super.run();
         }
+        // the following method is from http://snippets.dzone.com/posts/show/3468
+        public void addFilesToExistingZip(File zipFile, File[] files) throws IOException {
+           File tempFile = new File( zipFile.getAbsolutePath() + "_tmp" );
+           tempFile.delete();
+
+           boolean renameOk = zipFile.renameTo(tempFile);
+           if (!renameOk) {
+               throw new RuntimeException("could not rename the file "+zipFile.getAbsolutePath()+" to "+tempFile.getAbsolutePath());
+           }
+           byte[] buf = new byte[1024];
+           
+           ZipInputStream zin = new ZipInputStream(new FileInputStream(tempFile));
+           ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile));
+           
+           ZipEntry entry = zin.getNextEntry();
+           while (entry != null) {
+               String name = entry.getName();
+               boolean notInFiles = true;
+               for (File f : files) {
+                   if (f.getName().equals(name)) {
+                       notInFiles = false;
+                       break;
+                   }
+               }
+               if (notInFiles) {
+                   // Add ZIP entry to output stream.
+                   out.putNextEntry(new ZipEntry(name));
+                   // Transfer bytes from the ZIP file to the output file
+                   int len;
+                   while ((len = zin.read(buf)) > 0) {
+                       out.write(buf, 0, len);
+                   }
+               }
+               entry = zin.getNextEntry();
+           }
+           // Close the streams        
+           zin.close();
+           // Compress the files
+           for (int i = 0; i < files.length; i++) {
+               InputStream in = new FileInputStream(files[i]);
+               // Add ZIP entry to output stream.
+               out.putNextEntry(new ZipEntry(files[i].getName()));
+               // Transfer bytes from the file to the ZIP file
+               int len;
+               while ((len = in.read(buf)) > 0) {
+                   out.write(buf, 0, len);
+               }
+               // Complete the entry
+               out.closeEntry();
+               in.close();
+           }
+           // Complete the ZIP file
+           out.close();
+           tempFile.delete();
+       }
 
         private final int copyFiles( File[] list ) {
             int counter = 0;
@@ -539,11 +609,10 @@ public class ZipAdapter extends CommanderAdapterBase {
 	        		File f = list[i];
 	        		if( f != null && f.exists() ) {
 	        			if( f.isFile() ) {
-	        			 // TODO
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!	        			 
 	        			}
 	        			else
 	        			if( f.isDirectory() ) {
-	        			 // TODO
 	        				counter += copyFiles( f.listFiles() );
 	        				if( errMsg != null ) break;
 	        			}
