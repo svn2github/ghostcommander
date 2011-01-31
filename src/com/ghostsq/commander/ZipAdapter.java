@@ -16,21 +16,20 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.http.util.EncodingUtils;
-
-import com.ghostsq.commander.Commander;
-import com.ghostsq.commander.CommanderAdapter;
-import com.ghostsq.commander.CommanderAdapterBase;
-
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 
+import com.ghostsq.commander.Commander;
+import com.ghostsq.commander.CommanderAdapter;
+import com.ghostsq.commander.CommanderAdapterBase;
+
 public class ZipAdapter extends CommanderAdapterBase {
     public final static String TAG = "ZipAdapter";
     private static final char   SLC = File.separatorChar;
     private static final String SLS = File.separator;
+    protected final static int BLOCK_SIZE = 100000;
     // Java compiler creates a thunk function to access to the private owner class member from a subclass
     // to avoid that all the member accessible from the subclasses are public
     public  Uri          uri = null;
@@ -61,6 +60,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                         return false;      
                 }
             }
+            Log.v( TAG, "reading " + uri );
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
             worker = new ListEngine( handler, pass_back_on_done );
             worker.start();
@@ -74,7 +74,7 @@ public class ZipAdapter extends CommanderAdapterBase {
         return false;
     }
 
-    public final ZipEntry[] GetFolderList( String fld_path ) {
+    private final ZipEntry[] GetFolderList( String fld_path ) {
         if( zip == null ) return null;
         if( fld_path == null ) fld_path = ""; 
         else
@@ -95,11 +95,9 @@ public class ZipAdapter extends CommanderAdapterBase {
                 String entry_name = e.getName();
                 if( entry_name == null || fld_path.compareToIgnoreCase(entry_name) == 0 ) 
                     continue;
-                /* There are at least two kinds of zips -
-                 * with dedicated folder entry and without one.
+                /* There are at least two kinds of zips - with dedicated folder entry and without one.
                  * The code below should process both.
-                 * Do not do changes here until you fully 
-                 * understand how does it works.
+                 * Do not change until you fully understand how it works.
                  */
                 if( fld_path.regionMatches( true, 0, entry_name, 0, fld_path_len ) ) {
                     int sl_pos = entry_name.indexOf( SLC, fld_path_len );
@@ -246,15 +244,7 @@ public class ZipAdapter extends CommanderAdapterBase {
         return false;
     }
 
-    class CopyEngine extends Engine 
-    {
-        protected final static int BLOCK_SIZE = 100000;        
-    	CopyEngine( Handler h ) {
-    		super( h );
-    	}
-    }
-    
-    class CopyFromEngine extends CopyEngine 
+    class CopyFromEngine extends Engine 
     {
 	    private File       dest_folder;
 	    private ZipEntry[] mList = null;
@@ -278,7 +268,7 @@ public class ZipAdapter extends CommanderAdapterBase {
 	    @Override
 	    public void run() {
 	    	int total = copyFiles( mList, "" );
-			sendResult( Utils.getCopyReport( total ) );
+			sendResult( Utils.getOpReport( total, "unpacked" ) );
 	        super.run();
 	    }
 	    private final int copyFiles( ZipEntry[] list, String path ) {
@@ -290,6 +280,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                     if( !f.isDirectory() )
                         dir_size += f.getSize();
 	            }
+	            
 	            double conv = 100./(double)dir_size;
 	        	for( int i = 0; i < list.length; i++ ) {
 	        		ZipEntry f = list[i];
@@ -370,66 +361,92 @@ public class ZipAdapter extends CommanderAdapterBase {
 
     @Override
     public boolean deleteItems( SparseBooleanArray cis ) {
-        commander.notifyMe( new Commander.Notify( "Not supported", Commander.OPERATION_FAILED ) );
-/*
         try {
         	if( !checkReadyness() ) return false;
-        	ZipEntry[] subItems = bitsToItems( cis );
-        	if( subItems != null ) {
-        	    commander.notifyMe( null, Commander.OPERATION_STARTED, 0 );
-                worker = new DelEngine( handler, subItems );
+        	ZipEntry[] to_delete = bitsToItems( cis );
+        	if( to_delete != null && zip != null && uri != null ) {
+        	    commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
+                worker = new DelEngine( handler, new File( uri.getPath() ), to_delete, zip.size() );
                 worker.start();
 	            return true;
         	}
         }
         catch( Exception e ) {
-            commander.showError( "Exception: " + e.getMessage() );
+            Log.e( TAG, "deleteItems()", e );
         }
-*/
+        commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_FAILED ) );
         return false;
     }
 
     class DelEngine extends Engine {
-        ZipEntry[] mList;
-        
-        DelEngine( Handler h, ZipEntry[] subItems ) {
-        	super( h );
-            mList = subItems;
+        private ZipEntry[] mList = null;
+        private File       zipFile;
+        private int        of = 0;
+        DelEngine( Handler h, File zipFile_, ZipEntry[] list, int of_ ) {
+            super( h );
+            zipFile = zipFile_;
+            mList = list;
+            of = of_;
         }
-
         @Override
         public void run() {
-        	int total = delFiles( mList, "" );
-    		sendResult( total > 0 ? "Deleted files/folders: " + total : "Nothing was deleted" );
-            super.run();
-        }
-
-        private final int delFiles( ZipEntry[] list, String path ) {
-            int counter = 0;
+            int processed = 0;
             try {
-	        	for( int i = 0; i < list.length; i++ ) {
-	        		if( stop || isInterrupted() ) {
-	        			errMsg = "Delete operation has been canceled";
-	        			break;
-	        		}
-	        		ZipEntry f = list[i];
-	        		if( f != null ) {
-	        			String pathName = path + f.getName();
-	        			if( f.isDirectory() ) {
-	        			    // TODO
-	        			}
-	        			else {
-	        			    // TODO
-	        			}
-	        			counter++;
-	        		}
-	        	}
-        	}
-			catch( Exception e ) {
-				e.printStackTrace();
-				errMsg = "Exception: " + e.getMessage();
-			}
-            return counter;
+                File old_file = new File( zipFile.getAbsolutePath() + "_tmp_" + (new Date()).getSeconds() + ".zip" );
+                if( !zipFile.renameTo(old_file) )
+                    throw new RuntimeException("could not rename the file " + zipFile.getAbsolutePath() + " to " + old_file.getAbsolutePath() );
+                ZipInputStream  zin = new ZipInputStream(  new FileInputStream( old_file ) );
+                ZipOutputStream out = new ZipOutputStream( new FileOutputStream( zipFile ) );
+                
+                byte[] buf = new byte[BLOCK_SIZE];
+                ZipEntry entry = zin.getNextEntry();
+                while( entry != null ) {
+                    if( isStopReq() ) break;
+                    String name = entry.getName();
+                    boolean spare_this = true;
+                    for( ZipEntry z : mList ) {
+                        if( isStopReq() ) break;
+                        String name_to_delete = z.getName();
+                        if( name.startsWith( name_to_delete ) ) {
+                            spare_this = false;
+                            sendProgress( "Deleting...", ++processed * 100 / of, 0 );
+                            break;
+                        }
+                    }
+                    if( spare_this ) {                        
+                        // Add ZIP entry to output stream.
+                        out.putNextEntry(new ZipEntry( name ));
+                        // Transfer bytes from the ZIP file to the output file
+                        int len;
+                        while( (len = zin.read( buf )) > 0 ) {
+                            if( isStopReq() ) break; 
+                            out.write(buf, 0, len);
+                        }
+                    }
+                    entry = zin.getNextEntry();
+                }
+                // Close the streams        
+                zin.close();
+                try {
+                    out.close();
+                } catch( Exception e ) {
+                    Log.e( TAG, "DelEngine.run()->out.close()", e );
+                }
+                if( isStopReq() ) {
+                    zipFile.delete();
+                    old_file.renameTo( zipFile );
+                    processed = 0;
+                    error("Cancelled");
+                }
+                else {
+                    old_file.delete();
+                    zip = null;
+                }
+            } catch( Exception e ) {
+                error( e.getMessage() );
+            }
+            sendResult( Utils.getOpReport( processed, "removed" ) );
+            super.run();
         }
     }
     
@@ -493,8 +510,6 @@ public class ZipAdapter extends CommanderAdapterBase {
 
     @Override
     public boolean receiveItems( String[] uris, boolean move ) {
-        commander.notifyMe( new Commander.Notify( "Not supported", Commander.OPERATION_FAILED ) );
-
     	try {
     		if( !checkReadyness() ) return false;
             if( uris == null || uris.length == 0 ) {
@@ -511,7 +526,7 @@ public class ZipAdapter extends CommanderAdapterBase {
             zip = null;
             items = null;
             
-            worker = new CopyToEngine( handler, list, move );
+            worker = new CopyToEngine( handler, list, uri.getFragment(), move );
             worker.start();
             return true;
 		} catch( Exception e ) {
@@ -520,58 +535,91 @@ public class ZipAdapter extends CommanderAdapterBase {
 		return false;
     }
     
-    class CopyToEngine extends CopyEngine {
-        File[] mList;
-        int     basePathLen;
-        CopyToEngine( Handler h, File[] list, boolean move ) { // TODO: delete the source on move
+    class CopyToEngine extends Engine {
+        private File[]     top_list; 
+        private int     basePathLen;
+        private String  destPath;
+        private long    totalSize = 0;
+        CopyToEngine( Handler h, File[] list, String dest, boolean move ) { // TODO: delete the source on move
         	super( h );
-            mList = list;
-            basePathLen = list[0].getParent().length() + 1;
+            top_list = list;
+            destPath = dest.endsWith( SLS ) ? dest : dest + SLS;
+            basePathLen = list.length > 0 ? list[0].getParent().length() + 1 : 0;
         }
-
         @Override
         public void run() {
-            
+            int num_files = 0;
             try {
+                sendProgress( "Preparing...", 1, 1 );
+                ArrayList<File> full_list = new ArrayList<File>( top_list.length );
+                totalSize = addToList( top_list, full_list );
                 File zipFile = new File( uri.getPath() );
-                addFilesToExistingZip( zipFile, mList );
-            } catch( IOException e ) {
-                commander.notifyMe( new Commander.Notify( "Exception: " + e.getMessage(), Commander.OPERATION_FAILED ) );
+                num_files = addFilesToZip( zipFile, full_list );
+            } catch( Exception e ) {
+                error( "Exception: " + e.getMessage() );
             }
-            
-    		sendResult( Utils.getCopyReport( 1 ) );
+    		sendResult( Utils.getOpReport( num_files, "packed" ) );
             super.run();
         }
-        // the following method is from http://snippets.dzone.com/posts/show/3468
-        public void addFilesToExistingZip(File zipFile, File[] files) throws IOException {
-           File tempFile = new File( zipFile.getAbsolutePath() + "_tmp" );
-           tempFile.delete();
-
-           boolean renameOk = zipFile.renameTo(tempFile);
-           if (!renameOk) {
-               throw new RuntimeException("could not rename the file "+zipFile.getAbsolutePath()+" to "+tempFile.getAbsolutePath());
-           }
-           byte[] buf = new byte[1024];
+        // adds files to the global full_list, and returns the total size 
+        private final long addToList( File[] sub_list, ArrayList<File> full_list ) {
+            long total_size = 0;
+            try {
+                for( int i = 0; i < sub_list.length; i++ ) {
+                    if( stop || isInterrupted() ) {
+                        errMsg = "Canceled";
+                        break;
+                    }
+                    File f = sub_list[i];
+                    if( f != null && f.exists() ) {
+                        if( f.isFile() ) {
+                            total_size += f.length();
+                            full_list.add( f );
+                        }
+                        else
+                        if( f.isDirectory() ) {
+                            total_size += addToList( f.listFiles(), full_list );
+                            if( errMsg != null ) break;
+                        }
+                    }
+                }
+            }
+            catch( Exception e ) {
+                e.printStackTrace();
+                errMsg = "Exception: " + e.getMessage();
+            }
+            return total_size;
+        }
+                
+        // the following method was based on the one from http://snippets.dzone.com/posts/show/3468
+        private final int addFilesToZip( File zipFile, ArrayList<File> files ) throws IOException {
+           File old_file = new File( zipFile.getAbsolutePath() + "_tmp_" + (new Date()).getSeconds() + ".zip" );
+           if( !zipFile.renameTo(old_file) )
+               throw new RuntimeException("could not rename the file " + zipFile.getAbsolutePath() + " to " + old_file.getAbsolutePath() );
+           ZipInputStream  zin = new ZipInputStream(  new FileInputStream( old_file ) );
+           ZipOutputStream out = new ZipOutputStream( new FileOutputStream( zipFile ) );
            
-           ZipInputStream zin = new ZipInputStream(new FileInputStream(tempFile));
-           ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile));
-           
+           byte[] buf = new byte[BLOCK_SIZE];
            ZipEntry entry = zin.getNextEntry();
-           while (entry != null) {
+           while( entry != null ) {
+               if( isStopReq() ) break;
                String name = entry.getName();
                boolean notInFiles = true;
-               for (File f : files) {
-                   if (f.getName().equals(name)) {
+               for( File f : files ) {
+                   if( isStopReq() ) break;
+                   String f_path = f.getCanonicalPath();
+                   if( f_path.regionMatches( true, basePathLen, name, 0, name.length() ) ) {
                        notInFiles = false;
                        break;
                    }
                }
-               if (notInFiles) {
+               if( notInFiles ) {
                    // Add ZIP entry to output stream.
-                   out.putNextEntry(new ZipEntry(name));
+                   out.putNextEntry(new ZipEntry( name ));
                    // Transfer bytes from the ZIP file to the output file
                    int len;
-                   while ((len = zin.read(buf)) > 0) {
+                   while( (len = zin.read( buf )) > 0 ) {
+                       if( isStopReq() ) break; 
                        out.write(buf, 0, len);
                    }
                }
@@ -579,15 +627,33 @@ public class ZipAdapter extends CommanderAdapterBase {
            }
            // Close the streams        
            zin.close();
+           
+           if( isStopReq() ) {
+               out.close();
+               zipFile.delete();
+               old_file.renameTo( zipFile );
+               return 0;
+           }
+           
+           double conv = 100./(double)totalSize;
+           long   byte_count = 0;
            // Compress the files
-           for (int i = 0; i < files.length; i++) {
-               InputStream in = new FileInputStream(files[i]);
+           int i;
+           for( i = 0; i < files.size(); i++ ) {
+               if( isStopReq() ) break;
+               InputStream in = new FileInputStream( files.get( i ) );
                // Add ZIP entry to output stream.
-               out.putNextEntry(new ZipEntry(files[i].getName()));
+               String fn = files.get( i ).getCanonicalPath();
+               String rfn = destPath + fn.substring( basePathLen );
+               out.putNextEntry( new ZipEntry( rfn ) );
                // Transfer bytes from the file to the ZIP file
                int len;
-               while ((len = in.read(buf)) > 0) {
+               int  so_far = (int)(byte_count * conv);
+               while( (len = in.read(buf)) > 0 ) {
+                   if( isStopReq() ) break;
                    out.write(buf, 0, len);
+                   byte_count += len;
+                   sendProgress( "Packing \n'" + fn + "'...", so_far, (int)(byte_count * conv) );
                }
                // Complete the entry
                out.closeEntry();
@@ -595,39 +661,15 @@ public class ZipAdapter extends CommanderAdapterBase {
            }
            // Complete the ZIP file
            out.close();
-           tempFile.delete();
+           if( isStopReq() ) {
+               zipFile.delete();
+               old_file.renameTo( zipFile );
+               return 0;
+           }
+           old_file.delete();
+           return i;
        }
-
-        private final int copyFiles( File[] list ) {
-            int counter = 0;
-            try {
-	        	for( int i = 0; i < list.length; i++ ) {
-	        		if( stop || isInterrupted() ) {
-	        			errMsg = "Canceled";
-	        			break;
-	        		}
-	        		File f = list[i];
-	        		if( f != null && f.exists() ) {
-	        			if( f.isFile() ) {
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!	        			 
-	        			}
-	        			else
-	        			if( f.isDirectory() ) {
-	        				counter += copyFiles( f.listFiles() );
-	        				if( errMsg != null ) break;
-	        			}
-    					counter++;
-	        		}
-	        	}
-        	}
-			catch( Exception e ) {
-				e.printStackTrace();
-				errMsg = "IOException: " + e.getMessage();
-			}
-            return counter;
-        }
     }
-    
     @Override
     public boolean renameItem( int position, String newName ) {
      // TODO
@@ -667,7 +709,11 @@ public class ZipAdapter extends CommanderAdapterBase {
                     item.name = item.dir ? SLS + UTF8_name : UTF8_name;
                     */
                     // item.name = item.dir ? SLS + getLocalName( curItem ) : getLocalName( curItem );
-                    item.name = item.dir ? SLS + curItem.getName() : curItem.getName();
+
+                    String entry_name = curItem.getName();
+                    int lsp = entry_name.lastIndexOf( SLC, item.dir ? entry_name.length() - 2 : entry_name.length() );
+                    
+                    item.name = lsp > 0 ? entry_name.substring( lsp + 1 ) : entry_name;
                     item.size = curItem.getSize();
                     long item_time = curItem.getTime();
                     item.date = item_time > 0 ? new Date( item_time ) : null;

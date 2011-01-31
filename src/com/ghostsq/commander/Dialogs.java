@@ -127,6 +127,11 @@ public class Dialogs implements DialogInterface.OnClickListener {
         boolean move = false;
         try {
             switch( id ) {
+            case PROGRESS_DIALOG: {
+            TextView t = (TextView)dialogObj.findViewById( R.id.text );
+            if( t != null )
+                t.setText( "" );
+            }            
             case R.id.F2: {
                 dialog.setTitle( R.string.rename_title );
                 TextView prompt = (TextView)dialog.findViewById( R.id.prompt );
@@ -281,7 +286,6 @@ public class Dialogs implements DialogInterface.OnClickListener {
         if( dialogObj == null )
             return;
         try {
-            AlertDialog pd = (AlertDialog)dialogObj;
             if( string != null ) {
                 TextView t = (TextView)dialogObj.findViewById( R.id.text );
                 if( t != null )

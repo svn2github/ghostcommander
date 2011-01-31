@@ -762,7 +762,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
 			for( int i = 1; i < n; i++ ) {
 				String name = a.getItemName( i , false );
 				if( name == null ) continue;
-				if( s.compareToIgnoreCase( name.substring( 0, s.length() ) ) == 0 ) {
+				if( s.regionMatches( true, 0, name, 0, s.length() ) ) {
 					setSelection( i );
 					return;
 				}
@@ -795,14 +795,21 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     }
     public final void copyFiles( String dest, boolean move ) {
         CommanderAdapter dest_adapter = getListAdapter( false );
-        Uri dest_uri = Uri.parse( dest );
-        if( dest_uri != null && dest_uri.compareTo( dest_adapter.getUri() ) != 0 )
-            dest_adapter = new FSAdapter( c, dest_uri, 0 ); // TODO: user might enter a ftp or some other url to copy to
+        if( !dest.equals( dest_adapter.toString() ) ) {
+            Uri dest_uri = Uri.parse( dest );
+            if( dest_uri.getScheme() != null ) {
+                c.showError( "Can copy only to local FS" );
+                return;
+            }
+            dest_adapter = new FSAdapter( c, dest_uri, 0 );
+            // TODO: user might enter a ftp or some other url to copy to
+        }
         try {
             c.showDialog( Dialogs.PROGRESS_DIALOG );
         }
         catch( IllegalArgumentException e ) {
-            c.showMessage( "showDialog() failed, " + e );
+            Log.e( TAG, "copyFiles()", e );
+            return;
         }
         getListAdapter( true ).copyItems( getSelectedOrChecked(), dest_adapter, move );
         // TODO: getCheckedItemPositions() returns an empty array after a failed operation. why? 
@@ -1158,6 +1165,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
 	public void setState( State s ) {
 	    if( s == null ) return;
     	resetQuickSearch();
+    	current = s.current;
         NavigateInternal( LEFT,  Uri.parse(s.left),  s.leftItem );
         NavigateInternal( RIGHT, Uri.parse(s.right), s.rightItem );
         applyColors();

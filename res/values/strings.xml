@@ -262,7 +262,7 @@ If you don\'t agree to the above, stop using this software immediately and unins
     </string>
     <string name="keys_text">
     "\tHow to use:\n
-To select a file, tap on the right half of the item\'s row.    
+To select more than one file, tap on the right half of the row.\n    
 To manually enter the location path (and see the favorites), long press on the panel\'s title\n
 Shortcuts keys:\n
 VolumeUp - Select the current item (file)
@@ -280,7 +280,7 @@ VolumeDn - Swap the panels
 7 - Create a new folder
 8 - Delete files or folders
 9 - Open preferences
-0 - Close program
+0 - Close the program
 [A-z] - Quick search    
     
 To open an anonymous FTP folder, enter path like:\n

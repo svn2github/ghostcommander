@@ -122,6 +122,13 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     }
 
     @Override
+    protected void onResume() {
+        Log.i( TAG, "Resuming\n");
+        super.onResume();
+        on = true;
+    }
+    
+    @Override
     protected void onStop() {
         Log.i( TAG, "Stopping\n");
         super.onStop();
@@ -527,6 +534,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             break;
         case OPERATION_COMPLETED:
             if( progress.cookie != null && progress.cookie.length() > 0 ) {
+                Log.i( TAG, "notify with cookie: " + progress.cookie );
                 int which_panel = progress.cookie.charAt( 0 ) == '1' ? 1 : 0;
                 String item_name = progress.cookie.substring( 1 );
                 panels.recoverAfterRefresh( item_name, which_panel );
