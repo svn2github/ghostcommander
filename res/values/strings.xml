@@ -42,6 +42,8 @@
     <string name="about">&#xA0; About</string>
     <string name="keys">1 Shortcut keys</string>
     <string name="new_file">Create a new file</string>
+    <string name="new_folder">Create a new folder</string>
+    <string name="new_zip">Create a new ZIP file</string>
 
     <string name="go_button">Go</string>
     <string name="show_size">Calculate Size</string>

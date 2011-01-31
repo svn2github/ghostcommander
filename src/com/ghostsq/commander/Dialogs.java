@@ -47,6 +47,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
         case INPUT_DIALOG:
         case R.id.F2:
         case R.id.new_file:
+        case R.id.new_zip:
         case R.id.F5:
         case R.id.F6:
         case R.id.F7:

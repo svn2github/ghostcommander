@@ -326,6 +326,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             break;
         case R.id.F2:
         case R.id.new_file:
+        case R.id.new_zip:
         case R.id.SF4:
         case R.id.F5:
         case R.id.F6:

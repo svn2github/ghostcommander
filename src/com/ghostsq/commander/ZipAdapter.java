@@ -207,6 +207,7 @@ public class ZipAdapter extends CommanderAdapterBase {
     public boolean isButtonActive( int brId ) {
         if( brId == R.id.F1 ||
             brId == R.id.F5 ||
+            brId == R.id.F8 ||
             brId == R.id.F9 ||
             brId == R.id.F10 ) return true;
         return false;

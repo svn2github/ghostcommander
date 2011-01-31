@@ -6,18 +6,12 @@
         android:icon="@drawable/file"
         android:alphabeticShortcut="f">
       <menu>
-	    <item android:id="@+id/F4"
-	        android:title="@string/F4"/>
-	    <item android:id="@+id/F5"
-	        android:title="@string/F5"/>
-	    <item android:id="@+id/F6"
-	        android:title="@string/F6"/>
 	    <item android:id="@+id/F7"
-	        android:title="@string/F7"/>
-	    <item android:id="@+id/F8"
-	        android:title="@string/F8"/>
-	    <item android:id="@+id/new_file"
-	        android:title="@string/new_file"/>
+	        android:title="@string/new_folder"/>
+        <item android:id="@+id/new_file"
+            android:title="@string/new_file"/>
+        <item android:id="@+id/new_zip"
+            android:title="@string/new_zip"/>
       </menu>
     </item>
 

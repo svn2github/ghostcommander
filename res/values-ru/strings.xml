@@ -38,6 +38,9 @@
 <string name="about">О программе</string>
 <string name="keys">Значения клавиш</string>
 <string name="new_file">Создать текстовый файл</string>
+<string name="new_folder">Создать новую папку</string>
+<string name="new_zip">Создать ZIP архив</string>
+
 <string name="go_button">Иди</string>
 <string name="show_size">Вычисли Размер</string>
 <string name="send_to">Послать...</string>
