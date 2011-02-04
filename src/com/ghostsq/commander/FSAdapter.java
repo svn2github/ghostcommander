@@ -17,6 +17,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
+import android.os.StatFs;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -232,14 +233,12 @@ public class FSAdapter extends CommanderAdapterBase {
 	@Override
 	public void reqItemsSize( SparseBooleanArray cis ) {
         try {
-        	FileEx[] list = bitsToFiles( cis );
-        	if( list != null ) {
-        		if( worker != null && worker.reqStop() )
-       		        return;
-        		commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-        		worker = new CalcSizesEngine( handler, list );
-        		worker.start();
-        	}
+        	FileEx[] list = bitsToFilesEx( cis );
+    		if( worker != null && worker.reqStop() )
+   		        return;
+    		commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
+    		worker = new CalcSizesEngine( handler, list );
+       		worker.start();
 		}
         catch(Exception e) {
 		}
@@ -255,35 +254,43 @@ public class FSAdapter extends CommanderAdapterBase {
         @Override
         public void run() {
         	try {
-				long sum = getSizes( mList );
-				if( sum < 0 ) {
-				    sendProgress( "Interrupted", Commander.OPERATION_FAILED );
-				    return;
-				}
-				if( (mode & MODE_SORTING) == SORT_SIZE )
-    				synchronized( items ) {
-        	            FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
-        	            Arrays.sort( items, comp );
+                StringBuffer result = new StringBuffer( );
+        	    if( mList != null && mList.length > 0 ) {
+    				long sum = getSizes( mList );
+    				if( sum < 0 ) {
+    				    sendProgress( "Interrupted", Commander.OPERATION_FAILED );
+    				    return;
     				}
-				String result;
-				if( mList.length == 1 ) {
-					File f = mList[0].f;
-					if( f.isDirectory() )
-						result = "Folder \"" + f.getAbsolutePath() + "\":\n" + num + " files,";
-					else
-						result = "File \"" + f.getAbsolutePath() + "\":";
-				} else
-					result = "" + num + " files:";
-				result += "\n" + Utils.getHumanSize(sum) + "bytes";
-				if( sum > 1024 )
-				    result += "\n ( " + sum + " bytes )";
-				if( dirs > 0 )
-					result += ",\nin " + dirs + " director" + ( dirs > 1 ? "ies." : "y.");
-				if( mList.length == 1 ) {
-				    result += "\nLast modified:\n  " +
-				        (String)DateFormat.format( "MMM dd yyyy hh:mm:ss", new Date( mList[0].f.lastModified() ) );
-				}
-				sendProgress( result, Commander.OPERATION_COMPLETED );
+    				if( (mode & MODE_SORTING) == SORT_SIZE )
+        				synchronized( items ) {
+            	            FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
+            	            Arrays.sort( items, comp );
+        				}
+                    if( mList.length == 1 ) {
+                        File f = mList[0].f;
+                        if( f.isDirectory() )
+                            result.append( "Folder \"" + f.getAbsolutePath() + "\":\n" + num + " files," );
+                        else
+                            result.append( "File \"" + f.getAbsolutePath() + "\":" );
+                    } else
+                        result.append( "" + num + " files:" );
+                    result.append( "\n" + Utils.getHumanSize(sum) + "bytes" );
+                    if( sum > 1024 )
+                        result.append( "\n ( " + sum + " bytes )" );
+                    if( dirs > 0 )
+                        result.append( ",\nin " + dirs + " director" + ( dirs > 1 ? "ies." : "y.") );
+                    if( mList.length == 1 ) {
+                        result.append( "\nLast modified:\n  " );
+                        result.append( (String)DateFormat.format( "MMM dd yyyy hh:mm:ss", new Date( mList[0].f.lastModified() ) ) );
+                    }
+                    result.append( "\n\n" );
+        	    }
+                StatFs stat = new StatFs( dirName );
+                long block_size = stat.getBlockSize( );
+                result.append( "\"" + dirName + "\" total: " + Utils.getHumanSize( stat.getBlockCount() * block_size ) +
+                 "bytes,\nfree: " + Utils.getHumanSize( stat.getAvailableBlocks() * block_size ) + "bytes." );
+                
+				sendProgress( result.toString(), Commander.OPERATION_COMPLETED );
 			} catch( Exception e ) {
 				sendProgress( e.getMessage(), Commander.OPERATION_FAILED );
 			}
@@ -361,7 +368,7 @@ public class FSAdapter extends CommanderAdapterBase {
     @Override
     public boolean deleteItems( SparseBooleanArray cis ) {
     	try {
-        	FileEx[] list = bitsToFiles( cis );
+        	FileEx[] list = bitsToFilesEx( cis );
         	if( list != null ) {
         		if( worker != null && worker.reqStop() ) {
         		    commander.notifyMe( new Commander.Notify( commander.getContext().getString( R.string.wait ), 
@@ -622,7 +629,7 @@ public class FSAdapter extends CommanderAdapterBase {
         }
         return true;
     }
-    private final FileEx[] bitsToFiles( SparseBooleanArray cis ) {
+    private final FileEx[] bitsToFilesEx( SparseBooleanArray cis ) {
         try {
             int counter = 0;
             for( int i = 0; i < cis.size(); i++ )
@@ -635,6 +642,27 @@ public class FSAdapter extends CommanderAdapterBase {
                     int k = cis.keyAt( i );
                     if( k > 0 )
                         res[j++] = items[ k - 1 ];
+                }
+            return res;
+        } catch( Exception e ) {
+            Log.e( TAG, "bitsToFilesEx()", e );
+        }
+        return null;
+    }
+
+    public final File[] bitsToFiles( SparseBooleanArray cis ) {
+        try {
+            int counter = 0;
+            for( int i = 0; i < cis.size(); i++ )
+                if( cis.valueAt( i ) && cis.keyAt( i ) > 0)
+                    counter++;
+            File[] res = new File[counter];
+            int j = 0;
+            for( int i = 0; i < cis.size(); i++ )
+                if( cis.valueAt( i ) ) {
+                    int k = cis.keyAt( i );
+                    if( k > 0 )
+                        res[j++] = items[ k - 1 ].f;
                 }
             return res;
         } catch( Exception e ) {

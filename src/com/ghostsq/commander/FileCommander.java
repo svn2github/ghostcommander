@@ -332,6 +332,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         case R.id.F6:
         case R.id.F7:
         case R.id.F8:
+        case CREATE_ZIP:
+        case R.id.about:
         case R.id.donate:
             showDialog( id );
             break;
@@ -395,9 +397,6 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             break;
         case R.id.unselect_all:
             showDialog( Dialogs.UNSELECT_DIALOG );
-            break;
-        case R.id.about:
-            showDialog( Dialogs.ABOUT_DIALOG );
             break;
         case R.id.online: {
                 Intent intent = new Intent( Intent.ACTION_VIEW );
@@ -497,7 +496,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             return;
         }
         boolean dialog_enabled = false;
-        Dialogs dh = getDialogsInstance(Dialogs.PROGRESS_DIALOG);
+        Dialogs dh = getDialogsInstance( Dialogs.PROGRESS_DIALOG );
         if( dh != null ) {
             Dialog d = dh.getDialog();
             if( d != null && d.isShowing() ) {

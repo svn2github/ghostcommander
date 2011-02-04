@@ -418,11 +418,15 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 menu.add( 0, R.id.F2, 0, R.string.rename_title );
             }
             menu.add( 0, R.id.F5, 0, R.string.copy_title );
-            if( fs_adapter )
+            if( fs_adapter ) {
                 menu.add( 0, R.id.F6, 0, R.string.move_title );
+            }
             menu.add( 0, R.id.F8, 0, R.string.delete_title );
-            if( fs_adapter && file && num <= 1 ) 
-                menu.add( 0, Commander.OPEN_WITH, 0, R.string.open_with );
+            if( fs_adapter ) { 
+                if( file && num <= 1 ) 
+                    menu.add( 0, Commander.OPEN_WITH, 0, R.string.open_with );
+                menu.add( 0, Commander.CREATE_ZIP, 0, R.string.create_zip );
+            }
         } catch( Exception e ) {
             Log.e( TAG, "populateContextMenu() " + e.getMessage(), e );
         }

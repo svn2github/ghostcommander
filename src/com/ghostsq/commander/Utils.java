@@ -7,7 +7,7 @@ import java.util.List;
 import android.net.Uri;
 import android.webkit.MimeTypeMap;
 
-public class Utils {
+public final class Utils {
 	private final static String[][] mimes = {	// should be sorted!
         { ".3gpp","audio/3gpp" },
         { ".aif", "audio/x-aiff" },
@@ -176,4 +176,8 @@ public class Utils {
         String authority = ui + "@" + host + (port >= 0 ? port : ""); 
 	    return u.buildUpon().encodedAuthority( authority ).build().toString();
 	}
+    public final static String mbAddSl( String path ) {
+        if( path == null || path.length() == 0 ) return "";
+        return path.charAt( path.length()-1 ) == '/' ? path : path + "/"; 
+    }
 }

@@ -527,7 +527,7 @@ public class ZipAdapter extends CommanderAdapterBase {
             zip = null;
             items = null;
             
-            worker = new CopyToEngine( handler, list, uri.getFragment(), move );
+            worker = new CopyToEngine( handler, list, new File( uri.getPath() ), uri.getFragment(), move );
             worker.start();
             return true;
 		} catch( Exception e ) {
@@ -535,27 +535,56 @@ public class ZipAdapter extends CommanderAdapterBase {
 		}
 		return false;
     }
+
+    public boolean createZip( File[] list, String zip_fn ) {
+        try {
+            if( !checkReadyness() ) return false;
+            commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
+            worker = new CopyToEngine( handler, list, new File( zip_fn ) );
+            worker.start();
+            return true;
+        } catch( Exception e ) {
+            commander.notifyMe( new Commander.Notify( "Exception: " + e.getMessage(), Commander.OPERATION_FAILED ) );
+        }
+        return false;
+    }
     
     class CopyToEngine extends Engine {
-        private File[]     top_list; 
+        private File[]  topList; 
         private int     basePathLen;
+        private File    zipFile;
         private String  destPath;
         private long    totalSize = 0;
-        CopyToEngine( Handler h, File[] list, String dest, boolean move ) { // TODO: delete the source on move
-        	super( h );
-            top_list = list;
-            destPath = dest.endsWith( SLS ) ? dest : dest + SLS;
+        private boolean newZip = false;
+        /**
+         *  Add files to existing zip 
+         */
+        CopyToEngine( Handler h, File[] list, File zip_file, String dest_sub, boolean move ) { // TODO: delete the source on move
+            super( h );
+            topList = list;
+            zipFile = zip_file;
+            destPath = dest_sub.endsWith( SLS ) ? dest_sub : dest_sub + SLS;
             basePathLen = list.length > 0 ? list[0].getParent().length() + 1 : 0;
+        }
+        /**
+         *  Create a new shiny ZIP 
+         */
+        CopyToEngine( Handler h, File[] list, File zip_file ) {  
+            super( h );
+            topList = list;
+            zipFile = zip_file;
+            destPath = SLS;
+            basePathLen = list.length > 0 ? list[0].getParent().length() + 1 : 0;
+            newZip = true;
         }
         @Override
         public void run() {
             int num_files = 0;
             try {
                 sendProgress( "Preparing...", 1, 1 );
-                ArrayList<File> full_list = new ArrayList<File>( top_list.length );
-                totalSize = addToList( top_list, full_list );
-                File zipFile = new File( uri.getPath() );
-                num_files = addFilesToZip( zipFile, full_list );
+                ArrayList<File> full_list = new ArrayList<File>( topList.length );
+                totalSize = addToList( topList, full_list );
+                num_files = addFilesToZip( full_list );
             } catch( Exception e ) {
                 error( "Exception: " + e.getMessage() );
             }
@@ -593,49 +622,55 @@ public class ZipAdapter extends CommanderAdapterBase {
         }
                 
         // the following method was based on the one from http://snippets.dzone.com/posts/show/3468
-        private final int addFilesToZip( File zipFile, ArrayList<File> files ) throws IOException {
-           File old_file = new File( zipFile.getAbsolutePath() + "_tmp_" + (new Date()).getSeconds() + ".zip" );
-           if( !zipFile.renameTo(old_file) )
-               throw new RuntimeException("could not rename the file " + zipFile.getAbsolutePath() + " to " + old_file.getAbsolutePath() );
-           ZipInputStream  zin = new ZipInputStream(  new FileInputStream( old_file ) );
-           ZipOutputStream out = new ZipOutputStream( new FileOutputStream( zipFile ) );
-           
-           byte[] buf = new byte[BLOCK_SIZE];
-           ZipEntry entry = zin.getNextEntry();
-           while( entry != null ) {
-               if( isStopReq() ) break;
-               String name = entry.getName();
-               boolean notInFiles = true;
-               for( File f : files ) {
+        private final int addFilesToZip( ArrayList<File> files ) throws IOException {
+            byte[] buf = new byte[BLOCK_SIZE];
+            ZipOutputStream out;
+            File            old_file = null;
+            if( newZip ) {
+               out = new ZipOutputStream( new FileOutputStream( zipFile ) );
+            }
+            else {
+               old_file = new File( zipFile.getAbsolutePath() + "_tmp_" + (new Date()).getSeconds() + ".zip" );
+               if( !zipFile.renameTo( old_file ) )
+                   throw new RuntimeException("could not rename the file " + zipFile.getAbsolutePath() + " to " + old_file.getAbsolutePath() );
+               ZipInputStream  zin = new ZipInputStream(  new FileInputStream( old_file ) );
+               out = new ZipOutputStream( new FileOutputStream( zipFile ) );
+               
+               ZipEntry entry = zin.getNextEntry();
+               while( entry != null ) {
                    if( isStopReq() ) break;
-                   String f_path = f.getCanonicalPath();
-                   if( f_path.regionMatches( true, basePathLen, name, 0, name.length() ) ) {
-                       notInFiles = false;
-                       break;
+                   String name = entry.getName();
+                   boolean notInFiles = true;
+                   for( File f : files ) {
+                       if( isStopReq() ) break;
+                       String f_path = f.getCanonicalPath();
+                       if( f_path.regionMatches( true, basePathLen, name, 0, name.length() ) ) {
+                           notInFiles = false;
+                           break;
+                       }
                    }
-               }
-               if( notInFiles ) {
-                   // Add ZIP entry to output stream.
-                   out.putNextEntry(new ZipEntry( name ));
-                   // Transfer bytes from the ZIP file to the output file
-                   int len;
-                   while( (len = zin.read( buf )) > 0 ) {
-                       if( isStopReq() ) break; 
-                       out.write(buf, 0, len);
+                   if( notInFiles ) {
+                       // Add ZIP entry to output stream.
+                       out.putNextEntry(new ZipEntry( name ));
+                       // Transfer bytes from the ZIP file to the output file
+                       int len;
+                       while( (len = zin.read( buf )) > 0 ) {
+                           if( isStopReq() ) break; 
+                           out.write(buf, 0, len);
+                       }
                    }
+                   entry = zin.getNextEntry();
                }
-               entry = zin.getNextEntry();
-           }
-           // Close the streams        
-           zin.close();
-           
-           if( isStopReq() ) {
-               out.close();
-               zipFile.delete();
-               old_file.renameTo( zipFile );
-               return 0;
-           }
-           
+               // Close the streams        
+               zin.close();
+               
+               if( isStopReq() ) {
+                   out.close();
+                   zipFile.delete();
+                   old_file.renameTo( zipFile );
+                   return 0;
+               }
+           }           
            double conv = 100./(double)totalSize;
            long   byte_count = 0;
            // Compress the files
@@ -650,7 +685,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                // Transfer bytes from the file to the ZIP file
                int len;
                int  so_far = (int)(byte_count * conv);
-               while( (len = in.read(buf)) > 0 ) {
+               while( (len = in.read( buf )) > 0 ) {
                    if( isStopReq() ) break;
                    out.write(buf, 0, len);
                    byte_count += len;
@@ -664,10 +699,12 @@ public class ZipAdapter extends CommanderAdapterBase {
            out.close();
            if( isStopReq() ) {
                zipFile.delete();
-               old_file.renameTo( zipFile );
+               if( !newZip ) 
+                   old_file.renameTo( zipFile );
                return 0;
            }
-           old_file.delete();
+           if( !newZip ) 
+               old_file.delete();
            return i;
        }
     }

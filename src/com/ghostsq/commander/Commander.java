@@ -22,7 +22,7 @@ public interface Commander {
         	                 OPERATION_COMPLETED_REFRESH_REQUIRED = -4,
         	                 OPERATION_FAILED_LOGIN_REQUIRED = -5;
 
-    public final static int  OPEN = 903, OPEN_WITH = 902, SEND_TO = 236;
+    public final static int  OPEN = 903, OPEN_WITH = 902, SEND_TO = 236, CREATE_ZIP = 180;
 	
 	/**
 	 * try to avoid this call. The adapter should be as UI-free as possible
