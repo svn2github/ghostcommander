@@ -61,6 +61,7 @@ public class AppsAdapter extends CommanderAdapterBase {
         if( engine instanceof ListEngine ) {
             ListEngine list_engine = (ListEngine)engine;
             items = list_engine.getItems();
+            numItems = items != null ? items.length : 0;
             notifyDataSetChanged();
         }
     }
@@ -83,7 +84,6 @@ public class AppsAdapter extends CommanderAdapterBase {
     @Override
     public boolean readSource( Uri tmp_uri, String pass_back_on_done ) {
         try {
-            
             if( worker != null ) {
                 if( worker.reqStop() ) { // that's not good.
                     Thread.sleep( 500 );      // will it end itself?
@@ -93,7 +93,6 @@ public class AppsAdapter extends CommanderAdapterBase {
                     }
                 }
             }
-            
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
             worker = new ListEngine( handler, pass_back_on_done );
             worker.start();
@@ -108,31 +107,26 @@ public class AppsAdapter extends CommanderAdapterBase {
     }
     @Override
     public void reqItemsSize( SparseBooleanArray cis ) {
-        commander.notifyMe( new Commander.Notify( "Not supported.", Commander.OPERATION_FAILED ) );
+        notErr();
     }
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
-        commander.notifyMe( new Commander.Notify( "Not supported.", Commander.OPERATION_FAILED ) );
-        return false;
+        return notErr();
     }
         
     @Override
     public boolean createFile( String fileURI ) {
-        commander.notifyMe( new Commander.Notify( "Operation is not supported.", 
-                                Commander.OPERATION_FAILED ) );
-        return false;
+        return notErr();
     }
 
     @Override
     public void createFolder( String new_name ) {
-        commander.notifyMe( new Commander.Notify( "Not supported.", Commander.OPERATION_FAILED ) );
+        notErr();
     }
-    
 
     @Override
     public boolean deleteItems( SparseBooleanArray cis ) {
-        commander.notifyMe( new Commander.Notify( "Not supported.", Commander.OPERATION_FAILED ) );
-        return false;
+        return notErr();
     }
     
     @Override
@@ -152,31 +146,25 @@ public class AppsAdapter extends CommanderAdapterBase {
 
     @Override
     public boolean receiveItems( String[] full_names, boolean move ) {
-        commander.notifyMe( new Commander.Notify( "Not supported.", Commander.OPERATION_FAILED ) );
-        return false;
+        return notErr();
     }
     
     @Override
     public boolean renameItem( int position, String newName ) {
+        return notErr();
+    }
+
+    private boolean notErr() {
         commander.notifyMe( new Commander.Notify( "Not supported.", Commander.OPERATION_FAILED ) );
         return false;
     }
-
+    
     /*
      * BaseAdapter implementation
      */
-    @Override
-    public int getCount() {
-        return items != null ? items.length : 0;
-    }
 
     @Override
     public Object getItem( int position ) {
-        return items != null && position < items.length ? items[position] : null;
-    }
-
-    @Override
-    public View getView( int position, View convertView, ViewGroup parent ) {
         Item item = new Item();
         item.name = "???";
         if( items != null && position >= 0 && position <= items.length ) {
@@ -189,33 +177,6 @@ public class AppsAdapter extends CommanderAdapterBase {
             item.date = null;
             item.attr = curItem.packageName;
         }
-        return getView( convertView, parent, item );
-    }
-
-    
-    private final ApplicationInfo[] bitsToItems( SparseBooleanArray cis ) {
-    	try {
-            int counter = 0;
-            for( int i = 0; i < cis.size(); i++ )
-                if( cis.valueAt( i ) )
-                    counter++;
-            ApplicationInfo[] subItems = new ApplicationInfo[counter];
-            int j = 0;
-            for( int i = 0; i < cis.size(); i++ )
-                if( cis.valueAt( i ) )
-                	subItems[j++] = items[ cis.keyAt( i ) - 1 ];
-            return subItems;
-		} catch( Exception e ) {
-			commander.showError( "bitsToNames()'s Exception: " + e.getMessage() );
-		}
-		return null;
-    }
-    private final boolean checkReadyness()   
-    {
-        if( worker != null ) {
-        	commander.notifyMe( new Commander.Notify( "busy!", Commander.OPERATION_FAILED ) );
-        	return false;
-        }
-    	return true;
+        return item;
     }
 }

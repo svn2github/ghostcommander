@@ -194,11 +194,6 @@ public class FindAdapter extends CommanderAdapterBase {
     }
 
     @Override
-    public int getCount() {
-        return items != null ? items.length + 1 : 1;
-    }
-
-    @Override
     public Object getItem( int position ) {
         Item item = new Item();
         if( position == 0 ) {
@@ -308,6 +303,7 @@ public class FindAdapter extends CommanderAdapterBase {
             if( engine instanceof SearchEngine ) {
                 SearchEngine list_engine = (SearchEngine)engine;
                 items = list_engine.getItems( mode );
+                numItems = items != null ? items.length + 1 : 1;
                 notifyDataSetChanged();
             }
         } catch( Exception e ) {

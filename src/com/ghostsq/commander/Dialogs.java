@@ -204,8 +204,8 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 }
                 if( edit != null ) {
                     edit.setWidth( owner.getWidth() - 70 );
-                    edit.setText( ".zip" );
-                    edit.setSelection( 0 );
+                    edit.setText( " .zip" );
+                    edit.setSelection( 1 );
                 }
                 break;
             }
@@ -349,6 +349,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                     EditText edit = (EditText)dialogObj.findViewById( R.id.edit_field );
                     if( edit != null ) {
                         String file_name = edit.getText().toString();
+                        if( file_name == null ) return;
                         switch( dialogId ) {
                         case R.id.F2:
                             owner.panels.renameFile( file_name );
@@ -364,7 +365,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                             owner.panels.createFolder( file_name );
                             break;
                         case Commander.CREATE_ZIP:
-                            owner.panels.createZip( file_name );
+                            owner.panels.createZip( file_name.trim() );
                             break;
                         case FileCommander.FIND_ACT: {
                                 Uri.Builder uri_b = new Uri.Builder()

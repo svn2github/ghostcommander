@@ -4,11 +4,7 @@ import java.io.File;
 import java.util.Calendar;
 import java.util.Locale;
 
-import dalvik.system.DexClassLoader;
-
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.text.format.DateFormat;
@@ -28,7 +24,6 @@ import android.widget.TableLayout;
 import android.widget.Toast;
 
 public abstract class CommanderAdapterBase extends BaseAdapter implements CommanderAdapter {
-    private final static String TAG = "CommanderAdapterBase";
 	protected final static String NOTIFY_STR = "str", NOTIFY_PRG1 = "prg1", NOTIFY_PRG2 = "prg2", NOTIFY_COOKIE = "cookie"; 
     protected Commander commander = null;
     public    static final String SLS = File.separator;
@@ -43,6 +38,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected int    mode = 0;
     protected String parentLink;
     protected Engine worker = null;
+    protected int    numItems = 0;
 
     // URI shemes hash codes
     private static final int   zip_schema_h =   "zip".hashCode();  
@@ -153,12 +149,14 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     }
     @Override
     public void terminateOperation() {
+        Log.i( getClass().getName(), "terminateOperation()" );
         if( worker != null ) {
             worker.reqStop();
         }
     }
     @Override
     public void prepareToDestroy() {
+        Log.i( getClass().getName(), "prepareToDestroy()" );
         if( worker != null ) {
             worker.reqStop();
             worker = null;
@@ -171,6 +169,11 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     }
     // Virtual
     protected void onComplete( Engine engine ) { // to override who need do something in the UI thread on an engine completion
+    }
+    
+    @Override
+    public int getCount() {
+        return numItems;
     }
     
     @Override
@@ -391,7 +394,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                     uris[j++] = getItemName( cis.keyAt( i ), true );
             return uris;
         } catch( Exception e ) {
-            Log.e( TAG, "bitsToNames()", e );
+            Log.e( getClass().getName(), "bitsToNames()", e );
         }
         return null;
     }
@@ -428,7 +431,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 menu.add( 0, Commander.CREATE_ZIP, 0, R.string.create_zip );
             }
         } catch( Exception e ) {
-            Log.e( TAG, "populateContextMenu() " + e.getMessage(), e );
+            Log.e( getClass().getName(), "populateContextMenu() " + e.getMessage(), e );
         }
     }    
 

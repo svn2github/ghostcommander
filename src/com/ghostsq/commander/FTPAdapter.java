@@ -163,6 +163,7 @@ public class FTPAdapter extends CommanderAdapterBase {
             }
             else
                 items = list_engine.getItems();
+            numItems = items != null ? items.length + 1 : 1;
             notifyDataSetChanged();
             if( theUserPass != null )
                 theUserPass.dirty = false; 
@@ -646,10 +647,6 @@ public class FTPAdapter extends CommanderAdapterBase {
     /*
      * BaseAdapter implementation
      */
-    @Override
-    public int getCount() {
-   	    return items != null ? items.length + 1 : 1;
-    }
 
     @Override
     public Object getItem( int position ) {

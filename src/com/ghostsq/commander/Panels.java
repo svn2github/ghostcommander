@@ -64,7 +64,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     private float downX = 0, downY = 0;
     private StringBuffer quickSearchBuf = null;
     private Toast        quickSearchTip = null;
-    private Shortcuts  shorcutsFoldersList;
+    private Shortcuts    shorcutsFoldersList;
+    private CommanderAdapter destAdapter = null;
 
     public Panels( FileCommander c_, int id_ ) {
         current = LEFT;
@@ -294,16 +295,18 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     public final void setSelection( int which, String name ) {
     	ListView flv = listViews[which];
     	CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
-        int i, num = ((ListAdapter)ca).getCount();
-        for( i = 0; i < num; i++ ) {
-        	String item_name = ca.getItemName( i, false );
-            if( item_name != null && item_name.compareTo( name ) == 0 ) {
-                if( !flv.requestFocusFromTouch() )
-                    Log.w( TAG, "ListView does not take focus :(" );
-                setSelection( which, i, flv.getHeight() / 2 );
-                break;
+    	if( ca != null ) {
+            int i, num = ((ListAdapter)ca).getCount();
+            for( i = 0; i < num; i++ ) {
+            	String item_name = ca.getItemName( i, false );
+                if( item_name != null && item_name.compareTo( name ) == 0 ) {
+                    if( !flv.requestFocusFromTouch() )
+                        Log.w( TAG, "ListView does not take focus :(" );
+                    setSelection( which, i, flv.getHeight() / 2 );
+                    break;
+                }
             }
-        }
+    	}
     }
     public final File getCurrentFile() {
         try {
@@ -625,7 +628,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         setPanelTitle( c.getString( R.string.wait ), which );
         setToolbarButtons( ca );
         
-        ca.readSource( uri, "" + current + ( posTo == null ? "" : posTo ) );
+        ca.readSource( uri, "" + which + ( posTo == null ? "" : posTo ) );
     }
     
     public void login( String to, String name, String pass ) {
@@ -791,23 +794,36 @@ public class Panels implements AdapterView.OnItemSelectedListener,
 	}
 	
     public final void terminateOperation() {
-        getListAdapter( true ).terminateOperation();
-        getListAdapter( false ).terminateOperation();
+        CommanderAdapter a = getListAdapter( true );
+        a.terminateOperation();
+        if( a == destAdapter ) destAdapter = null;
+        CommanderAdapter p = getListAdapter( false );
+        p.terminateOperation();
+        if( p == destAdapter ) destAdapter = null;
+        if( null != destAdapter ) {
+            destAdapter.terminateOperation();
+            destAdapter = null;
+        }
     }
+    public final void operationFinished() {
+        if( null != destAdapter )
+            destAdapter = null;
+    }    
+    
     public final void copyFiles( String dest, boolean move ) {
         try {
-            CommanderAdapter dest_adapter = getListAdapter( false );
-            if( !dest.equals( dest_adapter.toString() ) ) {
+            destAdapter = getListAdapter( false );
+            if( !dest.equals( destAdapter.toString() ) ) {
                 Uri dest_uri = Uri.parse( dest );
                 if( dest_uri.getScheme() != null ) {
                     c.showError( "Can copy only to local FS" );
                     return;
                 }
-                dest_adapter = new FSAdapter( c, dest_uri, 0 );
+                destAdapter = new FSAdapter( c, dest_uri, 0 );
                 // TODO: user might enter a ftp or some other url to copy to
             }
             c.showDialog( Dialogs.PROGRESS_DIALOG );
-            getListAdapter( true ).copyItems( getSelectedOrChecked(), dest_adapter, move );
+            getListAdapter( true ).copyItems( getSelectedOrChecked(), destAdapter, move );
             // TODO: getCheckedItemPositions() returns an empty array after a failed operation. why? 
             listViews[current].clearChoices();
         }
@@ -837,10 +853,13 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     public final void createZip( String new_zip_name ) {
         CommanderAdapter ca = getListAdapter( true );
         if( ca instanceof FSAdapter ) {
+            SparseBooleanArray cis = getSelectedOrChecked();
+            if( cis == null || cis.size() == 0 ) return;
             c.showDialog( Dialogs.PROGRESS_DIALOG );
             FSAdapter fsa = (FSAdapter)ca;
             ZipAdapter z = new ZipAdapter( c );
-            File[] files = fsa.bitsToFiles( getSelectedOrChecked() );
+            destAdapter = z;
+            File[] files = fsa.bitsToFiles( cis );
             z.createZip( files, Utils.mbAddSl( ca.toString() ) + new_zip_name );
         }
     }
@@ -1101,18 +1120,20 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 return;
             ListView flv = listViews[current];
             ListAdapter      la = flv.getAdapter();
-            CommanderAdapter ca = (CommanderAdapter)la;
-            int n_items = la.getCount();
-            for( int i = 1; i < n_items; i++ ) {
-                String item_name = ca.getItemName( i, true );
-                boolean set = false;
-                for( int j = 0; j < listOfItemsChecked.length; j++ ) {
-                    if( listOfItemsChecked[j].compareTo( item_name ) == 0 ) {
-                        set = true;
-                        break;
+            if( la != null ) {
+                CommanderAdapter ca = (CommanderAdapter)la;
+                int n_items = la.getCount();
+                for( int i = 1; i < n_items; i++ ) {
+                    String item_name = ca.getItemName( i, true );
+                    boolean set = false;
+                    for( int j = 0; j < listOfItemsChecked.length; j++ ) {
+                        if( listOfItemsChecked[j].compareTo( item_name ) == 0 ) {
+                            set = true;
+                            break;
+                        }
                     }
+                    flv.setItemChecked( i, set );
                 }
-                flv.setItemChecked( i, set );
             }
         } catch( Exception e ) {
             Log.e( TAG, "reStoreChoosedItems()", e );

@@ -176,6 +176,7 @@ public class MountAdapter extends CommanderAdapterBase {
         if( engine instanceof ListEngine ) {
             ListEngine list_engine = (ListEngine)engine;
             items = list_engine.getItems();
+            numItems = items != null ? items.length : 0;
             notifyDataSetChanged();
         }
     }
@@ -371,10 +372,6 @@ public class MountAdapter extends CommanderAdapterBase {
     /*
      * BaseAdapter implementation
      */
-    @Override
-    public int getCount() {
-   	    return items != null ? items.length : 0;
-    }
 
     @Override
     public Object getItem( int position ) {

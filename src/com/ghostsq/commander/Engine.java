@@ -3,6 +3,7 @@ package com.ghostsq.commander;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 public class Engine extends Thread {
     protected Handler thread_handler;
@@ -14,6 +15,7 @@ public class Engine extends Thread {
 	}
     public boolean reqStop() {
         if( isAlive() ) {
+            Log.i( getClass().getName(), "reqStop()" );
             stop = true;
             interrupt();
             return true;

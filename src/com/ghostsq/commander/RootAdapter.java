@@ -159,6 +159,7 @@ public class RootAdapter extends CommanderAdapterBase {
             else
                 items = list_engine.getItems();
             uri = list_engine.getUri();
+            numItems = items != null ? items.length + 1 : 1;
             notifyDataSetChanged();
         }
     }
@@ -578,10 +579,6 @@ public class RootAdapter extends CommanderAdapterBase {
     /*
      * BaseAdapter implementation
      */
-    @Override
-    public int getCount() {
-   	    return items != null ? items.length + 1 : 1;
-    }
 
     @Override
     public Object getItem( int position ) {

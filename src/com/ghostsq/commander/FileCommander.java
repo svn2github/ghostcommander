@@ -513,6 +513,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             return;
         }
         setProgressBarIndeterminateVisibility( false );
+        panels.operationFinished();
         switch( progress.status ) {
         case OPERATION_FAILED:
             if( progress.cookie != null && progress.cookie.length() > 0 ) {
@@ -565,7 +566,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     @Override
     public void showInfo( String msg ) {
         if( !on ) return;
-        if( msg.length() < 50 )
+        if( msg.length() < 20 )
             showMessage( msg );
         else {
             Dialogs dh = obtainDialogsInstance(Dialogs.INFO_DIALOG);
