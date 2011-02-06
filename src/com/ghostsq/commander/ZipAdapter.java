@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -15,6 +16,8 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+
+import org.apache.http.util.EncodingUtils;
 
 import android.net.Uri;
 import android.os.Handler;
@@ -29,7 +32,7 @@ public class ZipAdapter extends CommanderAdapterBase {
     public final static String TAG = "ZipAdapter";
     private static final char   SLC = File.separatorChar;
     private static final String SLS = File.separator;
-    protected static final int BLOCK_SIZE = 10000;
+    protected static final int BLOCK_SIZE = 100000;
     // Java compiler creates a thunk function to access to the private owner class member from a subclass
     // to avoid that all the member accessible from the subclasses are public
     public  Uri          uri = null;
@@ -99,7 +102,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                 
                 ZipEntry e = entries.nextElement();
                 if( e != null ) {
-                    String entry_name = e.getName();
+                    String entry_name = fixName( e );
                     //Log.v( TAG, "Found an Entry: " + entry_name );
                     if( entry_name == null || fld_path.compareToIgnoreCase(entry_name) == 0 ) 
                         continue;
@@ -114,14 +117,18 @@ public class ZipAdapter extends CommanderAdapterBase {
                             int    sub_dir_len = sub_dir.length();
                             boolean not_yet = true;
                             for( int i = 0; i < array.size(); i++ ) {
-                                String a_name = array.get( i ).getName();
+                                String a_name = fixName( array.get( i ) );
                                 if( a_name.regionMatches( fld_path_len, sub_dir, 0, sub_dir_len ) ) {
                                     not_yet = false;
                                     break;
                                 }
                             }
-                            if( not_yet )   // a folder
-                                array.add( new ZipEntry( entry_name.substring( 0, sl_pos+1 ) ) );
+                            if( not_yet ) {  // a folder
+                                ZipEntry sur_fld = new ZipEntry( entry_name.substring( 0, sl_pos+1 ) );
+                                byte[] eb = { 1, 2 };
+                                sur_fld.setExtra( eb );
+                                array.add( sur_fld );
+                            }
                         }
                         else
                             array.add( e ); // a leaf
@@ -289,15 +296,15 @@ public class ZipAdapter extends CommanderAdapterBase {
 	            
 	            double conv = 100./(double)dir_size;
 	        	for( int i = 0; i < list.length; i++ ) {
-	        		ZipEntry f = list[i];
-	        		if( f == null ) continue;
-	        		String full_name = f.getName();
-	        		if( full_name == null ) continue;
-        		    String file_name = new File( full_name ).getName();
+	        		ZipEntry entry = list[i];
+	        		if( entry == null ) continue;
+	        		String entry_name_fixed = fixName( entry );
+	        		if( entry_name_fixed == null ) continue;
+        		    String file_name = new File( entry_name_fixed ).getName();
         		    File   dest_file = new File( dest_folder, path + file_name );
-        			String rel_name = full_name.substring( base_len );
+        			String rel_name = entry_name_fixed.substring( base_len );
         			
-        			if( f.isDirectory() ) {
+        			if( entry.isDirectory() ) {
         				sendProgress( "Processing folder '" + rel_name + "'...", 0 );
         				if( !dest_file.mkdir() ) {
         					if( !dest_file.exists() || !dest_file.isDirectory() ) {
@@ -305,7 +312,7 @@ public class ZipAdapter extends CommanderAdapterBase {
 	        					break;
         					}
         				}
-        				ZipEntry[] subItems = GetFolderList( full_name );
+        				ZipEntry[] subItems = GetFolderList( entry_name_fixed );
 	                    if( subItems == null ) {
 	                    	errMsg = "Failed to get the file list of the subfolder '" + rel_name + "'.\n";
 	                    	break;
@@ -318,7 +325,7 @@ public class ZipAdapter extends CommanderAdapterBase {
     	        			errMsg = "Please make sure the folder '" + dest_folder.getAbsolutePath() + "' is writable";
     	        			break;
         				}
-        				InputStream in = zip.getInputStream( f );
+        				InputStream in = zip.getInputStream( entry );
         				FileOutputStream out = new FileOutputStream( dest_file );
         	            byte buf[] = new byte[BLOCK_SIZE];
         	            int  n = 0;
@@ -372,7 +379,7 @@ public class ZipAdapter extends CommanderAdapterBase {
         	ZipEntry[] to_delete = bitsToItems( cis );
         	if( to_delete != null && zip != null && uri != null ) {
         	    commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-                worker = new DelEngine( handler, new File( uri.getPath() ), to_delete, zip.size() );
+                worker = new DelEngine( handler, new File( uri.getPath() ), to_delete );
                 worker.start();
 	            return true;
         	}
@@ -387,18 +394,20 @@ public class ZipAdapter extends CommanderAdapterBase {
     class DelEngine extends Engine {
         private ZipEntry[] mList = null;
         private File       zipFile;
-        private int        of = 0;
-        DelEngine( Handler h, File zipFile_, ZipEntry[] list, int of_ ) {
+        DelEngine( Handler h, File zipFile_, ZipEntry[] list ) {
             super( h );
             zipFile = zipFile_;
             mList = list;
-            of = of_;
         }
         @Override
         public void run() {
-            int processed = 0;
             File old_file = new File( zipFile.getAbsolutePath() + "_tmp_" + (new Date()).getSeconds() + ".zip" );
             try {
+                ZipFile zf = new ZipFile( zipFile );
+                int  removed = 0, processed = 0, num_entries = zf.size();
+                long total_size = zipFile.length(), bytes_saved = 0;
+                final String del = "Deleting...";
+                
                 if( !zipFile.renameTo(old_file) ) {
                     error("could not rename the file " + zipFile.getAbsolutePath() + " to " + old_file.getAbsolutePath() );
                 }
@@ -417,11 +426,12 @@ public class ZipAdapter extends CommanderAdapterBase {
                             String name_to_delete = z.getName();
                             if( name.startsWith( name_to_delete ) ) {
                                 spare_this = false;
-                                sendProgress( "Deleting...", ++processed * 100 / of, 0 );
+                                removed++;
                                 break;
                             }
                         }
-                        if( spare_this ) {                        
+                        if( spare_this ) {
+                            int pp = ++processed * 100 / num_entries;
                             // Add ZIP entry to output stream.
                             out.putNextEntry(new ZipEntry( name ));
                             // Transfer bytes from the ZIP file to the output file
@@ -429,6 +439,8 @@ public class ZipAdapter extends CommanderAdapterBase {
                             while( (len = zin.read( buf )) > 0 ) {
                                 if( isStopReq() ) break; 
                                 out.write(buf, 0, len);
+                                bytes_saved += len;
+                                sendProgress( del, pp, (int)(bytes_saved * 100 / total_size) );
                             }
                         }
                         entry = zin.getNextEntry();
@@ -449,12 +461,14 @@ public class ZipAdapter extends CommanderAdapterBase {
                     else {
                         old_file.delete();
                         zip = null;
+                        sendResult( Utils.getOpReport( removed, "removed" ) );
+                        return;
                     }
                 }
             } catch( Exception e ) {
                 error( e.getMessage() );
             }
-            sendResult( Utils.getOpReport( processed, "removed" ) );
+            sendResult( Utils.getOpReport( 0, "deleted" ) );
             super.run();
         }
     }
@@ -467,10 +481,10 @@ public class ZipAdapter extends CommanderAdapterBase {
                 if( path != null && path.length() > 0 ) {
                     if( path.charAt( path.length() - 1 ) != SLC )
                         path += SLS;
-                    return path + items[position-1].getName();
+                    return path + fixName( items[position-1] );
                 }
             }
-            return new File( items[position-1].getName() ).getName();
+            return new File( fixName( items[position-1] ) ).getName();
         }
         return null;
     }
@@ -513,7 +527,7 @@ public class ZipAdapter extends CommanderAdapterBase {
         	else
         	    if( cur.length() == 0 || cur.charAt( cur.length()-1 ) != SLC )
         	        cur += SLS;
-            commander.Navigate( uri.buildUpon().fragment( item.getName() ).build(), null );
+            commander.Navigate( uri.buildUpon().fragment( fixName( item ) ).build(), null );
         }
     }
 
@@ -564,6 +578,7 @@ public class ZipAdapter extends CommanderAdapterBase {
         private String  destPath;
         private long    totalSize = 0;
         private boolean newZip = false;
+        private final String prep = "Preparing...";
         /**
          *  Add files to existing zip 
          */
@@ -592,9 +607,10 @@ public class ZipAdapter extends CommanderAdapterBase {
         public void run() {
             int num_files = 0;
             try {
-                sendProgress( "Preparing...", 1, 1 );
+                sendProgress( prep, 1, 1 );
                 ArrayList<File> full_list = new ArrayList<File>( topList.length );
                 totalSize = addToList( topList, full_list );
+                sendProgress( prep, 2, 2 );
                 num_files = addFilesToZip( full_list );
             } catch( Exception e ) {
                 error( "Exception: " + e.getMessage() );
@@ -646,16 +662,24 @@ public class ZipAdapter extends CommanderAdapterBase {
                    out = new ZipOutputStream( new FileOutputStream( zipFile ) );
                 }
                 else {
+                   ZipFile zf = new ZipFile( zipFile );
+                   int  num_entries = zf.size();
+                   long total_size = zipFile.length(), bytes_saved = 0;
+
                    old_file = new File( zipFile.getAbsolutePath() + "_tmp_" + (new Date()).getSeconds() + ".zip" );
                    if( !zipFile.renameTo( old_file ) )
                        throw new RuntimeException("could not rename the file " + zipFile.getAbsolutePath() + " to " + old_file.getAbsolutePath() );
                    ZipInputStream  zin = new ZipInputStream(  new FileInputStream( old_file ) );
                    out = new ZipOutputStream( new FileOutputStream( zipFile ) );
                    
+                   int e_i = 0, pp;
+                   
                    ZipEntry entry = zin.getNextEntry();
                    while( entry != null ) {
                        if( isStopReq() ) break;
-                       String name = entry.getName();
+                       pp = e_i++ * 100 / num_entries;
+                       sendProgress( prep, pp, 0 );
+                       String name = entry.getName();  // in this case the name is not corrupted! no need to fix
                        boolean notInFiles = true;
                        for( File f : files ) {
                            if( isStopReq() ) break;
@@ -667,19 +691,21 @@ public class ZipAdapter extends CommanderAdapterBase {
                        }
                        if( notInFiles ) {
                            // Add ZIP entry to output stream.
-                           out.putNextEntry(new ZipEntry( name ));
-                           // Transfer bytes from the ZIP file to the output file
+                           out.putNextEntry( new ZipEntry( name ) );
+                           // Transfer bytes from old ZIP file to the output file
                            int len;
                            while( (len = zin.read( buf )) > 0 ) {
-                               if( isStopReq() ) break; 
+                               if( isStopReq() ) break;
                                out.write(buf, 0, len);
+                               bytes_saved += len;
+                               sendProgress( prep, pp, (int)(bytes_saved * 100 / total_size) );
                            }
                        }
                        entry = zin.getNextEntry();
                    }
                    // Close the streams        
                    zin.close();
-                   
+
                    if( isStopReq() ) {
                        out.close();
                        zipFile.delete();
@@ -768,28 +794,36 @@ public class ZipAdapter extends CommanderAdapterBase {
             }
             else {
                 if( items != null && position > 0 && position <= items.length ) {
-                    ZipEntry curItem;
-                    curItem = items[position - 1];
-                    item.dir = curItem.isDirectory();
-                    /*
-                    byte name_bytes[] = EncodingUtils.getBytes( curItem.getName(), "cp437"); // iso-8859-1
-                    String UTF8_name = new String( name_bytes );
-                    item.name = item.dir ? SLS + UTF8_name : UTF8_name;
-                    */
-                    // item.name = item.dir ? SLS + getLocalName( curItem ) : getLocalName( curItem );
-
-                    String entry_name = curItem.getName();
-                    int lsp = entry_name.lastIndexOf( SLC, item.dir ? entry_name.length() - 2 : entry_name.length() );
+                    ZipEntry zip_entry = items[position - 1];
+                    item.dir = zip_entry.isDirectory();
+                    String name = fixName( zip_entry );
                     
-                    item.name = lsp > 0 ? entry_name.substring( lsp + 1 ) : entry_name;
-                    item.size = curItem.getSize();
-                    long item_time = curItem.getTime();
+                    int lsp = name.lastIndexOf( SLC, item.dir ? name.length() - 2 : name.length() );
+                    item.name = lsp > 0 ? name.substring( lsp + 1 ) : name;
+                    item.size = zip_entry.getSize();
+                    long item_time = zip_entry.getTime();
                     item.date = item_time > 0 ? new Date( item_time ) : null;
                 }
             }
         }
         return item;
     }
+    
+    private final String fixName( ZipEntry entry ) {
+        try {
+            byte[] ex = entry.getExtra();
+            if( ex != null && ex.length == 2 && ex[0] == 1 && ex[1] == 2 ) 
+                return entry.getName();
+//            byte[] bytes = entry.getName().getBytes( "iso-8859-1" );
+            byte bytes[] = EncodingUtils.getBytes( entry.getName(),"iso-8859-1" );
+
+            return new String( bytes );
+        } catch( Exception e ) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
     private final ZipEntry[] bitsToItems( SparseBooleanArray cis ) {
     	try {
             int counter = 0;
@@ -814,9 +848,6 @@ public class ZipAdapter extends CommanderAdapterBase {
         	return false;
         }
     	return true;
-    }
-    private final String getLocalName( ZipEntry e ) {
-        return new File( e.getName() ).getName();
     }
     public class ZipItemPropComparator implements Comparator<ZipEntry> {
         int type;

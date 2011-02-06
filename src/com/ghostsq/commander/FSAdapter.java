@@ -703,6 +703,9 @@ public class FSAdapter extends CommanderAdapterBase {
                                 item.name = SLS + f.f.getName();
                         } else
                             item.name = f.f.getName();
+                        
+                        byte[] bytes = item.name.getBytes();
+                        
                         item.size = item.dir ? f.size : f.f.length();
                         long msFileDate = f.f.lastModified();
                         if( msFileDate != 0 )
