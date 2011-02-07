@@ -203,7 +203,7 @@
     Пожалуста, убедитесь, что пакет\n
     \"Ghost Commander - Samba plugin\"\n
     (com.ghostsq.commander.samba.apk) инсталлирован.</string>
-<string name="no_root">Очевидно ваше устройство не позволяет доступ как root (su).</string>
+<string name="no_root">root не доступен.</string>
 <string name="donate">  Поддержка</string>
 <string name="online_help">  Описание в онлайне (EN)</string>
 <string name="donation">Выразите свою поддержку дальнейшему развитию
