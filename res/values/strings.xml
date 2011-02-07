@@ -167,6 +167,9 @@
     <string name="prevent_root">Warn on a leaving the sdcard</string>
     <string name="summary_prevent_root">Issue a warning when going to a device\'s root folder.</string>
 
+    <string name="root_root">Root mode on leaving /sdcard</string>
+    <string name="summary_root_root">Automatically switch to the \"root:\" mode when going to a device\'s root (not a /sdcard) folder.</string>
+
     <string name="thumbnails">Enable thumbnails</string>
     <string name="summary_thumbnails">Show thumbnails instead of plain icons for image files</string>
     <string name="thumbnails_size">Thumbnails size</string>

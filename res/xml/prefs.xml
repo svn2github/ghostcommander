@@ -132,6 +132,9 @@
                 android:entryValues="@array/language_vals"
                 android:dialogTitle="@string/language" 
                 android:defaultValue=""/>                
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/input_settings">
         <CheckBoxPreference
                 android:key="show_toolbar"
                 android:title="@string/show_toolbar"
@@ -215,25 +218,25 @@
                     android:key="show_by_date"
                     android:title="@string/show_by_date"
                     android:defaultValue="true"/>
-
         </PreferenceScreen>
-    </PreferenceCategory>
-    <PreferenceCategory
-        android:title="@string/input_settings">
         <CheckBoxPreference
                     android:key="arrow_mode"
                     android:title="@string/arrow_mode"
                     android:summary="@string/summary_arrow_mode"
                     android:defaultValue="false"/>
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/advanced">
         <CheckBoxPreference
                 android:key="prevent_root"
                 android:title="@string/prevent_root"
                 android:summary="@string/summary_prevent_root"
                 android:defaultValue="true"/>
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/advanced">
+        <CheckBoxPreference
+                android:key="root_root"
+                android:title="@string/root_root"
+                android:summary="@string/summary_root_root"
+                android:defaultValue="false"/>
        <PreferenceScreen
             android:key="advanced_preferences"
             android:title="@string/advanced_settings"

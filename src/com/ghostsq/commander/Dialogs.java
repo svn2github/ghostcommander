@@ -46,7 +46,6 @@ public class Dialogs implements DialogInterface.OnClickListener {
         case SELECT_DIALOG:
         case UNSELECT_DIALOG:
         case INPUT_DIALOG:
-        case Commander.CREATE_ZIP:
         case R.id.new_zip:
         case R.id.F2:
         case R.id.new_file:
@@ -190,7 +189,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 }
                 break;
             }
-            case Commander.CREATE_ZIP: {
+            case R.id.new_zip: {
                 final String op = owner.getString( R.string.create_zip_title );
                 dialog.setTitle( op );
                 if( prompt != null ) {
@@ -343,7 +342,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 case R.id.F6:
                 case R.id.F7:
                 case FileCommander.FIND_ACT:
-                case Commander.CREATE_ZIP:
+                case R.id.new_zip:
                 case UNSELECT_DIALOG:
                 case SELECT_DIALOG:
                     EditText edit = (EditText)dialogObj.findViewById( R.id.edit_field );
@@ -364,7 +363,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                         case R.id.F7:
                             owner.panels.createFolder( file_name );
                             break;
-                        case Commander.CREATE_ZIP:
+                        case R.id.new_zip:
                             owner.panels.createZip( file_name.trim() );
                             break;
                         case FileCommander.FIND_ACT: {

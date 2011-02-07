@@ -332,7 +332,6 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         case R.id.F6:
         case R.id.F7:
         case R.id.F8:
-        case CREATE_ZIP:
         case R.id.about:
         case R.id.donate:
             showDialog( id );
@@ -601,7 +600,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                     list[i].delete();
             }
             catch( Exception e ) {
-                Log.e( TAG, "Can't remove the plugin's .dex: ", e );
+                Log.w( TAG, "Can't remove the plugin's .dex: ", e );
             }
             if( adapterClass == null )
                 showError( "Can not load the adapter class of " + type );

@@ -41,11 +41,12 @@ public final class Utils {
 	public final static String getMimeByExt( String ext ) {
 		if( ext == null || ext.length() == 0 || ext.compareTo( "." ) == 0 ) 
 		    return "*/*";
+		ext = ext.toLowerCase();
 		int from = 0, to = mimes.length;
 		for( int l = 0; l < mimes.length; l++ ) {
 			int idx = ( to - from ) / 2 + from;
 			String tmp = mimes[idx][0];
-			if( tmp.compareToIgnoreCase( ext ) == 0 ) 
+			if( tmp.compareTo( ext ) == 0 ) 
 			    return mimes[idx][1];
 			int cp;
 			for( cp = 1; ; cp++ ) {

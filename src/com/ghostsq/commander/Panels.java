@@ -59,7 +59,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     private int titleColor = Prefs.getDefaultColor( Prefs.TTL_COLORS ), 
                   fgrColor = Prefs.getDefaultColor( Prefs.FGR_COLORS ),
                   selColor = Prefs.getDefaultColor( Prefs.SEL_COLORS );
-    private boolean fingerFriendly = false, warnOnRoot = true, arrow_mode = false, toolbarShown = false;
+    private boolean fingerFriendly = false, warnOnRoot = true, rootOnRoot = false, arrow_mode = false, toolbarShown = false;
     private boolean disableOpenSelectOnly = false, disableAllActions = false;
     private float downX = 0, downY = 0;
     private StringBuffer quickSearchBuf = null;
@@ -78,9 +78,9 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
         fingerFriendly =  sharedPref.getBoolean( "finger_friendly", true );
         setFingerFriendly( fingerFriendly );
-        warnOnRoot =  sharedPref.getBoolean( "prevent_root", true );
+        warnOnRoot = sharedPref.getBoolean( "prevent_root", true );
+        rootOnRoot = sharedPref.getBoolean( "root_root", false );
         arrow_mode = sharedPref.getBoolean( "arrow_mode", false );
-        
         toolbarShown = sharedPref.getBoolean( "show_toolbar", true );        
         
         initList( LEFT );
@@ -326,7 +326,10 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         return current == LEFT ? RIGHT : LEFT;
     }
     public final CommanderAdapter getListAdapter( boolean forCurrent ) {
-        ListView flv = (ListView)listViews[forCurrent ? current : opposite()];
+        return getListAdapter( forCurrent ? current : opposite() );
+    }
+    public final CommanderAdapter getListAdapter( int which ) {
+        ListView flv = (ListView)listViews[which];
         return flv != null ? (CommanderAdapter)flv.getAdapter() : null;
     }
     public final ListView getListView() {
@@ -366,6 +369,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             applyColors();
         	setFingerFriendly( sharedPref.getBoolean( "finger_friendly", false ) );
         	warnOnRoot =  sharedPref.getBoolean( "prevent_root", true );
+            rootOnRoot = sharedPref.getBoolean( "root_root", false );
             for( int i = LEFT; i <= RIGHT; i++ ) {
                 ListView flv = listViews[i];
                 applySettings( sharedPref, (CommanderAdapter)flv.getAdapter(), i );
@@ -564,6 +568,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     	public void onClick( DialogInterface idialog, int whichButton ) {
             if( whichButton == DialogInterface.BUTTON_POSITIVE ) {
                 warnOnRoot = false;
+                if( rootOnRoot )
+                    uri = uri.buildUpon().scheme( "root" ).build();
                 NavigateInternal( which, uri, posTo );
             }
             else if( whichButton == DialogInterface.BUTTON_NEUTRAL ) {
@@ -578,12 +584,10 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     	if( uri == null ) return;
     	String scheme = uri.getScheme(), path = uri.getPath();
     	
-    	if( warnOnRoot && ( scheme == null || scheme.compareTo("file") == 0 ) && 
-    	                    ( path == null || !path.startsWith( DEFAULT_LOC ) ) ) {
-    	    
-            ListView flv = (ListView)listViews[which];
-            if( flv != null ) {
-                CommanderAdapter ca =(CommanderAdapter)flv.getAdapter();
+    	if( ( scheme == null || scheme.compareTo("file") == 0 ) && 
+    	      ( path == null || !path.startsWith( DEFAULT_LOC ) ) ) {
+    	    if( warnOnRoot ) {
+                CommanderAdapter ca = getListAdapter( which );
                 if( ca != null && ca.getType().compareTo( "file" ) == 0 && ca.toString().startsWith( DEFAULT_LOC ) ) {
             		try {
                 		new NavDialog( c, which, uri, posTo );
@@ -592,18 +596,20 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         			}
                     return;
                 }
-            }
+    	    }
+    	    else if( rootOnRoot )
+    	        uri = uri.buildUpon().scheme( "root" ).build();
     	}
     	NavigateInternal( which, uri, posTo );
     }
     private final void NavigateInternal( int which, Uri uri, String posTo ) {
-        ListView flv = listViews[which];
-        flv.clearChoices();
-        flv.invalidateViews();
-        CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
-        String scheme = uri.getScheme();
-        int type_h = CommanderAdapterBase.GetAdapterTypeHash( scheme );
         try {
+            ListView flv = listViews[which];
+            flv.clearChoices();
+            flv.invalidateViews();
+            CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
+            String scheme = uri.getScheme();
+            int type_h = CommanderAdapterBase.GetAdapterTypeHash( scheme );
             if( ca == null || type_h != ca.getType().hashCode() ) {
                 if( ca != null )
                     ca.prepareToDestroy();
@@ -620,15 +626,15 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                     flv.setOnKeyListener( this );
                 }
             }
+            if( ca == null ) return;
+            applyColors();
+            setPanelTitle( c.getString( R.string.wait ), which );
+            setToolbarButtons( ca );
+            
+            ca.readSource( uri, "" + which + ( posTo == null ? "" : posTo ) );
         } catch( Exception e ) {
-            Log.e( TAG, "MaybeCreateAdapter() failed", e );
+            Log.e( TAG, "NavigateInternal()", e );
         }
-        if( ca == null ) return;
-        applyColors();
-        setPanelTitle( c.getString( R.string.wait ), which );
-        setToolbarButtons( ca );
-        
-        ca.readSource( uri, "" + which + ( posTo == null ? "" : posTo ) );
     }
     
     public void login( String to, String name, String pass ) {
@@ -910,8 +916,10 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         }
         	
         ListView flv = listViews[current];
-        if( position == 0 )
+        if( position == 0 ) {
             flv.setItemChecked( 0, false ); // parent item never selected
+            currentPositions[current] = 0;
+        }
         
         if( disableAllActions ) {
             disableAllActions = false;

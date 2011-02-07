@@ -145,6 +145,10 @@
 <string name="summary_finger_friendly">Увеличить элементы интерфейса для управления пальцем</string>
 <string name="prevent_root">Предупреждать на системных каталогах</string>
 <string name="summary_prevent_root">Выдавать предупреждающее сообщение на попытку перейти в системный каталог</string>
+
+<string name="root_root">Root режим при покидании /sdcard</string>
+<string name="summary_root_root">Автоматически переключаться в \"root:\" режим в случае обращения к каталогу не на /sdcard.</string>
+
 <string name="thumbnails">Миниатюры</string>
 <string name="summary_thumbnails">Предпросмотр графических файлов</string>
 <string name="thumbnails_size">Размер миниатюр</string>

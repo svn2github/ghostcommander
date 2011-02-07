@@ -359,15 +359,8 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected final static int getIconId( String file ) {
         if( file.indexOf( " -> " ) > 0 )
             return R.drawable.link;
-        MimeTypeMap mime_map = MimeTypeMap.getSingleton();
-        if( mime_map == null )
-            return R.drawable.unkn;
-        String mime = null;
         String ext = Utils.getFileExt( file );
-        if( ext != null && ext.length() > 0 )
-            mime = mime_map.getMimeTypeFromExtension( ext.substring( 1 ) );
-        if( mime == null )
-            return R.drawable.unkn; 
+        String mime = Utils.getMimeByExt( ext );
         String type = mime.substring( 0, mime.indexOf( '/' ) );
         if( type.compareTo( "text" ) == 0 )  return R.drawable.text; 
         if( type.compareTo( "image" ) == 0 ) return R.drawable.image; 
@@ -428,7 +421,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             if( fs_adapter ) { 
                 if( file && num <= 1 ) 
                     menu.add( 0, Commander.OPEN_WITH, 0, R.string.open_with );
-                menu.add( 0, Commander.CREATE_ZIP, 0, R.string.create_zip );
+                menu.add( 0, R.id.new_zip, 0, R.string.create_zip );
             }
         } catch( Exception e ) {
             Log.e( getClass().getName(), "populateContextMenu() " + e.getMessage(), e );

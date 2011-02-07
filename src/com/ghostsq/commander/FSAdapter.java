@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -142,6 +143,10 @@ public class FSAdapter extends CommanderAdapterBase {
         private final static int NOTIFY_THUMBNAIL_CHANGED = 653;
         private FileEx[] mList;
         protected int  num = 0, dirs = 0;
+        private int[] ext_h = { ".jpg".hashCode(),  ".JPG".hashCode(), 
+                               ".jpeg".hashCode(), ".JPEG".hashCode(), 
+                                ".png".hashCode(),  ".PNG".hashCode(), 
+                                ".gif".hashCode(),  ".GIF".hashCode() };
 
         ThumbnailsEngine( Handler h, FileEx[] list ) {
             super( h );
@@ -153,41 +158,45 @@ public class FSAdapter extends CommanderAdapterBase {
                 if( mList == null ) return;
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 int thumb_sz = getImgWidth();
+                Resources res = commander.getContext().getResources();
                 for( int i = 0; i < mList.length ; i++ ) {
                     if( isStopReq() ) break;
                     String fn = mList[i].f.getAbsolutePath();
-                    if( getIconId( fn ) == R.drawable.image ) {
-                        options.inJustDecodeBounds = true;
-                        options.outWidth = 0;
-                        options.outHeight = 0;
-                        options.inSampleSize = 1;
-                        
-                        BitmapFactory.decodeFile( fn, options );
-                        if( options.outWidth > 0 && options.outHeight > 0 ) {
-                            
-                            int greatest = Math.max( options.outWidth, options.outHeight );
-                            int factor = greatest / thumb_sz;
-                            int b;
-                            for( b = 0x8000000; b > 0; b >>= 1 )
-                                if( b < factor ) break;
-                            
-                            options.inSampleSize = b;
-                            options.inJustDecodeBounds = false;
-                            Bitmap bitmap = BitmapFactory.decodeFile( fn, options );
-                            if( bitmap != null ) {
-                                BitmapDrawable drawable = new BitmapDrawable( commander.getContext().getResources(), bitmap );
-                                drawable.setGravity( Gravity.CENTER );
-                                drawable.setBounds( 0, 0, 60, 60 );
-                                mList[i].thumbnail = drawable;
-
-                                Message msg = thread_handler.obtainMessage( NOTIFY_THUMBNAIL_CHANGED );
-                                msg.sendToTarget();
-                                
-                            }
+                    String ext = Utils.getFileExt( fn );
+                    if( ext == null ) continue;
+                    int ext_hash = ext.hashCode(), ht_sz = ext_h.length;
+                    boolean not_img = true;
+                    for( int j = 0; j < ht_sz; j ++ ) {
+                        if( ext_hash == ext_h[j] ) {
+                            not_img = false;
+                            break;
+                        }
+                    }
+                    if( not_img ) continue;
+                    options.inJustDecodeBounds = true;
+                    options.outWidth = 0;
+                    options.outHeight = 0;
+                    options.inSampleSize = 1;
+                    BitmapFactory.decodeFile( fn, options );
+                    if( options.outWidth > 0 && options.outHeight > 0 ) {
+                        int greatest = Math.max( options.outWidth, options.outHeight );
+                        int factor = greatest / thumb_sz;
+                        int b;
+                        for( b = 0x8000000; b > 0; b >>= 1 )
+                            if( b < factor ) break;
+                        options.inSampleSize = b;
+                        options.inJustDecodeBounds = false;
+                        Bitmap bitmap = BitmapFactory.decodeFile( fn, options );
+                        if( bitmap != null ) {
+                            BitmapDrawable drawable = new BitmapDrawable( res, bitmap );
+                            drawable.setGravity( Gravity.CENTER );
+                            drawable.setBounds( 0, 0, 60, 60 );
+                            mList[i].thumbnail = drawable;
+                            Message msg = thread_handler.obtainMessage( NOTIFY_THUMBNAIL_CHANGED );
+                            msg.sendToTarget();
                         }
                     }
                 }
-                
             } catch( Exception e ) {
                 sendProgress( e.getMessage(), Commander.OPERATION_FAILED );
             }
