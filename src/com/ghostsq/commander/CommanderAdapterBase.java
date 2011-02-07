@@ -146,6 +146,11 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         mode &= ~mask;
         mode |= val;
         dirty = true;
+        
+        if( mask == CommanderAdapter.MODE_SORTING ) {
+            reSort();
+            notifyDataSetChanged();
+        }
     }
     @Override
     public void terminateOperation() {
@@ -436,6 +441,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     @Override
     public void doIt( int command_id, SparseBooleanArray cis ) {
         // to be implemented in derived classes
+    }
+    
+    protected void reSort() {
+        // to override all the derives
     }
 
     public final void showMessage( String s ) {

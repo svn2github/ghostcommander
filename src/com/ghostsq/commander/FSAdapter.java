@@ -120,8 +120,7 @@ public class FSAdapter extends CommanderAdapterBase {
                     items[j++] = file_ex;
                 }
             }
-            FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
-            Arrays.sort( items, comp );
+            reSort();
             parentLink = dir.getParent() == null ? SLS : PLS;
             notifyDataSetChanged();
             if( thumbnail_size_perc > 0 ) {
@@ -296,7 +295,7 @@ public class FSAdapter extends CommanderAdapterBase {
         	    }
                 StatFs stat = new StatFs( dirName );
                 long block_size = stat.getBlockSize( );
-                result.append( "\"" + dirName + "\" total: " + Utils.getHumanSize( stat.getBlockCount() * block_size ) +
+                result.append( "total: " + Utils.getHumanSize( stat.getBlockCount() * block_size ) +
                  "bytes,\nfree: " + Utils.getHumanSize( stat.getAvailableBlocks() * block_size ) + "bytes." );
                 
 				sendProgress( result.toString(), Commander.OPERATION_COMPLETED );
@@ -712,9 +711,6 @@ public class FSAdapter extends CommanderAdapterBase {
                                 item.name = SLS + f.f.getName();
                         } else
                             item.name = f.f.getName();
-                        
-                        byte[] bytes = item.name.getBytes();
-                        
                         item.size = item.dir ? f.size : f.f.length();
                         long msFileDate = f.f.lastModified();
                         if( msFileDate != 0 )
@@ -762,5 +758,12 @@ public class FSAdapter extends CommanderAdapterBase {
                 return ext_cmp;
             return case_ignore ? f1.f.getName().compareToIgnoreCase( f2.f.getName() ) : f1.f.compareTo( f2.f );
         }
+    }
+
+    @Override
+    protected void reSort() {
+        if( items == null ) return;
+        FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
+        Arrays.sort( items, comp );
     }
 }

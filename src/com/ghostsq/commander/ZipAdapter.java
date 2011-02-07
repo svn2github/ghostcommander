@@ -27,6 +27,7 @@ import android.util.SparseBooleanArray;
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.CommanderAdapter;
 import com.ghostsq.commander.CommanderAdapterBase;
+import com.ghostsq.commander.FSAdapter.FilePropComparator;
 
 public class ZipAdapter extends CommanderAdapterBase {
     public final static String TAG = "ZipAdapter";
@@ -222,7 +223,12 @@ public class ZipAdapter extends CommanderAdapterBase {
             brId == R.id.F5 ||
             brId == R.id.F8 ||
             brId == R.id.F9 ||
-            brId == R.id.F10 ) return true;
+            brId == R.id.F10     ||
+            brId == R.id.by_name ||
+            brId == R.id.by_ext  ||
+            brId == R.id.by_size ||
+            brId == R.id.by_date
+        ) return true;
         return false;
     }
 
@@ -878,5 +884,12 @@ public class ZipAdapter extends CommanderAdapterBase {
                 return ext_cmp;
             return f1.getName().compareTo( f2.getName() );
 		}
+    }
+
+    @Override
+    protected void reSort() {
+        if( items == null ) return;
+        ZipItemPropComparator comp = new ZipItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
+        Arrays.sort( items, comp );
     }
 }

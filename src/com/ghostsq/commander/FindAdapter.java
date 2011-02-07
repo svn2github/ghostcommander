@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
+
+import com.ghostsq.commander.FSAdapter.FilePropComparator;
+
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
@@ -339,5 +342,12 @@ public class FindAdapter extends CommanderAdapterBase {
                 return ext_cmp;
             return f1.compareTo( f2 );            
         }
+    }
+
+    @Override
+    protected void reSort() {
+        if( items == null ) return;
+        FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
+        Arrays.sort( items, comp );
     }
 }

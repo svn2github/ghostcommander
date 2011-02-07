@@ -418,8 +418,9 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     }
     public void changeSorting( int sort_mode ) {
         CommanderAdapter ca = getListAdapter( true );
+        storeChoosedItems();
         ca.setMode( CommanderAdapter.MODE_SORTING, sort_mode );
-        refreshList( current );
+        reStoreChoosedItems();
     }
     public final void refreshLists() {
         refreshList( current );
