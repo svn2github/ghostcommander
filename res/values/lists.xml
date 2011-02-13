@@ -12,7 +12,6 @@
         <item>s</item>
         <item>d</item>  
     </string-array>
-    
     <string-array name="language">
         <item>Default</item>
         <item>English</item>
@@ -24,6 +23,7 @@
         <item>Deutsch</item>  
         <item>Čeština</item>
         <item>Български</item>
+	<item>Italiano</item>
     </string-array>
     <string-array name="language_vals">
         <item></item>
@@ -36,5 +36,6 @@
         <item>de</item>  
         <item>cs</item>
         <item>bg</item>
+	<item>it</item>
     </string-array>
 </resources>

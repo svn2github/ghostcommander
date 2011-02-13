@@ -226,6 +226,7 @@ public final class R {
         public static final int copy_title=0x7f07004e;
         /**  copy_title/move_title 
  copy_title/move_title 
+ copy_title/move_title 
          */
         public static final int copy_to_local_only=0x7f070053;
         public static final int create_zip=0x7f07002c;
@@ -238,6 +239,7 @@ public final class R {
          */
         public static final int delete_title=0x7f070057;
         /**  file name/summary 
+ file name/summary 
  file name/summary 
  file name/summary 
  file name/summary 
@@ -302,6 +304,7 @@ public final class R {
         public static final int list=0x7f070003;
         public static final int location=0x7f070002;
         /**  copy_title/move_title, file name/summary 
+ copy_title/move_title, file name/summary 
  copy_title/move_title, file name/summary 
  copy_title/move_title, file name/summary 
  copy_title/move_title, file name/summary 
