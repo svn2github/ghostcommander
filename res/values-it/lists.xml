@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="sorting">
+        <item>Per nome</item>
+        <item>Per estensione</item>
+        <item>Per dimensione</item>
+        <item>Per data</item>  
+    </string-array>
+    <string-array name="sorting_vals">
+        <item>n</item>
+        <item>e</item>
+        <item>s</item>
+        <item>d</item>  
+    </string-array>
+</resources>
