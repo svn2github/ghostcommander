@@ -205,6 +205,7 @@ public class FSAdapter extends CommanderAdapterBase {
     @Override
     public void openItem( int position ) {
         if( position == 0 ) {
+            if( dirName == null ) return;
             File cur_dir_file = new File( dirName );
             String parent_dir = cur_dir_file.getParent();
             commander.Navigate( Uri.parse( parentLink != SLS ? ( parent_dir != null ? parent_dir : DEFAULT_DIR ) : SLS ),
