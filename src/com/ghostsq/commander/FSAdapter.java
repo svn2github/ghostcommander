@@ -26,7 +26,6 @@ import android.view.Gravity;
 
 public class FSAdapter extends CommanderAdapterBase {
     private   final static String TAG = "FSAdapter";
-    protected final static String DEFAULT_DIR = "/sdcard";
     class FileEx  {
         public File f = null;
         public long size = -1;
@@ -451,17 +450,24 @@ public class FSAdapter extends CommanderAdapterBase {
             }
         }
         else {
-            return to.receiveItems( bitsToNames( cis ), move );
+            return to.receiveItems( bitsToNames( cis ), move ? MODE_MOVE : MODE_COPY );
         }
     }
 
     @Override
-    public boolean receiveItems( String[] uris, boolean move ) {
+    public boolean receiveItems( String[] uris, int move_mode ) {
     	try {
-            if( uris == null )
+            if( uris == null || uris.length == 0 )
             	return false;
-            if( move )
-            	return moveFiles( uris, dirName );
+            if( ( move_mode & MODE_MOVE ) != 0 ) {
+                boolean res = moveFiles( uris, dirName );
+                if( ( move_mode & MODE_DEL_SRC_DIR ) != 0 ) {
+                    File src_dir = new File( uris[0] ).getParentFile();
+                    if( src_dir != null )
+                        src_dir.delete();
+                }                    
+            	return res;
+            }
             File dest_file = new File( dirName );
             if( dest_file == null )
             	return false;

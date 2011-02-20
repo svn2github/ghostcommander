@@ -255,23 +255,25 @@ public class FTPAdapter extends CommanderAdapterBase {
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
         String err_msg = null;
         try {
-        	if( to instanceof FSAdapter ) {
-	        	File dest = new File( to.toString() );
-	        	if( dest.exists() && dest.isDirectory() ) {
-		        	if( !checkReadyness() ) return false;
-		        	LsItem[] subItems = bitsToItems( cis );
-		        	if( subItems != null ) {
-		        	    commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-		                worker = new CopyFromEngine( handler, subItems, dest, move );
-		                worker.start();
-		                return true;
-		        	}
-	        	}
-	        	else
-	        	    err_msg = commander.getContext().getString( R.string.dest_exist );
-        	}
-        	else
-        	    err_msg = commander.getContext().getString( R.string.copy_to_local_only );
+            LsItem[] subItems = bitsToItems( cis );
+            if( subItems == null ) 
+                throw new RuntimeException( "Nothing to copy" );
+            if( !checkReadyness() ) return false;
+            File dest = null;
+            int rec_h = 0;
+            if( to instanceof FSAdapter  ) {
+                dest = new File( to.toString() );
+                if( !dest.exists() ) dest.mkdirs();
+                if( !dest.isDirectory() )
+                    throw new RuntimeException( commander.getContext().getString( R.string.dest_exist ) );
+            } else {
+                dest = new File( createTempDir() );
+                rec_h = setRecipient( to ); 
+            }
+            commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
+            worker = new CopyFromEngine( handler, subItems, dest, move, rec_h );
+            worker.start();
+            return true;
         }
         catch( Exception e ) {
             err_msg = "Exception: " + e.getMessage();
@@ -304,17 +306,23 @@ public class FTPAdapter extends CommanderAdapterBase {
   class CopyFromEngine extends CopyEngine 
   {
 	    private LsItem[] mList;
-	    private File      dest_folder;
-	    private boolean move;
-	    CopyFromEngine( Handler h, LsItem[] list, File dest, boolean move_ ) {
+	    private File     dest_folder;
+	    private boolean  move;
+	    private int      recipient_hash;
+	    CopyFromEngine( Handler h, LsItem[] list, File dest, boolean move_, int rec_h ) {
 	    	super( h );
 	        mList = list;
 	        dest_folder = dest;
 	        move = move_;
+	        recipient_hash = rec_h;
 	    }
 	    @Override
 	    public void run() {
 	    	int total = copyFiles( mList, "" );
+            if( recipient_hash != 0 ) {
+                  sendReceiveReq( recipient_hash, dest_folder );
+                  return;
+            }
 			sendResult( Utils.getOpReport( total, move ? "moved" : "copied" ) );
 	        super.run();
 	    }
@@ -428,7 +436,6 @@ public class FTPAdapter extends CommanderAdapterBase {
         	super( h );
             mList = list;
         }
-
         @Override
         public void run() {
         	int total = delFiles( mList, "" );
@@ -529,7 +536,7 @@ public class FTPAdapter extends CommanderAdapterBase {
     }
 
     @Override
-    public boolean receiveItems( String[] uris, boolean move ) {
+    public boolean receiveItems( String[] uris, int move_mode ) {
     	try {
     		if( !checkReadyness() ) return false;
             if( uris == null || uris.length == 0 ) {
@@ -542,7 +549,7 @@ public class FTPAdapter extends CommanderAdapterBase {
             	return false;
             }
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            worker = new CopyToEngine( handler, list, move );
+            worker = new CopyToEngine( handler, list, move_mode );
             worker.start();
             return true;
 		} catch( Exception e ) {
@@ -552,23 +559,30 @@ public class FTPAdapter extends CommanderAdapterBase {
     }
     
     class CopyToEngine extends CopyEngine {
-        File[] mList;
-        int     basePathLen;
-        boolean move = false;
+        private   File[]  mList;
+        private   int     basePathLen;
+        private   boolean move = false;
+        private   boolean del_src_dir = false;
         
-        CopyToEngine( Handler h, File[] list, boolean move_ ) {
+        CopyToEngine( Handler h, File[] list, int move_mode_ ) {
         	super( h );
             mList = list;
             basePathLen = list[0].getParent().length() + 1;
-            move = move_;
+            move = ( move_mode_ & MODE_MOVE ) != 0;
+            del_src_dir = ( move_mode_ & CommanderAdapter.MODE_DEL_SRC_DIR ) != 0;
         }
 
         @Override
         public void run() {
-    		sendResult( Utils.getCopyReport( copyFiles( mList ) ) );
+            int total = copyFiles( mList );
+            if( del_src_dir ) {
+                File src_dir = mList[0].getParentFile();
+                if( src_dir != null )
+                    src_dir.delete();
+            }
+    		sendResult( Utils.getCopyReport( total ) );
             super.run();
         }
-
         private final int copyFiles( File[] list ) {
             int counter = 0;
             try {

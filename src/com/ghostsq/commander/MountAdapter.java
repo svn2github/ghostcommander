@@ -358,7 +358,7 @@ public class MountAdapter extends CommanderAdapterBase {
     }
 
     @Override
-    public boolean receiveItems( String[] full_names, boolean move ) {
+    public boolean receiveItems( String[] full_names, int move_mode ) {
         commander.notifyMe( new Commander.Notify( "Not supported.", Commander.OPERATION_FAILED ) );
         return false;
     }

@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.CommanderAdapter;
@@ -230,21 +231,26 @@ public class RootAdapter extends CommanderAdapterBase {
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
         try {
-        	if( to instanceof FSAdapter || to instanceof RootAdapter ) {
-        	    Uri to_uri = to.getUri();
-        	    if( to_uri != null ) {
-        	        String to_path = to_uri.getPath(); 
-    	        	if( to_path != null ) {
-    		        	LsItem[] subItems = bitsToItems( cis );
-    		        	if( subItems != null ) {
-    		        	    commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-    		                worker = new CopyFromEngine( commander.getContext(), handler, subItems, to_path, move );
-    		                worker.start();
-    		                return true;
-    		        	}
-    	        	}
-        	    }
-        	}
+            LsItem[] subItems = bitsToItems( cis );
+            if( subItems != null ) {
+                String to_path = null;
+                int rec_h = 0;
+            	if( to instanceof FSAdapter || to instanceof RootAdapter ) {
+            	    Uri to_uri = to.getUri();
+            	    if( to_uri != null )
+            	        to_path = to_uri.getPath();
+            	    to = null;
+            	} else {
+                    to_path = createTempDir();
+                    rec_h = setRecipient( to ); 
+            	}
+                if( to_path != null ) {
+                    commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
+                    worker = new CopyFromEngine( commander.getContext(), handler, subItems, to_path, move, rec_h );
+                    worker.start();
+                    return true;
+                }
+            }
         	commander.notifyMe( new Commander.Notify( "Failed to proceed.", Commander.OPERATION_FAILED ) );
         }
         catch( Exception e ) {
@@ -252,15 +258,14 @@ public class RootAdapter extends CommanderAdapterBase {
         }
         return false;
     }
-
     
-  class CopyFromEngine extends ExecEngine 
-  {
+    class CopyFromEngine extends ExecEngine {
 	    private LsItem[] list;
 	    private String   dest_folder;
 	    private boolean  move;
 	    private String   src_base_path;
-	    CopyFromEngine( Context ctx, Handler h, LsItem[] list_, String dest, boolean move_ ) {
+	    private int      recipient_hash;
+	    CopyFromEngine( Context ctx, Handler h, LsItem[] list_, String dest, boolean move_, int recipient_h ) {
 	    	super( ctx, h );
 	        list = list_;
 	        dest_folder = dest;
@@ -271,6 +276,7 @@ public class RootAdapter extends CommanderAdapterBase {
 	        else
 	        if( src_base_path.charAt( src_base_path.length()-1 ) != SLC )
 	            src_base_path += SLS;
+	        recipient_hash = recipient_h;
 	    }
 	    @Override
 	    public void run() {
@@ -310,6 +316,15 @@ public class RootAdapter extends CommanderAdapterBase {
                 p.waitFor();
                 if( p.exitValue() == 255 )
                     error( "Exit code 255" );
+                if( recipient_hash != 0 ) {
+                    File temp_dir = new File( dest_folder );
+                    File[] temp_content = temp_dir.listFiles();
+                    String[] paths = new String[temp_content.length];
+                    for( int i = 0; i < temp_content.length; i++ )
+                        paths[i] = temp_content[i].getAbsolutePath();
+                    sendReceiveReq( recipient_hash, paths );
+                    return;
+                }
             }
             catch( Exception e ) {
                 error( "Exception: " + e );
@@ -484,14 +499,15 @@ public class RootAdapter extends CommanderAdapterBase {
     }
 
     @Override
-    public boolean receiveItems( String[] full_names, boolean move ) {
+    public boolean receiveItems( String[] full_names, int move_mode ) {
     	try {
             if( full_names == null || full_names.length == 0 ) {
             	commander.notifyMe( new Commander.Notify( "Nothing to copy", Commander.OPERATION_FAILED ) );
             	return false;
             }
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            worker = new CopyToEngine( commander.getContext(), handler, full_names, move, uri.getPath(), false );
+            worker = new CopyToEngine( commander.getContext(), handler, full_names, 
+                                     ( move_mode & MODE_MOVE ) != 0, uri.getPath(), false );
             worker.start();
             return true;
 		} catch( Exception e ) {

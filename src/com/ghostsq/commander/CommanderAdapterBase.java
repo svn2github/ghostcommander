@@ -2,9 +2,11 @@ package com.ghostsq.commander;
 
 import java.io.File;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.format.DateFormat;
@@ -24,7 +26,9 @@ import android.widget.TableLayout;
 import android.widget.Toast;
 
 public abstract class CommanderAdapterBase extends BaseAdapter implements CommanderAdapter {
-	protected final static String NOTIFY_STR = "str", NOTIFY_PRG1 = "prg1", NOTIFY_PRG2 = "prg2", NOTIFY_COOKIE = "cookie"; 
+    protected final static String NOTIFY_STR = "str", NOTIFY_PRG1 = "prg1", NOTIFY_PRG2 = "prg2", NOTIFY_COOKIE = "cookie"; 
+    protected final static String NOTIFY_RECEIVER_HASH = "hash", NOTIFY_ITEMS_TO_RECEIVE = "itms"; 
+    protected final static String DEFAULT_DIR = "/sdcard";
     protected Commander commander = null;
     public    static final String SLS = File.separator;
     public    static final char   SLC = File.separator.charAt( 0 );
@@ -38,6 +42,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected int    mode = 0;
     protected String parentLink;
     protected Engine worker = null;
+    private   CommanderAdapter recipient = null;
     protected int    numItems = 0;
 
     // URI shemes hash codes
@@ -86,24 +91,42 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         if( type_h == type_h_find ) ca = new FindAdapter( c );  else
         if( type_h == type_h_root ) ca = new RootAdapter( c );  else
         if( type_h == type_h_mnt  ) ca = new MountAdapter( c ); else
+        if( type_h == type_h_apps ) ca = new AppsAdapter( c );  else
         if( type_h == type_h_smb  ) ca = c.CreateExternalAdapter( "samba", "SMBAdapter", R.id.smb );
         return ca;
     }
     
     protected Handler handler = new Handler() {
         public void handleMessage( Message msg ) {
-            int perc1 = msg.getData().getInt( CommanderAdapterBase.NOTIFY_PRG1 );
-            int perc2 = msg.getData().getInt( CommanderAdapterBase.NOTIFY_PRG2, -1 );
-            String str = msg.getData().getString( CommanderAdapterBase.NOTIFY_STR );
-            String cookie = msg.getData().getString( CommanderAdapterBase.NOTIFY_COOKIE );
-            if( perc1 < 0 ) {
-                onComplete( worker );
-                worker = null;
+            try {
+                Bundle b = msg.getData();
+                int rec_hash = b.getInt( CommanderAdapterBase.NOTIFY_RECEIVER_HASH );
+                if( rec_hash != 0 ) {
+                    if( recipient != null ) {
+                        if( recipient.hashCode() == rec_hash ) {
+                            String[] items = b.getStringArray( CommanderAdapterBase.NOTIFY_ITEMS_TO_RECEIVE );
+                            if( items != null )
+                                recipient.receiveItems( items, MODE_MOVE_DEL_SRC_DIR );
+                        }
+                        recipient = null;
+                    }                   
+                    return;
+                }
+                int perc1 = b.getInt( CommanderAdapterBase.NOTIFY_PRG1 );
+                int perc2 = b.getInt( CommanderAdapterBase.NOTIFY_PRG2, -1 );
+                String str = b.getString( CommanderAdapterBase.NOTIFY_STR );
+                String cookie = b.getString( CommanderAdapterBase.NOTIFY_COOKIE );
+                if( perc1 < 0 ) {
+                    onComplete( worker );
+                    worker = null;
+                }
+                Commander.Notify n_obj = cookie == null || cookie.length() == 0 ?
+                     new Commander.Notify( str, perc1, perc2 ) :
+                     new Commander.Notify( str, perc1, cookie );
+                commander.notifyMe( n_obj );
+            } catch( Exception e ) {
+                e.printStackTrace();
             }
-            Commander.Notify n_obj = cookie == null || cookie.length() == 0 ?
-                 new Commander.Notify( str, perc1, perc2 ) :
-                 new Commander.Notify( str, perc1, cookie );
-            commander.notifyMe( n_obj );
         }
     };
     
@@ -175,6 +198,20 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     // Virtual
     protected void onComplete( Engine engine ) { // to override who need do something in the UI thread on an engine completion
     }
+    
+    protected String createTempDir() {
+        Date d = new Date();
+        File temp_dir = new File( DEFAULT_DIR + "/temp/gc_" + d.getHours() + d.getMinutes() + d.getSeconds() );
+        temp_dir.mkdirs();
+        return temp_dir.getAbsolutePath();
+    }
+
+    protected int setRecipient( CommanderAdapter to ) {
+        if( recipient != null )
+            Log.e( getClass().getName(), "Recipient is not null!!!" );
+        recipient = to;
+        return recipient.hashCode(); 
+    }    
     
     @Override
     public int getCount() {

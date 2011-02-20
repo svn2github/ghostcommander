@@ -120,13 +120,18 @@ public interface CommanderAdapter {
 	 * @return      true if succeeded
 	 */
 	public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move );
+	
+    public final static int MODE_COPY = 0;
+    public final static int MODE_MOVE = 1;
+    public final static int MODE_DEL_SRC_DIR = 2;
+    public final static int MODE_MOVE_DEL_SRC_DIR = 3;
 	/**
 	 * @param fileURIs  list of files as universal transport parcel. All kind of adapters (network, etc.)
 	 * 					accepts data as files. It should be called from the current list's adapter
 	 * @param move      move instead of copy
 	 * @return          true if succeeded
 	 */
-	public boolean receiveItems( String[] fileURIs, boolean move );
+	public boolean receiveItems( String[] fileURIs, int move_mode );
 
 	public boolean createFile( String fileURI );
 

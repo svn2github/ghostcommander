@@ -1,5 +1,7 @@
 package com.ghostsq.commander;
 
+import java.io.File;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -49,6 +51,21 @@ public class Engine extends Thread {
         msg.setData( b );
         thread_handler.sendMessage( msg );
     }
+    protected final void sendReceiveReq( int rcpt_hash, String[] items ) {
+        Message msg = thread_handler.obtainMessage();
+        Bundle b = new Bundle();
+        b.putInt( CommanderAdapterBase.NOTIFY_RECEIVER_HASH, rcpt_hash );
+        b.putStringArray( CommanderAdapterBase.NOTIFY_ITEMS_TO_RECEIVE, items );
+        msg.setData( b );
+        thread_handler.sendMessage( msg );
+    }
+    protected final void sendReceiveReq( int recipient_hash, File dest_folder ) {
+        File[] temp_content = dest_folder.listFiles();
+        String[] paths = new String[temp_content.length];
+        for( int i = 0; i < temp_content.length; i++ )
+            paths[i] = temp_content[i].getAbsolutePath();
+        sendReceiveReq( recipient_hash, paths );
+    }    
     protected final void error( String err ) {
     	if( errMsg == null )
     		errMsg = err;

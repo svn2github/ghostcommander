@@ -28,6 +28,7 @@ import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.CommanderAdapter;
 import com.ghostsq.commander.CommanderAdapterBase;
 import com.ghostsq.commander.FSAdapter.FilePropComparator;
+import com.ghostsq.commander.FTPAdapter.CopyFromEngine;
 
 public class ZipAdapter extends CommanderAdapterBase {
     public final static String TAG = "ZipAdapter";
@@ -241,22 +242,28 @@ public class ZipAdapter extends CommanderAdapterBase {
 	}
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
-    	
         try {
-        	if( zip == null || to instanceof FSAdapter ) {
-	        	File dest = new File( to.toString() );
-	        	if( dest.exists() && dest.isDirectory() ) {
-		        	if( !checkReadyness() ) return false;
-		        	ZipEntry[] subItems = bitsToItems( cis );
-		        	if( subItems != null ) {
-		        	    commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-		                worker = new CopyFromEngine( handler, subItems, dest );
-		                worker.start();
-		                return true;
-		        	}
-	        	}
-        	}
-        	commander.notifyMe( new Commander.Notify( "Failed to proceed.", Commander.OPERATION_FAILED ) );
+            if( zip == null )
+                throw new RuntimeException( "Invalid ZIP" );
+            ZipEntry[] subItems = bitsToItems( cis );
+            if( subItems == null ) 
+                throw new RuntimeException( "Nothing to extract" );
+            if( !checkReadyness() ) return false;
+            File dest = null;
+            int rec_h = 0;
+            if( to instanceof FSAdapter  ) {
+                dest = new File( to.toString() );
+                if( !dest.exists() ) dest.mkdirs();
+                if( !dest.isDirectory() )
+                    throw new RuntimeException( commander.getContext().getString( R.string.dest_exist ) );
+            } else {
+                dest = new File( createTempDir() );
+                rec_h = setRecipient( to ); 
+            }
+            commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
+            worker = new CopyFromEngine( handler, subItems, dest, rec_h );
+            worker.start();
+            return true;
         }
         catch( Exception e ) {
             commander.showError( "Exception: " + e.getMessage() );
@@ -270,10 +277,12 @@ public class ZipAdapter extends CommanderAdapterBase {
 	    private ZipEntry[] mList = null;
 	    private String     base_pfx;
 	    private int        base_len; 
-	    CopyFromEngine( Handler h, ZipEntry[] list, File dest ) {
+        private int        recipient_hash;
+	    CopyFromEngine( Handler h, ZipEntry[] list, File dest, int rec_h ) {
 	    	super( h );
 	    	mList = list;
 	        dest_folder = dest;
+	        recipient_hash = rec_h;
             try {
                 base_pfx = uri.getFragment();
                 if( base_pfx == null )
@@ -287,6 +296,10 @@ public class ZipAdapter extends CommanderAdapterBase {
 	    @Override
 	    public void run() {
 	    	int total = copyFiles( mList, "" );
+            if( recipient_hash != 0 ) {
+                sendReceiveReq( recipient_hash, dest_folder );
+                return;
+            }
 			sendResult( Utils.getOpReport( total, "unpacked" ) );
 	        super.run();
 	    }
@@ -538,7 +551,7 @@ public class ZipAdapter extends CommanderAdapterBase {
     }
 
     @Override
-    public boolean receiveItems( String[] uris, boolean move ) {
+    public boolean receiveItems( String[] uris, int move_mode ) {
     	try {
     		if( !checkReadyness() ) return false;
             if( uris == null || uris.length == 0 ) {
@@ -555,7 +568,7 @@ public class ZipAdapter extends CommanderAdapterBase {
             zip = null;
             items = null;
             
-            worker = new CopyToEngine( handler, list, new File( uri.getPath() ), uri.getFragment(), move );
+            worker = new CopyToEngine( handler, list, new File( uri.getPath() ), uri.getFragment(), move_mode );
             worker.start();
             return true;
 		} catch( Exception e ) {
@@ -585,10 +598,13 @@ public class ZipAdapter extends CommanderAdapterBase {
         private long    totalSize = 0;
         private boolean newZip = false;
         private final String prep = "Preparing...";
+        private boolean move = false;
+        private boolean del_src_dir = false;
+        
         /**
          *  Add files to existing zip 
          */
-        CopyToEngine( Handler h, File[] list, File zip_file, String dest_sub, boolean move ) { // TODO: delete the source on move
+        CopyToEngine( Handler h, File[] list, File zip_file, String dest_sub, int move_mode_ ) {
             super( h );
             topList = list;
             zipFile = zip_file;
@@ -597,6 +613,8 @@ public class ZipAdapter extends CommanderAdapterBase {
             else
                 destPath = "";
             basePathLen = list.length > 0 ? list[0].getParent().length() + 1 : 0;
+            move = ( move_mode_ & MODE_MOVE ) != 0;
+            del_src_dir = ( move_mode_ & CommanderAdapter.MODE_DEL_SRC_DIR ) != 0;
         }
         /**
          *  Create a new shiny ZIP 
@@ -618,6 +636,11 @@ public class ZipAdapter extends CommanderAdapterBase {
                 totalSize = addToList( topList, full_list );
                 sendProgress( prep, 2, 2 );
                 num_files = addFilesToZip( full_list );
+                if( del_src_dir ) {
+                    File src_dir = topList[0].getParentFile();
+                    if( src_dir != null )
+                        src_dir.delete();
+                }
             } catch( Exception e ) {
                 error( "Exception: " + e.getMessage() );
             }
@@ -748,7 +771,9 @@ public class ZipAdapter extends CommanderAdapterBase {
                            in.close();
                        }
                        out.closeEntry();
-                       Log.v( TAG, "Packed: " + rfn );
+                       //Log.v( TAG, "Packed: " + rfn );
+                       if( move )
+                           f.delete();
                  }
                  // Complete the ZIP file
                  out.close();

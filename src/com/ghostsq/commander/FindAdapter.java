@@ -78,7 +78,7 @@ public class FindAdapter extends CommanderAdapterBase {
             return false;
         }
         else {
-            return to.receiveItems( bitsToNames( cis ), move );
+            return to.receiveItems( bitsToNames( cis ), move ? MODE_MOVE : MODE_COPY );
         }
     }
 
@@ -166,7 +166,7 @@ public class FindAdapter extends CommanderAdapterBase {
     }
 
     @Override
-    public boolean receiveItems( String[] fileURIs, boolean move ) {
+    public boolean receiveItems( String[] fileURIs, int move_mode ) {
         commander.notifyMe( new Commander.Notify( commander.getContext().getString( R.string.not_supported ), 
                                 Commander.OPERATION_FAILED ) );
         return false;

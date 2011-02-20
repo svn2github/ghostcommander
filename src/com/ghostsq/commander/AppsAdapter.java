@@ -140,12 +140,11 @@ public class AppsAdapter extends CommanderAdapterBase {
     public void openItem( int position ) {
         if( items == null || position < 0 || position > items.length )
             return;
-        // TODO show application properties
         ApplicationInfo item = items[position];
     }
 
     @Override
-    public boolean receiveItems( String[] full_names, boolean move ) {
+    public boolean receiveItems( String[] full_names, int move_mode ) {
         return notErr();
     }
     
