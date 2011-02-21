@@ -11,7 +11,7 @@ import android.util.Log;
 
 class ExecEngine extends Engine {
     public final static String TAG = "ExecEngine";
-    public  String sh = "sh"; // DEBUG ONLY!!!!!!!!! don't forget to  change back to "su"!!!!!!!!!
+    public  String sh = "su";
     private Context conetxt;
     private String  where, command;
     private boolean use_busybox = false;
