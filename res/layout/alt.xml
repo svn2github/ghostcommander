@@ -10,7 +10,7 @@
         android:id="@+id/titles"
         android:layout_width="fill_parent" android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="#555555">
+        android:background="#555">
         <TextView android:id="@+id/left_dir"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -65,6 +65,12 @@
 	        android:drawSelectorOnTop="false"
 	        android:paddingLeft="1dp"
 	        android:paddingRight="1dp"/>
+	    <View
+            android:id="@+id/divider" 
+            android:layout_width="1dip" 
+            android:layout_height="fill_parent"
+            android:background="#555"
+	    />
 	    <ListView
 			android:id="@+id/right_list" 
 	        android:layout_width="wrap_content" 

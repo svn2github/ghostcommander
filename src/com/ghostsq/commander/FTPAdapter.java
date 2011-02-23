@@ -323,7 +323,7 @@ public class FTPAdapter extends CommanderAdapterBase {
                   sendReceiveReq( recipient_hash, dest_folder );
                   return;
             }
-			sendResult( Utils.getOpReport( total, move ? "moved" : "copied" ) );
+			sendResult( Utils.getOpReport( commander.getContext(), total, R.string.downloaded ) );
 	        super.run();
 	    }
 	
@@ -439,7 +439,7 @@ public class FTPAdapter extends CommanderAdapterBase {
         @Override
         public void run() {
         	int total = delFiles( mList, "" );
-        	sendResult( Utils.getOpReport( total, "deleted" ) );
+        	sendResult( Utils.getOpReport( commander.getContext(), total, R.string.deleted ) );
             super.run();
         }
         private final int delFiles( LsItem[] list, String path ) {
@@ -580,7 +580,7 @@ public class FTPAdapter extends CommanderAdapterBase {
                 if( src_dir != null )
                     src_dir.delete();
             }
-    		sendResult( Utils.getCopyReport( total ) );
+    		sendResult( Utils.getOpReport( commander.getContext(), total, R.string.uploaded ) );
             super.run();
         }
         private final int copyFiles( File[] list ) {

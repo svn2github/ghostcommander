@@ -109,7 +109,8 @@ public class FindAdapter extends CommanderAdapterBase {
                     }
                 }
             }
-            commander.notifyMe( new Commander.Notify( commander.getContext().getString( R.string.deleted, cnt ),
+            commander.notifyMe( new Commander.Notify(
+                    Utils.getOpReport( commander.getContext(), cnt, R.string.deleted ),
                     Commander.OPERATION_COMPLETED_REFRESH_REQUIRED ) );
             return true;
         }

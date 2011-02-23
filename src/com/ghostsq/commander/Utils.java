@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import android.content.Context;
 import android.net.Uri;
 import android.webkit.MimeTypeMap;
 
@@ -121,14 +122,14 @@ public final class Utils {
 	    return list;
 	}
 	// TODO: localize
-    public final static String getOpReport( int total, String verb ) {
-        String report = ( total > 0 ? "" + total + " item" +
-                        ( total > 1 ? "s" : "" ) : "Nothing" ) +
-                        ( total > 1 ? " were" : " was" ) +" " + verb + ".";
+    public final static String getOpReport( Context ctx, int total, int verb_id ) {
+        String verb = ctx.getString( verb_id );
+        String report = ( total > 0 ? "" + total + " " + 
+                        ( total > 1 ? ctx.getString( R.string.items ) : ctx.getString( R.string.item ) ) 
+                                    : ctx.getString( R.string.nothing ) ) + " " +
+                        ( total > 1 ? ctx.getString( R.string.were  ) : ctx.getString( R.string.was ) ) 
+                        + " " + verb + ".";
         return report;
-    }
-    public final static String getCopyReport( int total ) {
-        return getOpReport( total, "copied" );
     }
     public final static String getHumanSize( long sz ) {
         if( sz > 1073741824 )

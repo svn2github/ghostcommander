@@ -87,7 +87,6 @@
 <string name="delete_title">Удаление</string>
 <string name="delete_err">Нечего удалять</string>
 <string name="delete_q">"Удалить %1$s ?"</string>
-<string name="deleted">%1$d файлов удалено</string>
 <string name="search_done">Поиск завершен</string>
 <string name="done">Сделано</string><!-- !!! -->
 <string name="interrupted">Выполнение прервано</string><!-- !!! -->
@@ -181,7 +180,7 @@
 <string name="editor_activity">Activity для редактирования</string>
 <string name="summary_editor_activity">Полное имя Activity класса. Имя пакета = префикс полного имени класса.</string>
 <string name="value_editor_activity">com.ghostsq.commander.Editor</string>
-<string name="busybox_location">Местонахождение busybox</string>
+<string name="busybox_location">Путь к busybox</string>
 <string name="summary_busybox_location">Для работы в root режиме нужен busybox. Укажите путь к нему здесь.</string>
 <string name="execute_command">Исполнить команду</string><!-- !!! -->
 <string name="nothing_to_open">Не ясно что редактировать</string>
@@ -194,10 +193,24 @@
 <string name="binary_file">Файл \"%1$s\" не текстовый. Редактирование приведёт к его порче.</string>
 <string name="cant_open">Не могу прочитать файл.</string>
 <string name="cant_save">Не могу сохранить файл.</string>
-<string name="nav_warn">Каталог в который вы хотите перейти - системный. Необдуманные действия в нём могут привести к поломке устройства в целом. Продолжить?</string>
+<string name="nav_warn">Каталог в который вы хотите перейти - системный. Необдуманные действия в нём могут привести к поломке устройства. Продолжить?</string>
 <string name="nav_warn_cmt">(Это предупреждение может быть отключено в настройках)</string>
 <string name="no_such_folder">\"%1$s\" не существует!</string>
 <string name="fav_added">Folder \"%1$s\" добавлен</string>
+
+    <string name="copied">скопирован(о)</string>
+    <string name="moved">перемещен(о)</string>
+    <string name="deleted">удален(о)</string>
+    <string name="downloaded">скачен(о)</string>
+    <string name="uploaded">закачен(о)</string>
+    <string name="packed">упакован(о)</string>
+    <string name="unpacked">распакован(о)</string>
+    <string name="item">файл</string>
+    <string name="items">файлов</string>
+    <string name="were">было</string>
+    <string name="was">был</string>
+    <string name="nothing">Ни один файл не</string>
+
 <string name="smb_missed">
     Не удаётся загрузить Samba адаптер.\n
     Пожалуста, убедитесь, что пакет\n

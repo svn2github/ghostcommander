@@ -89,7 +89,6 @@
     <string name="delete_title">Töröl</string>
     <string name="delete_err">Nem törölhető</string>
     <string name="delete_q">"Törli %1$s ?"</string><!-- file name/summary -->
-    <string name="deleted">%1$d törölve</string>
     <string name="search_done">Keresés kész</string>
     <string name="done">Kész</string>
     <string name="interrupted">Megszakítva</string>

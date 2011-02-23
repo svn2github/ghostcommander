@@ -75,7 +75,6 @@
     <string name="delete_title">刪除</string>
     <string name="delete_err">沒有要刪的檔案</string>
     <string name="delete_q">"刪除 %1$s ?"</string><!-- file name/summary -->
-    <string name="deleted">刪除</string>
     <string name="too_deep_hierarchy">檔案路徑太深</string>
     <string name="preparing">準備中...</string>
     

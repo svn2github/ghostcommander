@@ -95,7 +95,6 @@
     <string name="delete_title">Odstranit</string>
     <string name="delete_err">Nic k odstranění</string>
     <string name="delete_q">"Odstranit %1$s ?"</string><!-- file name/summary -->
-    <string name="deleted">%1$d souborů odstraněno</string>
     <string name="search_done">Vyhledávání dokončeno</string>
     <string name="done">Hotovo</string>
     <string name="interrupted">Přerušeno</string>

@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -123,11 +124,11 @@ public class FSAdapter extends CommanderAdapterBase {
             parentLink = dir.getParent() == null ? SLS : PLS;
             notifyDataSetChanged();
             if( thumbnail_size_perc > 0 ) {
-                worker = new ThumbnailsEngine( new Handler() {
+                ThumbnailsEngine the = new ThumbnailsEngine( new Handler() {
                     public void handleMessage( Message msg ) {
                         notifyDataSetChanged();
                     } }, items );
-                worker.start();
+                the.start();
             }
             commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pass_back_on_done ) );
             return true;
@@ -145,7 +146,6 @@ public class FSAdapter extends CommanderAdapterBase {
                                ".jpeg".hashCode(), ".JPEG".hashCode(), 
                                 ".png".hashCode(),  ".PNG".hashCode(), 
                                 ".gif".hashCode(),  ".GIF".hashCode() };
-
         ThumbnailsEngine( Handler h, FileEx[] list ) {
             super( h );
             mList = list;
@@ -406,7 +406,7 @@ public class FSAdapter extends CommanderAdapterBase {
         public void run() {
             try {
                 int cnt = deleteFiles( mList );
-                sendResult( Utils.getOpReport( cnt, "deleted" ) );
+                sendResult( Utils.getOpReport( commander.getContext(), cnt, R.string.deleted ) );
             }
             catch( Exception e ) {
                 sendProgress( e.getMessage(), Commander.OPERATION_FAILED );
@@ -526,7 +526,7 @@ public class FSAdapter extends CommanderAdapterBase {
                     x_list[j] = new FileEx( fList[j] );
 				long sum = getSizes( x_list );
 				conv = 100 / (double)sum;
-	            String report = Utils.getCopyReport( copyFiles( fList, mDest ) );
+	            String report = Utils.getOpReport( commander.getContext(), copyFiles( fList, mDest ), R.string.copied );
 	            sendResult( report );
 			} catch( Exception e ) {
 				sendProgress( e.getMessage(), Commander.OPERATION_FAILED );

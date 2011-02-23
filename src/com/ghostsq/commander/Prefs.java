@@ -1,10 +1,15 @@
 package com.ghostsq.commander;
 
+import java.util.Locale;
+
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
+import android.util.Log;
 
 public class Prefs extends PreferenceActivity implements Preference.OnPreferenceClickListener,
                                                           RGBPickerDialog.ColorChangeListener  
@@ -16,9 +21,11 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
     public static final String TTL_COLORS = "ttl_color_picker"; 
     private SharedPreferences color_pref = null;
     private String color_pref_key = null;
+    private String lang = "";
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        changeLanguage();
         super.onCreate(savedInstanceState);
         
         // Load the preferences from an XML resource
@@ -36,6 +43,21 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
         color_picker_pref = (Preference)findPreference( TTL_COLORS );
         if( color_picker_pref != null )
             color_picker_pref.setOnPreferenceClickListener( this );
+    }
+
+    final void changeLanguage() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        lang = sharedPref.getString( "language", "" );
+        Locale locale;
+        String country = lang.length() > 3 ? lang.substring( 3 ) : null;
+        if( country != null )
+            locale = new Locale( lang.substring( 0, 2 ), country );
+        else
+            locale = new Locale( lang );
+        Locale.setDefault( locale );
+        Configuration config = new Configuration();
+        config.locale = locale;
+        getResources().updateConfiguration( config, null );
     }
 
     @Override

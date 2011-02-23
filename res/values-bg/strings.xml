@@ -84,7 +84,6 @@
 <string name="delete_title">изтриване</string>
 <string name="delete_err">Няма нищо за изтриване</string>
 <string name="delete_q">"Да изтрия ли %1$s ?"</string>
-<string name="deleted">%1$d файла са изтрити</string>
 <string name="search_done">Търсенето завърши</string>
 <string name="done">Готово</string>
 <string name="interrupted">Прекъснато</string>

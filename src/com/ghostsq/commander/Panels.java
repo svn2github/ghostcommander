@@ -2,7 +2,6 @@ package com.ghostsq.commander;
 
 import java.io.File;
 
-import dalvik.system.DexClassLoader;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -11,12 +10,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
-import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
 import android.net.Uri;
 import android.net.UrlQuerySanitizer;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -350,6 +347,12 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             selColor = color_pref.getInt( Prefs.SEL_COLORS,  selColor );
           titleColor = color_pref.getInt( Prefs.TTL_COLORS,titleColor );
         }
+        if( id == R.layout.alt ) {
+            View div = mainView.findViewById( R.id.divider );
+            if( div != null)
+                div.setBackgroundColor( titleColor );
+        }
+        
         for( int i = LEFT; i <= RIGHT; i++ ) {
             ListView flv = listViews[i];
             flv.setBackgroundColor( bg_color );

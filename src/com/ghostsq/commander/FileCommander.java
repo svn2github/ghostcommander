@@ -90,7 +90,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onStart() {
-        Log.i( TAG, "Starting\n");
+        //Log.i( TAG, "Starting\n");
         super.onStart();
         on = true;
         if( dont_restore )
@@ -112,7 +112,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onPause() {
-        Log.i( TAG, "Pausing\n");
+        //Log.i( TAG, "Pausing\n");
         super.onPause();
         on = false;
         SharedPreferences.Editor editor = getPreferences( MODE_PRIVATE ).edit();
@@ -123,21 +123,21 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onResume() {
-        Log.i( TAG, "Resuming\n");
+        //Log.i( TAG, "Resuming\n");
         super.onResume();
         on = true;
     }
     
     @Override
     protected void onStop() {
-        Log.i( TAG, "Stopping\n");
+        //Log.i( TAG, "Stopping\n");
         super.onStop();
         on = false;
     }
 
     @Override
     protected void onDestroy() {
-        Log.i( TAG, "Destroying\n");
+        //Log.i( TAG, "Destroying\n");
         on = false;
         panels.Destroying();
         super.onDestroy();
@@ -175,7 +175,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             ca.populateContextMenu( menu, acmi, num );
         }
         catch( Exception e ) {
-            Log.e( TAG, "onCreateContextMenu() exception", e );
+            Log.e( TAG, "onCreateContextMenu()", e );
         }
     }
 
@@ -437,8 +437,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     }
 
     private final void openPrefs() {
-        Intent launchPreferencesIntent = new Intent().setClass(this, Prefs.class);
-        startActivityForResult(launchPreferencesIntent, REQUEST_CODE_PREFERENCES);
+        Intent launchPreferencesIntent = new Intent().setClass( this, Prefs.class );
+        startActivityForResult( launchPreferencesIntent, REQUEST_CODE_PREFERENCES );
     }
 
     private final void showSearchDialog() {

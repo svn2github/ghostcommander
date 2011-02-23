@@ -102,7 +102,6 @@
     <string name="delete_title">Elimina</string>
     <string name="delete_err">Nulla da eliminare</string>
     <string name="delete_q">"Eliminare %1$s ?"</string><!-- file name/summary -->
-    <string name="deleted">%1$d file sono stati eliminati</string>
     <string name="search_done">Ricerca completata</string>
     <string name="done">Fatto</string>
     <string name="interrupted">Interrotto</string>

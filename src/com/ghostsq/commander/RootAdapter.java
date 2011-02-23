@@ -329,7 +329,7 @@ public class RootAdapter extends CommanderAdapterBase {
             catch( Exception e ) {
                 error( "Exception: " + e );
             }
-	    	sendResult( Utils.getOpReport( counter, move ? "moved" : "copied" ) );
+	    	sendResult( Utils.getOpReport( commander.getContext(), counter, move ? R.string.moved : R.string.copied ) );
 	        super.run();
 	    }
 	}
@@ -446,7 +446,7 @@ public class RootAdapter extends CommanderAdapterBase {
             catch( Exception e ) {
                 error( "Exception: " + e );
             }
-    		sendResult( Utils.getOpReport( counter, "deleted" ) );
+    		sendResult( Utils.getOpReport( commander.getContext(), counter, R.string.deleted ) );
             super.run();
         }
     }
@@ -573,7 +573,7 @@ public class RootAdapter extends CommanderAdapterBase {
             if( quiet )
                 sendResult( null );
             else
-                sendResult( Utils.getOpReport( counter, move ? "moved" : "copied" ) );
+                sendResult( Utils.getOpReport( commander.getContext(), counter, move ? R.string.moved : R.string.copied ) );
             super.run();
         }
     }

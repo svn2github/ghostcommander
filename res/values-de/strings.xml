@@ -83,7 +83,6 @@
     <string name="delete_title">Löschen</string>
     <string name="delete_err">Nichts zum Löschen.</string>
     <string name="delete_q">%s löschen?</string>
-    <string name="deleted">%d Datei(en) wurden gelöscht.</string>
     <string name="search_done">Suche fertiggestellt.</string>
     <string name="done">erledigt</string>
     <string name="interrupted">unterbrochen</string>
@@ -192,6 +191,13 @@
     <string name="nav_warn_cmt">(Sie können diese Warnmeldung in den Einstellungen ausschalten.) Berühren Sie "Abbrechen" , um sicher zur Speicherkarte zurückzukehren. Berühren Sie die Schaltfläche "Beenden" um Ghost Commander zu schliessen. </string>
     <string name="no_such_folder">\"%s\" ist ein ungültiger Ordner!</string>
     <string name="fav_added">Der Ordner \"%s\" wurde zu den Favoriten hinzugefügt.</string>
+    
+    
+    
+    <string name="deleted">gelöscht</string>
+    
+    
+    
     <string name="smb_missed">Das Samba-Plugin
     (com.ghostsq.commander.samba)
     wurde nicht gefunden. Stellen Sie

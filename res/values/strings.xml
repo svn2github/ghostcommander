@@ -102,13 +102,25 @@
     <string name="delete_title">Delete</string>
     <string name="delete_err">Nothing to delete</string>
     <string name="delete_q">"Delete %1$s ?"</string><!-- file name/summary -->
-    <string name="deleted">%1$d files were deleted</string>
     <string name="search_done">Search complete</string>
     <string name="done">Done</string>
     <string name="interrupted">Interrupted</string>
     <string name="too_deep_hierarchy">The file hierarchy is too deep</string>
     <string name="nothing_found">No files found</string>
     <string name="preparing">Preparing...</string>
+
+    <string name="copied">copied</string>
+    <string name="moved">moved</string>
+    <string name="deleted">deleted</string>
+    <string name="downloaded">downloaded</string>
+    <string name="uploaded">uploaded</string>
+    <string name="packed">packed</string>
+    <string name="unpacked">unpacked</string>
+    <string name="item">item</string>
+    <string name="items">items</string>
+    <string name="were">were</string>
+    <string name="was">was</string>
+    <string name="nothing">Nothing</string>
     
     <string name="cd_title">Go to</string>
     <string name="cd_prompt">Change directory to:</string>
@@ -228,7 +240,6 @@
     <string name="no_such_folder">\"%1$s\" is not a valid folder!</string>
     <string name="fav_added">Folder \"%1$s\" was added to the favorites</string>
 
-    <string name="items">items</string>
     <string name="no_root">Not root?</string>
 
     <string name="smb_missed">

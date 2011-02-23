@@ -89,7 +89,6 @@
     <string name="delete_title">삭제</string>
     <string name="delete_err">삭제할 것이 없음</string>
     <string name="delete_q">%1$s 삭제?</string><!-- file name/summary -->
-    <string name="deleted">%1$s개 파일이 삭제되었읍니다.</string>
     <string name="search_done">검색완료</string>
     <string name="done">완료</string>
     <string name="interrupted">중단됨</string>

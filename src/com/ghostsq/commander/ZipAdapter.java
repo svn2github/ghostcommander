@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -27,8 +26,6 @@ import android.util.SparseBooleanArray;
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.CommanderAdapter;
 import com.ghostsq.commander.CommanderAdapterBase;
-import com.ghostsq.commander.FSAdapter.FilePropComparator;
-import com.ghostsq.commander.FTPAdapter.CopyFromEngine;
 
 public class ZipAdapter extends CommanderAdapterBase {
     public final static String TAG = "ZipAdapter";
@@ -300,7 +297,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                 sendReceiveReq( recipient_hash, dest_folder );
                 return;
             }
-			sendResult( Utils.getOpReport( total, "unpacked" ) );
+			sendResult( Utils.getOpReport( commander.getContext(), total, R.string.unpacked ) );
 	        super.run();
 	    }
 	    private final int copyFiles( ZipEntry[] list, String path ) {
@@ -480,14 +477,14 @@ public class ZipAdapter extends CommanderAdapterBase {
                     else {
                         old_file.delete();
                         zip = null;
-                        sendResult( Utils.getOpReport( removed, "removed" ) );
+                        sendResult( Utils.getOpReport( commander.getContext(), removed, R.string.deleted ) );
                         return;
                     }
                 }
             } catch( Exception e ) {
                 error( e.getMessage() );
             }
-            sendResult( Utils.getOpReport( 0, "deleted" ) );
+            sendResult( Utils.getOpReport( commander.getContext(), 0, R.string.deleted ) );
             super.run();
         }
     }
@@ -644,7 +641,7 @@ public class ZipAdapter extends CommanderAdapterBase {
             } catch( Exception e ) {
                 error( "Exception: " + e.getMessage() );
             }
-    		sendResult( Utils.getOpReport( num_files, "packed" ) );
+    		sendResult( Utils.getOpReport( commander.getContext(), num_files, R.string.packed ) );
             super.run();
         }
         // adds files to the global full_list, and returns the total size 
