@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.util.SparseBooleanArray;
 import android.view.ContextMenu;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 
 /**
  *		Interface to abstract list source
@@ -25,6 +26,7 @@ public interface CommanderAdapter {
         public String   attr = "";
         public Object   origin = null;
         public Drawable thumbnail = null;
+        public boolean  need_thumb = false;
     }
     
     /**
@@ -148,6 +150,8 @@ public interface CommanderAdapter {
      * @param items - selected or checked items to work with  
      */
 	public void doIt( int command_id, SparseBooleanArray cis );
+
+	public void shownItems( int from, int num );
 	
     /**
      * to be called before the adapter is going to be destroyed

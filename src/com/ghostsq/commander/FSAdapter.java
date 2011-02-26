@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.ref.SoftReference;
 import java.nio.channels.FileChannel;
 import java.util.Date;
 import java.util.Arrays;
@@ -24,24 +25,33 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.Gravity;
+import android.widget.ImageView;
 
 public class FSAdapter extends CommanderAdapterBase {
     private   final static String TAG = "FSAdapter";
-    class FileEx  {
+    class FileItem extends Item {
         public File f = null;
         public long size = -1;
-        public Drawable thumbnail = null;
-        public FileEx( String name ) {
+        public FileItem( String name ) {
             f = new File( name );
+            origin = f;
         }
-        public FileEx( File f_ ) {
+        public FileItem( File f_ ) {
             f = f_;
+            origin = f;
         }
     }
 
     private String dirName;
-    private FileEx[] items;
+    private FileItem[] items;
 
+    public static int[] ext_h = { 
+             ".jpg".hashCode(),  ".JPG".hashCode(), 
+             ".jpeg".hashCode(), ".JPEG".hashCode(), 
+             ".png".hashCode(),  ".PNG".hashCode(), 
+             ".gif".hashCode(),  ".GIF".hashCode() 
+         };
+    
     public FSAdapter( Commander c ) {
         super( c, 0 );
         dirName = null;
@@ -112,11 +122,11 @@ public class FSAdapter extends CommanderAdapterBase {
                 	if( !files_[i].isHidden() ) cnt++;
                 num = cnt;
             }
-            items = new FileEx[num];
+            items = new FileItem[num];
             int j = 0;
             for( int i = 0; i < num_files; i++ ) {
                 if( !hide || !files_[i].isHidden() ) {
-                    FileEx file_ex = new FileEx( files_[i] );
+                    FileItem file_ex = new FileItem( files_[i] );
                     items[j++] = file_ex;
                 }
             }
@@ -140,13 +150,15 @@ public class FSAdapter extends CommanderAdapterBase {
 
     class ThumbnailsEngine extends Engine {
         private final static int NOTIFY_THUMBNAIL_CHANGED = 653;
-        private FileEx[] mList;
-        protected int  num = 0, dirs = 0;
+        private FileItem[] mList;
+        private BitmapFactory.Options options;
+        private Resources res;
+        int thumb_sz;
         private int[] ext_h = { ".jpg".hashCode(),  ".JPG".hashCode(), 
                                ".jpeg".hashCode(), ".JPEG".hashCode(), 
                                 ".png".hashCode(),  ".PNG".hashCode(), 
                                 ".gif".hashCode(),  ".GIF".hashCode() };
-        ThumbnailsEngine( Handler h, FileEx[] list ) {
+        ThumbnailsEngine( Handler h, FileItem[] list ) {
             super( h );
             mList = list;
         }
@@ -154,52 +166,148 @@ public class FSAdapter extends CommanderAdapterBase {
         public void run() {
             try {
                 if( mList == null ) return;
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                int thumb_sz = getImgWidth();
-                Resources res = commander.getContext().getResources();
+                thumb_sz = getImgWidth();
+                options = new BitmapFactory.Options();
+                res = commander.getContext().getResources();
                 for( int i = 0; i < mList.length ; i++ ) {
-                    if( isStopReq() ) break;
-                    String fn = mList[i].f.getAbsolutePath();
+                    /* Wrong approach. when not image files on the way it stucks
+                    int n = -1;
+                    for( int j = 0; j < mList.length ; j++ ) {
+                        if( mList[j].need_thumb ) {
+                            n = j;
+                            Log.v( TAG, "Processing a thumb ahead of time!!! " + n );
+                            break;
+                        }
+                    }
+                    if( n < 0 )
+                        n = i;
+                    else
+                        i--;
+                    */
+                    FileItem f = mList[i];
+                    f.need_thumb = false;
+                    if( f.thumbnail != null ) continue;
+                    String fn = f.f.getAbsolutePath();
                     String ext = Utils.getFileExt( fn );
                     if( ext == null ) continue;
                     int ext_hash = ext.hashCode(), ht_sz = ext_h.length;
                     boolean not_img = true;
-                    for( int j = 0; j < ht_sz; j ++ ) {
+                    for( int j = 0; j < ht_sz; j++ ) {
                         if( ext_hash == ext_h[j] ) {
                             not_img = false;
                             break;
                         }
                     }
                     if( not_img ) continue;
-                    options.inJustDecodeBounds = true;
-                    options.outWidth = 0;
-                    options.outHeight = 0;
-                    options.inSampleSize = 1;
-                    BitmapFactory.decodeFile( fn, options );
-                    if( options.outWidth > 0 && options.outHeight > 0 ) {
-                        int greatest = Math.max( options.outWidth, options.outHeight );
-                        int factor = greatest / thumb_sz;
-                        int b;
-                        for( b = 0x8000000; b > 0; b >>= 1 )
-                            if( b < factor ) break;
-                        options.inSampleSize = b;
-                        options.inJustDecodeBounds = false;
-                        Bitmap bitmap = BitmapFactory.decodeFile( fn, options );
-                        if( bitmap != null ) {
-                            BitmapDrawable drawable = new BitmapDrawable( res, bitmap );
-                            drawable.setGravity( Gravity.CENTER );
-                            drawable.setBounds( 0, 0, 60, 60 );
-                            mList[i].thumbnail = drawable;
-                            Message msg = thread_handler.obtainMessage( NOTIFY_THUMBNAIL_CHANGED );
-                            msg.sendToTarget();
-                        }
+                    if( createThubnail( fn, f ) ) {
+                        Message msg = thread_handler.obtainMessage( NOTIFY_THUMBNAIL_CHANGED );
+                        msg.sendToTarget();
                     }
                 }
             } catch( Exception e ) {
                 sendProgress( e.getMessage(), Commander.OPERATION_FAILED );
             }
         }
+        
+        private boolean createThubnailO( String fn, FileItem f ) {
+            options.inSampleSize = 64;
+            Bitmap bitmap = (f.f.length() > 100000) ?
+                         BitmapFactory.decodeFile( fn, options ) : 
+                         Bitmap.createScaledBitmap( BitmapFactory.decodeFile( fn ),
+                              thumb_sz, thumb_sz, false );
+                                
+             BitmapDrawable drawable = new BitmapDrawable( res, bitmap );
+             drawable.setGravity( Gravity.CENTER );
+             drawable.setBounds( 0, 0, 60, 60 );
+             f.thumbnail = drawable;
+             return true;
+        }
+        
+        private boolean createThubnail( String fn, FileItem f ) {
+            options.inSampleSize = 1;
+            options.inJustDecodeBounds = true;
+            options.outWidth = 0;
+            options.outHeight = 0;
+            BitmapFactory.decodeFile( fn, options );
+            if( options.outWidth > 0 && options.outHeight > 0 ) {
+                int greatest = Math.max( options.outWidth, options.outHeight );
+                int factor = greatest / thumb_sz;
+                int b;
+                for( b = 0x8000000; b > 0; b >>= 1 )
+                    if( b < factor ) break;
+                options.inSampleSize = b;
+                options.inJustDecodeBounds = false;
+                Bitmap bitmap = BitmapFactory.decodeFile( fn, options );
+                if( bitmap != null ) {
+                    BitmapDrawable drawable = new BitmapDrawable( res, bitmap );
+                    drawable.setGravity( Gravity.CENTER );
+                    drawable.setBounds( 0, 0, 60, 60 );
+                    f.thumbnail = drawable;
+                    return true;
+                }
+            }
+            return false;
+        }
+        
     }
+/*
+    class ThumbnailCreation extends Thread {
+        private final static int NOTIFY_THUMBNAIL_CHANGED = 653;
+        private Handler thread_handler;
+        private FileItem  f;
+        private Item item;
+        protected int  num = 0, dirs = 0;
+        ThumbnailCreation( Handler h, FileItem f_, Item item_ ) {
+            thread_handler = h;
+            f = f_;
+            item = item_;
+        }
+        @Override
+        public void run() {
+            try {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                int thumb_sz = getImgWidth();
+                Resources res = commander.getContext().getResources();
+                
+                options.inJustDecodeBounds = true;
+                options.outWidth = 0;
+                options.outHeight = 0;
+                options.inSampleSize = 1;
+                String fn = f.f.getAbsolutePath();
+                BitmapFactory.decodeFile( fn, options );
+                if( options.outWidth > 0 && options.outHeight > 0 ) {
+                    int greatest = Math.max( options.outWidth, options.outHeight );
+                    int factor = greatest / thumb_sz;
+                    int b;
+                    for( b = 0x8000000; b > 0; b >>= 1 )
+                        if( b < factor ) break;
+                    options.inSampleSize = b;
+                    options.inJustDecodeBounds = false;
+                    Bitmap bitmap = BitmapFactory.decodeFile( fn, options );
+                    if( bitmap != null ) {
+                        final SoftReference<BitmapDrawable> drawable = new SoftReference<BitmapDrawable>( new BitmapDrawable( res, bitmap ) );
+                        drawable.get().setGravity( Gravity.CENTER );
+                        drawable.get().setBounds( 0, 0, 60, 60 );
+                        synchronized( f ) {
+                            f.thumbnail = drawable.get();
+                        }
+                        //Message msg = thread_handler.obtainMessage( NOTIFY_THUMBNAIL_CHANGED );
+                        //msg.sendToTarget();
+                        if( item.icon_view != null ) {
+                            thread_handler.post( new Runnable() {
+                                public void run() {
+                                    item.icon_view.setImageDrawable( drawable.get() );
+                                }
+                            } );
+                        }                        
+                    }
+                }
+            } catch( Exception e ) {
+                Log.e( TAG, "ThumbnailCreation.run()", e );
+            }
+        }
+    }
+*/   
     
     @Override
     public void openItem( int position ) {
@@ -241,7 +349,7 @@ public class FSAdapter extends CommanderAdapterBase {
 	@Override
 	public void reqItemsSize( SparseBooleanArray cis ) {
         try {
-        	FileEx[] list = bitsToFilesEx( cis );
+        	FileItem[] list = bitsToFilesEx( cis );
     		if( worker != null && worker.reqStop() )
    		        return;
     		commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
@@ -252,10 +360,10 @@ public class FSAdapter extends CommanderAdapterBase {
 		}
 	}
 	class CalcSizesEngine extends Engine {
-		private FileEx[] mList;
+		private FileItem[] mList;
         protected int  num = 0, dirs = 0, depth = 0;
 
-        CalcSizesEngine( Handler h, FileEx[] list ) {
+        CalcSizesEngine( Handler h, FileItem[] list ) {
         	super( h );
             mList = list;
         }
@@ -303,20 +411,20 @@ public class FSAdapter extends CommanderAdapterBase {
 				sendProgress( e.getMessage(), Commander.OPERATION_FAILED );
 			}
         }
-    	protected final long getSizes( FileEx[] list ) throws Exception {
+    	protected final long getSizes( FileItem[] list ) throws Exception {
     	    long count = 0;
     		for( int i = 0; i < list.length; i++ ) {
                 if( stop || isInterrupted() ) return -1;
-    			FileEx f = list[i];
+    			FileItem f = list[i];
     			if( f.f.isDirectory() ) {
     				dirs++;
     				if( depth++ > 20 )
     					throw new Exception( commander.getContext().getString( R.string.too_deep_hierarchy ) );
     				File[] subfiles = f.f.listFiles();
     				int l = subfiles.length;
-    				FileEx[] subfiles_ex = new FileEx[l];
+    				FileItem[] subfiles_ex = new FileItem[l];
     				for( int j = 0; j < l; j++ )
-    				    subfiles_ex[j] = new FileEx( subfiles[j] );
+    				    subfiles_ex[j] = new FileItem( subfiles[j] );
     				long sz = getSizes( subfiles_ex );
     				if( sz < 0 ) return -1;
     				f.size = sz;
@@ -376,7 +484,7 @@ public class FSAdapter extends CommanderAdapterBase {
     @Override
     public boolean deleteItems( SparseBooleanArray cis ) {
     	try {
-        	FileEx[] list = bitsToFilesEx( cis );
+        	FileItem[] list = bitsToFilesEx( cis );
         	if( list != null ) {
         		if( worker != null && worker.reqStop() ) {
         		    commander.notifyMe( new Commander.Notify( commander.getContext().getString( R.string.wait ), 
@@ -396,7 +504,7 @@ public class FSAdapter extends CommanderAdapterBase {
 	class DeleteEngine extends Engine {
 		private File[] mList;
 
-        DeleteEngine( Handler h, FileEx[] list ) {
+        DeleteEngine( Handler h, FileItem[] list ) {
         	super( h );
             mList = new File[list.length];
             for( int i = 0; i < list.length; i++ )
@@ -521,9 +629,9 @@ public class FSAdapter extends CommanderAdapterBase {
         	sendProgress( commander.getContext().getString( R.string.preparing ), 0, 0 );
         	try {
                 int l = fList.length;
-                FileEx[] x_list = new FileEx[l];
+                FileItem[] x_list = new FileItem[l];
                 for( int j = 0; j < l; j++ )
-                    x_list[j] = new FileEx( fList[j] );
+                    x_list[j] = new FileItem( fList[j] );
 				long sum = getSizes( x_list );
 				conv = 100 / (double)sum;
 	            String report = Utils.getOpReport( commander.getContext(), copyFiles( fList, mDest ), R.string.copied );
@@ -550,6 +658,7 @@ public class FSAdapter extends CommanderAdapterBase {
                         errMsg = "Canceled.";
                         break;
                     }
+                    long last_modified = file.lastModified();
                     outFile = new File( dest, file.getName() );
                     if( outFile.exists() ) {
                         errMsg = (outFile.isDirectory() ? "Directory '" : "File '") + outFile.getAbsolutePath() + "' already exist.";
@@ -587,6 +696,7 @@ public class FSAdapter extends CommanderAdapterBase {
                         	sendProgress( "Copied \n'" + uri + "'   ", (int)(bytes * conv) );
                         counter++;
                     }
+                    outFile.setLastModified( last_modified );
                 }
                 catch( SecurityException e ) {
                     errMsg = "Security issue on file '" + uri + "'.\n" + e.getMessage();
@@ -636,21 +746,23 @@ public class FSAdapter extends CommanderAdapterBase {
     private final boolean moveFiles( String[] files_to_move, String dest_folder ) {
         for( int i = 0; i < files_to_move.length; i++ ) {
             File f = new File( files_to_move[i] );
+            long last_modified = f.lastModified();
             File dest = new File( dest_folder, f.getName() );
             if( !f.renameTo( dest ) ) {
                 commander.showError( "Unable to move file '" + f.getAbsolutePath() + "'" );
                 return false;
             }
+            dest.setLastModified( last_modified );
         }
         return true;
     }
-    private final FileEx[] bitsToFilesEx( SparseBooleanArray cis ) {
+    private final FileItem[] bitsToFilesEx( SparseBooleanArray cis ) {
         try {
             int counter = 0;
             for( int i = 0; i < cis.size(); i++ )
                 if( cis.valueAt( i ) && cis.keyAt( i ) > 0)
                     counter++;
-            FileEx[] res = new FileEx[counter];
+            FileItem[] res = new FileItem[counter];
             int j = 0;
             for( int i = 0; i < cis.size(); i++ )
                 if( cis.valueAt( i ) ) {
@@ -699,8 +811,10 @@ public class FSAdapter extends CommanderAdapterBase {
 
     @Override
     public Object getItem( int position ) {
-        Item item = new Item();
+        Log.v( TAG, "getItem(" + position + ")" );
+        Item item = null;
         if( position == 0 ) {
+            item = new Item();
             item.name = parentLink;
             item.dir = true;
         }
@@ -708,8 +822,9 @@ public class FSAdapter extends CommanderAdapterBase {
             if( items != null && position-1 < items.length ) {
                 synchronized( items ) {
                     try {
-                        FileEx f = items[position - 1];
-                        item.origin = f.f;
+                        FileItem f = items[position - 1];
+                        item = f;
+                        //item.origin = f.f;
                         item.dir  = f.f.isDirectory();
                         if( item.dir ) {
                             if( ( mode & MODE_ICONS ) == ICON_MODE )  
@@ -722,7 +837,32 @@ public class FSAdapter extends CommanderAdapterBase {
                         long msFileDate = f.f.lastModified();
                         if( msFileDate != 0 )
                             item.date = new Date( msFileDate );
-                        item.thumbnail = f.thumbnail;
+                        synchronized( f ) { 
+                            if( f.thumbnail != null )
+                                item.thumbnail = f.thumbnail;
+                            else {
+                                /*
+                                if( !mBusy ) {
+                                    String fn = f.f.getAbsolutePath();
+                                    String ext = Utils.getFileExt( fn );
+                                    if( ext != null ) { 
+                                        int ext_hash = ext.hashCode(), ht_sz = ext_h.length;
+                                        boolean not_img = true;
+                                        for( int j = 0; j < ht_sz; j++ ) {
+                                            if( ext_hash == ext_h[j] ) {
+                                                not_img = false;
+                                                break;
+                                            }
+                                        }
+                                        if( !not_img ) {
+                                            ThumbnailCreation thc = new ThumbnailCreation( new Handler(), f, item );
+                                            thc.start();
+                                        }
+                                    }
+                                }
+                                */
+                            }
+                        }
                     } catch( Exception e ) {
                         Log.e( TAG, "getView() exception ", e );
                     }
@@ -734,7 +874,7 @@ public class FSAdapter extends CommanderAdapterBase {
         return item;
     }
 
-    public class FilePropComparator implements Comparator<FileEx> {
+    public class FilePropComparator implements Comparator<FileItem> {
         int     type;
         boolean case_ignore;
 
@@ -742,7 +882,7 @@ public class FSAdapter extends CommanderAdapterBase {
             type = type_;
             case_ignore = case_ignore_;
         }
-        public int compare( FileEx f1, FileEx f2 ) {
+        public int compare( FileItem f1, FileItem f2 ) {
             boolean f1IsDir = f1.f.isDirectory();
             boolean f2IsDir = f2.f.isDirectory();
             if( f1IsDir != f2IsDir )

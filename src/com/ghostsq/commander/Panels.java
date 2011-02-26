@@ -24,6 +24,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListAdapter;
@@ -31,14 +32,17 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
+import android.widget.AbsListView.OnScrollListener;
 
 public class Panels implements AdapterView.OnItemSelectedListener, 
-                                              AdapterView.OnItemClickListener, 
-                                                     View.OnClickListener, 
-                                                     View.OnLongClickListener, 
-                                                     View.OnTouchListener,
-                                                     View.OnFocusChangeListener,
-                                                     View.OnKeyListener {
+                                 AdapterView.OnItemClickListener,
+                                    ListView.OnScrollListener,
+                                        View.OnClickListener, 
+                                        View.OnLongClickListener, 
+                                        View.OnTouchListener,
+                                        View.OnFocusChangeListener,
+                                        View.OnKeyListener
+{
     private final static String TAG = "Panels";
     public  final static int LEFT = 0, RIGHT = 1;
     private final int titlesIds[] = { R.id.left_dir,  R.id.right_dir };
@@ -207,6 +211,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             flv.setOnFocusChangeListener( this );
             flv.setOnTouchListener( this );
             flv.setOnKeyListener( this );
+            flv.setOnScrollListener(this);
             c.registerForContextMenu( flv );
             setPanelTitle( "", which );
         }
@@ -951,7 +956,6 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     public boolean onTouch( View v, MotionEvent event ) {
     	resetQuickSearch();
 	    if( v instanceof ListView ) {
-	        
             if( v == listViews[opposite()])
                 togglePanels( false );
 	        
@@ -1097,6 +1101,45 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     	return true;
     }
 
+
+    /*
+     * ListView.OnScrollListener implementation 
+     */
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
+            int totalItemCount) {
+    }
+    @Override
+    public void onScrollStateChanged( AbsListView view, int scrollState ) {
+        CommanderAdapter ca;
+        try {
+            ca = (CommanderAdapter)view.getAdapter();
+        }
+        catch( ClassCastException e ) {
+            Log.e( TAG, "onScrollStateChanged()", e );
+            return;
+        }
+        if( ca != null ) {
+            switch( scrollState ) {
+            case OnScrollListener.SCROLL_STATE_IDLE:
+                ca.shownItems( view.getFirstVisiblePosition(), view.getChildCount() );
+                /*
+                for (int i=0; i<count; i++) {
+                    TextView t = (TextView)view.getChildAt(i);
+                    if (t.getTag() != null) {
+                        t.setText(mStrings[first + i]);
+                        t.setTag(null);
+                    }
+                }
+                */
+                break;
+            case OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
+            case OnScrollListener.SCROLL_STATE_FLING:
+                ca.shownItems( -1, -1 );
+                break;
+            }
+        }
+    }
+    
     /*
      * Persistent state
      */

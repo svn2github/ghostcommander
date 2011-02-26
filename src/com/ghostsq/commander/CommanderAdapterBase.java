@@ -35,15 +35,16 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     public    static final String PLS = "..";
     private   static final boolean long_date = Locale.getDefault().getLanguage().compareTo( "en" ) != 0;
     protected LayoutInflater mInflater = null;
-    private   int    parentWidth, imgWidth, icoWidth, nameWidth, sizeWidth, dateWidth, attrWidth;
-    private   int    fg_color, sl_color;
+    private   int     parentWidth, imgWidth, icoWidth, nameWidth, sizeWidth, dateWidth, attrWidth;
+    private   int     fg_color, sl_color;
     private   boolean dirty = true;
-    protected int    thumbnail_size_perc = 100;
-    protected int    mode = 0;
-    protected String parentLink;
-    protected Engine worker = null;
+    protected int     thumbnail_size_perc = 100;
+    protected int     mode = 0;
+    protected String  parentLink;
+    protected Engine  worker = null;
     private   CommanderAdapter recipient = null;
-    protected int    numItems = 0;
+    protected int     numItems = 0;
+    public    int     shownFrom = 0, shownNum = 3;
 
     // URI shemes hash codes
     private static final int   zip_schema_h =   "zip".hashCode();  
@@ -212,6 +213,16 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         recipient = to;
         return recipient.hashCode(); 
     }    
+
+    @Override
+    public void shownItems( int from, int num ) {
+        shownFrom = from; 
+        shownNum = num;
+        if( from < 0 )
+            Log.v( getClass().getName(), "Busy" );
+        else
+            Log.v( getClass().getName(), "Shown from: " + from + " num: " + num );
+    }
     
     @Override
     public int getCount() {
@@ -345,6 +356,8 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                         imgView.setImageDrawable( item.thumbnail );
                     }
                     else {
+                        if( thumbnail_size_perc > 0 )
+                            item.need_thumb = true;
                         imgView.setMaxWidth( icoWidth );
                         imgView.setImageResource( item.dir || item.name.equals( SLS ) || 
                                item.name.equals( PLS ) ? R.drawable.folder : getIconId( name ) );
