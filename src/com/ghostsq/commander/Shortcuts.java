@@ -101,6 +101,7 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
 		tv.setPadding( 4, 4, 4, 4 );
 		String screened = Utils.screenPwd( shortcutsList.get( position ) );
 		tv.setText( screened == null ? "" : screened );
+		tv.setTextColor( 0xFF000000 );
 		return tv;
 	}
 

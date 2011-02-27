@@ -9,6 +9,7 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Date;
 
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.CommanderAdapter;
@@ -115,7 +116,7 @@ public class FTPAdapter extends CommanderAdapterBase {
 	                    if( items_tmp != null  ) {
 	                        if( items_tmp.length > 0 ) {
     	                        LsItem.LsItemPropComparator comp = 
-    	                            items_tmp[0].new LsItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
+    	                            items_tmp[0].new LsItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0, ascending );
                                 Arrays.sort( items_tmp, comp );
 	                        }
 	                        parentLink = path == null || path.length() == 0 || path.equals( SLS ) ? SLS : PLS;
@@ -382,6 +383,9 @@ public class FTPAdapter extends CommanderAdapterBase {
         	        		    }
 	        	        	}
 	        			}
+	        			Date ftp_file_date = f.getDate();
+	        			if( ftp_file_date != null )
+	        			    dest.setLastModified( ftp_file_date.getTime() );
 	        			counter++;
 	        		}
 	        	}

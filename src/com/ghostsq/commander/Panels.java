@@ -1121,20 +1121,14 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         if( ca != null ) {
             switch( scrollState ) {
             case OnScrollListener.SCROLL_STATE_IDLE:
-                ca.shownItems( view.getFirstVisiblePosition(), view.getChildCount() );
-                /*
-                for (int i=0; i<count; i++) {
-                    TextView t = (TextView)view.getChildAt(i);
-                    if (t.getTag() != null) {
-                        t.setText(mStrings[first + i]);
-                        t.setTag(null);
-                    }
-                }
-                */
+                ca.setMode( CommanderAdapter.LIST_STATE, CommanderAdapter.STATE_IDLE );
+                //Log.v( TAG, "list      I D L E !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
+                view.invalidate();
                 break;
             case OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
             case OnScrollListener.SCROLL_STATE_FLING:
-                ca.shownItems( -1, -1 );
+                ca.setMode( CommanderAdapter.LIST_STATE, CommanderAdapter.STATE_BUSY );
+                //Log.v( TAG, "list    B U S Y  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
                 break;
             }
         }

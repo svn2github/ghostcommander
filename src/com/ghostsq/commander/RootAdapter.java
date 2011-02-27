@@ -130,7 +130,7 @@ public class RootAdapter extends CommanderAdapterBase {
                 if( sz > 0 ) {
                     array.toArray( items_tmp );
                     LsItem.LsItemPropComparator comp = 
-                        items_tmp[0].new LsItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
+                        items_tmp[0].new LsItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0, ascending );
                     Arrays.sort( items_tmp, comp );
                 }
                 String res_s = null;

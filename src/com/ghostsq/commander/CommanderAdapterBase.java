@@ -40,6 +40,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     private   boolean dirty = true;
     protected int     thumbnail_size_perc = 100;
     protected int     mode = 0;
+    protected boolean ascending = false;
     protected String  parentLink;
     protected Engine  worker = null;
     private   CommanderAdapter recipient = null;
@@ -167,6 +168,11 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             thumbnail_size_perc = val;
             return;
         }
+        if( mask == CommanderAdapter.MODE_SORTING ) {
+            int cur_sort = mode & mask;
+            if( cur_sort == val )
+                ascending = !ascending;
+        }
         mode &= ~mask;
         mode |= val;
         dirty = true;
@@ -214,16 +220,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         return recipient.hashCode(); 
     }    
 
-    @Override
-    public void shownItems( int from, int num ) {
-        shownFrom = from; 
-        shownNum = num;
-        if( from < 0 )
-            Log.v( getClass().getName(), "Busy" );
-        else
-            Log.v( getClass().getName(), "Shown from: " + from + " num: " + num );
-    }
-    
     @Override
     public int getCount() {
         return numItems;
@@ -356,8 +352,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                         imgView.setImageDrawable( item.thumbnail );
                     }
                     else {
-                        if( thumbnail_size_perc > 0 )
+                        if( thumbnail_size_perc > 0 && !item.no_thumb && ( mode & LIST_STATE ) == STATE_IDLE ) {
                             item.need_thumb = true;
+                            //Log.v( getClass().getName(), "Requesting an ahead thumbnail creation!!! " );                            
+                        }
                         imgView.setMaxWidth( icoWidth );
                         imgView.setImageResource( item.dir || item.name.equals( SLS ) || 
                                item.name.equals( PLS ) ? R.drawable.folder : getIconId( name ) );

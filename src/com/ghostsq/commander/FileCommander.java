@@ -20,6 +20,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.res.Configuration;
 import android.view.ContextMenu;
+import android.view.Display;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -85,7 +86,14 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         dialogs = new ArrayList<Dialogs>(Dialogs.numDialogTypes);
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         changeLanguage( sharedPref.getString( "language", "" ) );
-        panels = new Panels(this, sharedPref.getBoolean( "panels_mode", false ) ? R.layout.alt : R.layout.main);
+        boolean sideXside = false;
+        try {
+            Display disp = getWindowManager().getDefaultDisplay();
+            sideXside = disp.getWidth() > disp.getHeight();
+        } catch( Exception e ) {
+            Log.e( TAG, "", e );
+        }
+        panels = new Panels(this, sharedPref.getBoolean( "panels_mode", sideXside ) ? R.layout.alt : R.layout.main);
     }
 
     @Override
@@ -221,7 +229,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     public boolean onCreateOptionsMenu( Menu menu ) {
         // Inflate the currently selected menu XML resource.
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
+        inflater.inflate( R.menu.menu, menu );
         return true;
     }
 
@@ -622,6 +630,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     }    
 
     final void changeLanguage( String lang_ ) {
+        if( lang_ == null || lang_.length() == 0 ) return;
         if( !lang.equalsIgnoreCase( lang_ ) ) {
             Log.i( TAG, "Changing lang to " + lang_ );
             lang = lang_;

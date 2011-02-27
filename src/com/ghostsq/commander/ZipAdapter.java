@@ -164,7 +164,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                     	}
                 	    items_tmp = GetFolderList( cur_path );
                 	    if( items_tmp != null ) { 
-                            ZipItemPropComparator comp = new ZipItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
+                            ZipItemPropComparator comp = new ZipItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0, ascending );
                             Arrays.sort( items_tmp, comp );
                             sendProgress( null, Commander.OPERATION_COMPLETED, pass_back_on_done );
                             return;
@@ -879,10 +879,12 @@ public class ZipAdapter extends CommanderAdapterBase {
     }
     public class ZipItemPropComparator implements Comparator<ZipEntry> {
         int type;
-        boolean case_ignore;
-        public ZipItemPropComparator( int type_, boolean case_ignore_ ) {
+        boolean case_ignore, ascending;
+        
+        public ZipItemPropComparator( int type_, boolean case_ignore_, boolean ascending_ ) {
             type = type_;
             case_ignore = case_ignore_;
+            ascending = ascending_;
         }
 		@Override
 		public int compare( ZipEntry f1, ZipEntry f2 ) {
@@ -902,16 +904,16 @@ public class ZipAdapter extends CommanderAdapterBase {
                 ext_cmp = f1.getTime() - f2.getTime() < 0 ? -1 : 1;
                 break;
             }
-            if( ext_cmp != 0 )
-                return ext_cmp;
-            return f1.getName().compareTo( f2.getName() );
+            if( ext_cmp == 0 )
+                ext_cmp = f1.getName().compareTo( f2.getName() );
+            return ascending ? ext_cmp : -ext_cmp;
 		}
     }
 
     @Override
     protected void reSort() {
         if( items == null ) return;
-        ZipItemPropComparator comp = new ZipItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
+        ZipItemPropComparator comp = new ZipItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0, ascending );
         Arrays.sort( items, comp );
     }
 }

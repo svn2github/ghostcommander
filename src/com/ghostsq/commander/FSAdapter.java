@@ -10,6 +10,8 @@ import java.nio.channels.FileChannel;
 import java.util.Date;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -42,8 +44,11 @@ public class FSAdapter extends CommanderAdapterBase {
         }
     }
 
-    private String dirName;
+    private String     dirName;
     private FileItem[] items;
+    
+    ThumbnailsThread tht = null;
+    public static final Map<Integer, SoftReference<Drawable> > thumbnailCache = new HashMap<Integer, SoftReference<Drawable> >();
 
     public static int[] ext_h = { 
              ".jpg".hashCode(),  ".JPG".hashCode(), 
@@ -134,11 +139,13 @@ public class FSAdapter extends CommanderAdapterBase {
             parentLink = dir.getParent() == null ? SLS : PLS;
             notifyDataSetChanged();
             if( thumbnail_size_perc > 0 ) {
-                ThumbnailsEngine the = new ThumbnailsEngine( new Handler() {
+                if( tht != null )
+                    tht.interrupt();
+                tht = new ThumbnailsThread( new Handler() {
                     public void handleMessage( Message msg ) {
                         notifyDataSetChanged();
                     } }, items );
-                the.start();
+                tht.start();
             }
             commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pass_back_on_done ) );
             return true;
@@ -148,8 +155,9 @@ public class FSAdapter extends CommanderAdapterBase {
 		return false;
     }
 
-    class ThumbnailsEngine extends Engine {
+    class ThumbnailsThread extends Thread {
         private final static int NOTIFY_THUMBNAIL_CHANGED = 653;
+        private Handler thread_handler;
         private FileItem[] mList;
         private BitmapFactory.Options options;
         private Resources res;
@@ -158,8 +166,8 @@ public class FSAdapter extends CommanderAdapterBase {
                                ".jpeg".hashCode(), ".JPEG".hashCode(), 
                                 ".png".hashCode(),  ".PNG".hashCode(), 
                                 ".gif".hashCode(),  ".GIF".hashCode() };
-        ThumbnailsEngine( Handler h, FileItem[] list ) {
-            super( h );
+        ThumbnailsThread( Handler h, FileItem[] list ) {
+            thread_handler = h;
             mList = list;
         }
         @Override
@@ -169,22 +177,23 @@ public class FSAdapter extends CommanderAdapterBase {
                 thumb_sz = getImgWidth();
                 options = new BitmapFactory.Options();
                 res = commander.getContext().getResources();
+                boolean proc = false, proc_visible = false, proc_invisible = false;
                 for( int i = 0; i < mList.length ; i++ ) {
-                    /* Wrong approach. when not image files on the way it stucks
                     int n = -1;
                     for( int j = 0; j < mList.length ; j++ ) {
                         if( mList[j].need_thumb ) {
                             n = j;
-                            Log.v( TAG, "Processing a thumb ahead of time!!! " + n );
+                            proc_visible = true;
+                            //Log.v( TAG, "A thumbnail requested ahead of time!!! " + n );
                             break;
                         }
                     }
-                    if( n < 0 )
+                    proc_invisible = n < 0;
+                    if( proc_invisible )
                         n = i;
                     else
                         i--;
-                    */
-                    FileItem f = mList[i];
+                    FileItem f = mList[n];
                     f.need_thumb = false;
                     if( f.thumbnail != null ) continue;
                     String fn = f.f.getAbsolutePath();
@@ -198,14 +207,34 @@ public class FSAdapter extends CommanderAdapterBase {
                             break;
                         }
                     }
-                    if( not_img ) continue;
-                    if( createThubnail( fn, f ) ) {
-                        Message msg = thread_handler.obtainMessage( NOTIFY_THUMBNAIL_CHANGED );
-                        msg.sendToTarget();
+                    if( not_img ) {
+                        f.no_thumb = true;
+                        continue;
+                    }
+                    int fn_h = fn.hashCode();
+                    SoftReference<Drawable> cached_soft = thumbnailCache.get( fn_h );
+                    if( cached_soft != null ) {
+                        f.thumbnail = cached_soft.get();
+                        if( f.thumbnail != null ) continue; 
+                    }
+                    //Log.v( TAG, "Creating a thumbnail for " + n );
+                    if( proc = createThubnail( fn, f ) ) {
+                        thumbnailCache.put( fn_h, new SoftReference<Drawable>( f.thumbnail ) );
+                        //Log.v( TAG, "Thumbnail cache size: " + thumbnailCache.size() );
+                        if( proc_visible && proc_invisible ) {
+                            Message msg = thread_handler.obtainMessage( NOTIFY_THUMBNAIL_CHANGED );
+                            msg.sendToTarget();
+                            proc_visible = false;
+                            proc = false;
+                        }
                     }
                 }
+                if( proc ) {
+                    Message msg = thread_handler.obtainMessage( NOTIFY_THUMBNAIL_CHANGED );
+                    msg.sendToTarget();
+                }
             } catch( Exception e ) {
-                sendProgress( e.getMessage(), Commander.OPERATION_FAILED );
+                Log.e( TAG, "ThumbnailsThread.run()", e );
             }
         }
         
@@ -224,56 +253,11 @@ public class FSAdapter extends CommanderAdapterBase {
         }
         
         private boolean createThubnail( String fn, FileItem f ) {
-            options.inSampleSize = 1;
-            options.inJustDecodeBounds = true;
-            options.outWidth = 0;
-            options.outHeight = 0;
-            BitmapFactory.decodeFile( fn, options );
-            if( options.outWidth > 0 && options.outHeight > 0 ) {
-                int greatest = Math.max( options.outWidth, options.outHeight );
-                int factor = greatest / thumb_sz;
-                int b;
-                for( b = 0x8000000; b > 0; b >>= 1 )
-                    if( b < factor ) break;
-                options.inSampleSize = b;
-                options.inJustDecodeBounds = false;
-                Bitmap bitmap = BitmapFactory.decodeFile( fn, options );
-                if( bitmap != null ) {
-                    BitmapDrawable drawable = new BitmapDrawable( res, bitmap );
-                    drawable.setGravity( Gravity.CENTER );
-                    drawable.setBounds( 0, 0, 60, 60 );
-                    f.thumbnail = drawable;
-                    return true;
-                }
-            }
-            return false;
-        }
-        
-    }
-/*
-    class ThumbnailCreation extends Thread {
-        private final static int NOTIFY_THUMBNAIL_CHANGED = 653;
-        private Handler thread_handler;
-        private FileItem  f;
-        private Item item;
-        protected int  num = 0, dirs = 0;
-        ThumbnailCreation( Handler h, FileItem f_, Item item_ ) {
-            thread_handler = h;
-            f = f_;
-            item = item_;
-        }
-        @Override
-        public void run() {
             try {
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                int thumb_sz = getImgWidth();
-                Resources res = commander.getContext().getResources();
-                
+                options.inSampleSize = 1;
                 options.inJustDecodeBounds = true;
                 options.outWidth = 0;
                 options.outHeight = 0;
-                options.inSampleSize = 1;
-                String fn = f.f.getAbsolutePath();
                 BitmapFactory.decodeFile( fn, options );
                 if( options.outWidth > 0 && options.outHeight > 0 ) {
                     int greatest = Math.max( options.outWidth, options.outHeight );
@@ -285,29 +269,22 @@ public class FSAdapter extends CommanderAdapterBase {
                     options.inJustDecodeBounds = false;
                     Bitmap bitmap = BitmapFactory.decodeFile( fn, options );
                     if( bitmap != null ) {
-                        final SoftReference<BitmapDrawable> drawable = new SoftReference<BitmapDrawable>( new BitmapDrawable( res, bitmap ) );
-                        drawable.get().setGravity( Gravity.CENTER );
-                        drawable.get().setBounds( 0, 0, 60, 60 );
-                        synchronized( f ) {
-                            f.thumbnail = drawable.get();
-                        }
-                        //Message msg = thread_handler.obtainMessage( NOTIFY_THUMBNAIL_CHANGED );
-                        //msg.sendToTarget();
-                        if( item.icon_view != null ) {
-                            thread_handler.post( new Runnable() {
-                                public void run() {
-                                    item.icon_view.setImageDrawable( drawable.get() );
-                                }
-                            } );
-                        }                        
+                        BitmapDrawable drawable = new BitmapDrawable( res, bitmap );
+                        drawable.setGravity( Gravity.CENTER );
+                        drawable.setBounds( 0, 0, 60, 60 );
+                        f.thumbnail = drawable;
+                        return true;
                     }
                 }
-            } catch( Exception e ) {
-                Log.e( TAG, "ThumbnailCreation.run()", e );
+            } catch( RuntimeException rte ) {
+                Log.e( TAG, "createThubnail()", rte );
+            } catch( Error err ) {
+                Log.e( TAG, "createThubnail()", err );
             }
+            return false;
         }
+        
     }
-*/   
     
     @Override
     public void openItem( int position ) {
@@ -379,7 +356,7 @@ public class FSAdapter extends CommanderAdapterBase {
     				}
     				if( (mode & MODE_SORTING) == SORT_SIZE )
         				synchronized( items ) {
-            	            FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
+            	            FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0, ascending );
             	            Arrays.sort( items, comp );
         				}
                     if( mList.length == 1 ) {
@@ -609,6 +586,8 @@ public class FSAdapter extends CommanderAdapterBase {
     @Override
 	public void prepareToDestroy() {
         super.prepareToDestroy();
+        if( tht != null )
+            tht.interrupt();
 		items = null;
 	}
 
@@ -811,7 +790,7 @@ public class FSAdapter extends CommanderAdapterBase {
 
     @Override
     public Object getItem( int position ) {
-        Log.v( TAG, "getItem(" + position + ")" );
+        //Log.v( TAG, "getItem(" + position + ")" );
         Item item = null;
         if( position == 0 ) {
             item = new Item();
@@ -837,32 +816,6 @@ public class FSAdapter extends CommanderAdapterBase {
                         long msFileDate = f.f.lastModified();
                         if( msFileDate != 0 )
                             item.date = new Date( msFileDate );
-                        synchronized( f ) { 
-                            if( f.thumbnail != null )
-                                item.thumbnail = f.thumbnail;
-                            else {
-                                /*
-                                if( !mBusy ) {
-                                    String fn = f.f.getAbsolutePath();
-                                    String ext = Utils.getFileExt( fn );
-                                    if( ext != null ) { 
-                                        int ext_hash = ext.hashCode(), ht_sz = ext_h.length;
-                                        boolean not_img = true;
-                                        for( int j = 0; j < ht_sz; j++ ) {
-                                            if( ext_hash == ext_h[j] ) {
-                                                not_img = false;
-                                                break;
-                                            }
-                                        }
-                                        if( !not_img ) {
-                                            ThumbnailCreation thc = new ThumbnailCreation( new Handler(), f, item );
-                                            thc.start();
-                                        }
-                                    }
-                                }
-                                */
-                            }
-                        }
                     } catch( Exception e ) {
                         Log.e( TAG, "getView() exception ", e );
                     }
@@ -876,11 +829,12 @@ public class FSAdapter extends CommanderAdapterBase {
 
     public class FilePropComparator implements Comparator<FileItem> {
         int     type;
-        boolean case_ignore;
+        boolean case_ignore, ascending;
 
-        public FilePropComparator( int type_, boolean case_ignore_ ) {
+        public FilePropComparator( int type_, boolean case_ignore_, boolean ascending_ ) {
             type = type_;
             case_ignore = case_ignore_;
+            ascending = ascending_;
         }
         public int compare( FileItem f1, FileItem f2 ) {
             boolean f1IsDir = f1.f.isDirectory();
@@ -901,16 +855,16 @@ public class FSAdapter extends CommanderAdapterBase {
                 ext_cmp = f1.f.lastModified() - f2.f.lastModified() < 0 ? -1 : 1;
                 break;
             }
-            if( ext_cmp != 0 )
-                return ext_cmp;
-            return case_ignore ? f1.f.getName().compareToIgnoreCase( f2.f.getName() ) : f1.f.compareTo( f2.f );
+            if( ext_cmp == 0 )
+                ext_cmp = case_ignore ? f1.f.getName().compareToIgnoreCase( f2.f.getName() ) : f1.f.compareTo( f2.f );
+            return ascending ? ext_cmp : -ext_cmp;
         }
     }
 
     @Override
     protected void reSort() {
         if( items == null ) return;
-        FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
+        FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0, ascending );
         Arrays.sort( items, comp );
     }
 }

@@ -48,6 +48,7 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
     final void changeLanguage() {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         lang = sharedPref.getString( "language", "" );
+        if( lang == null || lang.length() == 0 ) return;
         Locale locale;
         String country = lang.length() > 3 ? lang.substring( 3 ) : null;
         if( country != null )

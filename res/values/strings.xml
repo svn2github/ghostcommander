@@ -166,7 +166,7 @@
     <string name="show_F9">Show &#xAB; 9 Menu&#xBB;</string>
     <string name="show_F10">Show &#xAB; 0 Exit&#xBB;</string>
     <string name="show_eq">Show &#xAB; = Make both panels same&#xBB;</string>
-    <string name="show_tgl">Show &#xAB; &#x21E6; Change&#xBB;</string>
+    <string name="show_tgl">Show &#xAB; &#x21E6; Toggle&#xBB;</string>
     <string name="show_sz">Show &#xAB; \" Size&#xBB;</string>
     
     <string name="show_by_name">Show &#xAB; Sort by Name&#xBB;</string>
@@ -202,7 +202,7 @@
     <string name="summary_show_hidden">If not checked, files beginning with a dot won\'t be shown</string>
 
     <string name="colors">Setup the colors</string>
-    <string name="summary_colors">Customize the the colors of the background, selection, etc.</string>
+    <string name="summary_colors">Customize the colors of the background, selection, etc.</string>
     <string name="bgr_color_picker">Background color</string>
     <string name="summary_bgr_color_picker">Choose a desired color for the background</string>
     <string name="fgr_color_picker">Foreground color</string>
@@ -260,7 +260,7 @@
     <string name="online_help">&#xA0; Online Help</string>
 
     <string name="donation">Do you like this application? Really? How about to make a little donation
-    of any ammount to support the further development?\n
+    of any amount to support the further development?\n
 Tap \"Ok\" to easily do that via PayPal.\n
 \"Cancel\" to enjoy the &#xAB;Ghost Commander&#xBB; file manager for free.\n
     </string>

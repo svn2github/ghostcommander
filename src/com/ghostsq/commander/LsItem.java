@@ -130,10 +130,11 @@ public class LsItem {
     }
     public class LsItemPropComparator implements Comparator<LsItem> {
         int type;
-        boolean case_ignore;
-        public LsItemPropComparator( int type_, boolean case_ignore_ ) {
+        boolean case_ignore, ascending;
+        public LsItemPropComparator( int type_, boolean case_ignore_, boolean ascending_ ) {
             type = type_;
             case_ignore = case_ignore_;
+            ascending = ascending_;
         }
         @Override
         public int compare( LsItem f1, LsItem f2 ) {
@@ -153,9 +154,9 @@ public class LsItem {
                 ext_cmp = f1.getDate().compareTo( f2.getDate() );
                 break;
             }
-            if( ext_cmp != 0 )
-                return ext_cmp;
-            return f1.compareTo( f2 );
+            if( ext_cmp == 0 )
+                ext_cmp = f1.compareTo( f2 );
+            return ascending ? ext_cmp : -ext_cmp;
         }
     }
 }

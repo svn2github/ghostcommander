@@ -26,7 +26,7 @@ public interface CommanderAdapter {
         public String   attr = "";
         public Object   origin = null;
         public Drawable thumbnail = null;
-        public boolean  need_thumb = false;
+        public boolean  need_thumb = false, no_thumb = false;
     }
     
     /**
@@ -45,6 +45,7 @@ public interface CommanderAdapter {
                             MODE_CASE  = 0x0040,   CASE_SENS = 0x0000,   CASE_IGNORE = 0x0040,
                             MODE_ICONS = 0x0080,   ICON_MODE = 0x0000,     TEXT_MODE = 0x0080,
                              MODE_ATTR = 0x0300,     NO_ATTR = 0x0000,     SHOW_ATTR = 0x0100, ATTR_ONLY = 0x0200,
+                           LIST_STATE = 0x10000, STATE_BUSY = 0x10000,   STATE_IDLE = 0x00000,
                              SET_MODE_COLORS = 0xF0000000, SET_TXT_COLOR = 0x10000000, SET_SEL_COLOR = 0x20000000,
                              SET_TBN_SIZE = 0x01000000;
     /**
@@ -151,8 +152,6 @@ public interface CommanderAdapter {
      */
 	public void doIt( int command_id, SparseBooleanArray cis );
 
-	public void shownItems( int from, int num );
-	
     /**
      * to be called before the adapter is going to be destroyed
      */
