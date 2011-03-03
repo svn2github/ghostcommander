@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -1122,13 +1123,11 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             switch( scrollState ) {
             case OnScrollListener.SCROLL_STATE_IDLE:
                 ca.setMode( CommanderAdapter.LIST_STATE, CommanderAdapter.STATE_IDLE );
-                //Log.v( TAG, "list      I D L E !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
-                view.invalidate();
+                view.invalidateViews();
                 break;
             case OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
             case OnScrollListener.SCROLL_STATE_FLING:
                 ca.setMode( CommanderAdapter.LIST_STATE, CommanderAdapter.STATE_BUSY );
-                //Log.v( TAG, "list    B U S Y  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
                 break;
             }
         }

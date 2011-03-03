@@ -82,7 +82,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate(savedInstanceState);
         
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        requestWindowFeature( Window.FEATURE_NO_TITLE );
+        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         dialogs = new ArrayList<Dialogs>(Dialogs.numDialogTypes);
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         changeLanguage( sharedPref.getString( "language", "" ) );

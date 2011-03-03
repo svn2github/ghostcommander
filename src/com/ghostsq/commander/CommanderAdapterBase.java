@@ -16,7 +16,6 @@ import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -176,7 +175,13 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         mode &= ~mask;
         mode |= val;
         dirty = true;
-        
+        if( mask == CommanderAdapter.LIST_STATE ) {
+            /*
+            Log.v( getClass().getName(), ( mode & LIST_STATE ) == STATE_IDLE ? 
+                    "list    I D L E  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" :
+                    "list    B U S Y  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
+            */
+        }
         if( mask == CommanderAdapter.MODE_SORTING ) {
             reSort();
             notifyDataSetChanged();
@@ -352,6 +357,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                         imgView.setImageDrawable( item.thumbnail );
                     }
                     else {
+                        // when list is on its end we don't receive the idle notification!
                         if( thumbnail_size_perc > 0 && !item.no_thumb && ( mode & LIST_STATE ) == STATE_IDLE ) {
                             item.need_thumb = true;
                             //Log.v( getClass().getName(), "Requesting an ahead thumbnail creation!!! " );                            

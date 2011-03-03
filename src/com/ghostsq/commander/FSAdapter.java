@@ -13,7 +13,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -27,7 +26,6 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.Gravity;
-import android.widget.ImageView;
 
 public class FSAdapter extends CommanderAdapterBase {
     private   final static String TAG = "FSAdapter";
@@ -167,6 +165,7 @@ public class FSAdapter extends CommanderAdapterBase {
                                 ".png".hashCode(),  ".PNG".hashCode(), 
                                 ".gif".hashCode(),  ".GIF".hashCode() };
         ThumbnailsThread( Handler h, FileItem[] list ) {
+            setName( getClass().getName() );
             thread_handler = h;
             mList = list;
         }
@@ -177,61 +176,75 @@ public class FSAdapter extends CommanderAdapterBase {
                 thumb_sz = getImgWidth();
                 options = new BitmapFactory.Options();
                 res = commander.getContext().getResources();
-                boolean proc = false, proc_visible = false, proc_invisible = false;
-                for( int i = 0; i < mList.length ; i++ ) {
-                    int n = -1;
-                    for( int j = 0; j < mList.length ; j++ ) {
-                        if( mList[j].need_thumb ) {
-                            n = j;
-                            proc_visible = true;
-                            //Log.v( TAG, "A thumbnail requested ahead of time!!! " + n );
-                            break;
+                for( int a = 0; a < 3; a++ ) {
+                    boolean succeeded = true;
+                    boolean proc = false, proc_visible = false, proc_invisible = false;
+                    for( int i = 0; i < mList.length ; i++ ) {
+                        int n = -1;
+                        for( int j = 0; j < mList.length ; j++ ) {
+                            if( mList[j].need_thumb ) {
+                                n = j;
+                                proc_visible = true;
+                                //Log.v( TAG, "A thumbnail requested ahead of time!!! " + n + ", " + mList[n].f.getName() );
+                                break;
+                            }
                         }
-                    }
-                    proc_invisible = n < 0;
-                    if( proc_invisible )
-                        n = i;
-                    else
-                        i--;
-                    FileItem f = mList[n];
-                    f.need_thumb = false;
-                    if( f.thumbnail != null ) continue;
-                    String fn = f.f.getAbsolutePath();
-                    String ext = Utils.getFileExt( fn );
-                    if( ext == null ) continue;
-                    int ext_hash = ext.hashCode(), ht_sz = ext_h.length;
-                    boolean not_img = true;
-                    for( int j = 0; j < ht_sz; j++ ) {
-                        if( ext_hash == ext_h[j] ) {
-                            not_img = false;
-                            break;
+                        proc_invisible = n < 0;
+                        if( proc_invisible )
+                            n = i;
+                        else
+                            i--;
+                        if( !proc_visible )
+                            sleep( 1 );
+                        FileItem f = mList[n];
+                        f.need_thumb = false;
+                        if( f.thumbnail != null ) continue;
+                        String fn = f.f.getAbsolutePath();
+                        String ext = Utils.getFileExt( fn );
+                        if( ext == null ) continue;
+                        int ext_hash = ext.hashCode(), ht_sz = ext_h.length;
+                        boolean not_img = true;
+                        for( int j = 0; j < ht_sz; j++ ) {
+                            if( ext_hash == ext_h[j] ) {
+                                not_img = false;
+                                break;
+                            }
                         }
-                    }
-                    if( not_img ) {
-                        f.no_thumb = true;
-                        continue;
-                    }
-                    int fn_h = fn.hashCode();
-                    SoftReference<Drawable> cached_soft = thumbnailCache.get( fn_h );
-                    if( cached_soft != null ) {
-                        f.thumbnail = cached_soft.get();
-                        if( f.thumbnail != null ) continue; 
-                    }
-                    //Log.v( TAG, "Creating a thumbnail for " + n );
-                    if( proc = createThubnail( fn, f ) ) {
-                        thumbnailCache.put( fn_h, new SoftReference<Drawable>( f.thumbnail ) );
-                        //Log.v( TAG, "Thumbnail cache size: " + thumbnailCache.size() );
-                        if( proc_visible && proc_invisible ) {
+                        if( not_img ) {
+                            f.no_thumb = true;
+                            continue;
+                        }
+                        int fn_h = fn.hashCode();
+                        SoftReference<Drawable> cached_soft = null;
+                        synchronized( thumbnailCache ) {
+                            cached_soft = thumbnailCache.get( fn_h );
+                        }
+                        if( cached_soft != null )
+                            f.thumbnail = cached_soft.get();
+                        if( f.thumbnail == null ) {
+                            //Log.v( TAG, "Creating a thumbnail for " + n + ", " + fn );
+                            if( createThubnail( fn, f ) )
+                                synchronized( thumbnailCache ) {
+                                    thumbnailCache.put( fn_h, new SoftReference<Drawable>( f.thumbnail ) );
+                                }
+                            else
+                                succeeded = false;
+                        }
+                        proc = true;
+                        if( f.thumbnail != null && proc_visible && proc_invisible ) {
+                            //Log.v( TAG, "Time to refresh!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
                             Message msg = thread_handler.obtainMessage( NOTIFY_THUMBNAIL_CHANGED );
                             msg.sendToTarget();
+                            yield();
                             proc_visible = false;
                             proc = false;
                         }
                     }
-                }
-                if( proc ) {
-                    Message msg = thread_handler.obtainMessage( NOTIFY_THUMBNAIL_CHANGED );
-                    msg.sendToTarget();
+                    if( proc ) {
+                        Message msg = thread_handler.obtainMessage( NOTIFY_THUMBNAIL_CHANGED );
+                        msg.sendToTarget();
+                    }
+                    if( succeeded ) break;
                 }
             } catch( Exception e ) {
                 Log.e( TAG, "ThumbnailsThread.run()", e );
@@ -276,6 +289,7 @@ public class FSAdapter extends CommanderAdapterBase {
                         return true;
                     }
                 }
+                Log.e( TAG, "createThubnail() failed for " + fn );
             } catch( RuntimeException rte ) {
                 Log.e( TAG, "createThubnail()", rte );
             } catch( Error err ) {
@@ -790,7 +804,6 @@ public class FSAdapter extends CommanderAdapterBase {
 
     @Override
     public Object getItem( int position ) {
-        //Log.v( TAG, "getItem(" + position + ")" );
         Item item = null;
         if( position == 0 ) {
             item = new Item();
@@ -816,6 +829,7 @@ public class FSAdapter extends CommanderAdapterBase {
                         long msFileDate = f.f.lastModified();
                         if( msFileDate != 0 )
                             item.date = new Date( msFileDate );
+                        //Log.v( TAG, "getItem(" + (position-1) + ") for " + item.name ); // DEBUG!!!
                     } catch( Exception e ) {
                         Log.e( TAG, "getView() exception ", e );
                     }
