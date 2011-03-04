@@ -62,19 +62,6 @@ public class FindAdapter extends CommanderAdapterBase {
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
         if( move && to instanceof FSAdapter ) {
-/*
-            try {
-                String dest_folder = to.toString();
-                String[] files_to_move = bitsToNames( cis );
-                if( files_to_move == null )
-                    return false;
-                return moveFiles( files_to_move, dest_folder );
-            }
-            catch( SecurityException e ) {
-                commander.showError( "Unable to move a file because of security reasons: " + e );
-                return false;
-            }
-*/
             return false;
         }
         else {
@@ -115,7 +102,7 @@ public class FindAdapter extends CommanderAdapterBase {
             return true;
         }
         catch( SecurityException e ) {
-            commander.showError( "Unable to delete: " + e );
+            commander.showError( commander.getContext().getString( R.string.sec_err, e.getMessage() ) );
         }
         return false;
     }

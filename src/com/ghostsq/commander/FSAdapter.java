@@ -13,6 +13,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -178,7 +179,8 @@ public class FSAdapter extends CommanderAdapterBase {
                 res = commander.getContext().getResources();
                 for( int a = 0; a < 3; a++ ) {
                     boolean succeeded = true;
-                    boolean proc = false, proc_visible = false, proc_invisible = false;
+                    boolean need_update = false, proc_visible = false, proc_invisible = false;
+                    int processed = 0;
                     for( int i = 0; i < mList.length ; i++ ) {
                         int n = -1;
                         for( int j = 0; j < mList.length ; j++ ) {
@@ -230,17 +232,18 @@ public class FSAdapter extends CommanderAdapterBase {
                             else
                                 succeeded = false;
                         }
-                        proc = true;
-                        if( f.thumbnail != null && proc_visible && proc_invisible ) {
+                        need_update = true;
+                        if( f.thumbnail != null && ( processed++ > 3 || ( proc_visible && proc_invisible ) ) ) {
                             //Log.v( TAG, "Time to refresh!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
                             Message msg = thread_handler.obtainMessage( NOTIFY_THUMBNAIL_CHANGED );
                             msg.sendToTarget();
                             yield();
                             proc_visible = false;
-                            proc = false;
+                            need_update = false;
+                            processed = 0;
                         }
                     }
-                    if( proc ) {
+                    if( need_update ) {
                         Message msg = thread_handler.obtainMessage( NOTIFY_THUMBNAIL_CHANGED );
                         msg.sendToTarget();
                     }
@@ -266,6 +269,7 @@ public class FSAdapter extends CommanderAdapterBase {
         }
         
         private boolean createThubnail( String fn, FileItem f ) {
+            final String func_name = "createThubnail()"; 
             try {
                 options.inSampleSize = 1;
                 options.inJustDecodeBounds = true;
@@ -289,11 +293,11 @@ public class FSAdapter extends CommanderAdapterBase {
                         return true;
                     }
                 }
-                Log.e( TAG, "createThubnail() failed for " + fn );
+                Log.e( TAG, func_name + " failed for " + fn );
             } catch( RuntimeException rte ) {
-                Log.e( TAG, "createThubnail()", rte );
+                Log.e( TAG, func_name, rte );
             } catch( Error err ) {
-                Log.e( TAG, "createThubnail()", err );
+                Log.e( TAG, func_name, err );
             }
             return false;
         }
@@ -441,7 +445,7 @@ public class FSAdapter extends CommanderAdapterBase {
             return ok;
         }
         catch( SecurityException e ) {
-            commander.showError( "Security Exception: " + e );
+            commander.showError( commander.getContext().getString( R.string.sec_err, e.getMessage() ) );
             return false;
         }
     }
@@ -454,7 +458,7 @@ public class FSAdapter extends CommanderAdapterBase {
 			                                                     Commander.OPERATION_FAILED ) );
 			return ok;     
 		} catch( Exception e ) {
-			commander.showError( "Unable to create file \"" + fileURI + "\", " + e.getMessage() );
+		    commander.showError( commander.getContext().getString( R.string.cant_create, fileURI, e.getMessage() ) );
 		}
 		return false;
 	}
@@ -469,7 +473,7 @@ public class FSAdapter extends CommanderAdapterBase {
         } catch( Exception e ) {
             Log.e( TAG, "createFolder", e );
         }
-        commander.notifyMe( new Commander.Notify( "Unable to create directory '" + new_name + "' in '" + dirName + "'", Commander.OPERATION_FAILED ) );
+        commander.notifyMe( new Commander.Notify( commander.getContext().getString( R.string.cant_md, new_name ), Commander.OPERATION_FAILED ) );
     }
 
     @Override
@@ -517,14 +521,19 @@ public class FSAdapter extends CommanderAdapterBase {
             int num = l.length;
             double conv = 100./num; 
             for( int i = 0; i < num; i++ ) {
+                sleep( 1 );
                 if( stop || isInterrupted() )
-                    throw new Exception( "Interrupted" );
+                    throw new Exception( commander.getContext().getString( R.string.canceled ) );
                 File f = l[i];
-                sendProgress( "Deleting " + f.getAbsolutePath(), (int)(cnt * conv) );
+                sendProgress( commander.getContext().getString( R.string.deleting, f.getName() ), (int)(cnt * conv) );
                 if( f.isDirectory() )
                     cnt += deleteFiles( f.listFiles() );
                 if( f.delete() )
                     cnt++;
+                else {
+                    error( commander.getContext().getString( R.string.cant_del, f.getName() ) );
+                    break;
+                }
             }
             return cnt;
         }
@@ -544,7 +553,7 @@ public class FSAdapter extends CommanderAdapterBase {
                 return ok;
             }
             catch( SecurityException e ) {
-                commander.showError( "Unable to move a file because of security reasons: " + e );
+                commander.showError( commander.getContext().getString( R.string.cant_move, e.getMessage() ) );
                 return false;
             }
         }
@@ -579,9 +588,7 @@ public class FSAdapter extends CommanderAdapterBase {
                     return false;
             }
             File[] list = Utils.getListOfFiles( uris );
-            if( list == null )
-            	commander.showError( "Something wrong with the files " );
-            else {
+            if( list != null ) {
                 if( worker != null && worker.reqStop() ) {
                     commander.notifyMe( new Commander.Notify( commander.getContext().getString( R.string.wait ), 
                             Commander.OPERATION_FAILED ) );
@@ -593,7 +600,7 @@ public class FSAdapter extends CommanderAdapterBase {
 	            return true;
             }
 		} catch( Exception e ) {
-			commander.showError( "Exception: " + e );
+		    e.printStackTrace();
 		}
 		return false;
     }
@@ -635,42 +642,45 @@ public class FSAdapter extends CommanderAdapterBase {
 			}
         }
         private final int copyFiles( File[] list, String dest ) {
-            int i;
-            for( i = 0; i < list.length; i++ ) {
+            Context c = commander.getContext();
+            for( int i = 0; i < list.length; i++ ) {
                 FileChannel  in = null;
                 FileChannel out = null;
                 File outFile = null;
                 File file = list[i];
                 if( file == null ) {
-                    errMsg = "Unknown error";
+                    error( c.getString( R.string.unkn_err ) );
                     break;
                 }
                 String uri = file.getAbsolutePath();
                 try {
                     if( stop || isInterrupted() ) {
-                        errMsg = "Canceled.";
+                        error( c.getString( R.string.canceled ) );
                         break;
                     }
                     long last_modified = file.lastModified();
-                    outFile = new File( dest, file.getName() );
-                    if( outFile.exists() ) {
-                        errMsg = (outFile.isDirectory() ? "Directory '" : "File '") + outFile.getAbsolutePath() + "' already exist.";
-                        break; // TODO: ask user about overwrite
-                    }
+                    String fn = file.getName();
+                    outFile = new File( dest, fn );
                     if( file.isDirectory() ) {
-                        if( depth++ > 40 )
-                            throw new Exception( commander.getContext().getString( R.string.too_deep_hierarchy ) );
-                        
-                        if( outFile.mkdir() ) {
+                        if( depth++ > 40 ) {
+                            error( commander.getContext().getString( R.string.too_deep_hierarchy ) );
+                            break;
+                        }
+                        else
+                        if( outFile.exists() || outFile.mkdir() ) {
                             copyFiles( file.listFiles(), outFile.getAbsolutePath() );
                             if( errMsg != null )
                             	break;
                         }
                         else
-                            errMsg = "Unable to create directory '" + outFile.getAbsolutePath() + "' ";
+                            error( c.getString( R.string.cant_md, outFile.getAbsolutePath() ) );
                         depth--;
                     }
                     else {
+                        if( outFile.exists() ) {
+                            error( c.getString( R.string.file_exist, outFile.getAbsolutePath() ) ); 
+                            break; // TODO: ask user about overwrite
+                        }
                         in  = new FileInputStream( file ).getChannel();
                         out = new FileOutputStream( outFile ).getChannel();
                         long size  = in.size();
@@ -678,30 +688,30 @@ public class FSAdapter extends CommanderAdapterBase {
                         long chunk = size > max_chunk ? max_chunk : size;
                         int  so_far = (int)(bytes * conv);
                         for( long start = 0; start < size; start += chunk ) {
-                        	sendProgress( "Coping \n'" + uri + "'...", so_far, (int)(bytes * conv) );
+                        	sendProgress( c.getString( R.string.coping, fn ), so_far, (int)(bytes * conv) );
                         	bytes += in.transferTo( start, chunk, out );
                             if( stop || isInterrupted() ) {
-                                errMsg = "Canceled.";
+                                error( c.getString( R.string.canceled ) );
                                 return counter;
                             }
                         }
                         if( i >= list.length-1 )
-                        	sendProgress( "Copied \n'" + uri + "'   ", (int)(bytes * conv) );
+                        	sendProgress( c.getString( R.string.copied_f, fn ), (int)(bytes * conv) );
                         counter++;
                     }
                     outFile.setLastModified( last_modified );
                 }
                 catch( SecurityException e ) {
-                    errMsg = "Security issue on file '" + uri + "'.\n" + e.getMessage();
+                    error( c.getString( R.string.sec_err, e.getMessage() ) );
                 }
                 catch( FileNotFoundException e ) {
-                    errMsg = "File not accessible.\n" + e.getMessage();
+                    error( c.getString( R.string.not_accs, e.getMessage() ) );
                 }
                 catch( IOException e ) {
-                    errMsg = "Access error on file: '" + uri + "'. :\n" + e.getMessage();
+                    error( c.getString( R.string.acc_err, uri, e.getMessage() ) );
                 }
-                catch( Exception e ) {
-                    errMsg = "Error on file: '" + uri + "':\n" + e.getMessage();
+                catch( RuntimeException e ) {
+                    error( c.getString( R.string.rtexcept, uri, e.getMessage() ) );
                 }
                 finally {
                     try {
@@ -712,7 +722,7 @@ public class FSAdapter extends CommanderAdapterBase {
 
                     }
                     catch( IOException e ) {
-                        errMsg = "Error on file: '" + uri + "'.";
+                        error( c.getString( R.string.acc_err, uri, e.getMessage() ) );
                     }
                     {
                         /*
@@ -727,6 +737,7 @@ public class FSAdapter extends CommanderAdapterBase {
                             outFile.delete();
                         }
                         catch( SecurityException e ) {
+                            Log.e( TAG, "on deleting after failed copy", e );
                         }
                     }
                     break;
@@ -742,7 +753,7 @@ public class FSAdapter extends CommanderAdapterBase {
             long last_modified = f.lastModified();
             File dest = new File( dest_folder, f.getName() );
             if( !f.renameTo( dest ) ) {
-                commander.showError( "Unable to move file '" + f.getAbsolutePath() + "'" );
+                commander.showError( commander.getContext().getString( R.string.cant_move, f.getAbsolutePath() ) );
                 return false;
             }
             dest.setLastModified( last_modified );
@@ -831,7 +842,7 @@ public class FSAdapter extends CommanderAdapterBase {
                             item.date = new Date( msFileDate );
                         //Log.v( TAG, "getItem(" + (position-1) + ") for " + item.name ); // DEBUG!!!
                     } catch( Exception e ) {
-                        Log.e( TAG, "getView() exception ", e );
+                        Log.e( TAG, "getItem(" + position + ")", e );
                     }
                 }
             }

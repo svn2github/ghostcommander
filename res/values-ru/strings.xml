@@ -7,22 +7,44 @@
 <string name="app">Приложение</string>
 <string name="help">Помощь</string><!-- !!! -->
 <string name="F1">1 Помощь</string>
-<string name="F2">2 Переименуй</string>
-<string name="F3">3 Просмотр</string>
-<string name="F4">4 Редактируй</string>
+<string name="F2">2 Переим.</string>
+<string name="F3">3 Просм.</string>
+<string name="F4">4 Редакт</string>
 <string name="SF4">  Создай</string><!-- !!! -->
-<string name="F5">5 Копируй</string>
-<string name="F6">6 Перемести</string>
-<string name="F7">7 Создай папку</string>
-<string name="F8">8 Удали</string>
+<string name="F5">5 Копир.</string>
+<string name="F6">6 Перен.</string>
+<string name="F7">7 Папка </string>
+<string name="F8">8 Удален.</string>
 <string name="F9">9 Настр.</string>
-<string name="F10">0 Выход</string>
+<string name="F10">0 Выход </string>
 <string name="oth_sh_this">= Tот же адрес</string>
 <string name="eq">= Сравняй</string>
 <string name="change">  Смени панель</string>
 <string name="tgl">⇦ Сменить</string>
 <string name="sz">\" Размер</string>
 <string name="refresh">Обнови</string>
+
+<string name="show_F1">  «1 Помощь»</string>
+<string name="show_F2">  «2 Переим.»</string>
+<string name="show_F3">  «3 Просм.»</string>
+<string name="show_F4">  «4 Редакт»</string>
+<string name="show_SF4">  «  Создать»</string>
+<string name="show_F5">  «5 Копир.»</string>
+<string name="show_F6">  «6 Перен.»</string>
+<string name="show_F7">  «7 Папка»</string>
+<string name="show_F8">  «8 Удален.»</string>
+<string name="show_F9">  «9 Настр.»</string>
+<string name="show_F10">  «0 Выход»</string>
+<string name="show_eq">  «= Тот же»</string>
+<string name="show_tgl">  « ⇦ Перейти»</string>
+<string name="show_sz">  « \" Размер»</string>
+<string name="show_by_name">  « по Имени»</string>
+<string name="show_by_ext">  « по Расширению»</string>
+<string name="show_by_size">  « по Размеру»</string>
+<string name="show_by_date">  « по Дате»</string>
+
+
+
 <string name="enter">  Ввести адрес или URI</string>
 <string name="add_fav">* Закладка на тек.адрес</string>
 <string name="enter_ftp">  Открыть FTP сайт</string>
@@ -122,24 +144,6 @@
 <string name="summary_show_toolbar">Показывать панель с кнопками файловых операций</string>
 <string name="toolbar_preference">Выбор инструментальных кнопок</string>
 <string name="summary_toolbar_preference">Настроить, какие кнопки показывать в инструментальной панели операций</string>
-<string name="show_F1">  « 1 Помощь»</string>
-<string name="show_F2">  « 2 Переименуй»</string>
-<string name="show_F3">  « 3 Просмотр»</string>
-<string name="show_F4">  « 4 Редактируй»</string>
-<string name="show_SF4">  «   Создать»</string>
-<string name="show_F5">  « 5 Копируй»</string>
-<string name="show_F6">  « 6 Перемести»</string>
-<string name="show_F7">  « 7 Создай каталог»</string>
-<string name="show_F8">  « 8 Удали»</string>
-<string name="show_F9">  « 9 Настр.»</string>
-<string name="show_F10">  « 0 Выход»</string>
-<string name="show_eq">  « = Тот же»</string>
-<string name="show_tgl">  « ⇦ Перейти»</string>
-<string name="show_sz">  « \" Размер»</string>
-<string name="show_by_name">  « по Имени»</string>
-<string name="show_by_ext">  « по Расширению»</string>
-<string name="show_by_size">  « по Размеру»</string>
-<string name="show_by_date">  « по Дате»</string>
 <string name="finger_friendly">Управление пальцем</string>
 <string name="summary_finger_friendly">Увеличить элементы интерфейса для управления пальцем</string>
 <string name="prevent_root">Предупреждать на системных каталогах</string>
@@ -181,7 +185,7 @@
 <string name="summary_editor_activity">Полное имя Activity класса. Имя пакета = префикс полного имени класса.</string>
 <string name="value_editor_activity">com.ghostsq.commander.Editor</string>
 <string name="busybox_location">Путь к busybox</string>
-<string name="summary_busybox_location">Для работы в root режиме нужен busybox. Укажите путь к нему здесь.</string>
+<string name="summary_busybox_location">Для работы в root режиме нужна программа \"busybox\". Укажите полный путь к нему здесь.</string>
 <string name="execute_command">Исполнить команду</string><!-- !!! -->
 <string name="nothing_to_open">Не ясно что редактировать</string>
 <string name="remind_to_save">Не забудьте сохранить изменения через меню</string>
@@ -197,6 +201,22 @@
 <string name="nav_warn_cmt">(Это предупреждение может быть отключено в настройках)</string>
 <string name="no_such_folder">\"%1$s\" не существует!</string>
 <string name="fav_added">Folder \"%1$s\" добавлен</string>
+
+    <string name="coping">Копируется\n\"%s\"...</string>
+    <string name="copied_f">Скопирован\n\"%s\"...</string>
+    <string name="deleting">Удаляется\n\"%s\"...</string>
+    <string name="canceled">Прервано</string>
+    <string name="unkn_err">Неизвестная ошибка</string>
+    <string name="cant_md">Не могу создать папку \"%s\"</string>
+    <string name="file_exist">Файл \"%s\" уже существует.</string>
+    <string name="sec_err">Доступ запрещен\n%s</string>
+    <string name="not_accs">Доступ к файлу запрещен.\n%s</string>
+    <string name="acc_err">Ошибка доступа к файлу \"%1$s\"\n %2$s</string>
+    <string name="rtexcept">Произошла ошибка на файле \"%1$s\"\n %2$s</string>
+    <string name="cant_move">Ошибка переноса файла \"%s\"</string>
+    <string name="cant_create">Ошибка создания файла \"%1$s\"\n%2$s</string>
+    <string name="cant_del">Ошибка удаления файла \"%1$s\"</string>
+
 
     <string name="copied">скопирован(о)</string>
     <string name="moved">перемещен(о)</string>

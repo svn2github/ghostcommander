@@ -96,7 +96,7 @@
     <string name="find_on_fs_only">The search feature works only with the local file system.</string>
     <string name="op_not_alwd">The \'%1$s\' is not allowed. Select something first.</string><!-- copy_title/move_title -->
     <string name="copy_to_local_only">It\'s possible to copy to the local filesystem only.</string>    
-    <string name="dest_exist">File already exist. Can not overwrite.</string>    
+    <!-- string name="dest_exist">File already exist. Can not overwrite.</string-->    
     <string name="copy_move_to">%1$s %2$s to:"</string><!-- copy_title/move_title, file name/summary -->
     <string name="login_title">Login</string>
     <string name="delete_title">Delete</string>
@@ -108,6 +108,25 @@
     <string name="too_deep_hierarchy">The file hierarchy is too deep</string>
     <string name="nothing_found">No files found</string>
     <string name="preparing">Preparing...</string>
+
+
+    <string name="coping">Coping\n\"%s\"...</string>
+    <string name="copied_f">Copied\n\"%s\"...</string>
+    <string name="deleting">Deleting\n\"%s\"...</string>
+    <string name="canceled">Canceled</string>
+    <string name="unkn_err">Unknown error</string>
+    <string name="cant_md">Unable to create directory \"%s\"</string>
+    <string name="file_exist">File \"%s\" already exist in the destination folder.</string>
+    <string name="sec_err">Security issue:\n%s</string>
+    <string name="not_accs">File not accessible.\n%s</string>
+    <string name="acc_err">Access error on file \"%1$s\"\n %2$s</string>
+    <string name="rtexcept">Error on file \"%1$s\"\n %2$s</string>
+    <string name="cant_move">Unable to move file \"%s\"</string>
+    <string name="cant_create">Unable to create file \"%1$s\"\n%2$s</string>
+    <string name="cant_del">Unable to delete file \"%1$s\"</string>
+    
+    
+
 
     <string name="copied">copied</string>
     <string name="moved">moved</string>

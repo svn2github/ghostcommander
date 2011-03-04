@@ -99,8 +99,8 @@
     <string name="dest_exist">Fichier existant. Ecriture impossible.</string>    
     <string name="copy_move_to">%1$s %2$s à:"</string><!-- copy_title/move_title, file name/summary -->
     <string name="login_title">Connecter</string>
-    <string name="delete_title">Effacer</string>
-    <string name="delete_err">Rien à effacer</string>
+    <string name="delete_title">Supprimer</string>
+    <string name="delete_err">Rien à supprimer</string>
     <string name="delete_q">"Effacer %1$s ?"</string><!-- file name/summary -->
     <string name="search_done">Fin de recherche</string>
     <string name="done">Fini</string>
@@ -141,25 +141,25 @@
     <string name="summary_show_toolbar">Afficher ou cacher les boutons en bas de l\'écran</string>
     <string name="toolbar_preference">Choisir les boutons à afficher</string>
     <string name="summary_toolbar_preference">Personnaliser les boutons dans la barre d\'outils</string>
-    <string name="show_F1">Show &#xAB; 1 Aide&#xBB;</string>
-    <string name="show_F2">Show &#xAB; 2 Renommer&#xBB;</string>
-    <string name="show_F3">Show &#xAB; 3 Voir&#xBB;</string>
-    <string name="show_F4">Show &#xAB; 4 Editer&#xBB;</string>
-    <string name="show_SF4">Show &#xAB; &#xA0; Créer&#xBB;</string>
-    <string name="show_F5">Show &#xAB; 5 Copier&#xBB;</string>
-    <string name="show_F6">Show &#xAB; 6 Déplacer&#xBB;</string>
-    <string name="show_F7">Show &#xAB; 7 Créer Rép&#xBB;</string>
-    <string name="show_F8">Show &#xAB; 8 Supprimer&#xBB;</string>
-    <string name="show_F9">Show &#xAB; 9 Menu&#xBB;</string>
-    <string name="show_F10">Show &#xAB; 0 Quitter&#xBB;</string>
-    <string name="show_eq">Show &#xAB; = Cloner&#xBB;</string>
-    <string name="show_tgl">Show &#xAB; &#x21E6; Basculer&#xBB;</string>
-    <string name="show_sz">Show &#xAB; \" Taille&#xBB;</string>
+    <string name="show_F1">Afficher &#xAB; 1 Aide&#xBB;</string>
+    <string name="show_F2">Afficher &#xAB; 2 Renommer&#xBB;</string>
+    <string name="show_F3">Afficher &#xAB; 3 Voir&#xBB;</string>
+    <string name="show_F4">Afficher &#xAB; 4 Editer&#xBB;</string>
+    <string name="show_SF4">Afficher &#xAB; &#xA0; Créer&#xBB;</string>
+    <string name="show_F5">Afficher &#xAB; 5 Copier&#xBB;</string>
+    <string name="show_F6">Afficher &#xAB; 6 Déplacer&#xBB;</string>
+    <string name="show_F7">Afficher &#xAB; 7 Créer Rép&#xBB;</string>
+    <string name="show_F8">Afficher &#xAB; 8 Supprimer&#xBB;</string>
+    <string name="show_F9">Afficher &#xAB; 9 Menu&#xBB;</string>
+    <string name="show_F10">Afficher &#xAB; 0 Quitter&#xBB;</string>
+    <string name="show_eq">Afficher &#xAB; = Cloner&#xBB;</string>
+    <string name="show_tgl">Afficher &#xAB; &#x21E6; Basculer&#xBB;</string>
+    <string name="show_sz">Afficher &#xAB; \" Taille&#xBB;</string>
     
-    <string name="show_by_name">Show &#xAB; Tri par Nom&#xBB;</string>
-    <string name="show_by_ext" >Show &#xAB; Tri par Extension&#xBB;</string>
-    <string name="show_by_size">Show &#xAB; Tri par Taille&#xBB;</string>
-    <string name="show_by_date">Show &#xAB; Tri par Date&#xBB;</string>
+    <string name="show_by_name">Afficher &#xAB; Tri par Nom&#xBB;</string>
+    <string name="show_by_ext" >Afficher &#xAB; Tri par Extension&#xBB;</string>
+    <string name="show_by_size">Afficher &#xAB; Tri par Taille&#xBB;</string>
+    <string name="show_by_date">Afficher &#xAB; Tri par Date&#xBB;</string>
 
     <string name="finger_friendly">Appui plus facile</string>
     <string name="summary_finger_friendly">Agrandir les éléments de l\'interface utilisateur</string>
@@ -188,7 +188,7 @@
     <string name="show_hidden">Afficher les fichiers cachés</string>
     <string name="summary_show_hidden">Si non coché, les fichiers commençant par un point ne sont pas affichés.</string>
 
-    <string name="colors">Paramètrage des couleurs</string>
+    <string name="colors">Paramétrage des couleurs</string>
     <string name="summary_colors">Personnaliser les couleurs du fond, de la sélection etc.</string>
     <string name="bgr_color_picker">Couleur de fond</string>
     <string name="summary_bgr_color_picker">Choisir une couleur pour le fond</string>
