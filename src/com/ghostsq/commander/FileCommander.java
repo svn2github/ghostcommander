@@ -99,7 +99,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onStart() {
-        //Log.i( TAG, "Starting\n");
+        Log.i( TAG, "Starting\n");
         super.onStart();
         on = true;
         if( dont_restore )
@@ -121,7 +121,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onPause() {
-        //Log.i( TAG, "Pausing\n");
+        Log.i( TAG, "Pausing\n");
         super.onPause();
         on = false;
         SharedPreferences.Editor editor = getPreferences( MODE_PRIVATE ).edit();
@@ -151,13 +151,13 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         panels.Destroying();
         super.onDestroy();
         if( isFinishing() && exit )
-            System.exit( 0 );  // does not work in API7
+            System.exit( 0 );
     }
-/*
+
     //these two methods are not called on screen rotation in v1.5, so all the store/restore is called from pause/start 
     @Override
     protected void onSaveInstanceState( Bundle outState ) {
-        Log.i( TAG, "Ghost Commander Saving\n");
+        Log.i( TAG, "Saving Instance State");
         Panels.State s = panels.getState();
         s.store(outState);
         super.onSaveInstanceState(outState);
@@ -165,7 +165,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onRestoreInstanceState( Bundle savedInstanceState ) {
-        Log.i( TAG, "Ghost Commander Restoring\n");
+        Log.i( TAG, "Restoring Instance State");
         if( savedInstanceState != null ) {
             Panels.State s = panels.new State();
             s.restore(savedInstanceState);
@@ -173,7 +173,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         }
         super.onRestoreInstanceState(savedInstanceState);
     }
-*/
+
     @Override
     public void onCreateContextMenu( ContextMenu menu, View v, ContextMenuInfo menuInfo ) {
         try {

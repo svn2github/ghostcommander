@@ -217,14 +217,14 @@
     <string name="cant_create">Ошибка создания файла \"%1$s\"\n%2$s</string>
     <string name="cant_del">Ошибка удаления файла \"%1$s\"</string>
 
-
-    <string name="copied">скопирован(о)</string>
-    <string name="moved">перемещен(о)</string>
-    <string name="deleted">удален(о)</string>
-    <string name="downloaded">скачен(о)</string>
-    <string name="uploaded">закачен(о)</string>
-    <string name="packed">упакован(о)</string>
-    <string name="unpacked">распакован(о)</string>
+    <string name="copied">скопирован</string>
+    <string name="moved">перемещен</string>
+    <string name="deleted">удален</string>
+    <string name="downloaded">скачен</string>
+    <string name="uploaded">закачен</string>
+    <string name="packed">упакован</string>
+    <string name="unpacked">распакован</string>
+    <string name="verb_plural_sfx">о</string>
     <string name="item">файл</string>
     <string name="items">файлов</string>
     <string name="were">было</string>
@@ -236,11 +236,11 @@
     Пожалуста, убедитесь, что пакет\n
     \"Ghost Commander - Samba plugin\"\n
     (com.ghostsq.commander.samba.apk) инсталлирован.</string>
-<string name="no_root">root не доступен.</string>
+<string name="no_root">Нет root прав.</string>
 <string name="donate">  Поддержка</string>
 <string name="online_help">  Описание в онлайне (EN)</string>
-<string name="donation">Выразите свою поддержку дальнейшему развитию
-      «Ghost Commander» путем перевода любой суммы разработчику через систему PayPal.\n
+<string name="donation">Выразите свою благодарность и окажите поддержку дальнейшему развитию проекта
+       путем перевода любой суммы разработчику через систему PayPal.\n
     </string>
 <string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
 <string name="about_text">

@@ -126,8 +126,6 @@
     <string name="cant_del">Unable to delete file \"%1$s\"</string>
     
     
-
-
     <string name="copied">copied</string>
     <string name="moved">moved</string>
     <string name="deleted">deleted</string>
@@ -135,6 +133,8 @@
     <string name="uploaded">uploaded</string>
     <string name="packed">packed</string>
     <string name="unpacked">unpacked</string>
+
+    <string name="verb_plural_sfx"></string>
     <string name="item">item</string>
     <string name="items">items</string>
     <string name="were">were</string>

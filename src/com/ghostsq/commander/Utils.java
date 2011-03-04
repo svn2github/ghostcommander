@@ -128,7 +128,8 @@ public final class Utils {
                         ( total > 1 ? ctx.getString( R.string.items ) : ctx.getString( R.string.item ) ) 
                                     : ctx.getString( R.string.nothing ) ) + " " +
                         ( total > 1 ? ctx.getString( R.string.were  ) : ctx.getString( R.string.was ) ) 
-                        + " " + verb + ".";
+                        + " " + verb + 
+                        ( total > 1 ? ctx.getString( R.string.verb_plural_sfx ) : "" ) + ".";
         return report;
     }
     public final static String getHumanSize( long sz ) {
