@@ -1,8 +1,12 @@
 package com.ghostsq.commander;
 
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -64,7 +68,7 @@ public class RootAdapter extends CommanderAdapterBase {
             try {
             	getList();
             }
-            catch( Exception e ) {
+            catch( IOException e ) {
                 sh = "sh";
                 // try again
                 try {
@@ -82,6 +86,9 @@ public class RootAdapter extends CommanderAdapterBase {
                 sendProgress( "VerifyError " + e, Commander.OPERATION_FAILED, pass_back_on_done );
                 Log.e( TAG, "VerifyError: ", e );
             }
+            catch( Exception e ) {
+                Log.e( TAG, "Exception", e );
+            }
             finally {
             	super.run();
             }
@@ -94,22 +101,24 @@ public class RootAdapter extends CommanderAdapterBase {
             }
             parentLink = path == null || path.length() == 0 || path.equals( SLS ) ? SLS : "..";
             Process p = Runtime.getRuntime().exec( sh );
-            DataOutputStream os = new DataOutputStream( p.getOutputStream() );
-            DataInputStream  is = new DataInputStream( p.getInputStream() );
+            OutputStreamWriter os = new OutputStreamWriter( p.getOutputStream() );
+            BufferedReader is = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
+            
             DataInputStream  es = new DataInputStream( p.getErrorStream() );
-            os.writeBytes( "ls -l " + path + "\n"); // execute command
+            String to_execute = "ls -l '" + path + "'\n";
+            os.write( to_execute ); // execute the command
             os.flush();
             for( int i=0; i< 10; i++ ) {
                 if( isStopReq() ) break;
-                if( is.available() > 0 ) break;
+                if( is.ready() ) break;
                 Thread.sleep( 50 );
             }
             ArrayList<LsItem>  array = null;
             if( !isStopReq() ) {
-                if( is.available() <= 0 ) // may be an error may be not
+                if( !is.ready() ) // may be an error may be not
                     Log.w( TAG, "No output from the executed command" );
                 array = new ArrayList<LsItem>();
-                while( is.available() > 0 ) {
+                while( is.ready() ) {
                     if( isStopReq() ) break; 
                     String ln = is.readLine();
                     if( ln == null ) break;
@@ -119,7 +128,7 @@ public class RootAdapter extends CommanderAdapterBase {
                     }
                 }
             }
-            os.writeBytes("exit\n");
+            os.write("exit\n");
             os.flush();
             if( !isStopReq() ) {
                 p.waitFor();
@@ -284,8 +293,8 @@ public class RootAdapter extends CommanderAdapterBase {
             try {
                 String bb = getBusyBox();
                 Process p = Runtime.getRuntime().exec( sh );
-                DataOutputStream os = new DataOutputStream( p.getOutputStream() );
-                DataInputStream  es = new DataInputStream( p.getErrorStream() );
+                OutputStreamWriter os = new OutputStreamWriter( p.getOutputStream() );
+                BufferedReader es = new BufferedReader( new InputStreamReader( p.getErrorStream() ) );
                 int num = list.length;
                 double conv = 100./(double)num;
                 for( int i = 0; i < num; i++ ) {
@@ -295,14 +304,17 @@ public class RootAdapter extends CommanderAdapterBase {
                     String full_name = src_base_path + file_name;
                     String to_exec;
                     String cmd = move ? " mv -f " : ( f.isDirectory() ? " cp -r " : " cp " );
-                    to_exec = bb + cmd + full_name + " " + dest_folder + "\n";
+                    to_exec = bb + cmd + "'" + full_name + "' '" + dest_folder + "'\n";
                     Log.i( TAG, to_exec );
-                    os.writeBytes( to_exec ); // execute command
+                    os.write( to_exec ); // execute command
                     os.flush();
                     Thread.sleep( 100 );
-                    if( es.available() > 0 ) {
-                        error( es.readLine() );
-                        break;
+                    if( es.ready() ) {
+                        String err_str = es.readLine();
+                        if( err_str.trim().length() > 0 ) {
+                            error( err_str );
+                            break;
+                        }
                     }
                     if( stop || isInterrupted() ) {
                         error( "Canceled" );
@@ -311,7 +323,7 @@ public class RootAdapter extends CommanderAdapterBase {
                     sendProgress( "'" + file_name + "'", (int)(i * conv) );
                     counter++;
                 }
-                os.writeBytes("exit\n");
+                os.write( "exit\n" );
                 os.flush();
                 p.waitFor();
                 if( p.exitValue() == 255 )
@@ -411,8 +423,9 @@ public class RootAdapter extends CommanderAdapterBase {
             int counter = 0;
             try {
                 Process p = Runtime.getRuntime().exec( sh );
-                DataOutputStream os = new DataOutputStream( p.getOutputStream() );
-                DataInputStream  es = new DataInputStream( p.getErrorStream() );
+                OutputStreamWriter os = new OutputStreamWriter( p.getOutputStream() );
+                BufferedReader es = new BufferedReader( new InputStreamReader( p.getErrorStream() ) );
+                
                 int num = mList.length;
                 double conv = 100./num;
                 for( int i = 0; i < num; i++ ) {
@@ -423,25 +436,32 @@ public class RootAdapter extends CommanderAdapterBase {
                     sendProgress( "Deleting " + full_name, (int)(counter * conv) );
                     String to_exec;
                     if( f.isDirectory() )
-                        to_exec = "rm -r " + full_name + "\n";
+                        to_exec = "rm -r '" + full_name + "'\n";
                     else
-                        to_exec = "rm " + full_name + "\n";
-                    os.writeBytes( to_exec ); // execute command
+                        to_exec = "rm '" + full_name + "'\n";
+                    os.write( to_exec ); // execute command
                     os.flush();
                     Thread.sleep( 200 );
-                    if( es.available() > 0 ) {
-                        error( es.readLine() );
-                        break;
+                    if( es.ready() ) {
+                        String err_str = es.readLine();
+                        if( err_str.trim().length() > 0 ) {
+                            error( err_str );
+                            break;
+                        }
                     }
                     counter++;
                 }
-                os.writeBytes("exit\n");
+                os.write("exit\n");
                 os.flush();
                 p.waitFor();
                 if( p.exitValue() == 255 )
                     Log.e( TAG, "Deleting batch failed" );
-                if( es.available() > 0 )
-                    error( "Late error detected:\n" + es.readLine() );
+                if( es.ready() ) {
+                    String err_str = es.readLine();
+                    if( err_str.trim().length() > 0 ) {
+                        error( err_str );
+                    }
+                }
             }
             catch( Exception e ) {
                 error( "Exception: " + e );
@@ -494,7 +514,7 @@ public class RootAdapter extends CommanderAdapterBase {
             else
             	if( cur.charAt( cur.length()-1 ) != SLC )
             		cur += SLS;
-            commander.Navigate( uri.buildUpon().path( cur + item.getName() ).build(), null );
+            commander.Navigate( uri.buildUpon().appendEncodedPath( item.getName() ).build(), null );
         }
     }
 
@@ -537,22 +557,26 @@ public class RootAdapter extends CommanderAdapterBase {
                 String bb = getBusyBox();
                 String cmd = move ? " mv " : " cp -r ";
                 Process p = Runtime.getRuntime().exec( sh );
-                DataOutputStream os = new DataOutputStream( p.getOutputStream() );
-                DataInputStream  es = new DataInputStream( p.getErrorStream() );
+                OutputStreamWriter os = new OutputStreamWriter( p.getOutputStream() );
+                BufferedReader es = new BufferedReader( new InputStreamReader( p.getErrorStream() ) );
+                
                 int num = src_full_names.length;
                 double conv = 100./(double)num;
                 for( int i = 0; i < num; i++ ) {
                     String full_name = src_full_names[i];
                     if( full_name == null ) continue;
                     String to_exec;
-                    to_exec = bb + cmd + full_name + " " + dest + "\n";
+                    to_exec = bb + cmd + "'" + full_name + "' '" + dest + "'\n";
                     Log.i( TAG, to_exec );
-                    os.writeBytes( to_exec ); // execute command
+                    os.write( to_exec ); // execute command
                     os.flush();
                     Thread.sleep( 100 );
-                    if( es.available() > 0 ) {
-                        error( es.readLine() );
-                        break;
+                    if( es.ready() ) {
+                        String err_str = es.readLine();
+                        if( err_str.trim().length() > 0 ) {
+                            error( err_str );
+                            break;
+                        }
                     }
                     if( stop || isInterrupted() ) {
                         error( "Canceled" );
@@ -561,7 +585,7 @@ public class RootAdapter extends CommanderAdapterBase {
                     if( !quiet ) sendProgress( "'" + full_name + "'   ", (int)(i * conv) );
                     counter++;
                 }
-                os.writeBytes("exit\n");
+                os.write("exit\n");
                 os.flush();
                 p.waitFor();
                 if( p.exitValue() == 255 )

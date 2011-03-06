@@ -26,7 +26,6 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -279,13 +278,13 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     }
     public final int getSelection() {
         int pos = listViews[current].getSelectedItemPosition();
-        return pos < 0 ? currentPositions[current] : pos;
+        return pos < 0 ? currentPositions[current] : ( currentPositions[current] = pos );
     }
     public final void setSelection( int i ) {
         setSelection( current, i, 0 );
     }
     public final void setSelection( int which, int i, int y_ ) {
-        final ListView final_flv = listViews[current];  
+        final ListView final_flv = listViews[which];  
         final int position = i, y = y_;
         final_flv.post(new Runnable() {
             public void run()
@@ -303,9 +302,10 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             for( i = 0; i < num; i++ ) {
             	String item_name = ca.getItemName( i, false );
                 if( item_name != null && item_name.compareTo( name ) == 0 ) {
+                    Log.v( TAG, "trying to set panel " + which + " selection to item '" + name + "', pos: " + i );
+                    setSelection( which, i, flv.getHeight() / 2 );
                     if( !flv.requestFocusFromTouch() )
                         Log.w( TAG, "ListView does not take focus :(" );
-                    setSelection( which, i, flv.getHeight() / 2 );
                     break;
                 }
             }
@@ -1238,6 +1238,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             CommanderAdapter  left_adapter = (CommanderAdapter)listViews[LEFT].getAdapter();
             s.left  =  left_adapter.toString();
             s.leftItem  =  left_adapter.getItemName( currentPositions[LEFT],  false );
+            Log.v( TAG, "Saving left current item: " + s.leftItem );
             CommanderAdapter right_adapter = (CommanderAdapter)listViews[RIGHT].getAdapter();
             s.right = right_adapter.toString();
             s.rightItem = right_adapter.getItemName( currentPositions[RIGHT], false );
@@ -1251,6 +1252,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
 	    if( s == null ) return;
     	resetQuickSearch();
     	current = s.current;
+    	Log.v( TAG, "Restoring left current item: " + s.leftItem );
         NavigateInternal( LEFT,  Uri.parse(s.left),  s.leftItem );
         NavigateInternal( RIGHT, Uri.parse(s.right), s.rightItem );
         applyColors();

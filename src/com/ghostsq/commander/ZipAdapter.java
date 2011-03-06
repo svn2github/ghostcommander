@@ -839,12 +839,13 @@ public class ZipAdapter extends CommanderAdapterBase {
     
     private final String fixName( ZipEntry entry ) {
         try {
+            String entry_name = entry.getName(); 
+            if( android.os.Build.VERSION.SDK_INT >= 10 )
+                return entry_name; // already fixed?
             byte[] ex = entry.getExtra();
             if( ex != null && ex.length == 2 && ex[0] == 1 && ex[1] == 2 ) 
-                return entry.getName();
-//            byte[] bytes = entry.getName().getBytes( "iso-8859-1" );
-            byte bytes[] = EncodingUtils.getBytes( entry.getName(),"iso-8859-1" );
-
+                return entry_name;
+            byte bytes[] = EncodingUtils.getBytes( entry_name, "iso-8859-1" );
             return new String( bytes );
         } catch( Exception e ) {
             e.printStackTrace();

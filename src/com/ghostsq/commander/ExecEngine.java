@@ -1,7 +1,10 @@
 package com.ghostsq.commander;
 
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -55,29 +58,28 @@ class ExecEngine extends Engine {
         try {
             String bb = use_bb ? getBusyBox() + " " : "";
             Process p = Runtime.getRuntime().exec( sh );
-            DataOutputStream os = new DataOutputStream( p.getOutputStream() );
-            DataInputStream  es = new DataInputStream( p.getErrorStream() );
-            DataInputStream  is = result != null ? new DataInputStream( p.getInputStream() ) : null;
+            OutputStreamWriter os = new OutputStreamWriter( p.getOutputStream() );
+            BufferedReader is = result != null ? new BufferedReader( new InputStreamReader( p.getInputStream() ) ) : null;
+            BufferedReader es = new BufferedReader( new InputStreamReader( p.getErrorStream() ) );
             
             if( where != null ) {
-                os.writeBytes( "cd " + where + "\n" ); // execute the command
+                os.write( "cd '" + where + "'\n" ); // execute the command
                 os.flush();
             }
             String to_exec = bb + cmd + "\n";
             Log.v( TAG, "executing '" + to_exec + "'" );
-            os.writeBytes( to_exec ); // execute the command
+            os.write( to_exec ); // execute the command
             os.flush();
             Thread.sleep( timeout );
 
-            while( es.available() > 0 ) {
-                if( isStopReq() ) 
-                    throw new Exception();
-                String ln = es.readLine();
-                if( ln == null ) break;
-                error( ln );
+            if( es.ready() ) {
+                String err_str = es.readLine();
+                if( err_str.trim().length() > 0 ) {
+                    error( err_str );
+                }
             }
             if( is != null && result != null )
-                while( is.available() > 0 ) {
+                while( is.ready() ) {
                     if( isStopReq() ) 
                         throw new Exception();
                     String ln = is.readLine();
@@ -85,7 +87,7 @@ class ExecEngine extends Engine {
                     result.append( ln );
                     result.append( "\n" );
                 }
-            os.writeBytes("exit\n");
+            os.write( "exit\n" );
             os.flush();
             p.waitFor();
             if( p.exitValue() == 255 )
