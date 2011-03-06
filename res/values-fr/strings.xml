@@ -120,6 +120,7 @@
 <string name="items">éléments</string>
 <string name="were"></string><!-- !!! -->
 <string name="was"></string><!-- !!! -->
+<string name="verb_plural_sfx">s</string> 
 <string name="nothing">Aucun élément</string><!-- !!! -->
 <string name="cd_title">Aller à</string>
 <string name="cd_prompt">Changer le répertoire à:</string>
