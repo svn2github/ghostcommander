@@ -21,11 +21,10 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
     public static final String TTL_COLORS = "ttl_color_picker"; 
     private SharedPreferences color_pref = null;
     private String color_pref_key = null;
-    private String lang = "";
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        changeLanguage();
+        Utils.changeLanguage( this, getResources() );
         super.onCreate(savedInstanceState);
         
         // Load the preferences from an XML resource
@@ -45,21 +44,6 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
             color_picker_pref.setOnPreferenceClickListener( this );
     }
 
-    final void changeLanguage() {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        lang = sharedPref.getString( "language", "" );
-        if( lang == null || lang.length() == 0 ) return;
-        Locale locale;
-        String country = lang.length() > 3 ? lang.substring( 3 ) : null;
-        if( country != null )
-            locale = new Locale( lang.substring( 0, 2 ), country );
-        else
-            locale = new Locale( lang );
-        Locale.setDefault( locale );
-        Configuration config = new Configuration();
-        config.locale = locale;
-        getResources().updateConfiguration( config, null );
-    }
 
     @Override
     public boolean onPreferenceClick( Preference preference ) {

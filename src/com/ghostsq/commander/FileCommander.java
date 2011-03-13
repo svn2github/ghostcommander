@@ -40,7 +40,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     private ArrayList<Dialogs> dialogs;
     public  Panels  panels, panelsBak = null;
     private boolean on = false, exit = false, dont_restore = false;
-    private String lang = "";
+    private String lang = ""; // just need to issue a warning on change
 
     public final void showMemory( String s ) {
         final ActivityManager sys = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
@@ -86,7 +86,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         dialogs = new ArrayList<Dialogs>(Dialogs.numDialogTypes);
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        changeLanguage( sharedPref.getString( "language", "" ) );
+        lang = sharedPref.getString( "language", "" );
+        Utils.changeLanguage( this, getResources() );
         boolean sideXside = false;
         try {
             Display disp = getWindowManager().getDefaultDisplay();
@@ -94,7 +95,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         } catch( Exception e ) {
             Log.e( TAG, "", e );
         }
-        panels = new Panels(this, sharedPref.getBoolean( "panels_mode", sideXside ) ? R.layout.alt : R.layout.main);
+        panels = new Panels(this, sharedPref.getBoolean( "panels_mode", sideXside ) );
     }
 
     @Override
@@ -248,7 +249,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         super.onActivityResult(requestCode, resultCode, data);
         if( requestCode == REQUEST_CODE_PREFERENCES ) {
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-            if( !lang.equalsIgnoreCase( sharedPref.getString( "language", "" ) ) ) {
+            String lang_ = sharedPref.getString( "language", "" );
+            if( !lang.equalsIgnoreCase( lang_ ) ) {
+                lang = lang_;
+                Utils.changeLanguage( this, getResources() );
                 showMessage( getString( R.string.restart_to_apply_lang ) );
                 exit = true;
             }
@@ -325,6 +329,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     }
 
     public final void doIt( int id ) {
+        Utils.changeLanguage( this, getResources() );
         switch( id ) {
         case R.id.keys:
         case R.id.F1:
@@ -435,7 +440,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     private final void toggleMode() {
         if( panelsBak == null ) {
             panelsBak = panels;
-            panels = new Panels(this, panels.getId() == R.layout.alt ? R.layout.main : R.layout.alt);
+            panels = new Panels( this, panels.getId() != R.layout.alt );
         } else {
             Panels tmp = panels;
             panels = panelsBak;
@@ -533,7 +538,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             return;
         case OPERATION_FAILED_LOGIN_REQUIRED: 
             if( progress.string != null ) {
-                dh = obtainDialogsInstance(Dialogs.LOGIN_DIALOG);
+                dh = obtainDialogsInstance( Dialogs.LOGIN_DIALOG );
                 dh.setMessageToBeShown( null, progress.string );
                 showDialog( Dialogs.LOGIN_DIALOG );
             }
@@ -629,27 +634,6 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         }
         return null;
     }    
-
-    final void changeLanguage( String lang_ ) {
-        if( lang_ == null || lang_.length() == 0 ) return;
-        if( !lang.equalsIgnoreCase( lang_ ) ) {
-            Log.i( TAG, "Changing lang to " + lang_ );
-            lang = lang_;
-            Locale locale;
-            String country = lang.length() > 3 ? lang.substring( 3 ) : null;
-            if( country != null ) {
-                Log.i( TAG, "Changing country to " + country );
-                locale = new Locale( lang.substring( 0, 2 ), country );
-            }
-            else
-                locale = new Locale( lang );
-            Locale.setDefault( locale );
-            Log.i( TAG, "Now the locale is " + Locale.getDefault().toString() );
-            Configuration config = new Configuration();
-            config.locale = locale;
-            getResources().updateConfiguration( config, null );
-        }
-    }
     final void startViewURIActivity( int res_id ) {
         Intent i = new Intent( Intent.ACTION_VIEW );
         i.setData( Uri.parse( getString( res_id ) ) );

@@ -13,6 +13,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.graphics.Color;
 import android.net.Uri;
 import android.net.UrlQuerySanitizer;
+import android.net.wifi.WifiConfiguration.GroupCipher;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -27,6 +28,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -34,7 +36,7 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 import android.widget.AbsListView.OnScrollListener;
 
-public class Panels implements AdapterView.OnItemSelectedListener, 
+public class Panels   implements AdapterView.OnItemSelectedListener, 
                                  AdapterView.OnItemClickListener,
                                     ListView.OnScrollListener,
                                         View.OnClickListener, 
@@ -56,7 +58,6 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     private FileCommander c;
     public  View mainView, toolbar = null;
     public  ViewFlipper mFlipper;
-    private int id;
     private int titleColor = Prefs.getDefaultColor( Prefs.TTL_COLORS ), 
                   fgrColor = Prefs.getDefaultColor( Prefs.FGR_COLORS ),
                   selColor = Prefs.getDefaultColor( Prefs.SEL_COLORS );
@@ -67,13 +68,19 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     private Toast        quickSearchTip = null;
     private Shortcuts    shorcutsFoldersList;
     private CommanderAdapter destAdapter = null;
-
-    public Panels( FileCommander c_, int id_ ) {
-        current = LEFT;
+    private boolean sxs;
+    
+    private int id = R.layout.main; // temporaty, to remove!
+    
+    
+    public Panels( FileCommander c_, boolean sxs_ ) {
         c = c_;
-        id = id_;
+        sxs = sxs_;
+        id = sxs ? R.layout.alt : R.layout.main;
+        current = LEFT;
         c.setContentView( id );
         mainView = c.findViewById( R.id.main );
+        
         mFlipper = ((ViewFlipper)c.findViewById( R.id.flipper ));
         
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
@@ -87,6 +94,9 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         initList( LEFT );
         initList( RIGHT );
         highlightCurrentTitle();
+        
+        
+        
         
         TextView left_title = (TextView)c.findViewById( titlesIds[LEFT] );
         if( left_title != null ) {
@@ -506,18 +516,33 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     	if( refresh && id == R.layout.main )
             refreshList( current );
     }
+    
     public final void setPanelCurrent( int which ) {
         Log.v( TAG, "setPanelCurrent " + which );
-        if( mFlipper != null ) {
-        	if( which == RIGHT ) {
-                mFlipper.setInAnimation(  AnimationUtils.loadAnimation( c, R.anim.left_in ) );
-                mFlipper.setOutAnimation( AnimationUtils.loadAnimation( c, R.anim.left_out ) );
-	        }
-	        else {
-                mFlipper.setInAnimation(  AnimationUtils.loadAnimation( c, R.anim.right_in ) );
-                mFlipper.setOutAnimation( AnimationUtils.loadAnimation( c, R.anim.right_out ) );
+        /*
+        if( sxs ) {
+            int w = mainView.getWidth();
+            int h = mainView.getHeight();
+            View lv = c.findViewById( listsIds[LEFT] );
+            View rv = c.findViewById( listsIds[RIGHT] );
+            lv.layout( -w/2, 0, w/2,     h );
+            rv.layout(  w/2, 0, w + w/2, h );
+            mainView.requestLayout();
+        }
+        else
+        */
+         {
+            if( mFlipper != null ) {
+            	if( which == RIGHT ) {
+                    mFlipper.setInAnimation(  AnimationUtils.loadAnimation( c, R.anim.left_in ) );
+                    mFlipper.setOutAnimation( AnimationUtils.loadAnimation( c, R.anim.left_out ) );
+    	        }
+    	        else {
+                    mFlipper.setInAnimation(  AnimationUtils.loadAnimation( c, R.anim.right_in ) );
+                    mFlipper.setOutAnimation( AnimationUtils.loadAnimation( c, R.anim.right_out ) );
+                }
+            	mFlipper.setDisplayedChild( which );
             }
-        	mFlipper.setDisplayedChild( which );
         }
         current = which;
         focus();

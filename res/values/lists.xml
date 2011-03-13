@@ -14,31 +14,33 @@
     </string-array>
 
     <string-array name="language">
-	    <item>Default</item>
-	    <item>English</item>
-	    <item>Русский</item>
-	    <item>中文</item>
-	    <item>文言</item>
-	    <item>한국어</item>  
-	    <item>Magyar</item>  
-	    <item>Deutsch</item>  
-	    <item>Čeština</item>
-	    <item>Български</item>
-	    <item>Italiano</item>
-	    <item>Français</item>
+        <item>Default</item>
+        <item>English</item>
+        <item>Русский</item>
+        <item>中文</item>
+        <item>文言</item>
+        <item>한국어</item>  
+        <item>Magyar</item>  
+        <item>Deutsch</item>  
+        <item>Čeština</item>
+        <item>Български</item>
+        <item>Italiano</item>
+        <item>Français</item>
+        <item>Polski</item>
     </string-array>
     <string-array name="language_vals">
-	    <item></item>
-	    <item>en</item>
-	    <item>ru</item>
-	    <item>zh_cn</item>
-	    <item>zh_tw</item>
-	    <item>ko</item>  
-	    <item>hu</item>  
-	    <item>de</item>  
-	    <item>cs</item>
-	    <item>bg</item>
-	    <item>it</item>
-	    <item>fr</item>
+        <item></item>
+        <item>en</item>
+        <item>ru</item>
+        <item>zh_cn</item>
+        <item>zh_tw</item>
+        <item>ko</item>  
+        <item>hu</item>  
+        <item>de</item>  
+        <item>cs</item>
+        <item>bg</item>
+        <item>it</item>
+        <item>fr</item>
+        <item>pl</item>
     </string-array>
 </resources>

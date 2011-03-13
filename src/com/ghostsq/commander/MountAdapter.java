@@ -321,16 +321,29 @@ public class MountAdapter extends CommanderAdapterBase {
             String cmd = null;
             try {
                 String o = mount.getOptions();
-                if( o.indexOf( "rw" ) >= 0 )
-                    o = o.replace( "rw", "ro" );
-                else
-                if( o.indexOf( "ro" ) >= 0 )
-                    o = o.replace( "ro", "rw" );
-                else {
-                    error( "Don't know what to do." );
+                if( o == null ) {
+                    error( "No Options found" );
                     return;
                 }
-                cmd = "mount -o remount," + o + " " + mount.getName();
+                String[] flds = o.split( "," );
+                boolean found = false;
+                for( int i = 0; i < flds.length; i++ ) {
+                    if( flds[i].equals( "rw" ) ) {
+                        flds[i] = "ro";
+                        found = true;
+                        break;
+                    }
+                    if( flds[i].equals( "ro" ) ) {
+                        flds[i] = "rw";
+                        found = true;
+                        break;
+                    }
+                }
+                if( !found ) {
+                    error( "No ro/rw options found" );
+                    return;
+                }
+                cmd = "mount -o remount," + Utils.join( flds, "," ) + " " + mount.getName();
                 execute( cmd, false, 500 );
             }
             catch( Exception e ) {
@@ -339,7 +352,7 @@ public class MountAdapter extends CommanderAdapterBase {
             }
             finally {
                 super.run();
-                sendResult( errMsg != null ? ( cmd == null ? "" : "Were tried to execute: '" + cmd + "'") : null );
+                sendResult( errMsg != null ? ( cmd == null ? "" : "Tried to execute: '" + cmd + "'") : null );
             }
         }
     }

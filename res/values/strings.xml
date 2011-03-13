@@ -140,6 +140,16 @@
     <string name="were">were</string>
     <string name="was">was</string>
     <string name="nothing">Nothing</string>
+<!-- 
+copied 0 will produce:
+"nothing" + "was" + "copied"
+
+copied 1 will produce:
+ 1 + "item" + "was" + "copied"
+
+copied >1 will produce:
+ # + "items" + "were" + "copied" + "verb_plural_sfx"
+ -->
     
     <string name="cd_title">Go to</string>
     <string name="cd_prompt">Change directory to:</string>

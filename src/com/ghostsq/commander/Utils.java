@@ -2,10 +2,17 @@ package com.ghostsq.commander;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.webkit.MimeTypeMap;
 
 public final class Utils {
@@ -182,5 +189,42 @@ public final class Utils {
     public final static String mbAddSl( String path ) {
         if( path == null || path.length() == 0 ) return "";
         return path.charAt( path.length()-1 ) == '/' ? path : path + "/"; 
+    }
+    public final static String join( String[] a, String sep ) {
+        if( a == null ) return "";
+        StringBuffer buf = new StringBuffer();
+        boolean first = true;
+        for( int i = 0; i < a.length; i++ ) {
+          if( first )
+            first = false;
+          else if( sep != null )
+            buf.append( sep );
+          buf.append( a[i] );
+        }
+        return buf.toString();
+    }
+    public final static void changeLanguage( Context c, Resources r ) {
+        try {
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
+            String lang = sharedPref.getString( "language", "" );
+            
+            Locale locale;
+            if( lang == null || lang.length() == 0 ) {
+                locale = Locale.getDefault();
+            }
+            else {
+                String country = lang.length() > 3 ? lang.substring( 3 ) : null;
+                if( country != null )
+                    locale = new Locale( lang.substring( 0, 2 ), country );
+                else
+                    locale = new Locale( lang );
+            }
+            Locale.setDefault( locale );
+            Configuration config = new Configuration();
+            config.locale = locale;
+            r.updateConfiguration( config, null );
+        } catch( Exception e ) {
+            e.printStackTrace();
+        }
     }
 }

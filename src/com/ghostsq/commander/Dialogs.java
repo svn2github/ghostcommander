@@ -42,6 +42,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
         return dialogObj;
     }
     protected Dialog createDialog( int id ) {
+        Utils.changeLanguage( owner, owner.getResources() );
         switch( id ) {
         case SELECT_DIALOG:
         case UNSELECT_DIALOG:
@@ -123,9 +124,10 @@ public class Dialogs implements DialogInterface.OnClickListener {
 
     protected void prepareDialog( int id, Dialog dialog ) {
         if( dialog != dialogObj ) {
-            owner.showMessage( "Dialogs corrupted!" );
+            Log.e( TAG, "Dialogs corrupted!" );
             return;
         }
+        Utils.changeLanguage( owner, owner.getResources() );
         boolean move = false;
         try {
             TextView prompt = (TextView)dialog.findViewById( R.id.prompt );

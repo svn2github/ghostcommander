@@ -150,8 +150,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         dateWidth = 0;
         attrWidth = 0;
         parentLink = SLS;       
-    	commander = c;		
-    	mInflater = (LayoutInflater)c.getContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+    	commander = c;
+    	Context ctx = c.getContext();
+    	mInflater = (LayoutInflater)ctx.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+    	Utils.changeLanguage( ctx, ctx.getResources() );
 	}
     
     @Override
