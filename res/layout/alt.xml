@@ -52,7 +52,7 @@
             android:layout_width="wrap_content" 
             android:layout_height="wrap_content"/>         
     </LinearLayout>
-    <LinearLayout android:id="@+id/panels"
+    <com.ghostsq.commander.PanelsView android:id="@+id/panels"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
@@ -79,6 +79,6 @@
 	        android:drawSelectorOnTop="false"
 	        android:paddingLeft="1dp"
 	        android:paddingRight="1dp"/>
-    </LinearLayout>
+    </com.ghostsq.commander.PanelsView>
  </LinearLayout>
  

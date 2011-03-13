@@ -57,7 +57,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     private int current = LEFT;
     private FileCommander c;
     public  View mainView, toolbar = null;
-    public  ViewFlipper mFlipper;
+    public  ViewFlipper mFlipper_   = null;
+    public  PanelsView  panelsView = null;
     private int titleColor = Prefs.getDefaultColor( Prefs.TTL_COLORS ), 
                   fgrColor = Prefs.getDefaultColor( Prefs.FGR_COLORS ),
                   selColor = Prefs.getDefaultColor( Prefs.SEL_COLORS );
@@ -70,18 +71,16 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     private CommanderAdapter destAdapter = null;
     private boolean sxs;
     
-    private int id = R.layout.main; // temporaty, to remove!
-    
-    
     public Panels( FileCommander c_, boolean sxs_ ) {
         c = c_;
-        sxs = sxs_;
-        id = sxs ? R.layout.alt : R.layout.main;
         current = LEFT;
-        c.setContentView( id );
+        c.setContentView( R.layout.alt );
         mainView = c.findViewById( R.id.main );
         
-        mFlipper = ((ViewFlipper)c.findViewById( R.id.flipper ));
+        //mFlipper = ((ViewFlipper)c.findViewById( R.id.flipper ));
+        panelsView = ((PanelsView)c.findViewById( R.id.panels ));
+        if( panelsView != null )
+            panelsView.setMode( sxs_, current );
         
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
         fingerFriendly =  sharedPref.getBoolean( "finger_friendly", true );
@@ -94,9 +93,6 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         initList( LEFT );
         initList( RIGHT );
         highlightCurrentTitle();
-        
-        
-        
         
         TextView left_title = (TextView)c.findViewById( titlesIds[LEFT] );
         if( left_title != null ) {
@@ -117,6 +113,10 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 			c.showMessage( "Exception on creating quickSearchTip: " + e );
 		}
         focus();
+    }
+    public final void setMode( boolean sxs_ ) {
+        sxs = sxs_;
+        if( panelsView != null ) panelsView.setMode( sxs_, current );
     }
     public int getCurrent() {
         return current;
@@ -197,7 +197,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     // View.OnFocusChangeListener implementation
     @Override
     public void onFocusChange( View v, boolean f ) {
-        if( id == R.layout.alt && f && listViews[current] != v ) {
+        if( sxs && f && listViews[current] != v ) {
             togglePanels( false );
         }
     }
@@ -205,9 +205,6 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public final boolean isCurrent( int q ) {
         return ( current == LEFT  && q == LEFT ) ||
                ( current == RIGHT && q == RIGHT );
-    }
-    public final int getId() {
-        return id;
     }
     private final void initList( int which ) {
         ListView flv = (ListView)c.findViewById( listsIds[which] );
@@ -363,7 +360,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             selColor = color_pref.getInt( Prefs.SEL_COLORS,  selColor );
           titleColor = color_pref.getInt( Prefs.TTL_COLORS,titleColor );
         }
-        if( id == R.layout.alt ) {
+        if( sxs ) {
             View div = mainView.findViewById( R.id.divider );
             if( div != null)
                 div.setBackgroundColor( titleColor );
@@ -402,7 +399,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     private final void applySettings( SharedPreferences sharedPref, CommanderAdapter ca, int which ) {
         try {
             arrow_mode = sharedPref.getBoolean( "arrow_mode", false );
-            if( id == R.layout.main )
+            if( !sxs )
                 ca.setMode( CommanderAdapter.MODE_WIDTH, sharedPref.getBoolean( "two_lines", false ) ? 
                 		    CommanderAdapter.NARROW_MODE : CommanderAdapter.WIDE_MODE );
 
@@ -412,7 +409,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             ca.setMode( CommanderAdapter.MODE_CASE, sharedPref.getBoolean( "case_ignore", true ) ? 
                     CommanderAdapter.CASE_IGNORE : CommanderAdapter.CASE_SENS );
 
-            String sfx = id == R.layout.main ? "_Ovr" : "_SbS";
+            String sfx = sxs ? "_SbS" : "_Ovr";
             boolean detail_mode = sharedPref.getBoolean( which == LEFT ? "left_detailed" + sfx : "right_detailed" + sfx, true );        
             ca.setMode( CommanderAdapter.MODE_DETAILS, detail_mode ? 
                         CommanderAdapter.DETAILED_MODE : CommanderAdapter.SIMPLE_MODE );
@@ -443,7 +440,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     }
     public final void refreshLists() {
         refreshList( current );
-        if( id == R.layout.alt )
+        if( sxs )
             refreshList( opposite() );
     }
     public final void refreshList( int which ) {
@@ -513,25 +510,16 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public final void togglePanels( boolean refresh ) {
         Log.v( TAG, "toggle" );
     	setPanelCurrent( opposite() );
-    	if( refresh && id == R.layout.main )
+    	if( refresh && !sxs )
             refreshList( current );
     }
     
     public final void setPanelCurrent( int which ) {
         Log.v( TAG, "setPanelCurrent " + which );
-        /*
-        if( sxs ) {
-            int w = mainView.getWidth();
-            int h = mainView.getHeight();
-            View lv = c.findViewById( listsIds[LEFT] );
-            View rv = c.findViewById( listsIds[RIGHT] );
-            lv.layout( -w/2, 0, w/2,     h );
-            rv.layout(  w/2, 0, w + w/2, h );
-            mainView.requestLayout();
-        }
-        else
-        */
-         {
+        if( panelsView != null ) {
+            panelsView.setMode( sxs, which );
+            
+/*
             if( mFlipper != null ) {
             	if( which == RIGHT ) {
                     mFlipper.setInAnimation(  AnimationUtils.loadAnimation( c, R.anim.left_in ) );
@@ -543,6 +531,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 }
             	mFlipper.setDisplayedChild( which );
             }
+*/
         }
         current = which;
         focus();
@@ -654,7 +643,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                     Log.e( TAG, "Unknown adapter with type hash " + type_h );
                 else {
                     ca.setMode( CommanderAdapter.WIDE_MODE, 
-                      id == R.layout.main ? CommanderAdapter.WIDE_MODE : CommanderAdapter.NARROW_MODE );
+                      sxs ? CommanderAdapter.NARROW_MODE : CommanderAdapter.WIDE_MODE );
                     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
                     applySettings( sharedPref, ca, which );
                     flv.setAdapter( (ListAdapter)ca );
@@ -816,7 +805,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 	}
     private final void showTip( String s ) {
     	try {
-	        if( R.layout.main == id || current == LEFT )
+	        if( !sxs || current == LEFT )
 	        	quickSearchTip.setGravity( Gravity.BOTTOM | Gravity.LEFT, 5, 10 );
 	        else
 	        	quickSearchTip.setGravity( Gravity.BOTTOM, 10, 10 );
@@ -1043,19 +1032,22 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 		            shorcutsFoldersList.openGoPanel( which, getFolderUri( isCurrent( which ) ) );
 		        }
 	        	return true;
+            case '*':
+                addCurrentToFavorites();
+                return true;
 	        case '{':
-	        case '}':
-	        	setPanelCurrent( ch == '{' ? Panels.LEFT : Panels.RIGHT );
-	        	return true;
+            case '}':
+                setPanelCurrent( ch == '{' ? Panels.LEFT : Panels.RIGHT );
+                return true;
+            case '#':
+                setMode( !sxs );
+                return true;
 	        case '+':
 	        case '-':
 	            c.showDialog( ch == '+' ? Dialogs.SELECT_DIALOG :  Dialogs.UNSELECT_DIALOG );
 	            return true;
 	        case '"':
 	        	showSizes();
-	            return true;
-	        case '*':
-	            addCurrentToFavorites();
 	            return true;
 	        case '2':
 	            c.showDialog( R.id.F2 );

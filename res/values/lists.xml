@@ -13,6 +13,18 @@
         <item>d</item>  
     </string-array>
 
+    <string-array name="panels_mode">
+        <item>Yes</item>
+        <item>No</item>
+        <item>Auto</item>
+    </string-array>
+
+    <string-array name="panels_mode_vals">
+        <item>y</item>
+        <item>n</item>
+        <item>a</item>
+    </string-array>
+
     <string-array name="language">
         <item>Default</item>
         <item>English</item>

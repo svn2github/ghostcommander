@@ -64,16 +64,14 @@
     </PreferenceScreen>
     <PreferenceCategory
             android:title="@string/layout_settings">
-        <CheckBoxPreference
-                android:key="case_ignore"
-                android:title="@string/sort_case"
-                android:summary="@string/summary_sort_case" 
-                android:defaultValue="true"/>
-        <CheckBoxPreference
-                android:key="panels_mode"
+        <ListPreference
+                android:key="panels_sxs_mode"
                 android:title="@string/panels_mode"
                 android:summary="@string/summary_panels_mode" 
-                android:defaultValue="false"/>
+                android:entries="@array/panels_mode"
+                android:entryValues="@array/panels_mode_vals"
+                android:dialogTitle="@string/panels_mode" 
+                android:defaultValue="a"/>                
         <CheckBoxPreference
                 android:key="two_lines"
                 android:title="@string/two_lines"
@@ -99,6 +97,11 @@
             android:title="@string/thumbnails_size" 
             android:summary="@string/summary_thumbnails_size" 
             android:defaultValue="100"/>
+        <CheckBoxPreference
+                android:key="case_ignore"
+                android:title="@string/sort_case"
+                android:summary="@string/summary_sort_case" 
+                android:defaultValue="true"/>
 	    <PreferenceScreen
 	                android:key="colors"
 	                android:title="@string/colors">

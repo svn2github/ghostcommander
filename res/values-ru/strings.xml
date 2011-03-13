@@ -54,8 +54,8 @@
 <string name="sort_by_ext">  По расширению</string>
 <string name="sort_by_size">  По размеру</string>
 <string name="sort_by_date">  По дате</string>
-<string name="select_all">+ Выдели файлы</string>
-<string name="unselect_all">- Снять выделение</string>
+<string name="select_all">+ Пометить файлы</string>
+<string name="unselect_all">- Снять пометку</string>
 <string name="prefs">9 Настройки</string>
 <string name="about">О программе</string>
 <string name="keys">Значения клавиш</string>

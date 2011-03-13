@@ -38,8 +38,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     public final static int FIND_ACT = 1017, DBOX_APP = 3592;
     
     private ArrayList<Dialogs> dialogs;
-    public  Panels  panels, panelsBak = null;
-    private boolean on = false, exit = false, dont_restore = false;
+    public  Panels  panels;
+    private boolean on = false, exit = false, dont_restore = false, sxs_auto = true;
     private String lang = ""; // just need to issue a warning on change
 
     public final void showMemory( String s ) {
@@ -88,14 +88,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         lang = sharedPref.getString( "language", "" );
         Utils.changeLanguage( this, getResources() );
-        boolean sideXside = false;
-        try {
-            Display disp = getWindowManager().getDefaultDisplay();
-            sideXside = disp.getWidth() > disp.getHeight();
-        } catch( Exception e ) {
-            Log.e( TAG, "", e );
-        }
-        panels = new Panels(this, sharedPref.getBoolean( "panels_mode", sideXside ) );
+        String panels_mode = sharedPref.getString( "panels_sxs_mode", "a" );
+        sxs_auto = panels_mode.equals( "a" );
+        boolean sxs = sxs_auto ? getRotMode() : panels_mode.equals( "y" );
+        panels = new Panels(this, sharedPref.getBoolean( "panels_mode", sxs ) );
     }
 
     @Override
@@ -155,6 +151,26 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             System.exit( 0 );
     }
 
+    @Override
+    public void onConfigurationChanged( Configuration newConfig ) {
+        super.onConfigurationChanged( newConfig );
+        if( sxs_auto ) {
+            if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                panels.setMode( true );
+            } else if( newConfig.orientation == Configuration.ORIENTATION_PORTRAIT ){
+                panels.setMode( false );
+            }
+        }
+/*// TODO: hide the numbers from the virtual buttons if there is no physical keyboard
+        // Checks whether a hardware keyboard is available
+        if (newConfig.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO) {
+            Toast.makeText(this, "keyboard visible", Toast.LENGTH_SHORT).show();
+        } else if (newConfig.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_YES) {
+            Toast.makeText(this, "keyboard hidden", Toast.LENGTH_SHORT).show();
+        }
+*/
+    }    
+    
     //these two methods are not called on screen rotation in v1.5, so all the store/restore is called from pause/start 
     @Override
     protected void onSaveInstanceState( Bundle outState ) {
@@ -257,9 +273,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 exit = true;
             }
             panels.applySettings( sharedPref );
-            if( panelsBak != null )
-                panelsBak.applySettings( sharedPref );
-            setMode( sharedPref.getBoolean( "panels_mode", false ) );
+            String panels_mode = sharedPref.getString( "panels_sxs_mode", "a" );
+            sxs_auto = panels_mode.equals( "a" );
+            boolean sxs = sxs_auto ? getRotMode() : panels_mode.equals( "y" );
+            panels.setMode( sxs );
             panels.showToolbar( sharedPref.getBoolean("show_toolbar", true ) );
         }
         else
@@ -428,28 +445,6 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             ca.doIt( id, panels.getSelectedOrChecked() );
         }
     }
-    private final boolean setMode( boolean side_by_side_mode ) {
-        if( ( side_by_side_mode && panels.getId() == R.layout.main ) || 
-           ( !side_by_side_mode && panels.getId() == R.layout.alt ) ) {
-            toggleMode();
-            return true;
-        }
-        return false;
-    }
-
-    private final void toggleMode() {
-        if( panelsBak == null ) {
-            panelsBak = panels;
-            panels = new Panels( this, panels.getId() != R.layout.alt );
-        } else {
-            Panels tmp = panels;
-            panels = panelsBak;
-            panelsBak = tmp;
-            setContentView(panels.mainView);
-        }
-        panels.setState(panelsBak.getState());
-    }
-
     private final void openPrefs() {
         Intent launchPreferencesIntent = new Intent().setClass( this, Prefs.class );
         startActivityForResult( launchPreferencesIntent, REQUEST_CODE_PREFERENCES );
@@ -634,9 +629,19 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         }
         return null;
     }    
-    final void startViewURIActivity( int res_id ) {
+    public final void startViewURIActivity( int res_id ) {
         Intent i = new Intent( Intent.ACTION_VIEW );
         i.setData( Uri.parse( getString( res_id ) ) );
         startActivity( i );
+    }
+    private final boolean getRotMode() {
+        boolean sideXside = false;
+        try {
+            Display disp = getWindowManager().getDefaultDisplay();
+            sideXside = disp.getWidth() > disp.getHeight();
+        } catch( Exception e ) {
+            Log.e( TAG, "", e );
+        }
+        return sideXside;
     }
 }

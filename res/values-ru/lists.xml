@@ -12,4 +12,11 @@
         <item>s</item>
         <item>d</item>  
     </string-array>
+
+    <string-array name="panels_mode">
+        <item>Да</item>
+        <item>Нет</item>
+        <item>Авто</item>
+    </string-array>
+
 </resources>
