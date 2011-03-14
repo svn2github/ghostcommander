@@ -507,10 +507,13 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public final void makeOtherAsCurrent() {
         NavigateInternal( opposite(), getListAdapter( true ).getUri(), null );
     }
+    public final void togglePanelsMode() {
+        setMode( !sxs );
+    }
     public final void togglePanels( boolean refresh ) {
         Log.v( TAG, "toggle" );
-    	setPanelCurrent( opposite() );
-    	if( refresh && !sxs )
+        setPanelCurrent( opposite() );
+        if( refresh && !sxs )
             refreshList( current );
     }
     

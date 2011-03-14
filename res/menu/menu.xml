@@ -69,10 +69,12 @@
         android:title="@string/app"
         android:icon="@drawable/app">        
       <menu>
-        <item android:id="@+id/donate"
-            android:title="@string/donate"/>
+        <item android:id="@+id/toggle_panels_mode"
+             android:title="@string/toggle_panels_mode"/>
         <item android:id="@+id/prefs"
             android:title="@string/prefs"/>
+        <item android:id="@+id/donate"
+            android:title="@string/donate"/>
         <item android:id="@+id/exit"
             android:title="@string/F10"/>
       </menu>

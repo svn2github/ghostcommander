@@ -1,0 +1,39 @@
+Dual panel file manager (like Norton Commander, Midnight Commander or Total Commander).
+
+Unlike regular file managers, it copies and moves files between its two panels.
+This allows you to easily keep the files in place by organizing the folders 
+on your sdcard.
+
+Aside the file system on the sdcard, the file manager can also upload or
+download files from remote locations such as FTP servers, Windows (aka Samba)
+network shares (plug-in required), create or extract ZIP archives.
+
+For the advanced users, this file manager has also the "root:" (su - super
+user) mode that is essential to work with system files on a rooted phone, change 
+file permissions attributes (chmod) and even execute your own shell commands. 
+Plus, the "mount:" mode allows you to browse and remount the file system's partitions.
+
+Please note! Tap on the right side of the panel to select multiple files.
+Tap on the left side to activate a file or enter a folder. Yes, one side will
+activate, and the other side will select!
+
+Furthermore the application comes with a lot of customizable options which allow 
+you to adjust its behavior to your personal habits.
+
+Full list of the Ghost Commander file manager features:
+* multiselect
+* pictures thumbnails
+* favorites
+* calculation of the total size of the selected folders and files
+* sorting - by file names, by extension, by size, by date
+* search for files by file name
+* text editor (built-in or external)
+* open a file with the appropriate application (install an .apk, show a picture or play a movie)
+* send files via email or bluetooth
+* many personalization settings, like: custom colors, custom interface language, custom toolbar set
+* standard file manager features: create directory, create text
+  file, delete files and folders, copy files and folders, FTP download, FTP
+  upload, ZIP creation and extraction, super user mode.
+
+Please visit the web site for more details.
+Do you have any question? Email me (in English).

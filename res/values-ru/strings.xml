@@ -134,6 +134,8 @@
 <string name="cancel">Отмена</string>
 <string name="ftp_connected">Подключились к FTP \"%1$s\",\n с именем \"%2$s\"</string>
 <string name="layout_settings">Настройки внешнего вида:</string>
+
+<string name="toggle_panels_mode"># Изменить режим панелей</string>
 <string name="panels_mode">Две панели рядом</string>
 <string name="summary_panels_mode">Показывать обе панели разом на одном экране</string>
 <string name="two_lines">Вывод в две строки</string>

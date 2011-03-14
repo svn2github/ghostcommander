@@ -380,6 +380,9 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         case R.id.eq:
             panels.makeOtherAsCurrent();
             break;
+        case R.id.toggle_panels_mode:
+            panels.togglePanelsMode();
+            break;
         case R.id.tgl:
             panels.togglePanels(true);
             break;

@@ -38,6 +38,7 @@
     <string name="select_all">+ Select files</string>
     <string name="unselect_all">- UnSelect files</string>
         
+    <string name="toggle_panels_mode"># Change panels mode</string>
     <string name="prefs">9 Settings</string>
     <string name="about">&#xA0; About</string>
     <string name="keys">1 Shortcut keys</string>
