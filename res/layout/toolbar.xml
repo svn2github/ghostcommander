@@ -131,7 +131,37 @@
                 android:paddingTop="1dp" 
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content" 
-                android:layout_height="wrap_content"/>         
+                android:layout_height="wrap_content"/>
+                
+             <Button android:id="@+id/select_all"
+                android:text="@string/select_b"
+                android:focusable="false"
+                android:paddingTop="1dp" 
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content" 
+                android:layout_height="wrap_content"/>
+             <Button android:id="@+id/unselect_all"
+                android:text="@string/unselect_b"
+                android:focusable="false"
+                android:paddingTop="1dp" 
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content" 
+                android:layout_height="wrap_content"/>
+                
+             <Button android:id="@+id/enter"
+                android:text="@string/enter_b"
+                android:focusable="false"
+                android:paddingTop="1dp" 
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content" 
+                android:layout_height="wrap_content"/>
+             <Button android:id="@+id/add_fav"
+                android:text="@string/add_fav_b"
+                android:focusable="false"
+                android:paddingTop="1dp" 
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content" 
+                android:layout_height="wrap_content"/>
      </LinearLayout>
  </HorizontalScrollView>
  

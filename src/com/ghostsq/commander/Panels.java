@@ -16,6 +16,7 @@ import android.net.UrlQuerySanitizer;
 import android.net.wifi.WifiConfiguration.GroupCipher;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.ClipboardManager;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.Gravity;
@@ -65,9 +66,9 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     private boolean fingerFriendly = false, warnOnRoot = true, rootOnRoot = false, arrow_mode = false, toolbarShown = false;
     private boolean disableOpenSelectOnly = false, disableAllActions = false;
     private float downX = 0, downY = 0;
-    private StringBuffer quickSearchBuf = null;
-    private Toast        quickSearchTip = null;
-    private Shortcuts    shorcutsFoldersList;
+    private StringBuffer     quickSearchBuf = null;
+    private Toast            quickSearchTip = null;
+    private Shortcuts        shorcutsFoldersList;
     private CommanderAdapter destAdapter = null;
     private boolean sxs;
     
@@ -166,6 +167,13 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                         case R.id.by_ext:  pref_id = "show_by_ext";  def = false; break;
                         case R.id.by_size: pref_id = "show_by_size"; def = true; break;
                         case R.id.by_date: pref_id = "show_by_date"; def = true; break;
+                        
+                        case R.id.select_all:   pref_id = "show_sel_uns"; def = false; break;
+                        case R.id.unselect_all: pref_id = "show_sel_uns"; def = false; break;
+
+                        case R.id.enter:   pref_id = "show_enter"; def = false; break;
+                        case R.id.add_fav: pref_id = "show_addfav"; def = false; break;
+                        
                         default: pref_id = "";
                         }
                         boolean a = ca.isButtonActive( id );
@@ -704,7 +712,20 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             c.startActivity( Intent.createChooser( intent, "Open with..." ) );            
         }        
     }    
-    
+    public final void copyName() {
+        CommanderAdapter ca = getListAdapter( true );
+        if( ca == null ) return;
+        ClipboardManager clipboard = (ClipboardManager)c.getContext().getSystemService( Context.CLIPBOARD_SERVICE ); 
+        String in = ca.getItemName( getSelection(), true );
+        clipboard.setText( in );
+    }    
+    public final void favFolder() {
+        CommanderAdapter ca = getListAdapter( true );
+        if( ca == null ) return;
+        String fn = ca.getItemName( getSelection(), true );
+        shorcutsFoldersList.addToFavorites( fn );
+    }    
+
     public final void openForEdit( String file_name ) {
         File f = file_name == null ? getCurrentFile() : new File( file_name );
         if( f != null && f.isFile() ) {
@@ -845,17 +866,24 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     
     public final void copyFiles( String dest, boolean move ) {
         try {
-            destAdapter = getListAdapter( false );
-            if( !dest.equals( destAdapter.toString() ) ) {
+            CommanderAdapter dest_adapter = getListAdapter( false );
+            if( dest_adapter == null || !dest.equals( dest_adapter.toString() ) ) {
                 Uri dest_uri = Uri.parse( dest );
-                if( dest_uri.getScheme() != null ) {
-                    c.showError( "Can copy only to local FS" );
+                if( dest_uri == null ) {
+                    c.showError( c.getString( R.string.inv_dest ) );
                     return;
                 }
-                destAdapter = new FSAdapter( c, dest_uri, 0 );
-                // TODO: user might enter a ftp or some other url to copy to
+                String scheme = dest_uri.getScheme();
+                int type_h = CommanderAdapterBase.GetAdapterTypeHash( scheme );
+                dest_adapter = CommanderAdapterBase.CreateAdapter( type_h, c );
+                if( dest_adapter == null ) {
+                    c.showError( c.getString( R.string.inv_dest ) );
+                    return;
+                }
+                dest_adapter.readSource( dest_uri, null ); // TODO: call Init() method to set the URI
             }
             c.showDialog( Dialogs.PROGRESS_DIALOG );
+            destAdapter = dest_adapter;
             getListAdapter( true ).copyItems( getSelectedOrChecked(), destAdapter, move );
             // TODO: getCheckedItemPositions() returns an empty array after a failed operation. why? 
             listViews[current].clearChoices();

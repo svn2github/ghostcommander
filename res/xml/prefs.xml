@@ -221,6 +221,21 @@
                     android:key="show_by_date"
                     android:title="@string/show_by_date"
                     android:defaultValue="true"/>
+                    
+            <CheckBoxPreference
+                    android:key="show_sel_uns"
+                    android:title="@string/show_sel_uns"
+                    android:defaultValue="false"/>
+            <CheckBoxPreference
+                    android:key="show_enter"
+                    android:title="@string/show_enter"
+                    android:defaultValue="false"/>
+            <CheckBoxPreference
+                    android:key="show_addfav"
+                    android:title="@string/show_addfav"
+                    android:defaultValue="false"/>
+                    
+                    
         </PreferenceScreen>
         <CheckBoxPreference
                     android:key="arrow_mode"

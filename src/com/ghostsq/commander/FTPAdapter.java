@@ -588,6 +588,7 @@ public class FTPAdapter extends CommanderAdapterBase {
             super.run();
         }
         private final int copyFiles( File[] list ) {
+            if( list == null ) return 0;
             int counter = 0;
             try {
 	        	for( int i = 0; i < list.length; i++ ) {

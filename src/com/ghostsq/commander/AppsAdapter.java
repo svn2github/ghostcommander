@@ -51,6 +51,9 @@ public class AppsAdapter extends CommanderAdapterBase {
             catch( Exception e ) {
                 sendProgress( "Fail", Commander.OPERATION_FAILED, pass_back_on_done );
             }
+            catch( OutOfMemoryError err ) {
+                sendProgress( "Out Of Memory", Commander.OPERATION_FAILED, pass_back_on_done );
+            }
             finally {
                 super.run();
             }

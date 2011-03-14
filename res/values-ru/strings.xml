@@ -24,6 +24,12 @@
 <string name="sz">\" Размер</string>
 <string name="refresh">Обнови</string>
 
+    <string name="enter_b">Адрес</string>
+    <string name="add_fav_b">* Запомнить</string>
+    <string name="select_b">+ Пометить</string>
+    <string name="unselect_b">- Снять</string>
+
+
 <string name="show_F1">  «1 Помощь»</string>
 <string name="show_F2">  «2 Переим.»</string>
 <string name="show_F3">  «3 Просм.»</string>
@@ -43,12 +49,15 @@
 <string name="show_by_size">  « по Размеру»</string>
 <string name="show_by_date">  « по Дате»</string>
 
+    <string name="show_sel_uns"> &#xAB;+/- Пометить/Снять&#xBB;</string>
+    <string name="show_enter"  > &#xAB;Адрес&#xBB;</string>
+    <string name="show_addfav" > &#xAB;* Запомнить&#xBB;</string>
 
 
 <string name="enter">  Ввести адрес или URI</string>
 <string name="add_fav">* Закладка на тек.адрес</string>
-<string name="enter_ftp">  Открыть FTP сайт</string>
-<string name="enter_smb">  Открыть сетевую папку Windows</string>
+<string name="enter_ftp">  FTP сервер</string>
+<string name="enter_smb">  Сеть Windows</string>
 <string name="search_file">/ Поиск файла</string>
 <string name="sort_by_name">  По имени</string>
 <string name="sort_by_ext">  По расширению</string>
@@ -67,26 +76,27 @@
 <string name="show_size">Вычисли Размер</string>
 <string name="send_to">Послать...</string>
 <string name="open_with">Открыть с...</string>
+<string name="copy_name">Копировать имя в буфер</string>
 <string name="input_settings">Ввод</string>
 <string name="arrow_mode">Стрелки Влево/Вправо</string>
-<string name="summary_arrow_mode">это Переключение и Выделение</string>
+<string name="summary_arrow_mode">это Переключение и Пометка</string>
 <string name="prefs_label">Настройки</string>
 <string name="editor_label">Текстовый редактор</string>
 <string name="advanced">Дополнительнo</string>
-<string name="advanced_settings">Дополнительные настройки</string><!-- !!! -->
-<string name="summary_advanced_settings">Для опытных пользователей</string><!-- !!! -->
+<string name="advanced_settings">Дополнительные настройки</string>
+<string name="summary_advanced_settings">Для опытных пользователей</string>
 <string name="wait"> жди... </string>
 <string name="fail"> (ошибка) </string>
 <string name="failed">Ошибка:\n</string>
-<string name="dialog_yes">Да</string><!-- !!! -->
-<string name="dialog_no">Нет</string><!-- !!! -->
+<string name="dialog_yes">Да</string>
+<string name="dialog_no">Нет</string>
 <string name="dialog_ok">Ok</string>
 <string name="dialog_cancel">Отмена</string>
 <string name="dialog_close">Закрыть</string>
 <string name="dialog_exit">Выйти</string>
-<string name="dialog_abort">Abort</string>
-<string name="dialog_retry">Retry</string>
-<string name="dialog_ignore">Ignore</string>
+<string name="dialog_abort">Прервать</string>
+<string name="dialog_retry">Повторить</string>
+<string name="dialog_ignore">Игнорировать</string>
 <string name="operation">Операция</string>
 <string name="edit_title">Редактор</string>
 <string name="newf_prompt">Имя нового файла</string>

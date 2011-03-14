@@ -26,7 +26,9 @@
     <string name="sz">\" Size</string>
     <string name="refresh">&#xA0; Refresh</string>
     <string name="enter">&#xA0; Change Location</string>
+    <string name="enter_b">Location</string>
     <string name="add_fav">* Favorite the current folder</string>
+    <string name="add_fav_b">* Favorite</string>
     <string name="enter_ftp">&#xA0; Open FTP site</string>
     <string name="enter_smb">&#xA0; Open Samba (Windows) share</string>
     <string name="search_file">/ Search file</string>
@@ -37,6 +39,8 @@
     <string name="sort_by_date">&#xA0; By Date</string>
     <string name="select_all">+ Select files</string>
     <string name="unselect_all">- UnSelect files</string>
+    <string name="select_b">+ Select</string>
+    <string name="unselect_b">- UnSelect</string>
         
     <string name="toggle_panels_mode"># Change panels mode</string>
     <string name="prefs">9 Settings</string>
@@ -50,6 +54,9 @@
     <string name="show_size">Calculate Size</string>
     <string name="send_to">Send to...</string>
     <string name="open_with">Open With...</string>
+    <string name="copy_name">Copy name to Clipboard</string>
+    <string name="fav_fld">Favorite the \"%s\" folder</string>
+    
     <string name="create_zip">ZIP...</string>
     <string name="create_zip_title">ZIP</string>
 
@@ -94,6 +101,7 @@
     <string name="copy_title">Copy</string>
     <string name="move_title">Move</string>
     <string name="no_items">There are no valid files to complete the operation.</string>
+    <string name="inv_dest">Invalid destination</string>
     <string name="find_on_fs_only">The search feature works only with the local file system.</string>
     <string name="op_not_alwd">The \'%1$s\' is not allowed. Select something first.</string><!-- copy_title/move_title -->
     <string name="copy_to_local_only">It\'s possible to copy to the local filesystem only.</string>    
@@ -203,6 +211,11 @@ copied >1 will produce:
     <string name="show_by_ext" >Show &#xAB; Sort by Extension&#xBB;</string>
     <string name="show_by_size">Show &#xAB; Sort by Size&#xBB;</string>
     <string name="show_by_date">Show &#xAB; Sort by Date&#xBB;</string>
+
+    <string name="show_sel_uns">Show &#xAB;+/- Select/Unselect &#xBB;</string>
+    <string name="show_enter"  >Show &#xAB;Location&#xBB;</string>
+    <string name="show_addfav" >Show &#xAB;* Favorite &#xBB;</string>
+
 
     <string name="finger_friendly">Finger friendly</string>
     <string name="summary_finger_friendly">Enlarge user interface elements</string>

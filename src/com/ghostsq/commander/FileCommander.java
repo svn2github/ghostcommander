@@ -372,8 +372,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             openPrefs();
             break;
         case R.id.exit:
-            exit = true;
         case R.id.F10:
+            exit = true;
             finish();
             break;
         case R.id.oth_sh_this:
@@ -442,6 +442,12 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             break;
         case OPEN_WITH:
             panels.tryToOpen();
+            break;
+        case COPY_NAME:
+            panels.copyName();
+            break;
+        case FAV_FLD:
+            panels.favFolder();
             break;
         default:
             CommanderAdapter ca = panels.getListAdapter( true );

@@ -461,6 +461,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             if( acmi.position == 0 ) {
                 menu.add(0, R.id.enter, 0, R.string.enter );
                 menu.add(0, R.id.eq, 0, R.string.oth_sh_this );
+                menu.add(0, R.id.add_fav, 0, R.string.add_fav );
                 return;
             }
             boolean fs_adapter = this instanceof FSAdapter || this instanceof FindAdapter;
@@ -482,8 +483,11 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             if( fs_adapter ) { 
                 if( file && num <= 1 ) 
                     menu.add( 0, Commander.OPEN_WITH, 0, R.string.open_with );
-                menu.add( 0, R.id.new_zip, 0, R.string.create_zip );
             }
+            menu.add( 0, R.id.F8, 0, R.string.delete_title );
+            menu.add( 0, Commander.COPY_NAME, 0, R.string.copy_name );
+            if( item.dir && acmi.position != 0 )
+                menu.add( 0, Commander.FAV_FLD, 0, commander.getContext().getString( R.string.fav_fld, item.name ) );
         } catch( Exception e ) {
             Log.e( getClass().getName(), "populateContextMenu() " + e.getMessage(), e );
         }
