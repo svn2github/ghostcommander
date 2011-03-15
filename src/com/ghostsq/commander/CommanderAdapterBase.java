@@ -39,7 +39,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     private   boolean dirty = true;
     protected int     thumbnail_size_perc = 100;
     protected int     mode = 0;
-    protected boolean ascending = false;
+    protected boolean ascending = true;
     protected String  parentLink;
     protected Engine  worker = null;
     private   CommanderAdapter recipient = null;
@@ -157,37 +157,37 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
 	}
     
     @Override
-    public void setMode( int mask, int val ) {
+    public int setMode( int mask, int val ) {
         if( ( mask & SET_MODE_COLORS ) != 0 ) {
             switch( mask & SET_MODE_COLORS ) {
             case SET_TXT_COLOR: fg_color = val; break;
             case SET_SEL_COLOR: sl_color = val; break;
             }
-            return;
+            return 0;
         }
         if( ( mask & SET_TBN_SIZE ) != 0 ) {
             thumbnail_size_perc = val;
-            return;
-        }
-        if( mask == CommanderAdapter.MODE_SORTING ) {
-            int cur_sort = mode & mask;
-            if( cur_sort == val )
-                ascending = !ascending;
+            return 0;
         }
         mode &= ~mask;
         mode |= val;
         dirty = true;
-        if( mask == CommanderAdapter.LIST_STATE ) {
+        if( mask == LIST_STATE ) {
             /*
             Log.v( getClass().getName(), ( mode & LIST_STATE ) == STATE_IDLE ? 
                     "list    I D L E  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" :
                     "list    B U S Y  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
+                    // Android v2.3.3 has a bug (again!)
             */
         }
-        if( mask == CommanderAdapter.MODE_SORTING ) {
+        if( ( mask & MODE_SORT_DIR ) != 0 ||
+            ( mask & MODE_SORTING )  != 0 ) {
+            if( ( mask & MODE_SORT_DIR ) != 0 )
+                ascending = ( val & MODE_SORT_DIR ) == SORT_ASC;
             reSort();
             notifyDataSetChanged();
         }
+        return mode;
     }
     @Override
     public void terminateOperation() {

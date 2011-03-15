@@ -27,9 +27,9 @@ public class FindAdapter extends CommanderAdapterBase {
         return "find";
     }
     @Override
-    public void setMode( int mask, int mode_ ) {
+    public int setMode( int mask, int mode_ ) {
         mode_ &= ~MODE_WIDTH;
-        super.setMode( mask, mode_ );
+        return super.setMode( mask, mode_ );
     }
 
     @Override

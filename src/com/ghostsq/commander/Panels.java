@@ -442,8 +442,16 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     }
     public void changeSorting( int sort_mode ) {
         CommanderAdapter ca = getListAdapter( true );
+        
+        int cur_mode = ca.setMode( 0, 0 );
+        boolean asc = ( cur_mode & CommanderAdapter.MODE_SORT_DIR ) == CommanderAdapter.SORT_ASC;
+        int sorted = cur_mode & CommanderAdapter.MODE_SORTING; 
         storeChoosedItems();
-        ca.setMode( CommanderAdapter.MODE_SORTING, sort_mode );
+        if( sorted == sort_mode ) 
+            ca.setMode( CommanderAdapter.MODE_SORT_DIR, asc ? CommanderAdapter.SORT_DSC : CommanderAdapter.SORT_ASC );
+        else
+            ca.setMode( CommanderAdapter.MODE_SORTING | CommanderAdapter.MODE_SORT_DIR, 
+                                            sort_mode | CommanderAdapter.SORT_ASC );
         reStoreChoosedItems();
     }
     public final void refreshLists() {
@@ -696,7 +704,9 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         File f = getCurrentFile();
         if( f != null ) {
             String ext = Utils.getFileExt( f.getName() );
-            String mime = ext.equalsIgnoreCase( ".apk" ) ? "*/*" : Utils.getMimeByExt( ext );
+            String mime = Utils.getMimeByExt( ext );
+            if( mime != null && !mime.startsWith( "image/" ) && !mime.startsWith( "audio/" ) )
+                mime = null;
             Intent sendIntent = new Intent( Intent.ACTION_SEND );
             Log.i( TAG, "Type file to send: " + mime );
             sendIntent.setType( mime == null ? "*/*" : mime );

@@ -147,8 +147,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         on = false;
         panels.Destroying();
         super.onDestroy();
-        if( isFinishing() && exit )
+        if( isFinishing() && exit ) {
+            Log.i( TAG, "Good bye cruel world...");
             System.exit( 0 );
+        }
     }
 
     @Override

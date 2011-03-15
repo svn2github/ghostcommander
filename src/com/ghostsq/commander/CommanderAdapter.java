@@ -42,18 +42,19 @@ public interface CommanderAdapter {
 	                      MODE_FINGERF = 0x0004,   SLIM_MODE = 0x0000,      FAT_MODE = 0x0004,
                           MODE_HIDDEN  = 0x0008,   SHOW_MODE = 0x0000,     HIDE_MODE = 0x0008,
                           MODE_SORTING = 0x0030,   SORT_NAME = 0x0000,     SORT_SIZE = 0x0010, SORT_DATE = 0x0020, SORT_EXT = 0x0030,
-                            MODE_CASE  = 0x0040,   CASE_SENS = 0x0000,   CASE_IGNORE = 0x0040,
-                            MODE_ICONS = 0x0080,   ICON_MODE = 0x0000,     TEXT_MODE = 0x0080,
+                        MODE_SORT_DIR  = 0x0040,    SORT_ASC = 0x0000,      SORT_DSC = 0x0040,
+                            MODE_CASE  = 0x0080,   CASE_SENS = 0x0000,   CASE_IGNORE = 0x0080,
                              MODE_ATTR = 0x0300,     NO_ATTR = 0x0000,     SHOW_ATTR = 0x0100, ATTR_ONLY = 0x0200,
+                            MODE_ICONS = 0x0400,   ICON_MODE = 0x0000,     TEXT_MODE = 0x0400,
                            LIST_STATE = 0x10000, STATE_BUSY = 0x10000,   STATE_IDLE = 0x00000,
                              SET_MODE_COLORS = 0xF0000000, SET_TXT_COLOR = 0x10000000, SET_SEL_COLOR = 0x20000000,
                              SET_TBN_SIZE = 0x01000000;
     /**
      * @param mask - see bits above 
      * @param mode - see bits above 
+     * @return the current mode 
      */
-    public void setMode( int mask, int mode );
-
+    public int setMode( int mask, int mode );
     /**
      *   @param menu - to call the method .add()
      *   @param acmi - to know which item is processed
