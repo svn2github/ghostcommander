@@ -484,7 +484,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 if( file && num <= 1 ) 
                     menu.add( 0, Commander.OPEN_WITH, 0, R.string.open_with );
             }
-            menu.add( 0, R.id.F8, 0, R.string.delete_title );
             menu.add( 0, Commander.COPY_NAME, 0, R.string.copy_name );
             if( item.dir && acmi.position != 0 )
                 menu.add( 0, Commander.FAV_FLD, 0, commander.getContext().getString( R.string.fav_fld, item.name ) );

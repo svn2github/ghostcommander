@@ -341,7 +341,6 @@ public class FTPAdapter extends CommanderAdapterBase {
                         String pathName = path + f.getName();
 	        			File dest = new File( dest_folder, pathName );
 	        			if( f.isDirectory() ) {
-	        				sendProgress( "Creating destination folder '" + pathName + "'...", 0 );
 	        				if( !dest.mkdir() ) {
 	        					if( !dest.exists() || !dest.isDirectory() ) {
 		        					errMsg = "Can't create folder \"" + dest.getCanonicalPath() + "\"";
