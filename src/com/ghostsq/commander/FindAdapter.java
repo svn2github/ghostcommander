@@ -8,18 +8,18 @@ import java.util.Date;
 
 import com.ghostsq.commander.FSAdapter.FilePropComparator;
 
+import android.content.pm.ApplicationInfo;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 
-public class FindAdapter extends CommanderAdapterBase {
+public class FindAdapter extends FSAdapter {
     public final static String TAG = "FindAdapter";
     private Uri uri;
-    private File[] items;
 
     public FindAdapter( Commander c ) {
-        super( c, 0 );
+        super( c );
         parentLink = PLS;
     }
     @Override
@@ -80,45 +80,6 @@ public class FindAdapter extends CommanderAdapterBase {
         commander.showError( commander.getContext().getString( R.string.not_supported ) );
     }
 
-    @Override
-    public boolean deleteItems( SparseBooleanArray cis ) {
-        try {
-            int cnt = 0;
-            for( int i = 0; i < cis.size(); i++ ) {
-                if( cis.valueAt( i ) ) {
-                    int pos = cis.keyAt( i ) - 1;
-                    if( pos >= 0 ) {
-                        File f = items[pos];
-                        if( f.isDirectory() ) 
-                            cnt += Utils.deleteDirContent( f );
-                        if( f.delete() )
-                            cnt++;
-                    }
-                }
-            }
-            commander.notifyMe( new Commander.Notify(
-                    Utils.getOpReport( commander.getContext(), cnt, R.string.deleted ),
-                    Commander.OPERATION_COMPLETED_REFRESH_REQUIRED ) );
-            return true;
-        }
-        catch( SecurityException e ) {
-            commander.showError( commander.getContext().getString( R.string.sec_err, e.getMessage() ) );
-        }
-        return false;
-    }
-
-    @Override
-    public String getItemName( int position, boolean full ) {
-        if( position == 0 )
-            return parentLink;
-        if( position < 0 || position > items.length || items == null )
-            return null;
-        else {
-            File f = items[position - 1];
-            if( f == null ) return null;
-            return full ? f.getAbsolutePath() : f.getName();
-        }
-    }
 
     @Override
     public Uri getUri() {
@@ -130,30 +91,6 @@ public class FindAdapter extends CommanderAdapterBase {
     }
 
     @Override
-    public void openItem( int position ) {
-        if( position == 0 ) {
-            commander.Navigate( Uri.parse( uri != null ? uri.getPath() : "/sdcard" ), null );
-        }   
-        else {
-            if( uri == null ) return;
-            File file = items[position - 1];
-            if( file.isDirectory() ) {
-                String dirName = uri.getPath();
-                if( dirName.charAt( dirName.length() - 1 ) != File.separatorChar )
-                    dirName += File.separatorChar;
-                commander.Navigate( Uri.parse( dirName + file.getName() + File.separatorChar ), null );
-            }
-            else {
-                String ext = Utils.getFileExt( file.getName() );
-                if( ext != null && ext.compareToIgnoreCase( ".zip" ) == 0 )
-                    commander.Navigate( (new Uri.Builder()).scheme( "zip" ).authority( "" ).path( file.getAbsolutePath() ).build(), null );
-                else
-                    commander.Open( file.getAbsolutePath() );
-            }
-        }
-    }
-
-    @Override
     public boolean receiveItems( String[] fileURIs, int move_mode ) {
         commander.notifyMe( new Commander.Notify( commander.getContext().getString( R.string.not_supported ), 
                                 Commander.OPERATION_FAILED ) );
@@ -161,55 +98,8 @@ public class FindAdapter extends CommanderAdapterBase {
     }
 
     @Override
-    public boolean renameItem( int position, String newName ) {
-        if( position <= 0 || position > items.length )
-            return false;
-        try {
-            return items[position - 1].renameTo( new File( newName ) );
-        }
-        catch( Exception e ) {
-            commander.showError( "Exception: " + e );
-            return false;
-        }
-    }
-
-    @Override
-    public void reqItemsSize( SparseBooleanArray cis ) {
-        commander.notifyMe( new Commander.Notify( commander.getContext().getString( R.string.not_supported ), 
-                                Commander.OPERATION_FAILED ) );
-    }
-
-    @Override
     public void setIdentities( String name, String pass ) {
         commander.showError( commander.getContext().getString( R.string.not_supported ) );
-    }
-
-    @Override
-    public Object getItem( int position ) {
-        Item item = new Item();
-        if( position == 0 ) {
-            item.name = parentLink;
-        }
-        else {
-            if( items != null && position-1 < items.length ) {
-                synchronized( items ) {
-                    File f = items[position - 1];
-                    try {
-                        item.dir  = f.isDirectory();
-                        item.name = item.dir ? f.getAbsolutePath() + SLS: f.getAbsolutePath();
-                        item.size = item.dir ? 0 : f.length();
-                        long msFileDate = f.lastModified();
-                        if( msFileDate != 0 )
-                            item.date = new Date( msFileDate );
-                    } catch( Exception e ) {
-                        Log.e( TAG, "getView() exception: ", e );
-                    }
-                }
-            }
-            else
-                item.name = "";
-        }
-        return item;
     }
 
     class SearchEngine extends Engine {
@@ -264,29 +154,11 @@ public class FindAdapter extends CommanderAdapterBase {
                 Log.e( TAG, "Exception on search: ", e );
             }
         }
-        public final File[] getItems( int mode ) {
+        public final FileItem[] getItems( int mode ) {
             if( result == null ) return null;
-            File[] output_array;
-            if( ( mode & MODE_HIDDEN ) == HIDE_MODE ) {
-                int cnt = 0;
-                for( int i = 0; i < result.size(); i++ )
-                    if( result.get(i).getName().charAt( 0 ) != '.' )
-                        cnt++;
-                output_array = new File[cnt];
-                int j = 0;
-                for( int i = 0; i < result.size(); i++ ) {
-                    File f = result.get(i);
-                    if( f.getName().charAt( 0 ) != '.' )
-                        output_array[j++] = f;
-                }
-            }
-            else {
-                output_array = new File[result.size()]; 
-                result.toArray( output_array );
-            }
-            FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
-            Arrays.sort( output_array, comp );
-            return output_array;
+            File[] files_ = new File[result.size()];
+            result.toArray( files_ );
+            return filesToItems( files_ );
         }       
     }
     protected void onComplete( Engine engine ) {
@@ -296,46 +168,33 @@ public class FindAdapter extends CommanderAdapterBase {
                 items = list_engine.getItems( mode );
                 numItems = items != null ? items.length + 1 : 1;
                 notifyDataSetChanged();
+                startThumbnailCreation();
             }
         } catch( Exception e ) {
             e.printStackTrace();
         }
     }
-    public class FilePropComparator implements Comparator<File> {
-        int type;
-        boolean case_ignore;
-
-        public FilePropComparator( int type_, boolean case_ignore_ ) {
-            type = type_;
-            case_ignore = case_ignore_;
-        }
-        public int compare( File f1, File f2 ) {
-            boolean f1IsDir = f1.isDirectory();
-            boolean f2IsDir = f2.isDirectory();
-            if( f1IsDir != f2IsDir )
-                return f1IsDir ? -1 : 1;
-            int ext_cmp = 0;
-            switch( type ) {
-            case SORT_EXT:
-                ext_cmp = Utils.getFileExt( f1.getName() ).compareTo( Utils.getFileExt( f2.getName() ) );
-                break;
-            case SORT_SIZE:
-                ext_cmp = f1.length() - f2.length() < 0 ? -1 : 1;
-                break;
-            case SORT_DATE:
-                ext_cmp = f1.lastModified() - f2.lastModified() < 0 ? -1 : 1;
-                break;
-            }
-            if( ext_cmp != 0 )
-                return ext_cmp;
-            return f1.compareTo( f2 );            
-        }
-    }
 
     @Override
-    protected void reSort() {
-        if( items == null ) return;
-        FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0 );
-        Arrays.sort( items, comp );
+    public Object getItem( int position ) {
+        try {
+            Object o = super.getItem( position );
+            if( o != null ) {
+                if( o instanceof FileItem ) {
+                    FileItem fi = (FileItem)o;
+                    fi.name = fi.f.getAbsolutePath();
+                }
+                return o;
+            }
+        } catch( Exception e ) {
+            Log.e( TAG, "getItem() Exception" );
+        }
+        return null;
+    }    
+    
+    @Override
+    public boolean isButtonActive( int brId ) {
+        if( brId == R.id.F7 ) return false;
+        return super.isButtonActive( brId );
     }
 }

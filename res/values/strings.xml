@@ -55,7 +55,7 @@
     <string name="send_to">Send to...</string>
     <string name="open_with">Open With...</string>
     <string name="copy_name">Copy name to Clipboard</string>
-    <string name="fav_fld">Favorite the \"%s\" folder</string>
+    <string name="fav_fld">Favorite the folder \"%s\"</string>
     
     <string name="create_zip">ZIP...</string>
     <string name="create_zip_title">ZIP</string>

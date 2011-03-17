@@ -44,7 +44,7 @@ public class FSAdapter extends CommanderAdapterBase {
     }
 
     private String     dirName;
-    private FileItem[] items;
+    protected FileItem[] items;
     
     ThumbnailsThread tht = null;
     public static final Map<Integer, SoftReference<Drawable> > thumbnailCache = new HashMap<Integer, SoftReference<Drawable> >();
@@ -117,35 +117,10 @@ public class FSAdapter extends CommanderAdapterBase {
                 }
             }
             dirName = dir_name;
-            int num_files = files_.length;
-            int num = num_files;
-            boolean hide = ( mode & MODE_HIDDEN ) == HIDE_MODE;
-            if( hide ) {
-                int cnt = 0;
-                for( int i = 0; i < num_files; i++ )
-                	if( !files_[i].isHidden() ) cnt++;
-                num = cnt;
-            }
-            items = new FileItem[num];
-            int j = 0;
-            for( int i = 0; i < num_files; i++ ) {
-                if( !hide || !files_[i].isHidden() ) {
-                    FileItem file_ex = new FileItem( files_[i] );
-                    items[j++] = file_ex;
-                }
-            }
-            reSort();
+            items = filesToItems( files_ );
             parentLink = dir.getParent() == null ? SLS : PLS;
             notifyDataSetChanged();
-            if( thumbnail_size_perc > 0 ) {
-                if( tht != null )
-                    tht.interrupt();
-                tht = new ThumbnailsThread( new Handler() {
-                    public void handleMessage( Message msg ) {
-                        notifyDataSetChanged();
-                    } }, items );
-                tht.start();
-            }
+            startThumbnailCreation();
             commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pass_back_on_done ) );
             return true;
 		} catch( Exception e ) {
@@ -154,6 +129,40 @@ public class FSAdapter extends CommanderAdapterBase {
 		return false;
     }
 
+    protected void startThumbnailCreation() {
+        if( thumbnail_size_perc > 0 ) {
+            if( tht != null )
+                tht.interrupt();
+            tht = new ThumbnailsThread( new Handler() {
+                public void handleMessage( Message msg ) {
+                    notifyDataSetChanged();
+                } }, items );
+            tht.start();
+        }
+    }
+    
+    protected FileItem[] filesToItems( File[] files_ ) {
+        int num_files = files_.length;
+        int num = num_files;
+        boolean hide = ( mode & MODE_HIDDEN ) == HIDE_MODE;
+        if( hide ) {
+            int cnt = 0;
+            for( int i = 0; i < num_files; i++ )
+                if( !files_[i].isHidden() ) cnt++;
+            num = cnt;
+        }
+        FileItem[] items_ = new FileItem[num];
+        int j = 0;
+        for( int i = 0; i < num_files; i++ ) {
+            if( !hide || !files_[i].isHidden() ) {
+                FileItem file_ex = new FileItem( files_[i] );
+                items_[j++] = file_ex;
+            }
+        }
+        reSort();
+        return items_;
+    }
+    
     class ThumbnailsThread extends Thread {
         private final static int NOTIFY_THUMBNAIL_CHANGED = 653;
         private Handler thread_handler;

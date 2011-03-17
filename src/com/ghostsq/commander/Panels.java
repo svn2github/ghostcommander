@@ -732,8 +732,14 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public final void favFolder() {
         CommanderAdapter ca = getListAdapter( true );
         if( ca == null ) return;
-        String fn = ca.getItemName( getSelection(), true );
-        shorcutsFoldersList.addToFavorites( fn );
+        Uri u = ca.getUri();
+        if( u != null ) {
+            String add = u.buildUpon().appendEncodedPath( ca.getItemName( getSelection(), false ) ).build().toString();
+            if( add != null && add.length() > 0 ) {
+                shorcutsFoldersList.addToFavorites( add );
+                c.showMessage( c.getString( R.string.fav_added, add ) );
+            }
+        }
     }    
 
     public final void openForEdit( String file_name ) {

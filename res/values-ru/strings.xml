@@ -52,10 +52,13 @@
     <string name="show_sel_uns"> &#xAB;+/- Пометить/Снять&#xBB;</string>
     <string name="show_enter"  > &#xAB;Адрес&#xBB;</string>
     <string name="show_addfav" > &#xAB;* Запомнить&#xBB;</string>
+    
+    
 
 
 <string name="enter">  Ввести адрес или URI</string>
 <string name="add_fav">* Закладка на тек.адрес</string>
+<string name="fav_fld">Закладка на папку \"%s\"</string>
 <string name="enter_ftp">  FTP сервер</string>
 <string name="enter_smb">  Сеть Windows</string>
 <string name="search_file">/ Поиск файла</string>
@@ -100,7 +103,7 @@
 <string name="operation">Операция</string>
 <string name="edit_title">Редактор</string>
 <string name="newf_prompt">Имя нового файла</string>
-<string name="rename_title">Переименование</string>
+<string name="rename_title">Новое имя</string>
 <string name="rename_prompt">Переименовать в:</string>
 <string name="rename_err">Нечего переименовывать</string>
 <string name="mkdir_title">Новая папка</string>
@@ -108,7 +111,7 @@
 <string name="search_title">Поиск</string>
 <string name="search_prompt">Имя файла:</string>
 <string name="copy_title">Копирование</string>
-<string name="move_title">Перемещение</string>
+<string name="move_title">Перенести</string>
 <string name="no_items">Не с чем совершить данную операцию.</string>
 <string name="find_on_fs_only">Функция поиска пока работает только на локальной файловой системе.</string><!-- !!! -->
 <string name="copy_move_not_alwd">Неизвестно с чем совершить операцию \"%1$s\". Сперва выделите файл(ы).</string>
@@ -230,7 +233,7 @@
     <string name="cant_del">Ошибка удаления файла \"%1$s\"</string>
 
     <string name="copied">скопирован</string>
-    <string name="moved">перемещен</string>
+    <string name="moved">перенесен</string>
     <string name="deleted">удален</string>
     <string name="downloaded">скачен</string>
     <string name="uploaded">закачен</string>
@@ -280,12 +283,12 @@ VolDn - Перейти на другую панель\n
 (, )  - Ввести путь для левой/правой панели и закладки\n
 * - Добавить текущую папку в закладки\n
 \" - Показать размер выбранных элементов\n
-= - перейти в другой панели на ту же папку что и здесь\n
+= - показать в другой панели эту же папку\n
 1 - Показать этот текст\n
 2 - Переименовать текущий файл\n
 4 - Редактировать текущий файл\n
 5 - Скопировать файлы или папки\n
-6 - Переместить файлы папки\n
+6 - Перенести файлы папки\n
 7 - Создать папку\n
 8 - Удалить выделенное\n
 9 - Настройки программы.
