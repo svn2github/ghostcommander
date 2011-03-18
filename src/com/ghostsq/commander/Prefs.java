@@ -1,18 +1,13 @@
 package com.ghostsq.commander;
 
-import java.util.Locale;
-
 import android.app.Activity;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceManager;
-import android.util.Log;
 
 public class Prefs extends PreferenceActivity implements Preference.OnPreferenceClickListener,
-                                                          RGBPickerDialog.ColorChangeListener  
+                                                       RGBPickerDialog.ColorChangeListener  
 {
     public static final String COLORS_PREFS = "colors"; 
     public static final String BGR_COLORS = "bgr_color_picker"; 
@@ -23,7 +18,7 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
     private String color_pref_key = null;
     
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate( Bundle savedInstanceState ) {
         Utils.changeLanguage( this, getResources() );
         super.onCreate(savedInstanceState);
         

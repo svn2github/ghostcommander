@@ -75,8 +75,9 @@ public class Engine extends Thread {
     protected final void sendResult( String report ) {
         if( errMsg != null )
             sendProgress( errMsg + "\n" + report, Commander.OPERATION_FAILED );
-        else
+        else {
             sendProgress( report, Commander.OPERATION_COMPLETED_REFRESH_REQUIRED );
+        }
     }
     protected final boolean tooLong( int sec ) {
         if( threadStartedAt == 0 ) return false;

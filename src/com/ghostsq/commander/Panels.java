@@ -80,8 +80,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         
         //mFlipper = ((ViewFlipper)c.findViewById( R.id.flipper ));
         panelsView = ((PanelsView)c.findViewById( R.id.panels ));
-        if( panelsView != null )
-            panelsView.setMode( sxs_, current );
+        
+        setMode( sxs_ );
         
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
         fingerFriendly =  sharedPref.getBoolean( "finger_friendly", true );

@@ -76,13 +76,17 @@
 <string name="new_zip">Создать ZIP архив</string>
 
 <string name="go_button">Иди</string>
-<string name="show_size">Вычисли Размер</string>
+<string name="show_size">Информация</string>
 <string name="send_to">Послать...</string>
 <string name="open_with">Открыть с...</string>
 <string name="copy_name">Копировать имя в буфер</string>
 <string name="input_settings">Ввод</string>
 <string name="arrow_mode">Стрелки Влево/Вправо</string>
 <string name="summary_arrow_mode">это Переключение и Пометка</string>
+
+   <string name="show_confirm">Подтверждения</string>
+   <string name="summary_show_confirm">Выдавать подтверждения о совершении файловых операций</string>
+
 <string name="prefs_label">Настройки</string>
 <string name="editor_label">Текстовый редактор</string>
 <string name="advanced">Дополнительнo</string>
@@ -245,6 +249,18 @@
     <string name="were">было</string>
     <string name="was">был</string>
     <string name="nothing">Ни один файл не</string>
+
+    <string name="sz_folder">Папка \"%1$s\":\nвключает файлов: %2$d,</string>
+    <string name="sz_file">Файл \"%s\":</string>
+    <string name="sz_files">Найдено файлов: %d </string>
+    <string name="sz_Nbytes">\nОбъемом: %1$sБ</string>
+    <string name="sz_bytes">\n(%dБ)</string>
+    <string name="sz_dirnum">,\nв %1$d папк%2$s</string>
+    <string name="sz_dirsfx_s">е.</string>
+    <string name="sz_dirsfx_p">ах.</string>
+    <string name="sz_lastmod">\nДата изменения:\n </string>
+    <string name="sz_total">Раздел: %1$sБ,\nСвободно: %2$sБ.</string>
+
 
 <string name="smb_missed">
     Не удаётся загрузить Samba адаптер.\n

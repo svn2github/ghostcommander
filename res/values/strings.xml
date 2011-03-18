@@ -51,7 +51,7 @@
     <string name="new_zip">Create a new ZIP file</string>
 
     <string name="go_button">Go</string>
-    <string name="show_size">Calculate Size</string>
+    <string name="show_size">Info</string>
     <string name="send_to">Send to...</string>
     <string name="open_with">Open With...</string>
     <string name="copy_name">Copy name to Clipboard</string>
@@ -63,6 +63,9 @@
     <string name="input_settings">Input</string>
     <string name="arrow_mode">Arrow commands</string>
     <string name="summary_arrow_mode">Left/Right arrow does toggle/select</string>
+
+    <string name="show_confirm">Show confirmation</string>
+    <string name="summary_show_confirm">Show the confirmation popup dialog on each operation completion</string>
 
     <string name="prefs_label">Settings</string>
     <string name="editor_label">Text Editor</string>
@@ -159,6 +162,18 @@ copied 1 will produce:
 copied >1 will produce:
  # + "items" + "were" + "copied" + "verb_plural_sfx"
  -->
+
+
+    <string name="sz_folder">Folder \"%1$s\":\n %2$d files,</string>
+    <string name="sz_file">File \"%s\":</string>
+    <string name="sz_files">Found files: %d </string>
+    <string name="sz_Nbytes">\nSize: %1$sb</string>
+    <string name="sz_bytes">\n ( %d bytes )</string>
+    <string name="sz_dirnum">,\nin %1$d director%2$s</string>
+    <string name="sz_dirsfx_s">y.</string>
+    <string name="sz_dirsfx_p">ies.</string>
+    <string name="sz_lastmod">\nLast modified:\n </string>
+    <string name="sz_total">Total: %1$sbytes,\nFree: %2$sbytes.</string>
     
     <string name="cd_title">Go to</string>
     <string name="cd_prompt">Change directory to:</string>
@@ -281,7 +296,7 @@ copied >1 will produce:
     <string name="nav_warn">You\'re opening a system folder. Tampering with it may lead to a failure. Proceed at this time?</string>
     <string name="nav_warn_cmt">(You can permanently disable this warning in the application settings )\nClick "Cancel" to safely go to the /sdcard folder. Click "Exit" to close the application.</string>
     <string name="no_such_folder">\"%1$s\" is not a valid folder!</string>
-    <string name="fav_added">Folder \"%1$s\" was added to the favorites</string>
+    <string name="fav_added">\"%1$s\" was added to the favorites</string>
 
     <string name="no_root">Not root?</string>
 

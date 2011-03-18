@@ -246,6 +246,11 @@
     <PreferenceCategory
         android:title="@string/advanced">
         <CheckBoxPreference
+                android:key="show_confirm"
+                android:title="@string/show_confirm"
+                android:summary="@string/summary_show_confirm"
+                android:defaultValue="true"/>
+        <CheckBoxPreference
                 android:key="prevent_root"
                 android:title="@string/prevent_root"
                 android:summary="@string/summary_prevent_root"
@@ -259,16 +264,16 @@
             android:key="advanced_preferences"
             android:title="@string/advanced_settings"
             android:summary="@string/summary_advanced_settings">
-	    <EditTextPreference 
-	        android:key="editor_activity" 
-	        android:title="@string/editor_activity" 
-	        android:summary="@string/summary_editor_activity" 
-	        android:defaultValue="@string/value_editor_activity"/>
-	    <EditTextPreference 
-	        android:key="busybox_path" 
-	        android:title="@string/busybox_location" 
-	        android:summary="@string/summary_busybox_location" 
-	        android:defaultValue="busybox"/>
+		    <EditTextPreference 
+		        android:key="editor_activity" 
+		        android:title="@string/editor_activity" 
+		        android:summary="@string/summary_editor_activity" 
+		        android:defaultValue="@string/value_editor_activity"/>
+		    <EditTextPreference 
+		        android:key="busybox_path" 
+		        android:title="@string/busybox_location" 
+		        android:summary="@string/summary_busybox_location" 
+		        android:defaultValue="busybox"/>
        </PreferenceScreen>
     </PreferenceCategory>
 </PreferenceScreen>

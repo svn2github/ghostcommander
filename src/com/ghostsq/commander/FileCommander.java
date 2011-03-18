@@ -39,7 +39,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     
     private ArrayList<Dialogs> dialogs;
     public  Panels  panels;
-    private boolean on = false, exit = false, dont_restore = false, sxs_auto = true;
+    private boolean on = false, exit = false, dont_restore = false, sxs_auto = true, show_confirm = true;
     private String lang = ""; // just need to issue a warning on change
 
     public final void showMemory( String s ) {
@@ -91,7 +91,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         String panels_mode = sharedPref.getString( "panels_sxs_mode", "a" );
         sxs_auto = panels_mode.equals( "a" );
         boolean sxs = sxs_auto ? getRotMode() : panels_mode.equals( "y" );
-        panels = new Panels(this, sharedPref.getBoolean( "panels_mode", sxs ) );
+        panels = new Panels( this, sxs );
+        setConfirmMode( sharedPref );
     }
 
     @Override
@@ -280,6 +281,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             boolean sxs = sxs_auto ? getRotMode() : panels_mode.equals( "y" );
             panels.setMode( sxs );
             panels.showToolbar( sharedPref.getBoolean("show_toolbar", true ) );
+            setConfirmMode( sharedPref );
         }
         else
         if( requestCode == REQUEST_CODE_SRV_FORM ) {
@@ -563,7 +565,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 panels.recoverAfterRefresh( null, -1 );
             break;
         }
-        if( progress.string != null && progress.string.length() > 0 )
+        if( ( show_confirm || progress.substat == OPERATION_REPORT_IMPORTANT )  
+                           && progress.string != null && progress.string.length() > 0 )
             showInfo( progress.string );
     }
 
@@ -655,4 +658,11 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         }
         return sideXside;
     }
+    private final void setConfirmMode( SharedPreferences sharedPref ) {
+        Locale locale = Locale.getDefault();
+        if( locale.getLanguage().equalsIgnoreCase( "pl" ) )
+            show_confirm = false;   // too complex grammar
+        else
+            show_confirm = sharedPref.getBoolean("show_confirm", true );
+    }    
 }

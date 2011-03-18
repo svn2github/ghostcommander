@@ -17,10 +17,12 @@ public interface Commander {
      *                                         the string as passed in the first parameter
      */
 	public final static int  OPERATION_STARTED = -1, 
-	                         OPERATION_FAILED = -2, 
-        	                 OPERATION_COMPLETED = -3, 
-        	                 OPERATION_COMPLETED_REFRESH_REQUIRED = -4,
-        	                 OPERATION_FAILED_LOGIN_REQUIRED = -5;
+	                           OPERATION_FAILED = -2, 
+	                           OPERATION_COMPLETED = -3, 
+	                           OPERATION_COMPLETED_REFRESH_REQUIRED = -4,
+	                           OPERATION_FAILED_LOGIN_REQUIRED = -5;
+	
+	public final static int  OPERATION_REPORT_IMPORTANT = 870;
 
     public final static int  OPEN = 903, OPEN_WITH = 902, SEND_TO = 236, COPY_NAME = 390, FAV_FLD = 414;
 	

@@ -159,7 +159,7 @@ public class FSAdapter extends CommanderAdapterBase {
                 items_[j++] = file_ex;
             }
         }
-        reSort();
+        reSort( items_ );
         return items_;
     }
     
@@ -374,6 +374,7 @@ public class FSAdapter extends CommanderAdapterBase {
         @Override
         public void run() {
         	try {
+        	    Context c = commander.getContext();
                 StringBuffer result = new StringBuffer( );
         	    if( mList != null && mList.length > 0 ) {
     				long sum = getSizes( mList );
@@ -383,34 +384,33 @@ public class FSAdapter extends CommanderAdapterBase {
     				}
     				if( (mode & MODE_SORTING) == SORT_SIZE )
         				synchronized( items ) {
-            	            FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0, ascending );
-            	            Arrays.sort( items, comp );
+        				    reSort( items );
         				}
                     if( mList.length == 1 ) {
                         File f = mList[0].f;
                         if( f.isDirectory() )
-                            result.append( "Folder \"" + f.getAbsolutePath() + "\":\n" + num + " files," );
+                            result.append( c.getString( R.string.sz_folder, f.getName(), num ) );
                         else
-                            result.append( "File \"" + f.getAbsolutePath() + "\":" );
+                            result.append( c.getString( R.string.sz_file, f.getName() ) );
                     } else
-                        result.append( "" + num + " files:" );
-                    result.append( "\n" + Utils.getHumanSize(sum) + "bytes" );
+                        result.append( c.getString( R.string.sz_files, num ) );
+                    if( sum > 0 )
+                        result.append( c.getString( R.string.sz_Nbytes, Utils.getHumanSize(sum).trim() ) );
                     if( sum > 1024 )
-                        result.append( "\n ( " + sum + " bytes )" );
+                        result.append( c.getString( R.string.sz_bytes, sum ) );
                     if( dirs > 0 )
-                        result.append( ",\nin " + dirs + " director" + ( dirs > 1 ? "ies." : "y.") );
+                        result.append( c.getString( R.string.sz_dirnum, dirs, ( dirs > 1 ? c.getString( R.string.sz_dirsfx_p ) : c.getString( R.string.sz_dirsfx_s ) ) ) );
                     if( mList.length == 1 ) {
-                        result.append( "\nLast modified:\n  " );
+                        result.append( c.getString( R.string.sz_lastmod ) );
                         result.append( (String)DateFormat.format( "MMM dd yyyy hh:mm:ss", new Date( mList[0].f.lastModified() ) ) );
                     }
                     result.append( "\n\n" );
         	    }
                 StatFs stat = new StatFs( dirName );
                 long block_size = stat.getBlockSize( );
-                result.append( "total: " + Utils.getHumanSize( stat.getBlockCount() * block_size ) +
-                 "bytes,\nfree: " + Utils.getHumanSize( stat.getAvailableBlocks() * block_size ) + "bytes." );
+                result.append( c.getString( R.string.sz_total, Utils.getHumanSize( stat.getBlockCount() * block_size ), Utils.getHumanSize( stat.getAvailableBlocks() * block_size ) ) );
                 
-				sendProgress( result.toString(), Commander.OPERATION_COMPLETED );
+				sendProgress( result.toString(), Commander.OPERATION_COMPLETED, Commander.OPERATION_REPORT_IMPORTANT );
 			} catch( Exception e ) {
 				sendProgress( e.getMessage(), Commander.OPERATION_FAILED );
 			}
@@ -425,14 +425,16 @@ public class FSAdapter extends CommanderAdapterBase {
     				if( depth++ > 20 )
     					throw new Exception( commander.getContext().getString( R.string.too_deep_hierarchy ) );
     				File[] subfiles = f.f.listFiles();
-    				int l = subfiles.length;
-    				FileItem[] subfiles_ex = new FileItem[l];
-    				for( int j = 0; j < l; j++ )
-    				    subfiles_ex[j] = new FileItem( subfiles[j] );
-    				long sz = getSizes( subfiles_ex );
-    				if( sz < 0 ) return -1;
-    				f.size = sz;
-    				count += f.size;
+    				if( subfiles != null ) {
+        				int l = subfiles.length;
+        				FileItem[] subfiles_ex = new FileItem[l];
+        				for( int j = 0; j < l; j++ )
+        				    subfiles_ex[j] = new FileItem( subfiles[j] );
+        				long sz = getSizes( subfiles_ex );
+        				if( sz < 0 ) return -1;
+        				f.size = sz;
+        				count += f.size;
+    				}
     				depth--;
     			}
     			else {
@@ -550,7 +552,8 @@ public class FSAdapter extends CommanderAdapterBase {
 
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
-        if( move && to instanceof FSAdapter ) {
+        boolean same_file_system = false;  // how to figure out that?
+        if( same_file_system && move && to instanceof FSAdapter ) {
             try {
                 commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
                 String dest_folder = to.toString();
@@ -567,7 +570,9 @@ public class FSAdapter extends CommanderAdapterBase {
             }
         }
         else {
-            return to.receiveItems( bitsToNames( cis ), move ? MODE_MOVE : MODE_COPY );
+            boolean ok = to.receiveItems( bitsToNames( cis ), move ? MODE_MOVE : MODE_COPY );
+            if( !ok ) commander.notifyMe( new Commander.Notify( Commander.OPERATION_FAILED ) );
+            return ok;
         }
     }
 
@@ -576,15 +581,6 @@ public class FSAdapter extends CommanderAdapterBase {
     	try {
             if( uris == null || uris.length == 0 )
             	return false;
-            if( ( move_mode & MODE_MOVE ) != 0 ) {
-                boolean res = moveFiles( uris, dirName );
-                if( ( move_mode & MODE_DEL_SRC_DIR ) != 0 ) {
-                    File src_dir = new File( uris[0] ).getParentFile();
-                    if( src_dir != null )
-                        src_dir.delete();
-                }                    
-            	return res;
-            }
             File dest_file = new File( dirName );
             if( dest_file == null )
             	return false;
@@ -604,7 +600,7 @@ public class FSAdapter extends CommanderAdapterBase {
                     return false;
                 }
                 commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            	worker = new CopyEngine( handler, list, dirName );
+            	worker = new CopyEngine( handler, list, dirName, ( move_mode & MODE_MOVE ) != 0 );
             	worker.start();
 	            return true;
             }
@@ -622,16 +618,18 @@ public class FSAdapter extends CommanderAdapterBase {
 	}
 
     class CopyEngine extends CalcSizesEngine {
-        String  mDest;
-        int     counter = 0;
-        long    bytes = 0;
-        double  conv;
-        File[]  fList = null;
+        private String  mDest;
+        private int     counter = 0;
+        private long    bytes = 0;
+        private double  conv;
+        private File[]  fList = null;
+        private boolean move;
 
-        CopyEngine( Handler h, File[] list, String dest ) {
+        CopyEngine( Handler h, File[] list, String dest, boolean move_ ) {
         	super( h, null );
         	fList = list;
             mDest = dest;
+            move = move_;
         }
         @Override
         public void run() {
@@ -704,10 +702,16 @@ public class FSAdapter extends CommanderAdapterBase {
                                 return counter;
                             }
                         }
+                        in.close();
+                        out.close();
+                        in = null;
+                        out = null;
                         if( i >= list.length-1 )
                         	sendProgress( c.getString( R.string.copied_f, fn ), (int)(bytes * conv) );
                         counter++;
                     }
+                    if( move )
+                        file.delete();
                     outFile.setLastModified( last_modified );
                 }
                 catch( SecurityException e ) {
@@ -897,8 +901,11 @@ public class FSAdapter extends CommanderAdapterBase {
 
     @Override
     protected void reSort() {
-        if( items == null ) return;
+        reSort( items );
+    }
+    public void reSort( FileItem[] items_ ) {
+        if( items_ == null ) return;
         FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0, ascending );
-        Arrays.sort( items, comp );
+        Arrays.sort( items_, comp );
     }
 }

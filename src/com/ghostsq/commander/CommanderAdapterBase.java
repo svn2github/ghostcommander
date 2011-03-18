@@ -421,6 +421,14 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         if( file.indexOf( " -> " ) > 0 )
             return R.drawable.link;
         String ext = Utils.getFileExt( file );
+        if( ".apk".equalsIgnoreCase( ext ) || ".dex".equalsIgnoreCase( ext ) )
+            return R.drawable.and;        
+        if( ".zip".equalsIgnoreCase( ext ) || ".jar".equalsIgnoreCase( ext ) )
+            return R.drawable.zip;        
+        if( ".pdf".equalsIgnoreCase( ext ) )
+            return R.drawable.pdf;        
+        if( ".vcf".equalsIgnoreCase( ext ) )
+            return R.drawable.book;        
         String mime = Utils.getMimeByExt( ext );
         String type = mime.substring( 0, mime.indexOf( '/' ) );
         if( type.compareTo( "text" ) == 0 )  return R.drawable.text; 
@@ -472,9 +480,8 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                     menu.add( 0, R.id.F4, 0, R.string.edit_title );
                 }
             }
-            if( num <= 1 ) {
+            if( num <= 1 )
                 menu.add( 0, R.id.F2, 0, R.string.rename_title );
-            }
             menu.add( 0, R.id.F5, 0, R.string.copy_title );
             if( fs_adapter ) {
                 menu.add( 0, R.id.F6, 0, R.string.move_title );
@@ -484,7 +491,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 if( file && num <= 1 ) 
                     menu.add( 0, Commander.OPEN_WITH, 0, R.string.open_with );
             }
-            menu.add( 0, Commander.COPY_NAME, 0, R.string.copy_name );
+            
+            menu.add( 0, R.id.new_zip, 0, R.string.new_zip );
+            if( num <= 1 )
+                menu.add( 0, Commander.COPY_NAME, 0, R.string.copy_name );
             if( item.dir && acmi.position != 0 )
                 menu.add( 0, Commander.FAV_FLD, 0, commander.getContext().getString( R.string.fav_fld, item.name ) );
         } catch( Exception e ) {
