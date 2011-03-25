@@ -108,10 +108,10 @@ public class RootAdapter extends CommanderAdapterBase {
             String to_execute = "ls -l '" + path + "'\n";
             os.write( to_execute ); // execute the command
             os.flush();
-            for( int i=0; i< 10; i++ ) {
+            for( int i=0; i< 100; i++ ) {
                 if( isStopReq() ) break;
                 if( is.ready() ) break;
-                Thread.sleep( 50 );
+                Thread.sleep( 20 );
             }
             ArrayList<LsItem>  array = null;
             if( !isStopReq() ) {

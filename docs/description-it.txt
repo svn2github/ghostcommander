@@ -14,8 +14,8 @@ i permessi dei file (chmod) e anche eseguire i propri comandi della shell.
 In più è fornita la modalità "mount:" per sfogliare e rimonatre le partizioni del file system.
 
 NOTA! Per selezionare più file fare clic sulla parte destra del pannello.
-Per aprire un file o una cartella fare clic sul lato sinistro: "un lato ti farà selezionare,
-un lato ti farà aprire".
+Per aprire un file o una cartella fare clic sul lato sinistro:
+"un lato ti farà selezionare, e l'altro ti farà aprire".
 
 L'applicazione fornisce diverse preferenze che permettono di impostarne
 il comportamento per adattarlo alle proprie abitudini.

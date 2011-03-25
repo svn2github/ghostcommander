@@ -12,7 +12,7 @@
     <string name="F2">2 Rinomina</string>
     <string name="F3">3 Visualizza</string>
     <string name="F4">4 Modifica</string>
-    <string name="SF4">&#xA0; Crea</string>
+    <string name="SF4">  Crea</string>
     <string name="F5">5 Copia</string>
     <string name="F6">6 Sposta</string>
     <string name="F7">7 Crea cartella</string>
@@ -21,34 +21,42 @@
     <string name="F10">0 Esci</string>
     <string name="oth_sh_this">= Rendi l\'altro pannello come quello attuale</string>
     <string name="eq">= Stesso</string>
-    <string name="change">&#x21E6; Cambia </string>
-    <string name="tgl">&#x21E6; Cambia </string>
+    <string name="change">⇦ Cambia</string>
+    <string name="tgl">⇦ Cambia</string>
     <string name="sz">\" Dimensione</string>
-    <string name="refresh">&#xA0; Aggiorna</string>
-    <string name="enter">&#xA0; Cambia posizione</string>
+    <string name="refresh">  Aggiorna</string>
+    <string name="enter">  Cambia posizione</string>
+    <string name="enter_b">Posizione</string>
     <string name="add_fav">* Rendi favorita la cartella corrente</string>
-    <string name="enter_ftp">&#xA0; Apri sito FTP</string>
-    <string name="enter_smb">&#xA0; Apri Samba (condivisioni di rete Windows)</string>
+    <string name="add_fav_b">* Favorita</string>
+    <string name="enter_ftp">  Apri sito FTP</string>
+    <string name="enter_smb">  Apri Samba (condivisioni di rete Windows)</string>
     <string name="search_file">/ Ricerca file</string>
 
-    <string name="sort_by_name">&#xA0; Per nome</string>
-    <string name="sort_by_ext">&#xA0; Per estensione</string>
-    <string name="sort_by_size">&#xA0; Per dimensione</string>
-    <string name="sort_by_date">&#xA0; Per data</string>
+    <string name="sort_by_name">  Per nome</string>
+    <string name="sort_by_ext">  Per estensione</string>
+    <string name="sort_by_size">  Per dimensione</string>
+    <string name="sort_by_date">  Per data</string>
     <string name="select_all">+ Seleziona più file</string>
     <string name="unselect_all">- Deseleziona file</string>
+    <string name="select_b">+ Seleziona</string>
+    <string name="unselect_b">- Deseleziona</string>
         
+    <string name="toggle_panels_mode"># Cambia modalità pannello</string>
     <string name="prefs">9 Impostazioni</string>
-    <string name="about">&#xA0; Informazioni</string>
+    <string name="about">  Informazioni</string>
     <string name="keys">1 Tasti scorciatoia</string>
     <string name="new_file">Crea un nuovo file</string>
     <string name="new_folder">Crea una nuova cartella</string>
     <string name="new_zip">Crea un nuovo file ZIP</string>
 
     <string name="go_button">Vai</string>
-    <string name="show_size">Calcola dimensione</string>
+    <string name="show_size">Informazioni</string>
     <string name="send_to">Invia a...</string>
     <string name="open_with">Apri con...</string>
+    <string name="copy_name">Copia il nome nella memeria</string>
+    <string name="fav_fld">Rende favorita la cartella «%s»</string>
+    
     <string name="create_zip">ZIP...</string>
     <string name="create_zip_title">ZIP</string>
 
@@ -56,14 +64,17 @@
     <string name="arrow_mode">Comandi freccia</string>
     <string name="summary_arrow_mode">Freccia sx/dx seleziona/cambia</string>
 
+    <string name="show_confirm">Mostra conferma</string>
+    <string name="summary_show_confirm">Mostra la conferma al completamento di ogni operazione</string>
+
     <string name="prefs_label">Impostazioni</string>
     <string name="editor_label">Editor di testo</string>
     <string name="advanced">Avanzate</string>
     <string name="advanced_settings">Impostazioni avanzate</string>
     <string name="summary_advanced_settings">Ulteriori impostazioni per utenti esperti</string>
 
-    <string name="wait"> Attendere...</string>
-    <string name="fail"> (Fallito)</string>
+    <string name="wait">Attendere...</string>
+    <string name="fail">(Fallito)</string>
     <string name="failed">Errore:\n</string>
 
     <string name="dialog_yes">Sì</string>
@@ -93,11 +104,12 @@
     <string name="copy_title">Copia</string>
     <string name="move_title">Sposta</string>
     <string name="no_items">Non ci sono file validi per completare l\'operazione</string>
+    <string name="inv_dest">Destinazione non valida</string>
     <string name="find_on_fs_only">La ricerca funziona solo per il file system locale.</string>
     <string name="op_not_alwd">Il \'%1$s\' non è permesso. Selezionare prima qualcosa.</string><!-- copy_title/move_title -->
     <string name="copy_to_local_only">È possibile copiare solamente sul file system locale</string>    
-    <string name="dest_exist">Il file esiste già. Impossibile sovrascrivere.</string>    
-    <string name="copy_move_to">%1$s %2$s a:"</string><!-- copy_title/move_title, file name/summary -->
+    <!-- string name="dest_exist">File already exist. Can not overwrite.</string-->    
+    <string name="copy_move_to">%1$s %2$s in:"</string><!-- copy_title/move_title, file name/summary -->
     <string name="login_title">Login</string>
     <string name="delete_title">Elimina</string>
     <string name="delete_err">Nulla da eliminare</string>
@@ -108,6 +120,60 @@
     <string name="too_deep_hierarchy">La struttura è troppo profonda</string>
     <string name="nothing_found">Nessun file trovato</string>
     <string name="preparing">In preparazione...</string>
+
+
+    <string name="coping">Copia di\n\"%s\"...</string>
+    <string name="copied_f">Copiato\n«%s»...</string>
+    <string name="deleting">Eliminazione di\n«%s»...</string>
+    <string name="canceled">Annullato</string>
+    <string name="unkn_err">Errore sconosciuto</string>
+    <string name="cant_md">Impossibile creare la cartella «%s»</string>
+    <string name="file_exist">Il file esiste «%s» già nella cartella di destinazione.</string>
+    <string name="sec_err">Problema di sicurezza:\n%s</string>
+    <string name="not_accs">File non accessibile.\n%s</string>
+    <string name="acc_err">Errore di accesso al file «%1$s»\n %2$s</string>
+    <string name="rtexcept">Errore nel file «%1$s»\n %2$s</string>
+    <string name="cant_move">Impossibile spostare il file «%s»</string>
+    <string name="cant_create">Impossibile creare il file «%1$s»\n%2$s</string>
+    <string name="cant_del">Impossibile eliminare il file «%s»</string>
+    
+    
+    <string name="copied">copiato</string>
+    <string name="moved">spostato</string>
+    <string name="deleted">eliminato</string>
+    <string name="downloaded">scaricato</string>
+    <string name="uploaded">caricato</string>
+    <string name="packed">compresso</string>
+    <string name="unpacked">decompresso </string>
+
+    <string name="verb_plural_sfx"/>
+    <string name="item">elemento</string>
+    <string name="items">elementi</string>
+    <string name="were">sono stati</string>
+    <string name="was">è stato</string>
+    <string name="nothing">Niente</string>
+<!-- 
+copied 0 will produce:
+"nothing" + "was" + "copied"
+
+copied 1 will produce:
+ 1 + "item" + "was" + "copied"
+
+copied >1 will produce:
+ # + "items" + "were" + "copied" + "verb_plural_sfx"
+ -->
+
+
+    <string name="sz_folder">Cartella «%1$s»:\n %2$d file,</string>
+    <string name="sz_file">File «%s»:</string>
+    <string name="sz_files">File trovati: %d </string>
+    <string name="sz_Nbytes">\nDimensione: %1$sb</string>
+    <string name="sz_bytes">\n (%d byte)</string>
+    <string name="sz_dirnum">,\nin %1$d cartell%2$s</string>
+    <string name="sz_dirsfx_s">a.</string>
+    <string name="sz_dirsfx_p">e.</string>
+    <string name="sz_lastmod">\nUltima modifica:\n</string>
+    <string name="sz_total">Totale: %1$sbyte,\nLiberi: %2$sbyte.</string>
     
     <string name="cd_title">Vai in</string>
     <string name="cd_prompt">Cambia cartella in:</string>
@@ -139,34 +205,39 @@
     <string name="summary_show_icons">Mostra le icone del tipo di file per ogni file</string>
     <string name="show_toolbar">Mostra la barra strumenti</string>
     <string name="summary_show_toolbar">Mostra o nasconde i pulsanti in basso nello schermo</string>
-    <string name="toolbar_preference">Scegliere i pulsanti da mostrare</string>
+    <string name="toolbar_preference">Pulsanti da mostrare</string>
     <string name="summary_toolbar_preference">Personalizzazione dei pulsanti sulla barra strumenti</string>
-    <string name="show_F1">Mostra &#xAB; 1 Aiuto&#xBB;</string>
-    <string name="show_F2">Mostra &#xAB; 2 Rinomina&#xBB;</string>
-    <string name="show_F3">Mostra &#xAB; 3 Visualizza&#xBB;</string>
-    <string name="show_F4">Mostra &#xAB; 4 Modifica&#xBB;</string>
-    <string name="show_SF4">Mostra &#xAB; &#xA0; Crea&#xBB;</string>
-    <string name="show_F5">Mostra &#xAB; 5 Copia&#xBB;</string>
-    <string name="show_F6">Mostra &#xAB; 6 Sposta&#xBB;</string>
-    <string name="show_F7">Mostra &#xAB; 7 Crea dir&#xBB;</string>
-    <string name="show_F8">Mostra &#xAB; 8 Elimina&#xBB;</string>
-    <string name="show_F9">Mostra &#xAB; 9 Menu&#xBB;</string>
-    <string name="show_F10">Mostra &#xAB; 0 Esci&#xBB;</string>
-    <string name="show_eq">Mostra &#xAB; = Rendi i pannelli uguali&#xBB;</string>
-    <string name="show_tgl">Mostra &#xAB; &#x21E6; Cambia&#xBB;</string>
-    <string name="show_sz">Mostra &#xAB; \" Dimensione&#xBB;</string>
+    <string name="show_F1">Mostra « 1 Aiuto»</string>
+    <string name="show_F2">Mostra « 2 Rinomina»</string>
+    <string name="show_F3">Mostra « 3 Visualizza»</string>
+    <string name="show_F4">Mostra « 4 Modifica»</string>
+    <string name="show_SF4">Mostra «   Crea»</string>
+    <string name="show_F5">Mostra « 5 Copia»</string>
+    <string name="show_F6">Mostra « 6 Sposta»</string>
+    <string name="show_F7">Mostra « 7 Crea dir»</string>
+    <string name="show_F8">Mostra « 8 Elimina»</string>
+    <string name="show_F9">Mostra « 9 Menu»</string>
+    <string name="show_F10">Mostra « 0 Esci»</string>
+    <string name="show_eq">Mostra « = Rendi i pannelli uguali»</string>
+    <string name="show_tgl">Mostra « ⇦ Cambia»</string>
+    <string name="show_sz">Mostra « \" Dimensione»</string>
     
-    <string name="show_by_name">Mostra &#xAB; Ordina per nome&#xBB;</string>
-    <string name="show_by_ext">Mostra &#xAB; Ordina per estensione&#xBB;</string>
-    <string name="show_by_size">Mostra &#xAB; Ordina per dimensione&#xBB;</string>
-    <string name="show_by_date">Mostra &#xAB; Ordina per data&#xBB;</string>
+    <string name="show_by_name">Mostra « Ordina per nome»</string>
+    <string name="show_by_ext">Mostra « Ordina per estensione»</string>
+    <string name="show_by_size">Mostra « Ordina per dimensione»</string>
+    <string name="show_by_date">Mostra « Ordina per data»</string>
+
+    <string name="show_sel_uns">Mostra «+/- Seleziona/Deseleziona »</string>
+    <string name="show_enter">Mostra «Posizione»</string>
+    <string name="show_addfav">Mostra «* Favorite»</string>
+
 
     <string name="finger_friendly">Facilitazione per le dita</string>
     <string name="summary_finger_friendly">Allarga gli elementi dell\'interfaccia</string>
     <string name="prevent_root">Avvisa quando si lascia la scheda sd</string>
     <string name="summary_prevent_root">Visualizza un avviso quando si accede alla cartella radice del dispositivo</string>
 
-    <string name="root_root">Modalità root quando si abbandona &#xAB;/sdcard&#xBB;</string>
+    <string name="root_root">Modalità root quando si abbandona «/sdcard»</string>
     <string name="summary_root_root">Abilita automaticamente la modalità \"root:\" quando si accede a una cartella di root (non «/sdcard»).</string>
 
     <string name="thumbnails">Mostra miniature</string>
@@ -191,11 +262,11 @@
     <string name="colors">Impostazione dei colori</string>
     <string name="summary_colors">Personalizzazione del colore dello sfondo, della selezione, ecc...</string>
     <string name="bgr_color_picker">Colore di sfondo</string>
-    <string name="summary_bgr_color_picker">Selezionare un colore per lo sfondo</string>
+    <string name="summary_bgr_color_picker">Seleziona un colore per lo sfondo</string>
     <string name="fgr_color_picker">Colore di primo piano</string>
-    <string name="summary_fgr_color_picker">Selezionare un colore per i nomi dei file</string>
+    <string name="summary_fgr_color_picker">Seleziona un colore per i nomi dei file</string>
     <string name="sel_color_picker">Colore selezionato</string>
-    <string name="summary_sel_color_picker">Selezionare un colore per i file selezionati e per il titolo del pannello</string>
+    <string name="summary_sel_color_picker">Seleziona un colore per i file selezionati e per il titolo del pannello</string>
     <string name="ttl_color_picker">Colore del titolo</string>
     <string name="summary_ttl_color_picker">Colore di sfondo del titolo del pannello</string>
     <string name="pick_color">Imposta colore</string>
@@ -218,89 +289,31 @@
     <string name="revert">Ripristina</string>
     <string name="wrap">Taglia le linee lunghe</string>
     <string name="no_such_file">Nessun file \"%1$s\"</string>
-    <string name="too_big_file">Il file \"%1$s\" è troppo grande</string>
-    <string name="binary_file">Il file \"%1$s\" è binario; è possibile danneggiarlo. Modificarlo a proprio rischio.</string>    
+    <string name="too_big_file">Il file «%1$s» è troppo grande</string>
+    <string name="binary_file">Il file «%1$s» è binario; è possibile danneggiarlo. Modificarlo a proprio rischio.</string>    
     <string name="cant_open">Impossibile aprire il file.</string>    
     <string name="cant_save">Impossibile salvare il file.</string>
-    <string name="nav_warn">SI sta per aprire una cartella di sistema. Modificandola si potrebbero avere dei problemi. Continuare?</string>
-    <string name="nav_warn_cmt">(È possibile disabilitare in modo permanente questi avvisi nelle impostazioni dell\'applicazione)\n
-    Premere "Annulla" per accedere alla cartella «/sdcard». Premere "Esci" per chiudere l\'applicazione.</string>
-    <string name="no_such_folder">\"%1$s\" non è una cartella valida!</string>
-    <string name="fav_added">La cartella \"%1$s\" è stata aggiunta alle favorite</string>
+    <string name="nav_warn">Si sta per aprire una cartella di sistema. Modificandola si potrebbero avere dei problemi. Continuare?</string>
+    <string name="nav_warn_cmt">(È possibile disabilitare in modo permanente questi avvisi nelle impostazioni dell\'applicazione)\n Premere "Annulla" per accedere alla cartella «/sdcard». Premere "Esci" per chiudere l\'applicazione.</string>
+    <string name="no_such_folder">«%1$s» non è una cartella valida!</string>
+    <string name="fav_added">«%1$s» è stata aggiunta alle favorite</string>
 
-    <string name="items">elementi</string>
     <string name="no_root">Utente non root?</string>
 
-    <string name="smb_missed">
-    Impossibile caricare l\'adattatore Samba.\n
-    Assicurarsi che il pacchetto\n
-    \"Ghost Commander - Samba plugin\"\n
-    (com.ghostsq.commander.samba) sia installato.</string>
+    <string name="smb_missed">Impossibile caricare l\'adattatore Samba.\n Assicurarsi che il pacchetto\n \"Ghost Commander - Samba plugin\"\n (com.ghostsq.commander.samba) sia installato.</string>
     <string name="smb_app_uri">market://search?q=pname:com.ghostsq.commander.samba</string>
-    <string name="dbox_missed">
-    Impossibile caricare l\'adattatore Dropbox.\n
-    Assicurarsi che il pacchetto\n
-    \"Ghost Commander - Dropbox plugin\"\n
-    (com.ghostsq.commander.dropbox) sia installato.</string>
+    <string name="dbox_missed">Impossibile caricare l\'adattatore Dropbox.\n Assicurarsi che il pacchetto\n \"Ghost Commander - Dropbox plugin\"\n (com.ghostsq.commander.dropbox) sia installato.</string>
     <string name="dbox_app_uri">market://search?q=pname:com.ghostsq.commander.dropbox</string>
     
 
-    <string name="donate">&#xA0; Donazione</string>
-    <string name="online_help">&#xA0; Aiuto online</string>
+    <string name="donate">  Donazione</string>
+    <string name="online_help">  Aiuto online</string>
 
-    <string name="donation">Questa applicazione ti è piaciuta? davvero!? Che ne dici di fare una piccola donazione 
-    di qualsiasi importo per contribuire agli sviluppi futuri?\n
-    Seleziona \"Ok\" per farlo tramite PayPal.\n
-    \"Annulla\" per goderti il gestore di file &#xAB;Ghost Commander&#xBB; gratuitamente.\n</string>
+    <string name="donation">Questa applicazione ti è piaciuta? davvero!? Che ne dici di fare una piccola donazione di qualsiasi importo per contribuire agli sviluppi futuri?\nSeleziona \"Ok\" per farlo tramite PayPal.\n \"Annulla\" per goderti il gestore di file «Ghost Commander» gratuitamente.\n</string>
     <string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
     <string name="help_uri">http://sites.google.com/site/ghostcommander1/info</string>
     
-    <string name="about_text">
-        Ghost Commander v%1$s\n
-        Un gestore di file.\n\n
-        Inviare via email i bug e i suggerimenti a\n
-        ghost.sq2@gmail.com\n
-        Grazie!\n\n\n
-        DISCLAIMER:\n
-Utilizzando questo programma, si accettano le seguenti condizioni:
-l\'autore di questo programma non è può essere ritenuto responsabile per qualsiasi tipo di danno, perdita di informazioni,
-o qualsiasi problema che è o può essere causato dall\'uso di questo programma.
-Si accetta di utilizzare questo programma a proprio rischio.\n
-Se non si accettano le precedenti condizioni, cessare immediatamente di utilizzare il programma e disinstallarlo.\n</string>
-    <string name="keys_text">
-    "\tGuida all\'utilizzo\n
-Per selezionare più di un file, selezionare la parte destra della riga.\n
-Per inserire manualmente il percorso (e visualizzare i favoriti), mantenere premuto il titolo del pannello\n
-Tasti scorciatoia:\n
-Volume su - Seleziona l\'elemento corrente (file)
-Volume giù - Scambia i pannelli
-+, -  - Seleziona o deseleziona gli elementi nella cartella corrente
-(, ) - Inserisce la posizione per il pannello destro/sinistro e i favoriti
-* - Aggiunge la cartella corrente ai favoriti \"
-- Mostra la dimensione totale dei file selezionati
-= - Fa visualizzare all\'altro pannello la cartella corrente
-1 - Aiuto
-2 - Rinomina il file corrente
-4 - Modifica il file corrente
-5 - Copia i file selezionati
-6 - Sposta i file selezionati
-7 - Crea una nuova cartella
-8 - Elimina i file o le cartelle selezionati
-9 - Apre le preferenze
-0 - Esce dal programma
-[A-z] - Ricerca veloce
-    
-Per aprire una cartella FTP anonima, inserire un percorso come:\n
-    ftp://host.com/cartella\n
-Oppure, se è necessario fornire un\'identità:\n
-    ftp://utente:password@host.com/cartella\n\n
-Per accedere come root (su), 
-inserire la posizione nel seguente modo:\n
-    \"root:///data\"\n Assicurarsi di aver installato \"busybox\" o che la sua posizione sia specificata nelle impostazioni.\n
-
-Per elencare i dispositivi montati, digitare \"mount://\"
-Fare clic su una posizione di montaggio per renderla \"rw\" o farla tornare \"ro\".
-    "
-    </string>
+    <string name="about_text">Ghost Commander v%1$s\n Un gestore di file.\n\n Inviare via email i bug e i suggerimenti a\n ghost.sq2@gmail.com\n Grazie!\n\n\n DISCLAIMER:\n Utilizzando questo programma, si accettano le seguenti condizioni: l\'autore di questo programma non è può essere ritenuto responsabile per qualsiasi tipo di danno, perdita di informazioni, o qualsiasi problema che è o può essere causato dall\'uso di questo programma. Si accetta di utilizzare questo programma a proprio rischio.\n Se non si accettano le precedenti condizioni, cessare immediatamente di utilizzare il programma e disinstallarlo.\n</string>
+    <string name="keys_text">"\tGuida all\'utilizzo\n Per selezionare più di un file, selezionare la parte destra della riga.\n Per inserire manualmente il percorso (e visualizzare i favoriti), mantenere premuto il titolo del pannello\n Tasti scorciatoia:\n Volume su - Seleziona l\'elemento corrente (file) Volume giù - Scambia i pannelli +, - - Seleziona o deseleziona gli elementi nella cartella corrente (, ) - Inserisce la posizione per il pannello destro/sinistro e i favoriti * - Aggiunge la cartella corrente alle favorite \" - Mostra la dimensione totale dei file selezionati = - Fa visualizzare all\'altro pannello la cartella corrente 1 - Aiuto 2 - Rinomina il file corrente 4 - Modifica il file corrente 5 - Copia i file selezionati 6 - Sposta i file selezionati 7 - Crea una nuova cartella 8 - Elimina i file o le cartelle selezionati 9 - Apre le preferenze 0 - Esce dal programma [A-z] - Ricerca veloce Per aprire una cartella FTP anonima, inserire un percorso come:\n ftp://host.com/cartella\n Oppure, se è necessario fornire un\'identità:\n ftp://utente:password@host.com/cartella\n\n Per accedere come root (su), inserire la posizione nel seguente modo:\n \"root:///data\"\n Assicurarsi di aver installato \"busybox\" o che la sua posizione sia specificata nelle impostazioni.\n Per elencare i dispositivi montati, digitare \"mount://\" Fare clic su una posizione di montaggio per renderla \"rw\" o farla tornare \"ro\". "</string>
     
 </resources>

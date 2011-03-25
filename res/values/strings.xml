@@ -100,7 +100,7 @@
     <string name="mkdir_title">MkDir</string>
     <string name="mkdir_prompt">Create directory:</string>
     <string name="search_title">Search</string>
-    <string name="search_prompt">File name:</string>
+    <string name="search_prompt">File name (wildcard \"*\" allowed):</string>
     <string name="copy_title">Copy</string>
     <string name="move_title">Move</string>
     <string name="no_items">There are no valid files to complete the operation.</string>
@@ -125,6 +125,10 @@
     <string name="coping">Coping\n\"%s\"...</string>
     <string name="copied_f">Copied\n\"%s\"...</string>
     <string name="deleting">Deleting\n\"%s\"...</string>
+    <string name="deleting_a">Deleting...</string>
+    <string name="unpacking">Unpacking \n\"%s\"...</string>
+    <string name="unpacked_p">Unpacked \n\"%s\"   </string>
+    
     <string name="canceled">Canceled</string>
     <string name="unkn_err">Unknown error</string>
     <string name="cant_md">Unable to create directory \"%s\"</string>
@@ -136,7 +140,7 @@
     <string name="cant_move">Unable to move file \"%s\"</string>
     <string name="cant_create">Unable to create file \"%1$s\"\n%2$s</string>
     <string name="cant_del">Unable to delete file \"%1$s\"</string>
-    
+    <string name="dest_wrtble">Please make sure the folder \"%s\" is writable</string>    
     
     <string name="copied">copied</string>
     <string name="moved">moved</string>
@@ -174,6 +178,8 @@ copied >1 will produce:
     <string name="sz_dirsfx_p">ies.</string>
     <string name="sz_lastmod">\nLast modified:\n </string>
     <string name="sz_total">Total: %1$sbytes,\nFree: %2$sbytes.</string>
+
+    <string name="busy">Busy!</string>
     
     <string name="cd_title">Go to</string>
     <string name="cd_prompt">Change directory to:</string>
@@ -327,7 +333,7 @@ Tap \"Ok\" to easily do that via PayPal.\n
     
     <string name="about_text">
         Ghost Commander v%1$s\n
-        A File manager.\n\n
+        A File manager by Ghost Squared.\n\n
         Please email bugs/suggestions to\n
         ghost.sq2@gmail.com\n
         Thank you.\n\n\n 

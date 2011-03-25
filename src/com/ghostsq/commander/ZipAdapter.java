@@ -1,6 +1,5 @@
 package com.ghostsq.commander;
 
-import java.lang.System;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -18,6 +17,7 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.http.util.EncodingUtils;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
@@ -55,7 +55,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                 return false;
             if( worker != null ) { // that's not good.
                 if( worker.isAlive() ) {
-                    showMessage( "Busy!" );
+                    showMessage( commander.getContext().getString( R.string.busy ) );
                     worker.interrupt();
                     Thread.sleep( 500 );      
                     if( worker.isAlive() ) 
@@ -287,7 +287,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                 base_len = base_pfx.length(); 
             }
             catch( NullPointerException e ) {
-                System.err.print( "Exception: " + e + " on uri.getFragment()" );
+                Log.e( TAG, "", e );
             }
 	    }
 	    @Override
@@ -309,7 +309,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                     if( !f.isDirectory() )
                         dir_size += f.getSize();
 	            }
-	            
+	            Context c = commander.getContext();
 	            double conv = 100./(double)dir_size;
 	        	for( int i = 0; i < list.length; i++ ) {
 	        		ZipEntry entry = list[i];
@@ -338,7 +338,7 @@ public class ZipAdapter extends CommanderAdapterBase {
         			}
         			else {
         				if( dest_file.exists() && !dest_file.delete() ) {
-    	        			errMsg = "Please make sure the folder '" + dest_folder.getAbsolutePath() + "' is writable";
+    	        			error( c.getString( R.string.dest_wrtble, dest_folder.getAbsolutePath() ) );
     	        			break;
         				}
         				InputStream in = zip.getInputStream( entry );
@@ -346,12 +346,14 @@ public class ZipAdapter extends CommanderAdapterBase {
         	            byte buf[] = new byte[BLOCK_SIZE];
         	            int  n = 0;
         	            int  so_far = (int)(byte_count * conv);
+        	            
+        	            String unp_msg = c.getString( R.string.unpacking, rel_name ); 
         	            while( true ) {
         	                n = in.read( buf );
         	                if( n < 0 ) break;
         	                out.write( buf, 0, n );
         	                byte_count += n;
-        	                sendProgress( "Unpacking \n'" + rel_name + "'...", so_far, (int)(byte_count * conv) );
+        	                sendProgress( unp_msg, so_far, (int)(byte_count * conv) );
                             if( stop || isInterrupted() ) {
                                 in.close();
                                 out.close();
@@ -362,11 +364,11 @@ public class ZipAdapter extends CommanderAdapterBase {
         	            }
         			}
                     if( stop || isInterrupted() ) {
-                        error( "Canceled by a request." );
+                        error( c.getString( R.string.canceled ) );
                         break;
                     }
                     if( i >= list.length-1 )
-                        sendProgress( "Unpacked \n'" + rel_name + "'   ", (int)(byte_count * conv) );
+                        sendProgress( c.getString( R.string.unpacked_p, rel_name ), (int)(byte_count * conv) );
         			counter++;
 	        	}
 	    	}
@@ -422,7 +424,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                 ZipFile zf = new ZipFile( zipFile );
                 int  removed = 0, processed = 0, num_entries = zf.size();
                 long total_size = zipFile.length(), bytes_saved = 0;
-                final String del = "Deleting...";
+                final String del = commander.getContext().getString( R.string.deleting_a );
                 
                 if( !zipFile.renameTo(old_file) ) {
                     error("could not rename the file " + zipFile.getAbsolutePath() + " to " + old_file.getAbsolutePath() );
@@ -873,7 +875,7 @@ public class ZipAdapter extends CommanderAdapterBase {
     private final boolean checkReadyness()   
     {
         if( worker != null ) {
-        	commander.notifyMe( new Commander.Notify( "busy!", Commander.OPERATION_FAILED ) );
+        	commander.notifyMe( new Commander.Notify( commander.getContext().getString( R.string.busy ), Commander.OPERATION_FAILED ) );
         	return false;
         }
     	return true;
