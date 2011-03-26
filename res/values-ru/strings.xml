@@ -247,8 +247,8 @@
     <string name="item">файл</string>
     <string name="items24">файла</string>    
     <string name="items">файлов</string>
-    <string name="were">было</string>
-    <string name="was">был</string>
+    <string name="were"></string>
+    <string name="was"></string>
     <string name="nothing">Ни один файл не</string>
 
     <string name="sz_folder">Папка \"%1$s\":\nвключает файлов: %2$d,</string>
