@@ -153,6 +153,7 @@
     <string name="verb_plural_sfx"></string>
     <string name="item">item</string>
     <string name="items">items</string>
+    <string name="items24"></string>    
     <string name="were">were</string>
     <string name="was">was</string>
     <string name="nothing">Nothing</string>

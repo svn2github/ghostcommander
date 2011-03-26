@@ -135,10 +135,12 @@
     <string name="unpacked">rozpakowano</string>
 
     <string name="verb_plural_sfx"></string>
-    <string name="item">plik/katalog</string>
-    <string name="items">plików/katalogów</string>
-    <string name="were">zostały</string>
-    <string name="was">został</string>
+    <string name="item">element</string>
+    <string name="items24">elementy</string>
+    <string name="items">elementów</string>
+    
+    <string name="were"></string>
+    <string name="was"></string>
     <string name="nothing">Nic nie</string>
     
     <string name="cd_title">Idź do</string>

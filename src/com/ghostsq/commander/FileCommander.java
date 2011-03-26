@@ -659,10 +659,6 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         return sideXside;
     }
     private final void setConfirmMode( SharedPreferences sharedPref ) {
-        Locale locale = Locale.getDefault();
-        if( locale.getLanguage().equalsIgnoreCase( "pl" ) )
-            show_confirm = false;   // too complex grammar
-        else
-            show_confirm = sharedPref.getBoolean("show_confirm", true );
+        show_confirm = sharedPref.getBoolean("show_confirm", true );
     }    
 }

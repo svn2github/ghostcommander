@@ -245,6 +245,7 @@
     <string name="unpacked">распакован</string>
     <string name="verb_plural_sfx">о</string>
     <string name="item">файл</string>
+    <string name="items24">файла</string>    
     <string name="items">файлов</string>
     <string name="were">было</string>
     <string name="was">был</string>
@@ -271,7 +272,7 @@
 <string name="donate">  Поддержка</string>
 <string name="online_help">  Описание в онлайне (EN)</string>
 <string name="donation">Выразите свою благодарность и окажите поддержку дальнейшему развитию проекта
-       путем перевода любой суммы разработчику через систему PayPal.\n
+       путем перевода разработчику любой желаемой денежной суммы через систему PayPal.\n
     </string>
 <string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
 <string name="about_text">
