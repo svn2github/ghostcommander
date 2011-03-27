@@ -89,7 +89,7 @@
     <string name="mkdir_title">Nowy katalog</string>
     <string name="mkdir_prompt">Utwórz katalog:</string>
     <string name="search_title">Szukaj</string>
-    <string name="search_prompt">Nazwa pliku:</string>
+    <string name="search_prompt">Wpisz szukaną nazwę (użycie \"*\" dozwolone):</string>
     <string name="copy_title">Kopiuj</string>
     <string name="move_title">Przenieś</string>
     <string name="no_items">Brak poprawnych plików, aby ukończyć operację.</string>
