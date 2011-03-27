@@ -13,7 +13,6 @@ import android.content.DialogInterface.OnClickListener;
 import android.graphics.Color;
 import android.net.Uri;
 import android.net.UrlQuerySanitizer;
-import android.net.wifi.WifiConfiguration.GroupCipher;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.ClipboardManager;
@@ -25,11 +24,9 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -173,6 +170,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 
                         case R.id.enter:   pref_id = "show_enter"; def = false; break;
                         case R.id.add_fav: pref_id = "show_addfav"; def = false; break;
+
+                        case R.id.remount: pref_id = ""; def = true; break;
                         
                         default: pref_id = "";
                         }

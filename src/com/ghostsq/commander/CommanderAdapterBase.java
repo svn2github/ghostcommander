@@ -504,7 +504,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
 
     @Override
     public boolean isButtonActive( int brId ) {
-        return true;
+        return R.id.remount != brId;
     }
 
     @Override

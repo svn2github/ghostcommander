@@ -29,6 +29,9 @@
     <string name="enter_b">Location</string>
     <string name="add_fav">* Favorite the current folder</string>
     <string name="add_fav_b">* Favorite</string>
+    
+    <string name="remount_b">Remount /system</string>
+    
     <string name="enter_ftp">&#xA0; Open FTP site</string>
     <string name="enter_smb">&#xA0; Open Samba (Windows) share</string>
     <string name="search_file">/ Search file</string>

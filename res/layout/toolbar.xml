@@ -162,6 +162,13 @@
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content" 
                 android:layout_height="wrap_content"/>
+             <Button android:id="@+id/remount"
+                android:text="@string/remount_b"
+                android:focusable="false"
+                android:paddingTop="1dp" 
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content" 
+                android:layout_height="wrap_content"/>
      </LinearLayout>
  </HorizontalScrollView>
  
