@@ -31,8 +31,8 @@ Lista możliwości:
 Aby dowiedzieć się więcej, odwiedź stronę:
 http://sites.google.com/site/ghostcommander1/info
 
-Autor aplikacji: ....................
+Ghost Commander - menedżer plików autorstwa Ghost Squared.
 Masz dodatkowe pytania? Napisz mi e-maila (w języku angielskim): ghost.sq2@gmail.com
 Polskie tłumaczenie: Robert Malara (robert.malara+gc@gmail.com)
-
+ 
 keywords: ghost commander file manager copy paste rename move directory directories file files panels total norton midnight intuitive server ftp connection connections download upload samba windows root mount zip unzip android memory card filesystem
