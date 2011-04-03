@@ -2,18 +2,12 @@ package com.ghostsq.commander;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-
-import com.ghostsq.commander.Commander;
-import com.ghostsq.commander.CommanderAdapter;
-import com.ghostsq.commander.CommanderAdapterBase;
 
 import android.os.Handler;
 import android.app.AlertDialog;
@@ -31,6 +25,12 @@ import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
+
+import com.ghostsq.commander.Commander;
+import com.ghostsq.commander.CommanderAdapter;
+import com.ghostsq.commander.CommanderAdapterBase;
+import com.ghostsq.commander.MountsListEngine;
+import com.ghostsq.commander.MountsListEngine.MountItem;
 
 public class RootAdapter extends CommanderAdapterBase {
     // Java compiler creates a thunk function to access to the private owner class member from a subclass
@@ -176,6 +176,19 @@ public class RootAdapter extends CommanderAdapterBase {
             uri = list_engine.getUri();
             numItems = items != null ? items.length + 1 : 1;
             notifyDataSetChanged();
+        } else
+        if( engine instanceof MountsListEngine ) {
+            MountsListEngine list_engine = (MountsListEngine)engine;
+            MountItem[] mounts = list_engine.getItems();
+            int num = mounts != null ? mounts.length : 0;
+            for( int i = 0; i < num; i++ ) {
+                String mp = mounts[i].getMountPoint();
+                if( "/system".equals( mp ) ) {
+                    worker = new RemountEngine( commander.getContext(), handler, mounts[i] );
+                    worker.start();
+                    break;
+                }
+            }
         }
     }
     
@@ -710,6 +723,13 @@ public class RootAdapter extends CommanderAdapterBase {
             }
             else if( CMD_CMD == command_id )
                 new CmdDialog( commander.getContext(), selected_one ? items_todo[0] : null, this );
+        } else if( R.id.remount == command_id ) {
+            if( isWorkerStillAlive() ) {
+                commander.showError( commander.getContext().getString( R.string.busy ) );
+                return;
+            }
+            worker = new MountsListEngine( commander.getContext(), handler, null );
+            worker.start();
         }
     }
     

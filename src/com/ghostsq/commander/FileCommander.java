@@ -220,7 +220,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             if( OPEN == item_id ) 
                 panels.openItem( info.position );
             else
-                doIt( item_id );
+                dispatchCommand( item_id );
             return true;
         } catch( Exception e ) {
             Log.e(TAG, "onContextItemSelected()", e);
@@ -259,7 +259,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         panels.resetQuickSearch();
         boolean processed = super.onMenuItemSelected( featureId, item );
         if( !processed ) 
-            doIt( item.getItemId() );
+            dispatchCommand( item.getItemId() );
         return true; 
     }
 
@@ -346,10 +346,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         panels.resetQuickSearch();
         if( button == null )
             return;
-        doIt( button.getId() );
+        dispatchCommand( button.getId() );
     }
 
-    public final void doIt( int id ) {
+    public final void dispatchCommand( int id ) {
         Utils.changeLanguage( this, getResources() );
         switch( id ) {
         case R.id.keys:

@@ -1,31 +1,8 @@
 package com.ghostsq.commander;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.ghostsq.commander.Commander;
-import com.ghostsq.commander.CommanderAdapter;
-import com.ghostsq.commander.CommanderAdapterBase;
-import com.ghostsq.commander.CommanderAdapter.Item;
-import com.ghostsq.commander.LsItem.LsItemPropComparator;
-import com.ghostsq.commander.RootAdapter.MkDirEngine;
 
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -33,7 +10,12 @@ import android.view.ContextMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
+
+import com.ghostsq.commander.Commander;
+import com.ghostsq.commander.CommanderAdapter;
+import com.ghostsq.commander.CommanderAdapterBase;
+import com.ghostsq.commander.MountsListEngine;
+import com.ghostsq.commander.MountsListEngine.MountItem;
 
 public class MountAdapter extends CommanderAdapterBase {
     // Java compiler creates a thunk function to access to the private owner class member from a subclass
@@ -42,43 +24,6 @@ public class MountAdapter extends CommanderAdapterBase {
     public  Uri uri = null;
     private int attempts = 0;
     
-    public class MountItem {
-        private String  dev = "", mntp = "", type = "", opts = "", r1 = "", r2 = "";
-        public MountItem( String string ) {
-            String[] flds = string.split( " " );
-            if( flds.length < 4 ) {
-                dev = "???";
-            }
-            if( flds[1].equals( "on" ) && flds[3].equals( "type" ) ) {
-                dev  = flds.length > 0 ? flds[0] : "";
-                mntp = flds.length > 2 ? flds[2] : ""; 
-                type = flds.length > 4 ? flds[4] : ""; 
-                opts = flds.length > 5 ? flds[5] : "";
-                
-                if( opts.length() > 1 && opts.charAt( 0 ) == '(' && opts.charAt( opts.length()-1 ) == ')' )
-                    opts = opts.substring( 1, opts.length()-1 );
-            } else {
-                dev  = flds.length > 0 ? flds[0] : "";
-                mntp = flds.length > 1 ? flds[1] : ""; 
-                type = flds.length > 2 ? flds[2] : ""; 
-                opts = flds.length > 3 ? flds[3] : ""; 
-                r1   = flds.length > 4 ? flds[4] : "";
-                r2   = flds.length > 5 ? flds[5] : "";
-            }
-        }
-        public boolean isValid() {
-            return dev.length() > 0 && mntp.length() > 0;
-        }
-        public String getName() {
-            return dev + " " + mntp;
-        }
-        public String getOptions() {
-            return opts;
-        }
-        public String getRest() {
-            return type + " " + opts + " " + r1 + " " + r2;
-        }
-    }
     
     public  MountItem[] items = null;
 
@@ -91,90 +36,11 @@ public class MountAdapter extends CommanderAdapterBase {
         return "mount";
     }
     
-    class ListEngine extends ExecEngine {
-        private MountItem[] items_tmp;
-        public  String pass_back_on_done;
-        ListEngine( Context ctx, Handler h, String pass_back_on_done_ ) {
-        	super( ctx, h );
-        	pass_back_on_done = pass_back_on_done_;
-        }
-        public MountItem[] getItems() {
-            return items_tmp;
-        }       
-        @Override
-        public void run() {
-            try {
-                if( uri == null )
-                    return;
-                getList();
-            }
-            catch( Exception e ) {
-                sh = "sh";
-                // try again
-                try {
-                    getList();
-                    sendProgress( commander.getContext().getString( R.string.no_root ), 
-                            Commander.OPERATION_COMPLETED, pass_back_on_done );
-                }
-                catch( Exception e1 ) {
-                    Log.e( TAG, "Exception even on 'sh' execution", e1 );
-                    sendProgress( commander.getContext().getString( R.string.no_root ), 
-                            Commander.OPERATION_FAILED, pass_back_on_done );
-                }
-            }
-            finally {
-                super.run();
-            }
-        }
-        
-        private void getList() throws Exception {
-            Process p = Runtime.getRuntime().exec( sh );
-            DataOutputStream os = new DataOutputStream( p.getOutputStream() );
-            DataInputStream  is = new DataInputStream( p.getInputStream() );
-            DataInputStream  es = new DataInputStream( p.getErrorStream() );
-            os.writeBytes( "mount\n"); // execute command
-            os.flush();
-            for( int i=0; i< 10; i++ ) {
-                if( isStopReq() ) 
-                    throw new Exception();
-                if( is.available() > 0 ) break;
-                Thread.sleep( 50 );
-            }
-            if( is.available() <= 0 ) // may be an error may be not
-                Log.w( TAG, "No output from the executed command" );
-            ArrayList<MountItem>  array = new ArrayList<MountItem>();
-            while( is.available() > 0 ) {
-                if( isStopReq() ) 
-                    throw new Exception();
-                String ln = is.readLine();
-                if( ln == null ) break;
-                MountItem item = new MountItem( ln );
-                if( item.isValid() )
-                    array.add( item );
-            }
-            os.writeBytes("exit\n");
-            os.flush();
-            p.waitFor();
-            if( p.exitValue() == 255 )
-                Log.e( TAG, "Process.exitValue() returned 255" );
-            int sz = array.size();
-            items_tmp = new MountItem[sz];
-            if( sz > 0 )
-                array.toArray( items_tmp );
-            String res_s = null;
-            if( es.available() > 0 )
-                res_s = es.readLine();
-            if( res_s != null && res_s.length() > 0 )
-               Log.e( TAG, "Error on the 'ls' command: " + res_s );
-            sendProgress( res_s, Commander.OPERATION_COMPLETED, pass_back_on_done );
-        }        
-        
-    }
     @Override
     protected void onComplete( Engine engine ) {
         attempts = 0;
-        if( engine instanceof ListEngine ) {
-            ListEngine list_engine = (ListEngine)engine;
+        if( engine instanceof MountsListEngine ) {
+            MountsListEngine list_engine = (MountsListEngine)engine;
             items = list_engine.getItems();
             numItems = items != null ? items.length : 0;
             notifyDataSetChanged();
@@ -234,7 +100,7 @@ public class MountAdapter extends CommanderAdapterBase {
             }
             
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            worker = new ListEngine( commander.getContext(), handler, pass_back_on_done );
+            worker = new MountsListEngine( commander.getContext(), handler, pass_back_on_done );
             worker.start();
             return true;
         }
@@ -310,53 +176,6 @@ public class MountAdapter extends CommanderAdapterBase {
         return null;
     }
 
-    class RemountEngine extends ExecEngine {
-        MountItem mount;
-        RemountEngine( Context ctx, Handler h, MountItem m ) {
-            super( ctx, h );
-            mount = m;
-        }
-        @Override
-        public void run() {
-            String cmd = null;
-            try {
-                String o = mount.getOptions();
-                if( o == null ) {
-                    error( "No Options found" );
-                    return;
-                }
-                String[] flds = o.split( "," );
-                boolean found = false;
-                for( int i = 0; i < flds.length; i++ ) {
-                    if( flds[i].equals( "rw" ) ) {
-                        flds[i] = "ro";
-                        found = true;
-                        break;
-                    }
-                    if( flds[i].equals( "ro" ) ) {
-                        flds[i] = "rw";
-                        found = true;
-                        break;
-                    }
-                }
-                if( !found ) {
-                    error( "No ro/rw options found" );
-                    return;
-                }
-                cmd = "mount -o remount," + Utils.join( flds, "," ) + " " + mount.getName();
-                execute( cmd, false, 500 );
-            }
-            catch( Exception e ) {
-                Log.e( TAG, "On remount, ", e );
-                error( "Exception: " + e );
-            }
-            finally {
-                super.run();
-                sendResult( errMsg != null ? ( cmd == null ? "" : "Tried to execute: '" + cmd + "'") : null );
-            }
-        }
-    }
-    
     @Override
     public void openItem( int position ) {
         if( items == null || position < 0 || position > items.length )

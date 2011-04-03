@@ -6,7 +6,6 @@
 <string name="list">Sortuj/Zaznacz</string>
 <string name="app">Aplikacja</string>
 <string name="help">Pomoc</string>
-
 <string name="F1">1 Pomoc</string>
 <string name="F2">2 Zm. naz.</string>
 <string name="F3">3 Podgląd</string>
@@ -25,8 +24,10 @@
 <string name="sz">\" Rozmiar</string>
 <string name="refresh">&#xA0; Odśwież</string>
 <string name="enter">&#xA0; Zmień ścieżkę</string>
+<string name="enter_b">Ścieżka</string>
 <string name="add_fav">* Dodaj katalog do Ulubionych</string>
 <string name="add_fav_b">* Ulubione</string>
+<string name="remount_b">Odmontuj /system</string>
 <string name="enter_ftp">  Połącz z FTPem</string>
 <string name="enter_smb">  Połącz z Samba (Windows)</string>
 <string name="search_file">/ Szukaj</string>
@@ -51,7 +52,7 @@
 <string name="send_to">Wyślij do...</string>
 <string name="open_with">Otwórz za pomocą...</string>
 <string name="copy_name">Kopiuj nazwę pliku do Schowka</string>
-<string name="fav_fld">Dodano do Ulubionych \"%s\"</string>
+<string name="fav_fld">Dodaj do Ulubionych: \"%s\"</string>
 <string name="create_zip">Spakuj do archiwum .ZIP...</string>
 <string name="create_zip_title">Spakuj</string>
 <string name="input_settings">Sterowanie</string>
@@ -64,22 +65,18 @@
 <string name="advanced">Zaawansowane</string>
 <string name="advanced_settings">Ustawienia zaawansowane</string>
 <string name="summary_advanced_settings">Jeszcze więcej ustawień (dla użytkowników zaawansowanych)</string>
-
 <string name="wait">czekaj...</string>
 <string name="fail">(niepowodzenie)</string>
 <string name="failed">Błąd:\n</string>
-
 <string name="dialog_yes">Tak</string>
 <string name="dialog_no">Nie</string>
 <string name="dialog_ok">OK</string>
 <string name="dialog_cancel">Anuluj</string>
 <string name="dialog_close">Zamknij</string>
 <string name="dialog_exit">Wyjdź</string>
-
 <string name="dialog_abort">Przerwij</string>
 <string name="dialog_retry">Ponów</string>
 <string name="dialog_ignore">Ignoruj</string>
-
 <string name="dialog_select">Zaznacz</string>
 <string name="dialog_unselect">Odznacz</string>
 <string name="operation">Operacja</string>
@@ -103,18 +100,19 @@
 <string name="login_title">Login</string>
 <string name="delete_title">Usuń</string>
 <string name="delete_err">Nie ma niczego do usunięcia.</string>
-<string name="delete_q">Usunąć \"%1$s\"?</string>
+<string name="delete_q">Usunąć %1$s?</string>
 <string name="search_done">Wyszukiwanie zakończone</string>
 <string name="done">Wykonano</string>
 <string name="interrupted">Przerwano</string>
 <string name="too_deep_hierarchy">Ścieżka dostępu jest zbyt głęboka</string>
 <string name="nothing_found">Nie znaleziono plików</string>
 <string name="preparing">Przygotowuję...</string>
-
-
 <string name="coping">Kopiuję\n\"%s\"...</string>
 <string name="copied_f">Skopiowano\n\"%s\"...</string>
 <string name="deleting">Usuwam\n\"%s\"...</string>
+<string name="deleting_a">Usuwanie...</string>
+<string name="unpacking">Rozpakowuję \n\"%s\"...</string>
+<string name="unpacked_p">Rozpakowano \n\"%s\"   </string>
 <string name="canceled">Anulowano</string>
 <string name="unkn_err">Nieznany błąd</string>
 <string name="cant_md">Nie można utworzyć katalogu \"%s\"</string>
@@ -126,8 +124,7 @@
 <string name="cant_move">Nie można przenieść pliku \"%s\"</string>
 <string name="cant_create">Nie można utworzyć pliku \"%1$s\"\n%2$s</string>
 <string name="cant_del">Nie można usunąć pliku \"%1$s\"</string>
-
-
+<string name="dest_wrtble">Upewnij się, że katalog \"%s\" posiada prawa do zapisu</string>
 <string name="copied">skopiowano</string>
 <string name="moved">przeniesiono</string>
 <string name="deleted">usunięto</string>
@@ -135,28 +132,26 @@
 <string name="uploaded">wysłano</string>
 <string name="packed">spakowano</string>
 <string name="unpacked">rozpakowano</string>
-
 <string name="verb_plural_sfx"></string>
 <string name="item">element</string>
-<string name="items24">elementy</string>
 <string name="items">elementów</string>
-
+<string name="items24">elementy</string>
 <string name="were"></string>
 <string name="was"></string>
 <string name="nothing">Nic nie</string>
-<string name="sz_folder">Katalog \"%1$s\":\n%2$d plik(i/ów),</string>
+<string name="sz_folder">Katalog \"%1$s\":\n%2$d plik(ów),</string>
 <string name="sz_file">Plik \"%s\":</string>
 <string name="sz_files">%d pliki(ów):</string>
-<string name="sz_Nbytes">\n%1$sb</string><!-- !!! -->
-<string name="sz_bytes">\n( %d B )</string><!-- !!! -->
+<string name="sz_Nbytes">\n %1$sB</string>
+<string name="sz_bytes">\n(%d B)</string>
 <string name="sz_dirnum">,\nw %1$d katalog%2$s</string>
 <string name="sz_dirsfx_s">u.</string>
 <string name="sz_dirsfx_p">ach.</string>
 <string name="sz_lastmod">\nOstatnio zmodyfikowany:\n</string>
-<string name="sz_total">całkowite miejsce: %1$sB,\nwolne miejsce: %2$sB.</string>
+<string name="sz_total">Pojemność dysku: %1$sB\nWolne miejsce: %2$sB</string>
+<string name="busy">Zajęty!</string>
 <string name="cd_title">Idź do</string>
 <string name="cd_prompt">Zmień katalog na:</string>
-
 <string name="not_supported">To polecenie nie jest wspierane.</string>
 <string name="select_some">Nic nie zaznaczono.</string>
 <string name="select">Wybierz</string>
@@ -165,7 +160,6 @@
 <string name="confirm">Potwierdź</string>
 <string name="progress">Postęp</string>
 <string name="alert">Uwaga</string>
-
 <string name="server">Host (serwer):</string>
 <string name="path">Katalog zdalny:</string>
 <string name="domain">Domena:</string>
@@ -174,7 +168,6 @@
 <string name="connect">Połącz</string>
 <string name="cancel">Anuluj</string>
 <string name="ftp_connected">Połączono z \"%1$s\",\n Zalogowany jako \"%2$s\"</string>
-
 <string name="layout_settings">Wygląd i wyświetlanie:</string>
 <string name="panels_mode">Widok 2 paneli</string>
 <string name="summary_panels_mode">Pokazuj obydwa panele obok siebie (podzielony ekran).</string>
@@ -211,15 +204,12 @@
 <string name="summary_finger_friendly">Większe elementy, polecenia, ikony, etc. (widok \"Finger Friendly\").</string>
 <string name="prevent_root">Ostrzegaj przed wyjściem z /sdcard</string>
 <string name="summary_prevent_root">Wyświetlaj ostrzeżenie przy próbie wejścia do katalogów systemowych.</string>
-
 <string name="root_root">Root przy wyjściu z /sdcard</string>
 <string name="summary_root_root">Automatycznie przełącz na tryb root-a przy wejściu do katalogów systemowych (wyjście poza /sdcard).</string>
-
 <string name="thumbnails">Miniaturki</string>
 <string name="summary_thumbnails">Wyświetlaj miniaturki zawartości plików zamiast zwykłych ikon rodzaju plików.</string>
 <string name="thumbnails_size">Rozmiar miniaturek</string>
 <string name="summary_thumbnails_size">Procentowo, względem rozmiaru zwykłych ikonek plików.</string>
-
 <string name="left_panel_settings">Ustawienia lewego panelu</string>
 <string name="right_panel_settings">Ustawienia prawego panelu</string>
 <string name="detailed_view_SbS">Szczegóły w widoku 2 paneli</string>
@@ -230,10 +220,8 @@
 <string name="summary_sorting">W jaki sposób są sortowane pliki/katalogi.</string>
 <string name="sort_case">Ignoruj wielkość liter przy sortowaniu</string>
 <string name="summary_sort_case">Przy odznaczonej opcji sortowanie będzie wrażliwe na wielkość liter.</string>
-
 <string name="show_hidden">Pokazuj ukryte pliki</string>
 <string name="summary_show_hidden">Przy odznaczonej opcji nie będą pokazywane pliki ukryte (zaczynające się od kropki).</string>
-
 <string name="colors">Ustawienia kolorów</string>
 <string name="summary_colors">Zdefiniuj kolory dla tła, tekstu, zaznaczenia, itd.</string>
 <string name="bgr_color_picker">Kolor tła</string>
@@ -245,19 +233,15 @@
 <string name="ttl_color_picker">Górny pasek</string>
 <string name="summary_ttl_color_picker">Wybierz kolor górnego paska paneli.</string>
 <string name="pick_color">Ustaw kolor</string>
-
 <string name="language">Język</string>
 <string name="summary_language">Wymuś język aplikacji (niezależnie od ustawień systemowych).</string>
 <string name="restart_to_apply_lang">Zrestartuj aplikację w celu ustawienia wybranego języka.</string>
-
 <string name="editor_activity">Paczka edytora zewnętrznego</string>
 <string name="summary_editor_activity">Jeśli chcesz używać innego edytora niż wbudowany, wpisz nazwę paczki aplikacji. Nazwa paczki = pełna nazwa klasy paczki edytora.</string>
 <string name="value_editor_activity">com.ghostsq.commander.Editor</string>
-
 <string name="busybox_location">Ścieżka do busybox-a</string>
 <string name="summary_busybox_location">Używanie trybu root-a wymaga podania ścieżki do busybox-a.</string>
 <string name="execute_command">Wykonaj komendę</string>
-
 <string name="nothing_to_open">Nie ma niczego do otwarcia.</string>
 <string name="remind_to_save">Nie zapomnij zapisać (przy pomocy menu) swoich zmian w pliku! Zapisywanie nie jest dokonywane automatycznie.</string>
 <string name="save">Zapisz</string>
@@ -272,9 +256,7 @@
 <string name="nav_warn_cmt">(Możesz wyłączyć to ostrzeżenie w menu opcji.)\nWybierz \"Anuluj\" aby pozostać wewnątrz katalogu /sdcard. Wybierz \"Wyjdź\" aby zamknąć aplikację.</string>
 <string name="no_such_folder">\"%1$s\" jest nieprawidłowym katalogiem!</string>
 <string name="fav_added">Katalog \"%1$s\" został dodany do Ulubionych.</string>
-
 <string name="no_root">Nie root?</string>
-
 <string name="smb_missed">
 Nie mogę użyć wtyczki Samba.\n
 Upewnij się, że wtyczka\n
@@ -295,7 +277,6 @@ Wybierz \"Anuluj\", jeśli nadal się wahasz i póki co chcesz używać «Ghost 
     </string>
 <string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
 <string name="help_uri">http://sites.google.com/site/ghostcommander1/info</string>
-    
 <string name="about_text">
 Ghost Commander v%1$s\n
 Menedżer plików autorstwa Ghost Squared.\n\n
@@ -351,5 +332,4 @@ Aby wylistować zamontowane urządzenia, wpisz \"mount://\"
 Kliknij na zamontowanym urządzenia, aby nadać mu uprawnienia \"rw\", kliknij ponownie aby nadać \"ro\".
     "
     </string>
-    
 </resources>

@@ -14,22 +14,22 @@ import android.util.Log;
 
 class ExecEngine extends Engine {
     public final static String TAG = "ExecEngine";
-    public  String sh = "su";
-    private Context conetxt;
-    private String  where, command;
-    private boolean use_busybox = false;
-    private int     wait_timeout = 500;
-    private StringBuilder result;
-    ExecEngine( Context conetxt_, Handler h ) {
+    public    String sh = "su";
+    protected Context context;
+    private   String  where, command;
+    private   boolean use_busybox = false;
+    private   int wait_timeout = 500;
+    private   StringBuilder result;
+    ExecEngine( Context context_, Handler h ) {
         super( h );
-        conetxt = conetxt_;
+        context = context_;
         where = null;
         command = null;
         result = null;
     }
-    ExecEngine( Context conetxt_, Handler h, String where_, String command_, boolean use_bb, int timeout ) {
+    ExecEngine( Context context_, Handler h, String where_, String command_, boolean use_bb, int timeout ) {
         super( h );
-        conetxt = conetxt_;
+        context = context_;
         where = where_;
         command = command_;
         use_busybox = use_bb; 
@@ -50,7 +50,7 @@ class ExecEngine extends Engine {
     }
     
     protected String getBusyBox() {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( conetxt );
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( context );
         return sharedPref.getString( "busybox_path", "busybox" );
     }
     
