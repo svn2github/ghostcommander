@@ -178,14 +178,18 @@ public class MountAdapter extends CommanderAdapterBase {
 
     @Override
     public void openItem( int position ) {
-        if( items == null || position < 0 || position > items.length )
-            return;
-        MountItem item = items[position];
-        if( isWorkerStillAlive() )
-            commander.notifyMe( new Commander.Notify( "Busy", Commander.OPERATION_FAILED ) );
-        else {
-            worker = new RemountEngine( commander.getContext(), handler, item );
-            worker.start();
+        try {
+            if( items == null || position < 0 || position > items.length )
+                return;
+            MountItem item = items[position];
+            if( isWorkerStillAlive() )
+                commander.notifyMe( new Commander.Notify( "Busy", Commander.OPERATION_FAILED ) );
+            else {
+                worker = new RemountEngine( commander.getContext(), handler, item );
+                worker.start();
+            }
+        } catch( Exception e ) {
+            e.printStackTrace();
         }
     }
 
@@ -210,14 +214,22 @@ public class MountAdapter extends CommanderAdapterBase {
         Item item = new Item();
         item.name = "???";
         if( items != null && position >= 0 && position <= items.length ) {
-            MountItem curItem;
-            curItem = items[position];
-            item.dir = false;
-            item.name = curItem.getName();
-            item.size = -1;
-            item.sel = false;
-            item.date = null;
-            item.attr = curItem.getRest();
+            MountItem curItem = items[position];
+            if( curItem != null ) {
+                String mp = curItem.getMountPoint();
+                if( mp != null ) {
+                    if( "/system".equals( mp ) )
+                        item.thumbnail = commander.getContext().getResources().getDrawable( R.drawable.application );
+                    else if( mp.contains( "/sdcard" ) )
+                        item.thumbnail = commander.getContext().getResources().getDrawable( R.drawable.sd );
+                }
+                item.dir = false;
+                item.name = curItem.getName();
+                item.size = -1;
+                item.sel = false;
+                item.date = null;
+                item.attr = curItem.getRest();
+            }
         }
         return item;
     }

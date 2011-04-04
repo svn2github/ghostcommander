@@ -13,7 +13,7 @@ public class RemountEngine extends ExecEngine {
     }
     @Override
     public void run() {
-        String cmd = null;
+        String cmd = null, mode = null;
         try {
             String o = mount.getOptions();
             if( o == null ) {
@@ -21,25 +21,25 @@ public class RemountEngine extends ExecEngine {
                 return;
             }
             String[] flds = o.split( "," );
-            boolean found = false;
             for( int i = 0; i < flds.length; i++ ) {
                 if( flds[i].equals( "rw" ) ) {
-                    flds[i] = "ro";
-                    found = true;
+                    mode = "ro";
+                    flds[i] = mode; 
                     break;
                 }
                 if( flds[i].equals( "ro" ) ) {
-                    flds[i] = "rw";
-                    found = true;
+                    mode = "rw";
+                    flds[i] = mode;
                     break;
                 }
             }
-            if( !found ) {
+            if( mode == null ) {
                 error( "No ro/rw options found" );
                 return;
             }
             cmd = "mount -o remount," + Utils.join( flds, "," ) + " " + mount.getName();
             execute( cmd, false, 500 );
+            
         }
         catch( Exception e ) {
             Log.e( TAG, "On remount, ", e );
@@ -47,7 +47,8 @@ public class RemountEngine extends ExecEngine {
         }
         finally {
             super.run();
-            sendResult( errMsg != null ? ( cmd == null ? "" : "Tried to execute: '" + cmd + "'") : null );
+            sendResult( errMsg != null ? ( cmd == null ? "" : context.getString( R.string.tried_to_exec, cmd ) ) : 
+                context.getString( R.string.remounted, mount.getMountPoint(), mode ) );
         }
     }
 }

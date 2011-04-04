@@ -219,8 +219,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         if( flv != null ) {
             flv.setItemsCanFocus( false );
             flv.setFocusableInTouchMode( true );
-            flv.setChoiceMode( ListView.CHOICE_MODE_MULTIPLE );
             flv.setOnItemSelectedListener( this );
+            flv.setChoiceMode( ListView.CHOICE_MODE_MULTIPLE );
             flv.setOnItemClickListener( this );
             flv.setOnFocusChangeListener( this );
             flv.setOnTouchListener( this );
@@ -292,7 +292,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     }
     public final int getSelection() {
         int pos = listViews[current].getSelectedItemPosition();
-        return pos < 0 ? currentPositions[current] : ( currentPositions[current] = pos );
+        return pos == AdapterView.INVALID_POSITION ? currentPositions[current] : ( currentPositions[current] = pos );
     }
     public final void setSelection( int i ) {
         setSelection( current, i, 0 );
@@ -300,7 +300,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public final void setSelection( int which, int i, int y_ ) {
         final ListView final_flv = listViews[which];  
         final int position = i, y = y_;
-        final_flv.post(new Runnable() {
+        final_flv.post( new Runnable() {
             public void run()
             {
                 final_flv.setSelectionFromTop( position, y );
@@ -340,7 +340,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         return null;
     }
     private final int opposite() {
-        return current == LEFT ? RIGHT : LEFT;
+        return 1 - current;
     }
     public final CommanderAdapter getListAdapter( boolean forCurrent ) {
         return getListAdapter( forCurrent ? current : opposite() );
@@ -476,6 +476,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public final void recoverAfterRefresh( String item_name, int which_panel ) {
         try {
             if( which_panel >= 0 ) {
+                Log.v( TAG, "restoring panel " + which_panel + " item: " + item_name );
                 if( item_name != null && item_name.length() > 0 )
                     setSelection( which_panel, item_name );
                 else
@@ -486,7 +487,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 reStoreChoosedItems();
                 flv.invalidateViews();
                 if( !flv.isInTouchMode() && currentPositions[current] > 0 ) {
-                    Log.i( TAG, "stored pos: " + currentPositions[current] );
+                    Log.v( TAG, "stored pos: " + currentPositions[current] );
                     flv.setSelection( currentPositions[current] );
                 }
             }
@@ -782,8 +783,14 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     }
     public final String getActiveItemsSummary() {
         int counter = getNumItemsChecked();
-        if( counter > 1 )
-            return "" + counter + " " + c.getString( R.string.items );
+        if( counter > 1 ) {
+            String items = null;
+            if( counter < 5 )
+                items = c.getString( R.string.items24 );
+            if( items == null || items.length() == 0 )
+                items = c.getString( R.string.items );
+            return "" + counter + " " + items;
+        }
         ListView flv = listViews[current];
         CommanderAdapter adapter = (CommanderAdapter)flv.getAdapter();
         if( counter == 1 ) {
@@ -960,13 +967,14 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
      */
     @Override
     public void onItemSelected( AdapterView<?> listView, View itemView, int pos, long id ) {
+        //Log.v( TAG, "Selected item " + pos );
     	shorcutsFoldersList.closeGoPanel();
-        if( id == R.layout.alt && listsIds[current] != listView.getId() )
-        	togglePanels( false );
-        currentPositions[current] = pos;
+    	int which = listsIds[current] == listView.getId() ? current : opposite();
+        currentPositions[which] = pos;
     }
     @Override
-    public void onNothingSelected( AdapterView<?> arg0 ) {
+    public void onNothingSelected( AdapterView<?> listView ) {
+        //Log.v( TAG, "NothingSelected" );
     	resetQuickSearch();
     }
     /**
@@ -974,7 +982,6 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
      */
     @Override
     public void onItemClick( AdapterView<?> parent, View view, int position, long id ) {
-        
         Log.v( TAG, "onItemClick" );
         
     	shorcutsFoldersList.closeGoPanel();

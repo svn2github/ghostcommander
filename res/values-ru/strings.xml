@@ -115,7 +115,10 @@
 <string name="search_title">Поиск</string>
 <string name="search_prompt">Имя файла:</string>
 <string name="copy_title">Копирование</string>
-<string name="move_title">Перенести</string>
+<string name="move_title">Перенос</string>
+<string name="to_copy">Копировать</string>
+<string name="to_move">Перенести</string>
+
 <string name="no_items">Не с чем совершить данную операцию.</string>
 <string name="find_on_fs_only">Функция поиска пока работает только на локальной файловой системе.</string><!-- !!! -->
 <string name="copy_move_not_alwd">Неизвестно с чем совершить операцию \"%1$s\". Сперва выделите файл(ы).</string>

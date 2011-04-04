@@ -88,7 +88,10 @@ public class FTPAdapter extends CommanderAdapterBase {
 	                        if( ftp.login( theUserPass.getUserName(), theUserPass.getPassword() ) )
 	                            sendProgress( commander.getContext().getString( R.string.ftp_connected,  host, theUserPass.getUserName() ), 3 );
 	                        else {
+	                            ftp.logout( true );
+	                            ftp.disconnect();
 	                            sendProgress( uri.toString(), Commander.OPERATION_FAILED_LOGIN_REQUIRED );
+	                            Log.w( TAG, "Invalid credentials" );
 	                            return;
 	                        }
 	                    }
@@ -124,6 +127,8 @@ public class FTPAdapter extends CommanderAdapterBase {
 	                        return;
 	                    }
 	                }
+	                else
+	                    Log.e( TAG, "Did not log in" );
             	}
             }
             catch( UnknownHostException e ) {
@@ -131,6 +136,7 @@ public class FTPAdapter extends CommanderAdapterBase {
             }
             catch( IOException e ) {
                 ftp.debugPrint( "IO exception:\n" + e.getMessage() );
+                e.printStackTrace();
             }
             catch( Exception e ) {
                 ftp.debugPrint( "Exception:\n" + e );

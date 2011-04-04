@@ -167,8 +167,11 @@ public class Dialogs implements DialogInterface.OnClickListener {
             case R.id.F6:
                 move = true;
             case R.id.F5: {
-                final String op = owner.getString( move ? R.string.move_title : R.string.copy_title );
-                dialog.setTitle( op );
+                final String op_title = owner.getString( move ? R.string.move_title : R.string.copy_title );
+                String op = owner.getString( move ? R.string.to_move : R.string.to_copy );
+                if( op == null || op.length() == 0 )
+                    op = op_title;
+                dialog.setTitle( op_title );
                 if( prompt != null ) {
                     String summ = owner.panels.getActiveItemsSummary();
                     if( summ == null ) {

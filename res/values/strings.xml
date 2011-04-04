@@ -106,6 +106,9 @@
     <string name="search_prompt">File name (wildcard \"*\" allowed):</string>
     <string name="copy_title">Copy</string>
     <string name="move_title">Move</string>
+    <!-- Will be used the copy/move _title if the following empty  -->
+    <string name="to_copy"></string>
+    <string name="to_move"></string>
     <string name="no_items">There are no valid files to complete the operation.</string>
     <string name="inv_dest">Invalid destination</string>
     <string name="find_on_fs_only">The search feature works only with the local file system.</string>
@@ -152,6 +155,9 @@
     <string name="uploaded">uploaded</string>
     <string name="packed">packed</string>
     <string name="unpacked">unpacked</string>
+    <string name="remounted">Remounted \"%1$s\" to \"%2$s\".</string>
+    <string name="tried_to_exec">Tried to execute: \"%s\"</string>
+    
 
     <string name="verb_plural_sfx"></string>
     <string name="item">item</string>
@@ -167,8 +173,12 @@ copied 0 will produce:
 copied 1 will produce:
  1 + "item" + "was" + "copied"
 
-copied >1 will produce:
+copied >1 and <5 will produce:
+ # + "items24" + "were" + "copied" + "verb_plural_sfx"
+
+copied >5 will produce:
  # + "items" + "were" + "copied" + "verb_plural_sfx"
+
  -->
 
 

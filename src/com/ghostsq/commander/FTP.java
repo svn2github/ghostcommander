@@ -13,15 +13,18 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+import android.util.Log;
+
 public class FTP {
-	
-	interface ProgressSink {
+    private final static String TAG = "FTPclient";
+    
+	public interface ProgressSink {
 		public boolean completed( long size );
 	};
 	
     private final static int BLOCK_SIZE = 100000;
     private final static boolean PRINT_DEBUG_INFO = true;
-    private String debugBuf = "";
+    private StringBuffer debugBuf = new StringBuffer();
     private Socket cmndSocket = null;
     private OutputStream outputStream = null;
     private BufferedInputStream inputStream = null;
@@ -36,7 +39,6 @@ public class FTP {
         	if( outputStream == null || cmndSocket == null || !cmndSocket.isConnected() )
         		return false;
         	debugPrint( ">>> " + cmd );
-//System.err.print( "\n>>> '" + cmd + "'\n" );
             byte[] bytes = cmd.getBytes();
             outputStream.write( bytes );
             outputStream.write( '\n' );
@@ -49,8 +51,11 @@ public class FTP {
     }
 
     public final void debugPrint( String message ) {
-        if( PRINT_DEBUG_INFO )
-            debugBuf += message + "\n";
+        //Log.i( TAG, message );
+        if( PRINT_DEBUG_INFO ) {
+            debugBuf.append( message );
+            debugBuf.append( "\n" );
+        }
     }
     private final boolean isPositivePreliminary( int response ) {
         return (response >= 100 && response < 200);
@@ -76,10 +81,10 @@ public class FTP {
                     return true;
                 if( isPositiveIntermediate( code ) )
                     return true; // when this occurred?
-                Thread.sleep( 50 );
+                Thread.sleep( 500 );
             } while( isPositivePreliminary( code ) );
 		} catch( InterruptedException e ) {
-            System.err.print( "Exception: " + e + ( response == null ? "" : (" on response '" + response + "'") + "\n" ) );
+            Log.e( TAG, "Exception " + ( response == null ? "" : (" on response '" + response + "'") + "\n" ), e );
 		}
         return false;
     }
@@ -97,7 +102,7 @@ public class FTP {
                 inputStream.read();
         }
         catch( IOException e ) {
-            System.err.print( "Exception: " + e + " on flushReply()\n" );
+            Log.e( TAG, "", e );
         }
     }
     private final String getReplyLine() {
@@ -112,7 +117,12 @@ public class FTP {
             do {
             	int cnt = 0;
             	do
-            		if( cnt++ < 200 ) Thread.sleep( 10 ); else return null;
+            		if( cnt++ < 200 ) 
+            		    Thread.sleep( 100 ); 
+            		else {
+            		    Log.e( TAG, "The server did not respond" );
+            		    return null;
+            		}
             	while( inputStream.available() == 0 );
                 for( i = 0; i < buf_sz; i++ ) {
                     int b = inputStream.read();
@@ -124,17 +134,16 @@ public class FTP {
                     }
                     buf[i] = (byte)b;
                 }
-//System.err.print( "\nfrom FTP:" + new String( buf, 0, i ) + "\n" );
+//Log.v( TAG, "\nfrom FTP:" + new String( buf, 0, i ) + "\n" );
             } while( !(Character.isDigit( buf[0] ) &&
                        Character.isDigit( buf[1] ) &&
                        Character.isDigit( buf[2] ) && buf[3] == ' ' ) ); // read until a coded response be found
             String reply = new String( buf, 0, i );
             debugPrint( "<<< " + reply );
-//            System.err.print( "\n<<< '" + reply + "'\n" );
             return reply;
         }
         catch( Exception e ) {
-            System.err.print( "\nException: " + e + " in getReplyLine()\n" );
+            Log.e( TAG, "", e );
             disconnect();
             return null;
 		}
@@ -239,7 +248,7 @@ public class FTP {
             return a * 256 + b;
         }
         catch( Exception e ) {
-            System.err.print( "\nException: " + e + " while parsing the string '" + s + "'\n" );
+            Log.e( TAG, "Exception while parsing the string '" + s + "'", e );
         }
         return -1;
     }
@@ -288,7 +297,7 @@ public class FTP {
             }
             return data_socket;
 		} catch( Exception e ) {
-		    System.err.print( "\nException: " + e + " on executing data command '" + command + "'\n" );
+		    Log.e( TAG, "Exception on executing data command '" + command + "'", e );
 		}
 		return null;
     }
@@ -303,7 +312,7 @@ public class FTP {
 	            serverSocket.close();
 		    serverSocket = null;
 		} catch( IOException e ) {
-		    System.err.print( "\nException: " + e + " in cleanUpDataCommand()\n" );
+		    Log.e( TAG, "", e );
 		}
         return waitForPositiveResponse();
     }
@@ -313,10 +322,10 @@ public class FTP {
      */
     
     public final void clearLog() {
-        debugBuf = "";
+        debugBuf.setLength( 0 );
     }
     public final String getLog() {
-        return debugBuf;
+        return debugBuf.toString();
     }
 
     public final boolean isLoggedIn() {
@@ -378,7 +387,6 @@ public class FTP {
         }
         catch( Exception e ) {
         	debugPrint( "Exception: " + e );
-        	System.err.print( "Exception: " + e + " while storing the file '" + fn + "'\n" );
         }
         finally {
         	cleanUpDataCommand();
@@ -416,14 +424,13 @@ public class FTP {
         }
         catch( Exception e ) {
         	debugPrint( "Exception: " + e );
-        	System.err.print( "Exception: " + e + " while retrieving the file '" + fn + "'\n" );
         }
         finally {
         	try {
 				if( in  != null )  in.close();
 				if( out != null ) out.close();
 			} catch( IOException e ) {
-			    System.err.print( "Exception: " + e + " on streams closing (finnaly section)\n" );
+			    Log.e( TAG, "Exception on streams closing (finnaly section)", e );
 			}
         	cleanUpDataCommand();
         }
@@ -491,7 +498,6 @@ public class FTP {
         }
         catch( Exception e ) {
         	debugPrint( "Exception: " + e );
-        	System.err.print( "Exception: " + e + " while processing the directory list '" + path + "'\n" );
         }
         finally {
         	cleanUpDataCommand();

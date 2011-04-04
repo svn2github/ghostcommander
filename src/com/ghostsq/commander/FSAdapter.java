@@ -325,11 +325,13 @@ public class FSAdapter extends CommanderAdapterBase {
         else {
             File file = items[position - 1].f;
             if( file.isDirectory() ) {
-                if( dirName.charAt( dirName.length() - 1 ) != File.separatorChar )
-                    dirName += File.separatorChar;
-                
-                String full_path = ( dirName + file.getName() + File.separatorChar ).replaceAll( "#", "%23" );
-                commander.Navigate( Uri.parse( full_path ), null );
+                if( dirName != null ) {
+                    if( dirName.charAt( dirName.length() - 1 ) != File.separatorChar )
+                        dirName += File.separatorChar;
+                    
+                    String full_path = ( dirName + file.getName() + File.separatorChar ).replaceAll( "#", "%23" );
+                    commander.Navigate( Uri.parse( full_path ), null );
+                }
             }
             else {
                 String ext = Utils.getFileExt( file.getName() );
