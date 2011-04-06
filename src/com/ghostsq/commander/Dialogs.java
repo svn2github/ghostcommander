@@ -106,7 +106,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 .setIcon( android.R.drawable.ic_dialog_alert )
                 .setTitle( R.string.alert )
                 .setMessage( "" )
-                .setPositiveButton( R.string.dialog_ok, null )
+                .setPositiveButton( R.string.dialog_ok, this )
                 .create();
         }
         case R.id.about:
@@ -115,7 +115,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 .setIcon( android.R.drawable.ic_dialog_info )
                 .setTitle( R.string.info )
                 .setMessage( toShowInAlertDialog == null ? "" : toShowInAlertDialog )
-                .setPositiveButton( R.string.dialog_ok, null )
+                .setPositiveButton( R.string.dialog_ok, this )
                 .create();
         }
         }

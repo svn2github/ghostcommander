@@ -199,7 +199,7 @@ public final class Utils {
         String host = u.getHost();
         int port = u.getPort();
         String authority = ui + "@" + host + (port >= 0 ? port : ""); 
-	    return u.buildUpon().encodedAuthority( authority ).build().toString();
+	    return Uri.decode( u.buildUpon().encodedAuthority( authority ).build().toString() );
 	}
     public final static String mbAddSl( String path ) {
         if( path == null || path.length() == 0 ) return "";
@@ -241,5 +241,9 @@ public final class Utils {
         } catch( Exception e ) {
             e.printStackTrace();
         }
+    }
+    public final static String escapeUriMarkup( String s ) {
+        if( s == null || s.length() == 0 ) return s;
+        return s.replaceAll( "#", "%23" ).replaceAll( ":", "%3A" );
     }
 }

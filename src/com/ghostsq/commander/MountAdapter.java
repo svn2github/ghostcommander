@@ -1,6 +1,8 @@
 package com.ghostsq.commander;
 
 
+import java.io.File;
+
 import android.os.Handler;
 import android.content.Context;
 import android.net.Uri;
@@ -15,6 +17,7 @@ import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.CommanderAdapter;
 import com.ghostsq.commander.CommanderAdapterBase;
 import com.ghostsq.commander.MountsListEngine;
+import com.ghostsq.commander.CommanderAdapter.Item;
 import com.ghostsq.commander.MountsListEngine.MountItem;
 
 public class MountAdapter extends CommanderAdapterBase {
@@ -171,7 +174,7 @@ public class MountAdapter extends CommanderAdapterBase {
     @Override
     public String getItemName( int position, boolean full ) {
         if( items != null && position >= 0 && position <= items.length ) {
-            return items[position].getName();
+            return items[position-1].getName();
         }
         return null;
     }
@@ -179,9 +182,12 @@ public class MountAdapter extends CommanderAdapterBase {
     @Override
     public void openItem( int position ) {
         try {
+            if( position == 0 ) {
+                commander.Navigate( Uri.parse( "root://./" ), null );
+            }
             if( items == null || position < 0 || position > items.length )
                 return;
-            MountItem item = items[position];
+            MountItem item = items[position-1];
             if( isWorkerStillAlive() )
                 commander.notifyMe( new Commander.Notify( "Busy", Commander.OPERATION_FAILED ) );
             else {
@@ -212,23 +218,30 @@ public class MountAdapter extends CommanderAdapterBase {
     @Override
     public Object getItem( int position ) {
         Item item = new Item();
-        item.name = "???";
-        if( items != null && position >= 0 && position <= items.length ) {
-            MountItem curItem = items[position];
-            if( curItem != null ) {
-                String mp = curItem.getMountPoint();
-                if( mp != null ) {
-                    if( "/system".equals( mp ) )
-                        item.thumbnail = commander.getContext().getResources().getDrawable( R.drawable.application );
-                    else if( mp.contains( "/sdcard" ) )
-                        item.thumbnail = commander.getContext().getResources().getDrawable( R.drawable.sd );
+        if( position == 0 ) {
+            item = new Item();
+            item.name = parentLink;
+            item.dir = true;
+        }
+        else {
+            item.name = "???";
+            if( items != null && position > 0 && position <= items.length ) {
+                MountItem curItem = items[position - 1];
+                if( curItem != null ) {
+                    String mp = curItem.getMountPoint();
+                    if( mp != null ) {
+                        if( "/system".equals( mp ) )
+                            item.thumbnail = commander.getContext().getResources().getDrawable( R.drawable.application );
+                        else if( mp.contains( "/sdcard" ) )
+                            item.thumbnail = commander.getContext().getResources().getDrawable( R.drawable.sd );
+                    }
+                    item.dir = false;
+                    item.name = curItem.getName();
+                    item.size = -1;
+                    item.sel = false;
+                    item.date = null;
+                    item.attr = curItem.getRest();
                 }
-                item.dir = false;
-                item.name = curItem.getName();
-                item.size = -1;
-                item.sel = false;
-                item.date = null;
-                item.attr = curItem.getRest();
             }
         }
         return item;

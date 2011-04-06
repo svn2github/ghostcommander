@@ -73,7 +73,7 @@ public class FSAdapter extends CommanderAdapterBase {
 
     @Override
     public String toString() {
-        return dirName;
+        return Utils.escapeUriMarkup( dirName );
     }
 
     /*
@@ -100,7 +100,7 @@ public class FSAdapter extends CommanderAdapterBase {
                 else
                     dir_name = dirName;
                 if( dir_name == null ) {
-                    commander.notifyMe( new Commander.Notify( "invalid path", Commander.OPERATION_FAILED ) );
+                    commander.notifyMe( new Commander.Notify( "invalid path: " + ( d == null ? "null" : d.toString() ), Commander.OPERATION_FAILED ) );
                     Log.e( TAG, "Unable to obtain folder of the folder name" );
                     return false;
                 }
@@ -319,18 +319,19 @@ public class FSAdapter extends CommanderAdapterBase {
             if( dirName == null ) return;
             File cur_dir_file = new File( dirName );
             String parent_dir = cur_dir_file.getParent();
-            commander.Navigate( Uri.parse( parentLink != SLS ? ( parent_dir != null ? parent_dir : DEFAULT_DIR ) : SLS ),
+            commander.Navigate( Uri.parse( Utils.escapeUriMarkup( parentLink != SLS ? ( parent_dir != null ? parent_dir : DEFAULT_DIR ) : SLS ) ),
                                 cur_dir_file.getName() );
         }
         else {
             File file = items[position - 1].f;
+            if( file == null ) return;
             if( file.isDirectory() ) {
                 if( dirName != null ) {
                     if( dirName.charAt( dirName.length() - 1 ) != File.separatorChar )
                         dirName += File.separatorChar;
                     
-                    String full_path = ( dirName + file.getName() + File.separatorChar ).replaceAll( "#", "%23" );
-                    commander.Navigate( Uri.parse( full_path ), null );
+                    String full_path = ( dirName + file.getName() + File.separatorChar );
+                    commander.Navigate( Uri.parse( Utils.escapeUriMarkup( full_path ) ), null );
                 }
             }
             else {
@@ -554,28 +555,27 @@ public class FSAdapter extends CommanderAdapterBase {
 
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
-        boolean same_file_system = false;  // how to figure out that?
-        if( same_file_system && move && to instanceof FSAdapter ) {
+        if( move && to instanceof FSAdapter ) { // first try to move by renaming
             try {
                 commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
                 String dest_folder = to.toString();
                 String[] files_to_move = bitsToNames( cis );
                 if( files_to_move == null )
                 	return false;
-                boolean ok = moveFiles( files_to_move, dest_folder );
-                commander.notifyMe( new Commander.Notify( Commander.OPERATION_COMPLETED_REFRESH_REQUIRED ) );
-                return ok;
+                if( moveFiles( files_to_move, dest_folder ) ) {
+                    commander.notifyMe( new Commander.Notify( Commander.OPERATION_COMPLETED_REFRESH_REQUIRED ) );
+                    return true;
+                }
+                Log.e( TAG, "Moving by renaming failed" );
             }
             catch( SecurityException e ) {
                 commander.showError( commander.getContext().getString( R.string.cant_move, e.getMessage() ) );
                 return false;
             }
         }
-        else {
-            boolean ok = to.receiveItems( bitsToNames( cis ), move ? MODE_MOVE : MODE_COPY );
-            if( !ok ) commander.notifyMe( new Commander.Notify( Commander.OPERATION_FAILED ) );
-            return ok;
-        }
+        boolean ok = to.receiveItems( bitsToNames( cis ), move ? MODE_MOVE : MODE_COPY );
+        if( !ok ) commander.notifyMe( new Commander.Notify( Commander.OPERATION_FAILED ) );
+        return ok;
     }
 
     @Override
@@ -643,7 +643,8 @@ public class FSAdapter extends CommanderAdapterBase {
                     x_list[j] = new FileItem( fList[j] );
 				long sum = getSizes( x_list );
 				conv = 100 / (double)sum;
-	            String report = Utils.getOpReport( commander.getContext(), copyFiles( fList, mDest ), R.string.copied );
+				int num = copyFiles( fList, mDest );
+	            String report = Utils.getOpReport( commander.getContext(), num, move ? R.string.moved : R.string.copied );
 	            sendResult( report );
 			} catch( Exception e ) {
 				sendProgress( e.getMessage(), Commander.OPERATION_FAILED );
@@ -768,7 +769,7 @@ public class FSAdapter extends CommanderAdapterBase {
             long last_modified = f.lastModified();
             File dest = new File( dest_folder, f.getName() );
             if( !f.renameTo( dest ) ) {
-                commander.showError( commander.getContext().getString( R.string.cant_move, f.getAbsolutePath() ) );
+                Log.e( TAG, commander.getContext().getString( R.string.cant_move, f.getAbsolutePath() ) );
                 return false;
             }
             dest.setLastModified( last_modified );
@@ -837,7 +838,7 @@ public class FSAdapter extends CommanderAdapterBase {
             item.dir = true;
         }
         else {
-            if( items != null && position-1 < items.length ) {
+            if( items != null && position <= items.length ) {
                 synchronized( items ) {
                     try {
                         FileItem f = items[position - 1];

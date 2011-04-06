@@ -2,7 +2,6 @@ package com.ghostsq.commander;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Locale;
 
 import dalvik.system.DexClassLoader;
 
@@ -93,11 +92,15 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         boolean sxs = sxs_auto ? getRotMode() : panels_mode.equals( "y" );
         panels = new Panels( this, sxs );
         setConfirmMode( sharedPref );
+        
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        Log.v( TAG, "Action: " + action );        
     }
 
     @Override
     protected void onStart() {
-        Log.i( TAG, "Starting\n");
+        Log.v( TAG, "Starting\n");
         super.onStart();
         on = true;
         if( dont_restore )
@@ -119,7 +122,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onPause() {
-        Log.i( TAG, "Pausing\n");
+        Log.v( TAG, "Pausing\n");
         super.onPause();
         on = false;
         SharedPreferences.Editor editor = getPreferences( MODE_PRIVATE ).edit();
@@ -130,21 +133,21 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onResume() {
-        //Log.i( TAG, "Resuming\n");
+        //Log.v( TAG, "Resuming\n");
         super.onResume();
         on = true;
     }
     
     @Override
     protected void onStop() {
-        //Log.i( TAG, "Stopping\n");
+        //Log.v( TAG, "Stopping\n");
         super.onStop();
         on = false;
     }
 
     @Override
     protected void onDestroy() {
-        //Log.i( TAG, "Destroying\n");
+        //Log.v( TAG, "Destroying\n");
         on = false;
         panels.Destroying();
         super.onDestroy();
@@ -497,6 +500,23 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     public void Open( String path ) {
         try {
             Intent i = new Intent( Intent.ACTION_VIEW );
+            Intent op_intent = getIntent();
+            if( op_intent != null ) {
+                String action = op_intent.getAction();
+                if( Intent.ACTION_PICK.equals( action ) ) {
+                    // TODO: op_intent.getData() contains the start picking directory
+                    i.setData( Uri.parse( path ) );
+                    setResult( RESULT_OK, i );
+                    finish();
+                    return;
+                }
+                if( Intent.ACTION_GET_CONTENT.equals( action ) ) {
+                    i.setData( Uri.parse( FileProvider.URI_PREFIX + path ) );
+                    setResult( RESULT_OK, i );
+                    finish();
+                    return;
+                }
+            }
             String mime = Utils.getMimeByExt( Utils.getFileExt( path ) );
             i.setDataAndType( Uri.fromFile( new File( path ) ), mime );
             startActivity(i);
@@ -588,7 +608,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     @Override
     public void showInfo( String msg ) {
         if( !on ) return;
-        if( msg.length() < 20 )
+        if( msg.length() < 64 )
             showMessage( msg );
         else {
             Dialogs dh = obtainDialogsInstance(Dialogs.INFO_DIALOG);

@@ -131,9 +131,9 @@ public class ServerForm extends Activity implements View.OnClickListener {
                         if( domain.length() > 0 )
                             auth += domain.trim() + ";";
                     }
-                    auth += user.trim();
+                    auth += Uri.encode( user.trim() );
                     if( pass.length() > 0 )
-                        auth += ":" + pass.trim();
+                        auth += ":" + Uri.encode( pass.trim() );
                     auth += "@";
                 }
                 auth += server_edit.getText().toString().trim();

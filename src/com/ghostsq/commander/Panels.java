@@ -196,7 +196,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     	boolean focusable_tm = flv.isFocusableInTouchMode();
     	boolean focused      = flv.isFocused();
     	boolean item_focus   = flv.getItemsCanFocus();
-    	c.showMessage( "" + focusable + ", " + focusable_tm + ", " + focused + ", " + item_focus );
+    	Log.v( TAG, "" + focusable + ", " + focusable_tm + ", " + focused + ", " + item_focus );
     	*/
         flv.requestFocus();
         flv.requestFocusFromTouch();  
@@ -316,7 +316,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             for( i = 0; i < num; i++ ) {
             	String item_name = ca.getItemName( i, false );
                 if( item_name != null && item_name.compareTo( name ) == 0 ) {
-                    Log.v( TAG, "trying to set panel " + which + " selection to item '" + name + "', pos: " + i );
+                    //Log.v( TAG, "trying to set panel " + which + " selection to item '" + name + "', pos: " + i );
                     setSelection( which, i, flv.getHeight() / 2 );
                     if( !flv.requestFocusFromTouch() )
                         Log.w( TAG, "ListView does not take focus :(" );
@@ -476,18 +476,20 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public final void recoverAfterRefresh( String item_name, int which_panel ) {
         try {
             if( which_panel >= 0 ) {
-                Log.v( TAG, "restoring panel " + which_panel + " item: " + item_name );
+                //Log.v( TAG, "restoring panel " + which_panel + " item: " + item_name );
                 if( item_name != null && item_name.length() > 0 )
                     setSelection( which_panel, item_name );
                 else
                     setSelection( which_panel, 0, 0 );
+                if( which_panel == current )
+                    focus();
             }
             else {
                 ListView flv = listViews[current];
                 reStoreChoosedItems();
                 flv.invalidateViews();
                 if( !flv.isInTouchMode() && currentPositions[current] > 0 ) {
-                    Log.v( TAG, "stored pos: " + currentPositions[current] );
+                    //Log.v( TAG, "stored pos: " + currentPositions[current] );
                     flv.setSelection( currentPositions[current] );
                 }
             }
@@ -534,7 +536,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     }
     
     public final void setPanelCurrent( int which ) {
-        Log.v( TAG, "setPanelCurrent " + which );
+        Log.v( TAG, "setPanelCurrent: " + which );
         if( panelsView != null ) {
             panelsView.setMode( sxs, which );
             
@@ -627,17 +629,20 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     	if( uri == null ) return;
     	String scheme = uri.getScheme(), path = uri.getPath();
     	
-    	if( ( scheme == null || scheme.compareTo("file") == 0 ) && 
+    	if( ( scheme == null || scheme.equals( "file") ) && 
     	      ( path == null || !path.startsWith( DEFAULT_LOC ) ) ) {
     	    if( warnOnRoot ) {
                 CommanderAdapter ca = getListAdapter( which );
-                if( ca != null && ca.getType().compareTo( "file" ) == 0 && ca.toString().startsWith( DEFAULT_LOC ) ) {
-            		try {
-                		new NavDialog( c, which, uri, posTo );
-        			} catch( Exception e ) {
-        				Log.e( TAG, "Navigate()", e );
-        			}
-                    return;
+                if( ca != null && "file".equals( ca.getType() ) ) {
+                    String cur_path = ca.toString();
+                    if( cur_path != null && cur_path.startsWith( DEFAULT_LOC ) ) {
+                		try {
+                    		new NavDialog( c, which, uri, posTo );
+            			} catch( Exception e ) {
+            				Log.e( TAG, "Navigate()", e );
+            			}
+            			return;
+                    }
                 }
     	    }
     	    else if( rootOnRoot )
@@ -667,6 +672,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                     applySettings( sharedPref, ca, which );
                     flv.setAdapter( (ListAdapter)ca );
                     flv.setOnKeyListener( this );
+                    flv.setSelection( 1 );
                 }
             }
             if( ca == null ) return;
@@ -697,7 +703,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             
     public final void Destroying() {
         getListAdapter( false ).prepareToDestroy();
-        getListAdapter( true ).prepareToDestroy();
+        getListAdapter( true  ).prepareToDestroy();
     }
 
     public final void tryToSend() {
@@ -824,9 +830,9 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     	return checked;
     }
     public final String getFolderUri( boolean active ) {
-        CommanderAdapter a = getListAdapter( active );
-        if( a == null ) return "";
-        return a.toString();
+        CommanderAdapter ca = getListAdapter( active );
+        if( ca == null ) return "";
+        return ca.toString();
     }
     public final String getSelectedItemName() {
         return getListAdapter( true ).getItemName( getSelection(), false );
@@ -982,7 +988,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
      */
     @Override
     public void onItemClick( AdapterView<?> parent, View view, int position, long id ) {
-        Log.v( TAG, "onItemClick" );
+        //Log.v( TAG, "onItemClick" );
         
     	shorcutsFoldersList.closeGoPanel();
     	resetQuickSearch();
@@ -1308,7 +1314,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             CommanderAdapter  left_adapter = (CommanderAdapter)listViews[LEFT].getAdapter();
             s.left  =  left_adapter.toString();
             s.leftItem  =  left_adapter.getItemName( currentPositions[LEFT],  false );
-            Log.v( TAG, "Saving left current item: " + s.leftItem );
+            //Log.v( TAG, "Saving left current item: " + s.leftItem );
             CommanderAdapter right_adapter = (CommanderAdapter)listViews[RIGHT].getAdapter();
             s.right = right_adapter.toString();
             s.rightItem = right_adapter.getItemName( currentPositions[RIGHT], false );
@@ -1322,9 +1328,9 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 	    if( s == null ) return;
     	resetQuickSearch();
     	current = s.current;
-    	Log.v( TAG, "Restoring left current item: " + s.leftItem );
-        NavigateInternal( LEFT,  Uri.parse(s.left),  s.leftItem );
-        NavigateInternal( RIGHT, Uri.parse(s.right), s.rightItem );
+    	//Log.v( TAG, "Restoring left current item: " + s.leftItem );
+        NavigateInternal( LEFT,  Uri.parse( s.left  ), s.leftItem );
+        NavigateInternal( RIGHT, Uri.parse( s.right ), s.rightItem );
         applyColors();
         setPanelCurrent( s.current );
         shorcutsFoldersList.setFromString( s.favUris );
