@@ -66,7 +66,7 @@
 <string name="edit_title">Редактор</string>
 <string name="newf_prompt">Име на новия файл</string>
 <string name="rename_title">Преименуване</string>
-<string name="rename_prompt">Преименувай в:</string>
+<string name="to_rename">Преименувай</string>
 <string name="rename_err">Нищо за преименуване</string>
 <string name="mkdir_title">Нова папка</string>
 <string name="mkdir_prompt">Име на новата папка</string>
@@ -79,7 +79,7 @@
 <string name="copy_move_not_alwd">Няма с какво да се завърши операцията \"%1$s\". Първо маркирайте файл(ове).</string>
 <string name="copy_to_local_only">Поддържа се копиране само в локалната файлова система!</string>
 <string name="dest_exist">не може да се презаписва вече съществуващ файл!</string>
-<string name="copy_move_to">%1$s %2$s в:"</string>
+<string name="oper_item_to">%1$s %2$s в:"</string>
 <string name="login_title">Вход</string>
 <string name="delete_title">изтриване</string>
 <string name="delete_err">Няма нищо за изтриване</string>

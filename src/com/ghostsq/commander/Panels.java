@@ -44,30 +44,26 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                                         View.OnKeyListener
 {
     private final static String TAG = "Panels";
-    public  final static int LEFT = 0, RIGHT = 1;
-    private final int titlesIds[] = { R.id.left_dir,  R.id.right_dir };
-    private final int  listsIds[] = { R.id.left_list, R.id.right_list };
     protected static final String DEFAULT_LOC = "/sdcard";
-
-    private int currentPositions[] = { -1, -1 };
-    private ListView   listViews[] = { null, null };
-    private String[] listOfItemsChecked = null;
-    private int current = LEFT;
-    private FileCommander c;
+    public  final static int LEFT = 0, RIGHT = 1;
+    private int     current = LEFT, navigated = -1;
+    private final int titlesIds[] = { R.id.left_dir,  R.id.right_dir };
+    private ListHelper list[] = { null, null };
+    public  FileCommander c;
     public  View mainView, toolbar = null;
     public  ViewFlipper mFlipper_   = null;
     public  PanelsView  panelsView = null;
     private int titleColor = Prefs.getDefaultColor( Prefs.TTL_COLORS ), 
                   fgrColor = Prefs.getDefaultColor( Prefs.FGR_COLORS ),
                   selColor = Prefs.getDefaultColor( Prefs.SEL_COLORS );
-    private boolean fingerFriendly = false, warnOnRoot = true, rootOnRoot = false, arrow_mode = false, toolbarShown = false;
+    private boolean warnOnRoot = true, rootOnRoot = false, arrow_mode = false, toolbarShown = false;
     private boolean disableOpenSelectOnly = false, disableAllActions = false;
     private float downX = 0, downY = 0;
     private StringBuffer     quickSearchBuf = null;
     private Toast            quickSearchTip = null;
     private Shortcuts        shorcutsFoldersList;
     private CommanderAdapter destAdapter = null;
-    private boolean sxs;
+    public  boolean sxs, fingerFriendly = false;
     
     public Panels( FileCommander c_, boolean sxs_ ) {
         c = c_;
@@ -190,21 +186,12 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         }
     }
     public final void focus() {
-    	ListView flv = listViews[current];
-    	/*
-    	boolean focusable    = flv.isFocusable();
-    	boolean focusable_tm = flv.isFocusableInTouchMode();
-    	boolean focused      = flv.isFocused();
-    	boolean item_focus   = flv.getItemsCanFocus();
-    	Log.v( TAG, "" + focusable + ", " + focusable_tm + ", " + focused + ", " + item_focus );
-    	*/
-        flv.requestFocus();
-        flv.requestFocusFromTouch();  
+    	list[current].focus();
     }
     // View.OnFocusChangeListener implementation
     @Override
     public void onFocusChange( View v, boolean f ) {
-        if( sxs && f && listViews[current] != v ) {
+        if( sxs && f && list[current].flv != v ) {
             togglePanels( false );
         }
     }
@@ -214,21 +201,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                ( current == RIGHT && q == RIGHT );
     }
     private final void initList( int which ) {
-        ListView flv = (ListView)c.findViewById( listsIds[which] );
-        listViews[which] = flv;
-        if( flv != null ) {
-            flv.setItemsCanFocus( false );
-            flv.setFocusableInTouchMode( true );
-            flv.setOnItemSelectedListener( this );
-            flv.setChoiceMode( ListView.CHOICE_MODE_MULTIPLE );
-            flv.setOnItemClickListener( this );
-            flv.setOnFocusChangeListener( this );
-            flv.setOnTouchListener( this );
-            flv.setOnKeyListener( this );
-            flv.setOnScrollListener(this);
-            c.registerForContextMenu( flv );
-            setPanelTitle( "", which );
-        }
+        list[which] = new ListHelper( which, this );
+        setPanelTitle( "", which );
     }
 
     public final void setPanelTitle( String s, int which ) {
@@ -290,46 +264,23 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         shorcutsFoldersList.addToFavorites( cur_uri );
         c.showMessage( c.getString( R.string.fav_added, cur_uri ) );
     }
-    public final int getSelection() {
-        int pos = listViews[current].getSelectedItemPosition();
-        return pos == AdapterView.INVALID_POSITION ? currentPositions[current] : ( currentPositions[current] = pos );
+    public final int getSelection( boolean one_checked ) {
+        return list[current].getSelection( one_checked );
     }
     public final void setSelection( int i ) {
         setSelection( current, i, 0 );
     }
     public final void setSelection( int which, int i, int y_ ) {
-        final ListView final_flv = listViews[which];  
-        final int position = i, y = y_;
-        final_flv.post( new Runnable() {
-            public void run()
-            {
-                final_flv.setSelectionFromTop( position, y );
-            }
-        });                     
-        currentPositions[which] = i;
+        list[which].setSelection( i, y_ );
     }
     public final void setSelection( int which, String name ) {
-    	ListView flv = listViews[which];
-    	CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
-    	if( ca != null ) {
-            int i, num = ((ListAdapter)ca).getCount();
-            for( i = 0; i < num; i++ ) {
-            	String item_name = ca.getItemName( i, false );
-                if( item_name != null && item_name.compareTo( name ) == 0 ) {
-                    //Log.v( TAG, "trying to set panel " + which + " selection to item '" + name + "', pos: " + i );
-                    setSelection( which, i, flv.getHeight() / 2 );
-                    if( !flv.requestFocusFromTouch() )
-                        Log.w( TAG, "ListView does not take focus :(" );
-                    break;
-                }
-            }
-    	}
+    	list[which].setSelection( name );
     }
     public final File getCurrentFile() {
         try {
             ListAdapter a = (ListAdapter)getListAdapter( true );
             if( a instanceof FSAdapter ) {
-                CommanderAdapter.Item item = (CommanderAdapter.Item)a.getItem( getSelection() ); 
+                CommanderAdapter.Item item = (CommanderAdapter.Item)a.getItem( getSelection( true ) ); 
                 if( item != null && item.origin != null )
                     return (File)item.origin; 
             }
@@ -343,19 +294,12 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         return 1 - current;
     }
     public final CommanderAdapter getListAdapter( boolean forCurrent ) {
-        return getListAdapter( forCurrent ? current : opposite() );
-    }
-    public final CommanderAdapter getListAdapter( int which ) {
-        ListView flv = (ListView)listViews[which];
-        return flv != null ? (CommanderAdapter)flv.getAdapter() : null;
-    }
-    public final ListView getListView() {
-        return listViews[current];
+        return list[forCurrent ? current : opposite()].getListAdapter();
     }
     public final int getWidth() {
         return mainView.getWidth();
     }
-    private final void applyColors() {
+    public final void applyColors() {
         SharedPreferences color_pref = c.getSharedPreferences( Prefs.COLORS_PREFS, Activity.MODE_PRIVATE );
         int bg_color = Prefs.getDefaultColor( Prefs.BGR_COLORS );
             fgrColor = Prefs.getDefaultColor( Prefs.FGR_COLORS );
@@ -372,19 +316,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             if( div != null)
                 div.setBackgroundColor( titleColor );
         }
-        
-        for( int i = LEFT; i <= RIGHT; i++ ) {
-            ListView flv = listViews[i];
-            flv.setBackgroundColor( bg_color );
-            flv.setCacheColorHint( bg_color );
-            CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
-            if( ca != null ) {
-                ca.setMode( CommanderAdapter.SET_TXT_COLOR, fgrColor );
-                ca.setMode( CommanderAdapter.SET_SEL_COLOR, selColor );
-            }
-            else
-                Log.e( TAG, "CommanderAdapter is not defined" );
-        }
+        list[LEFT].applyColors( bg_color, fgrColor, selColor );
+        list[RIGHT].applyColors( bg_color, fgrColor, selColor );
         highlightCurrentTitle();
     }
     public final void applySettings( SharedPreferences sharedPref ) {
@@ -393,50 +326,12 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         	setFingerFriendly( sharedPref.getBoolean( "finger_friendly", false ) );
         	warnOnRoot =  sharedPref.getBoolean( "prevent_root", true );
             rootOnRoot = sharedPref.getBoolean( "root_root", false );
-            for( int i = LEFT; i <= RIGHT; i++ ) {
-                ListView flv = listViews[i];
-                applySettings( sharedPref, (CommanderAdapter)flv.getAdapter(), i );
-            }
+            list[LEFT].applySettings( sharedPref );
+            list[RIGHT].applySettings( sharedPref );
             setPanelCurrent( current );
         }
         catch( Exception e ) {
             Log.e( TAG, "applySettings()", e );
-        }
-    }
-    private final void applySettings( SharedPreferences sharedPref, CommanderAdapter ca, int which ) {
-        try {
-            arrow_mode = sharedPref.getBoolean( "arrow_mode", false );
-            if( !sxs )
-                ca.setMode( CommanderAdapter.MODE_WIDTH, sharedPref.getBoolean( "two_lines", false ) ? 
-                		    CommanderAdapter.NARROW_MODE : CommanderAdapter.WIDE_MODE );
-
-            ca.setMode( CommanderAdapter.MODE_ICONS, sharedPref.getBoolean( "show_icons", true ) ? 
-                    CommanderAdapter.ICON_MODE : CommanderAdapter.TEXT_MODE );
-
-            ca.setMode( CommanderAdapter.MODE_CASE, sharedPref.getBoolean( "case_ignore", true ) ? 
-                    CommanderAdapter.CASE_IGNORE : CommanderAdapter.CASE_SENS );
-
-            String sfx = sxs ? "_SbS" : "_Ovr";
-            boolean detail_mode = sharedPref.getBoolean( which == LEFT ? "left_detailed" + sfx : "right_detailed" + sfx, true );        
-            ca.setMode( CommanderAdapter.MODE_DETAILS, detail_mode ? 
-                        CommanderAdapter.DETAILED_MODE : CommanderAdapter.SIMPLE_MODE );
-            String sort = sharedPref.getString( which == LEFT ? "left_sorting" : "right_sorting", "n" );
-            ca.setMode( CommanderAdapter.MODE_SORTING, sort.compareTo( "s" ) == 0 ? CommanderAdapter.SORT_SIZE : 
-                                                       sort.compareTo( "e" ) == 0 ? CommanderAdapter.SORT_EXT : 
-                                                       sort.compareTo( "d" ) == 0 ? CommanderAdapter.SORT_DATE : 
-                                                                                    CommanderAdapter.SORT_NAME );
-            ca.setMode( CommanderAdapter.MODE_FINGERF, fingerFriendly ? CommanderAdapter.FAT_MODE : CommanderAdapter.SLIM_MODE );
-
-            boolean hidden_mode = sharedPref.getBoolean( ( which == LEFT ? "left" : "right" ) + "_show_hidden", true );
-            ca.setMode( CommanderAdapter.MODE_HIDDEN, hidden_mode ? CommanderAdapter.SHOW_MODE : CommanderAdapter.HIDE_MODE );
-
-            int thubnails_size = 0;
-            if( sharedPref.getBoolean( "show_thumbnails", true ) )
-                thubnails_size = Integer.parseInt( sharedPref.getString( "thumbnails_size", "100" ) );
-            ca.setMode( CommanderAdapter.SET_TBN_SIZE, thubnails_size );
-
-        } catch( Exception e ) {
-            Log.e( TAG, "applySettings() inner", e );
         }
     }
     public void changeSorting( int sort_mode ) {
@@ -460,40 +355,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     }
     public final void refreshList( int which ) {
         try {
-            ListView flv = listViews[which];
-            CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
-            if( ca == null ) return;
-            if( which == current ) {
-                storeChoosedItems();
-                flv.clearChoices();
-            }
-            ca.readSource( null, null );
-            flv.invalidateViews();
-        } catch( Exception e ) {
-            Log.e( TAG, "refreshList()", e );
-        }
-    }
-    public final void recoverAfterRefresh( String item_name, int which_panel ) {
-        try {
-            if( which_panel >= 0 ) {
-                //Log.v( TAG, "restoring panel " + which_panel + " item: " + item_name );
-                if( item_name != null && item_name.length() > 0 )
-                    setSelection( which_panel, item_name );
-                else
-                    setSelection( which_panel, 0, 0 );
-                if( which_panel == current )
-                    focus();
-            }
-            else {
-                ListView flv = listViews[current];
-                reStoreChoosedItems();
-                flv.invalidateViews();
-                if( !flv.isInTouchMode() && currentPositions[current] > 0 ) {
-                    //Log.v( TAG, "stored pos: " + currentPositions[current] );
-                    flv.setSelection( currentPositions[current] );
-                }
-            }
-            refreshPanelTitles();
+            list[which].refreshList( which == current );
         } catch( Exception e ) {
             Log.e( TAG, "refreshList()", e );
         }
@@ -501,7 +363,6 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public void setFingerFriendly( boolean finger_friendly ) {
         fingerFriendly = finger_friendly;
         try {
-            int mode = fingerFriendly ? CommanderAdapter.FAT_MODE : CommanderAdapter.SLIM_MODE;
             for( int p = LEFT; p <= RIGHT; p++ ) {
                 TextView title = (TextView)c.findViewById( titlesIds[p] );
                 if( title != null ) {
@@ -510,13 +371,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                     else
                         title.setPadding( 8, 1, 8, 1 );
                 }
-                ListView flv = listViews[p];
-                if( flv != null ) {
-                    CommanderAdapter  ca = (CommanderAdapter)flv.getAdapter();
-                    if( ca != null ) 
-                        ca.setMode( CommanderAdapter.MODE_FINGERF, mode );
-                    flv.invalidate();
-                }
+                list[p].setFingerFriendly( finger_friendly );
             }
         }
         catch( Exception e ) {
@@ -563,30 +418,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         storeChoosedItems();
         getListAdapter( true ).reqItemsSize( getSelectedOrChecked() );
 	}
-    public final void checkItem( boolean next ) {
-        ListView flv = listViews[current];
-        final int pos = getSelection();
-        if( pos > 0 ) {
-            SparseBooleanArray cis = flv.getCheckedItemPositions();
-            flv.setItemChecked( pos, !cis.get( pos ) );
-            if( next )
-                flv.setSelectionFromTop( pos + 1, flv.getHeight() / 2 );
-        }
-    }
     public final void checkItems( boolean set, String mask ) {
-        String[] cards = Utils.prepareWildcard( mask );
-        ListView flv = listViews[current];
-        CommanderAdapter ca =(CommanderAdapter)flv.getAdapter();
-        for( int i = 1; i < flv.getCount(); i++ ) {
-            if( cards == null )
-                flv.setItemChecked( i, set );
-            else {
-                String i_n = ca.getItemName( i, false );
-                if( i_n == null ) continue;
-                if( Utils.match( i_n, cards ) )
-                    flv.setItemChecked( i, set );
-            }
-        }
+        list[current].checkItems( set, mask );
     }
     class NavDialog implements OnClickListener {
         private   final Uri sdcard = Uri.parse(DEFAULT_LOC);
@@ -632,7 +465,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     	if( ( scheme == null || scheme.equals( "file") ) && 
     	      ( path == null || !path.startsWith( DEFAULT_LOC ) ) ) {
     	    if( warnOnRoot ) {
-                CommanderAdapter ca = getListAdapter( which );
+                CommanderAdapter ca = list[which].getListAdapter();
                 if( ca != null && "file".equals( ca.getType() ) ) {
                     String cur_path = ca.toString();
                     if( cur_path != null && cur_path.startsWith( DEFAULT_LOC ) ) {
@@ -650,39 +483,27 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     	}
     	NavigateInternal( which, uri, posTo );
     }
+    
     private final void NavigateInternal( int which, Uri uri, String posTo ) {
+        list[which].Navigate( uri, posTo );
+        if( which == current )
+            navigated = which; 
+    }
+
+    public final void recoverAfterRefresh( String item_name, int which ) {
         try {
-            ListView flv = listViews[which];
-            flv.clearChoices();
-            flv.invalidateViews();
-            CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
-            String scheme = uri.getScheme();
-            int type_h = CommanderAdapterBase.GetAdapterTypeHash( scheme );
-            if( ca == null || type_h != ca.getType().hashCode() ) {
-                if( ca != null )
-                    ca.prepareToDestroy();
-                ca = null;
-               ca = CommanderAdapterBase.CreateAdapter( type_h, c );
-                if( ca == null )
-                    Log.e( TAG, "Unknown adapter with type hash " + type_h );
-                else {
-                    ca.setMode( CommanderAdapter.WIDE_MODE, 
-                      sxs ? CommanderAdapter.NARROW_MODE : CommanderAdapter.WIDE_MODE );
-                    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
-                    applySettings( sharedPref, ca, which );
-                    flv.setAdapter( (ListAdapter)ca );
-                    flv.setOnKeyListener( this );
-                    flv.setSelection( 1 );
+            if( which >= 0 ) {
+                list[which].recoverAfterRefresh( item_name, which == current );
+                if( navigated >= 0 && which == navigated ) {
+                    navigated = -1;
+                    list[which].focus();
                 }
             }
-            if( ca == null ) return;
-            applyColors();
-            setPanelTitle( c.getString( R.string.wait ), which );
-            setToolbarButtons( ca );
-            
-            ca.readSource( uri, "" + which + ( posTo == null ? "" : posTo ) );
+            else
+                list[current].recoverAfterRefresh();
+            refreshPanelTitles();
         } catch( Exception e ) {
-            Log.e( TAG, "NavigateInternal()", e );
+            Log.e( TAG, "refreshList()", e );
         }
     }
     
@@ -732,7 +553,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         CommanderAdapter ca = getListAdapter( true );
         if( ca == null ) return;
         ClipboardManager clipboard = (ClipboardManager)c.getContext().getSystemService( Context.CLIPBOARD_SERVICE ); 
-        String in = ca.getItemName( getSelection(), true );
+        String in = ca.getItemName( getSelection( true ), true );
         clipboard.setText( in );
     }    
     public final void favFolder() {
@@ -740,7 +561,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         if( ca == null ) return;
         Uri u = ca.getUri();
         if( u != null ) {
-            String add = u.buildUpon().appendEncodedPath( ca.getItemName( getSelection(), false ) ).build().toString();
+            String add = u.buildUpon().appendEncodedPath( ca.getItemName( getSelection( true ), false ) ).build().toString();
             if( add != null && add.length() > 0 ) {
                 shorcutsFoldersList.addToFavorites( add );
                 c.showMessage( c.getString( R.string.fav_added, add ) );
@@ -778,64 +599,28 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             c.showMessage( "Not editable" );
     }
     public final int getNumItemsChecked() {
-        ListView flv = listViews[current];
-        SparseBooleanArray cis = flv.getCheckedItemPositions();
-        int counter = 0;
-        for( int i = 0; i < cis.size(); i++ )
-            if( cis.valueAt( i ) ) {
-                counter++;
-            }
-        return counter;
+        return list[current].getNumItemsChecked();
     }
     public final String getActiveItemsSummary() {
-        int counter = getNumItemsChecked();
-        if( counter > 1 ) {
-            String items = null;
-            if( counter < 5 )
-                items = c.getString( R.string.items24 );
-            if( items == null || items.length() == 0 )
-                items = c.getString( R.string.items );
-            return "" + counter + " " + items;
-        }
-        ListView flv = listViews[current];
-        CommanderAdapter adapter = (CommanderAdapter)flv.getAdapter();
-        if( counter == 1 ) {
-            SparseBooleanArray cis = flv.getCheckedItemPositions();
-            for( int i = 0; i < cis.size(); i++ )
-                if( cis.valueAt( i ) )
-                    return "'" + adapter.getItemName( cis.keyAt( i ), false ) + "'";
-        }
-        int cur_sel = getSelection();
-        if( cur_sel <= 0 )
-            return null; // the topmost item is also invalid
-        return "'" + adapter.getItemName( cur_sel, false ) + "'";
+        return list[current].getActiveItemsSummary();
     }
     public final SparseBooleanArray getSelectedOrChecked() {
-        ListView flv = listViews[current];
-        int num_checked = getNumItemsChecked();
-        SparseBooleanArray cis;
-        if( num_checked > 0 )
-            cis = flv.getCheckedItemPositions();
-        else {
-            cis = new SparseBooleanArray( 1 );
-            cis.put( getSelection(), true );
-        }
-        return cis;
+        return list[current].getSelectedOrChecked();
     }
     /**
      * @return 0 - nothing selected, 1 - a file, -1 - a folder, otherwise the number 
-     */
     public final int getNumItemsSelectedOrChecked() {
     	int checked = getNumItemsChecked();
     	return checked;
     }
+     */
     public final String getFolderUri( boolean active ) {
         CommanderAdapter ca = getListAdapter( active );
         if( ca == null ) return "";
         return ca.toString();
     }
     public final String getSelectedItemName() {
-        return getListAdapter( true ).getItemName( getSelection(), false );
+        return getListAdapter( true ).getItemName( getSelection( true ), false );
     }
 	public final void quickSearch( char ch ) {
 		CommanderAdapter a = getListAdapter( true );
@@ -914,7 +699,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             destAdapter = dest_adapter;
             getListAdapter( true ).copyItems( getSelectedOrChecked(), destAdapter, move );
             // TODO: getCheckedItemPositions() returns an empty array after a failed operation. why? 
-            listViews[current].clearChoices();
+            list[current].flv.clearChoices();
         }
         catch( Exception e ) {
             Log.e( TAG, "copyFiles()", e );
@@ -937,6 +722,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 
 	public final void createFolder( String new_name ) {
         getListAdapter( true ).createFolder( new_name );
+        list[current].setSelection( new_name );
     }
 
     public final void createZip( String new_zip_name ) {
@@ -956,14 +742,16 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public final void deleteItems() {
     	c.showDialog( Dialogs.PROGRESS_DIALOG );
         if( getListAdapter( true ).deleteItems( getSelectedOrChecked() ) )
-            listViews[current].clearChoices();
+            list[current].flv.clearChoices();
     }
 
     public final void renameFile( String new_name ) {
         CommanderAdapter adapter = getListAdapter( true );
-        int pos = getSelection();
-        if( pos >= 0 )
+        int pos = getSelection( true );
+        if( pos >= 0 ) {
             adapter.renameItem( pos, new_name );
+            list[current].setSelection( new_name );
+        }
     }
 
     // /////////////////////////////////////////////////////////////////////////////////
@@ -975,8 +763,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public void onItemSelected( AdapterView<?> listView, View itemView, int pos, long id ) {
         //Log.v( TAG, "Selected item " + pos );
     	shorcutsFoldersList.closeGoPanel();
-    	int which = listsIds[current] == listView.getId() ? current : opposite();
-        currentPositions[which] = pos;
+    	int which = list[current].id == listView.getId() ? current : opposite();
+        list[which].setCurPos( pos );
     }
     @Override
     public void onNothingSelected( AdapterView<?> listView ) {
@@ -992,16 +780,16 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         
     	shorcutsFoldersList.closeGoPanel();
     	resetQuickSearch();
-        if( id == R.layout.alt && listViews[current] != parent ) {
+    	ListView flv = list[current].flv;
+        if( flv != parent ) {
             togglePanels( false );
-            if( listViews[current] != parent )
-            	Log.e( TAG, "onItemClick. current=" + current + ", parent=" + parent.getId() );
+          	Log.e( TAG, "onItemClick. current=" + current + ", parent=" + parent.getId() );
         }
         	
-        ListView flv = listViews[current];
+        
         if( position == 0 ) {
             flv.setItemChecked( 0, false ); // parent item never selected
-            currentPositions[current] = 0;
+            list[current].setCurPos( 0 );
         }
         
         if( disableAllActions ) {
@@ -1019,8 +807,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         }
     }
     public void openItem( int position ) {
-        ListView flv = listViews[current];
-        ((CommanderAdapter)flv.getAdapter()).openItem( position );
+        ((CommanderAdapter)list[current].flv.getAdapter()).openItem( position );
     }
     
     /**
@@ -1030,7 +817,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public boolean onTouch( View v, MotionEvent event ) {
     	resetQuickSearch();
 	    if( v instanceof ListView ) {
-            if( v == listViews[opposite()])
+            if( v == list[opposite()].flv)
                 togglePanels( false );
 	        
 	    	shorcutsFoldersList.closeGoPanel();
@@ -1057,6 +844,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                     togglePanels( false );
                     disableAllActions = true;
                     */
+                    list[current].focus();
        	            break;
     	        }
 	        /*
@@ -1078,7 +866,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     	if( event.getAction() != KeyEvent.ACTION_DOWN ) return false;
 	    if( v instanceof ListView ) {
 	    	shorcutsFoldersList.closeGoPanel();
-	    	char ch = (char) event.getUnicodeChar();
+	    	char ch = (char)event.getUnicodeChar();
 	    	if( ch >= 'A' && ch <= 'z' ) {
 	    		quickSearch( ch );
 	    		return true;
@@ -1137,14 +925,10 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             case KeyEvent.KEYCODE_DPAD_RIGHT:
                 if( !arrow_mode ) return false;
             case KeyEvent.KEYCODE_VOLUME_UP:
-	            checkItem( true );
+	            list[current].checkItem( true );
 	            return true;
             case KeyEvent.KEYCODE_DPAD_LEFT:
 	            if( !arrow_mode ) return false;
-	        case KeyEvent.KEYCODE_VOLUME_DOWN:
-	        case KeyEvent.KEYCODE_TAB:
-	            togglePanels( true );
-	            return true;
 	        default:
 	        	return false;
 	    	}
@@ -1214,55 +998,11 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
      */
     
     public void storeChoosedItems() {
-        try {
-            ListView flv = listViews[current];
-            SparseBooleanArray cis = flv.getCheckedItemPositions();
-            CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
-            int counter = 0;
-            for( int i = 0; i < cis.size(); i++ )
-                if( cis.valueAt( i ) && cis.keyAt( i ) > 0)
-                    counter++;
-            listOfItemsChecked = null;
-            if( counter > 0 ) {
-                listOfItemsChecked = new String[counter];
-                int j = 0;
-                for( int i = 0; i < cis.size(); i++ )
-                    if( cis.valueAt( i ) ) {
-                        int k = cis.keyAt( i );
-                        if( k > 0 )
-                            listOfItemsChecked[j++] = ca.getItemName( k, true );
-                    }
-            }
-        } catch( Exception e ) {
-            Log.e( TAG, "storeChoosedItems()", e );
-        }
+        list[current].storeChoosedItems();
     }
     
     public void reStoreChoosedItems() {
-        try {
-            if( listOfItemsChecked == null || listOfItemsChecked.length == 0 )
-                return;
-            ListView flv = listViews[current];
-            ListAdapter      la = flv.getAdapter();
-            if( la != null ) {
-                CommanderAdapter ca = (CommanderAdapter)la;
-                int n_items = la.getCount();
-                for( int i = 1; i < n_items; i++ ) {
-                    String item_name = ca.getItemName( i, true );
-                    boolean set = false;
-                    for( int j = 0; j < listOfItemsChecked.length; j++ ) {
-                        if( listOfItemsChecked[j].compareTo( item_name ) == 0 ) {
-                            set = true;
-                            break;
-                        }
-                    }
-                    flv.setItemChecked( i, set );
-                }
-            }
-        } catch( Exception e ) {
-            Log.e( TAG, "reStoreChoosedItems()", e );
-        }
-        listOfItemsChecked = null;
+        list[current].reStoreChoosedItems();
     }
     
     class State {
@@ -1311,13 +1051,13 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         State s = new State();
         s.current = current;
         try {
-            CommanderAdapter  left_adapter = (CommanderAdapter)listViews[LEFT].getAdapter();
+            CommanderAdapter  left_adapter = (CommanderAdapter)list[LEFT].getListAdapter();
             s.left  =  left_adapter.toString();
-            s.leftItem  =  left_adapter.getItemName( currentPositions[LEFT],  false );
+            s.leftItem  =  left_adapter.getItemName( list[LEFT].getCurPos(), false );
             //Log.v( TAG, "Saving left current item: " + s.leftItem );
-            CommanderAdapter right_adapter = (CommanderAdapter)listViews[RIGHT].getAdapter();
+            CommanderAdapter right_adapter = (CommanderAdapter)list[RIGHT].getListAdapter();
             s.right = right_adapter.toString();
-            s.rightItem = right_adapter.getItemName( currentPositions[RIGHT], false );
+            s.rightItem = right_adapter.getItemName( list[RIGHT].getCurPos(), false );
         } catch( Exception e ) {
             Log.e( TAG, "getState()", e );
         }

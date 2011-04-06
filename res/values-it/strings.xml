@@ -109,7 +109,7 @@
     <string name="op_not_alwd">Il \'%1$s\' non è permesso. Selezionare prima qualcosa.</string><!-- copy_title/move_title -->
     <string name="copy_to_local_only">È possibile copiare solamente sul file system locale</string>    
     <!-- string name="dest_exist">File already exist. Can not overwrite.</string-->    
-    <string name="copy_move_to">%1$s %2$s in:"</string><!-- copy_title/move_title, file name/summary -->
+    <string name="oper_item_to">%1$s %2$s in:"</string><!-- copy_title/move_title, file name/summary -->
     <string name="login_title">Login</string>
     <string name="delete_title">Elimina</string>
     <string name="delete_err">Nulla da eliminare</string>

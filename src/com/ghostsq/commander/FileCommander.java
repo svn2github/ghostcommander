@@ -322,6 +322,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             return true;
         }
         switch( keyCode ) {
+        case KeyEvent.KEYCODE_TAB:
+        case KeyEvent.KEYCODE_VOLUME_DOWN:
+            panels.togglePanels( true );
+            return true;
         case KeyEvent.KEYCODE_BACK:
         case KeyEvent.KEYCODE_DEL:
             panels.getListAdapter(true).openItem(0);

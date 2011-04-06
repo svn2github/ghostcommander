@@ -78,7 +78,7 @@
     <string name="copy_move_not_alwd">\'%s\' ist nicht möglich.</string>
     <string name="copy_to_local_only">Datei- und Ordneroperationen sind nur zu oder von diesem Gerät erlaubt.</string>
     <string name="dest_exist">Datei ist bereits vorhanden. Überschreiben fehlgeschlagen.</string>
-    <string name="copy_move_to">%1$s %2$s nach:</string>
+    <string name="oper_item_to">%1$s %2$s nach:</string>
     <string name="login_title">Login</string>
     <string name="delete_title">Löschen</string>
     <string name="delete_err">Nichts zum Löschen.</string>

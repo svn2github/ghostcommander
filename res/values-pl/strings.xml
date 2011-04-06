@@ -83,7 +83,6 @@
 <string name="edit_title">Nowy plik</string>
 <string name="newf_prompt">Nazwa nowego pliku:</string>
 <string name="rename_title">Zmień nazwę</string>
-<string name="rename_prompt">Zmień nazwę na:</string>
 <string name="rename_err">Nie wybrano plików do zmiany nazwy.</string>
 <string name="mkdir_title">Nowy katalog</string>
 <string name="mkdir_prompt">Podaj nazwę nowego katalogu:</string>
@@ -96,7 +95,7 @@
 <string name="find_on_fs_only">Wyszukiwanie działa jedynie na dyskach lokalnych.</string>
 <string name="op_not_alwd">\'%1$s\' nie jest możliwe. Musisz zaznaczyć pliki.</string>
 <string name="copy_to_local_only">Kopiowanie jest dopuszczalne jedynie na dyskach lokalnych.</string>
-<string name="copy_move_to">%1$s %2$s do:"</string>
+<string name="oper_item_to">%1$s %2$s do:"</string>
 <string name="login_title">Login</string>
 <string name="delete_title">Usuń</string>
 <string name="delete_err">Nie ma niczego do usunięcia.</string>

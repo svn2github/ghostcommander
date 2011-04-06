@@ -90,7 +90,7 @@
     <string name="copy_move_not_alwd">\'%1$s\' není možné. Nejprve něco označte.</string><!-- copy_title/move_title -->
     <string name="copy_to_local_only">Kopírovat je možné pouze na lokální filesystém.</string>    
     <string name="dest_exist">Soubor již existuje. Nelze přepsat.</string>    
-    <string name="copy_move_to">%1$s %2$s do:"</string><!-- copy_title/move_title, file name/summary -->
+    <string name="oper_item_to">%1$s %2$s do:"</string><!-- copy_title/move_title, file name/summary -->
     <string name="login_title">Přihlásit</string>
     <string name="delete_title">Odstranit</string>
     <string name="delete_err">Nic k odstranění</string>

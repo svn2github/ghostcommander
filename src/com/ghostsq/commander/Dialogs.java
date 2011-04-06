@@ -50,6 +50,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
         case R.id.new_zip:
         case R.id.F2:
         case R.id.new_file:
+        case R.id.SF4:
         case R.id.F5:
         case R.id.F6:
         case R.id.F7:
@@ -140,20 +141,25 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 break;
             }            
             case R.id.F2: {
-                dialog.setTitle( R.string.rename_title );
-                if( prompt != null )
-                    prompt.setText( R.string.rename_prompt );
+                final String op_title = owner.getString( R.string.rename_title );
+                String op = owner.getString( R.string.to_rename );
+                if( op == null || op.length() == 0 )
+                    op = op_title;
+                dialog.setTitle( op_title );
                 String item_name = owner.panels.getSelectedItemName();
                 if( item_name == null ) {
                     owner.showMessage( owner.getString( R.string.rename_err ) );
                     item_name = "";
                 }
+                if( prompt != null )
+                    prompt.setText( owner.getString( R.string.oper_item_to, op, item_name ) );
                 if( edit != null ) {
                     edit.setWidth( owner.getWidth() - 80 );
                     edit.setText( item_name );
                 }
                 break;
             }
+            case R.id.SF4:
             case R.id.new_file: {
                 dialog.setTitle( R.string.edit_title );
                 if( prompt != null )
@@ -183,7 +189,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                     }
                     else
                         valid = true;
-                    prompt.setText( owner.getString( R.string.copy_move_to, op, summ ) );
+                    prompt.setText( owner.getString( R.string.oper_item_to, op, summ ) );
                 }
                 String copy_to = owner.panels.getFolderUri( false );
                 if( copy_to != null ) {
@@ -204,7 +210,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                         summ = owner.getString( R.string.no_items );
                         owner.showMessage( owner.getString( R.string.op_not_alwd, op ) );
                     }
-                    prompt.setText( owner.getString( R.string.copy_move_to, op, summ ) );
+                    prompt.setText( owner.getString( R.string.oper_item_to, op, summ ) );
                 }
                 if( edit != null ) {
                     edit.setWidth( owner.getWidth() - 70 );
@@ -343,6 +349,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 switch( dialogId ) {
                 case R.id.F2:
                 case R.id.new_file:
+                case R.id.SF4:
                 case R.id.F5:
                 case R.id.F6:
                 case R.id.F7:
@@ -358,6 +365,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                         case R.id.F2:
                             owner.panels.renameFile( file_name );
                             break;
+                        case R.id.SF4:
                         case R.id.new_file:
                             owner.panels.createNewFile( file_name );
                             break;

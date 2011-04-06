@@ -39,7 +39,7 @@
 <string name="unselect_all">- Désélectionner les fichiers</string>
 <string name="select_b">+ Sélectionner</string><!-- !!! -->
 <string name="unselect_b">- Désélectionner</string><!-- !!! -->
-<string name="toggle_panels_mode"># Changer mode d'affichage des panneaux</string><!-- !!! -->
+<string name="toggle_panels_mode"># Changer mode d\'affichage des panneaux</string><!-- !!! -->
 <string name="prefs">9 Configuration</string>
 <string name="about">  A propos</string>
 <string name="keys">1 Raccourcis clavier</string>
@@ -58,7 +58,7 @@
 <string name="arrow_mode">Commandes fléchées</string>
 <string name="summary_arrow_mode">Flèche Gauche/Droite =  basculer/sélectionner</string>
 <string name="show_confirm">Afficher la confirmation</string><!-- !!! -->
-<string name="summary_show_confirm">Afficher le dialogue de confirmation à chaque fin d'opération</string><!-- !!! -->
+<string name="summary_show_confirm">Afficher le dialogue de confirmation à chaque fin d\'opération</string><!-- !!! -->
 <string name="prefs_label">Configuration</string>
 <string name="editor_label">Editeur de texte</string>
 <string name="advanced">Avancés</string>
@@ -99,7 +99,7 @@ if they are empty, the copy_title/move_title will be used  -->
 <string name="find_on_fs_only">La fonction recherche ne s\'applique qu\'avec les fichiers locaux.</string>
 <string name="op_not_alwd">Opération \'%1$s\' non permise. Sélectionner d\'abord un élément.</string>
 <string name="copy_to_local_only">Copie possible vers fichiers locaux uniquement.</string>
-<string name="copy_move_to">%1$s %2$s à:"</string>
+<string name="oper_item_to">%1$s %2$s à:"</string>
 <string name="login_title">Connecter</string>
 <string name="delete_title">Supprimer</string>
 <string name="delete_err">Rien à supprimer</string>
@@ -127,7 +127,7 @@ if they are empty, the copy_title/move_title will be used  -->
 <string name="cant_move">Impossible de déplacer le fichier \"%s\"</string>
 <string name="cant_create">Impossible de créer le fichier file \"%1$s\"\n%2$s</string>
 <string name="cant_del">Impossible de supprimer le fichier \"%1$s\"</string>
-<string name="dest_wrtble">Vérifier que le répertoire \"%s\" n'est pas protégé en écriture</string><!-- !!! -->
+<string name="dest_wrtble">Vérifier que le répertoire \"%s\" n\'est pas protégé en écriture</string><!-- !!! -->
 <string name="copied">copié</string>
 <string name="moved">déplacé</string>
 <string name="deleted">supprimé</string>
@@ -136,7 +136,7 @@ if they are empty, the copy_title/move_title will be used  -->
 <string name="packed">compresssé</string>
 <string name="unpacked">décompressé</string>
 <string name="remounted">Remonté \"%1$s\" en \"%2$s\".</string><!-- !!! -->
-<string name="tried_to_exec">Essai d'exécution : \"%s\"</string><!-- !!! -->
+<string name="tried_to_exec">Essai d\'exécution : \"%s\"</string><!-- !!! -->
 <string name="verb_plural_sfx">s</string>
 <string name="item">élément</string>
 <string name="items">éléments</string>

@@ -84,7 +84,7 @@
     
     
     <string name="copy_move_not_alwd">A \'%1$s\' Nem megengedett. Jelöljön ki valamit.</string><!-- copy_title/move_title -->
-    <string name="copy_move_to">%1$s %2$s:"</string><!-- copy_title/move_title, file name/summary -->
+    <string name="oper_item_to">%1$s %2$s:"</string><!-- copy_title/move_title, file name/summary -->
     <string name="login_title">Bejelentkezés</string>
     <string name="delete_title">Töröl</string>
     <string name="delete_err">Nem törölhető</string>
