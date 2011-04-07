@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
 <string name="app_name">Ghost Commander</string>
 <string name="file">Utwórz nowy</string>
@@ -80,9 +80,10 @@
 <string name="dialog_select">Zaznacz</string>
 <string name="dialog_unselect">Odznacz</string>
 <string name="operation">Operacja</string>
-<string name="edit_title">Nowy plik</string>
+<string name="edit_title">Edytuj...</string>
 <string name="newf_prompt">Nazwa nowego pliku:</string>
 <string name="rename_title">Zmień nazwę</string>
+<string name="rename_prompt">Zmień nazwę na:</string>
 <string name="rename_err">Nie wybrano plików do zmiany nazwy.</string>
 <string name="mkdir_title">Nowy katalog</string>
 <string name="mkdir_prompt">Podaj nazwę nowego katalogu:</string>
@@ -280,12 +281,12 @@ Wybierz \"Anuluj\", jeśli nadal się wahasz i póki co chcesz używać «Ghost 
 Ghost Commander v%1$s\n
 Menedżer plików autorstwa Ghost Squared.\n\n
 Zauważone błędy, sugestie, uwagi proszę zgłaszać na\n
-ghost.sq2@gmail.com\n
-Dziękujemy.\n\n
+ghost.sq2@gmail.com\n\n
+
 Polskie tłumaczenie:\n
 Robert Malara\n
-robert.malara+gc@gmail.com\n\n\n
-        Dziękujęmy.\n\n\n
+robert.malara+gc@gmail.com\n\n
+        Dziękujęmy.\n\n
         
          
         ZASTRZEŻENIA:\n
