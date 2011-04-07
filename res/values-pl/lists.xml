@@ -15,8 +15,8 @@
     
     <string-array name="panels_mode">
         <item>Tak</item>
-        <item>Nr</item>
-        <item>Auto</item>
+        <item>Nie</item>
+        <item>Automatycznie</item>
     </string-array>
     
 </resources>

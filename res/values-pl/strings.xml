@@ -32,10 +32,14 @@
 <string name="enter_smb">  Połącz z Samba (Windows)</string>
 <string name="search_file">/ Szukaj</string>
 
-<string name="sort_by_name">&#xA0; Po naz.</string>
-<string name="sort_by_ext" >&#xA0; Po rozsz.</string>
-<string name="sort_by_size">&#xA0; Po rozm.</string>
+<string name="sort_by_name">&#xA0; Po nazwie</string>
+<string name="sort_by_ext" >&#xA0; Po rozszerzeniu</string>
+<string name="sort_by_size">&#xA0; Po wielkości</string>
 <string name="sort_by_date">&#xA0; Po dacie</string>
+<string name="sort_by_name_b">Po naz.</string>
+<string name="sort_by_ext_b" >Po rozsz.</string>
+<string name="sort_by_size_b">Po rozm.</string>
+<string name="sort_by_date_b">Po dacie</string>
 <string name="select_all">+ Zaznacz pliki</string>
 <string name="unselect_all">- Odznacz pliki</string>
 <string name="select_b">+ Zaznacz</string>
