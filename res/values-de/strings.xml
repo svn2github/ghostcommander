@@ -32,6 +32,10 @@
     <string name="sort_by_ext">  Nach Erweiterung</string>
     <string name="sort_by_size">  Nach Grösse</string>
     <string name="sort_by_date">  Nach Datum</string>
+    <string name="sort_by_name_b">Nach Name</string>
+    <string name="sort_by_ext_b">Nach Erweiterung</string>
+    <string name="sort_by_size_b">Nach Grösse</string>
+    <string name="sort_by_date_b">Nach Datum</string>
     <string name="select_all">+ Markieren</string>
     <string name="unselect_all">- Markierung aufheben</string>
     <string name="prefs">9 Einstellungen</string>

@@ -246,4 +246,22 @@ public final class Utils {
         if( s == null || s.length() == 0 ) return s;
         return s.replaceAll( "#", "%23" ).replaceAll( ":", "%3A" );
     }
+    
+    public enum RR {
+               busy(R.string.busy),
+           copy_err(R.string.copy_err),
+             copied(R.string.copied),
+              moved(R.string.moved),
+        interrupted(R.string.interrupted),
+          uploading(R.string.uploading),
+           fail_del(R.string.fail_del),
+           cant_del(R.string.cant_del),
+         retrieving(R.string.retrieving),
+           deleting(R.string.deleting),
+      not_supported(R.string.not_supported);
+        
+        private int r;
+        private RR(int r_) { r = r_; }
+        public int r() { return r; }
+    };
 }

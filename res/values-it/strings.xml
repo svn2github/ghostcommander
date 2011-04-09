@@ -37,6 +37,10 @@
     <string name="sort_by_ext">  Per estensione</string>
     <string name="sort_by_size">  Per dimensione</string>
     <string name="sort_by_date">  Per data</string>
+    <string name="sort_by_name_b">Per nome</string>
+    <string name="sort_by_ext_b">Per estens.</string>
+    <string name="sort_by_size_b">Per dimens.</string>
+    <string name="sort_by_date_b">Per data</string>
     <string name="select_all">+ Seleziona più file</string>
     <string name="unselect_all">- Deseleziona file</string>
     <string name="select_b">+ Seleziona</string>

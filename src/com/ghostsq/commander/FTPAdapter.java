@@ -15,6 +15,7 @@ import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.CommanderAdapter;
 import com.ghostsq.commander.CommanderAdapterBase;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
@@ -230,7 +231,7 @@ public class FTPAdapter extends CommanderAdapterBase {
                     return false;
             if( worker != null ) { // that's not good.
             	if( worker.isAlive() ) {
-            	    showMessage( "Busy..." );
+            	    Log.w( TAG, "Busy..." );
             		if( worker.isInterrupted() ) {	// cruel force
 		            	ftp.logout( false );
 		            	ftp.disconnect();	
@@ -263,8 +264,10 @@ public class FTPAdapter extends CommanderAdapterBase {
         String err_msg = null;
         try {
             LsItem[] subItems = bitsToItems( cis );
-            if( subItems == null ) 
-                throw new RuntimeException( "Nothing to copy" );
+            if( subItems == null ) {
+                commander.notifyMe( new Commander.Notify( s( R.string.copy_err ), Commander.OPERATION_FAILED ) );
+                return false;
+            } 
             if( !checkReadyness() ) return false;
             File dest = null;
             int rec_h = 0;
@@ -272,7 +275,7 @@ public class FTPAdapter extends CommanderAdapterBase {
                 dest = new File( to.toString() );
                 if( !dest.exists() ) dest.mkdirs();
                 if( !dest.isDirectory() )
-                    throw new RuntimeException( commander.getContext().getString( R.string.dest_exist ) );
+                    throw new RuntimeException( s( R.string.dest_exist ) );
             } else {
                 dest = new File( createTempDir() );
                 rec_h = setRecipient( to ); 
@@ -337,9 +340,10 @@ public class FTPAdapter extends CommanderAdapterBase {
 	    private final int copyFiles( LsItem[] list, String path ) {
 	        int counter = 0;
 	        try {
+	            Context ctx = commander.getContext();
 	        	for( int i = 0; i < list.length; i++ ) {
 	        		if( stop || isInterrupted() ) {
-	        			errMsg = "Copy operation has been canceled";
+	        		    error( ctx.getString( R.string.interrupted ) );
 	        			break;
 	        		}
 	        		LsItem f = list[i];
@@ -370,7 +374,7 @@ public class FTPAdapter extends CommanderAdapterBase {
 	    	        			errMsg = "Please make sure the folder '" + dest_folder.getCanonicalPath() + "' is writable";
 	    	        			break;
 	        				}
-	        				sendProgress( "Downloading file\n'" + pathName + "'", 0 );
+	        				sendProgress( ctx.getString( R.string.retrieving, pathName ), 0 );
 	        				setCurFileLength( f.length() );
 	        				FileOutputStream out = new FileOutputStream( dest );
 	        	        	synchronized( ftp ) {
@@ -454,16 +458,16 @@ public class FTPAdapter extends CommanderAdapterBase {
         private final int delFiles( LsItem[] list, String path ) {
             int counter = 0;
             try {
+                Context ctx = commander.getContext();
 	        	for( int i = 0; i < list.length; i++ ) {
 	        		if( stop || isInterrupted() ) {
-	        			errMsg = "Delete operation has been canceled";
+	        		    error( ctx.getString( R.string.interrupted ) );
 	        			break;
 	        		}
 	        		LsItem f = list[i];
 	        		if( f != null ) {
 	        			String pathName = path + f.getName();
 	        			if( f.isDirectory() ) {
-	        				sendProgress( "Removing folder '" + pathName + "'...", i * 100 / list.length );
 		                    LsItem[] subItems = ftp.getDirList( pathName );
 	        				counter += delFiles( subItems, pathName + SLS );
 	        				if( errMsg != null ) break;
@@ -476,7 +480,7 @@ public class FTPAdapter extends CommanderAdapterBase {
 	        	        	}
 	        			}
 	        			else {
-	        				sendProgress( "Deleting file '" + pathName + "'...", i * 100 / list.length );
+	        				sendProgress( ctx.getString( R.string.deleting, pathName ), i * 100 / list.length );
 	        	        	synchronized( ftp ) {
 	        	        		ftp.clearLog();
 	        	        		if( !ftp.delete( pathName ) ) {
@@ -549,7 +553,7 @@ public class FTPAdapter extends CommanderAdapterBase {
     	try {
     		if( !checkReadyness() ) return false;
             if( uris == null || uris.length == 0 ) {
-            	commander.notifyMe( new Commander.Notify( "Nothing to copy", Commander.OPERATION_FAILED ) );
+            	commander.notifyMe( new Commander.Notify( s( R.string.copy_err ), Commander.OPERATION_FAILED ) );
             	return false;
             }
             File[] list = Utils.getListOfFiles( uris );
@@ -596,34 +600,34 @@ public class FTPAdapter extends CommanderAdapterBase {
             if( list == null ) return 0;
             int counter = 0;
             try {
+                Context ctx = commander.getContext();
 	        	for( int i = 0; i < list.length; i++ ) {
 	        		if( stop || isInterrupted() ) {
-	        			errMsg = "Canceled";
+	        			error( ctx.getString( R.string.interrupted ) );
 	        			break;
 	        		}
 	        		File f = list[i];
 	        		if( f != null && f.exists() ) {
 	        			if( f.isFile() ) {
-	        				sendProgress( "Uploading file \n'" + f.getName() + "'", 0 );
+	        				sendProgress( ctx.getString( R.string.uploading, f.getName() ), 0 );
 	        				String fn = f.getAbsolutePath().substring( basePathLen );
 	    					FileInputStream in = new FileInputStream( f );
 	    					setCurFileLength( f.length() );
 	    		        	synchronized( ftp ) {
 	    		        		ftp.clearLog();
 		    					if( !ftp.store( fn, in, this ) ) {
-		    						errMsg = "Upload '" + f.getName() + "' failed.\n FTP log:\n\n" + ftp.getLog();
+		    						error( ctx.getString( R.string.ftp_upload_failed, f.getName(), ftp.getLog() ) );
 		    						break;
 		    					}
 	    		        	}
 	        			}
 	        			else
 	        			if( f.isDirectory() ) {
-	        				sendProgress( "Folder '" + f.getName() + "'...", 0 );
 	        	        	synchronized( ftp ) {
 	        	        		ftp.clearLog();
 	        	        		String toCreate = f.getAbsolutePath().substring( basePathLen );
 		        				if( !ftp.makeDir( toCreate ) ) {
-		        					errMsg = "Failed to create folder  '" + toCreate + "'.\n FTP log:\n\n" + ftp.getLog();
+		        				    error( ctx.getString( R.string.ftp_mkdir_failed, toCreate, ftp.getLog() ) );
 		        					break;
 		        				}
 	        	        	}
@@ -632,7 +636,7 @@ public class FTPAdapter extends CommanderAdapterBase {
 	        			}
     					counter++;
                         if( move && !f.delete() ) {
-                            errMsg = "Unable to delete '" + f.getCanonicalPath() + "'.";
+                            error( ctx.getString( R.string.cant_del, f.getCanonicalPath() ) );
                             break;
                         }
 	        		}
@@ -640,7 +644,7 @@ public class FTPAdapter extends CommanderAdapterBase {
         	}
 			catch( IOException e ) {
 				e.printStackTrace();
-				errMsg = "IOException: " + e.getMessage();
+				error( "IOException: " + e.getMessage() );
 			}
             return counter;
         }
@@ -707,7 +711,7 @@ public class FTPAdapter extends CommanderAdapterBase {
                 	subItems[j++] = items[ cis.keyAt( i ) - 1 ];
             return subItems;
 		} catch( Exception e ) {
-		    Log.e( TAG, "bitsToNames()'s Exception: " + e.getMessage() );
+		    Log.e( TAG, "", e );
 		}
 		return null;
     }
@@ -718,7 +722,7 @@ public class FTPAdapter extends CommanderAdapterBase {
         	return false;
         }
         if( !ftp.isLoggedIn() ) {
-        	commander.notifyMe( new Commander.Notify( "Not logged in!", Commander.OPERATION_FAILED ) );
+        	commander.notifyMe( new Commander.Notify( s( R.string.ftp_nologin ), Commander.OPERATION_FAILED ) );
         	return false;
         }
     	return true;

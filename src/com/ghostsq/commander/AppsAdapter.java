@@ -11,11 +11,13 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Handler;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
 
 public class AppsAdapter extends CommanderAdapterBase {
+    private final static String TAG = "AppsAdapter";
     // Java compiler creates a thunk function to access to the private owner class member from a subclass
     // to avoid that all the member accessible from the subclasses are public
     public  ApplicationInfo[] items = null;
@@ -91,7 +93,7 @@ public class AppsAdapter extends CommanderAdapterBase {
                 if( worker.reqStop() ) { // that's not good.
                     Thread.sleep( 500 );      // will it end itself?
                     if( worker.isAlive() ) {
-                        showMessage( "A worker thread is still alive and don't want to stop" );
+                        Log.e( TAG, "Busy!" );
                         return false;
                     }
                 }

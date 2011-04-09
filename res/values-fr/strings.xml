@@ -35,6 +35,10 @@
 <string name="sort_by_ext">  Par Extension</string>
 <string name="sort_by_size">  Par Taille</string>
 <string name="sort_by_date">  Par Date</string>
+<string name="sort_by_name_b">Par Nom</string>
+<string name="sort_by_ext_b">Par Ext.</string>
+<string name="sort_by_size_b">Par Taille</string>
+<string name="sort_by_date_b">Par Date</string>
 <string name="select_all">+ Sélectionner les fichiers</string>
 <string name="unselect_all">- Désélectionner les fichiers</string>
 <string name="select_b">+ Sélectionner</string><!-- !!! -->

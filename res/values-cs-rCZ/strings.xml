@@ -35,6 +35,10 @@
     <string name="sort_by_ext" >&#xA0; Dle Přípony</string>
     <string name="sort_by_size">&#xA0; Dle Velikosti</string>
     <string name="sort_by_date">&#xA0; Dle Data</string>
+    <string name="sort_by_name_b">Dle Názvu</string>
+    <string name="sort_by_ext_b" >Dle Přípony</string>
+    <string name="sort_by_size_b">Dle Velik.</string>
+    <string name="sort_by_date_b">Dle Data</string>
     <string name="select_all">+ Označit</string>
     <string name="unselect_all">- Odznačit</string>
         

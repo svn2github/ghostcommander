@@ -31,6 +31,9 @@
     <string name="sort_by_name">  根据文件名</string>
     <string name="sort_by_size">  根据文件大小</string>
     <string name="sort_by_date">  根据修改时间</string>
+    <string name="sort_by_name_b">根据文件名</string>
+    <string name="sort_by_size_b">根据文件大小</string>
+    <string name="sort_by_date_b">根据修改时间</string>
     <string name="select_all">+ 全选</string>
     <string name="unselect_all">- 取消全选</string>
         

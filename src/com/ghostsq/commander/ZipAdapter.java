@@ -55,7 +55,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                 return false;
             if( worker != null ) { // that's not good.
                 if( worker.isAlive() ) {
-                    showMessage( commander.getContext().getString( R.string.busy ) );
+                    commander.showInfo( commander.getContext().getString( R.string.busy ) );
                     worker.interrupt();
                     Thread.sleep( 500 );      
                     if( worker.isAlive() ) 
@@ -321,7 +321,6 @@ public class ZipAdapter extends CommanderAdapterBase {
         			String rel_name = entry_name_fixed.substring( base_len );
         			
         			if( entry.isDirectory() ) {
-        				sendProgress( "Processing folder '" + rel_name + "'...", 0 );
         				if( !dest_file.mkdir() ) {
         					if( !dest_file.exists() || !dest_file.isDirectory() ) {
 	        					errMsg = "Can't create folder \"" + dest_file.getAbsolutePath() + "\"";
@@ -474,7 +473,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                         zipFile.delete();
                         old_file.renameTo( zipFile );
                         processed = 0;
-                        error("Cancelled");
+                        error( s( R.string.interrupted ) );
                     }
                     else {
                         old_file.delete();
@@ -554,7 +553,7 @@ public class ZipAdapter extends CommanderAdapterBase {
     	try {
     		if( !checkReadyness() ) return false;
             if( uris == null || uris.length == 0 ) {
-            	commander.notifyMe( new Commander.Notify( "Nothing to copy", Commander.OPERATION_FAILED ) );
+            	commander.notifyMe( new Commander.Notify( s( R.string.copy_err ), Commander.OPERATION_FAILED ) );
             	return false;
             }
             File[] list = Utils.getListOfFiles( uris );
@@ -684,6 +683,7 @@ public class ZipAdapter extends CommanderAdapterBase {
         private final int addFilesToZip( ArrayList<File> files ) throws IOException {
             File old_file = null;
             try {
+                Context ctx = commander.getContext();
                 byte[] buf = new byte[BLOCK_SIZE];
                 ZipOutputStream out;
                 if( newZip ) {
@@ -757,6 +757,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                        else {
                            out.putNextEntry( new ZipEntry( rfn ) );
                            // Transfer bytes from the file to the ZIP file
+                           String pack_s = ctx.getString( R.string.packing, fn );
                            InputStream in = new FileInputStream( f );
                            int len;
                            int  so_far = (int)(byte_count * conv);
@@ -764,7 +765,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                                if( isStopReq() ) break;
                                out.write(buf, 0, len);
                                byte_count += len;
-                               sendProgress( "Packing \n\"" + fn + "\"...", so_far, (int)(byte_count * conv) );
+                               sendProgress( pack_s, so_far, (int)(byte_count * conv) );
                            }
                            // Complete the entry
                            in.close();
@@ -868,7 +869,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                 	subItems[j++] = items[ cis.keyAt( i ) - 1 ];
             return subItems;
 		} catch( Exception e ) {
-			commander.showError( "bitsToNames()'s Exception: " + e.getMessage() );
+			Log.e( TAG, "", e );
 		}
 		return null;
     }
@@ -898,7 +899,9 @@ public class ZipAdapter extends CommanderAdapterBase {
             int ext_cmp = 0;
             switch( type ) {
             case SORT_EXT:
-                ext_cmp = Utils.getFileExt( f1.getName() ).compareTo( Utils.getFileExt( f2.getName() ) );
+                ext_cmp = case_ignore ? 
+                        Utils.getFileExt( f1.getName() ).compareToIgnoreCase( Utils.getFileExt( f2.getName() ) ) :
+                        Utils.getFileExt( f1.getName() ).compareTo( Utils.getFileExt( f2.getName() ) );
                 break;
             case SORT_SIZE:
                 ext_cmp = f1.getSize() - f2.getSize() < 0 ? -1 : 1;
@@ -908,7 +911,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                 break;
             }
             if( ext_cmp == 0 )
-                ext_cmp = f1.getName().compareTo( f2.getName() );
+                ext_cmp = case_ignore ? f1.getName().compareToIgnoreCase( f2.getName() ) : f1.getName().compareTo( f2.getName() );
             return ascending ? ext_cmp : -ext_cmp;
 		}
     }

@@ -228,7 +228,7 @@ public class RootAdapter extends CommanderAdapterBase {
                 if( worker.reqStop() ) { // that's not good.
                     Thread.sleep( 500 ); // will it end itself?
                     if( worker.isAlive() ) {
-                        showMessage( "A worker thread is still alive and doesn't want to stop" );
+                        Log.e( TAG, "Busy!" );
                         return false;
                     }
                 }

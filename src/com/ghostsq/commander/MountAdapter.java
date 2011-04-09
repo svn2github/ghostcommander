@@ -65,7 +65,7 @@ public class MountAdapter extends CommanderAdapterBase {
     @Override
     public void populateContextMenu( ContextMenu menu, AdapterView.AdapterContextMenuInfo acmi, int num ) {
         if( num <= 1 ) {
-            menu.add( 0, Commander.OPEN, 0, "Remount" );
+            menu.add( 0, Commander.OPEN, 0, s( R.string.remount ) );
         }
     }    
     @Override
@@ -88,15 +88,15 @@ public class MountAdapter extends CommanderAdapterBase {
                 return false;
             
             if( worker != null ) {
-                Log.e( TAG, "Worker is busy" );
+                Log.w( TAG, "Busy " + attempts );
                 if( attempts++ < 2 ) {
-                    commander.showInfo( "Busy..." );
+                    commander.showInfo( s( R.string.busy ) );
                     return false;
                 }
                 if( worker.reqStop() ) { // that's not good.
                     Thread.sleep( 500 );      // will it end itself?
                     if( worker.isAlive() ) {
-                        showMessage( "A worker thread is still alive and don't want to stop" );
+                        Log.e( TAG, "Busy!" );
                         return false;
                     }
                 }
@@ -111,23 +111,22 @@ public class MountAdapter extends CommanderAdapterBase {
             commander.showError( "Exception: " + e );
             e.printStackTrace();
         }
-        commander.notifyMe( new Commander.Notify( "Fail", Commander.OPERATION_FAILED ) );
+        commander.notifyMe( new Commander.Notify( s( R.string.fail ), Commander.OPERATION_FAILED ) );
         return false;
     }
 	@Override
 	public void reqItemsSize( SparseBooleanArray cis ) {
-		commander.notifyMe( new Commander.Notify( "Not supported.", Commander.OPERATION_FAILED ) );
+		commander.notifyMe( new Commander.Notify( s( R.string.not_supported ), Commander.OPERATION_FAILED ) );
 	}
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
-        commander.notifyMe( new Commander.Notify( "Not supported.", Commander.OPERATION_FAILED ) );
+        commander.notifyMe( new Commander.Notify( s( R.string.not_supported ), Commander.OPERATION_FAILED ) );
         return false;
     }
 	    
 	@Override
 	public boolean createFile( String fileURI ) {
-		commander.notifyMe( new Commander.Notify( "Operation is not supported.", 
-		                        Commander.OPERATION_FAILED ) );
+		commander.notifyMe( new Commander.Notify( s( R.string.not_supported ), Commander.OPERATION_FAILED ) );
 		return false;
 	}
 
@@ -158,7 +157,7 @@ public class MountAdapter extends CommanderAdapterBase {
 	@Override
     public void createFolder( String dev_mp_pair ) {
         if( isWorkerStillAlive() )
-            commander.notifyMe( new Commander.Notify( "Busy", Commander.OPERATION_FAILED ) );
+            commander.notifyMe( new Commander.Notify( s( R.string.busy ), Commander.OPERATION_FAILED ) );
         else {
             worker = new CreateEngine( commander.getContext(), handler, dev_mp_pair );
             worker.start();
@@ -167,7 +166,7 @@ public class MountAdapter extends CommanderAdapterBase {
 
     @Override
     public boolean deleteItems( SparseBooleanArray cis ) {
-        commander.notifyMe( new Commander.Notify( "Not supported.", Commander.OPERATION_FAILED ) );
+        commander.notifyMe( new Commander.Notify( s( R.string.not_supported ), Commander.OPERATION_FAILED ) );
         return false;
     }
     
@@ -189,7 +188,7 @@ public class MountAdapter extends CommanderAdapterBase {
                 return;
             MountItem item = items[position-1];
             if( isWorkerStillAlive() )
-                commander.notifyMe( new Commander.Notify( "Busy", Commander.OPERATION_FAILED ) );
+                commander.notifyMe( new Commander.Notify( s( R.string.busy ), Commander.OPERATION_FAILED ) );
             else {
                 worker = new RemountEngine( commander.getContext(), handler, item );
                 worker.start();
@@ -201,13 +200,13 @@ public class MountAdapter extends CommanderAdapterBase {
 
     @Override
     public boolean receiveItems( String[] full_names, int move_mode ) {
-        commander.notifyMe( new Commander.Notify( "Not supported.", Commander.OPERATION_FAILED ) );
+        commander.notifyMe( new Commander.Notify( s( R.string.not_supported ), Commander.OPERATION_FAILED ) );
         return false;
     }
     
     @Override
     public boolean renameItem( int position, String newName ) {
-        commander.notifyMe( new Commander.Notify( "Not supported.", Commander.OPERATION_FAILED ) );
+        commander.notifyMe( new Commander.Notify( s( R.string.not_supported ), Commander.OPERATION_FAILED ) );
         return false;
     }
 

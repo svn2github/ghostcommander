@@ -515,8 +515,12 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected void reSort() {
         // to override all the derives
     }
-
+/*
     public final void showMessage( String s ) {
         Toast.makeText( commander.getContext(), s, Toast.LENGTH_LONG ).show();
+    }
+*/
+    protected final String s( int r_id ) {
+        return commander.getContext().getString( r_id ); 
     }
 }

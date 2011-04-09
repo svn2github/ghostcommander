@@ -31,6 +31,7 @@
     <string name="add_fav_b">* Favorite</string>
     
     <string name="remount_b">Remount /system</string>
+    <string name="remount">Remount</string>
     
     <string name="enter_ftp">&#xA0; Open FTP site</string>
     <string name="enter_smb">&#xA0; Open Samba (Windows) share</string>
@@ -40,6 +41,12 @@
     <string name="sort_by_ext" >&#xA0; By Extension</string>
     <string name="sort_by_size">&#xA0; By Size</string>
     <string name="sort_by_date">&#xA0; By Date</string>
+
+    <string name="sort_by_name_b">By Name</string>
+    <string name="sort_by_ext_b" >By Extension</string>
+    <string name="sort_by_size_b">By Size</string>
+    <string name="sort_by_date_b">By Date</string>
+
     <string name="select_all">+ Select files</string>
     <string name="unselect_all">- UnSelect files</string>
     <string name="select_b">+ Select</string>
@@ -77,7 +84,7 @@
     <string name="summary_advanced_settings">Extra settings for advanced users</string>
 
     <string name="wait"> wait... </string>
-    <string name="fail"> (failed) </string>
+    <string name="fail"> FAILED </string>
     <string name="failed">Error:\n</string>
 
     <string name="dialog_yes">Yes</string>
@@ -108,6 +115,7 @@
     <string name="to_copy"></string>
     <string name="to_move"></string>
     <string name="to_rename"></string>
+    <string name="copy_err">Nothing to copy</string>
     <string name="rename_err">Nothing to rename.</string>
     <string name="no_items">There are no valid files to complete the operation.</string>
     <string name="inv_dest">Invalid destination</string>
@@ -132,8 +140,14 @@
     <string name="copied_f">Copied\n\"%s\"...</string>
     <string name="deleting">Deleting\n\"%s\"...</string>
     <string name="deleting_a">Deleting...</string>
+    <string name="fail_del">File "%1$s\" was not completed, deleting.</string>
     <string name="unpacking">Unpacking \n\"%s\"...</string>
     <string name="unpacked_p">Unpacked \n\"%s\"   </string>
+    <string name="packing">Packing \n\"%s\"...</string>
+    
+    <string name="retrieving">Retrieving \n\"%s\"...</string>
+    <string name="uploading">Uploading \n\"%s\"...</string>
+    <string name="uploaded_p">Uploaded \n\"%s\"   </string>
     
     <string name="canceled">Canceled</string>
     <string name="unkn_err">Unknown error</string>
@@ -145,7 +159,7 @@
     <string name="rtexcept">Error on file \"%1$s\"\n %2$s</string>
     <string name="cant_move">Unable to move file \"%s\"</string>
     <string name="cant_create">Unable to create file \"%1$s\"\n%2$s</string>
-    <string name="cant_del">Unable to delete file \"%1$s\"</string>
+    <string name="cant_del">Unable to delete \"%1$s\"</string>
     <string name="dest_wrtble">Please make sure the folder \"%s\" is writable</string>    
     
     <string name="copied">copied</string>
@@ -214,7 +228,10 @@ copied >5 will produce:
     <string name="password">Password:</string>
     <string name="connect">Connect</string>
     <string name="cancel">Cancel</string>
-    <string name="ftp_connected">Connected to \"%1$s\",\n Logged in as \"%2$s\"</string>    
+    <string name="ftp_connected">Connected to \"%1$s\",\n Logged in as \"%2$s\"</string>
+    <string name="ftp_upload_failed">Upload \"%1$s\" failed.\n FTP log:\n\n%2$%</string>
+    <string name="ftp_mkdir_failed">Failed to create folder  \"%1$s\".\n FTP log:\n\n\"%2$s\</string>            
+    <string name="ftp_nologin">Not logged in!</string>            
 
     <string name="layout_settings">Configure the layout:</string>
     <string name="panels_mode">Side-by-side panels</string>

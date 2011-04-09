@@ -426,7 +426,7 @@ public class FSAdapter extends CommanderAdapterBase {
     			if( f.f.isDirectory() ) {
     				dirs++;
     				if( depth++ > 20 )
-    					throw new Exception( commander.getContext().getString( R.string.too_deep_hierarchy ) );
+    					throw new Exception( s( R.string.too_deep_hierarchy ) );
     				File[] subfiles = f.f.listFiles();
     				if( subfiles != null ) {
         				int l = subfiles.length;
@@ -496,7 +496,7 @@ public class FSAdapter extends CommanderAdapterBase {
         	FileItem[] list = bitsToFilesEx( cis );
         	if( list != null ) {
         		if( worker != null && worker.reqStop() ) {
-        		    commander.notifyMe( new Commander.Notify( commander.getContext().getString( R.string.wait ), 
+        		    commander.notifyMe( new Commander.Notify( s( R.string.wait ), 
         		            Commander.OPERATION_FAILED ) );
        		        return false;
         		}
@@ -537,7 +537,7 @@ public class FSAdapter extends CommanderAdapterBase {
             for( int i = 0; i < num; i++ ) {
                 sleep( 1 );
                 if( stop || isInterrupted() )
-                    throw new Exception( commander.getContext().getString( R.string.canceled ) );
+                    throw new Exception( s( R.string.canceled ) );
                 File f = l[i];
                 sendProgress( commander.getContext().getString( R.string.deleting, f.getName() ), (int)(cnt * conv) );
                 if( f.isDirectory() )
@@ -597,7 +597,7 @@ public class FSAdapter extends CommanderAdapterBase {
             File[] list = Utils.getListOfFiles( uris );
             if( list != null ) {
                 if( worker != null && worker.reqStop() ) {
-                    commander.notifyMe( new Commander.Notify( commander.getContext().getString( R.string.wait ), 
+                    commander.notifyMe( new Commander.Notify( s( R.string.wait ), 
                             Commander.OPERATION_FAILED ) );
                     return false;
                 }

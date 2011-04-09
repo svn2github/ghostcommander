@@ -33,8 +33,12 @@
 
     <string name="sort_by_name">&#xA0; Név</string>
     <string name="sort_by_ext" >&#xA0; Kiterjesztés</string>
-    <string name="sort_by_size">&#xA0; méret</string>
+    <string name="sort_by_size">&#xA0; Méret</string>
     <string name="sort_by_date">&#xA0; Dátum</string>
+    <string name="sort_by_name_b">Név</string>
+    <string name="sort_by_ext_b" >Kiterjesztés</string>
+    <string name="sort_by_size_b">Méret</string>
+    <string name="sort_by_date_b">Dátum</string>
     <string name="select_all">+ Kijelöl</string>
     <string name="unselect_all">- Kijelölés törlése</string>
         

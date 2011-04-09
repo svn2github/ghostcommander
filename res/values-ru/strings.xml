@@ -53,9 +53,6 @@
     <string name="show_enter"  > &#xAB;Адрес&#xBB;</string>
     <string name="show_addfav" > &#xAB;* Запомнить&#xBB;</string>
     
-    
-
-
 <string name="enter">  Ввести адрес или URI</string>
 <string name="add_fav">* Закладка на тек.адрес</string>
 <string name="fav_fld">Закладка на папку \"%s\"</string>
@@ -66,6 +63,10 @@
 <string name="sort_by_ext">  По расширению</string>
 <string name="sort_by_size">  По размеру</string>
 <string name="sort_by_date">  По дате</string>
+<string name="sort_by_name_b">По имени</string>
+<string name="sort_by_ext_b">По расш.</string>
+<string name="sort_by_size_b">По размеру</string>
+<string name="sort_by_date_b">По дате</string>
 <string name="select_all">+ Пометить файлы</string>
 <string name="unselect_all">- Снять пометку</string>
 <string name="prefs">9 Настройки</string>

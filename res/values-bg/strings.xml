@@ -32,6 +32,10 @@
 <string name="sort_by_ext">  По разширение</string>
 <string name="sort_by_size">  По размер</string>
 <string name="sort_by_date">  По дата</string>
+<string name="sort_by_name_b">По име</string>
+<string name="sort_by_ext_b">По разш.</string>
+<string name="sort_by_size_b">По размер</string>
+<string name="sort_by_date_b">По дата</string>
 <string name="select_all">+ Избери</string>
 <string name="unselect_all">- Демаркирай</string>
 <string name="prefs">9 Настройки</string>
