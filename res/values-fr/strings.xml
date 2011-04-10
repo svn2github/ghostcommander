@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-<string name="app_name">Ghost Commander</string>
+<resources><string name="app_name">Ghost Commander</string>
 <string name="file">Fichier</string>
 <string name="location">Emplacement</string>
 <string name="list">Affichage</string>
@@ -24,10 +23,11 @@
 <string name="sz">\" Taille</string>
 <string name="refresh">  Rafraîchir</string>
 <string name="enter">  Changer emplacement</string>
-<string name="enter_b">Emplacement</string><!-- !!! -->
+<string name="enter_b">Emplacement</string>
 <string name="add_fav">* Mettre en favoris le répertoire courant</string>
-<string name="add_fav_b">* Favoris</string><!-- !!! -->
-<string name="remount_b">Remonter /system</string><!-- !!! -->
+<string name="add_fav_b">* Favoris</string>
+<string name="remount_b">Remonter /system</string>
+<string name="remount">Remonter</string><!-- !!! -->
 <string name="enter_ftp">  Connecter au site FTP</string>
 <string name="enter_smb">  Ouvrir partage Samba (Windows)</string>
 <string name="search_file">/ Rechercher fichier</string>
@@ -41,9 +41,9 @@
 <string name="sort_by_date_b">Par Date</string>
 <string name="select_all">+ Sélectionner les fichiers</string>
 <string name="unselect_all">- Désélectionner les fichiers</string>
-<string name="select_b">+ Sélectionner</string><!-- !!! -->
-<string name="unselect_b">- Désélectionner</string><!-- !!! -->
-<string name="toggle_panels_mode"># Changer mode d\'affichage des panneaux</string><!-- !!! -->
+<string name="select_b">+ Sélectionner</string>
+<string name="unselect_b">- Désélectionner</string>
+<string name="toggle_panels_mode"># Changer mode d\'affichage des panneaux</string>
 <string name="prefs">9 Configuration</string>
 <string name="about">  A propos</string>
 <string name="keys">1 Raccourcis clavier</string>
@@ -54,15 +54,15 @@
 <string name="show_size">Calculer Taille</string>
 <string name="send_to">Envoyer à...</string>
 <string name="open_with">Ouvrir avec...</string>
-<string name="copy_name">Copier le nom dans le presse-papier</string><!-- !!! -->
-<string name="fav_fld">Mettre en favori le répertoire \"%s\"</string><!-- !!! -->
+<string name="copy_name">Copier le nom dans le presse-papier</string>
+<string name="fav_fld">Mettre en favori le répertoire \"%s\"</string>
 <string name="create_zip">ZIP...</string>
 <string name="create_zip_title">ZIP</string>
 <string name="input_settings">Saisie</string>
 <string name="arrow_mode">Commandes fléchées</string>
 <string name="summary_arrow_mode">Flèche Gauche/Droite =  basculer/sélectionner</string>
-<string name="show_confirm">Afficher la confirmation</string><!-- !!! -->
-<string name="summary_show_confirm">Afficher le dialogue de confirmation à chaque fin d\'opération</string><!-- !!! -->
+<string name="show_confirm">Afficher la confirmation</string>
+<string name="summary_show_confirm">Afficher le dialogue de confirmation à chaque fin d\'opération</string>
 <string name="prefs_label">Configuration</string>
 <string name="editor_label">Editeur de texte</string>
 <string name="advanced">Avancés</string>
@@ -80,26 +80,24 @@
 <string name="dialog_abort">Abandonner</string>
 <string name="dialog_retry">Réessayer</string>
 <string name="dialog_ignore">Ignorer</string>
+<string name="dialog_replace_all">Tout remplacer</string><!-- !!! -->
+<string name="dialog_skip_all">Tout ignorer</string><!-- !!! -->
 <string name="dialog_select">Sélectionner</string>
 <string name="dialog_unselect">Désélectionner</string>
 <string name="operation">Opération</string>
 <string name="edit_title">Editer</string>
 <string name="newf_prompt">Nouveau nom de fichier</string>
-<string name="rename_title">Renommer</string>
-<string name="rename_prompt">Renommer en:</string>
-<string name="rename_err">Rien à renommer.</string>
 <string name="mkdir_title">Créer répertoire</string>
 <string name="mkdir_prompt">Créer répertoire:</string>
 <string name="search_title">Recherche</string>
 <string name="search_prompt">Nom de fichier:</string>
+<string name="rename_title">Renommer</string>
 <string name="copy_title">Copier</string>
 <string name="move_title">Déplacer</string>
-<!-- The following two are used as the first word in the phrase like "copy 5 items to:"
-if they are empty, the copy_title/move_title will be used  -->
-<string name="to_copy"></string><!-- !!! -->
-<string name="to_move"></string><!-- !!! -->
+<string name="copy_err">Rien à copier</string><!-- !!! -->
+<string name="rename_err">Rien à renommer.</string>
 <string name="no_items">Pas de fichiers valides pour terminer l\'opération.</string>
-<string name="inv_dest">Destination invalide</string><!-- !!! -->
+<string name="inv_dest">Destination invalide</string>
 <string name="find_on_fs_only">La fonction recherche ne s\'applique qu\'avec les fichiers locaux.</string>
 <string name="op_not_alwd">Opération \'%1$s\' non permise. Sélectionner d\'abord un élément.</string>
 <string name="copy_to_local_only">Copie possible vers fichiers locaux uniquement.</string>
@@ -117,9 +115,14 @@ if they are empty, the copy_title/move_title will be used  -->
 <string name="coping">Copie\n\"%s\"...</string>
 <string name="copied_f">Copié\n\"%s\"...</string>
 <string name="deleting">Suppression\n\"%s\"...</string>
-<string name="deleting_a">Suppression...</string><!-- !!! -->
-<string name="unpacking">Décompression \n\"%s\"...</string><!-- !!! -->
-<string name="unpacked_p">Décompressé \n\"%s\"   </string><!-- !!! -->
+<string name="deleting_a">Suppression...</string>
+<string name="fail_del">Fichier "%1$s\" incomplet, supprimé.</string><!-- !!! -->
+<string name="unpacking">Décompression \n\"%s\"...</string>
+<string name="unpacked_p">Décompressé \n\"%s\"   </string>
+<string name="packing">Compression \n\"%s\"...</string><!-- !!! -->
+<string name="retrieving">Lecture \n\"%s\"...</string><!-- !!! -->
+<string name="uploading">Téléchargement \n\"%s\"...</string><!-- !!! -->
+<string name="uploaded_p">Téléchargé \n\"%s\"   </string><!-- !!! -->
 <string name="canceled">Annulé</string>
 <string name="unkn_err">Erreur inconnue</string>
 <string name="cant_md">Impossible de créer le répertoire \"%s\"</string>
@@ -131,7 +134,7 @@ if they are empty, the copy_title/move_title will be used  -->
 <string name="cant_move">Impossible de déplacer le fichier \"%s\"</string>
 <string name="cant_create">Impossible de créer le fichier file \"%1$s\"\n%2$s</string>
 <string name="cant_del">Impossible de supprimer le fichier \"%1$s\"</string>
-<string name="dest_wrtble">Vérifier que le répertoire \"%s\" n\'est pas protégé en écriture</string><!-- !!! -->
+<string name="dest_wrtble">Vérifier que le répertoire \"%s\" n\'est pas protégé en écriture</string>
 <string name="copied">copié</string>
 <string name="moved">déplacé</string>
 <string name="deleted">supprimé</string>
@@ -139,26 +142,26 @@ if they are empty, the copy_title/move_title will be used  -->
 <string name="uploaded">téléchargés</string>
 <string name="packed">compresssé</string>
 <string name="unpacked">décompressé</string>
-<string name="remounted">Remonté \"%1$s\" en \"%2$s\".</string><!-- !!! -->
-<string name="tried_to_exec">Essai d\'exécution : \"%s\"</string><!-- !!! -->
+<string name="remounted">Remonté \"%1$s\" en \"%2$s\".</string>
+<string name="tried_to_exec">Essai d\'exécution : \"%s\"</string>
 <string name="verb_plural_sfx">s</string>
 <string name="item">élément</string>
 <string name="items">éléments</string>
-<string name="items24"></string><!-- !!! -->
-<string name="were"></string>
-<string name="was"></string>
+<string name="items24"/>
+<string name="were"/>
+<string name="was"/>
 <string name="nothing">Aucun élément</string>
-<string name="sz_folder">Répertoire \"%1$s\":\n %2$d fichiers,</string><!-- !!! -->
-<string name="sz_file">Fichier \"%s\":</string><!-- !!! -->
-<string name="sz_files">Fichiers trouvés : %d </string><!-- !!! -->
-<string name="sz_Nbytes">\nTaille : %1$sb</string><!-- !!! -->
-<string name="sz_bytes">\n ( %d octets )</string><!-- !!! -->
-<string name="sz_dirnum">,\ndans %1$d répertoire%2$s</string><!-- !!! -->
-<string name="sz_dirsfx_s">.</string><!-- !!! -->
-<string name="sz_dirsfx_p">s.</string><!-- !!! -->
-<string name="sz_lastmod">\nDernière modification :\n </string><!-- !!! -->
-<string name="sz_total">Total : %1$soctets,\nLibre : %2$soctets.</string><!-- !!! -->
-<string name="busy">Occupé!</string><!-- !!! -->
+<string name="sz_folder">Répertoire \"%1$s\":\n %2$d fichiers,</string>
+<string name="sz_file">Fichier \"%s\":</string>
+<string name="sz_files">Fichiers trouvés : %d </string>
+<string name="sz_Nbytes">\nTaille : %1$sb</string>
+<string name="sz_bytes">\n ( %d octets )</string>
+<string name="sz_dirnum">,\ndans %1$d répertoire%2$s</string>
+<string name="sz_dirsfx_s">.</string>
+<string name="sz_dirsfx_p">s.</string>
+<string name="sz_lastmod">\nDernière modification :\n </string>
+<string name="sz_total">Total : %1$soctets,\nLibre : %2$soctets.</string>
+<string name="busy">Occupé!</string>
 <string name="cd_title">Aller à</string>
 <string name="cd_prompt">Changer le répertoire à:</string>
 <string name="not_supported">Opération non supportée.</string>
@@ -177,6 +180,9 @@ if they are empty, the copy_title/move_title will be used  -->
 <string name="connect">Connecter</string>
 <string name="cancel">Abandonner</string>
 <string name="ftp_connected">Connecté à \"%1$s\",\n Connecté comme \"%2$s\"</string>
+<string name="ftp_upload_failed">Echec téléchargement \"%1$s\".\n Fichier log FTP \n\n%2$%</string><!-- !!! -->
+<string name="ftp_mkdir_failed">Echec création répertoire  \"%1$s\".\n Fichier log FTP :\n\n\"%2$s\</string><!-- !!! -->
+<string name="ftp_nologin">Pas loggué!</string><!-- !!! -->
 <string name="layout_settings">Paramétrage de l\'affichage:</string>
 <string name="panels_mode">Panneaux côte-à-côte</string>
 <string name="summary_panels_mode">Afficher les panneaux côte-à-côte dans un écran divisé.</string>
@@ -206,9 +212,9 @@ if they are empty, the copy_title/move_title will be used  -->
 <string name="show_by_ext">Afficher « Tri par Extension»</string>
 <string name="show_by_size">Afficher « Tri par Taille»</string>
 <string name="show_by_date">Afficher « Tri par Date»</string>
-<string name="show_sel_uns">Afficher «+/- Sélection/Désélection »</string><!-- !!! -->
-<string name="show_enter">Afficher «Emplacement»</string><!-- !!! -->
-<string name="show_addfav">Afficher «* Favoris »</string><!-- !!! -->
+<string name="show_sel_uns">Afficher «+/- Sélection/Désélection »</string>
+<string name="show_enter">Afficher «Emplacement»</string>
+<string name="show_addfav">Afficher «* Favoris »</string>
 <string name="finger_friendly">Appui plus facile</string>
 <string name="summary_finger_friendly">Agrandir les éléments de l\'interface utilisateur</string>
 <string name="prevent_root">Avertissement en quittant la carte SD</string>
@@ -272,12 +278,6 @@ if they are empty, the copy_title/move_title will be used  -->
     \"Ghost Commander - Samba plugin\"\n
     (com.ghostsq.commander.samba) est installé.</string>
 <string name="smb_app_uri">market://search?q=pname:com.ghostsq.commander.samba</string>
-<string name="dbox_missed">
-    Impossible de charger l\'adaptateur Dropbox.\n
-    Veuillez vérifier que le paquetage\n
-    \"Ghost Commander - Dropbox plugin\"\n
-    (com.ghostsq.commander.dropbox) est installé.</string>
-<string name="dbox_app_uri">market://search?q=pname:com.ghostsq.commander.dropbox</string>
 <string name="donate">  Don</string>
 <string name="online_help">  Aide en ligne</string>
 <string name="donation">Aimez-vous cette application ? Réellement ? Et si vous faites un petit don
@@ -285,8 +285,6 @@ if they are empty, the copy_title/move_title will be used  -->
 Appuyer \"Ok\" pour donner avec PayPal.\n
 \"Abandon\" pour utiliser «Ghost Commander» gestionnaire de fichiers gratuit .\n
     </string>
-<string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
-<string name="help_uri">http://sites.google.com/site/ghostcommander1/info</string>
 <string name="about_text">
         Ghost Commander v%1$s\n
         Gestionnaire de fichiers.\n\n
@@ -329,10 +327,10 @@ Ou, si des identifiants sont nécessaires:\n
     ftp://nom_utilisateur:mot_de_passe@serveur.com/repertoire\n\n
 Pour accéder comme root (su), 
 rentrer l\'emplacement comme:\n
-    \"root:///data\"\n
+    \"root:/data\"\n
 Assurez-vous que \"busybox\" est installé, et/ou que son emplacement est spécifié dans les paramètres.\n
 
-Pour lister les disques montés, taper \"mount://\"
+Pour lister les disques montés, taper \"mount:\"
 Cliquer sur un élément pour le rendre \"rw\" (lecture/écriture) ou \"ro\" (lecture seule).
     "
     </string>
