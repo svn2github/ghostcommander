@@ -19,7 +19,8 @@ import android.widget.TextView;
 public class Dialogs implements DialogInterface.OnClickListener {
     private final static String TAG = "Dialogs";
     public final static int ARI_DIALOG = 148, ALERT_DIALOG = 193, CONFIRM_DIALOG = 396, INPUT_DIALOG = 860, PROGRESS_DIALOG = 493,
-            INFO_DIALOG = 864, LOGIN_DIALOG = 995, SELECT_DIALOG = 239, UNSELECT_DIALOG = 762;
+            INFO_DIALOG = 864, LOGIN_DIALOG = 995, SELECT_DIALOG = 239, UNSELECT_DIALOG = 762,
+            FILE_EXIST_DIALOG = 328;
     
     public final static int numDialogTypes = 5;
     protected String toShowInAlertDialog = null, cookie = null;
@@ -33,15 +34,16 @@ public class Dialogs implements DialogInterface.OnClickListener {
         dialogId = id;
         dialogObj = null;
     }
-
-    public int getId() {
+    public final int getId() {
         return dialogId;
     }
-
-    public Dialog getDialog() {
+    public final Dialog getDialog() {
         return dialogObj;
     }
-    protected Dialog createDialog( int id ) {
+    public final void showDialog() {
+        owner.showDialog( dialogId );
+    }
+    protected final Dialog createDialog( int id ) {
         Utils.changeLanguage( owner, owner.getResources() );
         switch( id ) {
         case SELECT_DIALOG:
@@ -70,13 +72,33 @@ public class Dialogs implements DialogInterface.OnClickListener {
         case LOGIN_DIALOG: {
             LayoutInflater factory = LayoutInflater.from( owner );
             final View textEntryView = factory.inflate( R.layout.login, null );
-            return dialogObj = new AlertDialog.Builder( owner ).setView( textEntryView ).setTitle( "Login" )
-                    .setPositiveButton( R.string.dialog_ok, this ).setNegativeButton( R.string.dialog_cancel, this ).create();
+            return dialogObj = new AlertDialog.Builder( owner )
+                    .setView( textEntryView )
+                    .setTitle( "Login" )
+                    .setPositiveButton( R.string.dialog_ok, this )
+                    .setNegativeButton( R.string.dialog_cancel, this )
+                    .create();
         }
+        /*
         case ARI_DIALOG: {
             return dialogObj = new AlertDialog.Builder( owner ).setIcon( android.R.drawable.ic_dialog_alert )
-                    .setTitle( R.string.error ).setMessage( R.string.error ).setPositiveButton( R.string.dialog_abort, this )
-                    .setNeutralButton( R.string.dialog_retry, this ).setNegativeButton( R.string.dialog_ignore, this ).create();
+                    .setTitle( R.string.error )
+                    .setMessage( R.string.error )
+                    .setPositiveButton( R.string.dialog_abort, this )
+                    .setNeutralButton( R.string.dialog_retry, this )
+                    .setNegativeButton( R.string.dialog_ignore, this )
+                    .create();
+        }
+        */
+        case FILE_EXIST_DIALOG: {
+            return dialogObj = new AlertDialog.Builder( owner )
+                    .setIcon( android.R.drawable.ic_dialog_alert )
+                    .setTitle( R.string.error )
+                    .setMessage( R.string.error )
+                    .setPositiveButton( R.string.dialog_replace_all, this )
+                    .setNeutralButton( R.string.dialog_skip_all, this )
+                    .setNegativeButton( R.string.dialog_cancel, this )
+                    .create();
         }
         case CONFIRM_DIALOG:
         case R.id.F8:
@@ -296,6 +318,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                     Log.e( TAG, "Package name not found", e);
                 }
                 break;
+            case FILE_EXIST_DIALOG:
             case INFO_DIALOG:
             case ALERT_DIALOG: {
                 if( toShowInAlertDialog != null ) {
@@ -404,14 +427,15 @@ public class Dialogs implements DialogInterface.OnClickListener {
                             owner.panels.login( cookie, name_edit.getText().toString(), pass_edit.getText().toString() );
                     }
                     break;
-                case R.id.donate: {
+                case R.id.donate:
                         owner.startViewURIActivity( R.string.donate_uri );
                         break;
-                    }
-                case R.id.smb: {
+                case R.id.smb:
                         owner.startViewURIActivity( R.string.smb_app_uri );
                         break;
-                    }
+                case FILE_EXIST_DIALOG:
+                    owner.setResolution( Commander.REPLACE_ALL );
+                    break;
 /*
                 case FileCommander.DBOX_APP: {
                         owner.startViewURIActivity( R.string.dbox_app_uri );

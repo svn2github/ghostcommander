@@ -243,7 +243,7 @@ public class FSAdapter extends CommanderAdapterBase {
                         }
                         need_update = true;
                         if( f.thumbnail != null && ( processed++ > 3 || ( proc_visible && proc_invisible ) ) ) {
-                            //Log.v( TAG, "Time to refresh!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
+                            //Log.v( TAG, "Time to refresh!" );
                             Message msg = thread_handler.obtainMessage( NOTIFY_THUMBNAIL_CHANGED );
                             msg.sendToTarget();
                             yield();
@@ -261,20 +261,6 @@ public class FSAdapter extends CommanderAdapterBase {
             } catch( Exception e ) {
                 Log.e( TAG, "ThumbnailsThread.run()", e );
             }
-        }
-        
-        private boolean createThubnailO( String fn, FileItem f ) {
-            options.inSampleSize = 64;
-            Bitmap bitmap = (f.f.length() > 100000) ?
-                         BitmapFactory.decodeFile( fn, options ) : 
-                         Bitmap.createScaledBitmap( BitmapFactory.decodeFile( fn ),
-                              thumb_sz, thumb_sz, false );
-                                
-             BitmapDrawable drawable = new BitmapDrawable( res, bitmap );
-             drawable.setGravity( Gravity.CENTER );
-             drawable.setBounds( 0, 0, 60, 60 );
-             f.thumbnail = drawable;
-             return true;
         }
         
         private boolean createThubnail( String fn, FileItem f ) {
@@ -651,7 +637,7 @@ public class FSAdapter extends CommanderAdapterBase {
 				return;
 			}
         }
-        private final int copyFiles( File[] list, String dest ) {
+        private final int copyFiles( File[] list, String dest ) throws InterruptedException {
             Context c = commander.getContext();
             for( int i = 0; i < list.length; i++ ) {
                 FileChannel  in = null;
@@ -688,8 +674,10 @@ public class FSAdapter extends CommanderAdapterBase {
                     }
                     else {
                         if( outFile.exists() ) {
-                            error( c.getString( R.string.file_exist, outFile.getAbsolutePath() ) ); 
-                            break; // TODO: ask user about overwrite
+                            int res = askOnFileExist( c.getString( R.string.file_exist, outFile.getAbsolutePath() ), commander );
+                            if( res == Commander.ABORT ) break;
+                            if( res == Commander.SKIP )  continue;
+                            if( res == Commander.REPLACE ) outFile.delete();
                         }
                         in  = new FileInputStream( file ).getChannel();
                         out = new FileOutputStream( outFile ).getChannel();

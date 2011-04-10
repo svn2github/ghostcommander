@@ -524,3 +524,4 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         return commander.getContext().getString( r_id ); 
     }
 }
+

@@ -34,12 +34,13 @@ import android.widget.Toast;
 public class FileCommander extends Activity implements Commander, View.OnClickListener {
     private final static String TAG = "GhostCommanderActivity";
     public  final static int REQUEST_CODE_PREFERENCES = 1, REQUEST_CODE_SRV_FORM = 2;
-    public final static int FIND_ACT = 1017, DBOX_APP = 3592;
+    public  final static int FIND_ACT = 1017, DBOX_APP = 3592;
     
     private ArrayList<Dialogs> dialogs;
     public  Panels  panels;
     private boolean on = false, exit = false, dont_restore = false, sxs_auto = true, show_confirm = true;
-    private String lang = ""; // just need to issue a warning on change
+    private String  lang = ""; // just need to issue a warning on change
+    private int     file_exist_resolution = Commander.UNKNOWN;
 
     public final void showMemory( String s ) {
         final ActivityManager sys = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
@@ -64,10 +65,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     }
 
     protected final Dialogs obtainDialogsInstance( int id ) {
-        Dialogs dh = getDialogsInstance(id);
+        Dialogs dh = getDialogsInstance( id );
         if( dh == null ) {
-            dh = new Dialogs(this, id);
-            dialogs.add(dh);
+            dh = new Dialogs( this, id );
+            dialogs.add( dh );
         }
         return dh;
     }
@@ -236,17 +237,17 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         if( !on ) {
             Log.e( TAG, "onCreateDialog() is called when the activity is down" );
         }
-        Dialogs dh = obtainDialogsInstance(id);
-        Dialog d = dh.createDialog(id);
-        return d != null ? d : super.onCreateDialog(id);
+        Dialogs dh = obtainDialogsInstance( id );
+        Dialog d = dh.createDialog( id );
+        return d != null ? d : super.onCreateDialog( id );
     }
 
     @Override
     protected void onPrepareDialog( int id, Dialog dialog ) {
-        Dialogs dh = getDialogsInstance(id);
+        Dialogs dh = getDialogsInstance( id );
         if( dh != null )
-            dh.prepareDialog(id, dialog);
-        super.onPrepareDialog(id, dialog);
+            dh.prepareDialog( id, dialog );
+        super.onPrepareDialog( id, dialog );
     }
 
     @Override
@@ -560,6 +561,12 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         setProgressBarIndeterminateVisibility( false );
         panels.operationFinished();
         switch( progress.status ) {
+        case OPERATION_SUSPENDED_FILE_EXIST: {
+                dh = obtainDialogsInstance( Dialogs.FILE_EXIST_DIALOG );
+                dh.setMessageToBeShown( progress.string, null );
+                dh.showDialog();
+            }
+            return;
         case OPERATION_FAILED:
             if( progress.cookie != null && progress.cookie.length() > 0 ) {
                 int which_panel = progress.cookie.charAt( 0 ) == '1' ? 1 : 0;
@@ -594,19 +601,26 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             showInfo( progress.string );
     }
 
+    public void setResolution( int r ) {
+        synchronized( this ) {
+            file_exist_resolution = r;
+            notify();
+        }
+        showDialog( Dialogs.PROGRESS_DIALOG );
+    }    
     @Override
-    public int askUser( String errMsg ) {
-        // showDialog( ARI_DIALOG ); // TODO
-        showMessage(errMsg);
-        return Commander.ABORT;
-    }
-
+    public int getResolution() {
+        int r = file_exist_resolution;
+        file_exist_resolution = Commander.UNKNOWN; 
+        return r;
+    }    
+    
     @Override
     public void showError( String errMsg ) {
         if( !on ) return;
-        Dialogs dh = obtainDialogsInstance(Dialogs.ALERT_DIALOG);
-        dh.setMessageToBeShown(errMsg, null);
-        showDialog( Dialogs.ALERT_DIALOG );
+        Dialogs dh = obtainDialogsInstance( Dialogs.ALERT_DIALOG );
+        dh.setMessageToBeShown( errMsg, null );
+        dh.showDialog();
     }
 
     @Override
@@ -615,9 +629,9 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         if( msg.length() < 64 )
             showMessage( msg );
         else {
-            Dialogs dh = obtainDialogsInstance(Dialogs.INFO_DIALOG);
-            dh.setMessageToBeShown(msg, null);
-            showDialog( Dialogs.INFO_DIALOG );
+            Dialogs dh = obtainDialogsInstance( Dialogs.INFO_DIALOG );
+            dh.setMessageToBeShown( msg, null );
+            dh.showDialog();
         }
     }
 
@@ -684,5 +698,5 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     }
     private final void setConfirmMode( SharedPreferences sharedPref ) {
         show_confirm = sharedPref.getBoolean("show_confirm", true );
-    }    
+    }
 }
