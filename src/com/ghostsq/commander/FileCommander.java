@@ -368,13 +368,18 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             panels.openForEdit(null);
             break;
         case R.id.F2:
-        case R.id.new_file:
         case R.id.new_zip:
-        case R.id.SF4:
         case R.id.F5:
         case R.id.F6:
-        case R.id.F7:
         case R.id.F8:
+            if( panels.getNumItemsSelectedOrChecked() > 0 )
+                showDialog( id );
+            else
+                showMessage( getString( R.string.no_items ) );
+            break;
+        case R.id.new_file:
+        case R.id.SF4:
+        case R.id.F7:
         case R.id.about:
         case R.id.donate:
             showDialog( id );
@@ -573,7 +578,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 panels.setPanelTitle( getString( R.string.fail ), which_panel );
             }
             if( progress.string != null && progress.string.length() > 0 )
-                showError( getString( R.string.failed ) + progress.string );
+                showError( progress.string );
+            panels.redrawLists();
             return;
         case OPERATION_FAILED_LOGIN_REQUIRED: 
             if( progress.string != null ) {
@@ -606,7 +612,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             file_exist_resolution = r;
             notify();
         }
-        showDialog( Dialogs.PROGRESS_DIALOG );
+        if( file_exist_resolution != Commander.ABORT )
+            showDialog( Dialogs.PROGRESS_DIALOG );
     }    
     @Override
     public int getResolution() {

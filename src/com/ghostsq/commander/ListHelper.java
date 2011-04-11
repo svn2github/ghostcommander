@@ -56,12 +56,12 @@ public class ListHelper {
                 if( ca == null )
                     Log.e( TAG, "Unknown adapter with type hash " + type_h );
                 else {
-                    ca.setMode( CommanderAdapter.WIDE_MODE, 
-                      p.sxs ? CommanderAdapter.NARROW_MODE : CommanderAdapter.WIDE_MODE );
-                    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( p.c );
-                    applySettings( sharedPref );
                     flv.setAdapter( (ListAdapter)ca );
                     flv.setOnKeyListener( p );
+                    ca.setMode( CommanderAdapter.MODE_WIDTH, 
+                        p.sxs ? CommanderAdapter.NARROW_MODE : CommanderAdapter.WIDE_MODE );
+                    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( p.c );
+                    applySettings( sharedPref );
                     //flv.setSelection( 1 );
                 }
             }
@@ -76,15 +76,14 @@ public class ListHelper {
         }
     }
     
-    
     public final void focus() {
-        /*
+        
         boolean focusable    = flv.isFocusable();
         boolean focusable_tm = flv.isFocusableInTouchMode();
         boolean focused      = flv.isFocused();
         boolean item_focus   = flv.getItemsCanFocus();
-        Log.v( TAG, "" + focusable + ", " + focusable_tm + ", " + focused + ", " + item_focus );
-        */
+        Log.v( TAG, "wants focus. " + focusable + ", " + focusable_tm + ", " + focused + ", " + item_focus );
+        
         flv.requestFocus();
         flv.requestFocusFromTouch();  
     }
@@ -104,6 +103,10 @@ public class ListHelper {
     public final void applySettings( SharedPreferences sharedPref ) {
         try {
             CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
+            if( ca == null ) {
+                Log.e( TAG, "Adapter is null!" );
+                return;
+            }
             if( !p.sxs )
                 ca.setMode( CommanderAdapter.MODE_WIDTH, sharedPref.getBoolean( "two_lines", false ) ? 
                             CommanderAdapter.NARROW_MODE : CommanderAdapter.WIDE_MODE );
@@ -131,8 +134,10 @@ public class ListHelper {
             int thubnails_size = 0;
             if( sharedPref.getBoolean( "show_thumbnails", true ) )
                 thubnails_size = Integer.parseInt( sharedPref.getString( "thumbnails_size", "100" ) );
-            ca.setMode( CommanderAdapter.SET_TBN_SIZE, thubnails_size );
-
+            /*
+            int m = ca.setMode( CommanderAdapter.SET_TBN_SIZE, thubnails_size );
+            Log.v( TAG, "Mode set: " + m );
+            */
         } catch( Exception e ) {
             Log.e( TAG, "applySettings() inner", e );
         }
@@ -150,19 +155,20 @@ public class ListHelper {
         }
     }
     
-    public final void refreshList( boolean this_current ) {
+    public final void refreshList() {
         try {
             CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
             if( ca == null ) return;
-            if( this_current ) {
-                storeChoosedItems();
-                flv.clearChoices();
-            }
+            storeChoosedItems();
+            flv.clearChoices();
             ca.readSource( null, null );
             flv.invalidateViews();
         } catch( Exception e ) {
             Log.e( TAG, "refreshList()", e );
         }
+    }
+    public final void askRedrawList() {
+        flv.invalidateViews();
     }
     
     // --- Selection and Items Checking ---
@@ -252,6 +258,13 @@ public class ListHelper {
         return counter;
     }
 
+    public final int getNumItemsSelectedOrChecked() {
+        int checked = getNumItemsChecked();
+        if( checked > 0 ) return checked;
+        return getSelection( false ) >= 1 ? 1 : 0;  // excluding the parent (0) item
+    }
+
+    
     public final SparseBooleanArray getSelectedOrChecked() {
         int num_checked = getNumItemsChecked();
         SparseBooleanArray cis;

@@ -7,8 +7,15 @@ import android.content.Context;
 import android.net.Uri;
 
 public interface Commander {
-	final static int UNKNOWN = 0, ABORT = -1, RETRY = -2, IGNORE = -3, 
-	    REPLACE = -4, REPLACE_ALL = -5, SKIP = -6, SKIP_ALL = -7;
+	final static int UNKNOWN = 0, 
+	                 ABORT   = 1,
+	                 REPLACE = 2, 
+	                 SKIP    = 4,
+	                 DECIDED = 6,
+                     APPLY_ALL   = 8,
+	                 REPLACE_ALL = 8|2,
+	                 SKIP_ALL    = 8|4;
+	
     /**
      *   notifyMe() constants:
      *   OPERATION_FAILED                      always show message (default if not provided)  

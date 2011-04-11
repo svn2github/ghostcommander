@@ -9,7 +9,8 @@
             android:layout_height="wrap_content"
             android:padding="4dip"/>
         <TextView android:id="@+id/fld_name"
-            android:paddingRight="4dip" />
+            android:paddingRight="4dip" 
+            android:gravity="top"/>
         <TextView android:id="@+id/fld_size"
             android:textSize="9sp"
             android:paddingRight="5dip"

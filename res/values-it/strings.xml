@@ -138,8 +138,8 @@
     <string name="preparing">In preparazione...</string>
 
 
-    <string name="coping">Copia di\n«%s»...</string>
-    <string name="copied_f">Copiato:\n«%s»...</string>
+    <string name="copying">Copia di\n«%s»...</string>
+    <string name="copied_f">Copiato:\n«%s»   </string>
     <string name="deleting">Eliminazione di\n«%s»...</string>
     <string name="deleting_a">Eliminazione in corso...</string>
     <string name="fail_del">Il file «%1$s\» non è stato completato, cancellazione.</string>
@@ -157,7 +157,7 @@
     <string name="file_exist">Il file «%s» esiste già nella cartella di destinazione.</string>
     <string name="sec_err">Problema di sicurezza:\n%s</string>
     <string name="not_accs">File non accessibile.\n%s</string>
-    <string name="acc_err">Errore di accesso al file «%s»\n %2$s</string>
+    <string name="acc_err">Errore di accesso al file «%1$s»\n %2$s</string>
     <string name="rtexcept">Errore nel file «%1$s»\n %2$s</string>
     <string name="cant_move">Impossibile spostare il file «%s»</string>
     <string name="cant_create">Impossibile creare il file «%1$s»\n%2$s</string>

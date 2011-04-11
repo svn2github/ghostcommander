@@ -258,7 +258,8 @@ public final class Utils {
            cant_del(R.string.cant_del),
          retrieving(R.string.retrieving),
            deleting(R.string.deleting),
-      not_supported(R.string.not_supported);
+      not_supported(R.string.not_supported),
+         file_exist(R.string.file_exist);
         
         private int r;
         private RR(int r_) { r = r_; }

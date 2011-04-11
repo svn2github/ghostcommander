@@ -138,7 +138,7 @@
     <string name="preparing">Preparing...</string>
 
 
-    <string name="coping">Coping\n\"%s\"...</string>
+    <string name="copying">Copying\n\"%s\"...</string>
     <string name="copied_f">Copied\n\"%s\"...</string>
     <string name="deleting">Deleting\n\"%s\"...</string>
     <string name="deleting_a">Deleting...</string>

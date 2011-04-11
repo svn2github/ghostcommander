@@ -7,12 +7,10 @@
 		<xsl:variable name="dd" select="document('res/values/strings.xml')"/>
 		<xsl:for-each select="$dd/resources/string">
 			<xsl:variable name="lc" select="$r/string[@name=current()/@name]"/>
-			<xsl:copy><xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
 				<xsl:choose>
-				   <xsl:when test="$lc"><xsl:value-of select="$lc"/></xsl:when>
-				   <xsl:otherwise><xsl:value-of select="."/></xsl:otherwise>
+				   <xsl:when test="$lc">  <xsl:copy-of select="$lc" disable-output-encoding="no"/></xsl:when>
+				   <xsl:otherwise>  <xsl:copy-of select="."/><xsl:comment> !!! </xsl:comment></xsl:otherwise>
 				</xsl:choose>
-			</xsl:copy><xsl:if test="not($lc)"><xsl:comment> !!! </xsl:comment></xsl:if>
 <xsl:text>
 </xsl:text>
   		</xsl:for-each>

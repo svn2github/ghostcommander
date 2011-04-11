@@ -370,9 +370,16 @@ public class FTPAdapter extends CommanderAdapterBase {
                             }
 	        			}
 	        			else {
-	        				if( dest.exists() && !dest.delete() ) {
-	    	        			errMsg = "Please make sure the folder '" + dest_folder.getCanonicalPath() + "' is writable";
-	    	        			break;
+	        				if( dest.exists()  ) {
+                                int res = askOnFileExist( ctx.getString( R.string.file_exist, dest.getAbsolutePath() ), commander );
+                                if( res == Commander.ABORT ) break;
+                                if( res == Commander.SKIP )  continue;
+                                if( res == Commander.REPLACE ) {
+                                    if( !dest.delete() ) {
+                                        error( ctx.getString( R.string.cant_del, dest.getAbsoluteFile() ) );
+                                        break;
+                                    }
+                                }
 	        				}
 	        				sendProgress( ctx.getString( R.string.retrieving, pathName ), 0 );
 	        				setCurFileLength( f.length() );
@@ -401,7 +408,8 @@ public class FTPAdapter extends CommanderAdapterBase {
 	    	}
 			catch( Exception e ) {
 				e.printStackTrace();
-				errMsg = "Exception: " + e.getMessage();
+				error( "Exception: " + e.getMessage() );
+				//
 			}
 	        return counter;
 	    }

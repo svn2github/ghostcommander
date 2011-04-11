@@ -675,9 +675,9 @@ public class FSAdapter extends CommanderAdapterBase {
                     else {
                         if( outFile.exists() ) {
                             int res = askOnFileExist( c.getString( R.string.file_exist, outFile.getAbsolutePath() ), commander );
-                            if( res == Commander.ABORT ) break;
                             if( res == Commander.SKIP )  continue;
                             if( res == Commander.REPLACE ) outFile.delete();
+                            if( res == Commander.ABORT ) break;
                         }
                         in  = new FileInputStream( file ).getChannel();
                         out = new FileOutputStream( outFile ).getChannel();
@@ -686,7 +686,7 @@ public class FSAdapter extends CommanderAdapterBase {
                         long chunk = size > max_chunk ? max_chunk : size;
                         int  so_far = (int)(bytes * conv);
                         for( long start = 0; start < size; start += chunk ) {
-                        	sendProgress( c.getString( R.string.coping, fn ), so_far, (int)(bytes * conv) );
+                        	sendProgress( c.getString( R.string.copying, fn ), so_far, (int)(bytes * conv) );
                         	bytes += in.transferTo( start, chunk, out );
                             if( stop || isInterrupted() ) {
                                 error( c.getString( R.string.canceled ) );

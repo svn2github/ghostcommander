@@ -354,12 +354,15 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             refreshList( opposite() );
     }
     public final void refreshList( int which ) {
-        try {
-            list[which].refreshList( which == current );
-        } catch( Exception e ) {
-            Log.e( TAG, "refreshList()", e );
-        }
+        list[which].refreshList();
     }
+    public final void redrawLists() {
+        list[current].askRedrawList();
+        if( sxs )
+            list[opposite()].askRedrawList();
+        list[current].focus();
+    }
+    
     public void setFingerFriendly( boolean finger_friendly ) {
         fingerFriendly = finger_friendly;
         try {
@@ -410,7 +413,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 */
         }
         current = which;
-        focus();
+        list[current].focus();
         highlightCurrentTitle();
         setToolbarButtons( getListAdapter( true ) );
     }
@@ -601,6 +604,10 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public final int getNumItemsChecked() {
         return list[current].getNumItemsChecked();
     }
+    public final int getNumItemsSelectedOrChecked() {
+        return list[current].getNumItemsSelectedOrChecked();
+    }
+
     public final String getActiveItemsSummary() {
         return list[current].getActiveItemsSummary();
     }

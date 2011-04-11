@@ -89,25 +89,20 @@ public class Engine extends Thread {
     }
 
     protected final int askOnFileExist( String msg, Commander commander ) throws InterruptedException {
-        if( file_exist_behaviour == Commander.SKIP_ALL )
-            return Commander.SKIP;
-        if( file_exist_behaviour == Commander.REPLACE_ALL )
-            return Commander.REPLACE;
+        if( ( file_exist_behaviour & Commander.APPLY_ALL ) != 0 )
+            return file_exist_behaviour & ~Commander.APPLY_ALL;
         int res;
         synchronized( commander ) {
             sendProgress( msg, Commander.OPERATION_SUSPENDED_FILE_EXIST );
             while( ( res = commander.getResolution() ) == Commander.UNKNOWN )
                 commander.wait();
         }
-        switch( res ) {
-        case Commander.ABORT:
+        if( res == Commander.ABORT ) {
             error( commander.getContext().getString( R.string.interrupted ) );
-            break;
-        case Commander.SKIP_ALL:
-        case Commander.REPLACE_ALL:
-            file_exist_behaviour = res;
-            break;
+            return res;
         }
-        return res;
+        if( ( res & Commander.APPLY_ALL ) != 0 )
+            file_exist_behaviour = res;
+        return res & ~Commander.APPLY_ALL;
     }
 }

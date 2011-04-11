@@ -204,8 +204,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                     String summ = owner.panels.getActiveItemsSummary();
                     if( summ == null ) {
                         dialog.cancel();
-                        owner.showMessage( owner.getString( R.string.no_items ) + "\n" + 
-                                           owner.getString( R.string.op_not_alwd, op ) );
+                        owner.showMessage( owner.getString( R.string.op_not_alwd, op ) );
                         valid = false;
                         return;
                     }
@@ -444,9 +443,14 @@ public class Dialogs implements DialogInterface.OnClickListener {
 */
                 }
             } else if( whichButton == DialogInterface.BUTTON_NEGATIVE ) {
-                if( dialogId == PROGRESS_DIALOG ) {
+                if( dialogId == PROGRESS_DIALOG )
                     owner.panels.terminateOperation();
-                }
+                else
+                if( dialogId == FILE_EXIST_DIALOG )
+                    owner.setResolution( Commander.ABORT );
+            } else if( whichButton == DialogInterface.BUTTON_NEUTRAL ) {
+                if( dialogId == FILE_EXIST_DIALOG )
+                    owner.setResolution( Commander.SKIP_ALL );
             }
             owner.panels.focus();
         } catch( Exception e ) {

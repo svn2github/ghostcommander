@@ -267,7 +267,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             int vpad = fat ? ( icons ? 2 : 8 ) : 0;
             row_view.setPadding( 0, vpad, 4, vpad );        
             
-            String name = item.dir ? item.name : " " + item.name, size = "", date = "";
+            String name = item.name, size = "", date = "";
             if( dm ) {
             	if( item.size >= 0 )
             		size = Utils.getHumanSize( item.size );

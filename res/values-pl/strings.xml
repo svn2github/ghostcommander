@@ -111,8 +111,8 @@
 <string name="too_deep_hierarchy">Ścieżka dostępu jest zbyt głęboka</string>
 <string name="nothing_found">Nie znaleziono plików</string>
 <string name="preparing">Przygotowuję...</string>
-<string name="coping">Kopiuję\n\"%s\"...</string>
-<string name="copied_f">Skopiowano\n\"%s\"...</string>
+<string name="copying">Kopiuję\n\"%s\"...</string>
+<string name="copied_f">Skopiowano\n\"%s\"   </string>
 <string name="deleting">Usuwam\n\"%s\"...</string>
 <string name="deleting_a">Usuwanie...</string>
 <string name="unpacking">Rozpakowuję \n\"%s\"...</string>

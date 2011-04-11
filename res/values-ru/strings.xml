@@ -78,8 +78,8 @@
 <string name="dialog_abort">Прервать</string>
 <string name="dialog_retry">Повторить</string>
 <string name="dialog_ignore">Игнорировать</string>
-<string name="dialog_replace_all">Заменить все</string>
-<string name="dialog_skip_all">Пропустить все</string>
+<string name="dialog_replace_all">Заменять все</string>
+<string name="dialog_skip_all">Не заменять</string>
 <string name="dialog_select">Пометить</string>
 <string name="dialog_unselect">Снять пометку</string>
 <string name="operation">Операция</string>
@@ -113,8 +113,8 @@
 <string name="too_deep_hierarchy">Слишком глубокое вложение папок</string>
 <string name="nothing_found">Файлы не найдены</string>
 <string name="preparing">Подготовка...</string>
-<string name="coping">Копируется\n\"%s\"...</string>
-<string name="copied_f">Скопирован\n\"%s\"...</string>
+<string name="copying">Копируется\n\"%s\"...</string>
+<string name="copied_f">Скопирован\n\"%s\"   </string>
 <string name="deleting">Удаляется\n\"%s\"...</string>
 <string name="deleting_a">Удаляются...</string>
 <string name="fail_del">Ошибка на файле "%1$s\", удален.</string>
