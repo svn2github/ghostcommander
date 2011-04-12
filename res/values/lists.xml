@@ -39,6 +39,7 @@
         <item>Italiano</item>
         <item>Français</item>
         <item>Polski</item>
+        <item>Español</item>
     </string-array>
     <string-array name="language_vals">
         <item></item>
@@ -54,5 +55,6 @@
         <item>it</item>
         <item>fr</item>
         <item>pl</item>
+        <item>es</item>
     </string-array>
 </resources>

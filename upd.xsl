@@ -8,7 +8,7 @@
 		<xsl:for-each select="$dd/resources/string">
 			<xsl:variable name="lc" select="$r/string[@name=current()/@name]"/>
 				<xsl:choose>
-				   <xsl:when test="$lc">  <xsl:copy-of select="$lc" disable-output-encoding="no"/></xsl:when>
+				   <xsl:when test="$lc">  <xsl:copy-of select="$lc"/></xsl:when>
 				   <xsl:otherwise>  <xsl:copy-of select="."/><xsl:comment> !!! </xsl:comment></xsl:otherwise>
 				</xsl:choose>
 <xsl:text>
