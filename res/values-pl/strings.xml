@@ -27,7 +27,8 @@
 <string name="enter_b">Ścieżka</string>
 <string name="add_fav">* Dodaj katalog do Ulubionych</string>
 <string name="add_fav_b">* Ulubione</string>
-<string name="remount_b">Odmontuj /system</string>
+<string name="remount_b">Montuj pon. /system</string>
+<string name="remount">Zamontuj ponownie</string>
 <string name="enter_ftp">  Połącz z FTPem</string>
 <string name="enter_smb">  Połącz z Samba (Windows)</string>
 <string name="search_file">/ Szukaj</string>
@@ -81,6 +82,8 @@
 <string name="dialog_abort">Przerwij</string>
 <string name="dialog_retry">Ponów</string>
 <string name="dialog_ignore">Ignoruj</string>
+<string name="dialog_replace_all">Zastąp wszystko</string>
+<string name="dialog_skip_all">Pomiń wszystko</string>
 <string name="dialog_select">Zaznacz</string>
 <string name="dialog_unselect">Odznacz</string>
 <string name="operation">Operacja</string>
@@ -88,13 +91,19 @@
 <string name="newf_prompt">Nazwa nowego pliku:</string>
 <string name="rename_title">Zmień nazwę</string>
 <string name="rename_prompt">Zmień nazwę na:</string>
-<string name="rename_err">Nie wybrano plików do zmiany nazwy.</string>
 <string name="mkdir_title">Nowy katalog</string>
 <string name="mkdir_prompt">Podaj nazwę nowego katalogu:</string>
 <string name="search_title">Szukaj</string>
 <string name="search_prompt">Wpisz szukaną nazwę (użycie \"*\" dozwolone):</string>
 <string name="copy_title">Kopiuj</string>
 <string name="move_title">Przenieś</string>
+
+<!-- Will be used the copy/move _title if the following are empty  -->
+<string name="to_copy"/><!-- !!! -->
+<string name="to_move"/><!-- !!! -->
+<string name="to_rename"/><!-- !!! -->
+<string name="copy_err">Nie wybrano</string>
+<string name="rename_err">Nie wybrano plików do zmiany nazwy.</string>
 <string name="no_items">Brak poprawnych plików, aby ukończyć operację.</string>
 <string name="inv_dest">Błędna ścieżka docelowa</string>
 <string name="find_on_fs_only">Wyszukiwanie działa jedynie na dyskach lokalnych.</string>
@@ -111,12 +120,17 @@
 <string name="too_deep_hierarchy">Ścieżka dostępu jest zbyt głęboka</string>
 <string name="nothing_found">Nie znaleziono plików</string>
 <string name="preparing">Przygotowuję...</string>
-<string name="copying">Kopiuję\n\"%s\"...</string>
-<string name="copied_f">Skopiowano\n\"%s\"   </string>
+<string name="coping">Kopiuję\n\"%s\"...</string>
+<string name="copied_f">Skopiowano\n\"%s\"...</string>
 <string name="deleting">Usuwam\n\"%s\"...</string>
 <string name="deleting_a">Usuwanie...</string>
+<string name="fail_del">Plik "%1$s\" niekompletny, usuwam.</string>
 <string name="unpacking">Rozpakowuję \n\"%s\"...</string>
 <string name="unpacked_p">Rozpakowano \n\"%s\"   </string>
+<string name="packing">Archiwizuję \n\"%s\"...</string>
+<string name="retrieving">Odzyskuję \n\"%s\"...</string>
+<string name="uploading">Wgrywam \n\"%s\"...</string>
+<string name="uploaded_p">Wgrano \n\"%s\"   </string>
 <string name="canceled">Anulowano</string>
 <string name="unkn_err">Nieznany błąd</string>
 <string name="cant_md">Nie można utworzyć katalogu \"%s\"</string>
@@ -136,12 +150,14 @@
 <string name="uploaded">wysłano</string>
 <string name="packed">spakowano</string>
 <string name="unpacked">rozpakowano</string>
-<string name="verb_plural_sfx"></string>
+<string name="remounted">Zamontowano ponownie \"%1$s\" do \"%2$s\".</string>
+<string name="tried_to_exec">Próba uruchomienia: \"%s\"</string>
+<string name="verb_plural_sfx"/>
 <string name="item">element</string>
 <string name="items">elementów</string>
 <string name="items24">elementy</string>
-<string name="were"></string>
-<string name="was"></string>
+<string name="were"/>
+<string name="was"/>
 <string name="nothing">Nic nie</string>
 <string name="sz_folder">Katalog \"%1$s\":\n%2$d plik(ów),</string>
 <string name="sz_file">Plik \"%s\":</string>
@@ -172,6 +188,9 @@
 <string name="connect">Połącz</string>
 <string name="cancel">Anuluj</string>
 <string name="ftp_connected">Połączono z \"%1$s\",\n Zalogowany jako \"%2$s\"</string>
+<string name="ftp_upload_failed">Wgrywanie \"%1$s\" nieudane.\n Log serwera FTP:\n\n%2$%</string>
+<string name="ftp_mkdir_failed">Nie można utworzyć katalogu \"%1$s\".\n Log serwera FTP:\n\n\"%2$s\</string>
+<string name="ftp_nologin">Nie zalogowany!</string>
 <string name="layout_settings">Wygląd i wyświetlanie:</string>
 <string name="panels_mode">Widok 2 paneli</string>
 <string name="summary_panels_mode">Pokazuj obydwa panele obok siebie (podzielony ekran).</string>
@@ -266,21 +285,12 @@ Nie mogę użyć wtyczki Samba.\n
 Upewnij się, że wtyczka\n
 \"Ghost Commander - Samba plugin\"\n
 (com.ghostsq.commander.samba) jest zainstalowana.</string>
-<string name="smb_app_uri">market://search?q=pname:com.ghostsq.commander.samba</string>
-<string name="dbox_missed">
-    Nie mogę użyć wtyczki do obsługi Dropbox-a.\n
-    Upewnij się, że wtyczka\n
-    \"Ghost Commander - Dropbox plugin\"\n
-    (com.ghostsq.commander.dropbox) jest zainstalowana.</string>
-<string name="dbox_app_uri">market://search?q=pname:com.ghostsq.commander.dropbox</string>
 <string name="donate">  Wspomóż rozwój</string>
 <string name="online_help">  Pomoc on-line</string>
 <string name="donation">Lubisz tą aplikację? Rozważ więc możliwość wsparcia finansowego. Każda, nawet drobna suma będzie doceniona, a zebrane datki posłużą do dalszego doskonalenia i rozwoju programu.\n
 Wybierz \"OK\" aby wpłacić datek za pośrednictwem PayPal-a.\n
 Wybierz \"Anuluj\", jeśli nadal się wahasz i póki co chcesz używać «Ghost Commander-a» za darmo (nadal będziesz mógł wesprzeć nas finansowo w późniejszym terminie).\n
     </string>
-<string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
-<string name="help_uri">http://sites.google.com/site/ghostcommander1/info</string>
 <string name="about_text">
 Ghost Commander v%1$s\n
 Menedżer plików autorstwa Ghost Squared.\n\n

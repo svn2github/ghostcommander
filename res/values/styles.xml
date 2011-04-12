@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.CustomDialog" parent="android:style/Theme.Dialog">
+        <!-- item name="android:windowBackground">@drawable/filled_box</item-->
+    </style>
+</resources>

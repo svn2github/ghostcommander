@@ -26,8 +26,8 @@
 <string name="enter_b">Адрес</string>
 <string name="add_fav">* Закладка на тек.адрес</string>
 <string name="add_fav_b">* Запомнить</string>
-<string name="remount_b">Remount /system</string><!-- !!! -->
-<string name="remount">Remount</string><!-- !!! -->
+<string name="remount_b">Remount /system</string>
+<string name="remount">Remount</string>
 <string name="enter_ftp">  FTP сервер</string>
 <string name="enter_smb">  Сеть Windows</string>
 <string name="search_file">/ Поиск файла</string>
@@ -162,7 +162,7 @@
 <string name="sz_dirsfx_p">ах.</string>
 <string name="sz_lastmod">\nДата изменения:\n </string>
 <string name="sz_total">Раздел: %1$sБ,\nСвободно: %2$sБ.</string>
-<string name="busy">Busy!</string><!-- !!! -->
+<string name="busy">Занят!</string>
 <string name="cd_title">Смена папки</string>
 <string name="cd_prompt">Сменить текущую папку на:</string>
 <string name="not_supported">Операция не поддерживается.</string>

@@ -30,7 +30,9 @@ import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.CommanderAdapter;
 import com.ghostsq.commander.CommanderAdapterBase;
 import com.ghostsq.commander.MountsListEngine;
+import com.ghostsq.commander.LsItem.LsItemPropComparator;
 import com.ghostsq.commander.MountsListEngine.MountItem;
+import com.ghostsq.commander.ZipAdapter.ZipItemPropComparator;
 
 public class RootAdapter extends CommanderAdapterBase {
     // Java compiler creates a thunk function to access to the private owner class member from a subclass
@@ -775,5 +777,12 @@ public class RootAdapter extends CommanderAdapterBase {
                 owner.Execute( ctv.getText().toString(), bbc.isChecked() );
             idialog.dismiss();
         }
+    }
+
+    @Override
+    protected void reSort() {
+        if( items == null || items.length < 1 ) return;
+        LsItemPropComparator comp = items[0].new LsItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0, ascending );
+        Arrays.sort( items, comp );
     }
 }

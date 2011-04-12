@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -19,7 +21,18 @@ public class ServerForm extends Activity implements View.OnClickListener {
         try {
             super.onCreate( savedInstanceState );
             schema = getIntent().getStringExtra( "schema" );
+
+            
+            setTitle( R.string.connect );
+            
+            requestWindowFeature( Window.FEATURE_LEFT_ICON );
+            
             setContentView( R.layout.server );
+            getWindow().setLayout (LayoutParams.FILL_PARENT /* width */ , LayoutParams.WRAP_CONTENT /* height */);
+            
+            getWindow().setFeatureDrawableResource( Window.FEATURE_LEFT_ICON,
+                    android.R.drawable.ic_dialog_dialer );
+            
             if( schema.equals( "ftp" ) ) {
                 LinearLayout domain_block = (LinearLayout)findViewById( R.id.domain_block );
                 domain_block.setVisibility( View.GONE );

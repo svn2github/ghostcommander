@@ -14,6 +14,7 @@ import java.util.Date;
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.CommanderAdapter;
 import com.ghostsq.commander.CommanderAdapterBase;
+import com.ghostsq.commander.LsItem.LsItemPropComparator;
 
 import android.content.Context;
 import android.net.Uri;
@@ -759,5 +760,11 @@ public class FTPAdapter extends CommanderAdapterBase {
             if( p == null ) return true;
             return false;
         }
+    }
+    @Override
+    protected void reSort() {
+        if( items == null || items.length < 1 ) return;
+        LsItemPropComparator comp = items[0].new LsItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0, ascending );
+        Arrays.sort( items, comp );
     }
 }

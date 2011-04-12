@@ -134,10 +134,7 @@ public class ListHelper {
             int thubnails_size = 0;
             if( sharedPref.getBoolean( "show_thumbnails", true ) )
                 thubnails_size = Integer.parseInt( sharedPref.getString( "thumbnails_size", "100" ) );
-            /*
-            int m = ca.setMode( CommanderAdapter.SET_TBN_SIZE, thubnails_size );
-            Log.v( TAG, "Mode set: " + m );
-            */
+            ca.setMode( CommanderAdapter.SET_TBN_SIZE, thubnails_size );
         } catch( Exception e ) {
             Log.e( TAG, "applySettings() inner", e );
         }
