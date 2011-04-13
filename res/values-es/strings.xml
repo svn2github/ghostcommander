@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Ghost Commander</string>
     
@@ -19,13 +19,13 @@
     <string name="F8">8 Eliminar</string>
     <string name="F9">9 Ajustes</string>
     <string name="F10">0 Salir</string>
-    <string name="oth_sh_this">= Misma ruta en ambos paneles</string>
-    <string name="eq">= Misma</string>
+    <string name="oth_sh_this">= Igualar rutas</string>
+    <string name="eq">= Ig. Ruta</string>
     <string name="change">&#x21E6; Alternar</string>
     <string name="tgl">&#x21E6; Alternar</string>
-    <string name="sz">\" Size</string>
+    <string name="sz">Calc Tamaño</string>
     <string name="refresh">&#xA0; Actualizar</string>
-    <string name="enter">&#xA0; Cambiar Ruta</string>
+    <string name="enter">&#xA0; Editar Ruta</string>
     <string name="enter_b">Ruta</string>
     <string name="add_fav">* Añadir a favoritos</string>
     <string name="add_fav_b">* Favorito</string>
@@ -35,52 +35,52 @@
     
     <string name="enter_ftp">&#xA0; Abrir sitio FTP</string>
     <string name="enter_smb">&#xA0; Abrir unidad Samba (Windows)</string>
-    <string name="search_file">/ Buscar archivo</string>
+    <string name="search_file">/ Buscar archivos</string>
 
-    <string name="sort_by_name">&#xA0; Por Nombre</string>
-    <string name="sort_by_ext" >&#xA0; Por Extensión</string>
-    <string name="sort_by_size">&#xA0; Por Tamaño</string>
-    <string name="sort_by_date">&#xA0; Por Fecha</string>
+    <string name="sort_by_name">&#xA0; Ordenar por nombre</string>
+    <string name="sort_by_ext" >&#xA0; Ordenar por extensión</string>
+    <string name="sort_by_size">&#xA0; Ordenar por tamaño</string>
+    <string name="sort_by_date">&#xA0; Ordenar por fecha</string>
 
-    <string name="sort_by_name_b">Por Nombre</string>
-    <string name="sort_by_ext_b" >Por Extensión</string>
-    <string name="sort_by_size_b">Por Tamaño</string>
-    <string name="sort_by_date_b">Por Fecha</string>
+    <string name="sort_by_name_b">Ord Nombre</string>
+    <string name="sort_by_ext_b" >Ord Extensión</string>
+    <string name="sort_by_size_b">Ord Tamaño</string>
+    <string name="sort_by_date_b">Ord Fecha</string>
 
     <string name="select_all">+ Seleccionar todo</string>
     <string name="unselect_all">- Deseleccionar todo</string>
     <string name="select_b">+ Seleccionar</string>
     <string name="unselect_b">- Deseleccionar</string>
         
-    <string name="toggle_panels_mode"># Cambiar modo de paneles</string>
+    <string name="toggle_panels_mode"># Alternar vista</string>
     <string name="prefs">9 Ajustes</string>
     <string name="about">&#xA0; Acerca de</string>
-    <string name="keys">1 Atajos</string>
+    <string name="keys">1 Atajos de teclado</string>
     <string name="new_file">Crear archivo</string>
     <string name="new_folder">Crear carpeta</string>
-    <string name="new_zip">Crear archivo ZIP</string>
+    <string name="new_zip">Comprimir en ZIP</string>
 
     <string name="go_button">Ir</string>
-    <string name="show_size">Info</string>
+    <string name="show_size">Ver información</string>
     <string name="send_to">Enviar a...</string>
     <string name="open_with">Abrir con...</string>
-    <string name="copy_name">Copiar nombre al Portapapeles</string>
+    <string name="copy_name">Copiar nombre</string>
     <string name="fav_fld">Añadir \"%s\" a favoritos</string>
     
-    <string name="create_zip">ZIP...</string>
-    <string name="create_zip_title">ZIP</string>
+    <string name="create_zip">Comprimir...</string>
+    <string name="create_zip_title">Comprimir en ZIP</string>
 
-    <string name="input_settings">Entrada</string>
-    <string name="arrow_mode">Arrow commands</string>
-    <string name="summary_arrow_mode">Flecha Izquierda/Derecha alterna/selecciona</string>
+    <string name="input_settings">Controles</string>
+    <string name="arrow_mode">Usar teclas de dirección</string>
+    <string name="summary_arrow_mode">Tecla izquierda/derecha alterna/selecciona</string>
 
-    <string name="show_confirm">Mostar confirmación</string>
+    <string name="show_confirm">Mostar confirmaciones</string>
     <string name="summary_show_confirm">Mostrar diálogo de confirmación al completar cada operación</string>
 
     <string name="prefs_label">Ajustes</string>
     <string name="editor_label">Editor de texto</string>
     <string name="advanced">Avanzado</string>
-    <string name="advanced_settings">Opciones Avanzadas</string>
+    <string name="advanced_settings">Opciones avanzadas</string>
     <string name="summary_advanced_settings">Opciones adicionales para usuarios avanzados</string>
 
     <string name="wait"> espera... </string>
@@ -110,8 +110,8 @@
     <string name="mkdir_title">MkDir</string>
     <string name="mkdir_prompt">Crear carpeta:</string>
     <string name="search_title">Buscar</string>
-    <string name="search_prompt">Nombre de archivo (comodín \"*\" permitido):</string>
-    <string name="rename_title">Renombrar</string>
+    <string name="search_prompt">Nombre de archivo (comodín \"*\"):</string>
+    <string name="rename_title">Renom</string>
     <string name="copy_title">Copiar</string>
     <string name="move_title">Mover</string>
     <!-- Will be used the copy/move _title if the following empty  -->
@@ -125,8 +125,8 @@
     <string name="find_on_fs_only">La función de búsqueda sólo funciona en el sistema de archivos local.</string>
     <string name="op_not_alwd">No se puede \'%1$s\'. Selecciona algo primero.</string><!-- copy_title/move_title -->
     <string name="copy_to_local_only">Sólo es posible copiar al sistema de archivos local.</string>    
-    <string name="oper_item_to">%1$s %2$s to:"</string><!-- copy_title/move_title, file name/summary -->
-    <string name="login_title">Login</string>
+    <string name="oper_item_to">%1$s %2$s a:"</string><!-- copy_title/move_title, file name/summary -->
+    <string name="login_title">Identificación</string>
     <string name="delete_title">Eliminar</string>
     <string name="delete_err">Nada que eliminar</string>
     <string name="delete_q">"¿Eliminar %1$s ?"</string><!-- file name/summary -->
@@ -171,7 +171,7 @@
     <string name="uploaded">subido</string>
     <string name="packed">comprimido</string>
     <string name="unpacked">descomprimido</string>
-    <string name="remounted">Remontado \"%1$s\" to \"%2$s\".</string>
+    <string name="remounted">Remontado \"%1$s\" a \"%2$s\".</string>
     <string name="tried_to_exec">Se intentó ejecutar: \"%s\"</string>
     
 
@@ -214,7 +214,7 @@ copied >5 will produce:
     <string name="cd_title">Ir a</string>
     <string name="cd_prompt">Cambiar a carpeta:</string>
 
-    <string name="not_supported">Operación no soportada.</string>
+    <string name="not_supported">Operación no soportada</string>
     <string name="select_some">Ninguna selección realizada</string>
     <string name="select">Seleccionar</string>
     <string name="error">Error</string>
@@ -235,19 +235,19 @@ copied >5 will produce:
     <string name="ftp_mkdir_failed">Error al crear carpeta \"%1$s\".\n FTP log:\n\n\"%2$s\</string>            
     <string name="ftp_nologin">No se ha logueado!</string>            
 
-    <string name="layout_settings">Configurar diseño:</string>
-    <string name="panels_mode">Panel doble</string>
-    <string name="summary_panels_mode">Mostrar ambos paneles a pantalla partida.</string>
+    <string name="layout_settings">Vista</string>
+    <string name="panels_mode">Vista doble</string>
+    <string name="summary_panels_mode">Mostrar ambos paneles a pantalla partida</string>
     <string name="two_lines">Dos líneas por fila</string>
-    <string name="summary_two_lines">Mostrar siempre los atributos del archivo en segunda fila.</string>
-    <string name="show_icons">Iconos de Archivo</string>
-    <string name="summary_show_icons">Mostrar el icono de tipo de archivo para cada elemento.</string>
-    <string name="show_toolbar">Mostrar Barra de Acciones</string>
-    <string name="summary_show_toolbar">Mostrar u ocultar la barra inferior de botones.</string>
-    <string name="toolbar_preference">Definir botones a mostrar</string>
-    <string name="summary_toolbar_preference">Personalizar los botones a mostrar en la Barra de Acciones.</string>
+    <string name="summary_two_lines">Mostrar siempre los atributos del archivo en segunda fila</string>
+    <string name="show_icons">Mostrar iconos</string>
+    <string name="summary_show_icons">Mostrar el icono de tipo de archivo para cada elemento</string>
+    <string name="show_toolbar">Mostrar barra de acciones</string>
+    <string name="summary_show_toolbar">Mostrar u ocultar la barra inferior de botones</string>
+    <string name="toolbar_preference">Configurar botones</string>
+    <string name="summary_toolbar_preference">Personalizar los botones a mostrar en la barra de acciones</string>
     <string name="show_F1">Mostrar &#xAB; 1 Ayuda&#xBB;</string>
-    <string name="show_F2">Mostrar &#xAB; 2 Renombrar&#xBB;</string>
+    <string name="show_F2">Mostrar &#xAB; 2 Renom&#xBB;</string>
     <string name="show_F3">Mostrar &#xAB; 3 Ver&#xBB;</string>
     <string name="show_F4">Mostrar &#xAB; 4 Editar&#xBB;</string>
     <string name="show_SF4">Mostrar &#xAB; &#xA0; Crear&#xBB;</string>
@@ -257,9 +257,9 @@ copied >5 will produce:
     <string name="show_F8">Mostrar &#xAB; 8 Eliminar&#xBB;</string>
     <string name="show_F9">Mostrar &#xAB; 9 Menú&#xBB;</string>
     <string name="show_F10">Mostrar &#xAB; 0 Salir&#xBB;</string>
-    <string name="show_eq">Mostrar &#xAB; = Misma ruta en ambos paneles&#xBB;</string>
+    <string name="show_eq">Mostrar &#xAB; = Igualar rutas&#xBB;</string>
     <string name="show_tgl">Mostrar &#xAB; &#x21E6; Alternar&#xBB;</string>
-    <string name="show_sz">Mostrar &#xAB; \" Tamaño&#xBB;</string>
+    <string name="show_sz">Mostrar &#xAB; Calc Tamaño&#xBB;</string>
     
     <string name="show_by_name">Mostrar &#xAB; Ordenar por Nombre&#xBB;</string>
     <string name="show_by_ext" >Mostrar &#xAB; Ordenar por Extensión&#xBB;</string>
@@ -273,49 +273,49 @@ copied >5 will produce:
 
     <string name="finger_friendly">Facilitar uso táctil</string>
     <string name="summary_finger_friendly">Aumenta el tamaño los elementos en pantalla</string>
-    <string name="prevent_root">Avisar al abandonar la tarjeta SD</string>
-    <string name="summary_prevent_root">Muestra un aviso al intentar acceder a la raíz del sistema.</string>
+    <string name="prevent_root">Avisar al salir de tarjeta</string>
+    <string name="summary_prevent_root">Muestra un aviso al intentar acceder a la raíz del sistema</string>
 
-    <string name="root_root">Modo Root al abandonar /sdcard</string>
-    <string name="summary_root_root">Cambia automáticamente al modo \"root:\" cuando se accede a la raíz del sistema.</string>
+    <string name="root_root">Modo \"root\"</string>
+    <string name="summary_root_root">Cambia automáticamente al modo \"root:\" cuando se accede a la raíz del sistema</string>
 
     <string name="thumbnails">Mostrar miniaturas</string>
     <string name="summary_thumbnails">Muestra miniaturas en lugar de iconos para las imágenes</string>
-    <string name="thumbnails_size">Tamaño de miniatura</string>
+    <string name="thumbnails_size">Tamaño de miniaturas</string>
     <string name="summary_thumbnails_size">Expresado en porcentaje respecto al tamaño de los iconos</string>
 
     <string name="left_panel_settings">Opciones del panel izquierdo</string>
     <string name="right_panel_settings">Opciones del panel derecho</string>
-    <string name="detailed_view_SbS">Vista detallada en modo Doble</string>
-    <string name="summary_detailed_view_SbS">Mostrar tamaño y fecha del archivo en modo Doble</string>
-    <string name="detailed_view_Ovr">Detailed in Overlapped mode</string>
-    <string name="summary_detailed_view_Ovr">Mostrar tamaño y fecha del archivo en modo Pestañas</string>
-    <string name="sorting">Orden</string>
+    <string name="detailed_view_SbS">Detalles en vista doble</string>
+    <string name="summary_detailed_view_SbS">Mostrar tamaño y fecha del archivo en vista doble</string>
+    <string name="detailed_view_Ovr">Detalles en vista de pestañas</string>
+    <string name="summary_detailed_view_Ovr">Mostrar tamaño y fecha del archivo en vista de pestañas</string>
+    <string name="sorting">Ordenar por</string>
     <string name="summary_sorting">Cómo ordenar los elementos en la lista</string>
-    <string name="sort_case">Ignorar mayúsculas al ordenar</string>
+    <string name="sort_case">Ignorar mayúsculas</string>
     <string name="summary_sort_case">Desmarcado las mayúsculas afectarán al orden de los elementos</string>
     
     <string name="show_hidden">Mostrar archivos ocultos</string>
-    <string name="summary_show_hidden">Desmarcado los archivos precedidos de punto no se mostrarán</string>
+    <string name="summary_show_hidden">Desmarcado los archivos precedidos de un punto no se mostrarán</string>
 
-    <string name="colors">Configurar colores</string>
+    <string name="colors">Definir colores</string>
     <string name="summary_colors">Personalizar los color de fondo, selección, etc.</string>
     <string name="bgr_color_picker">Color de fondo</string>
     <string name="summary_bgr_color_picker">Elige el color del fondo deseado</string>
     <string name="fgr_color_picker">Color de texto</string>
     <string name="summary_fgr_color_picker">Elige el color del texto deseado</string>
-    <string name="sel_color_picker">Color de seleccionado</string>
+    <string name="sel_color_picker">Color de selección</string>
     <string name="summary_sel_color_picker">Elige el color de los elementos seleccionados y el título del panel activo deseado</string>
     <string name="ttl_color_picker">Color de título</string>
     <string name="summary_ttl_color_picker">Elige el color del título del panel</string>
     <string name="pick_color">Elegir color</string>
 
     <string name="language">Idioma</string>
-    <string name="summary_language">Ignorar el idioma por defecto del sistema</string>
+    <string name="summary_language">Seleccionar el idioma de la interfaz</string>
     <string name="restart_to_apply_lang">Por favor, reinicia la aplicación para aplicar el nuevo idioma</string>        
 
-    <string name="editor_activity">Nombre de actividad del Editor</string>
-    <string name="summary_editor_activity">Nombre de la actividad asociada al comando EDITAR. Nombre del paquete = prefijo de nombre de clase.</string>
+    <string name="editor_activity">Nombre de actividad del editor</string>
+    <string name="summary_editor_activity">Nombre de la actividad asociada al comando \"Editar\". Nombre del paquete = prefijo de nombre de clase.</string>
     <string name="value_editor_activity">com.ghostsq.commander.Editor</string>
     
     <string name="busybox_location">Ruta a busybox</string>
@@ -325,17 +325,17 @@ copied >5 will produce:
     <string name="nothing_to_open">Nada que abrir</string>
     <string name="remind_to_save">No olvides guardar los cambios (usando el menú)</string>
     <string name="save">Guardar</string>
-    <string name="revert">Revert</string>
+    <string name="revert">Deshacer</string>
     <string name="wrap">Romper líneas largas</string>
     <string name="no_such_file">No existe el archivo \"%1$s\"</string>
     <string name="too_big_file">El archivo \"%1$s\" es demasiado grande.</string>
-    <string name="binary_file">El archivo \"%1$s\" es binario. Puede que lo dañes . Edítalo bajo tu propia responsabilidad.</string>    
+    <string name="binary_file">El archivo \"%1$s\" es binario. Puede que lo dañes. Edítalo bajo tu propia responsabilidad.</string>    
     <string name="cant_open">No se puede abrir el archivo.</string>    
     <string name="cant_save">No se puede guardar el archivo.</string>
-    <string name="nav_warn">Estás abriendo una carpeta del sistema. Su manipulación puede conducir a fallos. ¿Continuar esta vez?</string>
-    <string name="nav_warn_cmt">(Puedes ocultar este aviso permanentemente desde el menú)\nPresiona "Cancelar" para volver a la carpeta /sdcard. Presiona "Salir" para abandonar la aplicación.</string>
+    <string name="nav_warn">Estás abriendo una carpeta del sistema. Su manipulación puede producir fallos en el sistema. ¿Continuar esta vez?</string>
+    <string name="nav_warn_cmt">(Puedes ocultar este aviso permanentemente desde el menú)\nPresiona \"Cancelar\" para volver a la carpeta /sdcard. Presiona \"Salir\" para abandonar la aplicación.</string>
     <string name="no_such_folder">¡\"%1$s\" no es una carpeta válida!</string>
-    <string name="fav_added">\"%1$s\" fue añadido a Favoritos</string>
+    <string name="fav_added">\"%1$s\" fue añadido a favoritos</string>
 
     <string name="no_root">¿No root?</string>
 
@@ -345,7 +345,7 @@ copied >5 will produce:
     \"Ghost Commander - Samba plugin\"\n
     (com.ghostsq.commander.samba) está instalado.</string>
 
-    <string name="donate">&#xA0; Donar</string>
+    <string name="donate">&#xA0; Hacer donación</string>
     <string name="online_help">&#xA0; Ayuda en línea</string>
 
     <string name="donation">¿Te gusta esta aplicación? ¿De verdad? ¿Qué te parece una donación, 
@@ -371,7 +371,7 @@ If you don\'t agree to the above, stop using this software immediately and unins
     "\tIntrucciones de uso:\n
 Para seleccionar más de un archivo, presiona en la mitad derecha de la fila.\n    
 Para introducir la ruta manualmente (y ver los favoritos), haz una pulsación larga sobre el título del panel\n
-Atajos:\n
+Atajos de teclado:\n
 SubirVolumen - Seleccionar elemento actual (archivo)
 BajarVolumen - Cambiar de panel
 +, -  - Seleccionar o deseleccionar archivos en la carpeta actual  
