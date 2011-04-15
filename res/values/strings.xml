@@ -183,7 +183,9 @@
     <string name="was">was</string>
     <string name="nothing">Nothing</string>
 <!-- 
-copied 0 will produce:
+The strings above are to concatenate according the following sample:
+
+copied 0 items will produce:
 "nothing" + "was" + "copied"
 
 copied 1 will produce:

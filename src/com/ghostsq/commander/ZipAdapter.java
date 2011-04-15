@@ -309,7 +309,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                     if( !f.isDirectory() )
                         dir_size += f.getSize();
 	            }
-	            Context c = commander.getContext();
+	            Context ctx = commander.getContext();
 	            double conv = 100./(double)dir_size;
 	        	for( int i = 0; i < list.length; i++ ) {
 	        		ZipEntry entry = list[i];
@@ -336,17 +336,24 @@ public class ZipAdapter extends CommanderAdapterBase {
         				if( errMsg != null ) break;
         			}
         			else {
-        				if( dest_file.exists() && !dest_file.delete() ) {
-    	        			error( c.getString( R.string.dest_wrtble, dest_folder.getAbsolutePath() ) );
-    	        			break;
-        				}
+                        if( dest_file.exists()  ) {
+                            int res = askOnFileExist( ctx.getString( R.string.file_exist, dest_file.getAbsolutePath() ), commander );
+                            if( res == Commander.ABORT ) break;
+                            if( res == Commander.SKIP )  continue;
+                            if( res == Commander.REPLACE ) {
+                                if( !dest_file.delete() ) {
+                                    error( ctx.getString( R.string.cant_del, dest_file.getAbsoluteFile() ) );
+                                    break;
+                                }
+                            }
+                        }
         				InputStream in = zip.getInputStream( entry );
         				FileOutputStream out = new FileOutputStream( dest_file );
         	            byte buf[] = new byte[BLOCK_SIZE];
         	            int  n = 0;
         	            int  so_far = (int)(byte_count * conv);
         	            
-        	            String unp_msg = c.getString( R.string.unpacking, rel_name ); 
+        	            String unp_msg = ctx.getString( R.string.unpacking, rel_name ); 
         	            while( true ) {
         	                n = in.read( buf );
         	                if( n < 0 ) break;
@@ -363,11 +370,11 @@ public class ZipAdapter extends CommanderAdapterBase {
         	            }
         			}
                     if( stop || isInterrupted() ) {
-                        error( c.getString( R.string.canceled ) );
+                        error( ctx.getString( R.string.canceled ) );
                         break;
                     }
                     if( i >= list.length-1 )
-                        sendProgress( c.getString( R.string.unpacked_p, rel_name ), (int)(byte_count * conv) );
+                        sendProgress( ctx.getString( R.string.unpacked_p, rel_name ), (int)(byte_count * conv) );
         			counter++;
 	        	}
 	    	}
