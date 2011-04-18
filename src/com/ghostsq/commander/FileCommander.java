@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.view.ContextMenu;
 import android.view.Display;
@@ -134,21 +135,21 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onResume() {
-        //Log.v( TAG, "Resuming\n");
+        Log.v( TAG, "Resuming\n");
         super.onResume();
         on = true;
     }
     
     @Override
     protected void onStop() {
-        //Log.v( TAG, "Stopping\n");
+        Log.v( TAG, "Stopping\n");
         super.onStop();
         on = false;
     }
 
     @Override
     protected void onDestroy() {
-        //Log.v( TAG, "Destroying\n");
+        Log.v( TAG, "Destroying\n");
         on = false;
         panels.Destroying();
         super.onDestroy();

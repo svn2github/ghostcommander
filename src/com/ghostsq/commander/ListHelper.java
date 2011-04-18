@@ -77,13 +77,13 @@ public class ListHelper {
     }
     
     public final void focus() {
-        
+/*        
         boolean focusable    = flv.isFocusable();
         boolean focusable_tm = flv.isFocusableInTouchMode();
         boolean focused      = flv.isFocused();
         boolean item_focus   = flv.getItemsCanFocus();
         Log.v( TAG, "wants focus. " + focusable + ", " + focusable_tm + ", " + focused + ", " + item_focus );
-        
+*/        
         flv.requestFocus();
         flv.requestFocusFromTouch();  
     }
@@ -149,6 +149,7 @@ public class ListHelper {
             flv.invalidate();
         }
         catch( Exception e ) {
+            Log.e( TAG, null, e );
         }
     }
     

@@ -9,7 +9,7 @@
     <RelativeLayout  
         android:id="@+id/titles"
         android:layout_width="fill_parent" android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:background="#555">
         <TextView android:id="@+id/left_dir"
             android:layout_width="wrap_content"

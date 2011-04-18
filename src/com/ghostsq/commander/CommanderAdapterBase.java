@@ -28,6 +28,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected final static String NOTIFY_STR = "str", NOTIFY_PRG1 = "prg1", NOTIFY_PRG2 = "prg2", NOTIFY_COOKIE = "cookie"; 
     protected final static String NOTIFY_RECEIVER_HASH = "hash", NOTIFY_ITEMS_TO_RECEIVE = "itms"; 
     protected final static String DEFAULT_DIR = "/sdcard";
+    protected final String TAG = getClass().getName();
     protected Commander commander = null;
     public    static final String SLS = File.separator;
     public    static final char   SLC = File.separator.charAt( 0 );
@@ -174,7 +175,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         dirty = true;
         if( mask == LIST_STATE ) {
             /*
-            Log.v( getClass().getName(), ( mode & LIST_STATE ) == STATE_IDLE ? 
+            Log.v( TAG, ( mode & LIST_STATE ) == STATE_IDLE ? 
                     "list    I D L E  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" :
                     "list    B U S Y  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
                     // Android v2.3.3 has a bug (again!)
@@ -191,14 +192,14 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     }
     @Override
     public void terminateOperation() {
-        Log.i( getClass().getName(), "terminateOperation()" );
+        Log.i( TAG, "terminateOperation()" );
         if( worker != null ) {
             worker.reqStop();
         }
     }
     @Override
     public void prepareToDestroy() {
-        Log.i( getClass().getName(), "prepareToDestroy()" );
+        Log.i( TAG, "prepareToDestroy()" );
         if( worker != null ) {
             worker.reqStop();
             worker = null;
@@ -222,7 +223,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
 
     protected int setRecipient( CommanderAdapter to ) {
         if( recipient != null )
-            Log.e( getClass().getName(), "Recipient is not null!!!" );
+            Log.e( TAG, "Recipient is not null!!!" );
         recipient = to;
         return recipient.hashCode(); 
     }    
@@ -248,10 +249,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     }
 
     protected View getView( View convertView, ViewGroup parent, Item item ) {
+        View row_view = null;
         try {
             boolean wm = (mode & WIDE_MODE) == WIDE_MODE;
             boolean dm = ( mode & MODE_DETAILS ) == DETAILED_MODE;
-            View row_view;
             boolean current_wide = convertView instanceof TableLayout;
             if( convertView == null || 
         		( (  wm && !current_wide ) || 
@@ -362,7 +363,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                         // when list is on its end we don't receive the idle notification!
                         if( thumbnail_size_perc > 0 && !item.no_thumb && ( mode & LIST_STATE ) == STATE_IDLE ) {
                             item.need_thumb = true;
-                            //Log.v( getClass().getName(), "Requesting an ahead thumbnail creation!!! " );                            
+                            //Log.v( TAG, "Requesting an ahead thumbnail creation!!! " );                            
                         }
                         imgView.setMaxWidth( icoWidth );
                         imgView.setImageResource( item.dir || item.name.equals( SLS ) || 
@@ -408,13 +409,11 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 //sizeView.setBackgroundColor( 0xFF0000FF );  // DEBUG!!!!!!
             }
             row_view.setTag( null );
-    
-            return row_view;
         }
         catch( Exception e ) {
-            System.err.print("\ngetView() exception: " + e ); 
+            Log.e( TAG, "\ngetView() exception: " + e ); 
         }
-        return null; // is it safe?
+        return row_view;
     }
     
     protected final static int getIconId( String file ) {
@@ -456,7 +455,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                     uris[j++] = getItemName( cis.keyAt( i ), true );
             return uris;
         } catch( Exception e ) {
-            Log.e( getClass().getName(), "bitsToNames()", e );
+            Log.e( TAG, "bitsToNames()", e );
         }
         return null;
     }
@@ -498,7 +497,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             if( item.dir && acmi.position != 0 )
                 menu.add( 0, Commander.FAV_FLD, 0, commander.getContext().getString( R.string.fav_fld, item.name ) );
         } catch( Exception e ) {
-            Log.e( getClass().getName(), "populateContextMenu() " + e.getMessage(), e );
+            Log.e( TAG, "populateContextMenu() " + e.getMessage(), e );
         }
     }    
 

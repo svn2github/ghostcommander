@@ -78,7 +78,6 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
         fingerFriendly =  sharedPref.getBoolean( "finger_friendly", true );
-        setFingerFriendly( fingerFriendly );
         warnOnRoot = sharedPref.getBoolean( "prevent_root", true );
         rootOnRoot = sharedPref.getBoolean( "root_root", false );
         arrow_mode = sharedPref.getBoolean( "arrow_mode", false );
@@ -86,6 +85,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         
         initList( LEFT );
         initList( RIGHT );
+        
+        setFingerFriendly( fingerFriendly );
         highlightCurrentTitle();
         
         TextView left_title = (TextView)c.findViewById( titlesIds[LEFT] );
@@ -234,6 +235,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         }
     }
     private final void highlightCurrentTitle() {
+        if( mainView == null ) return;
         View title_bar = mainView.findViewById( R.id.titles );
         if( title_bar != null )
             title_bar.setBackgroundColor( titleColor );
@@ -374,10 +376,12 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                     else
                         title.setPadding( 8, 1, 8, 1 );
                 }
-                list[p].setFingerFriendly( finger_friendly );
+                if( list[p] != null )
+                    list[p].setFingerFriendly( finger_friendly );
             }
         }
         catch( Exception e ) {
+            Log.e( TAG, null, e );
         }
     }
     public final void makeOtherAsCurrent() {
