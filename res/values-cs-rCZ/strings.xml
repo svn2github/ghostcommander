@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 <string name="app_name">Ghost Commander</string>
 <string name="file">Soubor</string>
@@ -124,7 +124,7 @@
 <string name="unpacking">Rozbalování \n\"%s\"...</string><!-- !!! -->
 <string name="unpacked_p">Rozbaleno \n\"%s\"   </string><!-- !!! -->
 <string name="packing">Zabaluji \n\"%s\"...</string><!-- !!! -->
-<string name="retrieving">Obnovování \n\"%s\"...</string><!-- !!! -->
+<string name="retrieving">Získávání \n\"%s\"...</string><!-- !!! -->
 <string name="uploading">Uploadování \n\"%s\"...</string><!-- !!! -->
 <string name="uploaded_p">Uploadováno \n\"%s\"   </string><!-- !!! -->
 <string name="canceled">Zrušeno</string><!-- !!! -->
@@ -196,7 +196,7 @@
 <string name="summary_show_icons">Zobrazit ikonu typu souboru</string>
 <string name="show_toolbar">Zobrazit panel nástrojů</string>
 <string name="summary_show_toolbar">Zobrazit nebo schovat tlačítka panelu nástrojů vespodu obrazovky</string>
-<string name="toolbar_preference">Volba zobrazených tlačítka</string>
+<string name="toolbar_preference">Volba zobrazených tlačítek</string>
 <string name="summary_toolbar_preference">Upravit seznam tlačítek panelu nástrojů</string>
 <string name="show_F1">Zobrazit « 1 Náp.»</string>
 <string name="show_F2">Zobrazit « 2 Přejm.»</string>
@@ -222,9 +222,9 @@
 <string name="finger_friendly">Přizpůsobení pro dotyk</string>
 <string name="summary_finger_friendly">Zvětšit prvky uživatelského rozhraní</string>
 <string name="prevent_root">Varovat při opuštění SD</string>
-<string name="summary_prevent_root">Zobrazit varovnou hlášku při přechodu do root \'\\\' složky zařízení</string>
+<string name="summary_prevent_root">Zobrazit varovnou hlášku při přechodu do root \'/\' složky zařízení</string>
 <string name="root_root">Root mód při opuštění složky /sdcard</string><!-- !!! -->
-<string name="summary_root_root">Automaticky nastaví \"root:\" mód při přechodu do root složky (ne do /sdcard).</string><!-- !!! -->
+<string name="summary_root_root">Automaticky nastaví \"root\" mód při přechodu do root \'/\' složky (ne do /sdcard).</string><!-- !!! -->
 <string name="thumbnails">Povolit miniatury</string>
 <string name="summary_thumbnails">Zobrazit miniatury obrázků místo obecné ikony pro obrázek</string>
 <string name="thumbnails_size">Velikost miniatur</string>
