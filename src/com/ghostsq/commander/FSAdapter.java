@@ -100,7 +100,7 @@ public class FSAdapter extends CommanderAdapterBase {
                 else
                     dir_name = dirName;
                 if( dir_name == null ) {
-                    commander.notifyMe( new Commander.Notify( "invalid path: " + ( d == null ? "null" : d.toString() ), Commander.OPERATION_FAILED ) );
+                    commander.notifyMe( new Commander.Notify( s( R.string.inv_path ) + ": " + ( d == null ? "null" : d.toString() ), Commander.OPERATION_FAILED ) );
                     Log.e( TAG, "Unable to obtain folder of the folder name" );
                     return false;
                 }
@@ -111,7 +111,7 @@ public class FSAdapter extends CommanderAdapterBase {
                     err_msg = commander.getContext().getString( R.string.no_such_folder, dir_name );
                 String parent_path;
                 if( dir == null || ( parent_path = dir.getParent() ) == null || ( d = Uri.parse( parent_path ) ) == null ) {
-                    commander.notifyMe( new Commander.Notify( "invalid path", Commander.OPERATION_FAILED ) );
+                    commander.notifyMe( new Commander.Notify( s( R.string.inv_path ), Commander.OPERATION_FAILED ) );
                     Log.e( TAG, "Wrong folder '" + dir_name + "'" );
                     return false;
                 }
@@ -312,13 +312,7 @@ public class FSAdapter extends CommanderAdapterBase {
             File file = items[position - 1].f;
             if( file == null ) return;
             if( file.isDirectory() ) {
-                if( dirName != null ) {
-                    if( dirName.charAt( dirName.length() - 1 ) != File.separatorChar )
-                        dirName += File.separatorChar;
-                    
-                    String full_path = ( dirName + file.getName() + File.separatorChar );
-                    commander.Navigate( Uri.parse( Utils.escapeUriMarkup( full_path ) ), null );
-                }
+                commander.Navigate( Uri.parse( Utils.escapeUriMarkup( file.getAbsolutePath() ) ), null );
             }
             else {
                 String ext = Utils.getFileExt( file.getName() );

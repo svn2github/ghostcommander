@@ -366,8 +366,13 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                             //Log.v( TAG, "Requesting an ahead thumbnail creation!!! " );                            
                         }
                         imgView.setMaxWidth( icoWidth );
-                        imgView.setImageResource( item.dir || item.name.equals( SLS ) || 
-                               item.name.equals( PLS ) ? R.drawable.folder : getIconId( name ) );
+                        try {
+                            imgView.setImageResource( item.dir || item.name.equals( SLS ) || 
+                                   item.name.equals( PLS ) ? R.drawable.folder : getIconId( name ) );
+                        }
+                        catch( OutOfMemoryError e ) {
+                            Log.e( TAG, "", e );
+                        }
                     }
                 }
                 else

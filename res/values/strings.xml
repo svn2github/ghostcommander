@@ -122,6 +122,7 @@
     <string name="rename_err">Nothing to rename.</string>
     <string name="no_items">There are no valid files to complete the operation.</string>
     <string name="inv_dest">Invalid destination</string>
+    <string name="inv_path">Invalid path</string>
     <string name="find_on_fs_only">The search feature works only with the local file system.</string>
     <string name="op_not_alwd">The \'%1$s\' is not allowed. Select something first.</string><!-- copy_title/move_title -->
     <string name="copy_to_local_only">It\'s possible to copy to the local filesystem only.</string>    

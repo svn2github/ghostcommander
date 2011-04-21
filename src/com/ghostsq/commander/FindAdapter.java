@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.zip.ZipEntry;
 
 import com.ghostsq.commander.FSAdapter.FilePropComparator;
 
@@ -58,6 +59,16 @@ public class FindAdapter extends FSAdapter {
         return false;
     }
     
+    @Override
+    public void openItem( int position ) {
+        if( position == 0 ) { // ..
+            if( uri != null ) {
+                commander.Navigate( Uri.parse( uri.getPath() ), null );
+            }
+            return;
+        }
+        super.openItem( position );
+    }
     
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
@@ -104,14 +115,22 @@ public class FindAdapter extends FSAdapter {
 
     class SearchEngine extends Engine {
         private String[] cards;
+        private String match;
         private String path; 
         private ArrayList<File> result;
         private int depth = 0;
         private String pass_back_on_done;
         
-        SearchEngine( Handler h, String match, String path_, String pass_back_on_done_ ) {
+        SearchEngine( Handler h, String match_, String path_, String pass_back_on_done_ ) {
             super( h );
-            cards = Utils.prepareWildcard( match );
+            if( match_.indexOf( '*' ) >= 0 ){
+                cards = Utils.prepareWildcard( match_ );
+                match = null;
+            }
+            else {
+                cards = null;
+                match = match_;
+            }
             path = path_;
             pass_back_on_done = pass_back_on_done_;
         }
@@ -140,9 +159,11 @@ public class FindAdapter extends FSAdapter {
                         throw new Exception( commander.getContext().getString( R.string.interrupted ) );
                     File f = subfiles[i];
                     
-                    if( Utils.match( f.getName(), cards ) ) {
+                    if( cards != null && Utils.match( f.getName(), cards ) )
                         result.add( f );
-                    }
+                    if( match != null && f.getName().contains( match ) )
+                        result.add( f );
+                    
                     if( f.isDirectory() ) {
                         if( depth++ > 30 )
                             throw new Exception( commander.getContext().getString( R.string.too_deep_hierarchy ) );
