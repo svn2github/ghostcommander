@@ -22,7 +22,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TableLayout;
-import android.widget.Toast;
 
 public abstract class CommanderAdapterBase extends BaseAdapter implements CommanderAdapter {
     protected final static String NOTIFY_STR = "str", NOTIFY_PRG1 = "prg1", NOTIFY_PRG2 = "prg2", NOTIFY_COOKIE = "cookie"; 
@@ -48,6 +47,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     public    int     shownFrom = 0, shownNum = 3;
 
     // URI shemes hash codes
+    private static final int  home_schema_h =   "home".hashCode();  
     private static final int   zip_schema_h =   "zip".hashCode();  
     private static final int   ftp_schema_h =   "ftp".hashCode();  
     private static final int  find_schema_h =  "find".hashCode();  
@@ -59,6 +59,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     private static final int gdocs_schema_h = "gdocs".hashCode();
     // adapters names hash codes
     private static final int type_h_fs    = "file".hashCode();   
+    private static final int type_h_home  = home_schema_h;  
     private static final int type_h_zip   = zip_schema_h;  
     private static final int type_h_ftp   = ftp_schema_h; 
     private static final int type_h_find  = find_schema_h;
@@ -73,6 +74,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     final static int GetAdapterTypeHash( String scheme ) {
         if( scheme == null ) return type_h_fs; 
         final int scheme_h = scheme.hashCode();
+        if( home_schema_h == scheme_h )  return type_h_home;   
         if(  zip_schema_h == scheme_h )  return type_h_zip;   
         if(  ftp_schema_h == scheme_h )  return type_h_ftp;  
         if( find_schema_h == scheme_h )  return type_h_find;  
@@ -87,9 +89,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
 
     final static CommanderAdapter CreateAdapter( int type_h, Commander c ) {
         CommanderAdapter ca = null;
-        if( type_h == type_h_fs  )  ca = new FSAdapter( c );    else
-        if( type_h == type_h_zip )  ca = new ZipAdapter( c );   else
-        if( type_h == type_h_ftp )  ca = new FTPAdapter( c );   else
+        if( type_h == type_h_fs   ) ca = new FSAdapter( c );    else
+        if( type_h == type_h_home ) ca = new HomeAdapter( c );  else
+        if( type_h == type_h_zip  ) ca = new ZipAdapter( c );   else
+        if( type_h == type_h_ftp  ) ca = new FTPAdapter( c );   else
         if( type_h == type_h_find ) ca = new FindAdapter( c );  else
         if( type_h == type_h_root ) ca = new RootAdapter( c );  else
         if( type_h == type_h_mnt  ) ca = new MountAdapter( c ); else
@@ -367,8 +370,8 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                         }
                         imgView.setMaxWidth( icoWidth );
                         try {
-                            imgView.setImageResource( item.dir || item.name.equals( SLS ) || 
-                                   item.name.equals( PLS ) ? R.drawable.folder : getIconId( name ) );
+                            imgView.setImageResource( item.icon_id != -1 ? item.icon_id : 
+                               ( item.dir || item.name.equals( SLS ) || item.name.equals( PLS ) ? R.drawable.folder : getIconId( name ) ) );
                         }
                         catch( OutOfMemoryError e ) {
                             Log.e( TAG, "", e );

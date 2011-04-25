@@ -22,9 +22,10 @@ public interface CommanderAdapter {
         public String   name = "";
         public Date     date = null;
         public long     size = -1;
-        public boolean  dir, sel;
+        public boolean  dir = false, sel = false;
         public String   attr = "";
         public Object   origin = null;
+        public int      icon_id = -1;
         public Drawable thumbnail = null;
         public boolean  need_thumb = false, no_thumb = false;
     }

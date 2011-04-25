@@ -45,7 +45,7 @@ public class MountAdapter extends CommanderAdapterBase {
         if( engine instanceof MountsListEngine ) {
             MountsListEngine list_engine = (MountsListEngine)engine;
             items = list_engine.getItems();
-            numItems = items != null ? items.length : 0;
+            numItems = items != null ? items.length + 1 : 0;
             notifyDataSetChanged();
         }
     }
@@ -230,9 +230,9 @@ public class MountAdapter extends CommanderAdapterBase {
                     String mp = curItem.getMountPoint();
                     if( mp != null ) {
                         if( "/system".equals( mp ) )
-                            item.thumbnail = commander.getContext().getResources().getDrawable( R.drawable.application );
+                            item.icon_id = R.drawable.application;
                         else if( mp.contains( "/sdcard" ) )
-                            item.thumbnail = commander.getContext().getResources().getDrawable( R.drawable.sd );
+                            item.icon_id = R.drawable.sd;
                     }
                     item.dir = false;
                     item.name = curItem.getName();

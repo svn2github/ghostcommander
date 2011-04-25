@@ -32,6 +32,14 @@
     
     <string name="remount_b">Remount /system</string>
     <string name="remount">Remount</string>
+
+
+    <string name="local">Local /sdcard</string>
+    <string name="ftp">FTP site</string>
+    <string name="smb">Samba (Windows) share</string>
+    <string name="root">root mode</string>
+    <string name="mount">Mount points</string>
+    <string name="apps">Installed applications</string>
     
     <string name="enter_ftp">&#xA0; Open FTP site</string>
     <string name="enter_smb">&#xA0; Open Samba (Windows) share</string>

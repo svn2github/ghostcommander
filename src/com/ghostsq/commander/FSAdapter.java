@@ -685,6 +685,7 @@ public class FSAdapter extends CommanderAdapterBase {
                         for( long start = 0; start < size; start += chunk ) {
                         	sendProgress( c.getString( R.string.copying, fn ), so_far, (int)(bytes * conv) );
                         	bytes += in.transferTo( start, chunk, out );
+//Log.v( TAG, "copying..." );
                             if( stop || isInterrupted() ) {
                                 error( c.getString( R.string.canceled ) );
                                 return counter;
