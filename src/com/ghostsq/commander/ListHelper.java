@@ -43,34 +43,36 @@ public class ListHelper {
 
     public final void Navigate( Uri uri, String posTo ) {
         try {
+            Log.v( TAG, "Navigate to " + uri );
+            
             flv.clearChoices();
             flv.invalidateViews();
-            CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
+            CommanderAdapter ca_old = (CommanderAdapter)flv.getAdapter();
+            CommanderAdapter ca_new = null;
             String scheme = uri.getScheme();
             int type_h = CommanderAdapterBase.GetAdapterTypeHash( scheme );
-            if( ca == null || type_h != ca.getType().hashCode() ) {
-                if( ca != null )
-                    ca.prepareToDestroy();
-                ca = null;
-               ca = CommanderAdapterBase.CreateAdapter( type_h, p.c );
-                if( ca == null )
-                    Log.e( TAG, "Unknown adapter with type hash " + type_h );
-                else {
-                    flv.setAdapter( (ListAdapter)ca );
-                    flv.setOnKeyListener( p );
-                    ca.setMode( CommanderAdapter.MODE_WIDTH, 
-                        p.sxs ? CommanderAdapter.NARROW_MODE : CommanderAdapter.WIDE_MODE );
-                    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( p.c );
-                    applySettings( sharedPref );
-                    //flv.setSelection( 1 );
+            if( ca_old == null || type_h != ca_old.getType().hashCode() ) {
+                ca_new = CommanderAdapterBase.CreateAdapter( type_h, p.c );
+                if( ca_new == null ) {
+                    Log.e( TAG, "Can't create adapter of type '" + scheme + "'" );
+                    if( ca_old != null )
+                        return;
+                    ca_new = CommanderAdapterBase.CreateAdapter( CommanderAdapterBase.GetAdapterTypeHash( null ), p.c );
                 }
+                if( ca_old != null )
+                    ca_old.prepareToDestroy();
+                flv.setAdapter( (ListAdapter)ca_new );
+                flv.setOnKeyListener( p );
+                ca_new.setMode( CommanderAdapter.MODE_WIDTH, 
+                    p.sxs ? CommanderAdapter.NARROW_MODE : CommanderAdapter.WIDE_MODE );
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( p.c );
+                applySettings( sharedPref );
+                ca_old = ca_new;
             }
-            if( ca == null ) return;
             p.applyColors();
             p.setPanelTitle( p.c.getString( R.string.wait ), which );
-            p.setToolbarButtons( ca );
-            
-            ca.readSource( uri, "" + which + ( posTo == null ? "" : posTo ) );
+            p.setToolbarButtons( ca_old );
+            ca_old.readSource( uri, "" + which + ( posTo == null ? "" : posTo ) );
         } catch( Exception e ) {
             Log.e( TAG, "NavigateInternal()", e );
         }

@@ -64,6 +64,7 @@ public class FSAdapter extends CommanderAdapterBase {
     public FSAdapter( Commander c, Uri d, int mode_ ) {
     	super( c, mode_ );
     	dirName = d == null ? DEFAULT_DIR : d.getPath();
+        notifyDataSetChanged();
         items = null;
     }
     @Override
@@ -88,6 +89,7 @@ public class FSAdapter extends CommanderAdapterBase {
     @Override
     public boolean readSource( Uri d, String pass_back_on_done ) {
     	try {
+
     	    if( worker != null ) worker.reqStop();
             File[] files_ = null; 
             String dir_name = null;
@@ -104,6 +106,7 @@ public class FSAdapter extends CommanderAdapterBase {
                     Log.e( TAG, "Unable to obtain folder of the folder name" );
                     return false;
                 }
+                Log.v( TAG, "readSource() path=" + dir_name );                
                 dir = new File( dir_name );
                 files_ = dir.listFiles();
                 if( files_ != null ) break;
@@ -123,8 +126,11 @@ public class FSAdapter extends CommanderAdapterBase {
             startThumbnailCreation();
             commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pass_back_on_done ) );
             return true;
-		} catch( Exception e ) {
-			Log.e( TAG, "readSource() excception", e );
+        } catch( Exception e ) {
+            Log.e( TAG, "readSource() excception", e );
+        } catch( OutOfMemoryError err ) {
+            Log.e( TAG, "Out Of Memory", err );
+            commander.notifyMe( new Commander.Notify( s( R.string.oom_err ), Commander.OPERATION_FAILED ) );
 		}
 		return false;
     }
@@ -682,10 +688,12 @@ public class FSAdapter extends CommanderAdapterBase {
                         final long max_chunk = 524288;
                         long chunk = size > max_chunk ? max_chunk : size;
                         int  so_far = (int)(bytes * conv);
+                        String rep_s = c.getString( R.string.copying, fn ); 
                         for( long start = 0; start < size; start += chunk ) {
-                        	sendProgress( c.getString( R.string.copying, fn ), so_far, (int)(bytes * conv) );
+// debug only, to remove!
+//Log.v( TAG, rep_s + " " + (int)(bytes * conv) );
+                        	sendProgress( rep_s, so_far, (int)(bytes * conv) );
                         	bytes += in.transferTo( start, chunk, out );
-//Log.v( TAG, "copying..." );
                             if( stop || isInterrupted() ) {
                                 error( c.getString( R.string.canceled ) );
                                 return counter;
@@ -697,6 +705,9 @@ public class FSAdapter extends CommanderAdapterBase {
                         out = null;
                         if( i >= list.length-1 )
                         	sendProgress( c.getString( R.string.copied_f, fn ), (int)(bytes * conv) );
+                        
+// debug only, to remove!
+//Log.v( TAG, c.getString( R.string.copied_f, fn ) );
                         counter++;
                     }
                     if( move )
@@ -710,7 +721,8 @@ public class FSAdapter extends CommanderAdapterBase {
                     error( c.getString( R.string.not_accs, e.getMessage() ) );
                 }
                 catch( IOException e ) {
-                    error( c.getString( R.string.acc_err, uri, e.getMessage() ) );
+                    String msg = e.getMessage();
+                    error( c.getString( R.string.acc_err, uri, msg != null ? msg : "" ) );
                 }
                 catch( RuntimeException e ) {
                     error( c.getString( R.string.rtexcept, uri, e.getMessage() ) );

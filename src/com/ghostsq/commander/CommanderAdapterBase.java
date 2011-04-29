@@ -47,7 +47,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     public    int     shownFrom = 0, shownNum = 3;
 
     // URI shemes hash codes
-    private static final int  home_schema_h =   "home".hashCode();  
+    private static final int  home_schema_h =  "home".hashCode();  
     private static final int   zip_schema_h =   "zip".hashCode();  
     private static final int   ftp_schema_h =   "ftp".hashCode();  
     private static final int  find_schema_h =  "find".hashCode();  

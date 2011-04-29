@@ -161,6 +161,7 @@
     <string name="uploaded_p">Uploaded \n\"%s\"   </string>
     
     <string name="canceled">Canceled</string>
+    <string name="oom_err">Out of memory</string>
     <string name="unkn_err">Unknown error</string>
     <string name="cant_md">Unable to create directory \"%s\"</string>
     <string name="file_exist">File \"%s\" already exist in the destination folder.</string>
@@ -367,8 +368,7 @@ copied >5 will produce:
     <string name="donate">&#xA0; Donate</string>
     <string name="online_help">&#xA0; Online Help</string>
 
-    <string name="donation">Do you like this application? Really? How about to make a little donation
-    of any amount to support the further development?\n
+    <string name="donation">A little donation will support the further development.\n
 Tap \"Ok\" to easily do that via PayPal.\n
 \"Cancel\" to enjoy the &#xAB;Ghost Commander&#xBB; file manager for free.\n
     </string>

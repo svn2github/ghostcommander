@@ -681,11 +681,11 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         }
         catch( Exception e ) {
             showDialog( dialog_id );
-            Log.e( TAG, "Load class failed: ", e );
+            Log.e( TAG, "CreateExternalAdapter("+ type +") failed", e );
         }
         catch( Error e ) {
             showError( "Can not load the " + type + " class - an Error was thrown: " + e + "\nPlease report to the application develeoper." );
-            Log.e( TAG, "Loading " + type + " class failed: ", e );
+            Log.e( TAG, "CreateExternalAdapter("+ type +") failed", e );
         }
         return null;
     }    
