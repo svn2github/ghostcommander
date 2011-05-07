@@ -41,7 +41,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected int     mode = 0;
     protected boolean ascending = true;
     protected String  parentLink;
-    protected Engine  worker = null;
     private   CommanderAdapter recipient = null;
     protected int     numItems = 0;
     public    int     shownFrom = 0, shownNum = 3;
@@ -100,8 +99,30 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         if( type_h == type_h_smb  ) ca = c.CreateExternalAdapter( "samba", "SMBAdapter", R.id.smb );
         return ca;
     }
+
+    // Virtual method - to override!
+    // derived adapter classes need to override this to take the obtained items array and notify the dataset change
+    protected void onReadComplete() {  
+    }
     
-    protected Handler handler = new Handler() {
+    protected class ReaderHandler extends Handler {
+        public void handleMessage( Message msg ) {
+            try {
+                Bundle b = msg.getData();
+                int code = b.getInt( CommanderAdapterBase.NOTIFY_PRG1 );
+                String str = b.getString( CommanderAdapterBase.NOTIFY_STR );
+                String cookie = b.getString( CommanderAdapterBase.NOTIFY_COOKIE );
+                onReadComplete();
+                reader = null;
+                Commander.Notify n_obj = new Commander.Notify( str, code, cookie );
+                commander.notifyMe( n_obj );
+            } catch( Exception e ) {
+                e.printStackTrace();
+            }
+        }
+    };    
+
+    protected class WorkerHandler extends Handler {
         public void handleMessage( Message msg ) {
             try {
                 Bundle b = msg.getData();
@@ -120,21 +141,20 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 int perc1 = b.getInt( CommanderAdapterBase.NOTIFY_PRG1 );
                 int perc2 = b.getInt( CommanderAdapterBase.NOTIFY_PRG2, -1 );
                 String str = b.getString( CommanderAdapterBase.NOTIFY_STR );
-                String cookie = b.getString( CommanderAdapterBase.NOTIFY_COOKIE );
-                if( perc1 < 0 ) {
-                    onComplete( worker );
+                if( perc1 < 0 ) // the thread is done
                     worker = null;
-                }
-                Commander.Notify n_obj = cookie == null || cookie.length() == 0 ?
-                     new Commander.Notify( str, perc1, perc2 ) :
-                     new Commander.Notify( str, perc1, cookie );
+                Commander.Notify n_obj = new Commander.Notify( str, perc1, perc2 );
                 commander.notifyMe( n_obj );
             } catch( Exception e ) {
                 e.printStackTrace();
             }
         }
-    };
-    
+    };    
+
+    protected Engine  reader = null, worker = null;
+    protected WorkerHandler workerHandler = new WorkerHandler();
+    protected ReaderHandler readerHandler = new ReaderHandler();
+   
     protected CommanderAdapterBase() {
         // don't forget to call the Init( c ) method  if  the default constructor can be called!
     }
@@ -196,35 +216,32 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     @Override
     public void terminateOperation() {
         Log.i( TAG, "terminateOperation()" );
-        if( worker != null ) {
+        if( worker != null )
             worker.reqStop();
-        }
     }
     @Override
     public void prepareToDestroy() {
         Log.i( TAG, "prepareToDestroy()" );
-        if( worker != null ) {
-            worker.reqStop();
-            worker = null;
-        }
+        terminateOperation();
+        worker = null;
+        if( reader != null )
+            reader.reqStop();
+        reader = null;
     }
 
-    public boolean isWorkerStillAlive() {
+    public final boolean isWorkerStillAlive() {
         if( worker == null ) return false;
         return worker.reqStop();
     }
-    // Virtual
-    protected void onComplete( Engine engine ) { // to override who need do something in the UI thread on an engine completion
-    }
     
-    protected String createTempDir() {
+    protected final String createTempDir() {
         Date d = new Date();
         File temp_dir = new File( DEFAULT_DIR + "/temp/gc_" + d.getHours() + d.getMinutes() + d.getSeconds() );
         temp_dir.mkdirs();
         return temp_dir.getAbsolutePath();
     }
 
-    protected int setRecipient( CommanderAdapter to ) {
+    protected final int setRecipient( CommanderAdapter to ) {
         if( recipient != null )
             Log.e( TAG, "Recipient is not null!!!" );
         recipient = to;

@@ -528,8 +528,21 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             return;
         }
     }
-            
-    public final void Destroying() {
+
+    public final void terminateOperation() {
+        CommanderAdapter a = getListAdapter( true );
+        a.terminateOperation();
+        if( a == destAdapter ) destAdapter = null;
+        CommanderAdapter p = getListAdapter( false );
+        p.terminateOperation();
+        if( p == destAdapter ) destAdapter = null;
+        if( null != destAdapter ) {
+            destAdapter.terminateOperation();
+            destAdapter = null;
+        }
+    }
+    
+    public final void Destroy() {
         getListAdapter( false ).prepareToDestroy();
         getListAdapter( true  ).prepareToDestroy();
     }
@@ -670,19 +683,6 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 	public final void openGoPanel() {
 		shorcutsFoldersList.openGoPanel( current, getFolderUri( true ) );
 	}
-	
-    public final void terminateOperation() {
-        CommanderAdapter a = getListAdapter( true );
-        a.terminateOperation();
-        if( a == destAdapter ) destAdapter = null;
-        CommanderAdapter p = getListAdapter( false );
-        p.terminateOperation();
-        if( p == destAdapter ) destAdapter = null;
-        if( null != destAdapter ) {
-            destAdapter.terminateOperation();
-            destAdapter = null;
-        }
-    }
     public final void operationFinished() {
         if( null != destAdapter )
             destAdapter = null;

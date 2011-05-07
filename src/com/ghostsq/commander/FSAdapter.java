@@ -346,7 +346,7 @@ public class FSAdapter extends CommanderAdapterBase {
     		if( worker != null && worker.reqStop() )
    		        return;
     		commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-    		worker = new CalcSizesEngine( handler, list );
+    		worker = new CalcSizesEngine( workerHandler, list );
     		worker.setName( TAG + ".CalcSizesEngine" );
        		worker.start();
 		}
@@ -488,7 +488,7 @@ public class FSAdapter extends CommanderAdapterBase {
        		        return false;
         		}
         		commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-        		worker = new DeleteEngine( handler, list );
+        		worker = new DeleteEngine( workerHandler, list );
         		worker.setName( TAG + ".DeleteEngine" );
         		worker.start();
         	}
@@ -590,7 +590,7 @@ public class FSAdapter extends CommanderAdapterBase {
                     return false;
                 }
                 commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            	worker = new CopyEngine( handler, list, dirName, ( move_mode & MODE_MOVE ) != 0 );
+            	worker = new CopyEngine( workerHandler, list, dirName, ( move_mode & MODE_MOVE ) != 0 );
             	worker.setName( TAG + ".CopyEngine" );
             	worker.start();
 	            return true;

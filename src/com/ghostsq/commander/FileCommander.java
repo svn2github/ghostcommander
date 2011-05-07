@@ -151,7 +151,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     protected void onDestroy() {
         Log.v( TAG, "Destroying\n");
         on = false;
-        //panels.Destroying();
+        //panels.Destroy();
         super.onDestroy();
         if( isFinishing() && exit ) {
             Log.i( TAG, "Good bye cruel world...");

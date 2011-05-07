@@ -40,10 +40,10 @@ public class MountAdapter extends CommanderAdapterBase {
     }
     
     @Override
-    protected void onComplete( Engine engine ) {
+    protected void onReadComplete() {
         attempts = 0;
-        if( engine instanceof MountsListEngine ) {
-            MountsListEngine list_engine = (MountsListEngine)engine;
+        if( reader instanceof MountsListEngine ) {
+            MountsListEngine list_engine = (MountsListEngine)reader;
             items = list_engine.getItems();
             numItems = items != null ? items.length + 1 : 0;
             notifyDataSetChanged();
@@ -103,7 +103,7 @@ public class MountAdapter extends CommanderAdapterBase {
             }
             
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            worker = new MountsListEngine( commander.getContext(), handler, pass_back_on_done );
+            worker = new MountsListEngine( commander.getContext(), readerHandler, pass_back_on_done );
             worker.start();
             return true;
         }
@@ -159,7 +159,7 @@ public class MountAdapter extends CommanderAdapterBase {
         if( isWorkerStillAlive() )
             commander.notifyMe( new Commander.Notify( s( R.string.busy ), Commander.OPERATION_FAILED ) );
         else {
-            worker = new CreateEngine( commander.getContext(), handler, dev_mp_pair );
+            worker = new CreateEngine( commander.getContext(), workerHandler, dev_mp_pair );
             worker.start();
         }
 	}
@@ -190,7 +190,7 @@ public class MountAdapter extends CommanderAdapterBase {
             if( isWorkerStillAlive() )
                 commander.notifyMe( new Commander.Notify( s( R.string.busy ), Commander.OPERATION_FAILED ) );
             else {
-                worker = new RemountEngine( commander.getContext(), handler, item );
+                worker = new RemountEngine( commander.getContext(), workerHandler, item );
                 worker.start();
             }
         } catch( Exception e ) {

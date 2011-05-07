@@ -62,9 +62,9 @@ public class AppsAdapter extends CommanderAdapterBase {
         }
     }
     @Override
-    protected void onComplete( Engine engine ) {
-        if( engine instanceof ListEngine ) {
-            ListEngine list_engine = (ListEngine)engine;
+    protected void onReadComplete() {
+        if( reader instanceof ListEngine ) {
+            ListEngine list_engine = (ListEngine)reader;
             items = list_engine.getItems();
             numItems = items != null ? items.length : 0;
             notifyDataSetChanged();
@@ -89,18 +89,18 @@ public class AppsAdapter extends CommanderAdapterBase {
     @Override
     public boolean readSource( Uri tmp_uri, String pass_back_on_done ) {
         try {
-            if( worker != null ) {
-                if( worker.reqStop() ) { // that's not good.
+            if( reader != null ) {
+                if( reader.reqStop() ) { // that's not good.
                     Thread.sleep( 500 );      // will it end itself?
-                    if( worker.isAlive() ) {
+                    if( reader.isAlive() ) {
                         Log.e( TAG, "Busy!" );
                         return false;
                     }
                 }
             }
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            worker = new ListEngine( handler, pass_back_on_done );
-            worker.start();
+            reader = new ListEngine( readerHandler, pass_back_on_done );
+            reader.start();
             return true;
         }
         catch( Exception e ) {

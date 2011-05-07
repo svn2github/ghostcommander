@@ -152,9 +152,9 @@ public class FTPAdapter extends CommanderAdapterBase {
         }
     }
     @Override
-    protected void onComplete( Engine engine ) {
-        if( engine instanceof ListEngine ) {
-            ListEngine list_engine = (ListEngine)engine;
+    protected void onReadComplete() {
+        if( reader instanceof ListEngine ) {
+            ListEngine list_engine = (ListEngine)reader;
             items = null;
             if( ( mode & MODE_HIDDEN ) == HIDE_MODE ) {
                 LsItem[] tmp_items = list_engine.getItems();
@@ -230,23 +230,23 @@ public class FTPAdapter extends CommanderAdapterBase {
             else
                 if( uri == null )
                     return false;
-            if( worker != null ) { // that's not good.
-            	if( worker.isAlive() ) {
+            if( reader != null ) { // that's not good.
+            	if( reader.isAlive() ) {
             	    Log.w( TAG, "Busy..." );
-            		if( worker.isInterrupted() ) {	// cruel force
+            		if( reader.isInterrupted() ) {	// cruel force
 		            	ftp.logout( false );
 		            	ftp.disconnect();	
             		}
             		else
-            			worker.reqStop();
+            			reader.reqStop();
 	            	Thread.sleep( 500 );      // it has ended itself!
-	            	if( worker.isAlive() ) 
+	            	if( reader.isAlive() ) 
 	            		return false;      
             	}
             }
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            worker = new ListEngine( handler, need_reconnect, pass_back_on_done );
-            worker.start();
+            reader = new ListEngine( readerHandler, need_reconnect, pass_back_on_done );
+            reader.start();
             return true;
         }
         catch( Exception e ) {
@@ -282,7 +282,7 @@ public class FTPAdapter extends CommanderAdapterBase {
                 rec_h = setRecipient( to ); 
             }
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            worker = new CopyFromEngine( handler, subItems, dest, move, rec_h );
+            worker = new CopyFromEngine( workerHandler, subItems, dest, move, rec_h );
             worker.start();
             return true;
         }
@@ -440,7 +440,7 @@ public class FTPAdapter extends CommanderAdapterBase {
         	LsItem[] subItems = bitsToItems( cis );
         	if( subItems != null ) {
         	    commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-                worker = new DelEngine( handler, subItems );
+                worker = new DelEngine( workerHandler, subItems );
                 worker.start();
 	            return true;
         	}
@@ -571,7 +571,7 @@ public class FTPAdapter extends CommanderAdapterBase {
             	return false;
             }
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            worker = new CopyToEngine( handler, list, move_mode );
+            worker = new CopyToEngine( workerHandler, list, move_mode );
             worker.start();
             return true;
 		} catch( Exception e ) {

@@ -53,19 +53,19 @@ public class ZipAdapter extends CommanderAdapterBase {
                 uri = tmp_uri;
             if( uri == null )
                 return false;
-            if( worker != null ) { // that's not good.
-                if( worker.isAlive() ) {
+            if( reader != null ) { // that's not good.
+                if( reader.isAlive() ) {
                     commander.showInfo( commander.getContext().getString( R.string.busy ) );
-                    worker.interrupt();
+                    reader.interrupt();
                     Thread.sleep( 500 );      
-                    if( worker.isAlive() ) 
+                    if( reader.isAlive() ) 
                         return false;      
                 }
             }
             Log.v( TAG, "reading " + uri );
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            worker = new ListEngine( handler, pass_back_on_done );
-            worker.start();
+            reader = new ListEngine( readerHandler, pass_back_on_done );
+            reader.start();
             return true;
         }
         catch( Exception e ) {
@@ -182,9 +182,9 @@ public class ZipAdapter extends CommanderAdapterBase {
         }
     }
     @Override
-    protected void onComplete( Engine engine ) {
-        if( engine instanceof ListEngine ) {
-            ListEngine list_engine = (ListEngine)engine;
+    protected void onReadComplete() {
+        if( reader instanceof ListEngine ) {
+            ListEngine list_engine = (ListEngine)reader;
             ZipEntry[] tmp_items = list_engine.getItems();
             if( tmp_items != null && ( mode & MODE_HIDDEN ) == HIDE_MODE ) {
                 int cnt = 0;
@@ -258,7 +258,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                 rec_h = setRecipient( to ); 
             }
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            worker = new CopyFromEngine( handler, subItems, dest, rec_h );
+            worker = new CopyFromEngine( workerHandler, subItems, dest, rec_h );
             worker.start();
             return true;
         }
@@ -403,7 +403,7 @@ public class ZipAdapter extends CommanderAdapterBase {
         	ZipEntry[] to_delete = bitsToItems( cis );
         	if( to_delete != null && zip != null && uri != null ) {
         	    commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-                worker = new DelEngine( handler, new File( uri.getPath() ), to_delete );
+                worker = new DelEngine( workerHandler, new File( uri.getPath() ), to_delete );
                 worker.start();
 	            return true;
         	}
@@ -573,7 +573,7 @@ public class ZipAdapter extends CommanderAdapterBase {
             zip = null;
             items = null;
             
-            worker = new CopyToEngine( handler, list, new File( uri.getPath() ), uri.getFragment(), move_mode );
+            worker = new CopyToEngine( workerHandler, list, new File( uri.getPath() ), uri.getFragment(), move_mode );
             worker.start();
             return true;
 		} catch( Exception e ) {
@@ -586,7 +586,7 @@ public class ZipAdapter extends CommanderAdapterBase {
         try {
             if( !checkReadyness() ) return false;
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            worker = new CopyToEngine( handler, list, new File( zip_fn ) );
+            worker = new CopyToEngine( workerHandler, list, new File( zip_fn ) );
             worker.start();
             return true;
         } catch( Exception e ) {

@@ -36,7 +36,7 @@ public class FindAdapter extends FSAdapter {
     @Override
     public boolean readSource( Uri uri_, String pass_back_on_done ) {
         try {
-            if( worker != null ) worker.reqStop();
+            if( reader != null ) reader.reqStop();
             if( uri_ != null )
                 uri = uri_;
             if( uri == null )
@@ -46,8 +46,8 @@ public class FindAdapter extends FSAdapter {
                 String match = uri.getQueryParameter( "q" );
                 if( path != null && path.length() > 0 && match != null && match.length() > 0  ) {
                     commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-                    worker = new SearchEngine( handler, match, path, pass_back_on_done );
-                    worker.start();
+                    reader = new SearchEngine( readerHandler, match, path, pass_back_on_done );
+                    reader.start();
                     return true;
                 }
             }

@@ -153,10 +153,10 @@ public class RootAdapter extends CommanderAdapterBase {
         }
     }
     @Override
-    protected void onComplete( Engine engine ) {
+    protected void onReadComplete() {
         attempts = 0;
-        if( engine instanceof ListEngine ) {
-            ListEngine list_engine = (ListEngine)engine;
+        if( reader instanceof ListEngine ) {
+            ListEngine list_engine = (ListEngine)reader;
             items = null;
             if( ( mode & MODE_HIDDEN ) == HIDE_MODE ) {
                 LsItem[] tmp_items = list_engine.getItems();
@@ -178,14 +178,14 @@ public class RootAdapter extends CommanderAdapterBase {
             numItems = items != null ? items.length + 1 : 1;
             notifyDataSetChanged();
         } else
-        if( engine instanceof MountsListEngine ) {
-            MountsListEngine list_engine = (MountsListEngine)engine;
+        if( reader instanceof MountsListEngine ) {
+            MountsListEngine list_engine = (MountsListEngine)reader;
             MountItem[] mounts = list_engine.getItems();
             int num = mounts != null ? mounts.length : 0;
             for( int i = 0; i < num; i++ ) {
                 String mp = mounts[i].getMountPoint();
                 if( "/system".equals( mp ) ) {
-                    worker = new RemountEngine( commander.getContext(), handler, mounts[i] );
+                    worker = new RemountEngine( commander.getContext(), workerHandler, mounts[i] );
                     worker.start();
                     break;
                 }
@@ -221,14 +221,14 @@ public class RootAdapter extends CommanderAdapterBase {
                 tmp_uri = uri;
             if( tmp_uri == null )
                 return false;
-            if( worker != null ) {
+            if( reader != null ) {
                 if( attempts++ < 2 ) {
                     commander.showInfo( "Busy..." );
                     return false;
                 }
-                if( worker.reqStop() ) { // that's not good.
+                if( reader.reqStop() ) { // that's not good.
                     Thread.sleep( 500 ); // will it end itself?
-                    if( worker.isAlive() ) {
+                    if( reader.isAlive() ) {
                         Log.e( TAG, "Busy!" );
                         return false;
                     }
@@ -236,8 +236,8 @@ public class RootAdapter extends CommanderAdapterBase {
             }
             
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            worker = new ListEngine( commander.getContext(), handler, tmp_uri, pass_back_on_done );
-            worker.start();
+            reader = new ListEngine( commander.getContext(), readerHandler, tmp_uri, pass_back_on_done );
+            reader.start();
             return true;
         }
         catch( Exception e ) {
@@ -269,7 +269,7 @@ public class RootAdapter extends CommanderAdapterBase {
             	}
                 if( to_path != null ) {
                     commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-                    worker = new CopyFromEngine( commander.getContext(), handler, subItems, to_path, move, rec_h );
+                    worker = new CopyFromEngine( commander.getContext(), workerHandler, subItems, to_path, move, rec_h );
                     worker.start();
                     return true;
                 }
@@ -372,7 +372,7 @@ public class RootAdapter extends CommanderAdapterBase {
         if( isWorkerStillAlive() )
             commander.notifyMe( new Commander.Notify( "Busy", Commander.OPERATION_FAILED ) );
         else {
-            worker = new MkDirEngine( commander.getContext(), handler, new_name );
+            worker = new MkDirEngine( commander.getContext(), workerHandler, new_name );
             worker.start();
         }
     }
@@ -406,7 +406,7 @@ public class RootAdapter extends CommanderAdapterBase {
         	LsItem[] subItems = bitsToItems( cis );
         	if( subItems != null ) {
         	    commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-                worker = new DelEngine( commander.getContext(), handler, subItems );
+                worker = new DelEngine( commander.getContext(), workerHandler, subItems );
                 worker.start();
 	            return true;
         	}
@@ -540,7 +540,7 @@ public class RootAdapter extends CommanderAdapterBase {
             	return false;
             }
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            worker = new CopyToEngine( commander.getContext(), handler, full_names, 
+            worker = new CopyToEngine( commander.getContext(), workerHandler, full_names, 
                                      ( move_mode & MODE_MOVE ) != 0, uri.getPath(), false );
             worker.start();
             return true;
@@ -626,7 +626,7 @@ public class RootAdapter extends CommanderAdapterBase {
             a[0] = uri.getPath() + SLS + from.getName();
             String to = uri.getPath() + SLS + newName;
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            worker = new CopyToEngine( commander.getContext(), handler, a, true, to, true );
+            worker = new CopyToEngine( commander.getContext(), workerHandler, a, true, to, true );
             worker.start();
             return true;
         } catch( Exception e ) {
@@ -725,12 +725,12 @@ public class RootAdapter extends CommanderAdapterBase {
             else if( CMD_CMD == command_id )
                 new CmdDialog( commander.getContext(), selected_one ? items_todo[0] : null, this );
         } else if( R.id.remount == command_id ) {
-            if( isWorkerStillAlive() ) {
+            if( reader.isAlive() ) {
                 commander.showError( commander.getContext().getString( R.string.busy ) );
                 return;
             }
-            worker = new MountsListEngine( commander.getContext(), handler, null );
-            worker.start();
+            reader = new MountsListEngine( commander.getContext(), readerHandler, null );
+            reader.start();
         }
     }
     
@@ -738,7 +738,7 @@ public class RootAdapter extends CommanderAdapterBase {
         if( isWorkerStillAlive() )
             commander.notifyMe( new Commander.Notify( "Busy", Commander.OPERATION_FAILED ) );
         else {
-            worker = new ExecEngine( commander.getContext(), handler, uri.getPath(), command, bb, 500 );
+            worker = new ExecEngine( commander.getContext(), workerHandler, uri.getPath(), command, bb, 500 );
             worker.start();
         }
     }
