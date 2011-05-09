@@ -17,7 +17,6 @@ import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.CommanderAdapter;
 import com.ghostsq.commander.CommanderAdapterBase;
 import com.ghostsq.commander.MountsListEngine;
-import com.ghostsq.commander.CommanderAdapter.Item;
 import com.ghostsq.commander.MountsListEngine.MountItem;
 
 public class MountAdapter extends CommanderAdapterBase {
@@ -93,18 +92,17 @@ public class MountAdapter extends CommanderAdapterBase {
                     commander.showInfo( s( R.string.busy ) );
                     return false;
                 }
-                if( worker.reqStop() ) { // that's not good.
+                if( reader.reqStop() ) { // that's not good.
                     Thread.sleep( 500 );      // will it end itself?
-                    if( worker.isAlive() ) {
+                    if( reader.isAlive() ) {
                         Log.e( TAG, "Busy!" );
                         return false;
                     }
                 }
             }
-            
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            worker = new MountsListEngine( commander.getContext(), readerHandler, pass_back_on_done );
-            worker.start();
+            reader = new MountsListEngine( commander.getContext(), readerHandler, pass_back_on_done );
+            reader.start();
             return true;
         }
         catch( Exception e ) {

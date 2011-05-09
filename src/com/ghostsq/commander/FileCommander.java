@@ -560,7 +560,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             }
         }
         if( progress.status >= 0 ) {
-            if( !dialog_enabled && progress.substat < 0 )
+            if( !dialog_enabled && progress.substat < 0 && progress.string != null && progress.string.length() > 0 )
                 showMessage( progress.string );
             return;
         }
