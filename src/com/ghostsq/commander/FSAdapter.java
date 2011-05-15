@@ -364,6 +364,7 @@ public class FSAdapter extends CommanderAdapterBase {
         @Override
         public void run() {
         	try {
+        	    Init( null );
         	    Context c = commander.getContext();
                 StringBuffer result = new StringBuffer( );
         	    if( mList != null && mList.length > 0 ) {
@@ -510,6 +511,7 @@ public class FSAdapter extends CommanderAdapterBase {
         @Override
         public void run() {
             try {
+                Init( null );
                 int cnt = deleteFiles( mList );
                 sendResult( Utils.getOpReport( commander.getContext(), cnt, R.string.deleted ) );
             }

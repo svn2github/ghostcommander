@@ -19,7 +19,7 @@ public class FTP {
     private final static String TAG = "FTPclient";
     
 	public interface ProgressSink {
-		public boolean completed( long size );
+		public boolean completed( long size ) throws InterruptedException;
 	};
 	
     private final static int BLOCK_SIZE = 100000;
@@ -51,7 +51,7 @@ public class FTP {
     }
 
     public final void debugPrint( String message ) {
-        //Log.i( TAG, message );
+        Log.v( TAG, message );
         if( PRINT_DEBUG_INFO ) {
             debugBuf.append( message );
             debugBuf.append( "\n" );
@@ -69,11 +69,12 @@ public class FTP {
     private final boolean isNegative( int response ) {
         return (response >= 400 );
     }
-    private final boolean waitForPositiveResponse() {
+    private final boolean waitForPositiveResponse() throws InterruptedException {
         String response = null;
         try {
         	int code;
             do {
+                Thread.sleep( 100 );
             	response = getReplyLine();
             	if( response == null ) return false;
                 code = getReplyCode( response );
@@ -81,9 +82,9 @@ public class FTP {
                     return true;
                 if( isPositiveIntermediate( code ) )
                     return true; // when this occurred?
-                Thread.sleep( 500 );
+                Thread.sleep( 400 );
             } while( isPositivePreliminary( code ) );
-		} catch( InterruptedException e ) {
+		} catch( RuntimeException e ) {
             Log.e( TAG, "Exception " + ( response == null ? "" : (" on response '" + response + "'") + "\n" ), e );
 		}
         return false;
@@ -120,7 +121,7 @@ public class FTP {
             		if( cnt++ < 200 ) 
             		    Thread.sleep( 100 ); 
             		else {
-            		    Log.e( TAG, "The server did not respond" );
+            		    Log.e( TAG, "The server did not respond. " + inputStream.toString() );
             		    return null;
             		}
             	while( inputStream.available() == 0 );
@@ -148,7 +149,7 @@ public class FTP {
             return null;
 		}
     }
-    public final boolean connect( String host, int port ) throws UnknownHostException, IOException {
+    public final boolean connect( String host, int port ) throws UnknownHostException, IOException, InterruptedException {
         cmndSocket = new Socket( host, port );
         outputStream = cmndSocket.getOutputStream();
         inputStream = new BufferedInputStream( cmndSocket.getInputStream(), 256 );
@@ -187,13 +188,13 @@ public class FTP {
     public void setActiveMode( boolean a ) {
         allowActive = a;
     }
-    private final boolean executeCommand( String command ) {
+    private final boolean executeCommand( String command ) throws InterruptedException {
         sendCommand( command );
         return waitForPositiveResponse();
     }
 
     private boolean announcePort( ServerSocket serverSocket )
-            throws IOException {
+            throws IOException, InterruptedException {
         int localport = serverSocket.getLocalPort();
         // get local ip address in high byte order
         byte[] addrbytes = cmndSocket.getLocalAddress().getAddress();
@@ -247,7 +248,7 @@ public class FTP {
             }
             return a * 256 + b;
         }
-        catch( Exception e ) {
+        catch( RuntimeException  e ) {
             Log.e( TAG, "Exception while parsing the string '" + s + "'", e );
         }
         return -1;
@@ -269,12 +270,14 @@ public class FTP {
                 byte[] addr = new byte[4];
                 int server_port = parsePassiveResponse( getReplyLine(), addr );
                 if( server_port < 0 ) {
-                    debugPrint( "Passive mode failed" );
+                    debugPrint( "Can't negotiate the PASV" );
                     return null;
                 }
                 data_socket = new Socket( InetAddress.getByAddress( addr ), server_port );
-                if( !data_socket.isConnected() )
+                if( !data_socket.isConnected() ) {
+                    Log.e( TAG, "Can't open PASV data socket" );
                     return null;
+                }
             }
 
             /*
@@ -285,14 +288,18 @@ public class FTP {
 
             sendCommand( command );
             
-            if( isNegative( getReplyCode( getReplyLine() ) ) )
+            if( isNegative( getReplyCode( getReplyLine() ) ) ) {
+                Log.e( TAG, "Executing " + command + " failed" );
                 return null;
+            }
             
-            if( data_socket == null && serverSocket != null ) // active mode
+            if( data_socket == null && serverSocket != null ) {// active mode
+                Log.i( TAG, "Awaiting the data connection to PORT" );
             	data_socket = serverSocket.accept(); // will block
+            }
 
             if( data_socket == null || !data_socket.isConnected() ) {
-                debugPrint( "Unable to establish data connection for " + command );
+                debugPrint( "Can't establish data connection for " + command );
                 return null;
             }
             return data_socket;
@@ -301,7 +308,7 @@ public class FTP {
 		}
 		return null;
     }
-    private final boolean cleanUpDataCommand() {
+    private final boolean cleanUpDataCommand() throws InterruptedException {
     	
         // Clean up the data structures
         try {
@@ -334,27 +341,27 @@ public class FTP {
         return loggedIn;
     }
     
-    public final boolean login( String username, String password ) throws IOException {
+    public final boolean login( String username, String password ) throws IOException, InterruptedException {
         if( !executeCommand( "USER " + username ) )
             return false;
         loggedIn = executeCommand( "PASS " + password );
         return loggedIn;
     }
 
-    public final boolean logout( boolean quit ) throws IOException {
+    public final boolean logout( boolean quit ) throws IOException, InterruptedException {
         boolean quit_res = quit ? executeCommand( "QUIT" ) : false;
         loggedIn = false; 
         return quit_res;
     }
-    public final void heartBeat() {
+    public final void heartBeat() throws InterruptedException {
     	executeCommand( "NOOP" );
     }
-    public final boolean rename( String from, String to ) {
+    public final boolean rename( String from, String to ) throws InterruptedException {
     	if( !executeCommand( "RNFR " + from ) )
     		return false;
     	return executeCommand( "RNTO " + to );
     }
-    public final boolean store( String fn, InputStream in, FTP.ProgressSink report_to ) {
+    public final boolean store( String fn, InputStream in, FTP.ProgressSink report_to ) throws InterruptedException {
     	
     	dataSocket = null;
         try {
@@ -393,7 +400,7 @@ public class FTP {
         }
         return false;
     }
-    public final boolean retrieve( String fn, OutputStream out, FTP.ProgressSink report_to ) {
+    public final boolean retrieve( String fn, OutputStream out, FTP.ProgressSink report_to ) throws InterruptedException {
     	
     	dataSocket = null;
     	InputStream in = null;
@@ -436,7 +443,7 @@ public class FTP {
         }
         return false;
     }
-    public final void setCurrentDir( String dir ) {
+    public final void setCurrentDir( String dir ) throws InterruptedException {
     	executeCommand( dir.compareTo( ".." ) == 0 ? "CDUP" : "CWD " + dir );
     }
     public final String getCurrentDir() {
@@ -451,17 +458,17 @@ public class FTP {
     		return null;
     	return parts[1];
     }
-    public final boolean makeDir( String dir ) {
+    public final boolean makeDir( String dir ) throws InterruptedException {
     	return executeCommand( "MKD " + dir );
     }
-    public final boolean rmDir( String dir ) {
+    public final boolean rmDir( String dir ) throws InterruptedException {
     	return executeCommand( "RMD " + dir );
     }
-    public final boolean delete( String name ) {
+    public final boolean delete( String name ) throws InterruptedException {
     	return executeCommand( "DELE " + name );
     }
     
-    public final LsItem[] getDirList( String path ) {
+    public final LsItem[] getDirList( String path ) throws InterruptedException {
     	if( !isLoggedIn() )
     		return null;        	
     	String cur_dir = null;

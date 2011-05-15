@@ -40,7 +40,8 @@ class ExecEngine extends Engine {
     @Override
     public void run() {
         try {
-            if( command == null ) return; 
+            if( command == null ) return;
+            Init( null );
             execute( command, use_busybox, wait_timeout );
         } catch( Exception e ) {
             error( "Exception: " + e );

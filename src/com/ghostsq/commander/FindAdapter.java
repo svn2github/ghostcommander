@@ -137,6 +137,7 @@ public class FindAdapter extends FSAdapter {
         @Override
         public void run() {
             try {
+                Init( null );
                 result = new ArrayList<File>();
                 searchInFolder( new File( path ) );
                 sendProgress( tooLong( 8 ) ? commander.getContext().getString( R.string.search_done ) : null, 

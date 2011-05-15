@@ -17,6 +17,10 @@ public class Engine extends Thread {
 	protected Engine( Handler h ) {
 	    thread_handler = h; // TODO - distinct the member from the parent class
 	}
+	protected void Init( String name ) {
+	    setName( name == null ? getClass().getName() : name );
+	}
+	
     public boolean reqStop() {
         if( isAlive() ) {
             Log.i( getClass().getName(), "reqStop()" );

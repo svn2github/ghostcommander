@@ -43,6 +43,7 @@ public class AppsAdapter extends CommanderAdapterBase {
         @Override
         public void run() {
             try {
+                Init( null );
                 List<ApplicationInfo> allApps = pm.getInstalledApplications( 0 );
                 items_tmp = new ApplicationInfo[allApps.size()];
                 allApps.toArray( items_tmp );

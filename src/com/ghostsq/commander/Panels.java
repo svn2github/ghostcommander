@@ -56,7 +56,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     private int titleColor = Prefs.getDefaultColor( Prefs.TTL_COLORS ), 
                   fgrColor = Prefs.getDefaultColor( Prefs.FGR_COLORS ),
                   selColor = Prefs.getDefaultColor( Prefs.SEL_COLORS );
-    private boolean warnOnRoot = true, rootOnRoot = false, arrow_mode = false, toolbarShown = false;
+    private boolean warnOnRoot = true, rootOnRoot = false, arrowsLegacy = false, toolbarShown = false;
     private boolean disableOpenSelectOnly = false, disableAllActions = false;
     private float downX = 0, downY = 0;
     private StringBuffer     quickSearchBuf = null;
@@ -80,7 +80,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         fingerFriendly =  sharedPref.getBoolean( "finger_friendly", true );
         warnOnRoot = sharedPref.getBoolean( "prevent_root", true );
         rootOnRoot = sharedPref.getBoolean( "root_root", false );
-        arrow_mode = sharedPref.getBoolean( "arrow_mode", false );
+        arrowsLegacy = sharedPref.getBoolean( "arrow_mode", false );
         toolbarShown = sharedPref.getBoolean( "show_toolbar", true );        
         
         initList( LEFT );
@@ -328,6 +328,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         	setFingerFriendly( sharedPref.getBoolean( "finger_friendly", false ) );
         	warnOnRoot =  sharedPref.getBoolean( "prevent_root", true );
             rootOnRoot = sharedPref.getBoolean( "root_root", false );
+            arrowsLegacy = sharedPref.getBoolean( "arrow_mode", false );
             list[LEFT].applySettings( sharedPref );
             list[RIGHT].applySettings( sharedPref );
             setPanelCurrent( current );
@@ -543,6 +544,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     }
     
     public final void Destroy() {
+        Log.i( TAG, "Destroing" );
         getListAdapter( false ).prepareToDestroy();
         getListAdapter( true  ).prepareToDestroy();
     }
@@ -875,6 +877,9 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     @Override
 	public boolean onKey( View v, int keyCode, KeyEvent event ) {
     	if( event.getAction() != KeyEvent.ACTION_DOWN ) return false;
+    	
+    	Log.v( TAG, "panel key:" + keyCode + ", number:" + event.getNumber() + ", uchar:" + event.getUnicodeChar() );
+    	
 	    if( v instanceof ListView ) {
 	    	shorcutsFoldersList.closeGoPanel();
 	    	char ch = (char)event.getUnicodeChar();
@@ -924,9 +929,12 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 	        case '7':
 	        	c.showDialog( R.id.F7 );
 	        	return true;
-	        case '8':
-	        	c.showDialog( R.id.F8 );
-	        	return true;
+            case '8':
+                c.showDialog( R.id.F8 );
+                return true;
+            case ' ':
+                list[current].checkItem( true );
+                return true;
 	        }
 	    	switch( keyCode ) {
 	        case KeyEvent.KEYCODE_DPAD_UP:
@@ -934,12 +942,15 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 		    	resetQuickSearch();
 		    	return false;
             case KeyEvent.KEYCODE_DPAD_RIGHT:
-                if( !arrow_mode ) return false;
+                if( !arrowsLegacy ) return false;
             case KeyEvent.KEYCODE_VOLUME_UP:
 	            list[current].checkItem( true );
 	            return true;
             case KeyEvent.KEYCODE_DPAD_LEFT:
-	            if( !arrow_mode ) return false;
+	            if( arrowsLegacy ) { 
+	                togglePanels( true );
+	                return true;    
+	            }
 	        default:
 	        	return false;
 	    	}

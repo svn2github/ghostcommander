@@ -8,6 +8,9 @@ import dalvik.system.DexClassLoader;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -30,6 +33,7 @@ import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.util.Log;
 import android.widget.AdapterView;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 
 public class FileCommander extends Activity implements Commander, View.OnClickListener {
@@ -42,6 +46,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     private boolean on = false, exit = false, dont_restore = false, sxs_auto = true, show_confirm = true;
     private String  lang = ""; // just need to issue a warning on change
     private int     file_exist_resolution = Commander.UNKNOWN;
+    private NotificationManager notMan = null;
+    private long    notLastTime = 0; 
 
     public final void showMemory( String s ) {
         final ActivityManager sys = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
@@ -97,7 +103,9 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         
         Intent intent = getIntent();
         String action = intent.getAction();
-        Log.v( TAG, "Action: " + action );        
+        Log.v( TAG, "Action: " + action );
+        
+        notMan = (NotificationManager)getSystemService( Context.NOTIFICATION_SERVICE );
     }
 
     @Override
@@ -151,9 +159,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     protected void onDestroy() {
         Log.v( TAG, "Destroying\n");
         on = false;
-        //panels.Destroy();
         super.onDestroy();
         if( isFinishing() && exit ) {
+            if( notMan != null ) notMan.cancelAll();
+            panels.Destroy();
             Log.i( TAG, "Good bye cruel world...");
             System.exit( 0 );
         }
@@ -299,8 +308,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     public boolean onKeyDown( int keyCode, KeyEvent event ) {
-        // showMessage( "key:" + keyCode + ", number:" + event.getNumber() +
-        // ", uchar:" + event.getUnicodeChar() );
+        Log.v( TAG, "global key:" + keyCode + ", number:" + event.getNumber() + ", uchar:" + event.getUnicodeChar() );
         char c = (char)event.getUnicodeChar();
         panels.resetQuickSearch();
         switch( c ) {
@@ -320,6 +328,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             openPrefs();
             return true;
         case '0':
+            exit = true;
             finish();
             return true;
         }
@@ -545,11 +554,13 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     public void notifyMe( Notify progress ) {
         if( progress.status == Commander.OPERATION_STARTED ) {
             setProgressBarIndeterminateVisibility( true );
+            if( progress.string != null && progress.string.length() > 0 )
+                showMessage( progress.string );
             return;
         }
         boolean dialog_enabled = false;
         Dialogs dh = getDialogsInstance( Dialogs.PROGRESS_DIALOG );
-        if( dh != null ) {
+        if( on && dh != null ) {
             Dialog d = dh.getDialog();
             if( d != null && d.isShowing() ) {
                 dialog_enabled = true;
@@ -560,10 +571,12 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             }
         }
         if( progress.status >= 0 ) {
-            if( !dialog_enabled && progress.substat < 0 && progress.string != null && progress.string.length() > 0 )
-                showMessage( progress.string );
+            if( !dialog_enabled && progress.string != null && progress.string.length() > 0 ) {
+                setSystemNotification( progress.string, progress.status );
+            }
             return;
         }
+        if( notMan != null ) notMan.cancel( 1 ); 
         setProgressBarIndeterminateVisibility( false );
         panels.operationFinished();
         switch( progress.status ) {
@@ -608,6 +621,25 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             showInfo( progress.string );
     }
 
+    private void setSystemNotification( String msg, int p ) {
+        if( notMan == null ) return;
+        long cur_time = System.currentTimeMillis();
+        if( notLastTime + 1000 > cur_time ) return;
+        notLastTime = cur_time;
+        Notification notification = new Notification( R.drawable.icon, "A file operation in progress", cur_time );
+        notification.contentIntent = PendingIntent.getActivity( this, 0, new Intent( this, FileCommander.class ), 0 );
+        notification.flags |= Notification.FLAG_ONGOING_EVENT;
+
+        RemoteViews not_view = new RemoteViews( getPackageName(), R.layout.progress );
+        not_view.setTextColor( R.id.text, 0xFF000000 );
+        not_view.setTextViewText( R.id.text, msg );
+        not_view.setProgressBar( R.id.progress_bar, 100, p, false );
+        not_view.setTextColor( R.id.percent, 0xFF000000 );
+        not_view.setTextViewText( R.id.percent, "" );
+        notification.contentView = not_view;
+        notMan.notify( 1, notification );
+    }
+    
     public void setResolution( int r ) {
         synchronized( this ) {
             file_exist_resolution = r;

@@ -80,7 +80,6 @@ public class ZipAdapter extends CommanderAdapterBase {
         protected EnumEngine( Handler h ) {
             super( h );
         }
-
         protected final ZipEntry[] GetFolderList( String fld_path ) {
             if( zip == null ) return null;
             if( fld_path == null ) fld_path = ""; 
@@ -425,6 +424,7 @@ public class ZipAdapter extends CommanderAdapterBase {
         }
         @Override
         public void run() {
+            Init( null );
             File old_file = new File( zipFile.getAbsolutePath() + "_tmp_" + (new Date()).getSeconds() + ".zip" );
             try {
                 ZipFile zf = new ZipFile( zipFile );
@@ -636,6 +636,7 @@ public class ZipAdapter extends CommanderAdapterBase {
         public void run() {
             int num_files = 0;
             try {
+                Init( null );
                 sendProgress( prep, 1, 1 );
                 ArrayList<File> full_list = new ArrayList<File>( topList.length );
                 totalSize = addToList( topList, full_list );

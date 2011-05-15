@@ -106,7 +106,7 @@ public class RootAdapter extends CommanderAdapterBase {
             BufferedReader is = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
             
             DataInputStream  es = new DataInputStream( p.getErrorStream() );
-            String to_execute = "ls -l '" + path + "'\n";
+            String to_execute = "ls -l '" + path.replaceAll( "'", "'\''" ) + "'\n";
             os.write( to_execute ); // execute the command
             os.flush();
             for( int i=0; i< 100; i++ ) {
@@ -318,7 +318,7 @@ public class RootAdapter extends CommanderAdapterBase {
                     String full_name = src_base_path + file_name;
                     String to_exec;
                     String cmd = move ? " mv -f " : ( f.isDirectory() ? " cp -r " : " cp " );
-                    to_exec = bb + cmd + "'" + full_name + "' '" + dest_folder + "'\n";
+                    to_exec = bb + cmd + "'" + full_name.replaceAll( "'", "'\''" ) + "' '" + dest_folder + "'\n";
                     Log.i( TAG, to_exec );
                     os.write( to_exec ); // execute command
                     os.flush();
@@ -436,6 +436,7 @@ public class RootAdapter extends CommanderAdapterBase {
         public void run() {
             int counter = 0;
             try {
+                Init( null );
                 Process p = Runtime.getRuntime().exec( sh );
                 OutputStreamWriter os = new OutputStreamWriter( p.getOutputStream() );
                 BufferedReader es = new BufferedReader( new InputStreamReader( p.getErrorStream() ) );
@@ -450,9 +451,9 @@ public class RootAdapter extends CommanderAdapterBase {
                     sendProgress( "Deleting " + full_name, (int)(counter * conv) );
                     String to_exec;
                     if( f.isDirectory() )
-                        to_exec = "rm -r '" + full_name + "'\n";
+                        to_exec = "rm -r '" + full_name.replaceAll( "'", "'\''" ) + "'\n";
                     else
-                        to_exec = "rm '" + full_name + "'\n";
+                        to_exec = "rm '" + full_name.replaceAll( "'", "'\''" ) + "'\n";
                     os.write( to_exec ); // execute command
                     os.flush();
                     Thread.sleep( 200 );
@@ -580,7 +581,7 @@ public class RootAdapter extends CommanderAdapterBase {
                     String full_name = src_full_names[i];
                     if( full_name == null ) continue;
                     String to_exec;
-                    to_exec = bb + cmd + "'" + full_name + "' '" + dest + "'\n";
+                    to_exec = bb + cmd + "'" + full_name.replaceAll( "'", "'\''" ) + "' '" + dest + "'\n";
                     Log.i( TAG, to_exec );
                     os.write( to_exec ); // execute command
                     os.flush();
@@ -725,7 +726,7 @@ public class RootAdapter extends CommanderAdapterBase {
             else if( CMD_CMD == command_id )
                 new CmdDialog( commander.getContext(), selected_one ? items_todo[0] : null, this );
         } else if( R.id.remount == command_id ) {
-            if( reader.isAlive() ) {
+            if( reader != null && reader.isAlive() ) {
                 commander.showError( commander.getContext().getString( R.string.busy ) );
                 return;
             }

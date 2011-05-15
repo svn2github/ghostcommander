@@ -112,8 +112,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 int code = b.getInt( CommanderAdapterBase.NOTIFY_PRG1 );
                 String str = b.getString( CommanderAdapterBase.NOTIFY_STR );
                 String cookie = b.getString( CommanderAdapterBase.NOTIFY_COOKIE );
-                onReadComplete();
-                reader = null;
+                if( code <= Commander.OPERATION_FAILED ) {
+                    onReadComplete();
+                    reader = null;
+                }
                 Commander.Notify n_obj = new Commander.Notify( str, code, cookie );
                 commander.notifyMe( n_obj );
             } catch( Exception e ) {
