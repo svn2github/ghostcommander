@@ -246,6 +246,11 @@
     <PreferenceCategory
         android:title="@string/advanced">
         <CheckBoxPreference
+                android:key="show_root"
+                android:title="@string/show_root"
+                android:summary="@string/summary_show_root"
+                android:defaultValue="false"/>
+        <CheckBoxPreference
                 android:key="show_confirm"
                 android:title="@string/show_confirm"
                 android:summary="@string/summary_show_confirm"

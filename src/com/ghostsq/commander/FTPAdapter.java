@@ -315,8 +315,8 @@ public class FTPAdapter extends CommanderAdapterBase {
 			if( curFileLen > 0 )
 				sendProgress( progressMessage, (int)(size * 100 / curFileLen) );
 			//Log.v( TAG, progressMessage + " " + size );
-    		if( stop || isInterrupted() ) {
-    			errMsg = "Canceled";
+    		if( isStopReq() ) {
+    			error( commander.getContext().getString( R.string.canceled ) );
     			return false;
     		}
             Thread.sleep( 1 );
@@ -339,16 +339,20 @@ public class FTPAdapter extends CommanderAdapterBase {
 	    }
 	    @Override
 	    public void run() {
-	    	int total = copyFiles( mList, "" );
-            if( recipient_hash != 0 ) {
-                  sendReceiveReq( recipient_hash, dest_folder );
-                  return;
+	    	try {
+                int total = copyFiles( mList, "" );
+                if( recipient_hash != 0 ) {
+                      sendReceiveReq( recipient_hash, dest_folder );
+                      return;
+                }
+                sendResult( Utils.getOpReport( commander.getContext(), total, R.string.downloaded ) );
+            } catch( InterruptedException e ) {
+                sendResult( commander.getContext().getString( R.string.canceled ) );
             }
-			sendResult( Utils.getOpReport( commander.getContext(), total, R.string.downloaded ) );
 	        super.run();
 	    }
 	
-	    private final int copyFiles( LsItem[] list, String path ) {
+	    private final int copyFiles( LsItem[] list, String path ) throws InterruptedException {
 	        int counter = 0;
 	        try {
 	            Context ctx = commander.getContext();
@@ -399,13 +403,13 @@ public class FTPAdapter extends CommanderAdapterBase {
 	        	        	synchronized( ftp ) {
 	        	        		ftp.clearLog();
 	        	        		if( !ftp.retrieve( pathName, out, this ) ) {
-		        					errMsg = "Failed to download file '" + pathName + "'.\n FTP log:\n\n" + ftp.getLog();
+		        					error( "Can't download file '" + pathName + "'.\n FTP log:\n\n" + ftp.getLog() );
 		        					dest.delete();
 		        					break;
 	        	        		}
 	        	        		else if( move ) {
                                     if( !ftp.delete( pathName ) ) {
-                                        errMsg = "Failed to delete file '" + pathName + "'.\n FTP log:\n\n" + ftp.getLog();
+                                        error( "Can't delete file '" + pathName + "'.\n FTP log:\n\n" + ftp.getLog() );
                                         break;
                                     }
         	        		    }
@@ -419,10 +423,14 @@ public class FTPAdapter extends CommanderAdapterBase {
 	        		}
 	        	}
 	    	}
-			catch( Exception e ) {
-				e.printStackTrace();
-				error( "Exception: " + e.getMessage() );
-			}
+            catch( RuntimeException e ) {
+                e.printStackTrace();
+                error( "Runtime Exception: " + e.getMessage() );
+            }
+            catch( IOException e ) {
+                e.printStackTrace();
+                error( "Input-Output Exception: " + e.getMessage() );
+            }
 	        return counter;
 	    }
 	}

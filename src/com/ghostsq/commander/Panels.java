@@ -708,7 +708,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 }
                 dest_adapter.readSource( dest_uri, null ); // TODO: call Init() method to set the URI
             }
-            c.showDialog( Dialogs.PROGRESS_DIALOG );
+            //c.showDialog( Dialogs.PROGRESS_DIALOG );
             destAdapter = dest_adapter;
             getListAdapter( true ).copyItems( getSelectedOrChecked(), destAdapter, move );
             // TODO: getCheckedItemPositions() returns an empty array after a failed operation. why? 
@@ -743,7 +743,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         if( ca instanceof FSAdapter ) {
             SparseBooleanArray cis = getSelectedOrChecked();
             if( cis == null || cis.size() == 0 ) return;
-            c.showDialog( Dialogs.PROGRESS_DIALOG );
+            //c.showDialog( Dialogs.PROGRESS_DIALOG );
             FSAdapter fsa = (FSAdapter)ca;
             ZipAdapter z = new ZipAdapter( c );
             destAdapter = z;
@@ -753,7 +753,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     }
     
     public final void deleteItems() {
-    	c.showDialog( Dialogs.PROGRESS_DIALOG );
+    	//c.showDialog( Dialogs.PROGRESS_DIALOG );
         if( getListAdapter( true ).deleteItems( getSelectedOrChecked() ) )
             list[current].flv.clearChoices();
     }
@@ -878,7 +878,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 	public boolean onKey( View v, int keyCode, KeyEvent event ) {
     	if( event.getAction() != KeyEvent.ACTION_DOWN ) return false;
     	
-    	Log.v( TAG, "panel key:" + keyCode + ", number:" + event.getNumber() + ", uchar:" + event.getUnicodeChar() );
+    	//Log.v( TAG, "panel key:" + keyCode + ", uchar:" + event.getUnicodeChar() + ", shift: " + event.isShiftPressed() );
     	
 	    if( v instanceof ListView ) {
 	    	shorcutsFoldersList.closeGoPanel();
@@ -940,6 +940,15 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 	        case KeyEvent.KEYCODE_DPAD_UP:
 	        case KeyEvent.KEYCODE_DPAD_DOWN:	
 		    	resetQuickSearch();
+		    	if( event.isShiftPressed() ) {
+                   list[current].checkItem(false);
+                   // ListView will not move to next item on Shift+DPAD, so let's remove the Shift
+                   // bit from meta state and re-dispatch the event.
+                   KeyEvent shiftStrippedEvent = new KeyEvent(event.getDownTime(), event.getEventTime(),
+                           KeyEvent.ACTION_DOWN, keyCode, event.getRepeatCount(),
+                           event.getMetaState() & ~(KeyEvent.META_SHIFT_ON | KeyEvent.META_SHIFT_LEFT_ON | KeyEvent.META_SHIFT_RIGHT_ON)); 
+                   return v.onKeyDown(keyCode, shiftStrippedEvent);		    	
+		    	}
 		    	return false;
             case KeyEvent.KEYCODE_DPAD_RIGHT:
                 if( !arrowsLegacy ) return false;
@@ -1061,7 +1070,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             e.putString( FU, favUris );
         }
         public void restore( SharedPreferences p ) {
-            left      = p.getString( LP, DEFAULT_LOC );
+            left      = p.getString( LP, "home:" );
             right     = p.getString( RP, DEFAULT_LOC );
             leftItem  = p.getString( LI, null );
             rightItem = p.getString( RI, null );

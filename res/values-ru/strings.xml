@@ -172,6 +172,7 @@
 <string name="info">Информация</string>
 <string name="confirm">Подтверждение</string>
 <string name="progress">Выполнение</string>
+<string name="inprogress">Операция продолжает выполняться</string>
 <string name="alert">Внимание</string>
 <string name="server">Сервер:</string>
 <string name="path">Путь на сервере:</string>
@@ -220,6 +221,10 @@
 <string name="summary_finger_friendly">Увеличить элементы интерфейса для управления пальцем</string>
 <string name="prevent_root">Предупреждать на системных каталогах</string>
 <string name="summary_prevent_root">Выдавать предупреждающее сообщение на попытку перейти в системный каталог</string>
+
+<string name="show_root">Показывать рутовые режимы</string>
+<string name="summary_show_root">Включить переход в root: и mount: режимы в список "отправной точки"</string>
+
 <string name="root_root">Root режим при покидании /sdcard</string>
 <string name="summary_root_root">Автоматически переключаться в \"root:\" режим в случае обращения к каталогу не на /sdcard.</string>
 <string name="thumbnails">Миниатюры</string>
@@ -273,6 +278,24 @@
 <string name="no_such_folder">\"%1$s\" не существует!</string>
 <string name="fav_added">Folder \"%1$s\" добавлен</string>
 <string name="no_root">Нет root прав.</string>
+
+<string name="home">&#xA0; Отправная точка</string>
+<string name="local">Локальные файлы</string>
+<string name="ftp">FTP сервер</string>
+<string name="smb">Сеть Windows</string>
+<string name="root">root режим</string>
+<string name="mount">Монтировано</string>
+<string name="apps">Приложения</string>
+<string name="exit">Выход</string>
+
+<string name="local_descr">Доступ к файлам расположеным на SD карточке или внутренней памяти устройства.</string>
+<string name="ftp_descr">Подключение к файл-серверу по протоколу FTP (протокол передачи файлов).</string>
+<string name="smb_descr">Доступ к компьютеру локальной сети с установленой ОС Windows. Требуется плагин \"Ghost Commander - Samba Plugin\".</string>
+<string name="root_descr">Выполнение системных команд и работа с файлами на системном разделею Будьте осторожны!.</string>
+<string name="mount_descr">Список монтированых устройств. Возможность перемонтирования в \"rw\" и обратно в \"ro\"</string>
+<string name="apps_descr">Список установленых приложений.</string>
+<string name="exit_descr">Выход из этой программы.</string>
+
 <string name="smb_missed">
     Не удаётся загрузить Samba адаптер.\n
     Пожалуста, убедитесь, что пакет\n
@@ -280,8 +303,8 @@
     (com.ghostsq.commander.samba.apk) инсталлирован.</string>
 <string name="donate">  Поддержка</string>
 <string name="online_help">  Описание в онлайне (EN)</string>
-<string name="donation">Выразите свою благодарность и окажите поддержку дальнейшему развитию проекта
-       путем перевода разработчику любой желаемой денежной суммы через систему PayPal.\n
+<string name="donation">Выразите свою благодарность и окажите поддержку 
+       путем перевода разработчику любой денежной суммы через систему PayPal.\n
     </string>
 <string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
 <string name="about_text">

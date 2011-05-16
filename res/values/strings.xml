@@ -26,20 +26,29 @@
     <string name="sz">\" Size</string>
     <string name="refresh">&#xA0; Refresh</string>
     <string name="enter">&#xA0; Change Location</string>
+  <string name="home">&#xA0; Home</string>
     <string name="enter_b">Location</string>
     <string name="add_fav">* Favorite the current folder</string>
     <string name="add_fav_b">* Favorite</string>
     
     <string name="remount_b">Remount /system</string>
     <string name="remount">Remount</string>
-
-
-    <string name="local">Local /sdcard</string>
+    
+    <string name="local">Local storage</string>
     <string name="ftp">FTP site</string>
     <string name="smb">Samba (Windows) share</string>
     <string name="root">root mode</string>
     <string name="mount">Mount points</string>
-    <string name="apps">Installed applications</string>
+    <string name="apps">Applications</string>
+    <string name="exit">Exit</string>
+    
+    <string name="local_descr">Browse, organize and do whatever you want with the files stored on the inserted SD card or the internal flash memory.</string>
+    <string name="ftp_descr">Connect to an FTP server of your choice and download files from it or upload files to it.</string>
+    <string name="smb_descr">This requires \"Ghost Commander - Samba Plugin\" application be installed. If it is, connect to any Windows powered computer of your local network.</string>
+    <string name="root_descr">If your phone is rooted, use this mode to work with the system content. If you don\'t know what that means, please don\'t open this mode.</string>
+    <string name="mount_descr">Browse the list of mounted devices. It allows you to remount to \"rw\" mode and back to \"ro\". Use with caution.</string>
+    <string name="apps_descr">List of the installed applications. Not fully implemented yet.</string>
+    <string name="exit_descr">Exit this application. </string>
     
     <string name="enter_ftp">&#xA0; Open FTP site</string>
     <string name="enter_smb">&#xA0; Open Samba (Windows) share</string>
@@ -232,8 +241,9 @@ copied >5 will produce:
     <string name="error">Error</string>
     <string name="info">Information</string>
     <string name="confirm">Confirm</string>
-    <string name="progress">Progress</string>
     <string name="alert">Alert</string>
+    <string name="progress">Progress</string>
+    <string name="inprogress">A file operation in progress</string>
 
     <string name="server">Server:</string>
     <string name="path">Path on server:</string>
@@ -288,6 +298,8 @@ copied >5 will produce:
     <string name="prevent_root">Warn on a leaving the sdcard</string>
     <string name="summary_prevent_root">Issue a warning when going to a device\'s root folder.</string>
 
+    <string name="show_root">Show root in the home view</string>
+    <string name="summary_show_root">Show the root: and mount: items in the starting points list (Home)</string>
     <string name="root_root">Root mode on leaving /sdcard</string>
     <string name="summary_root_root">Automatically switch to the \"root:\" mode when going to a device\'s root (not a /sdcard) folder.</string>
 

@@ -11,12 +11,25 @@ import android.view.ViewGroup;
 
 public class HomeAdapter extends CommanderAdapterBase {
     private final static String TAG = "HomeAdapter";
-    private final static int    LOCAL = 0, FTP = 1, SMB = 2, ROOT = 3, MOUNT = 4, APPS = 5, LAST = 5;
+    private final static int    LOCAL = 0, FTP = 1, SMB = 2, ROOT = 3, MOUNT = 4, APPS = 5, EXIT = 6, LAST = EXIT;
+    private boolean root = false;
     
     public HomeAdapter( Commander c ) {
         super( c, DETAILED_MODE | NARROW_MODE | SHOW_ATTR );
-        numItems = 5;
+        numItems = getNumItems();
     }
+
+    @Override
+    public int setMode( int mask, int val ) {
+        super.setMode( mask, val );
+        if( ( mask & MODE_ROOT ) != 0 ) {
+            root = ( mode & MODE_ROOT ) != 0;
+            numItems = getNumItems();
+            notifyDataSetChanged();
+        }
+        return mode;
+    }    
+    
     @Override
     public String getType() {
         return "home";
@@ -75,22 +88,21 @@ public class HomeAdapter extends CommanderAdapterBase {
     }
     
     @Override
-    public String getItemName( int p, boolean full ) {
-        switch( p ) {
-        case LOCAL: return s( R.string.local ); 
-        case FTP:   return s( R.string.ftp );
-        case SMB:   return s( R.string.smb );
-        case ROOT:  return s( R.string.root );
-        case MOUNT: return s( R.string.mount );
-        case APPS:  return s( R.string.apps );
-        }
-        return null;
-    }
-    @Override
     public void openItem( int position ) {
+        position = translatePosition( position );
         if( position < 0 || position > LAST )
             return;
-        // TODO
+        String uri_s = null;
+        switch( position ) {
+        case LOCAL: uri_s = "/sdcard"; break; 
+        case ROOT:  uri_s = "root:///"; break;
+        case MOUNT: uri_s = "mount:"; break;
+        case APPS:  uri_s = "apps:"; break;
+        case FTP:   commander.dispatchCommand( FileCommander.FTP_ACT ); return;
+        case SMB:   commander.dispatchCommand( FileCommander.SMB_ACT ); return;
+        case EXIT:  commander.dispatchCommand( R.id.exit ); return;
+        }
+        commander.Navigate( Uri.parse(  uri_s ), null );
     }
 
     @Override
@@ -107,6 +119,35 @@ public class HomeAdapter extends CommanderAdapterBase {
         commander.notifyMe( new Commander.Notify( "Not supported.", Commander.OPERATION_FAILED ) );
         return false;
     }
+
+    private int getNumItems() {
+        int num = LAST + 1;
+        if( !root ) num -= 2;
+        num--; // skip also apps
+        return num;
+    }
+    
+    private int translatePosition( int p ) {
+        if( !root && p >= ROOT )
+            p += 2;
+        if( p >= APPS ) // temporary
+            p += 1;
+        return p;
+    }
+   
+    @Override
+    public String getItemName( int p, boolean full ) {
+        switch( p ) {
+        case LOCAL: return s( R.string.local ); 
+        case FTP:   return s( R.string.ftp );
+        case SMB:   return s( R.string.smb );
+        case ROOT:  return s( R.string.root );
+        case MOUNT: return s( R.string.mount );
+        //case APPS:  return s( R.string.apps );
+        case EXIT:  return s( R.string.exit );
+        }
+        return null;
+    }
     
     /*
      * BaseAdapter implementation
@@ -114,17 +155,28 @@ public class HomeAdapter extends CommanderAdapterBase {
 
     @Override
     public Object getItem( int position ) {
+        position = translatePosition( position );
         Item item = new Item();
         item.name = "???";
         if( position >= 0 && position <= LAST ) {
             item.name = getItemName( position, false );
              
             switch( position ) {
-            case LOCAL: item.icon_id = R.drawable.sd; break;  
-            case FTP:   item.icon_id = R.drawable.server; break;
-            case SMB:   item.icon_id = R.drawable.smb; break;
-            case ROOT:  item.icon_id = R.drawable.root; break;
-            case MOUNT: item.icon_id = R.drawable.mount; break;
+            case LOCAL: item.icon_id = R.drawable.sd;       break;  
+            case FTP:   item.icon_id = R.drawable.server;   break;
+            case SMB:   item.icon_id = R.drawable.smb;      break;
+            case ROOT:  item.icon_id = R.drawable.root;     break;
+            case MOUNT: item.icon_id = R.drawable.mount;    break;
+            case EXIT:  item.icon_id = R.drawable.exit;     break;
+            //case APPS:  item.icon_id = R.drawable.apps; break;
+            }
+            switch( position ) {
+            case LOCAL: item.attr = s( R.string.local_descr ); break;  
+            case FTP:   item.attr = s( R.string.ftp_descr );   break;
+            case SMB:   item.attr = s( R.string.smb_descr );   break;
+            case ROOT:  item.attr = s( R.string.root_descr );  break;
+            case MOUNT: item.attr = s( R.string.mount_descr ); break;
+            case EXIT:  item.attr = s( R.string.exit_descr );  break;
             //case APPS:  item.icon_id = R.drawable.apps; break;
             }
         }

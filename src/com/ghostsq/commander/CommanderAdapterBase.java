@@ -96,7 +96,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         if( type_h == type_h_root ) ca = new RootAdapter( c );  else
         if( type_h == type_h_mnt  ) ca = new MountAdapter( c ); else
         if( type_h == type_h_apps ) ca = new AppsAdapter( c );  else
-        if( type_h == type_h_smb  ) ca = c.CreateExternalAdapter( "samba", "SMBAdapter", R.id.smb );
+        if( type_h == type_h_smb  ) ca = c.CreateExternalAdapter( "samba", "SMBAdapter", Dialogs.SMB_PLG_DIALOG );
         return ca;
     }
 

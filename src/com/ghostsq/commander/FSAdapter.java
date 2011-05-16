@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
+import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.FileChannel;
 import java.util.Date;
 import java.util.Arrays;
@@ -409,7 +410,7 @@ public class FSAdapter extends CommanderAdapterBase {
     	protected final long getSizes( FileItem[] list ) throws Exception {
     	    long count = 0;
     		for( int i = 0; i < list.length; i++ ) {
-                if( stop || isInterrupted() ) return -1;
+                if( isStopReq() ) return -1;
     			FileItem f = list[i];
     			if( f.f.isDirectory() ) {
     				dirs++;
@@ -526,7 +527,7 @@ public class FSAdapter extends CommanderAdapterBase {
             double conv = 100./num; 
             for( int i = 0; i < num; i++ ) {
                 sleep( 1 );
-                if( stop || isInterrupted() )
+                if( isStopReq() )
                     throw new Exception( s( R.string.canceled ) );
                 File f = l[i];
                 sendProgress( commander.getContext().getString( R.string.deleting, f.getName() ), (int)(cnt * conv) );
@@ -655,7 +656,7 @@ public class FSAdapter extends CommanderAdapterBase {
                 }
                 String uri = file.getAbsolutePath();
                 try {
-                    if( stop || isInterrupted() ) {
+                    if( isStopReq() ) {
                         error( c.getString( R.string.canceled ) );
                         break;
                     }
@@ -696,10 +697,11 @@ public class FSAdapter extends CommanderAdapterBase {
 //Log.v( TAG, rep_s + " " + (int)(bytes * conv) );
                         	sendProgress( rep_s, so_far, (int)(bytes * conv) );
                         	bytes += in.transferTo( start, chunk, out );
-                            if( stop || isInterrupted() ) {
+                            if( isStopReq() ) {
                                 error( c.getString( R.string.canceled ) );
                                 return counter;
                             }
+                            //Thread.sleep( 1 );
                         }
                         in.close();
                         out.close();
@@ -722,6 +724,9 @@ public class FSAdapter extends CommanderAdapterBase {
                 catch( FileNotFoundException e ) {
                     error( c.getString( R.string.not_accs, e.getMessage() ) );
                 }
+                catch( ClosedByInterruptException e ) {
+                    error( c.getString( R.string.canceled ) );
+                }
                 catch( IOException e ) {
                     String msg = e.getMessage();
                     error( c.getString( R.string.acc_err, uri, msg != null ? msg : "" ) );
@@ -735,28 +740,14 @@ public class FSAdapter extends CommanderAdapterBase {
                             in.close();
                         if( out != null )
                             out.close();
-
+                        if( errMsg != null && outFile != null ) {
+                            Log.i( TAG, "Deleting failed output file" );
+                            outFile.delete();
+                        }
                     }
                     catch( IOException e ) {
                         error( c.getString( R.string.acc_err, uri, e.getMessage() ) );
                     }
-                    {
-                        /*
-                         * // TODO ask user asynchronous from a different thread
-                         * int res = commander.askUser( err_msg ); if( res == Commander.ABORT ) return false; if( res == Commander.RETRY ) i--;
-                         */
-                    }
-                }
-                if( errMsg != null ) {
-                    if( outFile != null ) {
-                        try {
-                            outFile.delete();
-                        }
-                        catch( SecurityException e ) {
-                            Log.e( TAG, "on deleting after failed copy", e );
-                        }
-                    }
-                    break;
                 }
             }
             return counter;
@@ -862,8 +853,10 @@ public class FSAdapter extends CommanderAdapterBase {
                     }
                 }
             }
-            else
-                item.name = "";
+            else {
+                item = new Item();
+                item.name = "???";
+            }
         }
         return item;
     }

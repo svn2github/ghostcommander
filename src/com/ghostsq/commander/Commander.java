@@ -6,6 +6,10 @@ package com.ghostsq.commander;
 import android.content.Context;
 import android.net.Uri;
 
+/**
+ * @author zc2
+ *
+ */
 public interface Commander {
 	final static int UNKNOWN = 0, 
 	                 ABORT   = 1,
@@ -64,6 +68,13 @@ public interface Commander {
      * @param int    dialog_id  - resource ID to show dialog if the class can't be loaded
      */
 	public CommanderAdapter CreateExternalAdapter( String type, String class_name, int dialog_id );
+
+	
+	/**
+	 * Try to execute a command as if it came from the UI
+	 * @param id - command id to execute
+	 */
+	public void dispatchCommand( int id );	
 	
 	/**
 	 * Execute (launch) the specified item.  

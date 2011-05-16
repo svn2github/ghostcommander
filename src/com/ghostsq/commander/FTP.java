@@ -51,7 +51,7 @@ public class FTP {
     }
 
     public final void debugPrint( String message ) {
-        Log.v( TAG, message );
+        //Log.v( TAG, message );
         if( PRINT_DEBUG_INFO ) {
             debugBuf.append( message );
             debugBuf.append( "\n" );
@@ -401,7 +401,6 @@ public class FTP {
         return false;
     }
     public final boolean retrieve( String fn, OutputStream out, FTP.ProgressSink report_to ) throws InterruptedException {
-    	
     	dataSocket = null;
     	InputStream in = null;
         try {
@@ -424,12 +423,14 @@ public class FTP {
         		if( n < 0 ) break;
         		out.write( buf, 0, n );
         		if( report_to != null )
-        			if( !report_to.completed( done += n ) )
+        			if( !report_to.completed( done += n ) ) {
+        			    executeCommand( "ABOR" );
         				return false;
+        			}
         	}
         	return true;
         }
-        catch( Exception e ) {
+        catch( IOException e ) {
         	debugPrint( "Exception: " + e );
         }
         finally {

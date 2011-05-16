@@ -20,7 +20,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
     private final static String TAG = "Dialogs";
     public final static int ARI_DIALOG = 148, ALERT_DIALOG = 193, CONFIRM_DIALOG = 396, INPUT_DIALOG = 860, PROGRESS_DIALOG = 493,
             INFO_DIALOG = 864, LOGIN_DIALOG = 995, SELECT_DIALOG = 239, UNSELECT_DIALOG = 762,
-            FILE_EXIST_DIALOG = 328;
+            FILE_EXIST_DIALOG = 328, SMB_PLG_DIALOG = 275;
     
     public final static int numDialogTypes = 5;
     protected String toShowInAlertDialog = null, cookie = null;
@@ -103,7 +103,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
         case CONFIRM_DIALOG:
         case R.id.F8:
         case R.id.donate:
-        case R.id.smb:
+        case SMB_PLG_DIALOG:
         case FileCommander.DBOX_APP:
         {
             return dialogObj = new AlertDialog.Builder( owner )
@@ -301,7 +301,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
             case R.id.donate:
                 ( (AlertDialog)dialog ).setMessage( owner.getString( R.string.donation ) );
                 break;
-            case R.id.smb:
+            case SMB_PLG_DIALOG:
                 ( (AlertDialog)dialog ).setMessage( owner.getString( R.string.smb_missed ) );
                 break;
             case FileCommander.DBOX_APP:
@@ -332,7 +332,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
         }
     }
 
-    public void setMessage( String string, int progress, int progressSec ) {
+    public void setProgress( String string, int progress, int progressSec ) {
         if( dialogObj == null )
             return;
         try {
@@ -429,7 +429,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 case R.id.donate:
                         owner.startViewURIActivity( R.string.donate_uri );
                         break;
-                case R.id.smb:
+                case SMB_PLG_DIALOG:
                         owner.startViewURIActivity( R.string.smb_app_uri );
                         break;
                 case FILE_EXIST_DIALOG:

@@ -20,7 +20,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.view.ContextMenu;
 import android.view.Display;
@@ -39,7 +38,7 @@ import android.widget.Toast;
 public class FileCommander extends Activity implements Commander, View.OnClickListener {
     private final static String TAG = "GhostCommanderActivity";
     public  final static int REQUEST_CODE_PREFERENCES = 1, REQUEST_CODE_SRV_FORM = 2;
-    public  final static int FIND_ACT = 1017, DBOX_APP = 3592;
+    public  final static int FIND_ACT = 1017, DBOX_APP = 3592, SMB_ACT = 2751, FTP_ACT = 4501;
     
     private ArrayList<Dialogs> dialogs;
     public  Panels  panels;
@@ -104,7 +103,6 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         Intent intent = getIntent();
         String action = intent.getAction();
         Log.v( TAG, "Action: " + action );
-        
         notMan = (NotificationManager)getSystemService( Context.NOTIFICATION_SERVICE );
     }
 
@@ -308,7 +306,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     public boolean onKeyDown( int keyCode, KeyEvent event ) {
-        Log.v( TAG, "global key:" + keyCode + ", number:" + event.getNumber() + ", uchar:" + event.getUnicodeChar() );
+        //Log.v( TAG, "global key:" + keyCode + ", number:" + event.getNumber() + ", uchar:" + event.getUnicodeChar() );
         char c = (char)event.getUnicodeChar();
         panels.resetQuickSearch();
         switch( c ) {
@@ -367,7 +365,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         dispatchCommand( button.getId() );
     }
 
-    public final void dispatchCommand( int id ) {
+    public void dispatchCommand( int id ) {
         Utils.changeLanguage( this, getResources() );
         switch( id ) {
         case R.id.keys:
@@ -416,13 +414,16 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         case R.id.sz:
             panels.showSizes();
             break;
-        case R.id.ftp: {
+        case R.id.home:
+            Navigate( Uri.parse( "home:" ), null );
+            break;
+        case FTP_ACT: {
                 Intent i = new Intent( this, ServerForm.class );
                 i.putExtra( "schema", "ftp" );
                 startActivityForResult( i, REQUEST_CODE_SRV_FORM );
             }
             break;
-        case R.id.smb: {
+        case SMB_ACT: {
                 Intent i = new Intent( this, ServerForm.class );
                 i.putExtra( "schema", "smb" );
                 startActivityForResult( i, REQUEST_CODE_SRV_FORM );
@@ -558,23 +559,34 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 showMessage( progress.string );
             return;
         }
-        boolean dialog_enabled = false;
         Dialogs dh = getDialogsInstance( Dialogs.PROGRESS_DIALOG );
-        if( on && dh != null ) {
-            Dialog d = dh.getDialog();
-            if( d != null && d.isShowing() ) {
-                dialog_enabled = true;
-                if( progress.status < 0 )
-                    d.cancel();
-                else
-                    dh.setMessage( progress.string, progress.status, progress.substat );
-            }
-        }
+        
         if( progress.status >= 0 ) {
-            if( !dialog_enabled && progress.string != null && progress.string.length() > 0 ) {
-                setSystemNotification( progress.string, progress.status );
+            //dh = obtainDialogsInstance( Dialogs.PROGRESS_DIALOG );
+            if( on ) {
+                if( dh != null ) {
+                    Dialog d = dh.getDialog();
+                    if( d != null && d.isShowing() ) {
+                        dh.setProgress( progress.string, progress.status, progress.substat );
+                        return;
+                    }
+                }
+                showDialog( Dialogs.PROGRESS_DIALOG );
+            }
+            else {
+                if( progress.string != null && progress.string.length() > 0 )
+                    setSystemNotification( progress.string, progress.status );
             }
             return;
+        }
+        else {
+            if( dh != null ) {
+                Dialog d = dh.getDialog();
+                if( d != null && d.isShowing() ) {
+                    Log.v( TAG, "Trying to cancel the progress dialog..." );
+                    d.cancel();
+                }
+            }
         }
         if( notMan != null ) notMan.cancel( 1 ); 
         setProgressBarIndeterminateVisibility( false );
@@ -626,8 +638,11 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         long cur_time = System.currentTimeMillis();
         if( notLastTime + 1000 > cur_time ) return;
         notLastTime = cur_time;
-        Notification notification = new Notification( R.drawable.icon, "A file operation in progress", cur_time );
-        notification.contentIntent = PendingIntent.getActivity( this, 0, new Intent( this, FileCommander.class ), 0 );
+        Notification notification = new Notification( R.drawable.icon, getString( R.string.inprogress ), cur_time );
+        Intent intent = new Intent( this, FileCommander.class ).setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP | 
+                                                                          Intent.FLAG_ACTIVITY_SINGLE_TOP );
+        notification.contentIntent = PendingIntent.getActivity( this, 0, intent, 
+                                     PendingIntent.FLAG_CANCEL_CURRENT );
         notification.flags |= Notification.FLAG_ONGOING_EVENT;
 
         RemoteViews not_view = new RemoteViews( getPackageName(), R.layout.progress );
@@ -645,8 +660,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             file_exist_resolution = r;
             notify();
         }
+        /*
         if( file_exist_resolution != Commander.ABORT )
             showDialog( Dialogs.PROGRESS_DIALOG );
+        */
     }    
     @Override
     public int getResolution() {

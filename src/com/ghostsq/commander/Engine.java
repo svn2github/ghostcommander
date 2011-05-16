@@ -24,11 +24,16 @@ public class Engine extends Thread {
     public boolean reqStop() {
         if( isAlive() ) {
             Log.i( getClass().getName(), "reqStop()" );
-            stop = true;
-            interrupt();
+            if( stop )
+                interrupt();
+            else
+                stop = true;
             return true;
         }
-        return false;
+        else {
+            Log.i( getClass().getName(), "Engine thread is not alive" );
+            return false;
+        }
     }
     protected boolean isStopReq() {
         return stop || isInterrupted();
