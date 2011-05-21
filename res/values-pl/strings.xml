@@ -188,7 +188,7 @@
 <string name="connect">Połącz</string>
 <string name="cancel">Anuluj</string>
 <string name="ftp_connected">Połączono z \"%1$s\",\n Zalogowany jako \"%2$s\"</string>
-<string name="ftp_upload_failed">Wgrywanie \"%1$s\" nieudane.\n Log serwera FTP:\n\n%2$%</string>
+<string name="ftp_upload_failed">Wgrywanie \"%1$s\" nieudane.\n Log serwera FTP:\n\n%2$s</string>
 <string name="ftp_mkdir_failed">Nie można utworzyć katalogu \"%1$s\".\n Log serwera FTP:\n\n\"%2$s\</string>
 <string name="ftp_nologin">Nie zalogowany!</string>
 <string name="layout_settings">Wygląd i wyświetlanie:</string>

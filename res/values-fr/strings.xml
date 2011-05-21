@@ -180,7 +180,7 @@
 <string name="connect">Connecter</string>
 <string name="cancel">Abandonner</string>
 <string name="ftp_connected">Connecté à \"%1$s\",\n Connecté comme \"%2$s\"</string>
-<string name="ftp_upload_failed">Echec téléchargement \"%1$s\".\n Fichier log FTP \n\n%2$%</string>
+<string name="ftp_upload_failed">Echec téléchargement \"%1$s\".\n Fichier log FTP \n\n%2$s</string>
 <string name="ftp_mkdir_failed">Echec création répertoire  \"%1$s\".\n Fichier log FTP :\n\n\"%2$s\</string>
 <string name="ftp_nologin">Pas loggué!</string>
 <string name="layout_settings">Paramétrage de l\'affichage:</string>

@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.regex.Matcher;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -68,7 +69,7 @@ class ExecEngine extends Engine {
                 os.flush();
             }
             String to_exec = bb + cmd + "\n";
-            Log.v( TAG, "executing '" + to_exec + "'" );
+            //Log.v( TAG, "executing: " + to_exec );
             os.write( to_exec ); // execute the command
             os.flush();
             Thread.sleep( timeout );
@@ -98,5 +99,8 @@ class ExecEngine extends Engine {
             Log.e( TAG, "On execution '" + cmd + "'", e );
             error( "Exception: " + e );
         }
+    }
+    static String prepFileName( String fn ) {
+        return "'" + fn.replaceAll( "'", Matcher.quoteReplacement("'\\''") ) + "'";
     }
 }

@@ -253,7 +253,7 @@ copied >5 will produce:
     <string name="connect">Connect</string>
     <string name="cancel">Cancel</string>
     <string name="ftp_connected">Connected to \"%1$s\",\n Logged in as \"%2$s\"</string>
-    <string name="ftp_upload_failed">Upload \"%1$s\" failed.\n FTP log:\n\n%2$%</string>
+    <string name="ftp_upload_failed">Upload \"%1$s\" failed.\n FTP log:\n\n%2$s</string>
     <string name="ftp_mkdir_failed">Failed to create folder  \"%1$s\".\n FTP log:\n\n\"%2$s\</string>            
     <string name="ftp_nologin">Not logged in!</string>            
 

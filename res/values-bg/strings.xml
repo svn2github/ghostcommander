@@ -183,7 +183,7 @@
 <string name="connect">Свържи</string>
 <string name="cancel">Отказ</string>
 <string name="ftp_connected">Свържи се към FTP \"%1$s\",\n с име \"%2$s\"</string>
-<string name="ftp_upload_failed">Качването \"%1$s\" е неуспешно.\n FTP log:\n\n%2$%</string>
+<string name="ftp_upload_failed">Качването \"%1$s\" е неуспешно.\n FTP log:\n\n%2$s</string>
 <string name="ftp_mkdir_failed">Не мога да създам папка \"%1$s\".\n FTP log:\n\n\"%2$s\</string>
 <string name="ftp_nologin">Не сте се регистрирали!</string>
 <string name="layout_settings">Настройки на външния вид:</string>

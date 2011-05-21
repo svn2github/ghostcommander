@@ -51,7 +51,7 @@ public class FTP {
     }
 
     public final void debugPrint( String message ) {
-        //Log.v( TAG, message );
+        Log.v( TAG, message );
         if( PRINT_DEBUG_INFO ) {
             debugBuf.append( message );
             debugBuf.append( "\n" );
@@ -80,6 +80,8 @@ public class FTP {
                 code = getReplyCode( response );
                 if( isPositiveComplete( code ) )
                     return true;
+                if( isNegative( code ) )
+                    return false;
                 if( isPositiveIntermediate( code ) )
                     return true; // when this occurred?
                 Thread.sleep( 400 );
@@ -321,7 +323,7 @@ public class FTP {
 		} catch( IOException e ) {
 		    Log.e( TAG, "", e );
 		}
-        return waitForPositiveResponse();
+        return true; //waitForPositiveResponse();
     }
     
     /*

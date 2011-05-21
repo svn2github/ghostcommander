@@ -106,7 +106,7 @@ public class RootAdapter extends CommanderAdapterBase {
             BufferedReader is = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
             
             DataInputStream  es = new DataInputStream( p.getErrorStream() );
-            String to_execute = "ls -l '" + path.replaceAll( "'", "'\''" ) + "'\n";
+            String to_execute = "ls -l " + ExecEngine.prepFileName( path ) + "\n";
             os.write( to_execute ); // execute the command
             os.flush();
             for( int i=0; i< 100; i++ ) {
@@ -317,8 +317,9 @@ public class RootAdapter extends CommanderAdapterBase {
                     String file_name = f.getName();
                     String full_name = src_base_path + file_name;
                     String to_exec;
-                    String cmd = move ? " mv -f " : ( f.isDirectory() ? " cp -r " : " cp " );
-                    to_exec = bb + cmd + "'" + full_name.replaceAll( "'", "'\''" ) + "' '" + dest_folder + "'\n";
+                    String cmd = move ? " mv -f" : ( f.isDirectory() ? " cp -r" : " cp" );
+                    to_exec = bb + cmd + " " + ExecEngine.prepFileName( full_name ) 
+                                       + " " + ExecEngine.prepFileName( dest_folder ) + "\n";
                     Log.i( TAG, to_exec );
                     os.write( to_exec ); // execute command
                     os.flush();
@@ -387,7 +388,7 @@ public class RootAdapter extends CommanderAdapterBase {
         @Override
         public void run() {
             try {
-                String cmd = "mkdir " + full_name;
+                String cmd = "mkdir " + ExecEngine.prepFileName( full_name ) + "\n";
                 execute( cmd, true, 100 );
             } catch( Exception e ) {
                 error( "Exception: " + e );
@@ -451,9 +452,9 @@ public class RootAdapter extends CommanderAdapterBase {
                     sendProgress( "Deleting " + full_name, (int)(counter * conv) );
                     String to_exec;
                     if( f.isDirectory() )
-                        to_exec = "rm -r '" + full_name.replaceAll( "'", "'\''" ) + "'\n";
+                        to_exec = "rm -r " + ExecEngine.prepFileName( full_name ) + "\n";
                     else
-                        to_exec = "rm '" + full_name.replaceAll( "'", "'\''" ) + "'\n";
+                        to_exec = "rm " + ExecEngine.prepFileName( full_name ) + "\n";
                     os.write( to_exec ); // execute command
                     os.flush();
                     Thread.sleep( 200 );
@@ -570,7 +571,7 @@ public class RootAdapter extends CommanderAdapterBase {
             int counter = 0;
             try {
                 String bb = getBusyBox();
-                String cmd = move ? " mv " : " cp -r ";
+                String cmd = move ? " mv" : " cp -r";
                 Process p = Runtime.getRuntime().exec( sh );
                 OutputStreamWriter os = new OutputStreamWriter( p.getOutputStream() );
                 BufferedReader es = new BufferedReader( new InputStreamReader( p.getErrorStream() ) );
@@ -581,7 +582,8 @@ public class RootAdapter extends CommanderAdapterBase {
                     String full_name = src_full_names[i];
                     if( full_name == null ) continue;
                     String to_exec;
-                    to_exec = bb + cmd + "'" + full_name.replaceAll( "'", "'\''" ) + "' '" + dest + "'\n";
+                    to_exec = bb + cmd + " " + ExecEngine.prepFileName( full_name ) + 
+                                         " " + ExecEngine.prepFileName( dest ) + "\n";
                     Log.i( TAG, to_exec );
                     os.write( to_exec ); // execute command
                     os.flush();
