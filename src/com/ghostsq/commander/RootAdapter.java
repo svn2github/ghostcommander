@@ -67,13 +67,12 @@ public class RootAdapter extends CommanderAdapterBase {
         @Override
         public void run() {
             try {
-            	getList();
+            	getList( true );
             }
             catch( IOException e ) {
-                sh = "sh";
-                // try again
+                // try again, without su
                 try {
-                    getList();
+                    getList( false );
                     sendProgress( commander.getContext().getString( R.string.no_root ), 
                             Commander.OPERATION_COMPLETED, pass_back_on_done );
                 }
@@ -94,19 +93,20 @@ public class RootAdapter extends CommanderAdapterBase {
             	super.run();
             }
         }
-        private void getList() throws Exception {
+        private void getList( boolean su ) throws Exception {
             String path = src.getPath();
             if( path == null ) {
                 path = SLS;
                 src = src.buildUpon().encodedPath( path ).build();
             }
             parentLink = path == null || path.length() == 0 || path.equals( SLS ) ? SLS : "..";
+            if( !su ) sh = "sh";
             Process p = Runtime.getRuntime().exec( sh );
             OutputStreamWriter os = new OutputStreamWriter( p.getOutputStream() );
             BufferedReader is = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
             
             DataInputStream  es = new DataInputStream( p.getErrorStream() );
-            String to_execute = "ls -l " + ExecEngine.prepFileName( path ) + "\n";
+            String to_execute = ( su ? getBusyBox() + " " : "" ) + "ls -l " + ExecEngine.prepFileName( path ) + "\n";
             os.write( to_execute ); // execute the command
             os.flush();
             for( int i=0; i< 100; i++ ) {
