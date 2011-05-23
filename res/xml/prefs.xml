@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
   xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+            android:title="@string/data_settings">
         <PreferenceScreen
                 android:key="left_panel_settings"
                 android:title="@string/left_panel_settings">
-
 		    <PreferenceCategory
 		            android:title="@string/left_panel_settings">
 		        <CheckBoxPreference
@@ -47,21 +48,27 @@
 	                android:title="@string/detailed_view_Ovr"
 	                android:summary="@string/summary_detailed_view_Ovr" 
 	                android:defaultValue="true"/>
-	        <ListPreference
-	                android:key="right_sorting"
-	                android:title="@string/sorting"
-	                android:summary="@string/summary_sorting"
-	                android:entries="@array/sorting"
-	                android:entryValues="@array/sorting_vals"
-	                android:dialogTitle="@string/sorting" 
-	                android:defaultValue="n"/>
+          <ListPreference
+                  android:key="right_sorting"
+                  android:title="@string/sorting"
+                  android:summary="@string/summary_sorting"
+                  android:entries="@array/sorting"
+                  android:entryValues="@array/sorting_vals"
+                  android:dialogTitle="@string/sorting" 
+                  android:defaultValue="n"/>
 	        <CheckBoxPreference
 	                android:key="right_show_hidden"
 	                android:title="@string/show_hidden"
 	                android:summary="@string/summary_show_hidden" 
 	                android:defaultValue="true"/>
 	    </PreferenceCategory>
-    </PreferenceScreen>
+      </PreferenceScreen>
+      <CheckBoxPreference
+                android:key="case_ignore"
+                android:title="@string/sort_case"
+                android:summary="@string/summary_sort_case" 
+                android:defaultValue="true"/>
+    </PreferenceCategory>
     <PreferenceCategory
             android:title="@string/layout_settings">
         <ListPreference
@@ -97,11 +104,14 @@
             android:title="@string/thumbnails_size" 
             android:summary="@string/summary_thumbnails_size" 
             android:defaultValue="200"/>
-        <CheckBoxPreference
-                android:key="case_ignore"
-                android:title="@string/sort_case"
-                android:summary="@string/summary_sort_case" 
-                android:defaultValue="true"/>
+        <ListPreference
+                android:key="font_size"
+                android:title="@string/font_size"
+                android:summary="@string/summary_font_size"
+                android:entries="@array/font_size"
+                android:entryValues="@array/font_size"
+                android:dialogTitle="@string/font_size" 
+                android:defaultValue="12"/>
 	    <PreferenceScreen
 	                android:key="colors"
 	                android:title="@string/colors">

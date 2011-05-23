@@ -1,6 +1,7 @@
 package com.ghostsq.commander;
 
 import java.io.File;
+import java.util.Set;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -76,17 +77,19 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         
         setMode( sxs_ );
         
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
+/*        
         fingerFriendly =  sharedPref.getBoolean( "finger_friendly", true );
         warnOnRoot = sharedPref.getBoolean( "prevent_root", true );
         rootOnRoot = sharedPref.getBoolean( "root_root", false );
         arrowsLegacy = sharedPref.getBoolean( "arrow_mode", false );
         toolbarShown = sharedPref.getBoolean( "show_toolbar", true );        
-        
+*/
         initList( LEFT );
         initList( RIGHT );
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
+        applySettings( sharedPref, true );
         
-        setFingerFriendly( fingerFriendly );
         highlightCurrentTitle();
         
         TextView left_title = (TextView)c.findViewById( titlesIds[LEFT] );
@@ -122,6 +125,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     }
     public final void setToolbarButtons( CommanderAdapter ca ) {
         try {
+            if( ca == null ) return;
             if( toolbarShown ) {
                 if( toolbar == null ) {
                     LayoutInflater inflater = (LayoutInflater)c.getContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
@@ -217,7 +221,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             }
             else {
                 UrlQuerySanitizer urlqs = new UrlQuerySanitizer();
-                title.setText( urlqs.unescape( Utils.screenPwd( s ) ) );
+                title.setText( urlqs.unescape( Favorite.screenPwd( s ) ) );
             }
         }
     }
@@ -322,16 +326,19 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         list[RIGHT].applyColors( bg_color, fgrColor, selColor );
         highlightCurrentTitle();
     }
-    public final void applySettings( SharedPreferences sharedPref ) {
+    public final void applySettings( SharedPreferences sharedPref, boolean init ) {
         try {
             applyColors();
         	setFingerFriendly( sharedPref.getBoolean( "finger_friendly", false ) );
         	warnOnRoot =  sharedPref.getBoolean( "prevent_root", true );
             rootOnRoot = sharedPref.getBoolean( "root_root", false );
             arrowsLegacy = sharedPref.getBoolean( "arrow_mode", false );
-            list[LEFT].applySettings( sharedPref );
-            list[RIGHT].applySettings( sharedPref );
-            setPanelCurrent( current );
+            toolbarShown = sharedPref.getBoolean( "show_toolbar", true );
+            if( !init ) {
+                list[LEFT].applySettings( sharedPref );
+                list[RIGHT].applySettings( sharedPref );
+                setPanelCurrent( current );
+            }
         }
         catch( Exception e ) {
             Log.e( TAG, "applySettings()", e );
@@ -1041,17 +1048,17 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     	private final static String LI = "LEFT_ITEM", RI = "RIGHT_ITEM";
     	private final static String CP = "CURRENT_PANEL";
     	private final static String FU = "FAV_URIS";
-        int current;
-        String left, right;
-        String leftItem, rightItem;
-        String favUris;	// comma separated
+        public int current;
+        public String left, right;
+        public String leftItem, rightItem;
+        public String favs;
         public void store( Bundle b ) {
             b.putString( LP, left );
             b.putString( RP, right );
             b.putString( LI, leftItem );
             b.putString( RI, rightItem );
             b.putInt( CP, current );
-            b.putString( FU, favUris );
+            b.putString( FU, favs );
         }
         public void restore( Bundle b ) {
             left      = b.getString( LP );
@@ -1059,7 +1066,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             leftItem  = b.getString( LI );
             rightItem = b.getString( RI );
             current   = b.getInt( CP );
-            favUris   = b.getString( FU );
+            favs   = b.getString( FU );
         }
         public void store( SharedPreferences.Editor e ) {
             e.putString( LP, left );
@@ -1067,7 +1074,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             e.putString( LI,  leftItem );
             e.putString( RI, rightItem );
             e.putInt( CP, current );
-            e.putString( FU, favUris );
+            e.putString( FU, favs );
         }
         public void restore( SharedPreferences p ) {
             left      = p.getString( LP, "home:" );
@@ -1075,7 +1082,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             leftItem  = p.getString( LI, null );
             rightItem = p.getString( RI, null );
             current   = p.getInt( CP, LEFT );
-            favUris   = p.getString( FU, "" );
+            favs      = p.getString( FU, "" );
         }
     }
     public State getState() {
@@ -1092,7 +1099,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         } catch( Exception e ) {
             Log.e( TAG, "getState()", e );
         }
-        s.favUris = shorcutsFoldersList.getAsString();
+        s.favs = shorcutsFoldersList.getAsString();
         return s;
     }
 	public void setState( State s ) {
@@ -1104,6 +1111,6 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         NavigateInternal( RIGHT, Uri.parse( s.right ), s.rightItem );
         applyColors();
         setPanelCurrent( s.current );
-        shorcutsFoldersList.setFromString( s.favUris );
+        shorcutsFoldersList.setFromString( s.favs );
     }
 }

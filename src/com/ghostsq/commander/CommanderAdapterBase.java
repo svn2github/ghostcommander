@@ -27,6 +27,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected final static String NOTIFY_STR = "str", NOTIFY_PRG1 = "prg1", NOTIFY_PRG2 = "prg2", NOTIFY_COOKIE = "cookie"; 
     protected final static String NOTIFY_RECEIVER_HASH = "hash", NOTIFY_ITEMS_TO_RECEIVE = "itms"; 
     protected final static String DEFAULT_DIR = "/sdcard";
+    protected final static int fnt_sz_rdc = 3;
     protected final String TAG = getClass().getName();
     protected Commander commander = null;
     public    static final String SLS = File.separator;
@@ -37,7 +38,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     private   int     parentWidth, imgWidth, icoWidth, nameWidth, sizeWidth, dateWidth, attrWidth;
     private   int     fg_color, sl_color;
     private   boolean dirty = true;
-    protected int     thumbnail_size_perc = 100;
+    protected int     thumbnail_size_perc = 100, font_size = 18;
     protected int     mode = 0;
     protected boolean ascending = true;
     protected String  parentLink;
@@ -195,6 +196,11 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             thumbnail_size_perc = val;
             return 0;
         }
+        if( ( mask & SET_FONT_SIZE ) != 0 ) {
+            font_size = val;
+            return 0;
+        }
+        
         mode &= ~mask;
         mode |= val;
         dirty = true;
@@ -402,6 +408,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             }
             TextView nameView = (TextView)row_view.findViewById( R.id.fld_name );
             if( nameView != null ) {
+                nameView.setTextSize( font_size );
                 nameView.setWidth( nameWidth );
                 nameView.setText( name != null ? name : "???" );
                 nameView.setTextColor( fg_color );
@@ -410,6 +417,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             TextView attrView = (TextView)row_view.findViewById( R.id.fld_attr );
             if( attrView != null ) {
                 if( dm ) { // must be to not ruin the layout
+                    attrView.setTextSize( font_size - fnt_sz_rdc );
                     attrView.setWidth( attrWidth );
                     attrView.setVisibility( View.VISIBLE );
                     attrView.setText( attrWidth == 0 || item.attr == null ? "" : item.attr );
@@ -421,6 +429,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             }
             TextView dateView = (TextView)row_view.findViewById( R.id.fld_date );
             if( dateView != null ) {
+                dateView.setTextSize( font_size - fnt_sz_rdc );
                 dateView.setVisibility( dm ? View.VISIBLE : View.GONE );
                 dateView.setWidth( dateWidth );
                 dateView.setText( date );
@@ -429,6 +438,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             }
             TextView sizeView = (TextView)row_view.findViewById( R.id.fld_size );
             if( sizeView != null ) {
+                sizeView.setTextSize( font_size - fnt_sz_rdc );
                 sizeView.setVisibility( dm ? View.VISIBLE : View.GONE );
                 sizeView.setWidth( sizeWidth );
                 sizeView.setText( size );

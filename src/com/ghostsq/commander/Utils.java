@@ -185,22 +185,6 @@ public final class Utils {
         return 0; 
     }
 
-    public final static String screenPwd( String uri_str ) {
-        if( uri_str == null ) return null;
-        return screenPwd( Uri.parse( uri_str ) );
-    }
-    public final static String screenPwd( Uri u ) {
-        if( u == null ) return null;
-        String ui = u.getUserInfo();
-        if( ui == null || ui.length() == 0 ) return u.toString();
-        int pw_pos = ui.indexOf( ':' );
-        if( pw_pos < 0 ) return u.toString();
-        ui = ui.substring( 0, pw_pos+1 ) + "***";
-        String host = u.getHost();
-        int port = u.getPort();
-        String authority = ui + "@" + host + (port >= 0 ? port : ""); 
-	    return Uri.decode( u.buildUpon().encodedAuthority( authority ).build().toString() );
-	}
     public final static String mbAddSl( String path ) {
         if( path == null || path.length() == 0 ) return "";
         return path.charAt( path.length()-1 ) == '/' ? path : path + "/"; 

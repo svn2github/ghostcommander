@@ -87,22 +87,11 @@
     <string name="create_zip">ZIP...</string>
     <string name="create_zip_title">ZIP</string>
 
-    <string name="input_settings">Input</string>
-    <string name="arrow_mode">Arrow commands</string>
-    <string name="summary_arrow_mode">Left/Right arrow does toggle/select</string>
-
-    <string name="show_confirm">Show confirmation</string>
-    <string name="summary_show_confirm">Show the confirmation popup dialog on each operation completion</string>
-
-    <string name="prefs_label">Settings</string>
-    <string name="editor_label">Text Editor</string>
-    <string name="advanced">Advanced</string>
-    <string name="advanced_settings">Advanced settings</string>
-    <string name="summary_advanced_settings">Extra settings for advanced users</string>
-
     <string name="wait"> wait... </string>
     <string name="fail"> FAILED </string>
     <string name="failed">Error:\n</string>
+    <string name="default_uri"></string>
+
 
     <string name="dialog_yes">Yes</string>
     <string name="dialog_no">No</string>
@@ -257,7 +246,19 @@ copied >5 will produce:
     <string name="ftp_mkdir_failed">Failed to create folder  \"%1$s\".\n FTP log:\n\n\"%2$s\</string>            
     <string name="ftp_nologin">Not logged in!</string>            
 
-    <string name="layout_settings">Configure the layout:</string>
+    <string name="data_settings">File lists</string>
+    <string name="layout_settings">Appearance</string>
+    <string name="input_settings">Input</string>
+
+    <string name="show_confirm">Show confirmation</string>
+    <string name="summary_show_confirm">Show the confirmation popup dialog on each operation completion</string>
+
+    <string name="prefs_label">Settings</string>
+    <string name="editor_label">Text Editor</string>
+    <string name="advanced">Advanced</string>
+    <string name="advanced_settings">Advanced settings</string>
+    <string name="summary_advanced_settings">Extra settings for advanced users</string>
+
     <string name="panels_mode">Side-by-side panels</string>
     <string name="summary_panels_mode">Show both panels side-by-side in a split screen.</string>
     <string name="two_lines">Two lines in a row</string>
@@ -308,6 +309,9 @@ copied >5 will produce:
     <string name="thumbnails_size">Thumbnails size</string>
     <string name="summary_thumbnails_size">In percents to the icons size</string>
 
+    <string name="font_size">Font size</string>
+    <string name="summary_font_size">Set the font size</string>
+
     <string name="left_panel_settings">Left panel settings</string>
     <string name="right_panel_settings">Right panel settings</string>
     <string name="detailed_view_SbS">Detailed in Side-by-side mode</string>
@@ -321,6 +325,8 @@ copied >5 will produce:
     
     <string name="show_hidden">Show hidden files</string>
     <string name="summary_show_hidden">If not checked, files beginning with a dot won\'t be shown</string>
+    <string name="arrow_mode">Arrow commands</string>
+    <string name="summary_arrow_mode">Left/Right arrow does toggle/select</string>
 
     <string name="colors">Setup the colors</string>
     <string name="summary_colors">Customize the colors of the background, selection, etc.</string>

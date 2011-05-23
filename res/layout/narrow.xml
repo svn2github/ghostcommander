@@ -11,7 +11,8 @@
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
 	        android:layout_toRightOf="@id/fld_icon"
-            android:padding="1dip"/>
+            android:padding="1dip"
+            android:textSize="10sp"/>
         <TextView android:text="ATTR" 
             android:id="@+id/fld_attr"
             android:layout_alignParentRight="true"

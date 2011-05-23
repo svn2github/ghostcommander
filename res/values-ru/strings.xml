@@ -56,16 +56,7 @@
 <string name="open_with">Открыть с...</string>
 <string name="copy_name">Копировать имя в буфер</string>
 <string name="fav_fld">Закладка на папку \"%s\"</string>
-<string name="input_settings">Ввод</string>
-<string name="arrow_mode">Стрелки Влево/Вправо</string>
-<string name="summary_arrow_mode">это Переключение и Пометка</string>
-<string name="show_confirm">Подтверждения</string>
-<string name="summary_show_confirm">Выдавать подтверждения о совершении файловых операций</string>
-<string name="prefs_label">Настройки</string>
-<string name="editor_label">Текстовый редактор</string>
-<string name="advanced">Дополнительнo</string>
-<string name="advanced_settings">Дополнительные настройки</string>
-<string name="summary_advanced_settings">Для опытных пользователей</string>
+
 <string name="wait"> жди... </string>
 <string name="fail"> (ошибка) </string>
 <string name="failed">Ошибка:\n</string>
@@ -100,7 +91,7 @@
 <string name="no_items">Не с чем совершить данную операцию.</string>
 <string name="inv_dest">Недопустимое место для копирования</string>
 <string name="find_on_fs_only">Функция поиска пока работает только на локальной файловой системе.</string>
-<string name="op_not_alwd">Опеарция \'%1$s\' не допустима. Выберите сперва что-либо.</string>
+<string name="op_not_alwd">Операция \'%s\' не допустима. Выберите сперва что-либо.</string>
 <string name="copy_to_local_only">Поддерживается копирование только в локальную файловую систему!</string>
 <string name="oper_item_to">%1$s %2$s в:"</string>
 <string name="login_title">Идентификация</string>
@@ -185,7 +176,13 @@
 <string name="ftp_upload_failed">Закачка \"%1$s\" неудалась.\n FTP log:\n\n%2$s</string>
 <string name="ftp_mkdir_failed">Не вышло создать папку \"%1$s\".\n FTP log:\n\n\"%2$s\</string>
 <string name="ftp_nologin">Пользователь не аутентифицирован.</string>
-<string name="layout_settings">Настройки внешнего вида:</string>
+
+<string name="data_settings">Списки файлов</string>
+<string name="layout_settings">Внешний вид</string>
+<string name="input_settings">Ввод</string>
+<string name="advanced_settings">Дополнительные настройки</string>
+<string name="summary_advanced_settings">Для опытных пользователей</string>
+
 <string name="panels_mode">Две панели рядом</string>
 <string name="summary_panels_mode">Показывать обе панели разом на одном экране</string>
 <string name="two_lines">Вывод в две строки</string>
@@ -231,6 +228,9 @@
 <string name="summary_thumbnails">Предпросмотр графических файлов</string>
 <string name="thumbnails_size">Размер миниатюр</string>
 <string name="summary_thumbnails_size">В процентах к размеру иконок</string>
+<string name="font_size">Размер шрифта</string>
+<string name="summary_font_size">Установить желаемый размер шрифта</string>
+
 <string name="left_panel_settings">Опции Левой панели</string>
 <string name="right_panel_settings">Опции Правой панели</string>
 <string name="detailed_view_SbS">Панели рядом, Детализация </string>
@@ -257,11 +257,20 @@
 <string name="language">Язык интерфейса</string>
 <string name="summary_language">Изменить язык программы на отличный от системного</string>
 <string name="restart_to_apply_lang">Перезапустите приложение для полной смены языка интерфейса</string>
+
+<string name="arrow_mode">Стрелки Влево/Вправо</string>
+<string name="summary_arrow_mode">это Переключение и Пометка</string>
+<string name="show_confirm">Подтверждения</string>
+<string name="summary_show_confirm">Выдавать подтверждения о совершении файловых операций</string>
+<string name="prefs_label">Настройки</string>
+<string name="editor_label">Текстовый редактор</string>
+<string name="advanced">Дополнительнo</string>
+
 <string name="editor_activity">Activity для редактирования</string>
-<string name="summary_editor_activity">Полное имя Activity класса. Имя пакета = префикс полного имени класса.</string>
+<string name="summary_editor_activity">Полное имя Activity класса. Имя пакета == префикс полного имени класса.</string>
 <string name="value_editor_activity">com.ghostsq.commander.Editor</string>
-<string name="busybox_location">Путь к busybox</string>
-<string name="summary_busybox_location">Для работы в root режиме нужна программа \"busybox\". Укажите полный путь к нему здесь.</string>
+<string name="busybox_location">Путь к \"busybox\"</string>
+<string name="summary_busybox_location">В случае если он находится не в пути поиска.</string>
 <string name="execute_command">Исполнить команду</string>
 <string name="nothing_to_open">Не ясно что редактировать</string>
 <string name="remind_to_save">Не забудьте сохранить изменения через меню</string>

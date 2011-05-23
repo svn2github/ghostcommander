@@ -1,8 +1,5 @@
 package com.ghostsq.commander;
 
-
-import java.io.File;
-
 import android.os.Handler;
 import android.content.Context;
 import android.net.Uri;
@@ -30,9 +27,16 @@ public class MountAdapter extends CommanderAdapterBase {
     public  MountItem[] items = null;
 
     public MountAdapter( Commander c ) {
-        super( c, DETAILED_MODE | NARROW_MODE | TEXT_MODE | SHOW_ATTR | ATTR_ONLY );
+        super( c, DETAILED_MODE | NARROW_MODE | SHOW_ATTR | ATTR_ONLY );
     }
 
+    @Override
+    public int setMode( int mask, int val ) {
+        if( ( mask & ( MODE_WIDTH | MODE_DETAILS | MODE_ATTR ) ) == 0 )
+            return super.setMode( mask, val );
+        return mode;
+    }
+    
     @Override
     public String getType() {
         return "mount";

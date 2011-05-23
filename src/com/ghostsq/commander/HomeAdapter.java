@@ -15,13 +15,14 @@ public class HomeAdapter extends CommanderAdapterBase {
     private boolean root = false;
     
     public HomeAdapter( Commander c ) {
-        super( c, DETAILED_MODE | NARROW_MODE | SHOW_ATTR );
+        super( c, DETAILED_MODE | NARROW_MODE | SHOW_ATTR | ATTR_ONLY );
         numItems = getNumItems();
     }
 
     @Override
     public int setMode( int mask, int val ) {
-        super.setMode( mask, val );
+        if( ( mask & ( MODE_WIDTH | MODE_DETAILS | MODE_ATTR ) ) == 0 )
+            super.setMode( mask, val );
         if( ( mask & MODE_ROOT ) != 0 ) {
             root = ( mode & MODE_ROOT ) != 0;
             numItems = getNumItems();

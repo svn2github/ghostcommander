@@ -4,6 +4,7 @@ import java.lang.String;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import android.net.Uri;
 import android.text.Editable;
@@ -23,18 +24,20 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener, OnClickListener, TextWatcher {
+    private final static String old_sep = ",", sep = "|!|";
+    private static Pattern sep_re = Pattern.compile( sep );
 	private FileCommander c;
 	private Panels        p;
 	private int  toChange = -1;
 	private View goPanel;
-	private ArrayList<String> shortcutsList;
+	private ArrayList<Favorite> shortcutsList;
 	
 	public Shortcuts( FileCommander c_, Panels p_ ) {
 		super();
 		c = c_;
 		p = p_;
 		goPanel = c.findViewById( R.id.uri_edit_panel );
-		shortcutsList = new ArrayList<String>();
+		shortcutsList = new ArrayList<Favorite>();
 		
         try {
             AutoCompleteTextView textView = (AutoCompleteTextView)goPanel.findViewById( R.id.uri_edit );
@@ -87,7 +90,7 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
 
 	@Override
 	public Object getItem( int position ) {
-		return shortcutsList.get( position );
+		return shortcutsList.get( position ).getUriString();
 	}
 
 	@Override
@@ -99,7 +102,7 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
 	public View getView( int position, View convertView, ViewGroup parent ) {
 		TextView tv = convertView != null ? (TextView)convertView : new TextView( c );
 		tv.setPadding( 4, 4, 4, 4 );
-		String screened = Utils.screenPwd( shortcutsList.get( position ) );
+		String screened = Favorite.screenPwd( shortcutsList.get( position ).getUri() );
 		tv.setText( screened == null ? "" : screened );
 		tv.setTextColor( 0xFF000000 );
 		return tv;
@@ -147,9 +150,9 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
 //    private final String searchForNotScreenedURI( String new_dir )
     
     
-    public final void addToFavorites( String uri ) {
-        	removeFromFavorites( uri );
-        	shortcutsList.add( uri );
+    public final void addToFavorites( String uri_str ) {
+        	removeFromFavorites( uri_str );
+        	shortcutsList.add( new Favorite( uri_str, null ) );
 			notifyDataSetChanged();
     }
     public final void removeFromFavorites( String uri ) {
@@ -164,7 +167,7 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
     		if( strip_uri.charAt( strip_uri.length()-1 ) != '/' )
     			strip_uri += "/";
 	        for( int i = 0; i <= shortcutsList.size(); i++ ) {
-	        	String item = shortcutsList.get( i );
+	        	String item = shortcutsList.get( i ).getUriString();
 	        	if( item != null ) {
 	        		String strip_item = item.trim();
 	        		if( strip_item.charAt( strip_item.length()-1 ) != '/' )
@@ -178,24 +181,35 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
 		return -1;
     }
     public final String getAsString() {
-    	String ss = "";
-        for( int i = 0; i < shortcutsList.size(); i++ )
-        	ss += shortcutsList.get( i ) + ",";
-		return ss;
+ 	    StringBuffer buf = new StringBuffer();
+ 	    int sz = shortcutsList.size();
+        for( int i = 0; i < sz; i++ ) {
+            buf.append( shortcutsList.get( i ).toString() );
+            if( i < sz-1 )
+                buf.append( sep );
+        }
+		return buf.toString();
 	}
 	
-    public final void setFromString( String uris ) {
+    public final void setFromString( String stored ) {
     	shortcutsList.clear();
-        StringTokenizer st = new StringTokenizer( uris, "," );
-        try {
-        	while( st.hasMoreTokens() ) {
-        		shortcutsList.add( st.nextToken() );
-	        }
-		} catch( NoSuchElementException e ) {
-			c.showError( "Error: " + e );
-		}
+    	if( stored.indexOf( sep ) >= 0 ) { // new sep
+            String[] favs = sep_re.split( stored );
+            for( int i = 0; i < favs.length; i++ )
+                shortcutsList.add( new Favorite( favs[i] ) );
+    	} else {
+            StringTokenizer st = new StringTokenizer( stored, old_sep );
+            try {
+                while( st.hasMoreTokens() ) {
+                    String stored_fav = st.nextToken();
+                    shortcutsList.add( new Favorite( stored_fav ) );
+                }
+            } catch( NoSuchElementException e ) {
+                c.showError( "Error: " + e );
+            }
+    	}
 		if( shortcutsList.isEmpty() )
-		    shortcutsList.add( "/sdcard" );
+		    shortcutsList.add( new Favorite( "/sdcard", c.getContext().getString( R.string.default_uri ) ) );
     }
 
 	@Override

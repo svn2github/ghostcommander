@@ -108,7 +108,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onStart() {
-        Log.v( TAG, "Starting\n");
+        Log.v( TAG, "Starting\n" );
         super.onStart();
         on = true;
         if( dont_restore )
@@ -116,8 +116,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         else {
             SharedPreferences prefs = getPreferences( MODE_PRIVATE );
             Panels.State s = panels.new State();
-            s.restore(prefs);
-            panels.setState(s);
+            s.restore( prefs );
+            panels.setState( s );
             final String FT = "first_time";
             if( prefs.getBoolean( FT, true ) ) {
                 SharedPreferences.Editor editor = prefs.edit();
@@ -135,7 +135,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         on = false;
         SharedPreferences.Editor editor = getPreferences( MODE_PRIVATE ).edit();
         Panels.State s = panels.getState();
-        s.store(editor);
+        s.store( editor );
         editor.commit();
     }
 
@@ -168,9 +168,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     public void onConfigurationChanged( Configuration newConfig ) {
+        Utils.changeLanguage( this, getResources() );
         super.onConfigurationChanged( newConfig );
         if( sxs_auto ) {
-            if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            if( newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE ) {
                 panels.setMode( true );
             } else if( newConfig.orientation == Configuration.ORIENTATION_PORTRAIT ){
                 panels.setMode( false );
@@ -287,7 +288,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 showMessage( getString( R.string.restart_to_apply_lang ) );
                 exit = true;
             }
-            panels.applySettings( sharedPref );
+            panels.applySettings( sharedPref, false );
             String panels_mode = sharedPref.getString( "panels_sxs_mode", "a" );
             sxs_auto = panels_mode.equals( "a" );
             boolean sxs = sxs_auto ? getRotMode() : panels_mode.equals( "y" );

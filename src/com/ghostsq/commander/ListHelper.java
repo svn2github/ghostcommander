@@ -137,6 +137,9 @@ public class ListHelper {
             if( sharedPref.getBoolean( "show_thumbnails", true ) )
                 thubnails_size = Integer.parseInt( sharedPref.getString( "thumbnails_size", "100" ) );
             ca.setMode( CommanderAdapter.SET_TBN_SIZE, thubnails_size );
+
+            String fnt_sz = sharedPref.getString( "font_size", "12" );
+            ca.setMode( CommanderAdapter.SET_FONT_SIZE, Integer.parseInt( fnt_sz ) );
             
             if( ca instanceof HomeAdapter )
                 ca.setMode( CommanderAdapter.MODE_ROOT, sharedPref.getBoolean( "show_root", false ) ? CommanderAdapter.ROOT_MODE : CommanderAdapter.BASIC_MODE );
