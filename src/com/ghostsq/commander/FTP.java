@@ -310,7 +310,7 @@ public class FTP {
 		}
 		return null;
     }
-    private final boolean cleanUpDataCommand() throws InterruptedException {
+    private final boolean cleanUpDataCommand( boolean wait_reps ) throws InterruptedException {
     	
         // Clean up the data structures
         try {
@@ -323,7 +323,7 @@ public class FTP {
 		} catch( IOException e ) {
 		    Log.e( TAG, "", e );
 		}
-        return true; //waitForPositiveResponse();
+        return wait_reps ? waitForPositiveResponse() : true;
     }
     
     /*
@@ -398,7 +398,7 @@ public class FTP {
         	debugPrint( "Exception: " + e );
         }
         finally {
-        	cleanUpDataCommand();
+        	cleanUpDataCommand( dataSocket != null );
         }
         return false;
     }
@@ -442,7 +442,7 @@ public class FTP {
 			} catch( IOException e ) {
 			    Log.e( TAG, "Exception on streams closing (finnaly section)", e );
 			}
-        	cleanUpDataCommand();
+        	cleanUpDataCommand( dataSocket != null );
         }
         return false;
     }
@@ -510,7 +510,7 @@ public class FTP {
         	debugPrint( "Exception: " + e );
         }
         finally {
-        	cleanUpDataCommand();
+        	cleanUpDataCommand( dataSocket != null );
         }
         if( array != null ) {
             LsItem[] result = new LsItem[array.size()]; 
