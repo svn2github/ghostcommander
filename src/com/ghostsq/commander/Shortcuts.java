@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import android.net.Uri;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +25,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener, OnClickListener, TextWatcher {
-    private final static String old_sep = ",", sep = "|!|";
-    private static Pattern sep_re = Pattern.compile( sep );
+    private final static String TAG = "Shortcuts";
+    private final static String old_sep = ",", sep = "`RS`";
 	private FileCommander c;
 	private Panels        p;
 	private int  toChange = -1;
@@ -180,38 +181,48 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
 		}
 		return -1;
     }
+
     public final String getAsString() {
- 	    StringBuffer buf = new StringBuffer();
- 	    int sz = shortcutsList.size();
-        for( int i = 0; i < sz; i++ ) {
-            buf.append( shortcutsList.get( i ).toString() );
-            if( i < sz-1 )
-                buf.append( sep );
-        }
-		return buf.toString();
-	}
-	
+        String s = Utils.join( store(), sep );
+        //Log.v( TAG, "Joined favs: " + s );
+        return s;
+    }
+    
     public final void setFromString( String stored ) {
+        if( stored == null ) return;
     	shortcutsList.clear();
-    	if( stored.indexOf( sep ) >= 0 ) { // new sep
-            String[] favs = sep_re.split( stored );
-            for( int i = 0; i < favs.length; i++ )
-                shortcutsList.add( new Favorite( favs[i] ) );
-    	} else {
-            StringTokenizer st = new StringTokenizer( stored, old_sep );
-            try {
-                while( st.hasMoreTokens() ) {
-                    String stored_fav = st.nextToken();
-                    shortcutsList.add( new Favorite( stored_fav ) );
-                }
-            } catch( NoSuchElementException e ) {
-                c.showError( "Error: " + e );
+    	String use_sep = stored.indexOf( sep ) >= 0 ? sep : old_sep;
+        String[] favs = stored.split( use_sep );
+        try {
+            for( int i = 0; i < favs.length; i++ ) {
+                String stored_fav = favs[i];
+                //Log.v( TAG, "fav: " + stored_fav );
+                shortcutsList.add( new Favorite( stored_fav ) );
             }
-    	}
+        } catch( NoSuchElementException e ) {
+            c.showError( "Error: " + e );
+        }
 		if( shortcutsList.isEmpty() )
 		    shortcutsList.add( new Favorite( "/sdcard", c.getContext().getString( R.string.default_uri ) ) );
     }
 
+    public final void restore( String[] stored ) {
+        for( int i = 0; i < stored.length; i++ ) {
+            shortcutsList.add( new Favorite( stored[i] ) );
+        }
+    }
+    
+    public final String[] store() {
+        int sz = shortcutsList.size();
+        String[] ret = new String[sz]; 
+        for( int i = 0; i < sz; i++ ) {
+            String fav_str = shortcutsList.get( i ).toString();
+            //Log.v( TAG, "a fav to store: " + fav_str );
+            ret[i] = fav_str;
+        }
+        return ret;
+    }
+    
 	@Override
 	public boolean onKey( View v, int keyCode, KeyEvent event ) {
 	    int v_id = v.getId();

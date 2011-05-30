@@ -207,8 +207,7 @@ public class RootAdapter extends CommanderAdapterBase {
 
     @Override
     public boolean isButtonActive( int brId ) {
-        if( brId == R.id.F4 || brId == R.id.sz ) return false;
-        return true;
+        return R.id.remount == brId ? true : super.isButtonActive( brId );
     }
 
     @Override

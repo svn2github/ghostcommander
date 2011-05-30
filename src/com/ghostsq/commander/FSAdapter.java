@@ -84,6 +84,19 @@ public class FSAdapter extends CommanderAdapterBase {
     public Uri getUri() {
         return Uri.parse( dirName );
     }
+    
+    @Override
+    public boolean isButtonActive( int brId ) {
+        switch( brId ) {
+            case R.id.F4: 
+            case R.id.SF4:
+            case R.id.sz: 
+                return true;
+        }
+        return super.isButtonActive( brId );
+    }
+    
+    
     @Override
     public void setIdentities( String name, String pass ) {
     }

@@ -1,13 +1,16 @@
 package com.ghostsq.commander;
 
 import java.security.KeyStore.PasswordProtection;
+import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 import android.net.Uri;
+import android.util.Log;
 
 public class Favorite {
+    private final static String TAG = "Favorite";
     // store/restore
-    private static String  sep = "::";
+    private static String  sep = "`US`";
     private static Pattern sep_re = Pattern.compile( sep );
     private static String  no_password = "(NP)";
     // fields
@@ -18,37 +21,55 @@ public class Favorite {
     
     public Favorite( String uri_str, String name_ ) {
         uri = Uri.parse( uri_str );
-        name = name_ == null ? "" : name_;
+        name = name_;
     }
     public Favorite( String raw ) {
         fromString( raw );
     }
     public boolean fromString( String raw ) {
+        if( raw == null ) return false;
         if( raw.indexOf( sep ) >= 0 ) {
-            String[] fields = sep_re.split( raw );
-            if( fields.length > 0 ) name = fields[0];
-            if( fields.length > 1 ) uri = Uri.parse( fields[1] );
-            if( fields.length > 2 ) username = fields[2]; else username = null;
-            if( fields.length > 3 ) decryptPassword( fields[3] ); else password = null;
+            String[] flds = sep_re.split( raw );
+            if( flds == null ) return false;
+            try {
+                name = "test";
+                username = null;
+                password = null;
+                for( int i = 0; i < flds.length; i++ ) {
+                    String s = flds[i];
+                    if( i == 0 ) uri = Uri.parse( s );
+                    if( i == 1 ) name = s;
+                    if( i == 2 ) username = s;
+                    if( i == 3 ) decryptPassword( s );
+                    //Log.v( TAG, "Restored to: name=" + name + ", uri=" + uri + ", user=" + username + ", pass=" + ( password != null ? new String( password.getPassword() ) : "" ) );
+                }
+            }
+            catch( Exception e ) {
+                Log.e( TAG, "can't restore " + raw, e );
+            }
         }
         else {            
             uri = Uri.parse( raw );
-            name = "";
+            name = null;
         }
         return true;
     }
 
     public String toString() {
         StringBuffer buf = new StringBuffer();
-        buf.append( name );
-        buf.append( sep );
         buf.append( uri.toString() );
-        if( username != null ) {
-            buf.append( name );
+        if( name != null ) {
             buf.append( sep );
+            buf.append( name );
         }
-        if( password != null )
+        if( username != null ) {
+            buf.append( sep );
+            buf.append( username );
+        }
+        if( password != null ) {
+            buf.append( sep );
             buf.append( encryptPassword() );
+        }
         return buf.toString();    
     }
     

@@ -1,6 +1,7 @@
 package com.ghostsq.commander;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Set;
 
 import android.app.Activity;
@@ -399,14 +400,14 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         setMode( !sxs );
     }
     public final void togglePanels( boolean refresh ) {
-        Log.v( TAG, "toggle" );
+        //Log.v( TAG, "toggle" );
         setPanelCurrent( opposite() );
         if( refresh && !sxs )
             refreshList( current );
     }
     
     public final void setPanelCurrent( int which ) {
-        Log.v( TAG, "setPanelCurrent: " + which );
+        //Log.v( TAG, "setPanelCurrent: " + which );
         if( panelsView != null ) {
             panelsView.setMode( sxs, which );
             
@@ -1047,18 +1048,20 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     	private final static String LP = "LEFT_URI", RP = "RIGHT_URI";
     	private final static String LI = "LEFT_ITEM", RI = "RIGHT_ITEM";
     	private final static String CP = "CURRENT_PANEL";
-    	private final static String FU = "FAV_URIS";
-        public int current;
-        public String left, right;
-        public String leftItem, rightItem;
-        public String favs;
+        private final static String FU = "FAV_URIS";
+        private final static String FV = "FAVORITES";
+        public int      current;
+        public String   left, right;
+        public String   leftItem, rightItem;
+        public String   favs;
+        
         public void store( Bundle b ) {
             b.putString( LP, left );
             b.putString( RP, right );
             b.putString( LI, leftItem );
             b.putString( RI, rightItem );
             b.putInt( CP, current );
-            b.putString( FU, favs );
+            b.putString( FV, favs );
         }
         public void restore( Bundle b ) {
             left      = b.getString( LP );
@@ -1066,7 +1069,9 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             leftItem  = b.getString( LI );
             rightItem = b.getString( RI );
             current   = b.getInt( CP );
-            favs   = b.getString( FU );
+            favs      = b.getString( FV );
+            if( favs == null || favs.length() == 0 )
+                favs  = b.getString( FU );
         }
         public void store( SharedPreferences.Editor e ) {
             e.putString( LP, left );
@@ -1074,7 +1079,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             e.putString( LI,  leftItem );
             e.putString( RI, rightItem );
             e.putInt( CP, current );
-            e.putString( FU, favs );
+            e.putString( FV, favs );
         }
         public void restore( SharedPreferences p ) {
             left      = p.getString( LP, "home:" );
@@ -1082,7 +1087,9 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             leftItem  = p.getString( LI, null );
             rightItem = p.getString( RI, null );
             current   = p.getInt( CP, LEFT );
-            favs      = p.getString( FU, "" );
+            favs      = p.getString( FV, "" );
+            if( favs == null || favs.length() == 0 )
+                favs  = p.getString( FU, "" );
         }
     }
     public State getState() {

@@ -257,12 +257,6 @@ public class FTPAdapter extends CommanderAdapterBase {
         return uri;
     }
 
-    @Override
-    public boolean isButtonActive( int brId ) {
-        if( brId == R.id.F4 || brId == R.id.sz ) return false;
-        return true;
-    }
-    
 	@Override
 	public void reqItemsSize( SparseBooleanArray cis ) {
 		commander.notifyMe( new Commander.Notify( "Not supported.", Commander.OPERATION_FAILED ) );

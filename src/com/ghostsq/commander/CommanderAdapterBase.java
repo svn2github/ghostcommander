@@ -540,7 +540,28 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
 
     @Override
     public boolean isButtonActive( int brId ) {
-        return R.id.remount != brId;
+        switch( brId ) {
+            case R.id.F1: 
+            case R.id.F2: 
+            case R.id.F5: 
+            case R.id.F6: 
+            case R.id.F7: 
+            case R.id.F8: 
+            case R.id.F9: 
+            case R.id.F10:
+            case R.id.eq: 
+            case R.id.tgl:
+            case R.id.by_name:
+            case R.id.by_ext: 
+            case R.id.by_size:
+            case R.id.by_date:
+            case R.id.select_all:
+            case R.id.unselect_all:
+            case R.id.enter: 
+            case R.id.add_fav:
+                return true;
+        }
+        return false;
     }
 
     @Override

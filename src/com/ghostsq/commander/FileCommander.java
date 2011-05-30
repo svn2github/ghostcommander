@@ -86,11 +86,11 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     /** Called when the activity is first created. */
     @Override
     public void onCreate( Bundle savedInstanceState ) {
-        super.onCreate(savedInstanceState);
+        super.onCreate( savedInstanceState );
         
         requestWindowFeature( Window.FEATURE_NO_TITLE );
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
-        dialogs = new ArrayList<Dialogs>(Dialogs.numDialogTypes);
+        dialogs = new ArrayList<Dialogs>( Dialogs.numDialogTypes );
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         lang = sharedPref.getString( "language", "" );
         Utils.changeLanguage( this, getResources() );
@@ -166,6 +166,26 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         }
     }
 
+    //these two methods are not called on screen rotation in v1.5, so all the store/restore is called from pause/start 
+    @Override
+    protected void onSaveInstanceState( Bundle outState ) {
+        Log.i( TAG, "Saving Instance State");
+        Panels.State s = panels.getState();
+        s.store(outState);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState( Bundle savedInstanceState ) {
+        Log.i( TAG, "Restoring Instance State");
+        if( savedInstanceState != null ) {
+            Panels.State s = panels.new State();
+            s.restore(savedInstanceState);
+            panels.setState(s);
+        }
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
     @Override
     public void onConfigurationChanged( Configuration newConfig ) {
         Utils.changeLanguage( this, getResources() );
@@ -187,26 +207,6 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 */
     }    
     
-    //these two methods are not called on screen rotation in v1.5, so all the store/restore is called from pause/start 
-    @Override
-    protected void onSaveInstanceState( Bundle outState ) {
-        Log.i( TAG, "Saving Instance State");
-        Panels.State s = panels.getState();
-        s.store(outState);
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState( Bundle savedInstanceState ) {
-        Log.i( TAG, "Restoring Instance State");
-        if( savedInstanceState != null ) {
-            Panels.State s = panels.new State();
-            s.restore(savedInstanceState);
-            panels.setState(s);
-        }
-        super.onRestoreInstanceState(savedInstanceState);
-    }
-
     @Override
     public void onCreateContextMenu( ContextMenu menu, View v, ContextMenuInfo menuInfo ) {
         try {
