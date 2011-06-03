@@ -114,10 +114,11 @@ public interface CommanderAdapter {
 	
 	/**
 	 * @param position in the list
-	 * @param newName for the item
+     * @param newName for the item
+     * @param copy file
 	 * @return true if success
 	 */
-	public boolean renameItem( int position, String newName );
+	public boolean renameItem( int position, String newName, boolean copy );
 	
 	/**
 	 * @param cis	booleans which internal items to copy

@@ -208,7 +208,7 @@ public class MountAdapter extends CommanderAdapterBase {
     }
     
     @Override
-    public boolean renameItem( int position, String newName ) {
+    public boolean renameItem( int position, String newName, boolean c ) {
         commander.notifyMe( new Commander.Notify( s( R.string.not_supported ), Commander.OPERATION_FAILED ) );
         return false;
     }

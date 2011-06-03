@@ -619,7 +619,7 @@ public class RootAdapter extends CommanderAdapterBase {
     }
     
     @Override
-    public boolean renameItem( int position, String newName ) {
+    public boolean renameItem( int position, String newName, boolean copy ) {
         if( position <= 0 || position > items.length )
             return false;
         try {
@@ -628,6 +628,11 @@ public class RootAdapter extends CommanderAdapterBase {
             a[0] = uri.getPath() + SLS + from.getName();
             String to = uri.getPath() + SLS + newName;
             commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
+            if( copy ) {
+                // TODO
+                return false;
+            }
+            
             worker = new CopyToEngine( commander.getContext(), workerHandler, a, true, to, true );
             worker.start();
             return true;

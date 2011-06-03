@@ -112,7 +112,7 @@ public class HomeAdapter extends CommanderAdapterBase {
     }
     
     @Override
-    public boolean renameItem( int position, String newName ) {
+    public boolean renameItem( int position, String newName, boolean c ) {
         return notErr();
     }
 

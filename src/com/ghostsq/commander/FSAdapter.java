@@ -451,10 +451,22 @@ public class FSAdapter extends CommanderAdapterBase {
     	}
     }
 	@Override
-    public boolean renameItem( int position, String newName ) {
+    public boolean renameItem( int position, String newName, boolean copy ) {
         if( position <= 0 || position > items.length )
             return false;
         try {
+            if( copy ) {
+                commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
+                File[] list = { items[position - 1].f };
+                String dest_name = dirName;
+                if( dest_name.charAt( dest_name.length()-1 ) != SLC )
+                    dest_name += SLS;
+                dest_name += newName;
+                worker = new CopyEngine( workerHandler, list, dest_name, false, true );
+                worker.setName( TAG + ".CopyEngine" );
+                worker.start();
+                return true;
+            }
             boolean ok = items[position - 1].f.renameTo( new File( dirName, newName ) );
             commander.notifyMe( new Commander.Notify( null, ok ? Commander.OPERATION_COMPLETED_REFRESH_REQUIRED : 
                                                                  Commander.OPERATION_FAILED ) );
@@ -606,7 +618,7 @@ public class FSAdapter extends CommanderAdapterBase {
                     return false;
                 }
                 commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-            	worker = new CopyEngine( workerHandler, list, dirName, ( move_mode & MODE_MOVE ) != 0 );
+            	worker = new CopyEngine( workerHandler, list, dirName, ( move_mode & MODE_MOVE ) != 0, false );
             	worker.setName( TAG + ".CopyEngine" );
             	worker.start();
 	            return true;
@@ -630,13 +642,14 @@ public class FSAdapter extends CommanderAdapterBase {
         private long    bytes = 0;
         private double  conv;
         private File[]  fList = null;
-        private boolean move;
+        private boolean move, destIsFullName;
 
-        CopyEngine( Handler h, File[] list, String dest, boolean move_ ) {
+        CopyEngine( Handler h, File[] list, String dest, boolean move_, boolean dest_is_full_name ) {
         	super( h, null );
         	fList = list;
             mDest = dest;
             move = move_;
+            destIsFullName = dest_is_full_name;
         }
         @Override
         public void run() {
@@ -648,7 +661,7 @@ public class FSAdapter extends CommanderAdapterBase {
                     x_list[j] = new FileItem( fList[j] );
 				long sum = getSizes( x_list );
 				conv = 100 / (double)sum;
-				int num = copyFiles( fList, mDest );
+				int num = copyFiles( fList, mDest, destIsFullName );
 	            String report = Utils.getOpReport( commander.getContext(), num, move ? R.string.moved : R.string.copied );
 	            sendResult( report );
 			} catch( Exception e ) {
@@ -656,7 +669,7 @@ public class FSAdapter extends CommanderAdapterBase {
 				return;
 			}
         }
-        private final int copyFiles( File[] list, String dest ) throws InterruptedException {
+        private final int copyFiles( File[] list, String dest, boolean dest_is_full_name ) throws InterruptedException {
             Context c = commander.getContext();
             for( int i = 0; i < list.length; i++ ) {
                 FileChannel  in = null;
@@ -675,7 +688,7 @@ public class FSAdapter extends CommanderAdapterBase {
                     }
                     long last_modified = file.lastModified();
                     String fn = file.getName();
-                    outFile = new File( dest, fn );
+                    outFile = dest_is_full_name ? new File( dest ) : new File( dest, fn );
                     if( file.isDirectory() ) {
                         if( depth++ > 40 ) {
                             error( commander.getContext().getString( R.string.too_deep_hierarchy ) );
@@ -683,7 +696,7 @@ public class FSAdapter extends CommanderAdapterBase {
                         }
                         else
                         if( outFile.exists() || outFile.mkdir() ) {
-                            copyFiles( file.listFiles(), outFile.getAbsolutePath() );
+                            copyFiles( file.listFiles(), outFile.getAbsolutePath(), false );
                             if( errMsg != null )
                             	break;
                         }

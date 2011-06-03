@@ -808,7 +808,7 @@ public class ZipAdapter extends CommanderAdapterBase {
        }
     }
     @Override
-    public boolean renameItem( int position, String newName ) {
+    public boolean renameItem( int position, String newName, boolean c ) {
      // TODO
         return false;
     }

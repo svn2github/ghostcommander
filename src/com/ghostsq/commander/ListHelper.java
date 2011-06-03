@@ -43,8 +43,7 @@ public class ListHelper {
 
     public final void Navigate( Uri uri, String posTo ) {
         try {
-            Log.v( TAG, "Navigate to " + uri );
-            
+            //Log.v( TAG, "Navigate to " + Favorite.screenPwd( uri ) );            
             flv.clearChoices();
             flv.invalidateViews();
             CommanderAdapter ca_old = (CommanderAdapter)flv.getAdapter();

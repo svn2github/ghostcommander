@@ -700,9 +700,22 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     
     public final void copyFiles( String dest, boolean move ) {
         try {
+            if( dest == null ) return;
+            SparseBooleanArray items = getSelectedOrChecked();
+            
+            CommanderAdapter cur_adapter = getListAdapter( true );
+            Uri dest_uri = Uri.parse( dest );
+
+            if( getNumItemsSelectedOrChecked() == 1 && dest.indexOf( "/" ) < 0 ) {
+                int pos = getSelection( true );
+                if( pos >= 0 ) {
+                    cur_adapter.renameItem( pos, dest, true );
+                    return;
+                }
+            }
+
             CommanderAdapter dest_adapter = getListAdapter( false );
             if( dest_adapter == null || !dest.equals( dest_adapter.toString() ) ) {
-                Uri dest_uri = Uri.parse( dest );
                 if( dest_uri == null ) {
                     c.showError( c.getString( R.string.inv_dest ) );
                     return;
@@ -718,7 +731,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             }
             //c.showDialog( Dialogs.PROGRESS_DIALOG );
             destAdapter = dest_adapter;
-            getListAdapter( true ).copyItems( getSelectedOrChecked(), destAdapter, move );
+            cur_adapter.copyItems( items, destAdapter, move );
             // TODO: getCheckedItemPositions() returns an empty array after a failed operation. why? 
             list[current].flv.clearChoices();
         }
@@ -727,6 +740,15 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         }
     }
 
+    public final void renameFile( String new_name ) {
+        CommanderAdapter adapter = getListAdapter( true );
+        int pos = getSelection( true );
+        if( pos >= 0 ) {
+            adapter.renameItem( pos, new_name, false );
+            list[current].setSelection( new_name );
+        }
+    }
+    
     public void createNewFile( String fileName ) {
 		String local_name = fileName;
 		CommanderAdapter ca = getListAdapter( true );
@@ -764,15 +786,6 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     	//c.showDialog( Dialogs.PROGRESS_DIALOG );
         if( getListAdapter( true ).deleteItems( getSelectedOrChecked() ) )
             list[current].flv.clearChoices();
-    }
-
-    public final void renameFile( String new_name ) {
-        CommanderAdapter adapter = getListAdapter( true );
-        int pos = getSelection( true );
-        if( pos >= 0 ) {
-            adapter.renameItem( pos, new_name );
-            list[current].setSelection( new_name );
-        }
     }
 
     // /////////////////////////////////////////////////////////////////////////////////

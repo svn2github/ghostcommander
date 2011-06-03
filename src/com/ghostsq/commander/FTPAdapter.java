@@ -685,12 +685,18 @@ public class FTPAdapter extends CommanderAdapterBase {
     }
     
     @Override
-    public boolean renameItem( int position, String newName ) {
+    public boolean renameItem( int position, String newName, boolean copy  ) {
         try {
             if( items == null || position <= 0 || position > items.length )
                 return false;
             if( ftp != null  && ftp.isLoggedIn() ) {
             	boolean ok;
+            	
+            	if( copy) {
+            	    commander.notifyMe( new Commander.Notify( s( R.string.not_supported ), Commander.OPERATION_FAILED ) );
+            	    return false;
+            	}
+            	
                 synchronized( ftp ) {
                     ok = ftp.rename( getItemName( position, false ), newName );
                 }
