@@ -191,7 +191,7 @@ public final class Utils {
     }
     public final static String join( String[] a, String sep ) {
         if( a == null ) return "";
-        StringBuffer buf = new StringBuffer();
+        StringBuffer buf = new StringBuffer( 256 );
         boolean first = true;
         for( int i = 0; i < a.length; i++ ) {
           if( first )

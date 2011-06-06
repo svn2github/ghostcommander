@@ -30,6 +30,7 @@ import android.view.MenuInflater;
 import android.view.KeyEvent;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.util.Log;
 import android.widget.AdapterView;
 import android.widget.RemoteViews;
@@ -477,6 +478,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             break;
         case FAV_FLD:
             panels.favFolder();
+            break;
+        case R.id.softkbd:
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.toggleSoftInput(0, 0);
             break;
         default:
             CommanderAdapter ca = panels.getListAdapter( true );

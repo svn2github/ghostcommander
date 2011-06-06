@@ -2,9 +2,7 @@ package com.ghostsq.commander;
 
 import java.lang.String;
 import java.util.NoSuchElementException;
-import java.util.StringTokenizer;
 import java.util.ArrayList;
-import java.util.regex.Pattern;
 
 import android.net.Uri;
 import android.text.Editable;
@@ -26,7 +24,7 @@ import android.widget.TextView;
 
 public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener, OnClickListener, TextWatcher {
     private final static String TAG = "Shortcuts";
-    private final static String old_sep = ",", sep = "`RS`";
+    private final static String old_sep = ",", sep = ";";
 	private FileCommander c;
 	private Panels        p;
 	private int  toChange = -1;
@@ -91,7 +89,7 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
 
 	@Override
 	public Object getItem( int position ) {
-		return shortcutsList.get( position ).getUriString();
+		return shortcutsList.get( position ).getUriString( false );
 	}
 
 	@Override
@@ -103,7 +101,7 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
 	public View getView( int position, View convertView, ViewGroup parent ) {
 		TextView tv = convertView != null ? (TextView)convertView : new TextView( c );
 		tv.setPadding( 4, 4, 4, 4 );
-		String screened = Favorite.screenPwd( shortcutsList.get( position ).getUri() );
+		String screened = shortcutsList.get( position ).getUriString( true );
 		tv.setText( screened == null ? "" : screened );
 		tv.setTextColor( 0xFF000000 );
 		return tv;
@@ -111,19 +109,19 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
 
 	// --- inner functions ---
 	
-    public final void openGoPanel( int which, String uri ) {
+    public final void openGoPanel( int which, String uri_s ) {
 		try {
 			goPanel.setVisibility( View.VISIBLE );
 			toChange = which;
 			AutoCompleteTextView edit = (AutoCompleteTextView)c.findViewById( R.id.uri_edit );
 			if( edit != null ) {
-				edit.setText( uri );
+				edit.setText( uri_s );
 				edit.showDropDown();
 				edit.requestFocus();
 			}
 			CheckBox star = (CheckBox)c.findViewById( R.id.star );
             if( star != null )
-            	star.setChecked( find( uri ) >= 0 );
+            	star.setChecked( find( uri_s ) >= 0 );
 		}
 		catch( Exception e ) {
 			c.showMessage( "Error: " + e );
@@ -156,19 +154,19 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
         	shortcutsList.add( new Favorite( uri_str, null ) );
 			notifyDataSetChanged();
     }
-    public final void removeFromFavorites( String uri ) {
-		int pos = find( uri );
+    public final void removeFromFavorites( String uri_s ) {
+		int pos = find( uri_s );
 		if( pos >= 0 )
 			shortcutsList.remove( pos );
 		notifyDataSetChanged();
     }
-    public final int find( String uri ) {
+    public final int find( String uri_s ) {
 		try {
-    		String strip_uri = uri.trim();
+    		String strip_uri = uri_s.trim();
     		if( strip_uri.charAt( strip_uri.length()-1 ) != '/' )
     			strip_uri += "/";
-	        for( int i = 0; i <= shortcutsList.size(); i++ ) {
-	        	String item = shortcutsList.get( i ).getUriString();
+	        for( int i = 0; i < shortcutsList.size(); i++ ) {
+	        	String item = shortcutsList.get( i ).getUriString( false );
 	        	if( item != null ) {
 	        		String strip_item = item.trim();
 	        		if( strip_item.charAt( strip_item.length()-1 ) != '/' )
@@ -178,49 +176,62 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
 	        	}
 	        }
 		} catch( Exception e ) {
+		    Log.e( TAG, "", e );
 		}
 		return -1;
     }
 
     public final String getAsString() {
-        String s = Utils.join( store(), sep );
+        int sz = shortcutsList.size();
+        String[] a = new String[sz]; 
+        for( int i = 0; i < sz; i++ ) {
+            String fav_str = shortcutsList.get( i ).toString();
+            a[i] = escape( fav_str );
+        }
+        String s = Utils.join( a, sep );
         //Log.v( TAG, "Joined favs: " + s );
         return s;
     }
     
-    public final void setFromString( String stored ) {
+    public final void setFromOldString( String stored ) {
         if( stored == null ) return;
-    	shortcutsList.clear();
-    	String use_sep = stored.indexOf( sep ) >= 0 ? sep : old_sep;
+        shortcutsList.clear();
+        String use_sep = old_sep;
         String[] favs = stored.split( use_sep );
         try {
             for( int i = 0; i < favs.length; i++ ) {
-                String stored_fav = favs[i];
+                shortcutsList.add( new Favorite( favs[i], null ) );
+            }
+        } catch( NoSuchElementException e ) {
+            c.showError( "Error: " + e );
+        }
+        if( shortcutsList.isEmpty() )
+            shortcutsList.add( new Favorite( "/sdcard", c.getContext().getString( R.string.default_uri ) ) );
+    }
+
+    public final void setFromString( String stored ) {
+        if( stored == null ) return;
+        shortcutsList.clear();
+        String use_sep = sep;
+        String[] favs = stored.split( use_sep );
+        try {
+            for( int i = 0; i < favs.length; i++ ) {
+                String stored_fav = unescape( favs[i] );
                 //Log.v( TAG, "fav: " + stored_fav );
                 shortcutsList.add( new Favorite( stored_fav ) );
             }
         } catch( NoSuchElementException e ) {
             c.showError( "Error: " + e );
         }
-		if( shortcutsList.isEmpty() )
-		    shortcutsList.add( new Favorite( "/sdcard", c.getContext().getString( R.string.default_uri ) ) );
+        if( shortcutsList.isEmpty() )
+            shortcutsList.add( new Favorite( "/sdcard", c.getContext().getString( R.string.default_uri ) ) );
     }
 
-    public final void restore( String[] stored ) {
-        for( int i = 0; i < stored.length; i++ ) {
-            shortcutsList.add( new Favorite( stored[i] ) );
-        }
+    private String unescape( String s ) {
+        return s.replace( "%3B", sep );
     }
-    
-    public final String[] store() {
-        int sz = shortcutsList.size();
-        String[] ret = new String[sz]; 
-        for( int i = 0; i < sz; i++ ) {
-            String fav_str = shortcutsList.get( i ).toString();
-            //Log.v( TAG, "a fav to store: " + fav_str );
-            ret[i] = fav_str;
-        }
-        return ret;
+    private String escape( String s ) {
+        return s.replace( sep, "%3B" );
     }
     
 	@Override
@@ -265,13 +276,13 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
 			try {
 				if( toChange < 0 ) break;
 				TextView edit = (TextView)goPanel.findViewById( R.id.uri_edit );
-	            String uri = edit.getText().toString().trim();
+	            String uri_s = edit.getText().toString().trim();
 	            CheckBox star_cb = (CheckBox)v;
 				if( star_cb.isChecked() )
-					addToFavorites( uri );
+					addToFavorites( uri_s );
 				else 
-					removeFromFavorites( uri );
-				star_cb.setChecked( find( uri ) >= 0 );
+					removeFromFavorites( uri_s );
+				star_cb.setChecked( find( uri_s ) >= 0 );
 				AutoCompleteTextView actv = (AutoCompleteTextView)goPanel.findViewById( R.id.uri_edit );
 				actv.showDropDown();
 				actv.requestFocus();

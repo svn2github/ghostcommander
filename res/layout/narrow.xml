@@ -18,6 +18,7 @@
             android:layout_alignParentRight="true"
             android:gravity="right"
             android:paddingRight="1dip"
+            android:paddingLeft="30dip"
             android:layout_below="@id/fld_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -26,7 +26,8 @@
     <string name="sz">\" Size</string>
     <string name="refresh">&#xA0; Refresh</string>
     <string name="enter">&#xA0; Change Location</string>
-  <string name="home">&#xA0; Home</string>
+    <string name="home">&#xA0; Home</string>
+    <string name="softkbd">&#xA0; Keyboard</string>    
     <string name="enter_b">Location</string>
     <string name="add_fav">* Favorite the current folder</string>
     <string name="add_fav_b">* Favorite</string>

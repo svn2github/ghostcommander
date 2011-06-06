@@ -76,6 +76,10 @@
       <menu>
         <item android:id="@+id/toggle_panels_mode"
              android:title="@string/toggle_panels_mode"/>
+        <item android:id="@+id/softkbd"
+            android:title="@string/softkbd"
+            android:icon="@drawable/panel">
+        </item>
         <item android:id="@+id/prefs"
             android:title="@string/prefs"/>
         <item android:id="@+id/donate"

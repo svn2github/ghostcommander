@@ -1,8 +1,16 @@
 package com.ghostsq.commander;
 
+import java.security.SecureRandom;
 import java.security.KeyStore.PasswordProtection;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
+
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+
+import org.apache.http.auth.UsernamePasswordCredentials;
 
 import android.net.Uri;
 import android.util.Log;
@@ -10,9 +18,10 @@ import android.util.Log;
 public class Favorite {
     private final static String TAG = "Favorite";
     // store/restore
-    private static String  sep = "`US`";
+    private static String  sep = ",";
     private static Pattern sep_re = Pattern.compile( sep );
-    private static String  no_password = "(NP)";
+    private static String  seed = "";
+    
     // fields
     private Uri     uri;
     private String  name;
@@ -21,6 +30,13 @@ public class Favorite {
     
     public Favorite( String uri_str, String name_ ) {
         uri = Uri.parse( uri_str );
+        String user_info = uri.getUserInfo();
+        if( user_info != null && user_info.length() > 0 ) {
+            UsernamePasswordCredentials crd = new UsernamePasswordCredentials( user_info );
+            username = crd.getUserName();
+            password = new PasswordProtection( crd.getPassword().toCharArray() );
+            uri = updateCredentials( uri, null );
+        }
         name = name_;
     }
     public Favorite( String raw ) {
@@ -28,69 +44,90 @@ public class Favorite {
     }
     public boolean fromString( String raw ) {
         if( raw == null ) return false;
-        if( raw.indexOf( sep ) >= 0 ) {
-            String[] flds = sep_re.split( raw );
-            if( flds == null ) return false;
-            try {
-                name = "test";
-                username = null;
-                password = null;
-                for( int i = 0; i < flds.length; i++ ) {
-                    String s = flds[i];
-                    if( i == 0 ) uri = Uri.parse( s );
-                    if( i == 1 ) name = s;
-                    if( i == 2 ) username = s;
-                    if( i == 3 ) decryptPassword( s );
-                    //Log.v( TAG, "Restored to: name=" + name + ", uri=" + uri + ", user=" + username + ", pass=" + ( password != null ? new String( password.getPassword() ) : "" ) );
-                }
-            }
-            catch( Exception e ) {
-                Log.e( TAG, "can't restore " + raw, e );
+        String[] flds = sep_re.split( raw );
+        if( flds == null ) return false;
+        try {
+            name = null;
+            username = null;
+            password = null;
+            for( int i = 0; i < flds.length; i++ ) {
+                String s = flds[i];
+                if( s == null || s.length() == 0 ) continue;
+                if( s.startsWith( "URI="  ) ) uri = Uri.parse( unescape( s.substring( 4 ) ) ); else 
+                if( s.startsWith( "NAME=" ) ) name = unescape( s.substring( 5 ) ); else
+                if( s.startsWith( "USER=" ) ) username = unescape( s.substring( 5 ) ); else
+                if( s.startsWith( "PASS=" ) ) decryptPassword( unescape( s.substring( 5 ) ) );
+                //Log.v( TAG, "Restored to: name=" + name + ", uri=" + uri + ", user=" + username + ", pass=" + ( password != null ? new String( password.getPassword() ) : "" ) );
             }
         }
-        else {            
-            uri = Uri.parse( raw );
-            name = null;
+        catch( Exception e ) {
+            Log.e( TAG, "can't restore " + raw, e );
         }
         return true;
     }
-
     public String toString() {
-        StringBuffer buf = new StringBuffer();
-        buf.append( uri.toString() );
+        StringBuffer buf = new StringBuffer( 128 );
+        buf.append( "URI=" );
+        buf.append( escape( uri.toString() ) );
         if( name != null ) {
             buf.append( sep );
-            buf.append( name );
+            buf.append( "NAME=" );
+            buf.append( escape( name ) );
         }
         if( username != null ) {
             buf.append( sep );
-            buf.append( username );
+            buf.append( "USER=" );
+            buf.append( escape( username ) );
         }
         if( password != null ) {
             buf.append( sep );
-            buf.append( encryptPassword() );
+            buf.append( "PASS=" );
+            buf.append( escape( encryptPassword() ) );
         }
         return buf.toString();    
     }
-    
+    /*
     public Uri getUri() {
         return uri;
     }
-    public String getUriString() {
-        return uri.toString();
+    */
+    public String getUriString( boolean screen_pw ) {
+        if( uri == null ) return null;
+        if( username == null ) return uri.toString();
+        String ui = username + ":";
+        if( screen_pw )
+            ui += "***";
+        else
+            if( password != null )
+                ui += new String( password.getPassword() );
+        return Uri.decode( updateCredentials( uri, ui ).toString() );
     }
     
     private String encryptPassword() {
-        if( password == null ) return no_password;
-        return new String( password.getPassword() ); // TODO encrypt password!!!!!!!!!!!!!!!!       
+        if( password != null )
+            try {
+                return encrypt( seed, new String( password.getPassword() ) );
+            } catch( Exception e ) {
+                e.printStackTrace();
+            }
+        return "";
     }
 
     private void decryptPassword( String stored ) {
-        if( stored == null || no_password.equals( stored ) ) {
-            password = null;
-            return;
+        password = null;
+        if( stored != null && stored.length() > 0 )
+        try {
+            String pw = decrypt( seed, stored );
+            password = new PasswordProtection( pw.toCharArray() );
+        } catch( Exception e ) {
+            e.printStackTrace();
         }
-        password = new PasswordProtection( stored.toCharArray() );   // TODO decrypt password!!!!!!!!!!!!!!!!
+    }
+    private String unescape( String s ) {
+        return s.replace( "%2C", sep );
+    }
+    private String escape( String s ) {
+        return s.replace( sep, "%2C" );
     }
 
     public final static String screenPwd( String uri_str ) {
@@ -104,11 +141,88 @@ public class Favorite {
         int pw_pos = ui.indexOf( ':' );
         if( pw_pos < 0 ) return u.toString();
         ui = ui.substring( 0, pw_pos+1 ) + "***";
+        return Uri.decode( updateCredentials( u, ui ).toString() );
+    }
+    public final static Uri updateCredentials( Uri u, String ui ) {
         String host = u.getHost();
         int port = u.getPort();
-        String authority = ui + "@" + host + (port >= 0 ? port : ""); 
-        return Uri.decode( u.buildUpon().encodedAuthority( authority ).build().toString() );
+        String authority = ui != null ? ui + "@" : ""; 
+        authority += host + ( port >= 0 ? port : "" ); 
+        return u.buildUpon().encodedAuthority( authority ).build(); 
     }
 
+    // ---------------------------
+    
+    public static String encrypt( String seed, String cleartext ) throws Exception {
+        byte[] rawKey = getRawKey( seed.getBytes() );
+        byte[] result = encrypt( rawKey, cleartext.getBytes() );
+        return toHex( result );
+    }
+
+    public static String decrypt( String seed, String encrypted ) throws Exception {
+        byte[] rawKey = getRawKey( seed.getBytes() );
+        byte[] enc = toByte( encrypted );
+        byte[] result = decrypt( rawKey, enc );
+        return new String( result );
+    }
+
+    private static byte[] getRawKey( byte[] seed ) throws Exception {
+        KeyGenerator kgen = KeyGenerator.getInstance( "AES" );
+        SecureRandom sr = SecureRandom.getInstance( "SHA1PRNG" );
+        sr.setSeed( seed );
+        kgen.init( 128, sr ); // 192 and 256 bits may not be available
+        SecretKey skey = kgen.generateKey();
+        byte[] raw = skey.getEncoded();
+        return raw;
+    }
+
+    private static byte[] encrypt( byte[] raw, byte[] clear ) throws Exception {
+        SecretKeySpec skeySpec = new SecretKeySpec( raw, "AES" );
+        Cipher cipher = Cipher.getInstance( "AES" );
+        cipher.init( Cipher.ENCRYPT_MODE, skeySpec );
+        byte[] encrypted = cipher.doFinal( clear );
+        return encrypted;
+    }
+
+    private static byte[] decrypt( byte[] raw, byte[] encrypted ) throws Exception {
+        SecretKeySpec skeySpec = new SecretKeySpec( raw, "AES" );
+        Cipher cipher = Cipher.getInstance( "AES" );
+        cipher.init( Cipher.DECRYPT_MODE, skeySpec );
+        byte[] decrypted = cipher.doFinal( encrypted );
+        return decrypted;
+    }
+
+    public static String toHex( String txt ) {
+        return toHex( txt.getBytes() );
+    }
+
+    public static String fromHex( String hex ) {
+        return new String( toByte( hex ) );
+    }
+
+    public static byte[] toByte( String hexString ) {
+        int len = hexString.length() / 2;
+        byte[] result = new byte[len];
+        for( int i = 0; i < len; i++ )
+            result[i] = Integer.valueOf( hexString.substring( 2 * i, 2 * i + 2 ), 16 ).byteValue();
+        return result;
+    }
+
+    public static String toHex( byte[] buf ) {
+        if( buf == null )
+            return "";
+        StringBuffer result = new StringBuffer( 2 * buf.length );
+        for( int i = 0; i < buf.length; i++ ) {
+            appendHex( result, buf[i] );
+        }
+        return result.toString();
+    }
+
+    private final static String HEX = "0123456789ABCDEF";
+
+    private static void appendHex( StringBuffer sb, byte b ) {
+        sb.append( HEX.charAt( ( b >> 4 ) & 0x0f ) ).append( HEX.charAt( b & 0x0f ) );
+    }
+    
 }
 

@@ -1062,11 +1062,11 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     	private final static String LI = "LEFT_ITEM", RI = "RIGHT_ITEM";
     	private final static String CP = "CURRENT_PANEL";
         private final static String FU = "FAV_URIS";
-        private final static String FV = "FAVORITES";
+        private final static String FV = "FAVS";
         public int      current;
         public String   left, right;
         public String   leftItem, rightItem;
-        public String   favs;
+        public String   favs, fav_uris;
         
         public void store( Bundle b ) {
             b.putString( LP, left );
@@ -1084,7 +1084,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             current   = b.getInt( CP );
             favs      = b.getString( FV );
             if( favs == null || favs.length() == 0 )
-                favs  = b.getString( FU );
+                fav_uris = b.getString( FU );
         }
         public void store( SharedPreferences.Editor e ) {
             e.putString( LP, left );
@@ -1102,7 +1102,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             current   = p.getInt( CP, LEFT );
             favs      = p.getString( FV, "" );
             if( favs == null || favs.length() == 0 )
-                favs  = p.getString( FU, "" );
+                fav_uris = p.getString( FU, "" );
         }
     }
     public State getState() {
@@ -1116,10 +1116,10 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             CommanderAdapter right_adapter = (CommanderAdapter)list[RIGHT].getListAdapter();
             s.right = right_adapter.toString();
             s.rightItem = right_adapter.getItemName( list[RIGHT].getCurPos(), false );
+            s.favs = shorcutsFoldersList.getAsString();
         } catch( Exception e ) {
             Log.e( TAG, "getState()", e );
         }
-        s.favs = shorcutsFoldersList.getAsString();
         return s;
     }
 	public void setState( State s ) {
@@ -1131,6 +1131,10 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         NavigateInternal( RIGHT, Uri.parse( s.right ), s.rightItem );
         applyColors();
         setPanelCurrent( s.current );
-        shorcutsFoldersList.setFromString( s.favs );
+        if( s.favs != null && s.favs.length() > 0 )
+            shorcutsFoldersList.setFromString( s.favs );
+        else
+            if( s.fav_uris != null )
+                shorcutsFoldersList.setFromOldString( s.fav_uris );
     }
 }

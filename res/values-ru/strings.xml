@@ -22,6 +22,7 @@
 <string name="tgl">⇦ Сменить</string>
 <string name="sz">\" Размер</string>
 <string name="refresh">Обнови</string>
+<string name="softkbd">&#xA0; Клавиатура</string>  
 <string name="enter">  Ввести адрес или URI</string>
 <string name="enter_b">Адрес</string>
 <string name="add_fav">* Закладка на тек.адрес</string>
