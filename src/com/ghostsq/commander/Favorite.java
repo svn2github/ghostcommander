@@ -29,24 +29,30 @@ public class Favorite {
     private PasswordProtection password;
     
     public Favorite( String uri_str, String name_ ) {
-        uri = Uri.parse( uri_str );
-        String user_info = uri.getUserInfo();
-        if( user_info != null && user_info.length() > 0 ) {
-            UsernamePasswordCredentials crd = new UsernamePasswordCredentials( user_info );
-            username = crd.getUserName();
-            password = new PasswordProtection( crd.getPassword().toCharArray() );
-            uri = updateCredentials( uri, null );
+        try {
+            uri = Uri.parse( uri_str );
+            String user_info = uri.getUserInfo();
+            if( user_info != null && user_info.length() > 0 ) {
+                UsernamePasswordCredentials crd = new UsernamePasswordCredentials( user_info );
+                username = crd.getUserName();
+                String pw = crd.getPassword();
+                password = pw != null ? new PasswordProtection( pw.toCharArray() ) : null;
+                uri = updateCredentials( uri, null );
+            }
+            name = name_;
         }
-        name = name_;
+        catch( Exception e ) {
+            e.printStackTrace();
+        }
     }
     public Favorite( String raw ) {
         fromString( raw );
     }
     public boolean fromString( String raw ) {
         if( raw == null ) return false;
-        String[] flds = sep_re.split( raw );
-        if( flds == null ) return false;
         try {
+            String[] flds = sep_re.split( raw );
+            if( flds == null ) return false;
             name = null;
             username = null;
             password = null;
@@ -66,25 +72,31 @@ public class Favorite {
         return true;
     }
     public String toString() {
-        StringBuffer buf = new StringBuffer( 128 );
-        buf.append( "URI=" );
-        buf.append( escape( uri.toString() ) );
-        if( name != null ) {
-            buf.append( sep );
-            buf.append( "NAME=" );
-            buf.append( escape( name ) );
+        try {
+            StringBuffer buf = new StringBuffer( 128 );
+            buf.append( "URI=" );
+            buf.append( escape( uri.toString() ) );
+            if( name != null ) {
+                buf.append( sep );
+                buf.append( "NAME=" );
+                buf.append( escape( name ) );
+            }
+            if( username != null ) {
+                buf.append( sep );
+                buf.append( "USER=" );
+                buf.append( escape( username ) );
+            }
+            if( password != null ) {
+                buf.append( sep );
+                buf.append( "PASS=" );
+                buf.append( escape( encryptPassword() ) );
+            }
+            return buf.toString();
         }
-        if( username != null ) {
-            buf.append( sep );
-            buf.append( "USER=" );
-            buf.append( escape( username ) );
+        catch( Exception e ) {
+            e.printStackTrace();
         }
-        if( password != null ) {
-            buf.append( sep );
-            buf.append( "PASS=" );
-            buf.append( escape( encryptPassword() ) );
-        }
-        return buf.toString();    
+        return null;
     }
     /*
     public Uri getUri() {
@@ -94,12 +106,12 @@ public class Favorite {
     public String getUriString( boolean screen_pw ) {
         if( uri == null ) return null;
         if( username == null ) return uri.toString();
-        String ui = username + ":";
+        String ui = username;
         if( screen_pw )
-            ui += "***";
+            ui += ":***";
         else
             if( password != null )
-                ui += new String( password.getPassword() );
+                ui += ":" + new String( password.getPassword() );
         return Uri.decode( updateCredentials( uri, ui ).toString() );
     }
     

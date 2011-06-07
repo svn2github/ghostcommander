@@ -186,6 +186,7 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
         String[] a = new String[sz]; 
         for( int i = 0; i < sz; i++ ) {
             String fav_str = shortcutsList.get( i ).toString();
+            if( fav_str == null ) continue;
             a[i] = escape( fav_str );
         }
         String s = Utils.join( a, sep );
@@ -195,10 +196,10 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
     
     public final void setFromOldString( String stored ) {
         if( stored == null ) return;
-        shortcutsList.clear();
-        String use_sep = old_sep;
-        String[] favs = stored.split( use_sep );
         try {
+            shortcutsList.clear();
+            String use_sep = old_sep;
+            String[] favs = stored.split( use_sep );
             for( int i = 0; i < favs.length; i++ ) {
                 shortcutsList.add( new Favorite( favs[i], null ) );
             }

@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import android.content.Context;
@@ -407,7 +408,15 @@ public class FSAdapter extends CommanderAdapterBase {
                         result.append( c.getString( R.string.sz_dirnum, dirs, ( dirs > 1 ? c.getString( R.string.sz_dirsfx_p ) : c.getString( R.string.sz_dirsfx_s ) ) ) );
                     if( mList.length == 1 ) {
                         result.append( c.getString( R.string.sz_lastmod ) );
-                        result.append( (String)DateFormat.format( "MMM dd yyyy hh:mm:ss", new Date( mList[0].f.lastModified() ) ) );
+                        String date_s;
+                        Date date = new Date( mList[0].f.lastModified() );
+                        if( Locale.getDefault().getLanguage().compareTo( "en" ) != 0 ) {
+                            java.text.DateFormat locale_date_format = DateFormat.getDateFormat( commander.getContext() );
+                            java.text.DateFormat locale_time_format = DateFormat.getTimeFormat( commander.getContext() );
+                            date_s = locale_date_format.format( date ) + " " + locale_time_format.format( date );
+                        } else 
+                            date_s = (String)DateFormat.format( "MMM dd yyyy hh:mm:ss", date );
+                        result.append( date_s );
                     }
                     result.append( "\n\n" );
         	    }
