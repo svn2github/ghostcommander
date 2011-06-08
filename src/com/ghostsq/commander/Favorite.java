@@ -20,7 +20,7 @@ public class Favorite {
     // store/restore
     private static String  sep = ",";
     private static Pattern sep_re = Pattern.compile( sep );
-    private static String  seed = "";
+    private static String  seed = "5hO@%#O7&!H3#R";
     
     // fields
     private Uri     uri;
