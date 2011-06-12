@@ -419,6 +419,9 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         case R.id.home:
             Navigate( Uri.parse( "home:" ), null );
             break;
+        case R.id.favs:
+            Navigate( Uri.parse( "favs:" ), null );
+            break;
         case FTP_ACT: {
                 Intent i = new Intent( this, ServerForm.class );
                 i.putExtra( "schema", "ftp" );

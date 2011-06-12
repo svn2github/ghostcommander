@@ -9,6 +9,9 @@
         <item android:id="@+id/home"
          android:title="@string/home"
          android:alphabeticShortcut="h"/>
+        <item android:id="@+id/favs"
+         android:title="@string/favs"
+         android:alphabeticShortcut="f"/>
         <item android:id="@+id/enter"
          android:title="@string/enter"
          android:alphabeticShortcut="d"/>
@@ -58,8 +61,7 @@
 
     <item android:id="@+id/file"
         android:title="@string/file"
-        android:icon="@drawable/file"
-        android:alphabeticShortcut="f">
+        android:icon="@drawable/file">
       <menu>
         <item android:id="@+id/F7"
             android:title="@string/new_folder"/>

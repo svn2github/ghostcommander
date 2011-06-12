@@ -57,6 +57,7 @@
 <string name="open_with">Открыть с...</string>
 <string name="copy_name">Копировать имя в буфер</string>
 <string name="fav_fld">Закладка на папку \"%s\"</string>
+<string name="shortcut">Поместить на десктоп</string>
 
 <string name="wait"> жди... </string>
 <string name="fail"> (ошибка) </string>
@@ -290,6 +291,7 @@
 <string name="no_root">Нет root прав.</string>
 
 <string name="home">&#xA0; Отправная точка</string>
+<string name="favs">Закладки</string>
 <string name="local">Локальные файлы</string>
 <string name="ftp">FTP сервер</string>
 <string name="smb">Сеть Windows</string>
@@ -297,7 +299,7 @@
 <string name="mount">Монтировано</string>
 <string name="apps">Приложения</string>
 <string name="exit">Выход</string>
-
+<string name="favs_descr">Просмотр и редактирование списка закладок на часто используемые папки и ресурсы.</string>
 <string name="local_descr">Доступ к файлам расположеным на SD карточке или внутренней памяти устройства.</string>
 <string name="ftp_descr">Подключение к файл-серверу по протоколу FTP (протокол передачи файлов).</string>
 <string name="smb_descr">Доступ к компьютеру локальной сети с установленой ОС Windows. Требуется плагин \"Ghost Commander - Samba Plugin\".</string>

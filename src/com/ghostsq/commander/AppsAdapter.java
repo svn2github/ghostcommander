@@ -83,10 +83,6 @@ public class AppsAdapter extends CommanderAdapterBase {
     public Uri getUri() {
         return Uri.parse( toString() );
     }
-
-    @Override
-    public void setIdentities( String name, String pass ) {
-    }
     @Override
     public boolean readSource( Uri tmp_uri, String pass_back_on_done ) {
         try {

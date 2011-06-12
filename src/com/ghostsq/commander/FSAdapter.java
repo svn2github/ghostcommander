@@ -96,11 +96,6 @@ public class FSAdapter extends CommanderAdapterBase {
         }
         return super.isButtonActive( brId );
     }
-    
-    
-    @Override
-    public void setIdentities( String name, String pass ) {
-    }
     @Override
     public boolean readSource( Uri d, String pass_back_on_done ) {
     	try {

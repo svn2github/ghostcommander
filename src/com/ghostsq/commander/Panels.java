@@ -63,6 +63,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     private float downX = 0, downY = 0;
     private StringBuffer     quickSearchBuf = null;
     private Toast            quickSearchTip = null;
+    private ArrayList<Favorite> favorites;
     private Shortcuts        shorcutsFoldersList;
     private CommanderAdapter destAdapter = null;
     public  boolean sxs, fingerFriendly = false;
@@ -103,7 +104,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             right_title.setOnClickListener( this );
             right_title.setOnLongClickListener( this );
         }
-        shorcutsFoldersList = new Shortcuts( c, this );
+        favorites = new ArrayList<Favorite>();
+        shorcutsFoldersList = new Shortcuts( c, this, favorites );
         try{ 
 	        quickSearchBuf = new StringBuffer();
 	        quickSearchTip = Toast.makeText( c, "", Toast.LENGTH_SHORT );
@@ -501,7 +503,13 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     }
     
     private final void NavigateInternal( int which, Uri uri, String posTo ) {
-        list[which].Navigate( uri, posTo );
+        ListHelper list_h = list[which];
+        list_h.Navigate( uri, posTo );
+        CommanderAdapter ca = list_h.getListAdapter();
+        if( ca != null && ca instanceof FavsAdapter ) {
+            FavsAdapter fav_a = (FavsAdapter)ca;
+            fav_a.setFavorites( favorites );
+        }
         if( which == current )
             navigated = which; 
     }
@@ -1125,16 +1133,16 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 	public void setState( State s ) {
 	    if( s == null ) return;
     	resetQuickSearch();
+        if( s.favs != null && s.favs.length() > 0 )
+            shorcutsFoldersList.setFromString( s.favs );
+        else
+            if( s.fav_uris != null )
+                shorcutsFoldersList.setFromOldString( s.fav_uris );
     	current = s.current;
     	//Log.v( TAG, "Restoring left current item: " + s.leftItem );
         NavigateInternal( LEFT,  Uri.parse( s.left  ), s.leftItem );
         NavigateInternal( RIGHT, Uri.parse( s.right ), s.rightItem );
         applyColors();
         setPanelCurrent( s.current );
-        if( s.favs != null && s.favs.length() > 0 )
-            shorcutsFoldersList.setFromString( s.favs );
-        else
-            if( s.fav_uris != null )
-                shorcutsFoldersList.setFromOldString( s.fav_uris );
     }
 }

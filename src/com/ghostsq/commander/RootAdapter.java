@@ -36,10 +36,10 @@ import com.ghostsq.commander.MountsListEngine.MountItem;
 public class RootAdapter extends CommanderAdapterBase {
     // Java compiler creates a thunk function to access to the private owner class member from a subclass
     // to avoid that all the member accessible from the subclasses are public
-    public final static String TAG = "RootAdapter";
-    public final static int CHMOD_CMD = 36793, CMD_CMD = 39716;
-    public  Uri uri = null;
-    public  LsItem[] items = null;
+    private final static String TAG = "RootAdapter";
+    private final static int CHMOD_CMD = 36793, CMD_CMD = 39716;
+    private Uri uri = null;
+    private LsItem[] items = null;
     private int attempts = 0;
 
     public RootAdapter( Commander c ) {
@@ -212,6 +212,7 @@ public class RootAdapter extends CommanderAdapterBase {
 
     @Override
     public void setIdentities( String name, String pass ) {
+        // TODO: may be some day we need to provide a password for su ?
     }
     @Override
     public boolean readSource( Uri tmp_uri, String pass_back_on_done ) {

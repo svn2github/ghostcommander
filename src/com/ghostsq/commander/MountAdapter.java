@@ -80,9 +80,6 @@ public class MountAdapter extends CommanderAdapterBase {
         return false;
     }
     @Override
-    public void setIdentities( String name, String pass ) {
-    }
-    @Override
     public boolean readSource( Uri tmp_uri, String pass_back_on_done ) {
         try {
             if( tmp_uri != null )
@@ -186,6 +183,7 @@ public class MountAdapter extends CommanderAdapterBase {
         try {
             if( position == 0 ) {
                 commander.Navigate( Uri.parse( "root://./" ), null );
+                return;
             }
             if( items == null || position < 0 || position > items.length )
                 return;

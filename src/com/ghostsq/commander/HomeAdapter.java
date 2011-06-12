@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 
 public class HomeAdapter extends CommanderAdapterBase {
     private final static String TAG = "HomeAdapter";
-    private final static int    LOCAL = 0, FTP = 1, SMB = 2, ROOT = 3, MOUNT = 4, APPS = 5, EXIT = 6, LAST = EXIT;
+    private final static int    FAVS = 0, LOCAL = 1, FTP = 2, SMB = 3, ROOT = 4, MOUNT = 5, APPS = 6, EXIT = 7, LAST = EXIT;
     private boolean root = false;
     
     public HomeAdapter( Commander c ) {
@@ -57,9 +57,6 @@ public class HomeAdapter extends CommanderAdapterBase {
     }
     
     @Override
-    public void setIdentities( String name, String pass ) {
-    }
-    @Override
     public boolean readSource( Uri tmp_uri, String pbod ) {
         commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pbod ) );
         return true;
@@ -95,10 +92,11 @@ public class HomeAdapter extends CommanderAdapterBase {
             return;
         String uri_s = null;
         switch( position ) {
-        case LOCAL: uri_s = "/sdcard"; break; 
+        case FAVS:  uri_s = "favs:";    break; 
+        case LOCAL: uri_s = "/sdcard";  break; 
         case ROOT:  uri_s = "root:///"; break;
-        case MOUNT: uri_s = "mount:"; break;
-        case APPS:  uri_s = "apps:"; break;
+        case MOUNT: uri_s = "mount:";   break;
+        case APPS:  uri_s = "apps:";    break;
         case FTP:   commander.dispatchCommand( FileCommander.FTP_ACT ); return;
         case SMB:   commander.dispatchCommand( FileCommander.SMB_ACT ); return;
         case EXIT:  commander.dispatchCommand( R.id.exit ); return;
@@ -139,6 +137,7 @@ public class HomeAdapter extends CommanderAdapterBase {
     @Override
     public String getItemName( int p, boolean full ) {
         switch( p ) {
+        case FAVS:  return s( R.string.favs ); 
         case LOCAL: return s( R.string.local ); 
         case FTP:   return s( R.string.ftp );
         case SMB:   return s( R.string.smb );
@@ -163,6 +162,7 @@ public class HomeAdapter extends CommanderAdapterBase {
             item.name = getItemName( position, false );
              
             switch( position ) {
+            case FAVS:  item.icon_id = R.drawable.favs;     break;  
             case LOCAL: item.icon_id = R.drawable.sd;       break;  
             case FTP:   item.icon_id = R.drawable.server;   break;
             case SMB:   item.icon_id = R.drawable.smb;      break;
@@ -172,6 +172,7 @@ public class HomeAdapter extends CommanderAdapterBase {
             //case APPS:  item.icon_id = R.drawable.apps; break;
             }
             switch( position ) {
+            case FAVS:  item.attr = s( R.string.favs_descr );  break;  
             case LOCAL: item.attr = s( R.string.local_descr ); break;  
             case FTP:   item.attr = s( R.string.ftp_descr );   break;
             case SMB:   item.attr = s( R.string.smb_descr );   break;

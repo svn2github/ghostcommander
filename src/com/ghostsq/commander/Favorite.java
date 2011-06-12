@@ -98,11 +98,12 @@ public class Favorite {
         }
         return null;
     }
-    /*
+    public String getName() {
+        return name;
+    }
     public Uri getUri() {
         return uri;
     }
-    */
     public String getUriString( boolean screen_pw ) {
         if( uri == null ) return null;
         if( username == null ) return uri.toString();

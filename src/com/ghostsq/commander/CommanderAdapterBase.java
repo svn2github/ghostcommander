@@ -47,16 +47,17 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     public    int     shownFrom = 0, shownNum = 3;
 
     // URI shemes hash codes
-    private static final int  home_schema_h =  "home".hashCode();  
-    private static final int   zip_schema_h =   "zip".hashCode();  
-    private static final int   ftp_schema_h =   "ftp".hashCode();  
-    private static final int  find_schema_h =  "find".hashCode();  
-    private static final int  root_schema_h =  "root".hashCode();  
-    private static final int   mnt_schema_h = "mount".hashCode();  
-    private static final int  apps_schema_h =  "apps".hashCode();  
-    private static final int   smb_schema_h =   "smb".hashCode();
-    private static final int    gd_schema_h =    "gd".hashCode();
-    private static final int gdocs_schema_h = "gdocs".hashCode();
+    protected static final int  home_schema_h =  "home".hashCode();  
+    protected static final int   zip_schema_h =   "zip".hashCode();  
+    protected static final int   ftp_schema_h =   "ftp".hashCode();  
+    protected static final int  find_schema_h =  "find".hashCode();  
+    protected static final int  root_schema_h =  "root".hashCode();  
+    protected static final int   mnt_schema_h = "mount".hashCode();  
+    protected static final int  apps_schema_h =  "apps".hashCode();
+    protected static final int  favs_schema_h =  "favs".hashCode();
+    protected static final int   smb_schema_h =   "smb".hashCode();
+    protected static final int    gd_schema_h =    "gd".hashCode();
+    protected static final int gdocs_schema_h = "gdocs".hashCode();
     // adapters names hash codes
     private static final int type_h_fs    = "file".hashCode();   
     private static final int type_h_home  = home_schema_h;  
@@ -66,6 +67,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     private static final int type_h_root  = root_schema_h;
     private static final int type_h_mnt   = mnt_schema_h;
     private static final int type_h_apps  = apps_schema_h;
+    private static final int type_h_favs  = favs_schema_h;
     private static final int type_h_smb   = smb_schema_h;
     private static final int type_h_gdocs = gdocs_schema_h;
     
@@ -81,6 +83,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         if( root_schema_h == scheme_h )  return type_h_root;  
         if(  mnt_schema_h == scheme_h )  return type_h_mnt;  
         if( apps_schema_h == scheme_h )  return type_h_apps;  
+        if( favs_schema_h == scheme_h )  return type_h_favs;  
         if(  smb_schema_h == scheme_h )  return type_h_smb;
         if(   gd_schema_h == scheme_h )  return type_h_gdocs;
         if(gdocs_schema_h == scheme_h )  return type_h_gdocs;
@@ -97,6 +100,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         if( type_h == type_h_root ) ca = new RootAdapter( c );  else
         if( type_h == type_h_mnt  ) ca = new MountAdapter( c ); else
         if( type_h == type_h_apps ) ca = new AppsAdapter( c );  else
+        if( type_h == type_h_favs ) ca = new FavsAdapter( c );  else
         if( type_h == type_h_smb  ) ca = c.CreateExternalAdapter( "samba", "SMBAdapter", Dialogs.SMB_PLG_DIALOG );
         return ca;
     }
@@ -448,7 +452,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             row_view.setTag( null );
         }
         catch( Exception e ) {
-            Log.e( TAG, "\ngetView() exception: " + e ); 
+            Log.e( TAG, null, e ); 
         }
         return row_view;
     }
@@ -562,6 +566,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 return true;
         }
         return false;
+    }
+
+    @Override
+    public void setIdentities( String name, String pass ) {
     }
 
     @Override

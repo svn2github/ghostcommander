@@ -31,12 +31,12 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
 	private View goPanel;
 	private ArrayList<Favorite> shortcutsList;
 	
-	public Shortcuts( FileCommander c_, Panels p_ ) {
+	public Shortcuts( FileCommander c_, Panels p_, ArrayList<Favorite> shortcuts_list ) {
 		super();
 		c = c_;
 		p = p_;
+		shortcutsList = shortcuts_list;
 		goPanel = c.findViewById( R.id.uri_edit_panel );
-		shortcutsList = new ArrayList<Favorite>();
 		
         try {
             AutoCompleteTextView textView = (AutoCompleteTextView)goPanel.findViewById( R.id.uri_edit );
@@ -163,18 +163,21 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
     public final int find( String uri_s ) {
 		try {
     		String strip_uri = uri_s.trim();
-    		if( strip_uri.charAt( strip_uri.length()-1 ) != '/' )
-    			strip_uri += "/";
-	        for( int i = 0; i < shortcutsList.size(); i++ ) {
-	        	String item = shortcutsList.get( i ).getUriString( false );
-	        	if( item != null ) {
-	        		String strip_item = item.trim();
-	        		if( strip_item.charAt( strip_item.length()-1 ) != '/' )
-	        			strip_item += "/";
-	        		if( strip_item.compareTo( strip_uri ) == 0 )
-	        			return i;
-	        	}
-	        }
+    		int slen = strip_uri.length();
+    		if( slen > 0 ) { 
+        		if( strip_uri.charAt( slen -1 ) != '/' )
+        			strip_uri += "/";
+    	        for( int i = 0; i < shortcutsList.size(); i++ ) {
+    	        	String item = shortcutsList.get( i ).getUriString( false );
+    	        	if( item != null ) {
+    	        		String strip_item = item.trim();
+    	        		if( strip_item.charAt( strip_item.length()-1 ) != '/' )
+    	        			strip_item += "/";
+    	        		if( strip_item.compareTo( strip_uri ) == 0 )
+    	        			return i;
+    	        	}
+    	        }
+    		}
 		} catch( Exception e ) {
 		    Log.e( TAG, "", e );
 		}
