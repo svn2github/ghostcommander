@@ -60,6 +60,10 @@ public class ListHelper {
                 }
                 if( ca_old != null )
                     ca_old.prepareToDestroy();
+                if( ca_new instanceof FavsAdapter ) {
+                    FavsAdapter fav_a = (FavsAdapter)ca_new;
+                    fav_a.setFavorites( p.getFavorites() );
+                }
                 flv.setAdapter( (ListAdapter)ca_new );
                 flv.setOnKeyListener( p );
                 ca_new.setMode( CommanderAdapter.MODE_WIDTH, 

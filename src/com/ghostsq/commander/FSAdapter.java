@@ -99,13 +99,11 @@ public class FSAdapter extends CommanderAdapterBase {
     @Override
     public boolean readSource( Uri d, String pass_back_on_done ) {
     	try {
-
     	    if( worker != null ) worker.reqStop();
             File[] files_ = null; 
             String dir_name = null;
             File dir = null;
             String err_msg = null;
-            
             while( true ) {
                 if( d != null )
                     dir_name = d.getPath();

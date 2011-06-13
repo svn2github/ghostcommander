@@ -114,11 +114,6 @@ public class HomeAdapter extends CommanderAdapterBase {
         return notErr();
     }
 
-    private boolean notErr() {
-        commander.notifyMe( new Commander.Notify( "Not supported.", Commander.OPERATION_FAILED ) );
-        return false;
-    }
-
     private int getNumItems() {
         int num = LAST + 1;
         if( !root ) num -= 2;

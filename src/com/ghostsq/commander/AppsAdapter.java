@@ -155,11 +155,6 @@ public class AppsAdapter extends CommanderAdapterBase {
         return notErr();
     }
 
-    private boolean notErr() {
-        commander.notifyMe( new Commander.Notify( "Not supported.", Commander.OPERATION_FAILED ) );
-        return false;
-    }
-    
     /*
      * BaseAdapter implementation
      */

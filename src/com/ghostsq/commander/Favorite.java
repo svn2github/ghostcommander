@@ -24,11 +24,11 @@ public class Favorite {
     
     // fields
     private Uri     uri;
-    private String  name;
+    private String  comment;
     private String  username;
     private PasswordProtection password;
     
-    public Favorite( String uri_str, String name_ ) {
+    public Favorite( String uri_str, String comment_ ) {
         try {
             uri = Uri.parse( uri_str );
             String user_info = uri.getUserInfo();
@@ -39,7 +39,7 @@ public class Favorite {
                 password = pw != null ? new PasswordProtection( pw.toCharArray() ) : null;
                 uri = updateCredentials( uri, null );
             }
-            name = name_;
+            comment = comment_;
         }
         catch( Exception e ) {
             e.printStackTrace();
@@ -53,17 +53,17 @@ public class Favorite {
         try {
             String[] flds = sep_re.split( raw );
             if( flds == null ) return false;
-            name = null;
+            comment = null;
             username = null;
             password = null;
             for( int i = 0; i < flds.length; i++ ) {
                 String s = flds[i];
                 if( s == null || s.length() == 0 ) continue;
                 if( s.startsWith( "URI="  ) ) uri = Uri.parse( unescape( s.substring( 4 ) ) ); else 
-                if( s.startsWith( "NAME=" ) ) name = unescape( s.substring( 5 ) ); else
+                if( s.startsWith( "CMT="  ) ) comment = unescape( s.substring( 4 ) ); else
                 if( s.startsWith( "USER=" ) ) username = unescape( s.substring( 5 ) ); else
                 if( s.startsWith( "PASS=" ) ) decryptPassword( unescape( s.substring( 5 ) ) );
-                //Log.v( TAG, "Restored to: name=" + name + ", uri=" + uri + ", user=" + username + ", pass=" + ( password != null ? new String( password.getPassword() ) : "" ) );
+                //Log.v( TAG, "Restored to: cmt=" + comment + ", uri=" + uri + ", user=" + username + ", pass=" + ( password != null ? new String( password.getPassword() ) : "" ) );
             }
         }
         catch( Exception e ) {
@@ -76,10 +76,10 @@ public class Favorite {
             StringBuffer buf = new StringBuffer( 128 );
             buf.append( "URI=" );
             buf.append( escape( uri.toString() ) );
-            if( name != null ) {
+            if( comment != null ) {
                 buf.append( sep );
-                buf.append( "NAME=" );
-                buf.append( escape( name ) );
+                buf.append( "CMT=" );
+                buf.append( escape( comment ) );
             }
             if( username != null ) {
                 buf.append( sep );
@@ -98,8 +98,8 @@ public class Favorite {
         }
         return null;
     }
-    public String getName() {
-        return name;
+    public String getComment() {
+        return comment;
     }
     public Uri getUri() {
         return uri;

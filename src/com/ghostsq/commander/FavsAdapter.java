@@ -22,6 +22,7 @@ public class FavsAdapter extends CommanderAdapterBase {
         super( c, DETAILED_MODE | NARROW_MODE | SHOW_ATTR | ATTR_ONLY );
         numItems = 0;
         favs = null;
+        numItems = 1;
     }
 
     public void setFavorites( ArrayList<Favorite> favs_ ) {
@@ -54,6 +55,12 @@ public class FavsAdapter extends CommanderAdapterBase {
     }
 
     @Override
+    public boolean readSource( Uri tmp_uri, String pbod ) {
+        commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pbod ) );
+        return true;
+    }
+
+    @Override
     public boolean isButtonActive( int brId ) {
         if( brId == R.id.F1 ||
             brId == R.id.F2 ||
@@ -75,11 +82,6 @@ public class FavsAdapter extends CommanderAdapterBase {
         }
     }    
     @Override
-    public boolean readSource( Uri tmp_uri, String pbod ) {
-        commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pbod ) );
-        return true;
-    }
-    @Override
     public void reqItemsSize( SparseBooleanArray cis ) {
         notErr();
     }
@@ -100,7 +102,18 @@ public class FavsAdapter extends CommanderAdapterBase {
 
     @Override
     public boolean deleteItems( SparseBooleanArray cis ) {
-        return notErr();
+        for( int i = 0; i < cis.size(); i++ )
+            if( cis.valueAt( i ) ) {
+                int k = cis.keyAt( i );
+                if( k > 0 ) {
+                    favs.remove( k - 1 );
+                    numItems--;
+                    notifyDataSetChanged();
+                    commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, null ) );
+                    return true;
+                }
+            }
+        return false;
     }
     
     @Override
@@ -124,13 +137,10 @@ public class FavsAdapter extends CommanderAdapterBase {
         return false;
     }
 
-    private boolean notErr() {
-        commander.notifyMe( new Commander.Notify( "Not supported.", Commander.OPERATION_FAILED ) );
-        return false;
-    }
-
     @Override
     public String getItemName( int p, boolean full ) {
+        if( favs != null && p > 0 && p <= favs.size() )
+            return favs.get( p-1 ).getUriString( true );
         return null;
     }
     
@@ -155,7 +165,7 @@ public class FavsAdapter extends CommanderAdapterBase {
                     item.size = -1;
                     item.sel = false;
                     item.date = null;
-                    item.attr = f.getName();
+                    item.attr = f.getComment();
                     
                     Uri uri = f.getUri();
                     if( uri != null ) {
@@ -177,10 +187,12 @@ public class FavsAdapter extends CommanderAdapterBase {
         }
         return item;
     }
+
     @Override
     public View getView( int position, View convertView, ViewGroup parent ) {
         Item item = (Item)getItem( position );
         if( item == null ) return null;
         return getView( convertView, parent, item );
     }
+
 }

@@ -204,6 +204,10 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         }
     }
     
+    public ArrayList<Favorite> getFavorites() {
+        return favorites;
+    }
+    
     public final boolean isCurrent( int q ) {
         return ( current == LEFT  && q == LEFT ) ||
                ( current == RIGHT && q == RIGHT );
@@ -505,11 +509,6 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     private final void NavigateInternal( int which, Uri uri, String posTo ) {
         ListHelper list_h = list[which];
         list_h.Navigate( uri, posTo );
-        CommanderAdapter ca = list_h.getListAdapter();
-        if( ca != null && ca instanceof FavsAdapter ) {
-            FavsAdapter fav_a = (FavsAdapter)ca;
-            fav_a.setFavorites( favorites );
-        }
         if( which == current )
             navigated = which; 
     }

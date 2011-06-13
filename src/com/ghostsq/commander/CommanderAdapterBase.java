@@ -245,6 +245,11 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         if( worker == null ) return false;
         return worker.reqStop();
     }
+
+    protected boolean notErr() {
+        commander.notifyMe( new Commander.Notify( "Not supported.", Commander.OPERATION_FAILED ) );
+        return false;
+    }
     
     protected final String createTempDir() {
         Date d = new Date();
