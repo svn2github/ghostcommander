@@ -117,6 +117,10 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     }
     public final void setMode( boolean sxs_ ) {
         sxs = sxs_;
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
+        applySettings( sharedPref, false );
+
         if( panelsView != null ) panelsView.setMode( sxs_, current );
     }
     public int getCurrent() {
@@ -607,6 +611,12 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     }    
 
     public final void openForEdit( String file_name ) {
+        CommanderAdapter ca = getListAdapter( true );
+        if( ca instanceof FavsAdapter ) {
+            FavsAdapter fa = (FavsAdapter)ca;
+            fa.editItem( getSelection( true ) );
+            return;
+        }
         File f = file_name == null ? getCurrentFile() : new File( file_name );
         if( f != null && f.isFile() ) {
         	try {

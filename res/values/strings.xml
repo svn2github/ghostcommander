@@ -96,7 +96,8 @@
     <string name="fail"> FAILED </string>
     <string name="failed">Error:\n</string>
     <string name="default_uri"></string>
-
+    <string name="fav_comment">Comment</string>
+    <string name="fav_dialog">Edit Favorite</string>  
 
     <string name="dialog_yes">Yes</string>
     <string name="dialog_no">No</string>
@@ -131,6 +132,7 @@
     <string name="to_rename"></string>
     <string name="copy_err">Nothing to copy</string>
     <string name="rename_err">Nothing to rename.</string>
+    <string name="edit_err">Not editable.</string>
     <string name="no_items">There are no valid files to complete the operation.</string>
     <string name="inv_dest">Invalid destination</string>
     <string name="inv_path">Invalid path</string>
@@ -240,7 +242,7 @@ copied >5 will produce:
     <string name="inprogress">A file operation in progress</string>
 
     <string name="server">Server:</string>
-    <string name="path">Path on server:</string>
+    <string name="path">Path:</string>
     <string name="domain">Domain:</string>
     <string name="username">User Name:</string>
     <string name="password">Password:</string>

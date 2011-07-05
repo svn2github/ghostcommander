@@ -176,7 +176,7 @@
 <string name="progress">Изпълнение</string>
 <string name="alert">Внимание</string>
 <string name="server">Сървър:</string>
-<string name="path">Път на сървъра:</string>
+<string name="path">Път:</string>
 <string name="domain">Домейн:</string>
 <string name="username">Потребител:</string>
 <string name="password">Парола:</string>

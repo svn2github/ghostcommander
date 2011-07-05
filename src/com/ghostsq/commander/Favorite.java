@@ -2,7 +2,6 @@ package com.ghostsq.commander;
 
 import java.security.SecureRandom;
 import java.security.KeyStore.PasswordProtection;
-import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 import javax.crypto.Cipher;
@@ -101,6 +100,9 @@ public class Favorite {
     public String getComment() {
         return comment;
     }
+    public void setComment( String s ) {
+        comment = s;
+    }
     public Uri getUri() {
         return uri;
     }
@@ -114,6 +116,14 @@ public class Favorite {
             if( password != null )
                 ui += ":" + new String( password.getPassword() );
         return Uri.decode( updateCredentials( uri, ui ).toString() );
+    }
+
+    public String getUserName() {
+        return username;
+    }
+    
+    public PasswordProtection getPassword() { 
+        return password;
     }
     
     private String encryptPassword() {

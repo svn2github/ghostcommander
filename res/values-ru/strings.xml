@@ -168,7 +168,7 @@
 <string name="inprogress">Операция продолжает выполняться</string>
 <string name="alert">Внимание</string>
 <string name="server">Сервер:</string>
-<string name="path">Путь на сервере:</string>
+<string name="path">Путь:</string>
 <string name="domain">Домен:</string>
 <string name="username">Логин:</string>
 <string name="password">Пароль:</string>

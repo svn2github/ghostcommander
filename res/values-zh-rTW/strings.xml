@@ -93,7 +93,7 @@
     <string name="alert">警報</string>
 
     <string name="server">伺服器:</string>
-    <string name="path">伺服器上的路徑：</string>
+    <string name="path">的路徑：</string>
     <string name="username">使用者名：</string>
     <string name="password">密碼：</string>
     <string name="connect">連接</string>

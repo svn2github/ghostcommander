@@ -78,7 +78,7 @@ public class FavsAdapter extends CommanderAdapterBase {
             menu.add( 0, R.id.F2,        0, s( R.string.rename_title ) );
             menu.add( 0, R.id.F4,        0, s( R.string.edit_title ) );
             menu.add( 0, R.id.F8,        0, s( R.string.delete_title ) );
-            menu.add( 0, SCUT_CMD,       0, s( R.string.shortcut ) );
+            //menu.add( 0, SCUT_CMD,       0, s( R.string.shortcut ) );     // TODO
         }
     }    
     @Override
@@ -133,14 +133,27 @@ public class FavsAdapter extends CommanderAdapterBase {
     }
     
     @Override
-    public boolean renameItem( int position, String newName, boolean c  ) {
+    public boolean renameItem( int p, String newName, boolean c  ) {
+        if( favs != null && p > 0 && p <= favs.size() ) {
+            favs.get( p-1 ).setComment( newName );
+            notifyDataSetChanged();
+            return true;
+        }
         return false;
     }
 
+    public void editItem( int p ) {
+        if( favs != null && p > 0 && p <= favs.size() ) {
+            new FavDialog( commander.getContext(), favs.get( p-1 ), this );
+        }
+    }    
+    
     @Override
     public String getItemName( int p, boolean full ) {
-        if( favs != null && p > 0 && p <= favs.size() )
-            return favs.get( p-1 ).getUriString( true );
+        if( favs != null && p > 0 && p <= favs.size() ) {
+            String comm = favs.get( p-1 ).getComment();
+            return comm == null ? "" : comm; // .getUriString( true );
+        }
         return null;
     }
     

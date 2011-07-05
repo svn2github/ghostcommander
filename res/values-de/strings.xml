@@ -104,7 +104,7 @@
     <string name="progress">Fortschritt</string>
     <string name="alert">Warnung</string>
     <string name="server">Server:</string>
-    <string name="path">Pfad auf dem Server:</string>
+    <string name="path">Pfad:</string>
     <string name="domain">Domain:</string>
     <string name="username">Benutzername:</string>
     <string name="password">Kennwort:</string>

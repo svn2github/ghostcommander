@@ -17,16 +17,12 @@ public class ServerForm extends Activity implements View.OnClickListener {
     private static final String TAG = "ServerForm";
     private String schema;
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate( Bundle savedInstanceState ) {
         try {
             super.onCreate( savedInstanceState );
             schema = getIntent().getStringExtra( "schema" );
-
-            
-            setTitle( R.string.connect );
-            
+            setTitle( R.string.connect + " " + schema );
             requestWindowFeature( Window.FEATURE_LEFT_ICON );
-            
             setContentView( R.layout.server );
             getWindow().setLayout (LayoutParams.FILL_PARENT /* width */ , LayoutParams.WRAP_CONTENT /* height */);
             

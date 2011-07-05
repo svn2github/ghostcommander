@@ -181,7 +181,7 @@
 <string name="progress">Postęp</string>
 <string name="alert">Uwaga</string>
 <string name="server">Host (serwer):</string>
-<string name="path">Katalog zdalny:</string>
+<string name="path">Katalog:</string>
 <string name="domain">Domena:</string>
 <string name="username">Użytkownik:</string>
 <string name="password">Hasło:</string>

@@ -224,7 +224,6 @@ copied >5 will produce:
     <string name="alert">Avviso</string>
 
     <string name="server">Server:</string>
-    <string name="path">Percorso sul server:</string>
     <string name="domain">Dominio:</string>
     <string name="username">Nome utente:</string>
     <string name="password">Password:</string>

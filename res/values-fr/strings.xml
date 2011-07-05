@@ -173,7 +173,7 @@
 <string name="progress">Progression</string>
 <string name="alert">Alerte</string>
 <string name="server">Serveur:</string>
-<string name="path">Chemin du serveur:</string>
+<string name="path">Chemin:</string>
 <string name="domain">Domaine:</string>
 <string name="username">Nom utilisateur:</string>
 <string name="password">Mot de passe:</string>

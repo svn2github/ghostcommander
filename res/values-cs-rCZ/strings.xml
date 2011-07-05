@@ -177,7 +177,7 @@
 <string name="progress">Průběh</string>
 <string name="alert">Upozornění</string>
 <string name="server">Server:</string>
-<string name="path">Složka na serveru:</string>
+<string name="path">Složka:</string>
 <string name="domain">Doména:</string>
 <string name="username">Jméno uživ.:</string>
 <string name="password">Heslo:</string>
