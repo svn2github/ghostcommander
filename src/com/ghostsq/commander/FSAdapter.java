@@ -16,6 +16,10 @@ import java.util.Locale;
 import java.util.Map;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -183,11 +187,13 @@ public class FSAdapter extends CommanderAdapterBase {
         private FileItem[] mList;
         private BitmapFactory.Options options;
         private Resources res;
-        int thumb_sz;
-        private int[] ext_h = { ".jpg".hashCode(),  ".JPG".hashCode(), 
-                               ".jpeg".hashCode(), ".JPEG".hashCode(), 
-                                ".png".hashCode(),  ".PNG".hashCode(), 
-                                ".gif".hashCode(),  ".GIF".hashCode() };
+        private int thumb_sz;
+        private final int apk_h = ".apk".hashCode(); 
+        private final int[] ext_h = { ".jpg".hashCode(),  ".JPG".hashCode(), 
+                                      ".jpeg".hashCode(), ".JPEG".hashCode(), 
+                                       ".png".hashCode(),  ".PNG".hashCode(), 
+                                       ".gif".hashCode(),  ".GIF".hashCode(),  
+                                        apk_h };
         ThumbnailsThread( Handler h, FileItem[] list ) {
             setName( getClass().getName() );
             thread_handler = h;
@@ -248,7 +254,7 @@ public class FSAdapter extends CommanderAdapterBase {
                             f.thumbnail = cached_soft.get();
                         if( f.thumbnail == null ) {
                             //Log.v( TAG, "Creating a thumbnail for " + n + ", " + fn );
-                            if( createThubnail( fn, f ) )
+                            if( createThubnail( fn, f, ext_hash ) )
                                 synchronized( thumbnailCache ) {
                                     thumbnailCache.put( fn_h, new SoftReference<Drawable>( f.thumbnail ) );
                                 }
@@ -277,9 +283,15 @@ public class FSAdapter extends CommanderAdapterBase {
             }
         }
         
-        private boolean createThubnail( String fn, FileItem f ) {
+        private boolean createThubnail( String fn, FileItem f, int h ) {
             final String func_name = "createThubnail()"; 
             try {
+                if( h == apk_h ) {
+                    PackageManager pm = commander.getContext().getPackageManager();
+                    PackageInfo info = pm.getPackageArchiveInfo( fn, 0 );
+                    f.thumbnail = pm.getApplicationIcon( info.packageName );
+                    return true;
+                }               
                 options.inSampleSize = 1;
                 options.inJustDecodeBounds = true;
                 options.outWidth = 0;
@@ -305,6 +317,8 @@ public class FSAdapter extends CommanderAdapterBase {
                 Log.e( TAG, func_name + " failed for " + fn );
             } catch( RuntimeException rte ) {
                 Log.e( TAG, func_name, rte );
+            } catch( NameNotFoundException nfe ) {
+                Log.e( TAG, func_name, nfe );
             } catch( Error err ) {
                 Log.e( TAG, func_name, err );
             }
