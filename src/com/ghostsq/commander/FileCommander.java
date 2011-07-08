@@ -101,9 +101,6 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         panels = new Panels( this, sxs );
         setConfirmMode( sharedPref );
         
-        Intent intent = getIntent();
-        String action = intent.getAction();
-        Log.v( TAG, "Action: " + action );
         notMan = (NotificationManager)getSystemService( Context.NOTIFICATION_SERVICE );
     }
 
@@ -119,6 +116,13 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             Panels.State s = panels.new State();
             s.restore( prefs );
             panels.setState( s );
+            
+            Intent intent = getIntent();
+            String action = intent.getAction();
+            Log.v( TAG, "Action: " + action );
+            if( Intent.ACTION_VIEW.equals( action ) )
+                panels.Navigate( 0, intent.getData(), null );
+            
             final String FT = "first_time";
             if( prefs.getBoolean( FT, true ) ) {
                 SharedPreferences.Editor editor = prefs.edit();

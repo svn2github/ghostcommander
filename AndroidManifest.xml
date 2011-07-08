@@ -40,7 +40,11 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.OPENABLE" />
             </intent-filter>
-            
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="ftp" />
+            </intent-filter>
         </activity>
 		<activity android:name=".Editor"  android:label="@string/editor_label">
             <intent-filter>

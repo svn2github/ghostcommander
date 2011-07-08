@@ -129,7 +129,7 @@ public class FindAdapter extends FSAdapter {
             }
             else {
                 cards = null;
-                match = match_;
+                match = match_.toLowerCase();
             }
             path = path_;
             pass_back_on_done = pass_back_on_done_;
@@ -162,7 +162,7 @@ public class FindAdapter extends FSAdapter {
                     
                     if( cards != null && Utils.match( f.getName(), cards ) )
                         result.add( f );
-                    if( match != null && f.getName().contains( match ) )
+                    if( match != null && f.getName().toLowerCase().contains( match ) )
                         result.add( f );
                     
                     if( f.isDirectory() ) {

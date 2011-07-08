@@ -63,6 +63,7 @@
 	        android:layout_height="fill_parent"
 	        android:layout_weight="1"
 	        android:drawSelectorOnTop="false"
+	        android:fastScrollEnabled="true"
 	        android:paddingLeft="1dp"
 	        android:paddingRight="1dp"/>
 	    <View
@@ -77,6 +78,7 @@
 	        android:layout_height="fill_parent"
 	        android:layout_weight="1"
 	        android:drawSelectorOnTop="false"
+	        android:fastScrollEnabled="true"
 	        android:paddingLeft="1dp"
 	        android:paddingRight="1dp"/>
     </com.ghostsq.commander.PanelsView>

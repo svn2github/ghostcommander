@@ -5,7 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.FileChannel;
 import java.util.Date;
@@ -16,7 +16,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -53,7 +52,7 @@ public class FSAdapter extends CommanderAdapterBase {
     protected FileItem[] items;
     
     ThumbnailsThread tht = null;
-    public static final Map<Integer, SoftReference<Drawable> > thumbnailCache = new HashMap<Integer, SoftReference<Drawable> >();
+    public static final Map<Integer, WeakReference<Drawable> > thumbnailCache = new HashMap<Integer, WeakReference<Drawable> >();
 
     public static int[] ext_h = { 
              ".jpg".hashCode(),  ".JPG".hashCode(), 
@@ -246,7 +245,7 @@ public class FSAdapter extends CommanderAdapterBase {
                             continue;
                         }
                         int fn_h = fn.hashCode();
-                        SoftReference<Drawable> cached_soft = null;
+                        WeakReference<Drawable> cached_soft = null;
                         synchronized( thumbnailCache ) {
                             cached_soft = thumbnailCache.get( fn_h );
                         }
@@ -256,7 +255,7 @@ public class FSAdapter extends CommanderAdapterBase {
                             //Log.v( TAG, "Creating a thumbnail for " + n + ", " + fn );
                             if( createThubnail( fn, f, ext_hash ) )
                                 synchronized( thumbnailCache ) {
-                                    thumbnailCache.put( fn_h, new SoftReference<Drawable>( f.thumbnail ) );
+                                    thumbnailCache.put( fn_h, new WeakReference<Drawable>( f.thumbnail ) );
                                 }
                             else
                                 succeeded = false;
@@ -587,24 +586,6 @@ public class FSAdapter extends CommanderAdapterBase {
 
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
-        if( move && to instanceof FSAdapter ) { // first try to move by renaming
-            try {
-                commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
-                String dest_folder = to.toString();
-                String[] files_to_move = bitsToNames( cis );
-                if( files_to_move == null )
-                	return false;
-                if( moveFiles( files_to_move, dest_folder ) ) {
-                    commander.notifyMe( new Commander.Notify( Commander.OPERATION_COMPLETED_REFRESH_REQUIRED ) );
-                    return true;
-                }
-                Log.e( TAG, "Moving by renaming failed" );
-            }
-            catch( SecurityException e ) {
-                commander.showError( commander.getContext().getString( R.string.cant_move, e.getMessage() ) );
-                return false;
-            }
-        }
         boolean ok = to.receiveItems( bitsToNames( cis ), move ? MODE_MOVE : MODE_COPY );
         if( !ok ) commander.notifyMe( new Commander.Notify( Commander.OPERATION_FAILED ) );
         return ok;
@@ -727,6 +708,17 @@ public class FSAdapter extends CommanderAdapterBase {
                             if( res == Commander.REPLACE ) outFile.delete();
                             if( res == Commander.ABORT ) break;
                         }
+                        if( move ) {    // first try to move by renaming
+                            long len = file.length();
+                            if( file.renameTo( outFile ) ) {
+                                counter++;
+                                bytes += len;
+                                int  so_far = (int)(bytes * conv);
+                                sendProgress( outFile.getName() + " " + c.getString( R.string.moved ), so_far, 0 );
+                                continue;
+                            }
+                        }
+                        
                         in  = new FileInputStream( file ).getChannel();
                         out = new FileOutputStream( outFile ).getChannel();
                         long size  = in.size();
@@ -782,7 +774,7 @@ public class FSAdapter extends CommanderAdapterBase {
                             in.close();
                         if( out != null )
                             out.close();
-                        if( errMsg != null && outFile != null ) {
+                        if( !move && errMsg != null && outFile != null ) {
                             Log.i( TAG, "Deleting failed output file" );
                             outFile.delete();
                         }
@@ -796,19 +788,6 @@ public class FSAdapter extends CommanderAdapterBase {
         }
     }
 
-    private final boolean moveFiles( String[] files_to_move, String dest_folder ) {
-        for( int i = 0; i < files_to_move.length; i++ ) {
-            File f = new File( files_to_move[i] );
-            long last_modified = f.lastModified();
-            File dest = new File( dest_folder, f.getName() );
-            if( !f.renameTo( dest ) ) {
-                Log.e( TAG, commander.getContext().getString( R.string.cant_move, f.getAbsolutePath() ) );
-                return false;
-            }
-            dest.setLastModified( last_modified );
-        }
-        return true;
-    }
     private final FileItem[] bitsToFilesEx( SparseBooleanArray cis ) {
         try {
             int counter = 0;

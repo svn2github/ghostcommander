@@ -3,6 +3,7 @@
 	android:layout_width="fill_parent" 
 	android:layout_height="fill_parent"
 	android:gravity="top"
+	android:typeface="monospace"
 	android:textColor="#eee"
 	android:background="#000"
 	android:scrollHorizontally="true"/>
