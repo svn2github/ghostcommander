@@ -148,6 +148,7 @@ public class FSAdapter extends CommanderAdapterBase {
 
     protected void startThumbnailCreation() {
         if( thumbnail_size_perc > 0 ) {
+            Log.i( TAG, "thumbnails " + thumbnail_size_perc );
             if( tht != null )
                 tht.interrupt();
             tht = new ThumbnailsThread( new Handler() {
@@ -295,7 +296,10 @@ public class FSAdapter extends CommanderAdapterBase {
                 options.inJustDecodeBounds = true;
                 options.outWidth = 0;
                 options.outHeight = 0;
-                BitmapFactory.decodeFile( fn, options );
+                
+                FileInputStream fis = new FileInputStream( fn );
+                BitmapFactory.decodeStream( fis, null, options);
+                //BitmapFactory.decodeFile( fn, options );
                 if( options.outWidth > 0 && options.outHeight > 0 ) {
                     int greatest = Math.max( options.outWidth, options.outHeight );
                     int factor = greatest / thumb_sz;
@@ -313,11 +317,16 @@ public class FSAdapter extends CommanderAdapterBase {
                         return true;
                     }
                 }
+                fis.close();
                 Log.e( TAG, func_name + " failed for " + fn );
             } catch( RuntimeException rte ) {
                 Log.e( TAG, func_name, rte );
             } catch( NameNotFoundException nfe ) {
                 Log.e( TAG, func_name, nfe );
+            } catch( FileNotFoundException fne ) {
+                Log.e( TAG, func_name, fne );
+            } catch( IOException ioe ) {
+                Log.e( TAG, func_name, ioe );
             } catch( Error err ) {
                 Log.e( TAG, func_name, err );
             }

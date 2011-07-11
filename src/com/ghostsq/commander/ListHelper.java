@@ -116,8 +116,8 @@ public class ListHelper {
                 ca.setMode( CommanderAdapter.MODE_WIDTH, sharedPref.getBoolean( "two_lines", false ) ? 
                             CommanderAdapter.NARROW_MODE : CommanderAdapter.WIDE_MODE );
 
-            ca.setMode( CommanderAdapter.MODE_ICONS, sharedPref.getBoolean( "show_icons", true ) ? 
-                    CommanderAdapter.ICON_MODE : CommanderAdapter.TEXT_MODE );
+            boolean show_icons = sharedPref.getBoolean( "show_icons", true );
+            ca.setMode( CommanderAdapter.MODE_ICONS, show_icons ? CommanderAdapter.ICON_MODE : CommanderAdapter.TEXT_MODE );
 
             ca.setMode( CommanderAdapter.MODE_CASE, sharedPref.getBoolean( "case_ignore", true ) ? 
                     CommanderAdapter.CASE_IGNORE : CommanderAdapter.CASE_SENS );
@@ -137,7 +137,7 @@ public class ListHelper {
             ca.setMode( CommanderAdapter.MODE_HIDDEN, hidden_mode ? CommanderAdapter.SHOW_MODE : CommanderAdapter.HIDE_MODE );
 
             int thubnails_size = 0;
-            if( sharedPref.getBoolean( "show_thumbnails", true ) )
+            if( show_icons && sharedPref.getBoolean( "show_thumbnails", true ) )
                 thubnails_size = Integer.parseInt( sharedPref.getString( "thumbnails_size", "100" ) );
             ca.setMode( CommanderAdapter.SET_TBN_SIZE, thubnails_size );
 
