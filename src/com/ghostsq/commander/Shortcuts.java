@@ -162,22 +162,24 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
     }
     public final int find( String uri_s ) {
 		try {
-    		String strip_uri = uri_s.trim();
-    		int slen = strip_uri.length();
-    		if( slen > 0 ) { 
-        		if( strip_uri.charAt( slen -1 ) != '/' )
-        			strip_uri += "/";
-    	        for( int i = 0; i < shortcutsList.size(); i++ ) {
-    	        	String item = shortcutsList.get( i ).getUriString( false );
-    	        	if( item != null ) {
-    	        		String strip_item = item.trim();
-    	        		if( strip_item.charAt( strip_item.length()-1 ) != '/' )
-    	        			strip_item += "/";
-    	        		if( strip_item.compareTo( strip_uri ) == 0 )
-    	        			return i;
-    	        	}
-    	        }
-    		}
+		    if( uri_s != null ) {
+        		String strip_uri = uri_s.trim();
+        		int slen = strip_uri.length();
+        		if( slen > 0 ) { 
+            		if( strip_uri.charAt( slen -1 ) != '/' )
+            			strip_uri += "/";
+        	        for( int i = 0; i < shortcutsList.size(); i++ ) {
+        	        	String item = shortcutsList.get( i ).getUriString( false );
+        	        	if( item != null ) {
+        	        		String strip_item = item.trim();
+        	        		if( strip_item.length() == 0 || strip_item.charAt( strip_item.length()-1 ) != '/' )
+        	        			strip_item += "/";
+        	        		if( strip_item.compareTo( strip_uri ) == 0 )
+        	        			return i;
+        	        	}
+        	        }
+        		}
+		    }
 		} catch( Exception e ) {
 		    Log.e( TAG, "", e );
 		}

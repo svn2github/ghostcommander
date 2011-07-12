@@ -77,21 +77,11 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         //mFlipper = ((ViewFlipper)c.findViewById( R.id.flipper ));
         panelsView = ((PanelsView)c.findViewById( R.id.panels ));
         
-        setMode( sxs_ );
-        
-/*        
-        fingerFriendly =  sharedPref.getBoolean( "finger_friendly", true );
-        warnOnRoot = sharedPref.getBoolean( "prevent_root", true );
-        rootOnRoot = sharedPref.getBoolean( "root_root", false );
-        arrowsLegacy = sharedPref.getBoolean( "arrow_mode", false );
-        toolbarShown = sharedPref.getBoolean( "show_toolbar", true );        
-*/
         initList( LEFT );
         initList( RIGHT );
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
-        applySettings( sharedPref, true );
-        
+        setMode( sxs_ );
+       
         highlightCurrentTitle();
         
         TextView left_title = (TextView)c.findViewById( titlesIds[LEFT] );

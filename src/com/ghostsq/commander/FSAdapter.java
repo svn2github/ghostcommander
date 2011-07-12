@@ -187,6 +187,7 @@ public class FSAdapter extends CommanderAdapterBase {
         private FileItem[] mList;
         private BitmapFactory.Options options;
         private Resources res;
+        private byte[] buf;
         private int thumb_sz;
         private final int apk_h = ".apk".hashCode(); 
         private final int[] ext_h = { ".jpg".hashCode(),  ".JPG".hashCode(), 
@@ -198,6 +199,7 @@ public class FSAdapter extends CommanderAdapterBase {
             setName( getClass().getName() );
             thread_handler = h;
             mList = list;
+            buf = new byte[16*1024];
         }
         @Override
         public void run() {
@@ -296,6 +298,7 @@ public class FSAdapter extends CommanderAdapterBase {
                 options.inJustDecodeBounds = true;
                 options.outWidth = 0;
                 options.outHeight = 0;
+                options.inTempStorage = buf;
                 
                 FileInputStream fis = new FileInputStream( fn );
                 BitmapFactory.decodeStream( fis, null, options);
@@ -311,8 +314,8 @@ public class FSAdapter extends CommanderAdapterBase {
                     Bitmap bitmap = BitmapFactory.decodeFile( fn, options );
                     if( bitmap != null ) {
                         BitmapDrawable drawable = new BitmapDrawable( res, bitmap );
-                        drawable.setGravity( Gravity.CENTER );
-                        drawable.setBounds( 0, 0, 60, 60 );
+//                        drawable.setGravity( Gravity.CENTER );
+//                        drawable.setBounds( 0, 0, 60, 60 );
                         f.thumbnail = drawable;
                         return true;
                     }

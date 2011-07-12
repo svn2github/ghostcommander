@@ -101,17 +101,12 @@ public class ListHelper {
             ca.setMode( CommanderAdapter.SET_TXT_COLOR, fgrColor );
             ca.setMode( CommanderAdapter.SET_SEL_COLOR, selColor );
         }
-        else
-            Log.e( TAG, "CommanderAdapter is not defined" );
     }
     
     public final void applySettings( SharedPreferences sharedPref ) {
         try {
             CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
-            if( ca == null ) {
-                Log.e( TAG, "Adapter is null!" );
-                return;
-            }
+            if( ca == null ) return;
             if( !p.sxs )
                 ca.setMode( CommanderAdapter.MODE_WIDTH, sharedPref.getBoolean( "two_lines", false ) ? 
                             CommanderAdapter.NARROW_MODE : CommanderAdapter.WIDE_MODE );
