@@ -5,7 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.FileChannel;
 import java.util.Date;
@@ -52,7 +52,7 @@ public class FSAdapter extends CommanderAdapterBase {
     protected FileItem[] items;
     
     ThumbnailsThread tht = null;
-    public static final Map<Integer, WeakReference<Drawable> > thumbnailCache = new HashMap<Integer, WeakReference<Drawable> >();
+    public static final Map<Integer, SoftReference<Drawable> > thumbnailCache = new HashMap<Integer, SoftReference<Drawable> >();
 
     public static int[] ext_h = { 
              ".jpg".hashCode(),  ".JPG".hashCode(), 
@@ -151,7 +151,7 @@ public class FSAdapter extends CommanderAdapterBase {
             Log.i( TAG, "thumbnails " + thumbnail_size_perc );
             if( tht != null )
                 tht.interrupt();
-            tht = new ThumbnailsThread( new Handler() {
+            tht = new ThumbnailsThread( this, new Handler() {
                 public void handleMessage( Message msg ) {
                     notifyDataSetChanged();
                 } }, items );
@@ -183,6 +183,7 @@ public class FSAdapter extends CommanderAdapterBase {
     
     class ThumbnailsThread extends Thread {
         private final static int NOTIFY_THUMBNAIL_CHANGED = 653;
+        private CommanderAdapterBase owner;
         private Handler thread_handler;
         private FileItem[] mList;
         private BitmapFactory.Options options;
@@ -195,11 +196,12 @@ public class FSAdapter extends CommanderAdapterBase {
                                        ".png".hashCode(),  ".PNG".hashCode(), 
                                        ".gif".hashCode(),  ".GIF".hashCode(),  
                                         apk_h };
-        ThumbnailsThread( Handler h, FileItem[] list ) {
+        ThumbnailsThread( CommanderAdapterBase owner_, Handler h, FileItem[] list ) {
+            owner = owner_;
             setName( getClass().getName() );
             thread_handler = h;
             mList = list;
-            buf = new byte[16*1024];
+            buf = new byte[100*1024];
         }
         @Override
         public void run() {
@@ -208,18 +210,29 @@ public class FSAdapter extends CommanderAdapterBase {
                 thumb_sz = getImgWidth();
                 options = new BitmapFactory.Options();
                 res = commander.getContext().getResources();
-                for( int a = 0; a < 3; a++ ) {
+                int fails_count = 0;
+                int missed_count = 0;
+                boolean visible_only = false;
+                for( int a = 1; a < 4; a++ ) {
                     boolean succeeded = true;
                     boolean need_update = false, proc_visible = false, proc_invisible = false;
                     int processed = 0;
                     for( int i = 0; i < mList.length ; i++ ) {
+                        visible_only = fails_count > 2 || missed_count > 4;
                         int n = -1;
-                        for( int j = 0; j < mList.length ; j++ ) {
-                            if( mList[j].need_thumb ) {
-                                n = j;
-                                proc_visible = true;
-                                //Log.v( TAG, "A thumbnail requested ahead of time!!! " + n + ", " + mList[n].f.getName() );
-                                break;
+                        while( true ) {
+                            for( int j = 0; j < mList.length ; j++ ) {
+                                if( mList[j].need_thumb ) {
+                                    n = j;
+                                    proc_visible = true;
+                                    //Log.v( TAG, "A thumbnail requested ahead of time!!! " + n + ", " + mList[n].f.getName() );
+                                    break;
+                                }
+                            }
+                            if( !visible_only || proc_visible ) break;
+                            Log.v( TAG, "Tired. Waiting for a request to proceed" );
+                            synchronized( owner ) {
+                                owner.wait();
                             }
                         }
                         proc_invisible = n < 0;
@@ -228,43 +241,60 @@ public class FSAdapter extends CommanderAdapterBase {
                         else
                             i--;
                         if( !proc_visible )
-                            sleep( 1 );
+                            sleep( 10 );
                         FileItem f = mList[n];
                         f.need_thumb = false;
-                        if( f.thumbnail != null ) continue;
-                        String fn = f.f.getAbsolutePath();
-                        String ext = Utils.getFileExt( fn );
-                        if( ext == null ) continue;
-                        int ext_hash = ext.hashCode(), ht_sz = ext_h.length;
-                        boolean not_img = true;
-                        for( int j = 0; j < ht_sz; j++ ) {
-                            if( ext_hash == ext_h[j] ) {
-                                not_img = false;
-                                break;
+
+                        if( f.thumbnail_soft != null ) {
+                            if( f.thumbnail_soft.get() == null ) {
+                                missed_count++;
+                                Log.e( TAG, "Amnesia detected " + missed_count + " times" );
                             }
+                            else
+                                continue;
                         }
-                        if( not_img ) {
-                            f.no_thumb = true;
-                            continue;
-                        }
+                        String fn = f.f.getAbsolutePath();
                         int fn_h = fn.hashCode();
-                        WeakReference<Drawable> cached_soft = null;
+                        SoftReference<Drawable> cached_soft = null;
                         synchronized( thumbnailCache ) {
                             cached_soft = thumbnailCache.get( fn_h );
                         }
-                        if( cached_soft != null )
-                            f.thumbnail = cached_soft.get();
-                        if( f.thumbnail == null ) {
-                            //Log.v( TAG, "Creating a thumbnail for " + n + ", " + fn );
-                            if( createThubnail( fn, f, ext_hash ) )
-                                synchronized( thumbnailCache ) {
-                                    thumbnailCache.put( fn_h, new WeakReference<Drawable>( f.thumbnail ) );
+                        if( cached_soft != null ) {
+                            f.thumbnail_soft = cached_soft;
+                        }
+                        
+                        if( f.thumbnail_soft == null || f.thumbnail_soft.get() == null ) {
+                            String ext = Utils.getFileExt( fn );
+                            if( ext == null ) continue;
+                            int ext_hash = ext.hashCode(), ht_sz = ext_h.length;
+                            boolean not_img = true;
+                            for( int j = 0; j < ht_sz; j++ ) {
+                                if( ext_hash == ext_h[j] ) {
+                                    not_img = false;
+                                    break;
                                 }
-                            else
+                            }
+                            if( not_img ) {
+                                f.no_thumb = true;
+                                f.thumbnail_soft = null;
+                                continue;
+                            }
+                            //Log.v( TAG, "Creating a thumbnail for " + n + ", " + fn );
+                            if( createThubnail( fn, f, ext_hash ) ) {
+                                synchronized( thumbnailCache ) {
+                                    thumbnailCache.put( fn_h, f.thumbnail_soft );
+                                }
+                            }
+                            else {
                                 succeeded = false;
+                                if( fails_count++ > 10 ) {
+                                    Log.e( TAG, "To many fails, give up" );
+                                    return;
+                                }
+                            }
                         }
                         need_update = true;
-                        if( f.thumbnail != null && ( processed++ > 3 || ( proc_visible && proc_invisible ) ) ) {
+                        if( f.thumbnail_soft != null && ( processed++ > 3 || ( proc_visible && proc_invisible ) ) ) {
                             //Log.v( TAG, "Time to refresh!" );
                             Message msg = thread_handler.obtainMessage( NOTIFY_THUMBNAIL_CHANGED );
                             msg.sendToTarget();
@@ -291,7 +321,7 @@ public class FSAdapter extends CommanderAdapterBase {
                 if( h == apk_h ) {
                     PackageManager pm = commander.getContext().getPackageManager();
                     PackageInfo info = pm.getPackageArchiveInfo( fn, 0 );
-                    f.thumbnail = pm.getApplicationIcon( info.packageName );
+                    f.thumbnail_soft = new SoftReference<Drawable>( pm.getApplicationIcon( info.packageName ) );
                     return true;
                 }               
                 options.inSampleSize = 1;
@@ -316,7 +346,7 @@ public class FSAdapter extends CommanderAdapterBase {
                         BitmapDrawable drawable = new BitmapDrawable( res, bitmap );
 //                        drawable.setGravity( Gravity.CENTER );
 //                        drawable.setBounds( 0, 0, 60, 60 );
-                        f.thumbnail = drawable;
+                        f.thumbnail_soft = new SoftReference<Drawable>( drawable );
                         return true;
                     }
                 }

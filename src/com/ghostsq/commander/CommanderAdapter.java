@@ -1,5 +1,6 @@
 package com.ghostsq.commander;
 
+import java.lang.ref.SoftReference;
 import java.util.Date;
 
 import android.graphics.drawable.Drawable;
@@ -26,7 +27,7 @@ public interface CommanderAdapter {
         public String   attr = "";
         public Object   origin = null;
         public int      icon_id = -1;
-        public Drawable thumbnail = null;
+        public SoftReference<Drawable> thumbnail_soft;
         public boolean  need_thumb = false, no_thumb = false;
     }
     

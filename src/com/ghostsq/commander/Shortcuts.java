@@ -206,13 +206,14 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
             String use_sep = old_sep;
             String[] favs = stored.split( use_sep );
             for( int i = 0; i < favs.length; i++ ) {
-                shortcutsList.add( new Favorite( favs[i], null ) );
+                if( favs[i] != null && favs[i].length() > 0 )
+                    shortcutsList.add( new Favorite( favs[i], null ) );
             }
         } catch( NoSuchElementException e ) {
             c.showError( "Error: " + e );
         }
         if( shortcutsList.isEmpty() )
-            shortcutsList.add( new Favorite( "/sdcard", c.getContext().getString( R.string.default_uri ) ) );
+            shortcutsList.add( new Favorite( "/sdcard", c.getContext().getString( R.string.default_uri_cmnt ) ) );
     }
 
     public final void setFromString( String stored ) {
@@ -230,7 +231,7 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
             c.showError( "Error: " + e );
         }
         if( shortcutsList.isEmpty() )
-            shortcutsList.add( new Favorite( "/sdcard", c.getContext().getString( R.string.default_uri ) ) );
+            shortcutsList.add( new Favorite( "/sdcard", c.getContext().getString( R.string.default_uri_cmnt ) ) );
     }
 
     private String unescape( String s ) {

@@ -73,6 +73,8 @@ public class PanelsView extends LinearLayout {
             }
         } catch( Exception e ) {
             e.printStackTrace();
+        } catch( Error e ) {
+            e.printStackTrace();
         }
 
     }

@@ -95,7 +95,7 @@
     <string name="wait"> wait... </string>
     <string name="fail"> FAILED </string>
     <string name="failed">Error:\n</string>
-    <string name="default_uri"></string>
+    <string name="default_uri_cmnt">Default location</string>
     <string name="fav_comment">Comment</string>
     <string name="fav_dialog">Edit Favorite</string>  
 

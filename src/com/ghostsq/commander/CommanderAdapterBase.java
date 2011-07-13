@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -392,15 +393,23 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 if( icons ) {
                     imgView.setVisibility( View.VISIBLE );
                     imgView.setAdjustViewBounds( true );
-                    if( item.thumbnail != null && thumbnail_size_perc > 0 ) {
+                    boolean th_ok = false;
+                    if( item.thumbnail_soft != null && thumbnail_size_perc > 0 ) {
                         imgView.setMaxWidth( imgWidth );
-                        imgView.setImageDrawable( item.thumbnail );
+                        
+                        Drawable th = item.thumbnail_soft.get();
+                        if( th != null ) {
+                            imgView.setImageDrawable( th );
+                            th_ok = true;
+                        }
                     }
-                    else {
+                    if( !th_ok ) {
                         // when list is on its end we don't receive the idle notification!
                         if( thumbnail_size_perc > 0 && !item.no_thumb && ( mode & LIST_STATE ) == STATE_IDLE ) {
-                            item.need_thumb = true;
-                            //Log.v( TAG, "Requesting an ahead thumbnail creation!!! " );                            
+                            synchronized( this ) {
+                                item.need_thumb = true;
+                                notifyAll();
+                            }
                         }
                         imgView.setMaxWidth( icoWidth );
                         try {

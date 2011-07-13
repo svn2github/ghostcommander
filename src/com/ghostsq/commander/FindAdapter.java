@@ -72,12 +72,7 @@ public class FindAdapter extends FSAdapter {
     
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
-        if( move && to instanceof FSAdapter ) {
-            return false;
-        }
-        else {
-            return to.receiveItems( bitsToNames( cis ), move ? MODE_MOVE : MODE_COPY );
-        }
+        return to.receiveItems( bitsToNames( cis ), move ? MODE_MOVE : MODE_COPY );
     }
 
     @Override
