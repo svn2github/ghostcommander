@@ -145,7 +145,7 @@ public class ServerForm extends Activity implements View.OnClickListener {
                         auth += ":" + Uri.encode( pass.trim() );
                     auth += "@";
                 }
-                auth += server_edit.getText().toString().trim();
+                auth += Utils.encodeToAuthority( server_edit.getText().toString().trim() );
                 Uri.Builder uri_b = new Uri.Builder().scheme( schema ).encodedAuthority( auth );
                 uri_b.path( path_edit.getText().toString().trim() );
                 setResult( RESULT_OK, (new Intent()).setAction( uri_b.build().toString() ) );

@@ -1,6 +1,6 @@
 package com.ghostsq.commander;
 
-import java.io.File;
+import java.net.URLEncoder;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -14,11 +14,16 @@ import android.widget.EditText;
 
 class FavDialog implements OnClickListener {
     public final static String TAG = "FavDialog";
+    private FavsAdapter owner;
     private Favorite f;
+    private Uri uri;
+    private EditText ce, pe, se, ue, we;
+    
     FavDialog( Context c, Favorite f_, FavsAdapter owner_ ) {
         try {
+            owner = owner_;
             f = f_;
-            Uri uri = f.getUri();
+            uri = f.getUri();
             if( uri == null ) return;
             LayoutInflater factory = LayoutInflater.from( c );
             View fdv = factory.inflate( R.layout.server, null );
@@ -27,10 +32,10 @@ class FavDialog implements OnClickListener {
             bb.setVisibility( View.GONE );
             View cb = fdv.findViewById( R.id.comment_block );
             cb.setVisibility( View.VISIBLE );
-            EditText ce = (EditText)cb.findViewById( R.id.comment_edit );
+            ce = (EditText)cb.findViewById( R.id.comment_edit );
             ce.setText( f.getComment() );
             
-            EditText pe = (EditText)fdv.findViewById( R.id.path_edit );
+            pe = (EditText)fdv.findViewById( R.id.path_edit );
             String path = uri.getPath();
             String quer = uri.getQuery();
             if( quer != null )
@@ -46,7 +51,7 @@ class FavDialog implements OnClickListener {
             boolean ftp = "ftp".equals( schm );
             boolean smb = "smb".equals( schm ); 
             if( ftp || smb ) {
-                EditText se = (EditText)sb.findViewById( R.id.server_edit );
+                se = (EditText)sb.findViewById( R.id.server_edit );
                 String host = uri.getHost();
                 if( host != null ) {
                     int port = uri.getPort();
@@ -58,9 +63,9 @@ class FavDialog implements OnClickListener {
                     View db = ib.findViewById( R.id.domain_block );
                     db.setVisibility( View.GONE );
                 }
-                EditText ue = (EditText)ib.findViewById( R.id.username_edit );
+                ue = (EditText)ib.findViewById( R.id.username_edit );
                 ue.setText( f.getUserName() );
-                EditText we = (EditText)ib.findViewById( R.id.password_edit );
+                we = (EditText)ib.findViewById( R.id.password_edit );
                 we.setText( new String( f.getPassword().getPassword() ) );
             }
             else {
@@ -75,11 +80,25 @@ class FavDialog implements OnClickListener {
                 .setNegativeButton( R.string.dialog_cancel, this )
                 .show();
         } catch( Exception e ) {
-            Log.e( TAG, "", e );
+            Log.e( TAG, null, e );
         }
     }
     @Override
     public void onClick( DialogInterface idialog, int whichButton ) {
+        if( whichButton == DialogInterface.BUTTON_POSITIVE ) {
+            try {
+                f.setComment( ce.getText().toString() );
+                String path = pe.getText().toString().trim();
+                String serv = se.getText().toString().trim();
+                f.setUri( uri.buildUpon().encodedAuthority( Utils.encodeToAuthority( serv ) ).path( path ).build() );
+                Log.i( TAG, "Uri:" + f.getUri() );
+                f.setUserName( ue.getText().toString().trim() );
+                f.setPassword( we.getText().toString().trim() );
+                owner.notifyDataSetChanged();
+            } catch( Exception e ) {
+                Log.e( TAG, null, e );
+            }
+        }
     }
 }
 

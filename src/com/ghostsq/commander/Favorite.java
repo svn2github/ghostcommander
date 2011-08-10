@@ -3,6 +3,7 @@ package com.ghostsq.commander;
 import java.security.SecureRandom;
 import java.security.KeyStore.PasswordProtection;
 import java.util.regex.Pattern;
+import java.net.URLEncoder;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -34,8 +35,7 @@ public class Favorite {
             if( user_info != null && user_info.length() > 0 ) {
                 UsernamePasswordCredentials crd = new UsernamePasswordCredentials( user_info );
                 username = crd.getUserName();
-                String pw = crd.getPassword();
-                password = pw != null ? new PasswordProtection( pw.toCharArray() ) : null;
+                setPassword( crd.getPassword() );
                 uri = updateCredentials( uri, null );
             }
             comment = comment_;
@@ -103,27 +103,45 @@ public class Favorite {
     public void setComment( String s ) {
         comment = s;
     }
+    public void setUri( Uri u ) {
+        uri = u;
+    }
     public Uri getUri() {
         return uri;
     }
+    public Uri getUriAuth() {
+        if( username == null ) return uri;
+        String auth = URLEncoder.encode( username );
+        if( password != null )
+            auth += ":" + URLEncoder.encode( new String( password.getPassword() ) );
+        auth += "@" + uri.getEncodedAuthority();
+        return uri.buildUpon().encodedAuthority( auth ).build();
+    }
+    
     public String getUriString( boolean screen_pw ) {
         if( uri == null ) return null;
         if( username == null ) return uri.toString();
-        String ui = username;
+        String ui = Uri.encode( username );
         if( screen_pw )
             ui += ":***";
         else
             if( password != null )
-                ui += ":" + new String( password.getPassword() );
-        return Uri.decode( updateCredentials( uri, ui ).toString() );
+                ui += ":" + Uri.encode( new String( password.getPassword() ) );
+        return updateCredentials( uri, ui ).toString();
     }
 
     public String getUserName() {
         return username;
     }
+    public void setUserName( String un ) {
+        username = un;
+    }
     
     public PasswordProtection getPassword() { 
         return password;
+    }
+    public void setPassword( String pw ) {
+        password = pw != null ? new PasswordProtection( pw.toCharArray() ) : null;
     }
     
     private String encryptPassword() {
@@ -166,11 +184,11 @@ public class Favorite {
         ui = ui.substring( 0, pw_pos+1 ) + "***";
         return Uri.decode( updateCredentials( u, ui ).toString() );
     }
-    public final static Uri updateCredentials( Uri u, String ui ) {
+    private final static Uri updateCredentials( Uri u, String ui ) {
         String host = u.getHost();
         int port = u.getPort();
         String authority = ui != null ? ui + "@" : ""; 
-        authority += host + ( port >= 0 ? port : "" ); 
+        authority += host + ( port >= 0 ? ":" + port : "" ); 
         return u.buildUpon().encodedAuthority( authority ).build(); 
     }
 

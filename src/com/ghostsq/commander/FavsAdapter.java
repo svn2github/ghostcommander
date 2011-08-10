@@ -124,7 +124,7 @@ public class FavsAdapter extends CommanderAdapterBase {
         }
         if( favs == null || position < 0 || position > numItems )
             return;
-        commander.Navigate( favs.get( position - 1 ).getUri(), null );
+        commander.Navigate( favs.get( position - 1 ).getUriAuth(), null );
     }
 
     @Override
