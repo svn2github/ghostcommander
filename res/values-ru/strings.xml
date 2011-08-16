@@ -291,7 +291,7 @@
 <string name="no_root">Нет root прав.</string>
 
 <string name="home">&#xA0; Отправная точка</string>
-<string name="favs">Закладки</string>
+<string name="favs">&#xA0; Закладки</string>
 <string name="local">Локальные файлы</string>
 <string name="ftp">FTP сервер</string>
 <string name="smb">Сеть Windows</string>

@@ -117,7 +117,7 @@ public class FSAdapter extends CommanderAdapterBase {
                     Log.e( TAG, "Unable to obtain folder of the folder name" );
                     return false;
                 }
-                Log.v( TAG, "readSource() path=" + dir_name );                
+                //Log.v( TAG, "readSource() path=" + dir_name );                
                 dir = new File( dir_name );
                 files_ = dir.listFiles();
                 if( files_ != null ) break;
@@ -218,7 +218,7 @@ public class FSAdapter extends CommanderAdapterBase {
                     boolean need_update = false, proc_visible = false, proc_invisible = false;
                     int processed = 0;
                     for( int i = 0; i < mList.length ; i++ ) {
-                        visible_only = fails_count > 2 || missed_count > 4;
+                        visible_only = fails_count > 2 || missed_count > 40;
                         int n = -1;
                         while( true ) {
                             for( int j = 0; j < mList.length ; j++ ) {
@@ -230,7 +230,7 @@ public class FSAdapter extends CommanderAdapterBase {
                                 }
                             }
                             if( !visible_only || proc_visible ) break;
-                            Log.v( TAG, "Tired. Waiting for a request to proceed" );
+                            //Log.v( TAG, "Tired. Waiting for a request to proceed" );
                             synchronized( owner ) {
                                 owner.wait();
                             }
@@ -248,7 +248,7 @@ public class FSAdapter extends CommanderAdapterBase {
                         if( f.thumbnail_soft != null ) {
                             if( f.thumbnail_soft.get() == null ) {
                                 missed_count++;
-                                Log.e( TAG, "Amnesia detected " + missed_count + " times" );
+                                //Log.e( TAG, "Amnesia detected " + missed_count + " times" );
                             }
                             else
                                 continue;
@@ -280,7 +280,7 @@ public class FSAdapter extends CommanderAdapterBase {
                                 continue;
                             }
                             //Log.v( TAG, "Creating a thumbnail for " + n + ", " + fn );
-                            if( createThubnail( fn, f, ext_hash ) ) {
+                            if( createThumbnail( fn, f, ext_hash ) ) {
                                 synchronized( thumbnailCache ) {
                                     thumbnailCache.put( fn_h, f.thumbnail_soft );
                                 }
@@ -315,7 +315,7 @@ public class FSAdapter extends CommanderAdapterBase {
             }
         }
         
-        private boolean createThubnail( String fn, FileItem f, int h ) {
+        private boolean createThumbnail( String fn, FileItem f, int h ) {
             final String func_name = "createThubnail()"; 
             try {
                 if( h == apk_h ) {

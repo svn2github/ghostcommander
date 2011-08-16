@@ -17,7 +17,7 @@ class FavDialog implements OnClickListener {
     private FavsAdapter owner;
     private Favorite f;
     private Uri uri;
-    private EditText ce, pe, se, ue, we;
+    private EditText ce, pe, se, de, ue, we;
     
     FavDialog( Context c, Favorite f_, FavsAdapter owner_ ) {
         try {
@@ -63,10 +63,22 @@ class FavDialog implements OnClickListener {
                     View db = ib.findViewById( R.id.domain_block );
                     db.setVisibility( View.GONE );
                 }
+                String username = f.getUserName();
+                
+                if( smb ) {
+                    int sep = username.indexOf( '\\' );
+                    if( sep < 0 )
+                        sep = username.indexOf( ';' );
+                    if( sep >= 0 ) {
+                        de = (EditText)ib.findViewById( R.id.domain_edit );
+                        de.setText( username.substring( 0, sep ) );
+                        username = username.substring( sep+1 );
+                    }
+                }
                 ue = (EditText)ib.findViewById( R.id.username_edit );
-                ue.setText( f.getUserName() );
+                ue.setText( username );
                 we = (EditText)ib.findViewById( R.id.password_edit );
-                we.setText( new String( f.getPassword().getPassword() ) );
+                we.setText( f.getPassword() );
             }
             else {
                 sb.setVisibility( View.GONE );
@@ -92,9 +104,10 @@ class FavDialog implements OnClickListener {
                 String serv = se.getText().toString().trim();
                 f.setUri( uri.buildUpon().encodedAuthority( Utils.encodeToAuthority( serv ) ).path( path ).build() );
                 Log.i( TAG, "Uri:" + f.getUri() );
-                f.setUserName( ue.getText().toString().trim() );
-                f.setPassword( we.getText().toString().trim() );
-                owner.notifyDataSetChanged();
+                String domain = de.getText().toString().trim();
+                String usernm = ue.getText().toString().trim();
+                f.setCredentials( domain.length() > 0 ? domain + ";" + usernm : usernm, we.getText().toString().trim() );
+                owner.invalidate();
             } catch( Exception e ) {
                 Log.e( TAG, null, e );
             }

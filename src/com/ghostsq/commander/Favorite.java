@@ -34,8 +34,7 @@ public class Favorite {
             String user_info = uri.getUserInfo();
             if( user_info != null && user_info.length() > 0 ) {
                 UsernamePasswordCredentials crd = new UsernamePasswordCredentials( user_info );
-                username = crd.getUserName();
-                setPassword( crd.getPassword() );
+                setCredentials( crd.getUserName(), crd.getPassword() );
                 uri = updateCredentials( uri, null );
             }
             comment = comment_;
@@ -109,7 +108,7 @@ public class Favorite {
     public Uri getUri() {
         return uri;
     }
-    public Uri getUriAuth() {
+    public Uri getUriWithAuth() {
         if( username == null ) return uri;
         String auth = URLEncoder.encode( username );
         if( password != null )
@@ -133,14 +132,16 @@ public class Favorite {
     public String getUserName() {
         return username;
     }
-    public void setUserName( String un ) {
+    public String getPassword() { 
+        return password != null ? new String( password.getPassword() ) : "";
+    }
+    public void setCredentials( String un, String pw ) {
+        if( un == null || un.length() == 0 ) {
+            username = null;
+            password = null;
+            return;
+        }
         username = un;
-    }
-    
-    public PasswordProtection getPassword() { 
-        return password;
-    }
-    public void setPassword( String pw ) {
         password = pw != null ? new PasswordProtection( pw.toCharArray() ) : null;
     }
     
@@ -153,7 +154,6 @@ public class Favorite {
             }
         return "";
     }
-
     private void decryptPassword( String stored ) {
         password = null;
         if( stored != null && stored.length() > 0 )

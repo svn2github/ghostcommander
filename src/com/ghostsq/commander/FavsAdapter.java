@@ -124,7 +124,7 @@ public class FavsAdapter extends CommanderAdapterBase {
         }
         if( favs == null || position < 0 || position > numItems )
             return;
-        commander.Navigate( favs.get( position - 1 ).getUriAuth(), null );
+        commander.Navigate( favs.get( position - 1 ).getUriWithAuth(), null );
     }
 
     @Override
@@ -147,16 +147,23 @@ public class FavsAdapter extends CommanderAdapterBase {
             new FavDialog( commander.getContext(), favs.get( p-1 ), this );
         }
     }    
+
+    public void invalidate() {
+        notifyDataSetChanged();
+        commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, null ) );
+    }    
     
     @Override
     public String getItemName( int p, boolean full ) {
         if( favs != null && p > 0 && p <= favs.size() ) {
-            String comm = favs.get( p-1 ).getComment();
-            return comm == null ? "" : comm; // .getUriString( true );
+            Favorite f = favs.get( p - 1 );
+            String comm = f.getComment();
+            return comm != null && comm.length() > 0 ? comm : full ? f.getUriString( true ) : "";
         }
         return null;
     }
     
+
     /*
      * BaseAdapter implementation
      */
