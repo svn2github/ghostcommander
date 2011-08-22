@@ -6,7 +6,9 @@ import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.CommanderAdapter;
 import com.ghostsq.commander.CommanderAdapterBase;
 
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Parcelable;
 import android.util.SparseBooleanArray;
 import android.view.ContextMenu;
 import android.view.View;
@@ -78,7 +80,7 @@ public class FavsAdapter extends CommanderAdapterBase {
             menu.add( 0, R.id.F2,        0, s( R.string.rename_title ) );
             menu.add( 0, R.id.F4,        0, s( R.string.edit_title ) );
             menu.add( 0, R.id.F8,        0, s( R.string.delete_title ) );
-            //menu.add( 0, SCUT_CMD,       0, s( R.string.shortcut ) );     // TODO
+            menu.add( 0, SCUT_CMD,       0, s( R.string.shortcut ) );
         }
     }    
     @Override
@@ -131,7 +133,7 @@ public class FavsAdapter extends CommanderAdapterBase {
     public boolean receiveItems( String[] full_names, int move_mode ) {
         return notErr();
     }
-    
+
     @Override
     public boolean renameItem( int p, String newName, boolean c  ) {
         if( favs != null && p > 0 && p <= favs.size() ) {
@@ -142,6 +144,20 @@ public class FavsAdapter extends CommanderAdapterBase {
         return false;
     }
 
+    @Override
+    public void doIt( int command_id, SparseBooleanArray cis ) {
+        if( SCUT_CMD == command_id ) {
+            int k = 0, n = favs.size();
+            for( int i = 0; i < cis.size(); i++ ) {
+                k = cis.keyAt( i );
+                if( cis.valueAt( i ) && k > 0 && k <= n )
+                    break;
+            }
+            if( k > 0 )
+                createDesktopShortcut( favs.get( k - 1 ) );
+        }
+    }
+    
     public void editItem( int p ) {
         if( favs != null && p > 0 && p <= favs.size() ) {
             new FavDialog( commander.getContext(), favs.get( p-1 ), this );
@@ -152,6 +168,43 @@ public class FavsAdapter extends CommanderAdapterBase {
         notifyDataSetChanged();
         commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, null ) );
     }    
+
+    
+    private final void createDesktopShortcut( Favorite f ) {
+        if( f == null ) return;
+        Uri uri = f.getUriWithAuth();
+        Intent shortcutIntent = new Intent();
+        shortcutIntent.setClassName( commander.getContext(), commander.getClass().getName() );
+        shortcutIntent.setAction( Intent.ACTION_VIEW );
+        shortcutIntent.setData( uri );
+
+        Intent intent = new Intent();
+        intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+        String name = f.getComment();
+        if( name == null || name.length() == 0 )
+            name = f.getUriString( true );
+        intent.putExtra( Intent.EXTRA_SHORTCUT_NAME, name );
+        Parcelable iconResource = Intent.ShortcutIconResource.fromContext( commander.getContext(), getDrawableIconId( uri ) );
+        intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, iconResource);
+        intent.setAction( "com.android.launcher.action.INSTALL_SHORTCUT" ); //Intent.ACTION_CREATE_SHORTCUT
+        commander.getContext().sendBroadcast( intent );
+    }
+
+    private final int getDrawableIconId( Uri uri ) {
+        if( uri != null ) {
+            String sch = uri.getScheme();
+            if( sch != null && sch.length() != 0 ) {
+                int scheme_h = GetAdapterTypeHash( sch );
+                if(  zip_schema_h == scheme_h )  return R.drawable.zip;     else   
+                if(  ftp_schema_h == scheme_h )  return R.drawable.server;  else   
+                if( root_schema_h == scheme_h )  return R.drawable.root;    else  
+                if(  mnt_schema_h == scheme_h )  return R.drawable.mount;   else  
+                if(  smb_schema_h == scheme_h )  return R.drawable.smb;     else
+                    return R.drawable.folder;
+            }
+        }
+        return R.drawable.folder;
+    }
     
     @Override
     public String getItemName( int p, boolean full ) {
@@ -186,22 +239,7 @@ public class FavsAdapter extends CommanderAdapterBase {
                     item.sel = false;
                     item.date = null;
                     item.attr = f.getComment();
-                    
-                    Uri uri = f.getUri();
-                    if( uri != null ) {
-                        String sch = uri.getScheme();
-                        if( sch == null || sch.length() == 0 )
-                            item.icon_id = R.drawable.folder;
-                        else {
-                            int scheme_h = GetAdapterTypeHash( sch );
-                            if(  zip_schema_h == scheme_h )  item.icon_id = R.drawable.zip;     else   
-                            if(  ftp_schema_h == scheme_h )  item.icon_id = R.drawable.server;  else   
-                            if( root_schema_h == scheme_h )  item.icon_id = R.drawable.root;    else  
-                            if(  mnt_schema_h == scheme_h )  item.icon_id = R.drawable.mount;   else  
-                            if(  smb_schema_h == scheme_h )  item.icon_id = R.drawable.smb;     else
-                                item.icon_id = R.drawable.folder;
-                        }
-                    }
+                    item.icon_id = getDrawableIconId( f.getUri() );
                 }
             }
         }

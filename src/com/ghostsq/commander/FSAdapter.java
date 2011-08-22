@@ -31,7 +31,6 @@ import android.os.StatFs;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.util.SparseBooleanArray;
-import android.view.Gravity;
 
 public class FSAdapter extends CommanderAdapterBase {
     private   final static String TAG = "FSAdapter";
