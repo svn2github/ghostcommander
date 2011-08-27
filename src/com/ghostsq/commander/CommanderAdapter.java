@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.util.SparseBooleanArray;
 import android.view.ContextMenu;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 
 /**
  *		Interface to abstract list source
@@ -27,7 +26,18 @@ public interface CommanderAdapter {
         public String   attr = "";
         public Object   origin = null;
         public int      icon_id = -1;
-        public SoftReference<Drawable> thumbnail_soft;
+        private Drawable thumbnail;
+        private long     thumbnail_used;
+        public boolean  isThumbNail()  { return thumbnail != null; }
+        public Drawable getThumbNail()             { thumbnail_used = System.currentTimeMillis(); return thumbnail; }
+        public void     setThumbNail( Drawable t ) { thumbnail_used = System.currentTimeMillis(); thumbnail = t; }
+        public boolean  remThumbnailIfOld() { 
+            if( thumbnail != null && !need_thumb && System.currentTimeMillis() - thumbnail_used > 30000 ) {
+                thumbnail = null;
+                return true;
+            }
+            return false;
+        }
         public boolean  need_thumb = false, no_thumb = false;
     }
     

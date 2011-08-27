@@ -394,10 +394,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                     imgView.setVisibility( View.VISIBLE );
                     imgView.setAdjustViewBounds( true );
                     boolean th_ok = false;
-                    if( item.thumbnail_soft != null && thumbnail_size_perc > 0 ) {
+                    if( item.isThumbNail() && thumbnail_size_perc > 0 ) {
                         imgView.setMaxWidth( imgWidth );
                         
-                        Drawable th = item.thumbnail_soft.get();
+                        Drawable th = item.getThumbNail();
                         if( th != null ) {
                             imgView.setImageDrawable( th );
                             th_ok = true;
