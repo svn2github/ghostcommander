@@ -287,7 +287,9 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         try {
             ListAdapter a = (ListAdapter)getListAdapter( true );
             if( a instanceof FSAdapter ) {
-                CommanderAdapter.Item item = (CommanderAdapter.Item)a.getItem( getSelection( true ) ); 
+                int pos = getSelection( true );
+                if( pos < 0 ) return null;
+                CommanderAdapter.Item item = (CommanderAdapter.Item)a.getItem( pos ); 
                 if( item != null && item.origin != null )
                     return (File)item.origin; 
             }
@@ -583,16 +585,21 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public final void copyName() {
         CommanderAdapter ca = getListAdapter( true );
         if( ca == null ) return;
-        ClipboardManager clipboard = (ClipboardManager)c.getContext().getSystemService( Context.CLIPBOARD_SERVICE ); 
-        String in = ca.getItemName( getSelection( true ), true );
-        clipboard.setText( in );
+        ClipboardManager clipboard = (ClipboardManager)c.getContext().getSystemService( Context.CLIPBOARD_SERVICE );
+        int pos = getSelection( true );
+        if( pos >= 0 ) {
+            String in = ca.getItemName( pos, true );
+            clipboard.setText( in );
+        }
     }    
     public final void favFolder() {
         CommanderAdapter ca = getListAdapter( true );
         if( ca == null ) return;
         Uri u = ca.getUri();
         if( u != null ) {
-            String add = u.buildUpon().appendEncodedPath( ca.getItemName( getSelection( true ), false ) ).build().toString();
+            int pos = getSelection( true );
+            if( pos < 0 ) return;
+            String add = u.buildUpon().appendEncodedPath( ca.getItemName( pos, false ) ).build().toString();
             if( add != null && add.length() > 0 ) {
                 shorcutsFoldersList.addToFavorites( add );
                 c.showMessage( c.getString( R.string.fav_added, add ) );
@@ -604,7 +611,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         CommanderAdapter ca = getListAdapter( true );
         if( ca instanceof FavsAdapter ) {
             FavsAdapter fa = (FavsAdapter)ca;
-            fa.editItem( getSelection( true ) );
+            int pos = getSelection( true );
+            if( pos > 0 ) fa.editItem( pos );
             return;
         }
         File f = file_name == null ? getCurrentFile() : new File( file_name );
@@ -661,7 +669,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         return ca.toString();
     }
     public final String getSelectedItemName() {
-        return getListAdapter( true ).getItemName( getSelection( true ), false );
+        int pos = getSelection( true );
+        return pos < 0 ? null : getListAdapter( true ).getItemName( pos, false );
     }
 	public final void quickSearch( char ch ) {
 		CommanderAdapter a = getListAdapter( true );

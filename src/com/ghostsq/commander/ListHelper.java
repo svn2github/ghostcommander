@@ -210,8 +210,7 @@ public class ListHelper {
             }
         }
     }
-    
-    
+        
     public final int getSelection( boolean one_checked ) {
         int pos = flv.getSelectedItemPosition();
         if( pos != AdapterView.INVALID_POSITION ) return currentPosition = pos;
