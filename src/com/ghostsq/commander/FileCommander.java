@@ -565,12 +565,12 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     }
 
     @Override
-    public void notifyMe( Notify progress ) {
+    public boolean notifyMe( Notify progress ) {
         if( progress.status == Commander.OPERATION_STARTED ) {
             setProgressBarIndeterminateVisibility( true );
             if( progress.string != null && progress.string.length() > 0 )
                 showMessage( progress.string );
-            return;
+            return false;
         }
         Dialogs dh = getDialogsInstance( Dialogs.PROGRESS_DIALOG );
         
@@ -581,7 +581,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                     Dialog d = dh.getDialog();
                     if( d != null && d.isShowing() ) {
                         dh.setProgress( progress.string, progress.status, progress.substat );
-                        return;
+                        return false;
                     }
                 }
                 showDialog( Dialogs.PROGRESS_DIALOG );
@@ -590,7 +590,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 if( progress.string != null && progress.string.length() > 0 )
                     setSystemNotification( progress.string, progress.status );
             }
-            return;
+            return false;
         }
         else {
             if( dh != null ) {
@@ -610,7 +610,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 dh.setMessageToBeShown( progress.string, null );
                 dh.showDialog();
             }
-            return;
+            return false;
         case OPERATION_FAILED:
             if( progress.cookie != null && progress.cookie.length() > 0 ) {
                 int which_panel = progress.cookie.charAt( 0 ) == '1' ? 1 : 0;
@@ -619,14 +619,14 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             if( progress.string != null && progress.string.length() > 0 )
                 showError( progress.string );
             panels.redrawLists();
-            return;
+            return true;
         case OPERATION_FAILED_LOGIN_REQUIRED: 
             if( progress.string != null ) {
                 dh = obtainDialogsInstance( Dialogs.LOGIN_DIALOG );
                 dh.setMessageToBeShown( null, progress.string );
                 showDialog( Dialogs.LOGIN_DIALOG );
             }
-            return;
+            return true;
         case OPERATION_COMPLETED_REFRESH_REQUIRED:
             panels.refreshLists();
             break;
@@ -644,6 +644,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         if( ( show_confirm || progress.substat == OPERATION_REPORT_IMPORTANT )  
                            && progress.string != null && progress.string.length() > 0 )
             showInfo( progress.string );
+        return true;
     }
 
     private void setSystemNotification( String msg, int p ) {

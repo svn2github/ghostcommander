@@ -149,10 +149,9 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 int perc1 = b.getInt( CommanderAdapterBase.NOTIFY_PRG1 );
                 int perc2 = b.getInt( CommanderAdapterBase.NOTIFY_PRG2, -1 );
                 String str = b.getString( CommanderAdapterBase.NOTIFY_STR );
-                if( perc1 < 0 ) // the thread is done
-                    worker = null;
                 Commander.Notify n_obj = new Commander.Notify( str, perc1, perc2 );
-                commander.notifyMe( n_obj );
+                if( commander.notifyMe( n_obj ) )
+                    worker = null;
             } catch( Exception e ) {
                 e.printStackTrace();
             }

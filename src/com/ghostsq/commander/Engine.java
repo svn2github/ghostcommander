@@ -14,9 +14,13 @@ public class Engine extends Thread {
 	protected long    threadStartedAt = 0;
     protected int     file_exist_behaviour = Commander.UNKNOWN;
 
-	protected Engine( Handler h ) {
-	    thread_handler = h; // TODO - distinct the member from the parent class
-	}
+    protected Engine( Handler h ) {
+        thread_handler = h; // TODO - distinct the member from the parent class
+    }
+    protected Engine( Handler h, Runnable r ) {
+        super( r );
+        thread_handler = h; 
+    }
 	protected void Init( String name ) {
 	    setName( name == null ? getClass().getName() : name );
 	}

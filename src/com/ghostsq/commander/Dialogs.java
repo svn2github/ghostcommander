@@ -217,6 +217,8 @@ public class Dialogs implements DialogInterface.OnClickListener {
                     if( edit != null ) {
                         edit.setWidth( owner.getWidth() - 70 );
                         edit.setText( copy_to );
+                        if( owner.panels.getNumItemsSelectedOrChecked() == 1 )
+                            edit.selectAll();
                     }
                 }
                 break;

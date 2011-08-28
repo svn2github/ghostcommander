@@ -169,7 +169,7 @@
     <string name="oom_err">Out of memory</string>
     <string name="unkn_err">Unknown error</string>
     <string name="cant_md">Unable to create directory \"%s\"</string>
-    <string name="file_exist">File \"%s\" already exist in the destination folder.</string>
+    <string name="file_exist">File \"%s\" already exist.</string>
     <string name="sec_err">Security issue:\n%s</string>
     <string name="not_accs">File not accessible.\n%s</string>
     <string name="acc_err">Access error on file \"%1$s\"\n %2$s</string>

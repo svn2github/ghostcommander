@@ -91,8 +91,9 @@ public interface Commander {
 	/**
      * Procedure completion notification. 
      * @param Notify object - see below
+     * @return true if finishing 
      */
-	public void notifyMe( Notify obj );
+	public boolean notifyMe( Notify obj );
 
 	/**
      * Adapter's working procedures (both in this thread and the candler of worker threads) should pass this

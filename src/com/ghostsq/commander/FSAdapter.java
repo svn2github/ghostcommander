@@ -251,7 +251,7 @@ public class FSAdapter extends CommanderAdapterBase {
                             continue;   // already exist
 
                         String fn = f.f.getAbsolutePath();
-                        int fn_h = fn.hashCode();
+                        int fn_h = ( fn + " " + f.f.length() ).hashCode();
                         SoftReference<Drawable> cached_soft = null;
                         synchronized( thumbnailCache ) {
                             cached_soft = thumbnailCache.get( fn_h );
@@ -510,18 +510,48 @@ public class FSAdapter extends CommanderAdapterBase {
             return false;
         try {
             if( copy ) {
+                // newName could be just name
                 commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
                 File[] list = { items[position - 1].f };
-                String dest_name = dirName;
-                if( dest_name.charAt( dest_name.length()-1 ) != SLC )
-                    dest_name += SLS;
-                dest_name += newName;
+                String dest_name;
+                if( newName.indexOf( SLC ) < 0 ) {
+                    dest_name = dirName;
+                    if( dest_name.charAt( dest_name.length()-1 ) != SLC )
+                        dest_name += SLS;
+                    dest_name += newName;
+                }
+                else
+                    dest_name = newName; 
                 worker = new CopyEngine( workerHandler, list, dest_name, false, true );
                 worker.setName( TAG + ".CopyEngine" );
                 worker.start();
                 return true;
             }
-            boolean ok = items[position - 1].f.renameTo( new File( dirName, newName ) );
+            File f = items[position - 1].f;
+            File new_file = new File( dirName, newName );
+            if( new_file.exists() ) {
+                if( f.equals( new_file ) ) return false;
+                final String msg$ = commander.getContext().getString( R.string.file_exist, newName );
+                final File from$ = f, to$ = new_file;  
+                worker = new Engine( workerHandler, new Runnable() {
+                    public void run() {
+                        try {
+                            int resolution = worker.askOnFileExist( msg$, commander );
+                            if( ( resolution & Commander.REPLACE ) != 0 ) {
+                                if( to$.delete() && from$.renameTo( to$ ) )
+                                    worker.sendResult( "ok" );
+                            }
+                                
+                        } catch( InterruptedException e ) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                worker.start();
+                return true;
+            }
+            
+            boolean ok = f.renameTo( new_file );
             commander.notifyMe( new Commander.Notify( null, ok ? Commander.OPERATION_COMPLETED_REFRESH_REQUIRED : 
                                                                  Commander.OPERATION_FAILED ) );
             return ok;

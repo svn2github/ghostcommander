@@ -231,7 +231,7 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
             c.showError( "Error: " + e );
         }
         if( shortcutsList.isEmpty() )
-            shortcutsList.add( new Favorite( "/sdcard", c.getContext().getString( R.string.default_uri_cmnt ) ) );
+            shortcutsList.add( new Favorite( "home:", c.getContext().getString( R.string.default_uri_cmnt ) ) );
     }
 
     private String unescape( String s ) {

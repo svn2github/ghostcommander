@@ -722,11 +722,21 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             CommanderAdapter cur_adapter = getListAdapter( true );
             Uri dest_uri = Uri.parse( dest );
 
-            if( getNumItemsSelectedOrChecked() == 1 && dest.indexOf( "/" ) < 0 ) {
-                int pos = getSelection( true );
-                if( pos >= 0 ) {
-                    cur_adapter.renameItem( pos, dest, true );
+            if( getNumItemsSelectedOrChecked() == 1 ) {
+                int pos = getSelection( true ); 
+                if( pos <= 0 ) return;
+                final char SLC = File.separator.charAt( 0 );
+                final boolean COPY = true;
+                if( dest.indexOf( SLC ) < 0 ) { // only the file name is specified 
+                    cur_adapter.renameItem( pos, dest, COPY );
                     return;
+                }
+                if( dest.charAt( 0 ) == SLC ) { // local FS only 
+                    File dest_file = new File( dest );
+                    if( !dest_file.isDirectory() ) {
+                        cur_adapter.renameItem( pos, dest, COPY );
+                        return;
+                    }
                 }
             }
 
@@ -857,7 +867,9 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         }
     }
     public void openItem( int position ) {
-        ((CommanderAdapter)list[current].flv.getAdapter()).openItem( position );
+        ListHelper l = list[current];
+        l.setCurPos( position );
+        ((CommanderAdapter)l.flv.getAdapter()).openItem( position );
     }
     
     /**
