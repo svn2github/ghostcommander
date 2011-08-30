@@ -16,12 +16,19 @@ import android.widget.LinearLayout;
 public class ServerForm extends Activity implements View.OnClickListener {
     private static final String TAG = "ServerForm";
     private String schema;
+    private enum Type { FTP, SMB, UNKNOWN };
+    private Type type;
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         try {
             super.onCreate( savedInstanceState );
             schema = getIntent().getStringExtra( "schema" );
-            setTitle( R.string.connect + " " + schema );
+            
+            if( schema.equals( "ftp" ) ) type = Type.FTP; else
+            if( schema.equals( "smb" ) ) type = Type.SMB; else
+                type = Type.UNKNOWN;
+            
+            setTitle( getString( R.string.connect ) + " " + ( type == Type.SMB ? "Windows PC" : schema ) );
             requestWindowFeature( Window.FEATURE_LEFT_ICON );
             setContentView( R.layout.server );
             getWindow().setLayout (LayoutParams.FILL_PARENT /* width */ , LayoutParams.WRAP_CONTENT /* height */);
@@ -29,7 +36,7 @@ public class ServerForm extends Activity implements View.OnClickListener {
             getWindow().setFeatureDrawableResource( Window.FEATURE_LEFT_ICON,
                     android.R.drawable.ic_dialog_dialer );
             
-            if( schema.equals( "ftp" ) ) {
+            if( type == Type.FTP ) {
                 LinearLayout domain_block = (LinearLayout)findViewById( R.id.domain_block );
                 domain_block.setVisibility( View.GONE );
             }
@@ -134,7 +141,7 @@ public class ServerForm extends Activity implements View.OnClickListener {
                 String auth = "";
                 
                 if( user.length() > 0 ) {
-                    if( schema.equals( "smb" ) ) {
+                    if( type == Type.SMB ) {
                         EditText domain_edit = (EditText)findViewById( R.id.domain_edit );
                         String domain = domain_edit.getText().toString();
                         if( domain.length() > 0 )
