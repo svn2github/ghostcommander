@@ -28,7 +28,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected final static String NOTIFY_STR = "str", NOTIFY_PRG1 = "prg1", NOTIFY_PRG2 = "prg2", NOTIFY_COOKIE = "cookie"; 
     protected final static String NOTIFY_RECEIVER_HASH = "hash", NOTIFY_ITEMS_TO_RECEIVE = "itms"; 
     protected final static String DEFAULT_DIR = "/sdcard";
-    protected final static int fnt_sz_rdc = 3;
     protected final String TAG = getClass().getName();
     protected Commander commander = null;
     public    static final String SLS = File.separator;
@@ -290,10 +289,14 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         try {
             boolean wm = (mode & WIDE_MODE) == WIDE_MODE;
             boolean dm = ( mode & MODE_DETAILS ) == DETAILED_MODE;
-            boolean current_wide = convertView instanceof TableLayout;
+            boolean current_wide = convertView != null && convertView.getId() == R.id.row_layout;
+            Log.v( TAG, " convertView = " + (convertView == null ? "null" : convertView.getId() ) );
             if( convertView == null || 
         		( (  wm && !current_wide ) || 
         		  ( !wm &&  current_wide ) ) ) {
+                
+                Log.v( TAG, "Inflating " + ( wm ? "row" : "narrow " ) );
+                
                 row_view = mInflater.inflate( wm ? R.layout.row : R.layout.narrow, parent, false );
             }
             else {
@@ -301,9 +304,14 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 row_view.setBackgroundColor( 0 ); // transparent
             }
             boolean icons = ( mode & MODE_ICONS ) == ICON_MODE;
-            boolean fat = wm && ( mode & MODE_FINGERF ) == FAT_MODE;
-            int vpad = fat ? ( icons ? 2 : 8 ) : 0;
-            row_view.setPadding( 0, vpad, 4, vpad );        
+            boolean fat = ( mode & MODE_FINGERF ) == FAT_MODE;
+            if( !fat )
+                row_view.setPadding( 0, 0, 4, 0 );
+            else {
+                int h = row_view.getHeight() - row_view.getPaddingTop() - row_view.getPaddingBottom(); 
+                int vp = h != 0 ? h/10 : 8;
+                row_view.setPadding( 0, vp, 4, vp );
+            }
             
             String name = item.name, size = "", date = "";
             if( dm ) {
@@ -429,38 +437,41 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 nameView.setWidth( nameWidth );
                 nameView.setText( name != null ? name : "???" );
                 nameView.setTextColor( fg_color );
-                //nameView.setBackgroundColor( 0xFFFF00FF );  // DEBUG!!!!!!
+//nameView.setBackgroundColor( 0xFFFF00FF );  // DEBUG!!!!!!
             }
+            
+            int fnt_sz_rdc = font_size - font_size/4;   // reduced font size
+            
             TextView attrView = (TextView)row_view.findViewById( R.id.fld_attr );
             if( attrView != null ) {
                 if( dm ) { // must be to not ruin the layout
-                    attrView.setTextSize( font_size - fnt_sz_rdc );
+                    attrView.setTextSize( fnt_sz_rdc );
                     attrView.setWidth( attrWidth );
                     attrView.setVisibility( View.VISIBLE );
                     attrView.setText( attrWidth == 0 || item.attr == null ? "" : item.attr );
                     attrView.setTextColor( fg_color );
-                    //attrView.setBackgroundColor( 0xFFFF0000 );  // DEBUG!!!!!!
+//attrView.setBackgroundColor( 0xFFFF0000 );  // DEBUG!!!!!!
                 }
                 else
                     attrView.setVisibility( View.GONE ); 
             }
             TextView dateView = (TextView)row_view.findViewById( R.id.fld_date );
             if( dateView != null ) {
-                dateView.setTextSize( font_size - fnt_sz_rdc );
+                dateView.setTextSize( fnt_sz_rdc );
                 dateView.setVisibility( dm ? View.VISIBLE : View.GONE );
                 dateView.setWidth( dateWidth );
                 dateView.setText( date );
                 dateView.setTextColor( fg_color );
-                //dateView.setBackgroundColor( 0xFF00AA00 );  // DEBUG!!!!!!
+//dateView.setBackgroundColor( 0xFF00AA00 );  // DEBUG!!!!!!
             }
             TextView sizeView = (TextView)row_view.findViewById( R.id.fld_size );
             if( sizeView != null ) {
-                sizeView.setTextSize( font_size - fnt_sz_rdc );
+                sizeView.setTextSize( fnt_sz_rdc );
                 sizeView.setVisibility( dm ? View.VISIBLE : View.GONE );
                 sizeView.setWidth( sizeWidth );
                 sizeView.setText( size );
                 sizeView.setTextColor( fg_color );
-                //sizeView.setBackgroundColor( 0xFF0000FF );  // DEBUG!!!!!!
+//sizeView.setBackgroundColor( 0xFF0000FF );  // DEBUG!!!!!!
             }
             row_view.setTag( null );
         }

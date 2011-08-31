@@ -1,29 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent" 
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:id="@+id/narrow_layout">
         <ImageView android:id="@+id/fld_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="1dip"/>
-        <TextView android:text="NAME" 
+        <TextView  
             android:id="@+id/fld_name"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
 	        android:layout_toRightOf="@id/fld_icon"
             android:padding="1dip"
-            android:textSize="10sp"/>
-        <TextView android:text="ATTR" 
+            android:textSize="10sp"
+            android:text="very long file name.conf"/>
+        <TextView
             android:id="@+id/fld_attr"
             android:layout_alignParentRight="true"
-            android:gravity="right"
             android:paddingRight="1dip"
             android:paddingLeft="30dip"
             android:layout_below="@id/fld_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="9sp"/>
-        <TextView android:text="DATE" 
+            android:textSize="9sp"
+            android:gravity="right"
+            android:text="-rwxr-xr-x 1 system system "/>
+        <TextView 
             android:id="@+id/fld_date"
             android:layout_toLeftOf="@id/fld_attr"
             android:layout_alignTop="@id/fld_attr"
@@ -32,18 +35,21 @@
             android:layout_height="wrap_content"
             android:textSize="9sp"
             android:paddingRight="4dip"
-            android:gravity="right"
-            android:singleLine="true"/>
-        <TextView android:text="SIZE" 
+            android:singleLine="true"
+            android:ellipsize="none"
+            android:text="04.12.2012 10:44"/>
+        <TextView 
             android:id="@+id/fld_size"
+            android:layout_below="@id/fld_name"
 	        android:layout_toLeftOf="@id/fld_date"
 	        android:layout_alignTop="@id/fld_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="9sp"
             android:paddingRight="6dip"
-            android:gravity="right"
-            android:singleLine="true"/>
+            android:singleLine="true"
+            android:ellipsize="none"
+            android:text="9999Kb"/>
 </RelativeLayout>
 
     

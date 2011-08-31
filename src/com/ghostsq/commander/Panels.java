@@ -332,7 +332,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public final void applySettings( SharedPreferences sharedPref, boolean init ) {
         try {
             applyColors();
-        	setFingerFriendly( sharedPref.getBoolean( "finger_friendly", false ) );
+            String fnt_sz = sharedPref.getString( "font_size", "12" );
+        	setFingerFriendly( sharedPref.getBoolean( "finger_friendly", false ), Integer.parseInt( fnt_sz ) );
         	warnOnRoot =  sharedPref.getBoolean( "prevent_root", true );
             rootOnRoot = sharedPref.getBoolean( "root_root", false );
             arrowsLegacy = sharedPref.getBoolean( "arrow_mode", false );
@@ -376,12 +377,13 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         list[current].focus();
     }
     
-    public void setFingerFriendly( boolean finger_friendly ) {
+    public void setFingerFriendly( boolean finger_friendly, int font_size ) {
         fingerFriendly = finger_friendly;
         try {
             for( int p = LEFT; p <= RIGHT; p++ ) {
                 TextView title = (TextView)c.findViewById( titlesIds[p] );
                 if( title != null ) {
+                    title.setTextSize( font_size );
                     if( finger_friendly )
                         title.setPadding( 8, 6, 8, 6 );
                     else

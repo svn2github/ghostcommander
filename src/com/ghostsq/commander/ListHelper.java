@@ -107,8 +107,7 @@ public class ListHelper {
         try {
             CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
             if( ca == null ) return;
-            if( !p.sxs )
-                ca.setMode( CommanderAdapter.MODE_WIDTH, sharedPref.getBoolean( "two_lines", false ) ? 
+            ca.setMode( CommanderAdapter.MODE_WIDTH, p.sxs || sharedPref.getBoolean( "two_lines", false ) ? 
                             CommanderAdapter.NARROW_MODE : CommanderAdapter.WIDE_MODE );
 
             boolean show_icons = sharedPref.getBoolean( "show_icons", true );
@@ -152,8 +151,8 @@ public class ListHelper {
             if( ca != null ) {
                 int mode = fat ? CommanderAdapter.FAT_MODE : CommanderAdapter.SLIM_MODE;
                 ca.setMode( CommanderAdapter.MODE_FINGERF, mode );
+                flv.invalidate();
             }
-            flv.invalidate();
         }
         catch( Exception e ) {
             Log.e( TAG, null, e );
