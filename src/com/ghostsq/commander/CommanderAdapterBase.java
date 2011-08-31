@@ -287,8 +287,12 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected View getView( View convertView, ViewGroup parent, Item item ) {
         View row_view = null;
         try {
+            int parent_width = parent.getWidth();
+            boolean recalc = dirty || parentWidth != parent_width;
+            boolean plenty = parent_width >= 480;
             boolean wm = (mode & WIDE_MODE) == WIDE_MODE;
             boolean dm = ( mode & MODE_DETAILS ) == DETAILED_MODE;
+            boolean ao = ( ATTR_ONLY & mode ) != 0;
             boolean current_wide = convertView != null && convertView.getId() == R.id.row_layout;
             Log.v( TAG, " convertView = " + (convertView == null ? "null" : convertView.getId() ) );
             if( convertView == null || 
@@ -306,17 +310,25 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             boolean icons = ( mode & MODE_ICONS ) == ICON_MODE;
             boolean fat = ( mode & MODE_FINGERF ) == FAT_MODE;
             if( !fat )
-                row_view.setPadding( 0, 0, 4, 0 );
+                row_view.setPadding( 1, 2, 4, 0 );
             else {
                 int h = row_view.getHeight() - row_view.getPaddingTop() - row_view.getPaddingBottom(); 
                 int vp = h != 0 ? h/10 : 8;
-                row_view.setPadding( 0, vp, 4, vp );
+                row_view.setPadding( 1, vp, 4, vp );
             }
+            ImageView imgView = (ImageView)row_view.findViewById( R.id.fld_icon );
+            TextView nameView = (TextView)row_view.findViewById( R.id.fld_name );
+            TextView attrView = (TextView)row_view.findViewById( R.id.fld_attr );
+            TextView dateView = (TextView)row_view.findViewById( R.id.fld_date );
+            TextView sizeView = (TextView)row_view.findViewById( R.id.fld_size );
+
+            float fnt_sz_rdc = font_size - font_size/4;   // reduced font size
             
             String name = item.name, size = "", date = "";
             if( dm ) {
             	if( item.size >= 0 )
             		size = Utils.getHumanSize( item.size );
+            	final String MDHM_date_frm = "MMM dd hh:mm";
                 if( item.date != null ) {
                     if( long_date ) {
                         java.text.DateFormat locale_date_format = DateFormat.getDateFormat( commander.getContext() );
@@ -325,69 +337,30 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                     } else {
         	            String dateFormat;
     	            	dateFormat = item.date.getYear() + 1900 == Calendar.getInstance().get( Calendar.YEAR ) ?
-    	                        "MMM dd hh:mm" : "MMM dd  yyyy";
+    	                        MDHM_date_frm : "MMM dd  yyyy";
         	            date = (String)DateFormat.format( dateFormat, item.date );
                     }
                 }
-            }
-            int parent_width = parent.getWidth();
-            if( dirty || parentWidth != parent_width ) {
-                parentWidth = parent_width;
-                icoWidth = icons ? ( fat ? 60 : 40 ) : 0;
-                imgWidth = thumbnail_size_perc > 0 && thumbnail_size_perc != 100 ? icoWidth * thumbnail_size_perc / 100 : icoWidth;
-                if( wm ) { // single row
-                    if( dm ) {
-                        if( ( ATTR_ONLY & mode ) != 0 ) {
-                            sizeWidth = 0;
-                            dateWidth = 0;
-                            attrWidth = ( parent_width - imgWidth ) / 2;
-                            nameWidth = parent_width - imgWidth - attrWidth; 
-                        }
-                        else if( SHOW_ATTR == ( MODE_ATTR & mode ) && parent_width > 480 ) {
-                            int rest = parent_width - imgWidth;
-                            nameWidth = parent_width > 800 ? rest / 2 : rest / 3;
-                            rest = parent_width - imgWidth - nameWidth; 
-                            sizeWidth = rest / 4;
-                            dateWidth = rest / 4;
-                            attrWidth =  rest / 2;
-                        }
-                        else {
-                            int rest = parent_width - imgWidth;
-                            nameWidth = parent_width > 560 ? rest * 2 / 3 : rest / 2;
-                            rest = parent_width - imgWidth - nameWidth; 
-                            sizeWidth = rest / 3;
-                            dateWidth = rest * 2 / 3;
-                            attrWidth = 0;
-                        }
-
-                    } else {
-                        nameWidth = parent_width - imgWidth;
+                if( recalc ) {
+                    if( ao ) {
                         sizeWidth = 0;
                         dateWidth = 0;
-                        attrWidth = 0;
-                    }
-                }
-                else {
-                    nameWidth = parent_width - imgWidth;
-                    if( ( ATTR_ONLY & mode ) != 0 ) {
-                        sizeWidth = 0;
-                        dateWidth = 0;
-                        attrWidth = parent_width;
+                        attrWidth = wm ? ( parent_width - imgWidth ) / 2 : parent_width;
                     }
                     else {
-                        if( parent_width >= 230 && SHOW_ATTR == ( MODE_ATTR & mode ) ) {
-                            sizeWidth = parent_width / 4;
-                            dateWidth = parent_width / 4;
-                            attrWidth = parent_width / 2;
+                        if( dateView != null ) {
+                            dateView.setTextSize( fnt_sz_rdc );
+                            // dateWidth is pixels, but what's the return of measureText() ???
+                            dateWidth = (int)dateView.getPaint().measureText( "MM" + (long_date ? date : MDHM_date_frm) );
                         }
-                        else {
-                            attrWidth = 0;
-                            sizeWidth = parent_width / 4;
-                            dateWidth = parent_width / 4;
+                        if( sizeView != null ) {
+                            dateView.setTextSize( fnt_sz_rdc );
+                            // sizeWidth is pixels, but what's the return of measureText() ???
+                            sizeWidth = (int)sizeView.getPaint().measureText( "9999.9M" );
                         }
+                        attrWidth = !wm || plenty ? 1 : 0;  // it's not set anyway
                     }
                 }
-                dirty = false;
             }
             
             //Log.v( TAG, "p:" + parent_width + ",i:" + imgWidth + ",n:" + nameWidth + ",d:" + dateWidth + ",s:" + sizeWidth + ",a:" + attrWidth );            
@@ -395,14 +368,13 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             if( item.sel )
                 row_view.setBackgroundColor( sl_color & 0xCFFFFFFF  );
 
-            ImageView imgView = (ImageView)row_view.findViewById( R.id.fld_icon );
             if( imgView != null ) {
                 if( icons ) {
                     imgView.setVisibility( View.VISIBLE );
                     imgView.setAdjustViewBounds( true );
                     boolean th_ok = false;
                     if( item.isThumbNail() && thumbnail_size_perc > 0 ) {
-                        imgView.setMaxWidth( imgWidth );
+                        //imgView.setMaxWidth( imgWidth );
                         
                         Drawable th = item.getThumbNail();
                         if( th != null ) {
@@ -418,7 +390,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                                 notifyAll();
                             }
                         }
-                        imgView.setMaxWidth( icoWidth );
+                        //imgView.setMaxWidth( icoWidth );
                         try {
                             imgView.setImageResource( item.icon_id != -1 ? item.icon_id : 
                                ( item.dir || item.name.equals( SLS ) || item.name.equals( PLS ) ? R.drawable.folder : getIconId( name ) ) );
@@ -431,47 +403,50 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 else
                     imgView.setVisibility( View.GONE );
             }
-            TextView nameView = (TextView)row_view.findViewById( R.id.fld_name );
             if( nameView != null ) {
                 nameView.setTextSize( font_size );
-                nameView.setWidth( nameWidth );
+                //nameView.setWidth( nameWidth );
                 nameView.setText( name != null ? name : "???" );
                 nameView.setTextColor( fg_color );
 //nameView.setBackgroundColor( 0xFFFF00FF );  // DEBUG!!!!!!
             }
-            
-            int fnt_sz_rdc = font_size - font_size/4;   // reduced font size
-            
-            TextView attrView = (TextView)row_view.findViewById( R.id.fld_attr );
+            if( dateView != null ) {
+                boolean vis = dm && !ao && ( dateWidth > 0 );
+                dateView.setVisibility( vis ? View.VISIBLE : View.GONE );
+                if( vis ) {
+                    dateView.setTextSize( fnt_sz_rdc );
+                    dateView.setWidth( dateWidth );
+                    dateView.setText( date );
+                    dateView.setTextColor( fg_color );
+//dateView.setBackgroundColor( 0xFF00AA00 );  // DEBUG!!!!!!
+                }
+            }
+            if( sizeView != null ) {
+                boolean vis = dm && !ao && ( sizeWidth > 0 );
+                sizeView.setVisibility( vis ? View.VISIBLE : View.GONE );
+                if( vis ) {
+                    sizeView.setTextSize( fnt_sz_rdc );
+                    sizeView.setWidth( sizeWidth );
+                    sizeView.setText( size );
+                    sizeView.setTextColor( fg_color );
+//sizeView.setBackgroundColor( 0xFF0000FF );  // DEBUG!!!!!!
+                }
+            }
             if( attrView != null ) {
-                if( dm ) { // must be to not ruin the layout
+                boolean vis = dm && ( attrWidth > 0 );
+                attrView.setVisibility( vis ? View.VISIBLE : View.GONE );
+                if( vis ) {
+                    if( !wm )
+                        attrView.setPadding( 34, 0, 4, 0 ); // not to overlap the icon
                     attrView.setTextSize( fnt_sz_rdc );
-                    attrView.setWidth( attrWidth );
+                    //attrView.setWidth( attrWidth );
                     attrView.setVisibility( View.VISIBLE );
-                    attrView.setText( attrWidth == 0 || item.attr == null ? "" : item.attr );
+                    attrView.setText( item.attr == null ? "" : item.attr.trim() );
                     attrView.setTextColor( fg_color );
 //attrView.setBackgroundColor( 0xFFFF0000 );  // DEBUG!!!!!!
                 }
                 else
                     attrView.setVisibility( View.GONE ); 
-            }
-            TextView dateView = (TextView)row_view.findViewById( R.id.fld_date );
-            if( dateView != null ) {
-                dateView.setTextSize( fnt_sz_rdc );
-                dateView.setVisibility( dm ? View.VISIBLE : View.GONE );
-                dateView.setWidth( dateWidth );
-                dateView.setText( date );
-                dateView.setTextColor( fg_color );
-//dateView.setBackgroundColor( 0xFF00AA00 );  // DEBUG!!!!!!
-            }
-            TextView sizeView = (TextView)row_view.findViewById( R.id.fld_size );
-            if( sizeView != null ) {
-                sizeView.setTextSize( fnt_sz_rdc );
-                sizeView.setVisibility( dm ? View.VISIBLE : View.GONE );
-                sizeView.setWidth( sizeWidth );
-                sizeView.setText( size );
-                sizeView.setTextColor( fg_color );
-//sizeView.setBackgroundColor( 0xFF0000FF );  // DEBUG!!!!!!
             }
             row_view.setTag( null );
         }

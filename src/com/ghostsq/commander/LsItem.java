@@ -78,7 +78,8 @@ public class LsItem {
                 String date_s = m.group( 3 ); 
                 SimpleDateFormat df = format_full_date;
                 date = df.parse( date_s );
-                attr = m.group( 1 );                
+                attr = m.group( 1 );
+                if( attr != null ) attr = attr.trim();
             } catch( ParseException e ) {
                 e.printStackTrace();
             }

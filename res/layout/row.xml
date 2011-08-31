@@ -50,7 +50,7 @@
             android:layout_gravity="right"
             android:layout_toLeftOf="@id/fld_size"
             android:textSize="9sp"
-            android:paddingRight="1dip"
+            android:paddingRight="4dip"
             android:typeface="monospace"
             android:singleLine="true"
             android:ellipsize="none"
