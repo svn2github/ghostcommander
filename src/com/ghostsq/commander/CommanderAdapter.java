@@ -38,7 +38,7 @@ public interface CommanderAdapter {
             }
             return false;
         }
-        public boolean  need_thumb = false, no_thumb = false;
+        public boolean  need_thumb = false, no_thumb = false, thumb_is_icon = false;
     }
     
     /**

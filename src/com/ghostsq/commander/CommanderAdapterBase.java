@@ -34,6 +34,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     public    static final char   SLC = File.separator.charAt( 0 );
     public    static final String PLS = "..";
     private   static final boolean long_date = Locale.getDefault().getLanguage().compareTo( "en" ) != 0;
+    protected static final int iconSize = 32; 
     protected LayoutInflater mInflater = null;
     private   int     parentWidth, imgWidth, icoWidth, nameWidth, sizeWidth, dateWidth, attrWidth;
     private   int     fg_color, sl_color;
@@ -378,6 +379,12 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                         
                         Drawable th = item.getThumbNail();
                         if( th != null ) {
+                            if( item.thumb_is_icon ) {
+                                imgView.setAdjustViewBounds( true );
+                                imgView.setMaxWidth( iconSize );
+                            }
+                            else
+                                imgView.setAdjustViewBounds( false );
                             imgView.setImageDrawable( th );
                             th_ok = true;
                         }
@@ -479,7 +486,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     }
     
     protected final int getImgWidth() {
-        return imgWidth == 0 ? ( thumbnail_size_perc > 0 ? thumbnail_size_perc * 40 / 100 : 0 ) : imgWidth;
+        return imgWidth == 0 ? ( thumbnail_size_perc > 0 ? thumbnail_size_perc * iconSize / 100 : 0 ) : imgWidth;
     }
     
     protected final String[] bitsToNames( SparseBooleanArray cis ) {

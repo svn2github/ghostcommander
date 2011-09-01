@@ -318,6 +318,7 @@ public class FSAdapter extends CommanderAdapterBase {
                     PackageManager pm = commander.getContext().getPackageManager();
                     PackageInfo info = pm.getPackageArchiveInfo( fn, 0 );
                     f.setThumbNail( pm.getApplicationIcon( info.packageName ) );
+                    f.thumb_is_icon = true;
                     return true;
                 }               
                 options.inSampleSize = 1;
@@ -330,6 +331,7 @@ public class FSAdapter extends CommanderAdapterBase {
                 BitmapFactory.decodeStream( fis, null, options);
                 //BitmapFactory.decodeFile( fn, options );
                 if( options.outWidth > 0 && options.outHeight > 0 ) {
+                    f.attr = "" + options.outWidth + "x" + options.outHeight;
                     int greatest = Math.max( options.outWidth, options.outHeight );
                     int factor = greatest / thumb_sz;
                     int b;
