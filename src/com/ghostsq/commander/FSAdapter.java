@@ -258,10 +258,13 @@ public class FSAdapter extends CommanderAdapterBase {
                         }
                         if( cached_soft != null )
                             f.setThumbNail( cached_soft.get() );
+
+                        String ext = Utils.getFileExt( fn );
+                        if( ext == null ) continue;
+                        
+                        if( ext.equals( ".apk" ) ) f.thumb_is_icon = true;
                         
                         if( !f.isThumbNail() ) {
-                            String ext = Utils.getFileExt( fn );
-                            if( ext == null ) continue;
                             int ext_hash = ext.hashCode(), ht_sz = ext_h.length;
                             boolean not_img = true;
                             for( int j = 0; j < ht_sz; j++ ) {

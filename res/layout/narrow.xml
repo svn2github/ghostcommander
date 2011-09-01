@@ -6,6 +6,7 @@
         <ImageView android:id="@+id/fld_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:scaleType="center"
             android:padding="1dip"/>
         <TextView  
             android:id="@+id/fld_name"

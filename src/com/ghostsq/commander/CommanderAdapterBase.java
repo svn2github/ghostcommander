@@ -34,9 +34,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     public    static final char   SLC = File.separator.charAt( 0 );
     public    static final String PLS = "..";
     private   static final boolean long_date = Locale.getDefault().getLanguage().compareTo( "en" ) != 0;
-    protected static final int iconSize = 32; 
+    protected static final int ICON_SIZE = 32;
+    protected int icoWidth = ICON_SIZE, imgWidth = ICON_SIZE;
     protected LayoutInflater mInflater = null;
-    private   int     parentWidth, imgWidth, icoWidth, nameWidth, sizeWidth, dateWidth, attrWidth;
+    private   int     parentWidth, nameWidth, sizeWidth, dateWidth, attrWidth;
     private   int     fg_color, sl_color;
     private   boolean dirty = true;
     protected int     thumbnail_size_perc = 100, font_size = 18;
@@ -174,8 +175,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
 	public void Init( Commander c ) {
         mode = 0;
         parentWidth = 0;
-        icoWidth = 0;
-        imgWidth = 0;
         nameWidth = 0;
         sizeWidth = 0;
         dateWidth = 0;
@@ -187,6 +186,15 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     	Utils.changeLanguage( ctx, ctx.getResources() );
 	}
     
+    private final void calcWidths() {
+        icoWidth = ( mode & MODE_ICONS ) == ICON_MODE ? ( ( mode & MODE_FINGERF ) == FAT_MODE ? ICON_SIZE * 2 : ICON_SIZE ) : 0;
+        imgWidth = thumbnail_size_perc > 0 && thumbnail_size_perc != 100 ? icoWidth * thumbnail_size_perc / 100 : icoWidth;
+    }
+    
+    public int getImgWidth() {
+        return imgWidth;
+    }
+    
     @Override
     public int setMode( int mask, int val ) {
         if( ( mask & SET_MODE_COLORS ) != 0 ) {
@@ -196,14 +204,17 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             }
             return 0;
         }
-        if( ( mask & SET_TBN_SIZE ) != 0 ) {
-            thumbnail_size_perc = val;
-            return 0;
-        }
         if( ( mask & SET_FONT_SIZE ) != 0 ) {
             font_size = val;
             return 0;
         }
+        if( ( mask & SET_TBN_SIZE ) != 0 ) {
+            thumbnail_size_perc = val;
+            calcWidths();
+            return 0;
+        }
+        if( ( mask & ( MODE_FINGERF | MODE_ICONS ) ) != 0 )
+            calcWidths();
         
         mode &= ~mask;
         mode |= val;
@@ -290,25 +301,19 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         try {
             int parent_width = parent.getWidth();
             boolean recalc = dirty || parentWidth != parent_width;
-            boolean plenty = parent_width >= 480;
             boolean wm = (mode & WIDE_MODE) == WIDE_MODE;
             boolean dm = ( mode & MODE_DETAILS ) == DETAILED_MODE;
             boolean ao = ( ATTR_ONLY & mode ) != 0;
             boolean current_wide = convertView != null && convertView.getId() == R.id.row_layout;
-            Log.v( TAG, " convertView = " + (convertView == null ? "null" : convertView.getId() ) );
             if( convertView == null || 
         		( (  wm && !current_wide ) || 
         		  ( !wm &&  current_wide ) ) ) {
-                
-                Log.v( TAG, "Inflating " + ( wm ? "row" : "narrow " ) );
-                
                 row_view = mInflater.inflate( wm ? R.layout.row : R.layout.narrow, parent, false );
             }
             else {
                 row_view = convertView;
                 row_view.setBackgroundColor( 0 ); // transparent
             }
-            boolean icons = ( mode & MODE_ICONS ) == ICON_MODE;
             boolean fat = ( mode & MODE_FINGERF ) == FAT_MODE;
             if( !fat )
                 row_view.setPadding( 1, 2, 4, 0 );
@@ -324,7 +329,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             TextView sizeView = (TextView)row_view.findViewById( R.id.fld_size );
 
             float fnt_sz_rdc = font_size - font_size/4;   // reduced font size
-            
             String name = item.name, size = "", date = "";
             if( dm ) {
             	if( item.size >= 0 )
@@ -338,7 +342,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                     } else {
         	            String dateFormat;
     	            	dateFormat = item.date.getYear() + 1900 == Calendar.getInstance().get( Calendar.YEAR ) ?
-    	                        MDHM_date_frm : "MMM dd  yyyy";
+    	                        MDHM_date_frm : "MMM dd yyyy ";
         	            date = (String)DateFormat.format( dateFormat, item.date );
                     }
                 }
@@ -359,32 +363,30 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                             // sizeWidth is pixels, but what's the return of measureText() ???
                             sizeWidth = (int)sizeView.getPaint().measureText( "9999.9M" );
                         }
-                        attrWidth = !wm || plenty ? 1 : 0;  // it's not set anyway
+                        if( attrView != null ) {
+                            attrView.setTextSize( fnt_sz_rdc );
+                            // sizeWidth is pixels, but what's the return of measureText() ???
+                            attrWidth = (int)sizeView.getPaint().measureText( "WWWWWWWWWW SYSTEM SYSTEM" );
+                        }
                     }
                 }
             }
-            
-            //Log.v( TAG, "p:" + parent_width + ",i:" + imgWidth + ",n:" + nameWidth + ",d:" + dateWidth + ",s:" + sizeWidth + ",a:" + attrWidth );            
-            
             if( item.sel )
                 row_view.setBackgroundColor( sl_color & 0xCFFFFFFF  );
-
+            int img_width = icoWidth;
             if( imgView != null ) {
-                if( icons ) {
+                if( icoWidth > 0 ) {
                     imgView.setVisibility( View.VISIBLE );
                     imgView.setAdjustViewBounds( true );
                     boolean th_ok = false;
                     if( item.isThumbNail() && thumbnail_size_perc > 0 ) {
-                        //imgView.setMaxWidth( imgWidth );
-                        
                         Drawable th = item.getThumbNail();
                         if( th != null ) {
-                            if( item.thumb_is_icon ) {
-                                imgView.setAdjustViewBounds( true );
-                                imgView.setMaxWidth( iconSize );
-                            }
-                            else
-                                imgView.setAdjustViewBounds( false );
+                            if( !item.thumb_is_icon )
+                                img_width = imgWidth;
+                            imgView.setScaleType( ImageView.ScaleType.CENTER );
+                            imgView.setAdjustViewBounds( true );
+                            imgView.setMaxWidth( img_width + 8 );
                             imgView.setImageDrawable( th );
                             th_ok = true;
                         }
@@ -397,7 +399,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                                 notifyAll();
                             }
                         }
-                        //imgView.setMaxWidth( icoWidth );
+                        Log.v( TAG, "st=" + imgView.getScaleType() );
+                        imgView.setScaleType( ImageView.ScaleType.FIT_CENTER );
+                        imgView.setAdjustViewBounds( true );
+                        imgView.setMaxWidth( img_width + 8 );
                         try {
                             imgView.setImageResource( item.icon_id != -1 ? item.icon_id : 
                                ( item.dir || item.name.equals( SLS ) || item.name.equals( PLS ) ? R.drawable.folder : getIconId( name ) ) );
@@ -412,7 +417,14 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             }
             if( nameView != null ) {
                 nameView.setTextSize( font_size );
-                //nameView.setWidth( nameWidth );
+                if( wm ) {
+                    nameWidth = parent_width - img_width - dateWidth - sizeWidth - attrWidth;
+                    if( nameWidth < 200 ) {
+                        attrWidth = 0;
+                        nameWidth = parent_width - img_width - dateWidth - sizeWidth; 
+                    }
+                    nameView.setWidth( nameWidth );
+                }
                 nameView.setText( name != null ? name : "???" );
                 nameView.setTextColor( fg_color );
 //nameView.setBackgroundColor( 0xFFFF00FF );  // DEBUG!!!!!!
@@ -444,9 +456,9 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 attrView.setVisibility( vis ? View.VISIBLE : View.GONE );
                 if( vis ) {
                     if( !wm )
-                        attrView.setPadding( 34, 0, 4, 0 ); // not to overlap the icon
+                        attrView.setPadding( img_width + 2, 0, 4, 0 ); // not to overlap the icon
                     attrView.setTextSize( fnt_sz_rdc );
-                    //attrView.setWidth( attrWidth );
+                    if( wm ) attrView.setWidth( attrWidth );
                     attrView.setVisibility( View.VISIBLE );
                     attrView.setText( item.attr == null ? "" : item.attr.trim() );
                     attrView.setTextColor( fg_color );
@@ -456,6 +468,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                     attrView.setVisibility( View.GONE ); 
             }
             row_view.setTag( null );
+Log.v( TAG, "p:" + parent_width + ",i:" + img_width + ",n:" + nameWidth + ",d:" + dateWidth + ",s:" + sizeWidth + ",a:" + attrWidth );            
         }
         catch( Exception e ) {
             Log.e( TAG, null, e ); 
@@ -483,10 +496,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         if( type.compareTo( "video" ) == 0 ) return R.drawable.video; 
         if( type.compareTo( "application" ) == 0 ) return R.drawable.application; 
         return R.drawable.unkn;
-    }
-    
-    protected final int getImgWidth() {
-        return imgWidth == 0 ? ( thumbnail_size_perc > 0 ? thumbnail_size_perc * iconSize / 100 : 0 ) : imgWidth;
     }
     
     protected final String[] bitsToNames( SparseBooleanArray cis ) {
