@@ -17,6 +17,7 @@ import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -187,7 +188,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
 	}
     
     private final void calcWidths() {
-        icoWidth = ( mode & MODE_ICONS ) == ICON_MODE ? ( ( mode & MODE_FINGERF ) == FAT_MODE ? ICON_SIZE * 2 : ICON_SIZE ) : 0;
+        icoWidth = ( mode & MODE_ICONS ) == ICON_MODE ? ( ( mode & MODE_FINGERF ) == FAT_MODE ? ICON_SIZE : ICON_SIZE / 2 ) : 0;
         imgWidth = thumbnail_size_perc > 0 && thumbnail_size_perc != 100 ? icoWidth * thumbnail_size_perc / 100 : icoWidth;
     }
     
@@ -384,9 +385,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                         if( th != null ) {
                             if( !item.thumb_is_icon )
                                 img_width = imgWidth;
-                            imgView.setScaleType( ImageView.ScaleType.CENTER );
-                            imgView.setAdjustViewBounds( true );
-                            imgView.setMaxWidth( img_width + 8 );
+                            imgView.setMaxWidth( img_width );
                             imgView.setImageDrawable( th );
                             th_ok = true;
                         }
@@ -400,10 +399,9 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                             }
                         }
                         Log.v( TAG, "st=" + imgView.getScaleType() );
-                        imgView.setScaleType( ImageView.ScaleType.FIT_CENTER );
-                        imgView.setAdjustViewBounds( true );
-                        imgView.setMaxWidth( img_width + 8 );
                         try {
+                            //imgView.setScaleType( ImageView.ScaleType.CENTER );
+                            imgView.setMaxWidth( img_width );
                             imgView.setImageResource( item.icon_id != -1 ? item.icon_id : 
                                ( item.dir || item.name.equals( SLS ) || item.name.equals( PLS ) ? R.drawable.folder : getIconId( name ) ) );
                         }
