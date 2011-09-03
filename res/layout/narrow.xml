@@ -6,6 +6,7 @@
         <ImageView android:id="@+id/fld_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="0px"
             android:adjustViewBounds="true"/>
         <TextView  
             android:id="@+id/fld_name"
@@ -33,6 +34,7 @@
 	        android:layout_alignTop="@id/fld_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="right"
             android:textSize="9sp"
             android:paddingRight="6dip"
             android:singleLine="true"

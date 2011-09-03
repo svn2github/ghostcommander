@@ -222,7 +222,7 @@
 <string name="summary_prevent_root">Выдавать предупреждающее сообщение на попытку перейти в системный каталог</string>
 
 <string name="show_root">Показывать рутовые режимы</string>
-<string name="summary_show_root">Включить переход в root: и mount: режимы в список "отправной точки"</string>
+<string name="summary_show_root">Включить root: и mount: режимы в список экрана "Домой"</string>
 
 <string name="root_root">Root режим при покидании /sdcard</string>
 <string name="summary_root_root">Автоматически переключаться в \"root:\" режим в случае обращения к каталогу не на /sdcard.</string>
@@ -290,7 +290,7 @@
 <string name="fav_added">Папка \"%1$s\" добавлена в закладки</string>
 <string name="no_root">Нет root прав.</string>
 
-<string name="home">&#xA0; Отправная точка</string>
+<string name="home">&#xA0; Домой</string>
 <string name="favs">&#xA0; Закладки</string>
 <string name="local">Локальные файлы</string>
 <string name="ftp">FTP сервер</string>

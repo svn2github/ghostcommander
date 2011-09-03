@@ -188,8 +188,15 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
 	}
     
     private final void calcWidths() {
-        icoWidth = ( mode & MODE_ICONS ) == ICON_MODE ? ( ( mode & MODE_FINGERF ) == FAT_MODE ? ICON_SIZE : ICON_SIZE / 2 ) : 0;
-        imgWidth = thumbnail_size_perc > 0 && thumbnail_size_perc != 100 ? icoWidth * thumbnail_size_perc / 100 : icoWidth;
+        try {
+            float density = commander.getContext().getResources().getDisplayMetrics().density;
+            Log.v( TAG, "density=" + density ); 
+            icoWidth = ( mode & MODE_ICONS ) == ICON_MODE ? 
+                    (int)( density * ( ( mode & MODE_FINGERF ) == FAT_MODE ? ICON_SIZE : ICON_SIZE / 2 ) ) : 0;
+            imgWidth = thumbnail_size_perc > 0 && thumbnail_size_perc != 100 ? icoWidth * thumbnail_size_perc / 100 : icoWidth;
+        } catch( Exception e ) {
+            e.printStackTrace();
+        }
     }
     
     public int getImgWidth() {
@@ -317,7 +324,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             }
             boolean fat = ( mode & MODE_FINGERF ) == FAT_MODE;
             if( !fat )
-                row_view.setPadding( 1, 2, 4, 0 );
+                row_view.setPadding( 1, 2, 4, 2 );
             else {
                 int h = row_view.getHeight() - row_view.getPaddingTop() - row_view.getPaddingBottom(); 
                 int vp = h != 0 ? h/10 : 8;
@@ -398,9 +405,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                                 notifyAll();
                             }
                         }
-                        Log.v( TAG, "st=" + imgView.getScaleType() );
                         try {
-                            //imgView.setScaleType( ImageView.ScaleType.CENTER );
                             imgView.setMaxWidth( img_width );
                             imgView.setImageResource( item.icon_id != -1 ? item.icon_id : 
                                ( item.dir || item.name.equals( SLS ) || item.name.equals( PLS ) ? R.drawable.folder : getIconId( name ) ) );

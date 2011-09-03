@@ -132,7 +132,7 @@ public class ListHelper {
 
             int thubnails_size = 0;
             if( show_icons && sharedPref.getBoolean( "show_thumbnails", true ) )
-                thubnails_size = Integer.parseInt( sharedPref.getString( "thumbnails_size", "100" ) );
+                thubnails_size = Integer.parseInt( sharedPref.getString( "thumbnails_size", "200" ) );
             ca.setMode( CommanderAdapter.SET_TBN_SIZE, thubnails_size );
 
             String fnt_sz = sharedPref.getString( "font_size", "12" );

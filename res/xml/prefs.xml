@@ -103,7 +103,7 @@
             android:key="thumbnails_size" 
             android:title="@string/thumbnails_size" 
             android:summary="@string/summary_thumbnails_size" 
-            android:defaultValue="100"/>
+            android:defaultValue="200"/>
         <ListPreference
                 android:key="font_size"
                 android:title="@string/font_size"
