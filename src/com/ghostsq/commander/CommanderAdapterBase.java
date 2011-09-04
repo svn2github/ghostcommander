@@ -35,6 +35,9 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     public    static final char   SLC = File.separator.charAt( 0 );
     public    static final String PLS = "..";
     private   static final boolean long_date = Locale.getDefault().getLanguage().compareTo( "en" ) != 0;
+    private   java.text.DateFormat localeDateFormat;
+    private   java.text.DateFormat localeTimeFormat;
+    
     protected static final int ICON_SIZE = 32;
     protected int icoWidth = ICON_SIZE, imgWidth = ICON_SIZE;
     protected LayoutInflater mInflater = null;
@@ -185,6 +188,8 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     	Context ctx = c.getContext();
     	mInflater = (LayoutInflater)ctx.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
     	Utils.changeLanguage( ctx, ctx.getResources() );
+    	localeDateFormat = DateFormat.getDateFormat( commander.getContext() );
+    	localeTimeFormat = DateFormat.getTimeFormat( commander.getContext() );
 	}
     
     private final void calcWidths() {
@@ -192,7 +197,8 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             float density = commander.getContext().getResources().getDisplayMetrics().density;
             Log.v( TAG, "density=" + density ); 
             icoWidth = ( mode & MODE_ICONS ) == ICON_MODE ? 
-                    (int)( density * ( ( mode & MODE_FINGERF ) == FAT_MODE ? ICON_SIZE : ICON_SIZE / 2 ) ) : 0;
+                    (int)( density * ( ( mode & MODE_FINGERF ) == FAT_MODE || 
+                                       ( mode & WIDE_MODE ) != WIDE_MODE ? ICON_SIZE : ICON_SIZE / 2 ) ) : 0;
             imgWidth = thumbnail_size_perc > 0 && thumbnail_size_perc != 100 ? icoWidth * thumbnail_size_perc / 100 : icoWidth;
         } catch( Exception e ) {
             e.printStackTrace();
@@ -226,7 +232,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         
         mode &= ~mask;
         mode |= val;
-        dirty = true;
         if( mask == LIST_STATE ) {
             /*
             Log.v( TAG, ( mode & LIST_STATE ) == STATE_IDLE ? 
@@ -235,6 +240,8 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                     // Android v2.3.3 has a bug (again!)
             */
         }
+        else
+            dirty = true;
         if( ( mask & MODE_SORT_DIR ) != 0 ||
             ( mask & MODE_SORTING )  != 0 ) {
             if( ( mask & MODE_SORT_DIR ) != 0 )
@@ -304,11 +311,22 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         return getView( convertView, parent, item );
     }
 
+    private String getLocalDateTimeStr( Date date ) {
+        try {
+            return localeDateFormat.format( date ) + " " + localeTimeFormat.format( date );
+        } catch( Exception e ) {
+            e.printStackTrace();
+        }
+        return "(ERR)";
+    }
+    
     protected View getView( View convertView, ViewGroup parent, Item item ) {
         View row_view = null;
         try {
             int parent_width = parent.getWidth();
             boolean recalc = dirty || parentWidth != parent_width;
+            parentWidth = parent_width;
+            dirty = false;
             boolean wm = (mode & WIDE_MODE) == WIDE_MODE;
             boolean dm = ( mode & MODE_DETAILS ) == DETAILED_MODE;
             boolean ao = ( ATTR_ONLY & mode ) != 0;
@@ -344,9 +362,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             	final String MDHM_date_frm = "MMM dd hh:mm";
                 if( item.date != null ) {
                     if( long_date ) {
-                        java.text.DateFormat locale_date_format = DateFormat.getDateFormat( commander.getContext() );
-                        java.text.DateFormat locale_time_format = DateFormat.getTimeFormat( commander.getContext() );
-                        date = locale_date_format.format( item.date ) + " " + locale_time_format.format( item.date );
+                        date = getLocalDateTimeStr( item.date );
                     } else {
         	            String dateFormat;
     	            	dateFormat = item.date.getYear() + 1900 == Calendar.getInstance().get( Calendar.YEAR ) ?
@@ -355,6 +371,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                     }
                 }
                 if( recalc ) {
+                    //Log.v( TAG, "recalc" );
                     if( ao ) {
                         sizeWidth = 0;
                         dateWidth = 0;
@@ -364,17 +381,21 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                         if( dateView != null ) {
                             dateView.setTextSize( fnt_sz_rdc );
                             // dateWidth is pixels, but what's the return of measureText() ???
-                            dateWidth = (int)dateView.getPaint().measureText( "MM" + (long_date ? date : MDHM_date_frm) );
+                            dateWidth = (int)dateView.getPaint().measureText( long_date ? "M" + getLocalDateTimeStr( new Date( -1 ) ) : MDHM_date_frm);
                         }
                         if( sizeView != null ) {
-                            dateView.setTextSize( fnt_sz_rdc );
+                            sizeView.setTextSize( fnt_sz_rdc );
                             // sizeWidth is pixels, but what's the return of measureText() ???
                             sizeWidth = (int)sizeView.getPaint().measureText( "9999.9M" );
                         }
                         if( attrView != null ) {
-                            attrView.setTextSize( fnt_sz_rdc );
-                            // sizeWidth is pixels, but what's the return of measureText() ???
-                            attrWidth = (int)sizeView.getPaint().measureText( "WWWWWWWWWW SYSTEM SYSTEM" );
+                            if( wm ) {
+                                attrView.setTextSize( fnt_sz_rdc );
+                                // sizeWidth is pixels, but what's the return of measureText() ???
+                                attrWidth = (int)sizeView.getPaint().measureText( "---------- system system" );
+                            }
+                            else
+                                attrWidth = parent_width - sizeWidth - dateWidth - icoWidth;
                         }
                     }
                 }
@@ -471,7 +492,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                     attrView.setVisibility( View.GONE ); 
             }
             row_view.setTag( null );
-Log.v( TAG, "p:" + parent_width + ",i:" + img_width + ",n:" + nameWidth + ",d:" + dateWidth + ",s:" + sizeWidth + ",a:" + attrWidth );            
+//Log.v( TAG, "p:" + parent_width + ",i:" + img_width + ",n:" + nameWidth + ",d:" + dateWidth + ",s:" + sizeWidth + ",a:" + attrWidth );            
         }
         catch( Exception e ) {
             Log.e( TAG, null, e ); 
