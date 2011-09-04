@@ -39,7 +39,8 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     private   java.text.DateFormat localeTimeFormat;
     
     protected static final int ICON_SIZE = 32;
-    protected int icoWidth = ICON_SIZE, imgWidth = ICON_SIZE;
+    protected int     icoWidth = ICON_SIZE, imgWidth = ICON_SIZE;
+    protected float   density = 1;
     protected LayoutInflater mInflater = null;
     private   int     parentWidth, nameWidth, sizeWidth, dateWidth, attrWidth;
     private   int     fg_color, sl_color;
@@ -188,14 +189,13 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     	Context ctx = c.getContext();
     	mInflater = (LayoutInflater)ctx.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
     	Utils.changeLanguage( ctx, ctx.getResources() );
-    	localeDateFormat = DateFormat.getDateFormat( commander.getContext() );
-    	localeTimeFormat = DateFormat.getTimeFormat( commander.getContext() );
+    	localeDateFormat = DateFormat.getDateFormat( ctx );
+    	localeTimeFormat = DateFormat.getTimeFormat( ctx );
+    	density = ctx.getResources().getDisplayMetrics().density;
 	}
     
     private final void calcWidths() {
         try {
-            float density = commander.getContext().getResources().getDisplayMetrics().density;
-            Log.v( TAG, "density=" + density ); 
             icoWidth = ( mode & MODE_ICONS ) == ICON_MODE ? 
                     (int)( density * ( ( mode & MODE_FINGERF ) == FAT_MODE || 
                                        ( mode & WIDE_MODE ) != WIDE_MODE ? ICON_SIZE : ICON_SIZE / 2 ) ) : 0;
@@ -341,13 +341,9 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 row_view.setBackgroundColor( 0 ); // transparent
             }
             boolean fat = ( mode & MODE_FINGERF ) == FAT_MODE;
-            if( !fat )
-                row_view.setPadding( 1, 2, 4, 2 );
-            else {
-                int h = row_view.getHeight() - row_view.getPaddingTop() - row_view.getPaddingBottom(); 
-                int vp = h != 0 ? h/10 : 8;
-                row_view.setPadding( 1, vp, 4, vp );
-            }
+            final int  LEFT_P = 1;
+            final int RIGHT_P = 2;
+            
             ImageView imgView = (ImageView)row_view.findViewById( R.id.fld_icon );
             TextView nameView = (TextView)row_view.findViewById( R.id.fld_name );
             TextView attrView = (TextView)row_view.findViewById( R.id.fld_attr );
@@ -375,13 +371,15 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                     if( ao ) {
                         sizeWidth = 0;
                         dateWidth = 0;
-                        attrWidth = wm ? ( parent_width - imgWidth ) / 2 : parent_width;
+                        attrWidth = wm ? ( parent_width - imgWidth ) / 2 : parent_width - LEFT_P - RIGHT_P;
                     }
                     else {
                         if( dateView != null ) {
                             dateView.setTextSize( fnt_sz_rdc );
                             // dateWidth is pixels, but what's the return of measureText() ???
-                            dateWidth = (int)dateView.getPaint().measureText( long_date ? "M" + getLocalDateTimeStr( new Date( -1 ) ) : MDHM_date_frm);
+                            String sample_date = long_date ? "M" + getLocalDateTimeStr( new Date( -1 ) ) : MDHM_date_frm;
+                            if( wm ) sample_date += "M";
+                            dateWidth = (int)dateView.getPaint().measureText( sample_date );
                         }
                         if( sizeView != null ) {
                             sizeView.setTextSize( fnt_sz_rdc );
@@ -395,7 +393,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                                 attrWidth = (int)sizeView.getPaint().measureText( "---------- system system" );
                             }
                             else
-                                attrWidth = parent_width - sizeWidth - dateWidth - icoWidth;
+                                attrWidth = parent_width - sizeWidth - dateWidth - icoWidth - LEFT_P - RIGHT_P;
                         }
                     }
                 }
@@ -442,10 +440,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             if( nameView != null ) {
                 nameView.setTextSize( font_size );
                 if( wm ) {
-                    nameWidth = parent_width - img_width - dateWidth - sizeWidth - attrWidth;
+                    nameWidth = parent_width - img_width - dateWidth - sizeWidth - attrWidth - LEFT_P - RIGHT_P;
                     if( nameWidth < 200 ) {
                         attrWidth = 0;
-                        nameWidth = parent_width - img_width - dateWidth - sizeWidth; 
+                        nameWidth = parent_width - img_width - dateWidth - sizeWidth - LEFT_P - RIGHT_P; 
                     }
                     nameView.setWidth( nameWidth );
                 }
@@ -491,6 +489,14 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 else
                     attrView.setVisibility( View.GONE ); 
             }
+
+            if( fat ) {
+                int vp = (int)( 10 * density );
+                row_view.setPadding( LEFT_P, vp, RIGHT_P, vp );
+            }
+            else 
+                row_view.setPadding( LEFT_P, 2, RIGHT_P, 2 );
+            
             row_view.setTag( null );
 //Log.v( TAG, "p:" + parent_width + ",i:" + img_width + ",n:" + nameWidth + ",d:" + dateWidth + ",s:" + sizeWidth + ",a:" + attrWidth );            
         }

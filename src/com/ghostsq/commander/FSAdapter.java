@@ -217,6 +217,7 @@ public class FSAdapter extends CommanderAdapterBase {
                     int processed = 0;
                     for( int i = 0; i < mList.length ; i++ ) {
                         visible_only = fails_count > 2;
+if( visible_only ) Log.v( TAG, "thumb on requests only" );
                         int n = -1;
                         while( true ) {
                             for( int j = 0; j < mList.length ; j++ ) {
@@ -227,8 +228,7 @@ public class FSAdapter extends CommanderAdapterBase {
                                     break;
                                 }
                                 else {
-                                    if( visible_only )
-                                        mList[j].remThumbnailIfOld();  // clear not in use to free memory
+                                    mList[j].remThumbnailIfOld( visible_only ? 10000 : 60000 );  // clear not in use to free memory
                                 }
                             }
                             if( !visible_only || proc_visible ) break;

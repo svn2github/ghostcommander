@@ -30,6 +30,7 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
 	private int  toChange = -1;
 	private View goPanel;
 	private ArrayList<Favorite> shortcutsList;
+    private float density = 1;
 	
 	public Shortcuts( FileCommander c_, Panels p_, ArrayList<Favorite> shortcuts_list ) {
 		super();
@@ -51,6 +52,7 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
             View star = goPanel.findViewById( R.id.star );
             if( star != null )
             	star.setOnClickListener( this );
+            density = c.getContext().getResources().getDisplayMetrics().density;
         } catch( Exception e ) {
 			c.showMessage( "Exception on setup history dropdown: " + e );
 		}
@@ -100,7 +102,8 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
 	@Override
 	public View getView( int position, View convertView, ViewGroup parent ) {
 		TextView tv = convertView != null ? (TextView)convertView : new TextView( c );
-		tv.setPadding( 4, 4, 4, 4 );
+		int vp = p.fingerFriendly ? (int)( 10 * density ) : 4;
+		tv.setPadding( 4, vp, 4, vp );
 		String screened = shortcutsList.get( position ).getUriString( true );
 		tv.setText( screened == null ? "" : screened );
 		tv.setTextColor( 0xFF000000 );

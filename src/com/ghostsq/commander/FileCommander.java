@@ -266,10 +266,15 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     public boolean onCreateOptionsMenu( Menu menu ) {
-        // Inflate the currently selected menu XML resource.
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate( R.menu.menu, menu );
-        return true;
+        try {
+            // Inflate the currently selected menu XML resource.
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate( R.menu.menu, menu );
+            return true;
+        } catch( Error e ) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     @Override
@@ -496,8 +501,12 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         }
     }
     private final void openPrefs() {
-        Intent launchPreferencesIntent = new Intent().setClass( this, Prefs.class );
-        startActivityForResult( launchPreferencesIntent, REQUEST_CODE_PREFERENCES );
+        try {
+            Intent launchPreferencesIntent = new Intent().setClass( this, Prefs.class );
+            startActivityForResult( launchPreferencesIntent, REQUEST_CODE_PREFERENCES );
+        } catch( Error e ) {
+            Log.e( TAG, "Preferences can't open", e );
+        }
     }
 
     private final void showSearchDialog() {

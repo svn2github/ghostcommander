@@ -333,7 +333,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         try {
             applyColors();
             String fnt_sz = sharedPref.getString( "font_size", "12" );
-        	setFingerFriendly( sharedPref.getBoolean( "finger_friendly", false ), Integer.parseInt( fnt_sz ) );
+        	setFingerFriendly( sharedPref.getBoolean( "finger_friendly", true ), Integer.parseInt( fnt_sz ) );
         	warnOnRoot =  sharedPref.getBoolean( "prevent_root", true );
             rootOnRoot = sharedPref.getBoolean( "root_root", false );
             arrowsLegacy = sharedPref.getBoolean( "arrow_mode", false );

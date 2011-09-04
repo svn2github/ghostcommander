@@ -31,8 +31,8 @@ public interface CommanderAdapter {
         public boolean  isThumbNail()  { return thumbnail != null; }
         public Drawable getThumbNail()             { thumbnail_used = System.currentTimeMillis(); return thumbnail; }
         public void     setThumbNail( Drawable t ) { thumbnail_used = System.currentTimeMillis(); thumbnail = t; }
-        public boolean  remThumbnailIfOld() { 
-            if( thumbnail != null && !need_thumb && System.currentTimeMillis() - thumbnail_used > 30000 ) {
+        public boolean  remThumbnailIfOld( int ttl ) { 
+            if( thumbnail != null && !need_thumb && System.currentTimeMillis() - thumbnail_used > ttl ) {
                 thumbnail = null;
                 return true;
             }

@@ -36,32 +36,32 @@
         <PreferenceScreen
                 android:key="right_panel_settings"
                 android:title="@string/right_panel_settings">
-	     <PreferenceCategory
-	            android:title="@string/right_panel_settings">
-	        <CheckBoxPreference
-	                android:key="right_detailed_SbS"
-	                android:title="@string/detailed_view_SbS"
-	                android:summary="@string/summary_detailed_view_SbS" 
-	                android:defaultValue="true"/>
-	        <CheckBoxPreference
-	                android:key="right_detailed_Ovr"
-	                android:title="@string/detailed_view_Ovr"
-	                android:summary="@string/summary_detailed_view_Ovr" 
-	                android:defaultValue="true"/>
-          <ListPreference
-                  android:key="right_sorting"
-                  android:title="@string/sorting"
-                  android:summary="@string/summary_sorting"
-                  android:entries="@array/sorting"
-                  android:entryValues="@array/sorting_vals"
-                  android:dialogTitle="@string/sorting" 
-                  android:defaultValue="n"/>
-	        <CheckBoxPreference
-	                android:key="right_show_hidden"
-	                android:title="@string/show_hidden"
-	                android:summary="@string/summary_show_hidden" 
-	                android:defaultValue="true"/>
-	    </PreferenceCategory>
+    	     <PreferenceCategory
+    	            android:title="@string/right_panel_settings">
+    	        <CheckBoxPreference
+    	                android:key="right_detailed_SbS"
+    	                android:title="@string/detailed_view_SbS"
+    	                android:summary="@string/summary_detailed_view_SbS" 
+    	                android:defaultValue="true"/>
+    	        <CheckBoxPreference
+    	                android:key="right_detailed_Ovr"
+    	                android:title="@string/detailed_view_Ovr"
+    	                android:summary="@string/summary_detailed_view_Ovr" 
+    	                android:defaultValue="true"/>
+              <ListPreference
+                      android:key="right_sorting"
+                      android:title="@string/sorting"
+                      android:summary="@string/summary_sorting"
+                      android:entries="@array/sorting"
+                      android:entryValues="@array/sorting_vals"
+                      android:dialogTitle="@string/sorting" 
+                      android:defaultValue="n"/>
+    	        <CheckBoxPreference
+    	                android:key="right_show_hidden"
+    	                android:title="@string/show_hidden"
+    	                android:summary="@string/summary_show_hidden" 
+    	                android:defaultValue="true"/>
+    	    </PreferenceCategory>
       </PreferenceScreen>
       <CheckBoxPreference
                 android:key="case_ignore"
