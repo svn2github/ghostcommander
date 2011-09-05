@@ -10,20 +10,25 @@ import android.view.View;
 import android.view.Window;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 
 public class ServerForm extends Activity implements View.OnClickListener {
     private static final String TAG = "ServerForm";
     private String schema;
     private enum Type { FTP, SMB, UNKNOWN };
     private Type type;
+    private EditText server_edit;
+    private EditText path_edit;
+    private EditText domain_edit;
+    private EditText name_edit;
+    private CheckBox active_ftp_cb;
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         try {
             super.onCreate( savedInstanceState );
-            schema = getIntent().getStringExtra( "schema" );
             
+            schema = getIntent().getStringExtra( "schema" );
             if( schema.equals( "ftp" ) ) type = Type.FTP; else
             if( schema.equals( "smb" ) ) type = Type.SMB; else
                 type = Type.UNKNOWN;
@@ -31,14 +36,20 @@ public class ServerForm extends Activity implements View.OnClickListener {
             setTitle( getString( R.string.connect ) + " " + ( type == Type.SMB ? "Windows PC" : schema ) );
             requestWindowFeature( Window.FEATURE_LEFT_ICON );
             setContentView( R.layout.server );
-            getWindow().setLayout (LayoutParams.FILL_PARENT /* width */ , LayoutParams.WRAP_CONTENT /* height */);
+            getWindow().setLayout (LayoutParams.FILL_PARENT /* width */, LayoutParams.WRAP_CONTENT /* height */);
             
-            getWindow().setFeatureDrawableResource( Window.FEATURE_LEFT_ICON,
-                    android.R.drawable.ic_dialog_dialer );
+            getWindow().setFeatureDrawableResource( Window.FEATURE_LEFT_ICON, android.R.drawable.ic_dialog_dialer );
             
+            server_edit = (EditText)findViewById( R.id.server_edit );
+            path_edit = (EditText)findViewById( R.id.path_edit );
+            domain_edit = (EditText)findViewById( R.id.domain_edit );
+            name_edit = (EditText)findViewById( R.id.username_edit );
+            active_ftp_cb = (CheckBox)findViewById( R.id.active );            
+
             if( type == Type.FTP ) {
-                LinearLayout domain_block = (LinearLayout)findViewById( R.id.domain_block );
+                View domain_block = findViewById( R.id.domain_block );
                 domain_block.setVisibility( View.GONE );
+                active_ftp_cb.setVisibility( View.VISIBLE );
             }
             
             Button connectButton = (Button)findViewById( R.id.connect );
@@ -56,19 +67,15 @@ public class ServerForm extends Activity implements View.OnClickListener {
         try {
             super.onStart();
             SharedPreferences prefs = getPreferences( MODE_PRIVATE );
-            EditText server_edit = (EditText)findViewById( R.id.server_edit );
-            EditText path_edit = (EditText)findViewById( R.id.path_edit );
-            EditText domain_edit = (EditText)findViewById( R.id.domain_edit );
-            EditText name_edit = (EditText)findViewById( R.id.username_edit );
             server_edit.setText( prefs.getString( "SERV", "" ) );            
             path_edit.setText( prefs.getString( "PATH", "/" ) );            
             domain_edit.setText( prefs.getString( "DOMAIN", "" ) );            
             name_edit.setText( prefs.getString( "USER", "" ) );            
+            active_ftp_cb.setChecked( prefs.getBoolean( "ACTIVE", false ) );            
         }
         catch( Exception e ) {
             Log.e( TAG, "onStart() Exception: ", e );
         }
-        
     }
 
     @Override
@@ -76,14 +83,11 @@ public class ServerForm extends Activity implements View.OnClickListener {
         try {
             super.onPause();
             SharedPreferences.Editor editor = getPreferences( MODE_PRIVATE ).edit();
-            EditText server_edit = (EditText)findViewById( R.id.server_edit );
-            EditText path_edit = (EditText)findViewById( R.id.path_edit );
-            EditText domain_edit = (EditText)findViewById( R.id.domain_edit );
-            EditText name_edit = (EditText)findViewById( R.id.username_edit );
             editor.putString( "SERV", server_edit.getText().toString() );            
             editor.putString( "PATH", path_edit.getText().toString() );            
             editor.putString( "DOMAIN", domain_edit.getText().toString() );            
             editor.putString( "USER", name_edit.getText().toString() );            
+            editor.putBoolean( "ACTIVE", active_ftp_cb.isChecked() );            
             editor.commit();
         }
         catch( Exception e ) {
@@ -94,14 +98,11 @@ public class ServerForm extends Activity implements View.OnClickListener {
     @Override
     protected void onSaveInstanceState( Bundle outState ) {
         try {
-            EditText server_edit = (EditText)findViewById( R.id.server_edit );
-            EditText path_edit = (EditText)findViewById( R.id.path_edit );
-            EditText name_edit = (EditText)findViewById( R.id.username_edit );
-            EditText domain_edit = (EditText)findViewById( R.id.domain_edit );
             outState.putString( "SERV", server_edit.getText().toString() );            
             outState.putString( "PATH", path_edit.getText().toString() );            
             outState.putString( "USER", name_edit.getText().toString() );            
             outState.putString( "DOMAIN", domain_edit.getText().toString() );            
+            outState.putBoolean( "ACTIVE", active_ftp_cb.isChecked() );            
             super.onSaveInstanceState(outState);
         }
         catch( Exception e ) {
@@ -112,14 +113,11 @@ public class ServerForm extends Activity implements View.OnClickListener {
     @Override
     protected void onRestoreInstanceState( Bundle savedInstanceState ) {
         try {
-            EditText server_edit = (EditText)findViewById( R.id.server_edit );
-            EditText path_edit = (EditText)findViewById( R.id.path_edit );
-            EditText name_edit = (EditText)findViewById( R.id.username_edit );
-            EditText domain_edit = (EditText)findViewById( R.id.domain_edit );
             server_edit.setText( savedInstanceState.getString( "SERV" ) );            
             path_edit.setText( savedInstanceState.getString( "PATH" ) );            
             name_edit.setText( savedInstanceState.getString( "USER" ) );            
             domain_edit.setText( savedInstanceState.getString( "DOMAIN" ) );            
+            active_ftp_cb.setChecked( savedInstanceState.getBoolean( "ACTIVE", false ) );            
             super.onRestoreInstanceState(savedInstanceState);
         }
         catch( Exception e ) {
@@ -131,11 +129,7 @@ public class ServerForm extends Activity implements View.OnClickListener {
     public void onClick( View v ) {
         try{ 
             if( v.getId() == R.id.connect ) {
-                EditText server_edit = (EditText)findViewById( R.id.server_edit );
-                EditText path_edit = (EditText)findViewById( R.id.path_edit );
-                EditText name_edit = (EditText)findViewById( R.id.username_edit );
                 EditText pass_edit = (EditText)findViewById( R.id.password_edit );
-                    
                 String user = name_edit.getText().toString();
                 String pass = pass_edit.getText().toString();
                 String auth = "";
@@ -155,6 +149,8 @@ public class ServerForm extends Activity implements View.OnClickListener {
                 auth += Utils.encodeToAuthority( server_edit.getText().toString().trim() );
                 Uri.Builder uri_b = new Uri.Builder().scheme( schema ).encodedAuthority( auth );
                 uri_b.path( path_edit.getText().toString().trim() );
+                if( type == Type.FTP && active_ftp_cb.isChecked() )
+                    uri_b.appendQueryParameter( "a", "true" );
                 setResult( RESULT_OK, (new Intent()).setAction( uri_b.build().toString() ) );
             }
             else

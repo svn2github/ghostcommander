@@ -153,9 +153,9 @@ public class Shortcuts extends BaseAdapter implements Filterable, OnKeyListener,
     
     
     public final void addToFavorites( String uri_str ) {
-        	removeFromFavorites( uri_str );
-        	shortcutsList.add( new Favorite( uri_str, null ) );
-			notifyDataSetChanged();
+    	removeFromFavorites( uri_str );
+    	shortcutsList.add( new Favorite( uri_str, null ) );
+		notifyDataSetChanged();
     }
     public final void removeFromFavorites( String uri_s ) {
 		int pos = find( uri_s );

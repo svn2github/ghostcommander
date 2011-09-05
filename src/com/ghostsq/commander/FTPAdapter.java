@@ -72,8 +72,10 @@ public class FTPAdapter extends CommanderAdapterBase {
                 String new_user_info = tmp_uri.getUserInfo();
                 if( uri == null ) 
                     need_reconnect = true;
-                else if( 0 != tmp_uri.getHost().compareTo( uri.getHost() ) )
+                else if( !tmp_uri.getHost().equalsIgnoreCase( uri.getHost() ) ) {
                     need_reconnect = true;
+                    theUserPass = null;
+                }
                 else if( new_user_info != null  ) {
                     if( theUserPass == null )
                         need_reconnect = true;
