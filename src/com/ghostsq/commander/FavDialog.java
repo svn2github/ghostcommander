@@ -37,12 +37,14 @@ class FavDialog implements OnClickListener {
             
             pe = (EditText)fdv.findViewById( R.id.path_edit );
             String path = uri.getPath();
+            /*
             String quer = uri.getQuery();
             if( quer != null )
                 path += "?" + quer;
             String frag = uri.getFragment();
             if( frag != null )
                 path += "#" + frag;
+            */
             pe.setText( path );            
             
             String schm = uri.getScheme();

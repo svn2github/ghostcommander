@@ -39,9 +39,8 @@ public class FTP {
         	if( outputStream == null || cmndSocket == null || !cmndSocket.isConnected() )
         		return false;
         	debugPrint( ">>> " + cmd );
-            byte[] bytes = cmd.getBytes();
+            byte[] bytes = ( cmd + "\r\n" ).getBytes();
             outputStream.write( bytes );
-            outputStream.write( '\n' );
             return true;
         }
         catch( IOException e ) {
