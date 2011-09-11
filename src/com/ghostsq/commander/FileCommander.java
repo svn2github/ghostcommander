@@ -43,7 +43,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     
     private ArrayList<Dialogs> dialogs;
     public  Panels  panels;
-    private boolean on = false, exit = false, dont_restore = false, sxs_auto = true, show_confirm = true;
+    private boolean on = false, exit = false, dont_restore = false, sxs_auto = true, show_confirm = true, back_exits = false;
     private String  lang = ""; // just need to issue a warning on change
     private int     file_exist_resolution = Commander.UNKNOWN;
     private NotificationManager notMan = null;
@@ -93,6 +93,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         dialogs = new ArrayList<Dialogs>( Dialogs.numDialogTypes );
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        back_exits = sharedPref.getBoolean( "exit_on_back", false );
         lang = sharedPref.getString( "language", "" );
         Utils.changeLanguage( this, getResources() );
         String panels_mode = sharedPref.getString( "panels_sxs_mode", "a" );
@@ -112,6 +113,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         if( dont_restore )
             dont_restore = false;
         else {
+            Utils.changeLanguage( this, getResources() );
             SharedPreferences prefs = getPreferences( MODE_PRIVATE );
             Panels.State s = panels.new State();
             s.restore( prefs );
@@ -195,13 +197,9 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     public void onConfigurationChanged( Configuration newConfig ) {
         Utils.changeLanguage( this, getResources() );
         super.onConfigurationChanged( newConfig );
-        if( sxs_auto ) {
-            if( newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE ) {
-                panels.setMode( true );
-            } else if( newConfig.orientation == Configuration.ORIENTATION_PORTRAIT ){
-                panels.setMode( false );
-            }
-        }
+        panels.setLayoutMode( sxs_auto ? newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE : panels.getLayoutMode() );
+            
+        
 /*// TODO: hide the numbers from the virtual buttons if there is no physical keyboard
         // Checks whether a hardware keyboard is available
         if (newConfig.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO) {
@@ -215,6 +213,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     @Override
     public void onCreateContextMenu( ContextMenu menu, View v, ContextMenuInfo menuInfo ) {
         try {
+            Utils.changeLanguage( this, getResources() );
             int num = panels.getNumItemsChecked();
             AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo)menuInfo;
             menu.setHeaderTitle( getString( R.string.operation ) );
@@ -291,6 +290,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         super.onActivityResult(requestCode, resultCode, data);
         if( requestCode == REQUEST_CODE_PREFERENCES ) {
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+            back_exits = sharedPref.getBoolean( "exit_on_back", false );
             String lang_ = sharedPref.getString( "language", "" );
             if( !lang.equalsIgnoreCase( lang_ ) ) {
                 lang = lang_;
@@ -302,7 +302,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             String panels_mode = sharedPref.getString( "panels_sxs_mode", "a" );
             sxs_auto = panels_mode.equals( "a" );
             boolean sxs = sxs_auto ? getRotMode() : panels_mode.equals( "y" );
-            panels.setMode( sxs );
+            panels.setLayoutMode( sxs );
             panels.showToolbar( sharedPref.getBoolean("show_toolbar", true ) );
             setConfirmMode( sharedPref );
         }
@@ -348,7 +348,11 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             return true;
         case KeyEvent.KEYCODE_BACK:
         case KeyEvent.KEYCODE_DEL:
-            panels.getListAdapter(true).openItem(0);
+            if( back_exits ){
+                finish();
+                return true;
+            }
+            panels.goUp();
             return false;
         case KeyEvent.KEYCODE_SEARCH:
             showSearchDialog();

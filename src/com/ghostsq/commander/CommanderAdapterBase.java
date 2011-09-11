@@ -327,7 +327,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             boolean recalc = dirty || parentWidth != parent_width;
             parentWidth = parent_width;
             dirty = false;
-            boolean wm = (mode & WIDE_MODE) == WIDE_MODE;
+            boolean wm = (mode & MODE_WIDTH) == WIDE_MODE;
             boolean dm = ( mode & MODE_DETAILS ) == DETAILED_MODE;
             boolean ao = ( ATTR_ONLY & mode ) != 0;
             boolean current_wide = convertView != null && convertView.getId() == R.id.row_layout;
@@ -345,10 +345,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             final int RIGHT_P = 2;
             
             ImageView imgView = (ImageView)row_view.findViewById( R.id.fld_icon );
-            TextView nameView = (TextView)row_view.findViewById( R.id.fld_name );
-            TextView attrView = (TextView)row_view.findViewById( R.id.fld_attr );
-            TextView dateView = (TextView)row_view.findViewById( R.id.fld_date );
-            TextView sizeView = (TextView)row_view.findViewById( R.id.fld_size );
+            TextView nameView =  (TextView)row_view.findViewById( R.id.fld_name );
+            TextView attrView =  (TextView)row_view.findViewById( R.id.fld_attr );
+            TextView dateView =  (TextView)row_view.findViewById( R.id.fld_date );
+            TextView sizeView =  (TextView)row_view.findViewById( R.id.fld_size );
 
             float fnt_sz_rdc = font_size - font_size/4;   // reduced font size
             String name = item.name, size = "", date = "";

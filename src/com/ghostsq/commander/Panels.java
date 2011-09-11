@@ -80,7 +80,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         initList( LEFT );
         initList( RIGHT );
 
-        setMode( sxs_ );
+        setLayoutMode( sxs_ );
        
         highlightCurrentTitle();
         
@@ -105,9 +105,11 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 		}
         focus();
     }
-    public final void setMode( boolean sxs_ ) {
+    public final boolean  getLayoutMode() {
+        return sxs;
+    }
+    public final void setLayoutMode( boolean sxs_ ) {
         sxs = sxs_;
-
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
         applySettings( sharedPref, false );
 
@@ -401,7 +403,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         NavigateInternal( opposite(), getListAdapter( true ).getUri(), null );
     }
     public final void togglePanelsMode() {
-        setMode( !sxs );
+        setLayoutMode( !sxs );
     }
     public final void togglePanels( boolean refresh ) {
         //Log.v( TAG, "toggle" );
@@ -873,6 +875,9 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         l.setCurPos( position );
         ((CommanderAdapter)l.flv.getAdapter()).openItem( position );
     }
+    public void goUp() {
+        getListAdapter(true).openItem(0);
+    }
     
     /**
      * View.OnTouchListener implementation 
@@ -954,7 +959,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 setPanelCurrent( ch == '{' ? Panels.LEFT : Panels.RIGHT );
                 return true;
             case '#':
-                setMode( !sxs );
+                setLayoutMode( !sxs );
                 return true;
 	        case '+':
 	        case '-':
@@ -1048,8 +1053,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     /*
      * ListView.OnScrollListener implementation 
      */
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
-            int totalItemCount) {
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
     }
     @Override
     public void onScrollStateChanged( AbsListView view, int scrollState ) {

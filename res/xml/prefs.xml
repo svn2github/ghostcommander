@@ -244,13 +244,16 @@
                     android:key="show_addfav"
                     android:title="@string/show_addfav"
                     android:defaultValue="false"/>
-                    
-                    
         </PreferenceScreen>
         <CheckBoxPreference
                     android:key="arrow_mode"
                     android:title="@string/arrow_mode"
                     android:summary="@string/summary_arrow_mode"
+                    android:defaultValue="false"/>
+        <CheckBoxPreference
+                    android:key="exit_on_back"
+                    android:title="@string/exit_on_back"
+                    android:summary="@string/summary_exit_on_back"
                     android:defaultValue="false"/>
     </PreferenceCategory>
     <PreferenceCategory

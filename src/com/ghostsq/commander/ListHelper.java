@@ -66,8 +66,10 @@ public class ListHelper {
                 }
                 flv.setAdapter( (ListAdapter)ca_new );
                 flv.setOnKeyListener( p );
-                ca_new.setMode( CommanderAdapter.MODE_WIDTH, 
-                    p.sxs ? CommanderAdapter.NARROW_MODE : CommanderAdapter.WIDE_MODE );
+/*
+                ca_new.setMode( CommanderAdapter.MODE_WIDTH, p.sxs && display_w ? 
+                                CommanderAdapter.NARROW_MODE : CommanderAdapter.WIDE_MODE );
+*/
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( p.c );
                 applySettings( sharedPref );
                 ca_old = ca_new;
@@ -107,8 +109,12 @@ public class ListHelper {
         try {
             CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
             if( ca == null ) return;
-            ca.setMode( CommanderAdapter.MODE_WIDTH, p.sxs || sharedPref.getBoolean( "two_lines", false ) ? 
-                            CommanderAdapter.NARROW_MODE : CommanderAdapter.WIDE_MODE );
+            
+            int w = p.c.getWindowManager().getDefaultDisplay().getWidth();
+            if( p.sxs ) w /= 2;
+            ca.setMode( CommanderAdapter.MODE_WIDTH, ( p.sxs && w < 480 ) ||   
+                        sharedPref.getBoolean( "two_lines", false ) ? 
+                        CommanderAdapter.NARROW_MODE : CommanderAdapter.WIDE_MODE );
 
             boolean show_icons = sharedPref.getBoolean( "show_icons", true );
             ca.setMode( CommanderAdapter.MODE_ICONS, show_icons ? CommanderAdapter.ICON_MODE : CommanderAdapter.TEXT_MODE );

@@ -262,6 +262,9 @@
 
 <string name="arrow_mode">Стрелки Влево/Вправо</string>
 <string name="summary_arrow_mode">это Переключение и Пометка</string>
+<string name="exit_on_back">Выход по "Back"</string>
+<string name="summary_exit_on_back">Выход из приложения по нажатию системной кнопки "Back"</string>
+
 <string name="show_confirm">Подтверждения</string>
 <string name="summary_show_confirm">Выдавать подтверждения о совершении файловых операций</string>
 <string name="prefs_label">Настройки</string>
