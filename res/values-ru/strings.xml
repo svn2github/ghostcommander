@@ -172,7 +172,7 @@
 <string name="domain">Домен:</string>
 <string name="username">Логин:</string>
 <string name="password">Пароль:</string>
-<string name="connect">Соеденить</string>
+<string name="connect">Соединить</string>
 <string name="cancel">Отмена</string>
 <string name="ftp_connected">Подключились к FTP \"%1$s\",\n с именем \"%2$s\"</string>
 <string name="ftp_upload_failed">Закачка \"%1$s\" неудалась.\n FTP log:\n\n%2$s</string>
