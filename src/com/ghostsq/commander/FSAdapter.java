@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.FileChannel;
+import java.security.MessageDigest;
 import java.util.Date;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -467,6 +468,21 @@ if( visible_only ) Log.v( TAG, "thumb on requests only" );
                         } else 
                             date_s = (String)DateFormat.format( "MMM dd yyyy hh:mm:ss", date );
                         result.append( date_s );
+                        
+                        if( mList[0].f.isFile() ) {
+                            FileInputStream in  = new FileInputStream( mList[0].f );
+                            MessageDigest digester = MessageDigest.getInstance( "MD5" );
+                            byte[] bytes = new byte[8192];
+                            int byteCount;
+                            while((byteCount = in.read(bytes)) > 0) {
+                                digester.update( bytes, 0, byteCount );
+                            }
+                            byte[] digest = digester.digest();
+                            in.close();
+                            result.append( "\nMD5: " );
+                            result.append( Utils.toHexString( digest ) );
+                        }
+                        
                     }
                     result.append( "\n\n" );
         	    }

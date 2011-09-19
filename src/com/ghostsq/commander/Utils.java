@@ -247,7 +247,27 @@ public final class Utils {
         if( s == null || s.length() == 0 ) return s;
         return s.replaceAll( "#", "%23" ).replaceAll( ":", "%3A" );
     }
+
+    public static byte[] hexStringToBytes( String hexString ) {
+        int len = hexString.length() / 2;
+        byte[] result = new byte[len];
+        for( int i = 0; i < len; i++ )
+            result[i] = Integer.valueOf( hexString.substring( 2 * i, 2 * i + 2 ), 16 ).byteValue();
+        return result;
+    }
+
+    private final static String HEX = "0123456789abcdef";
     
+    public static String toHexString( byte[] buf ) {
+        if( buf == null )
+            return "";
+        StringBuffer result = new StringBuffer( 2 * buf.length );
+        for( int i = 0; i < buf.length; i++ ) {
+            result.append( HEX.charAt( ( buf[i] >> 4 ) & 0x0f ) ).append( HEX.charAt( buf[i] & 0x0f ) );
+        }
+        return result.toString();
+    }
+
     public enum RR {
                busy(R.string.busy),
            copy_err(R.string.copy_err),
