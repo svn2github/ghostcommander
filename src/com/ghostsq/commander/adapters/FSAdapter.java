@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.FileChannel;
+import java.security.MessageDigest;
 import java.util.Date;
 import java.util.Arrays;
 import java.util.Comparator;

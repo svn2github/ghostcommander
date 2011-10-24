@@ -12,6 +12,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.http.auth.UsernamePasswordCredentials;
 
+import com.ghostsq.commander.utils.Utils;
+
 import android.net.Uri;
 import android.util.Log;
 
