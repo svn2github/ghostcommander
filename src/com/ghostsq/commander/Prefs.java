@@ -1,5 +1,7 @@
 package com.ghostsq.commander;
 
+import com.ghostsq.commander.utils.Utils;
+
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -20,7 +22,7 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         Utils.changeLanguage( this, getResources() );
-        super.onCreate(savedInstanceState);
+        super.onCreate( savedInstanceState );
         
         // Load the preferences from an XML resource
         addPreferencesFromResource( R.xml.prefs );

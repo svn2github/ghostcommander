@@ -3,6 +3,8 @@ package com.ghostsq.commander;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+import com.ghostsq.commander.utils.Utils;
+
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.database.Cursor;

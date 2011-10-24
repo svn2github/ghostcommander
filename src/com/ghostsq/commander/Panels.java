@@ -4,6 +4,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Set;
 
+import com.ghostsq.commander.adapters.CommanderAdapter;
+import com.ghostsq.commander.adapters.CommanderAdapterBase;
+import com.ghostsq.commander.adapters.FSAdapter;
+import com.ghostsq.commander.adapters.FavsAdapter;
+import com.ghostsq.commander.adapters.ZipAdapter;
+import com.ghostsq.commander.favorites.Favorite;
+import com.ghostsq.commander.favorites.Shortcuts;
+import com.ghostsq.commander.utils.Utils;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -46,7 +55,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                                         View.OnKeyListener
 {
     private final static String TAG = "Panels";
-    protected static final String DEFAULT_LOC = "/sdcard";
+    public static final String DEFAULT_LOC = "/sdcard";
     public  final static int LEFT = 0, RIGHT = 1;
     private int     current = LEFT, navigated = -1;
     private final int titlesIds[] = { R.id.left_dir,  R.id.right_dir };

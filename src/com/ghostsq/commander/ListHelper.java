@@ -1,5 +1,11 @@
 package com.ghostsq.commander;
 
+import com.ghostsq.commander.adapters.CommanderAdapter;
+import com.ghostsq.commander.adapters.CommanderAdapterBase;
+import com.ghostsq.commander.adapters.FavsAdapter;
+import com.ghostsq.commander.adapters.HomeAdapter;
+import com.ghostsq.commander.utils.Utils;
+
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.preference.PreferenceManager;

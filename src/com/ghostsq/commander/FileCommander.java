@@ -3,6 +3,11 @@ package com.ghostsq.commander;
 import java.io.File;
 import java.util.ArrayList;
 
+import com.ghostsq.commander.adapters.CommanderAdapter;
+import com.ghostsq.commander.adapters.FSAdapter;
+import com.ghostsq.commander.adapters.FindAdapter;
+import com.ghostsq.commander.utils.Utils;
+
 import dalvik.system.DexClassLoader;
 
 import android.app.Activity;
@@ -266,6 +271,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     @Override
     public boolean onCreateOptionsMenu( Menu menu ) {
         try {
+            Utils.changeLanguage( this, getResources() );
             // Inflate the currently selected menu XML resource.
             MenuInflater inflater = getMenuInflater();
             inflater.inflate( R.menu.menu, menu );

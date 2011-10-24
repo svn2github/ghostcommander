@@ -3,6 +3,8 @@
  */
 package com.ghostsq.commander;
 
+import com.ghostsq.commander.adapters.CommanderAdapter;
+
 import android.content.Context;
 import android.net.Uri;
 
