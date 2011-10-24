@@ -60,7 +60,7 @@
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
-        <activity android:name=".ToolButtonsProps" android:label="@string/tblist_label">
+        <activity android:name=".toolbuttons.ToolButtonsProps" android:label="@string/tblist_label">
           android:windowSoftInputMode="adjustPan"
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

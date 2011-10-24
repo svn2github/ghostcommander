@@ -157,7 +157,7 @@
                 android:key="toolbar_preference"
                 android:title="@string/toolbar_preference"
                 android:summary="@string/summary_toolbar_preference">
-                
+            <!--    
             <CheckBoxPreference
                     android:key="show_F1"
                     android:title="@string/show_F1"
@@ -166,10 +166,6 @@
                     android:key="show_F2"
                     android:title="@string/show_F2"
                     android:defaultValue="true"/>
-            <!--CheckBoxPreference
-                    android:key="show_F3"
-                    android:title="@string/show_F3"
-                    android:defaultValue="true"/-->
             <CheckBoxPreference
                     android:key="show_F4"
                     android:title="@string/show_F4"
@@ -244,6 +240,7 @@
                     android:key="show_addfav"
                     android:title="@string/show_addfav"
                     android:defaultValue="false"/>
+                    -->
         </PreferenceScreen>
         <CheckBoxPreference
                     android:key="arrow_mode"
