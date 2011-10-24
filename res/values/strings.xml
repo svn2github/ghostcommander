@@ -300,6 +300,7 @@ copied >5 will produce:
     <string name="show_enter"  >Show &#xAB;Location&#xBB;</string>
     <string name="show_addfav" >Show &#xAB;* Favorite &#xBB;</string>
 
+    <string name="tblist_label" >Arrange the tool buttons</string>
 
     <string name="finger_friendly">Finger friendly</string>
     <string name="summary_finger_friendly">Enlarge user interface elements</string>
