@@ -24,7 +24,7 @@ public class ToolButtonsProps extends ListActivity
 {
     public final String TAG = getClass().getName();
     private ToolButtonsAdapter adapter = null;
-    private ToolButtonsArray array = new ToolButtonsArray();
+    private ToolButtons array = new ToolButtons();
     private TouchListView tlv;
    
     class ToolButtonsAdapter extends ArrayAdapter<ToolButton> {

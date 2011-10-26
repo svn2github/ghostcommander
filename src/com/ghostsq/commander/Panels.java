@@ -2,7 +2,6 @@ package com.ghostsq.commander;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Set;
 
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
@@ -11,6 +10,8 @@ import com.ghostsq.commander.adapters.FavsAdapter;
 import com.ghostsq.commander.adapters.ZipAdapter;
 import com.ghostsq.commander.favorites.Favorite;
 import com.ghostsq.commander.favorites.Shortcuts;
+import com.ghostsq.commander.toolbuttons.ToolButton;
+import com.ghostsq.commander.toolbuttons.ToolButtons;
 import com.ghostsq.commander.utils.Utils;
 
 import android.app.Activity;
@@ -144,7 +145,25 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                     return;
                 }
                 toolbar.setVisibility( View.INVISIBLE );
+                
+                ViewGroup tb_holder = (ViewGroup)toolbar; 
+                tb_holder.removeAllViews();
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
+                ToolButtons tba = new ToolButtons();
+                tba.restore( sharedPref, c );
+                for( int i = 0; i < tba.size(); i++ ) {
+                    ToolButton tb = tba.get(i);
+                    int bid = tb.getId();
+                    if( tb.isVisible() && ca.isButtonActive( bid ) ) {
+                        Button b = new Button( c, null, fingerFriendly ? 0 : android.R.attr.buttonStyleSmall );
+                        b.setId( bid );
+                        b.setText( tb.getCaption() );
+                        b.setOnClickListener( c );
+                        tb_holder.addView( b );
+                    }
+                }
+                
+/*                
                 Button b = null;
                 ViewGroup buttonSet = (ViewGroup)toolbar;
                 for( int i = 0; i < buttonSet.getChildCount(); i++ ) {
@@ -188,6 +207,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                         b.setVisibility( a && sharedPref.getBoolean( pref_id, def ) ? View.VISIBLE : View.GONE );
                     }
                 }
+*/                
                 toolbar.setVisibility( View.VISIBLE );
             }
             else {

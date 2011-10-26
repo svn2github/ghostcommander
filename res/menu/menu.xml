@@ -50,10 +50,10 @@
         <item android:id="@+id/refresh"
              android:title="@string/refresh"
              android:alphabeticShortcut="r"/>
-        <item android:id="@+id/select_all"
+        <item android:id="@+id/sel_all"
              android:title="@string/select_all"
              android:alphabeticShortcut="a"/>
-        <item android:id="@+id/unselect_all"
+        <item android:id="@+id/uns_all"
              android:title="@string/unselect_all"
              android:alphabeticShortcut="u"/>
       </menu>

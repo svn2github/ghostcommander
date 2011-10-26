@@ -11,6 +11,9 @@
          android:layout_height="wrap_content"
          android:background="#333333"
          android:paddingTop="2dp">
+         
+        <!-- 
+        
             <Button android:id="@+id/F1"
                 android:text="@string/F1"
                 android:paddingTop="1dp"
@@ -169,6 +172,7 @@
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content" 
                 android:layout_height="wrap_content"/>
+            -->
      </LinearLayout>
  </HorizontalScrollView>
  

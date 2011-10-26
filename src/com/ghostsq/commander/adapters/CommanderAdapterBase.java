@@ -611,8 +611,8 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             case R.id.by_ext: 
             case R.id.by_size:
             case R.id.by_date:
-            case R.id.select_all:
-            case R.id.unselect_all:
+            case R.id.sel_all:
+            case R.id.uns_all:
             case R.id.enter: 
             case R.id.add_fav:
                 return true;

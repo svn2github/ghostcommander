@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <item type="id" name="F1" />
+  <item type="id" name="F2" />
+  <item type="id" name="F3" />
+  <item type="id" name="F4" />
+  <item type="id" name="SF4"/>
+  <item type="id" name="F5" />
+  <item type="id" name="F6" />
+  <item type="id" name="F7" />
+  <item type="id" name="F8" />
+  <item type="id" name="F9" />
+  <item type="id" name="F10"/>
+  <item type="id" name="eq" />
+  <item type="id" name="tgl"/>
+  <item type="id" name="sz" />
+  <item type="id" name="by_name" />
+  <item type="id" name="by_ext"  />
+  <item type="id" name="by_size" />
+  <item type="id" name="by_date" />
+  <item type="id" name="sel_all" />
+  <item type="id" name="uns_all" />
+  <item type="id" name="enter"   />
+  <item type="id" name="addfav"  />
+  <item type="id" name="remount" />
+</resources>
+
+
+
+
+
+
+
+
+
+
+

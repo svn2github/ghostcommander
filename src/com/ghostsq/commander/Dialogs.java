@@ -2,6 +2,7 @@ package com.ghostsq.commander;
 
 import org.apache.http.auth.UsernamePasswordCredentials;
 
+import com.ghostsq.commander.R.id;
 import com.ghostsq.commander.utils.Utils;
 
 import android.app.AlertDialog;
@@ -164,7 +165,8 @@ public class Dialogs implements DialogInterface.OnClickListener {
                     t.setText( "" );
                 break;
             }            
-            case R.id.F2: {
+            case R.id.F2: 
+            {
                 final String op_title = owner.getString( R.string.rename_title );
                 String op = owner.getString( R.string.to_rename );
                 if( op == null || op.length() == 0 )
@@ -196,7 +198,8 @@ public class Dialogs implements DialogInterface.OnClickListener {
             }
             case R.id.F6:
                 move = true;
-            case R.id.F5: {
+            case R.id.F5: 
+            {
                 final String op_title = owner.getString( move ? R.string.move_title : R.string.copy_title );
                 String op = owner.getString( move ? R.string.to_move : R.string.to_copy );
                 if( op == null || op.length() == 0 )
@@ -244,7 +247,8 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 }
                 break;
             }
-            case R.id.F7: {
+            case R.id.F7: 
+            {
                 dialog.setTitle( R.string.mkdir_title );
                 if( prompt != null )
                     prompt.setText( R.string.mkdir_prompt );
@@ -290,7 +294,8 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 ad.setTitle( owner.getString( R.string.login_title ) + host_name );
                 break;
             }
-            case R.id.F8: {
+            case R.id.F8: 
+            {
                 AlertDialog ad = (AlertDialog)dialog;
                 ad.setTitle( R.string.delete_title );
                 String str, summ = owner.panels.getActiveItemsSummary();

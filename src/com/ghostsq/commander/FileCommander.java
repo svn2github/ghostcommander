@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.FSAdapter;
 import com.ghostsq.commander.adapters.FindAdapter;
+import com.ghostsq.commander.toolbuttons.ToolButton;
 import com.ghostsq.commander.utils.Utils;
 
 import dalvik.system.DexClassLoader;
@@ -477,10 +478,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         case R.id.refresh:
             panels.refreshLists();
             break;
-        case R.id.select_all:
+        case R.id.sel_all:
             showDialog( Dialogs.SELECT_DIALOG );
             break;
-        case R.id.unselect_all:
+        case R.id.uns_all:
             showDialog( Dialogs.UNSELECT_DIALOG );
             break;
         case R.id.online: {
