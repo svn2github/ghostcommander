@@ -8,43 +8,43 @@
     <string name="app">Alkalmazás</string>
     <string name="help">Súgó</string>
     
-    <string name="F1">1 Súgó</string>
-    <string name="F2">2 Átnevez</string>
-    <string name="F3">3 Néz</string>
-    <string name="F4">4 Szerk.</string>
-    <string name="SF4">&#xA0; Létrehoz</string>
-    <string name="F5">5 Másol</string>
-    <string name="F6">6 Mozgat</string>
-    <string name="F7">7 Könyvt.lh</string>
-    <string name="F8">8 Töröl</string>
-    <string name="F9">9 Tulajd.</string>
-    <string name="F10">0 Kilép</string>
-    <string name="oth_sh_this">= Másik panel igazítása a jelenlegihez</string>
-    <string name="eq">= Ugyanaz</string>
-    <string name="change">&#x21E6; Vált</string>
-    <string name="tgl">&#x21E6; Vált</string>
-    <string name="sz">\" Méret</string>
-    <string name="refresh">&#xA0; Frissít</string>
-    <string name="enter">&#xA0; Mappa változtatása</string>
-    <string name="add_fav">* Jelenlegi mappa kedvenccé tétele</string>
-    <string name="enter_ftp">&#xA0; FTP kapcsolat</string>
-    <string name="enter_smb">&#xA0; Samba kapcsolat</string>    
-    <string name="search_file">/ Fájl keresése</string>
+    <string name="F1">Súgó</string>
+    <string name="F2">Átnevez</string>
+    <string name="F3">Néz</string>
+    <string name="F4">Szerk.</string>
+    <string name="SF4">Létrehoz</string>
+    <string name="F5">Másol</string>
+    <string name="F6">Mozgat</string>
+    <string name="F7">Könyvt.lh</string>
+    <string name="F8">Töröl</string>
+    <string name="F9">Tulajd.</string>
+    <string name="F10">Kilép</string>
+    <string name="oth_sh_this">Másik panel igazítása a jelenlegihez</string>
+    <string name="eq">Ugyanaz</string>
+    <string name="change">Vált</string>
+    <string name="tgl">Vált</string>
+    <string name="sz">Méret</string>
+    <string name="refresh">Frissít</string>
+    <string name="enter">Mappa változtatása</string>
+    <string name="add_fav">Jelenlegi mappa kedvenccé tétele</string>
+    <string name="enter_ftp">FTP kapcsolat</string>
+    <string name="enter_smb">Samba kapcsolat</string>
+    <string name="search_file">Fájl keresése</string>
 
-    <string name="sort_by_name">&#xA0; Név</string>
-    <string name="sort_by_ext" >&#xA0; Kiterjesztés</string>
-    <string name="sort_by_size">&#xA0; Méret</string>
-    <string name="sort_by_date">&#xA0; Dátum</string>
+    <string name="sort_by_name">Név</string>
+    <string name="sort_by_ext" >Kiterjesztés</string>
+    <string name="sort_by_size">Méret</string>
+    <string name="sort_by_date">Dátum</string>
     <string name="sort_by_name_b">Név</string>
     <string name="sort_by_ext_b" >Kiterjesztés</string>
     <string name="sort_by_size_b">Méret</string>
     <string name="sort_by_date_b">Dátum</string>
-    <string name="select_all">+ Kijelöl</string>
-    <string name="unselect_all">- Kijelölés törlése</string>
+    <string name="select_all">Kijelöl</string>
+    <string name="unselect_all">Kijelölés törlése</string>
         
-    <string name="prefs">9 Beállítások</string>
-    <string name="about">&#xA0; Névjegy</string>
-    <string name="keys">1 Gyorsbillentyűk</string>
+    <string name="prefs">Beállítások</string>
+    <string name="about">Névjegy</string>
+    <string name="keys">Gyorsbillentyűk</string>
     <string name="new_file">Fájl létrehozása</string>
 
     <string name="go_button">Ugrás</string>
@@ -130,21 +130,6 @@
     <string name="summary_show_toolbar">Mutassa vagy rejtse el a gombokat a képernyő alján</string>
     <string name="toolbar_preference">Válassza ki a kijelzendő gombokat</string>
     <string name="summary_toolbar_preference">Parancsgombok testreszabása az eszközsoron</string>
-    <string name="show_F1">&#xAB; 1 Súgó&#xBB;</string>
-    <string name="show_F2">&#xAB; 2 Átnevez&#xBB;</string>
-    <string name="show_F3"> &#xAB; 3 Megnéz&#xBB;</string>
-    <string name="show_F4">&#xAB; 4 Szerkeszt&#xBB;</string>
-    <string name="show_SF4"> &#xAB; &#xA0; Létrehoz&#xBB;</string>
-    <string name="show_F5">&#xAB; 5 Másol&#xBB;</string>
-    <string name="show_F6">&#xAB; 6 Mozgat&#xBB;</string>
-    <string name="show_F7">&#xAB; 7 Könyvt. létrehozása&#xBB;</string>
-    <string name="show_F8">&#xAB; 8 Töröl&#xBB;</string>
-    <string name="show_F9">&#xAB; 9 Menü&#xBB;</string>
-    <string name="show_F10">&#xAB; 0 Kilép&#xBB;</string>
-    <string name="show_eq">&#xAB; = Panel másolása&#xBB;</string>
-    <string name="show_tgl">&#xAB; &#x21E6; Váltás&#xBB;</string>
-    <string name="show_sz"> &#xAB; \" Méret&#xBB;</string>
-
     <string name="finger_friendly">Ujjbarát kijelző</string>
     <string name="summary_finger_friendly">Felhasználói gombok növelése</string>
     <string name="prevent_root">Root figyelmeztetés</string>

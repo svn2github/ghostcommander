@@ -16,6 +16,7 @@ public class ToolButton {
     private boolean   visible;
     private int       color;
     private Drawable  icon;
+    private boolean   modified;
 
     public final static int getId( String cn ) {
         if( cn == null ) return 0;
@@ -72,6 +73,35 @@ public class ToolButton {
         case  R.id.remount:      return  "remount";
         }
         return null;
+    }
+
+    public final static char getBoundKey( int id_ ) {
+        switch( id_ ) {
+        case  R.id.F1:           return  '1';
+        case  R.id.F2:           return  '2';
+        case  R.id.F3:           return  '3';
+        case  R.id.F4:           return  '4';
+        case  R.id.SF4:          return   0;
+        case  R.id.F5:           return  '5';
+        case  R.id.F6:           return  '6';
+        case  R.id.F7:           return  '7';
+        case  R.id.F8:           return  '8';
+        case  R.id.F9:           return  '9';
+        case  R.id.F10:          return  '0';
+        case  R.id.eq:           return  '=';
+        case  R.id.tgl:          return  0;
+        case  R.id.sz:           return  '\'';
+        case  R.id.by_name:      return  0;
+        case  R.id.by_ext:       return  0;
+        case  R.id.by_size:      return  0;
+        case  R.id.by_date:      return  0;
+        case  R.id.sel_all:      return  '+';
+        case  R.id.uns_all:      return  '-';
+        case  R.id.enter:        return  0;
+        case  R.id.addfav:       return  '*';
+        case  R.id.remount:      return  0;
+        }
+        return 0;
     }
 
     public final static int getCaptionRId( int id_ ) {
@@ -135,8 +165,10 @@ public class ToolButton {
     ToolButton( int id_ ) {
         id = id_;
         codename = getCodeName( id_ );
+        
         def_caption_r_id = getCaptionRId( id_ );
         caption = null;
+        modified = false;
         visible = getVisible( id_ );
     }
     public final int getId() {
@@ -157,14 +189,18 @@ public class ToolButton {
     }
     public final void store( SharedPreferences.Editor editor ) {
         editor.putBoolean( getVisiblePropertyName(), visible );
-        editor.putString( getCaptionPropertyName(), caption );
+        if( modified )
+            editor.putString( getCaptionPropertyName(), caption );
     }
     
     public final String getCaption() {
         return caption;
     }
     final void setCaption( String caption_ ) {
-        caption = caption_;
+        if( !caption.equals( caption_ ) ) {
+            modified = true;
+            caption = caption_;
+        }
     }
     public final boolean isVisible() {
         return visible;

@@ -223,7 +223,7 @@ public class FSAdapter extends CommanderAdapterBase {
                     int processed = 0;
                     for( int i = 0; i < mList.length ; i++ ) {
                         visible_only = fails_count > 2;
-if( visible_only ) Log.v( TAG, "thumb on requests only" );
+                        //if( visible_only ) Log.v( TAG, "thumb on requests only" );
                         int n = -1;
                         while( true ) {
                             for( int j = 0; j < mList.length ; j++ ) {
@@ -324,11 +324,16 @@ if( visible_only ) Log.v( TAG, "thumb on requests only" );
             final String func_name = "createThubnail()"; 
             try {
                 if( h == apk_h ) {
-                    PackageManager pm = commander.getContext().getPackageManager();
-                    PackageInfo info = pm.getPackageArchiveInfo( fn, 0 );
-                    f.setThumbNail( pm.getApplicationIcon( info.packageName ) );
-                    f.thumb_is_icon = true;
-                    return true;
+                    try {
+                        PackageManager pm = commander.getContext().getPackageManager();
+                        PackageInfo info = pm.getPackageArchiveInfo( fn, 0 );
+                        f.setThumbNail( pm.getApplicationIcon( info.packageName ) );
+                        f.thumb_is_icon = true;
+                        return true;
+                    }
+                    catch( Exception e ) {
+                    }
+                    return false;
                 }               
                 options.inSampleSize = 1;
                 options.inJustDecodeBounds = true;
@@ -362,8 +367,6 @@ if( visible_only ) Log.v( TAG, "thumb on requests only" );
                 Log.e( TAG, func_name + " failed for " + fn );
             } catch( RuntimeException rte ) {
                 Log.e( TAG, func_name, rte );
-            } catch( NameNotFoundException nfe ) {
-                Log.e( TAG, func_name, nfe );
             } catch( FileNotFoundException fne ) {
                 Log.e( TAG, func_name, fne );
             } catch( IOException ioe ) {

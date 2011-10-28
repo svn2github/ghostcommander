@@ -8,54 +8,54 @@
     <string name="app">Aplicación</string>
     <string name="help">Ayuda</string>
     
-    <string name="F1">1 Ayuda</string>
-    <string name="F2">2 Renombrar</string>
-    <string name="F3">3 Ver</string>
-    <string name="F4">4 Editar</string>
-    <string name="SF4">&#xA0; Crear</string>
-    <string name="F5">5 Copiar</string>
-    <string name="F6">6 Mover</string>
-    <string name="F7">7 MkDir</string>
-    <string name="F8">8 Eliminar</string>
-    <string name="F9">9 Ajustes</string>
-    <string name="F10">0 Salir</string>
-    <string name="oth_sh_this">= Igualar rutas</string>
-    <string name="eq">= Ig. Ruta</string>
-    <string name="change">&#x21E6; Alternar</string>
-    <string name="tgl">&#x21E6; Alternar</string>
+    <string name="F1">Ayuda</string>
+    <string name="F2">Renombrar</string>
+    <string name="F3">Ver</string>
+    <string name="F4">Editar</string>
+    <string name="SF4">Crear</string>
+    <string name="F5">Copiar</string>
+    <string name="F6">Mover</string>
+    <string name="F7">MkDir</string>
+    <string name="F8">Eliminar</string>
+    <string name="F9">Ajustes</string>
+    <string name="F10">Salir</string>
+    <string name="oth_sh_this">Igualar rutas</string>
+    <string name="eq">Ig. Ruta</string>
+    <string name="change">Alternar</string>
+    <string name="tgl">Alternar</string>
     <string name="sz">Calc Tamaño</string>
-    <string name="refresh">&#xA0; Actualizar</string>
-    <string name="enter">&#xA0; Editar Ruta</string>
+    <string name="refresh">Actualizar</string>
+    <string name="enter">Editar Ruta</string>
     <string name="enter_b">Ruta</string>
-    <string name="add_fav">* Añadir a favoritos</string>
-    <string name="add_fav_b">* Favorito</string>
+    <string name="add_fav">Añadir a favoritos</string>
+    <string name="add_fav_b">Favorito</string>
     
     <string name="remount_b">Remontar /system</string>
     <string name="remount">Remontar</string>
     
-    <string name="enter_ftp">&#xA0; Abrir sitio FTP</string>
-    <string name="enter_smb">&#xA0; Abrir unidad Samba (Windows)</string>
-    <string name="search_file">/ Buscar archivos</string>
+    <string name="enter_ftp">Abrir sitio FTP</string>
+    <string name="enter_smb">Abrir unidad Samba (Windows)</string>
+    <string name="search_file">Buscar archivos</string>
 
-    <string name="sort_by_name">&#xA0; Ordenar por nombre</string>
-    <string name="sort_by_ext" >&#xA0; Ordenar por extensión</string>
-    <string name="sort_by_size">&#xA0; Ordenar por tamaño</string>
-    <string name="sort_by_date">&#xA0; Ordenar por fecha</string>
+    <string name="sort_by_name">Ordenar por nombre</string>
+    <string name="sort_by_ext" >Ordenar por extensión</string>
+    <string name="sort_by_size">Ordenar por tamaño</string>
+    <string name="sort_by_date">Ordenar por fecha</string>
 
     <string name="sort_by_name_b">Ord Nombre</string>
     <string name="sort_by_ext_b" >Ord Extensión</string>
     <string name="sort_by_size_b">Ord Tamaño</string>
     <string name="sort_by_date_b">Ord Fecha</string>
 
-    <string name="select_all">+ Seleccionar todo</string>
-    <string name="unselect_all">- Deseleccionar todo</string>
-    <string name="select_b">+ Seleccionar</string>
-    <string name="unselect_b">- Deseleccionar</string>
+    <string name="select_all">Seleccionar todo</string>
+    <string name="unselect_all">Deseleccionar todo</string>
+    <string name="select_b">Seleccionar</string>
+    <string name="unselect_b">Deseleccionar</string>
         
-    <string name="toggle_panels_mode"># Alternar vista</string>
-    <string name="prefs">9 Ajustes</string>
-    <string name="about">&#xA0; Acerca de</string>
-    <string name="keys">1 Atajos de teclado</string>
+    <string name="toggle_panels_mode">Alternar vista</string>
+    <string name="prefs">Ajustes</string>
+    <string name="about">Acerca de</string>
+    <string name="keys">Atajos de teclado</string>
     <string name="new_file">Crear archivo</string>
     <string name="new_folder">Crear carpeta</string>
     <string name="new_zip">Comprimir en ZIP</string>
@@ -246,30 +246,6 @@ copied >5 will produce:
     <string name="summary_show_toolbar">Mostrar u ocultar la barra inferior de botones</string>
     <string name="toolbar_preference">Configurar botones</string>
     <string name="summary_toolbar_preference">Personalizar los botones a mostrar en la barra de acciones</string>
-    <string name="show_F1">Mostrar &#xAB; 1 Ayuda&#xBB;</string>
-    <string name="show_F2">Mostrar &#xAB; 2 Renom&#xBB;</string>
-    <string name="show_F3">Mostrar &#xAB; 3 Ver&#xBB;</string>
-    <string name="show_F4">Mostrar &#xAB; 4 Editar&#xBB;</string>
-    <string name="show_SF4">Mostrar &#xAB; &#xA0; Crear&#xBB;</string>
-    <string name="show_F5">Mostrar &#xAB; 5 Copiar&#xBB;</string>
-    <string name="show_F6">Mostrar &#xAB; 6 Mover&#xBB;</string>
-    <string name="show_F7">Mostrar &#xAB; 7 MkDir&#xBB;</string>
-    <string name="show_F8">Mostrar &#xAB; 8 Eliminar&#xBB;</string>
-    <string name="show_F9">Mostrar &#xAB; 9 Menú&#xBB;</string>
-    <string name="show_F10">Mostrar &#xAB; 0 Salir&#xBB;</string>
-    <string name="show_eq">Mostrar &#xAB; = Igualar rutas&#xBB;</string>
-    <string name="show_tgl">Mostrar &#xAB; &#x21E6; Alternar&#xBB;</string>
-    <string name="show_sz">Mostrar &#xAB; Calc Tamaño&#xBB;</string>
-    
-    <string name="show_by_name">Mostrar &#xAB; Ordenar por Nombre&#xBB;</string>
-    <string name="show_by_ext" >Mostrar &#xAB; Ordenar por Extensión&#xBB;</string>
-    <string name="show_by_size">Mostrar &#xAB; Ordenar por Tamaño&#xBB;</string>
-    <string name="show_by_date">Mostrar &#xAB; Ordenar por Fecha&#xBB;</string>
-
-    <string name="show_sel_uns">Mostrar &#xAB;+/- Seleccionar/Deseleccionar &#xBB;</string>
-    <string name="show_enter"  >Mostrar &#xAB;Ruta&#xBB;</string>
-    <string name="show_addfav" >Mostrar &#xAB;* Favorito &#xBB;</string>
-
 
     <string name="finger_friendly">Facilitar uso táctil</string>
     <string name="summary_finger_friendly">Aumenta el tamaño los elementos en pantalla</string>

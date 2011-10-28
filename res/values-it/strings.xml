@@ -8,54 +8,54 @@
     <string name="app">Applicazione</string>
     <string name="help">Aiuto</string>
     
-    <string name="F1">1 Aiuto</string>
-    <string name="F2">2 Rinomina</string>
-    <string name="F3">3 Visualizza</string>
-    <string name="F4">4 Modifica</string>
-    <string name="SF4">  Crea</string>
-    <string name="F5">5 Copia</string>
-    <string name="F6">6 Sposta</string>
-    <string name="F7">7 Crea cartella</string>
-    <string name="F8">8 Elimina</string>
-    <string name="F9">9 Pref</string>
-    <string name="F10">0 Esci</string>
-    <string name="oth_sh_this">= Rendi l\'altro pannello come quello attuale</string>
-    <string name="eq">= Stesso</string>
-    <string name="change">⇦ Cambia</string>
-    <string name="tgl">⇦ Cambia</string>
-    <string name="sz">\" Dimensione</string>
-    <string name="refresh">  Aggiorna</string>
-    <string name="enter">  Cambia posizione</string>
+    <string name="F1">Aiuto</string>
+    <string name="F2">Rinomina</string>
+    <string name="F3">Visualizza</string>
+    <string name="F4">Modifica</string>
+    <string name="SF4">Crea</string>
+    <string name="F5">Copia</string>
+    <string name="F6">Sposta</string>
+    <string name="F7">Crea cartella</string>
+    <string name="F8">Elimina</string>
+    <string name="F9">Pref</string>
+    <string name="F10">Esci</string>
+    <string name="oth_sh_this">Rendi l\'altro pannello come quello attuale</string>
+    <string name="eq">Stesso</string>
+    <string name="change">Cambia</string>
+    <string name="tgl">Cambia</string>
+    <string name="sz">Dimensione</string>
+    <string name="refresh">Aggiorna</string>
+    <string name="enter">Cambia posizione</string>
     <string name="enter_b">Posizione</string>
-    <string name="add_fav">* Rendi favorita la cartella corrente</string>
-    <string name="add_fav_b">* Favorita</string>
+    <string name="add_fav">Rendi favorita la cartella corrente</string>
+    <string name="add_fav_b">Favorita</string>
     
     <string name="remount_b">Rimonta /system</string>
     <string name="remount">Rimonta</string>
     
-    <string name="enter_ftp">  Apri sito FTP</string>
-    <string name="enter_smb">  Apri Samba (condivisioni di rete Windows)</string>
-    <string name="search_file">/ Ricerca file</string>
+    <string name="enter_ftp">Apri sito FTP</string>
+    <string name="enter_smb">Apri Samba (condivisioni di rete Windows)</string>
+    <string name="search_file">Ricerca file</string>
 
-    <string name="sort_by_name">  Per nome</string>
-    <string name="sort_by_ext">  Per estensione</string>
-    <string name="sort_by_size">  Per dimensione</string>
-    <string name="sort_by_date">  Per data</string>
+    <string name="sort_by_name">Per nome</string>
+    <string name="sort_by_ext">Per estensione</string>
+    <string name="sort_by_size">Per dimensione</string>
+    <string name="sort_by_date">Per data</string>
 
     <string name="sort_by_name_b">Per nome</string>
     <string name="sort_by_ext_b">Per estens.</string>
     <string name="sort_by_size_b">Per dimens.</string>
     <string name="sort_by_date_b">Per data</string>
 
-    <string name="select_all">+ Seleziona file</string>
-    <string name="unselect_all">- Deseleziona file</string>
-    <string name="select_b">+ Seleziona</string>
-    <string name="unselect_b">- Deseleziona</string>
+    <string name="select_all">Seleziona file</string>
+    <string name="unselect_all">Deseleziona file</string>
+    <string name="select_b">Seleziona</string>
+    <string name="unselect_b">Deseleziona</string>
         
-    <string name="toggle_panels_mode"># Cambia modalità pannello</string>
-    <string name="prefs">9 Impostazioni</string>
-    <string name="about">  Informazioni</string>
-    <string name="keys">1 Tasti scorciatoia</string>
+    <string name="toggle_panels_mode">Cambia modalità pannello</string>
+    <string name="prefs">Impostazioni</string>
+    <string name="about">Informazioni</string>
+    <string name="keys">Tasti scorciatoia</string>
     <string name="new_file">Crea un nuovo file</string>
     <string name="new_folder">Crea una nuova cartella</string>
     <string name="new_zip">Crea un nuovo file ZIP</string>
@@ -245,30 +245,6 @@ copied >5 will produce:
     <string name="summary_show_toolbar">Mostra o nasconde i pulsanti in basso nello schermo</string>
     <string name="toolbar_preference">Pulsanti da mostrare</string>
     <string name="summary_toolbar_preference">Personalizzazione dei pulsanti sulla barra strumenti</string>
-    <string name="show_F1">Mostra « 1 Aiuto»</string>
-    <string name="show_F2">Mostra « 2 Rinomina»</string>
-    <string name="show_F3">Mostra « 3 Visualizza»</string>
-    <string name="show_F4">Mostra « 4 Modifica»</string>
-    <string name="show_SF4">Mostra «   Crea»</string>
-    <string name="show_F5">Mostra « 5 Copia»</string>
-    <string name="show_F6">Mostra « 6 Sposta»</string>
-    <string name="show_F7">Mostra « 7 Crea dir»</string>
-    <string name="show_F8">Mostra « 8 Elimina»</string>
-    <string name="show_F9">Mostra « 9 Menu»</string>
-    <string name="show_F10">Mostra « 0 Esci»</string>
-    <string name="show_eq">Mostra « = Rendi i pannelli uguali»</string>
-    <string name="show_tgl">Mostra « ⇦ Cambia»</string>
-    <string name="show_sz">Mostra « \" Dimensione»</string>
-    
-    <string name="show_by_name">Mostra « Ordina per nome»</string>
-    <string name="show_by_ext">Mostra « Ordina per estensione»</string>
-    <string name="show_by_size">Mostra « Ordina per dimensione»</string>
-    <string name="show_by_date">Mostra « Ordina per data»</string>
-
-    <string name="show_sel_uns">Mostra «+/- Seleziona/Deseleziona»</string>
-    <string name="show_enter">Mostra «Posizione»</string>
-    <string name="show_addfav">Mostra «* Favorite»</string>
-
 
     <string name="finger_friendly">Facilitazione per le dita</string>
     <string name="summary_finger_friendly">Allarga gli elementi dell\'interfaccia</string>

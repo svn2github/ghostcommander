@@ -8,29 +8,29 @@
     <string name="app">Application</string>
     <string name="help">Help</string>
     
-    <string name="F1">1 Help</string>
-    <string name="F2">2 Rename</string>
-    <string name="F3">3 View</string>
-    <string name="F4">4 Edit</string>
-    <string name="SF4">&#xA0; Create</string>
-    <string name="F5">5 Copy</string>
-    <string name="F6">6 Move</string>
-    <string name="F7">7 MkDir</string>
-    <string name="F8">8 Del</string>
-    <string name="F9">9 Prefs</string>
-    <string name="F10">0 Exit</string>
-    <string name="oth_sh_this">= Make the other panel same as current</string>
-    <string name="eq">= Same</string>
-    <string name="change">&#x21E6; Toggle</string>
-    <string name="tgl">&#x21E6; Toggle</string>
-    <string name="sz">\" Size</string>
-    <string name="refresh">&#xA0; Refresh</string>
-    <string name="enter">&#xA0; Change Location</string>
-    <string name="home">&#xA0; Home</string>
-    <string name="softkbd">&#xA0; Keyboard</string>    
+    <string name="F1">Help</string>
+    <string name="F2">Rename</string>
+    <string name="F3">View</string>
+    <string name="F4">Edit</string>
+    <string name="SF4">Create</string>
+    <string name="F5">Copy</string>
+    <string name="F6">Move</string>
+    <string name="F7">MkDir</string>
+    <string name="F8">Del</string>
+    <string name="F9">Prefs</string>
+    <string name="F10">Exit</string>
+    <string name="oth_sh_this">Make the other panel same as current</string>
+    <string name="eq">Same</string>
+    <string name="change">Toggle</string>
+    <string name="tgl">Toggle</string>
+    <string name="sz">Size</string>
+    <string name="refresh">Refresh</string>
+    <string name="enter">Change Location</string>
+    <string name="home">Home</string>
+    <string name="softkbd">Keyboard</string>
     <string name="enter_b">Location</string>
-    <string name="add_fav">* Favorite the current folder</string>
-    <string name="add_fav_b">* Favorite</string>
+    <string name="add_fav">Favorite the current folder</string>
+    <string name="add_fav_b">Favorite</string>
     
     <string name="remount_b">Remount /system</string>
     <string name="remount">Remount</string>
@@ -55,29 +55,29 @@
 
     <string name="shortcut">Shortcut to the desktop</string>
     
-    <string name="enter_ftp">&#xA0; Open FTP site</string>
-    <string name="enter_smb">&#xA0; Open Samba (Windows) share</string>
+    <string name="enter_ftp">Open FTP site</string>
+    <string name="enter_smb">Open Samba (Windows) share</string>
     <string name="search_file">/ Search file</string>
 
-    <string name="sort_by_name">&#xA0; By Name</string>
-    <string name="sort_by_ext" >&#xA0; By Extension</string>
-    <string name="sort_by_size">&#xA0; By Size</string>
-    <string name="sort_by_date">&#xA0; By Date</string>
+    <string name="sort_by_name">By Name</string>
+    <string name="sort_by_ext" >By Extension</string>
+    <string name="sort_by_size">By Size</string>
+    <string name="sort_by_date">By Date</string>
 
     <string name="sort_by_name_b">By Name</string>
     <string name="sort_by_ext_b" >By Extension</string>
     <string name="sort_by_size_b">By Size</string>
     <string name="sort_by_date_b">By Date</string>
 
-    <string name="select_all">+ Select files</string>
-    <string name="unselect_all">- UnSelect files</string>
-    <string name="select_b">+ Select</string>
-    <string name="unselect_b">- UnSelect</string>
+    <string name="select_all">Select files</string>
+    <string name="unselect_all">UnSelect files</string>
+    <string name="select_b">Select</string>
+    <string name="unselect_b">UnSelect</string>
         
-    <string name="toggle_panels_mode"># Change panels mode</string>
-    <string name="prefs">9 Settings</string>
-    <string name="about">&#xA0; About</string>
-    <string name="keys">1 Shortcut keys</string>
+    <string name="toggle_panels_mode">Change panels mode</string>
+    <string name="prefs">Settings</string>
+    <string name="about">About</string>
+    <string name="keys">Shortcut keys</string>
     <string name="new_file">Create a new file</string>
     <string name="new_folder">Create a new folder</string>
     <string name="new_zip">Create a new ZIP file</string>
@@ -276,29 +276,6 @@ copied >5 will produce:
     <string name="summary_show_toolbar">Show or hide buttons at the bottom of the screen</string>
     <string name="toolbar_preference">Choose which buttons to show</string>
     <string name="summary_toolbar_preference">Customize the set of command buttons in the Toolbar</string>
-    <string name="show_F1">Show &#xAB; 1 Help&#xBB;</string>
-    <string name="show_F2">Show &#xAB; 2 Rename&#xBB;</string>
-    <string name="show_F3">Show &#xAB; 3 View&#xBB;</string>
-    <string name="show_F4">Show &#xAB; 4 Edit&#xBB;</string>
-    <string name="show_SF4">Show &#xAB; &#xA0; Create&#xBB;</string>
-    <string name="show_F5">Show &#xAB; 5 Copy&#xBB;</string>
-    <string name="show_F6">Show &#xAB; 6 Move&#xBB;</string>
-    <string name="show_F7">Show &#xAB; 7 MkDir&#xBB;</string>
-    <string name="show_F8">Show &#xAB; 8 Del&#xBB;</string>
-    <string name="show_F9">Show &#xAB; 9 Menu&#xBB;</string>
-    <string name="show_F10">Show &#xAB; 0 Exit&#xBB;</string>
-    <string name="show_eq">Show &#xAB; = Make both panels same&#xBB;</string>
-    <string name="show_tgl">Show &#xAB; &#x21E6; Toggle&#xBB;</string>
-    <string name="show_sz">Show &#xAB; \" Size&#xBB;</string>
-    
-    <string name="show_by_name">Show &#xAB; Sort by Name&#xBB;</string>
-    <string name="show_by_ext" >Show &#xAB; Sort by Extension&#xBB;</string>
-    <string name="show_by_size">Show &#xAB; Sort by Size&#xBB;</string>
-    <string name="show_by_date">Show &#xAB; Sort by Date&#xBB;</string>
-
-    <string name="show_sel_uns">Show &#xAB;+/- Select/Unselect &#xBB;</string>
-    <string name="show_enter"  >Show &#xAB;Location&#xBB;</string>
-    <string name="show_addfav" >Show &#xAB;* Favorite &#xBB;</string>
 
     <string name="tblist_label" >Arrange the tool buttons</string>
 
@@ -393,8 +370,8 @@ copied >5 will produce:
     <string name="dbox_app_uri">market://search?q=pname:com.ghostsq.commander.dropbox</string>
     
 
-    <string name="donate">&#xA0; Donate</string>
-    <string name="online_help">&#xA0; Online Help</string>
+    <string name="donate">Donate</string>
+    <string name="online_help">Online Help</string>
 
     <string name="donation">A little donation will support the further development.\n
 Tap \"Ok\" to easily do that via PayPal.\n

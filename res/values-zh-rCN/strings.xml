@@ -7,37 +7,37 @@
     <string name="list">列表</string>
     <string name="app">应用程序</string>
     
-    <string name="F1">1 帮助</string>
-    <string name="F2">2 重命名</string>
-    <string name="F3">3 查看</string>
-    <string name="F4">4 编辑</string>
-    <string name="SF4">   创建</string>
-    <string name="F5">5 复制</string>
-    <string name="F6">6 移动</string>
-    <string name="F7">7 新建目录</string>
-    <string name="F8">8 删除</string>
-    <string name="F9">9 设置</string>
-    <string name="F10">0 退出</string>
-    <string name="col_sw"># 切换模式</string>
-    <string name="oth_sh_this">= 使其他的与此相同</string>
-    <string name="eq">= 设为相同</string>
-    <string name="change">⇦ 切换当前面板</string>
-    <string name="tgl">⇦ 切换当前面板</string>
-    <string name="sz">\" 大小</string>
-    <string name="refresh">  刷新</string>
-    <string name="enter">  变更位置</string>
-    <string name="enter_ftp">  FTP 助手</string>
+    <string name="F1">帮助</string>
+    <string name="F2">重命名</string>
+    <string name="F3">查看</string>
+    <string name="F4">编辑</string>
+    <string name="SF4">创建</string>
+    <string name="F5">复制</string>
+    <string name="F6">移动</string>
+    <string name="F7">新建目录</string>
+    <string name="F8">删除</string>
+    <string name="F9">设置</string>
+    <string name="F10">退出</string>
+    <string name="col_sw">切换模式</string>
+    <string name="oth_sh_this">使其他的与此相同</string>
+    <string name="eq">设为相同</string>
+    <string name="change">切换当前面板</string>
+    <string name="tgl">切换当前面板</string>
+    <string name="sz">大小</string>
+    <string name="refresh">刷新</string>
+    <string name="enter">变更位置</string>
+    <string name="enter_ftp">FTP 助手</string>
 
-    <string name="sort_by_name">  根据文件名</string>
-    <string name="sort_by_size">  根据文件大小</string>
-    <string name="sort_by_date">  根据修改时间</string>
+    <string name="sort_by_name">根据文件名</string>
+    <string name="sort_by_size">根据文件大小</string>
+    <string name="sort_by_date">根据修改时间</string>
     <string name="sort_by_name_b">根据文件名</string>
     <string name="sort_by_size_b">根据文件大小</string>
     <string name="sort_by_date_b">根据修改时间</string>
-    <string name="select_all">+ 全选</string>
-    <string name="unselect_all">- 取消全选</string>
+    <string name="select_all">全选</string>
+    <string name="unselect_all">取消全选</string>
         
-    <string name="prefs">9 设置</string>
+    <string name="prefs">设置</string>
     <string name="about">关于</string>
     <string name="keys">快捷键</string>
     <string name="new_file">创建新文件</string>
@@ -109,20 +109,6 @@
     <string name="summary_show_toolbar">显示或隐藏屏幕底部的按钮</string>
     <string name="toolbar_preference">选择显示哪些按钮</string>
     <string name="summary_toolbar_preference">自定义工具栏上的命令按钮</string>
-    <string name="show_F1">显示 « 1 帮助»</string>
-    <string name="show_F2">显示 « 2 重命名»</string>
-    <string name="show_F3">显示 « 3 查看»</string>
-    <string name="show_F4">显示 « 4 编辑»</string>
-    <string name="show_SF4">显示 «   创建»</string>
-    <string name="show_F5">显示 « 5 复制»</string>
-    <string name="show_F6">显示 « 6 移动»</string>
-    <string name="show_F7">显示 « 7 新建目录»</string>
-    <string name="show_F8">显示 « 8 删除»</string>
-    <string name="show_F9">显示 « 9 菜单»</string>
-    <string name="show_F10">显示 « 0 退出»</string>
-    <string name="show_eq">显示 « = (设为相同)»</string>
-    <string name="show_tgl">显示 « ⇦ 更改»</string>
-    <string name="show_sz">显示 « \" 大小»</string>
 
     <string name="finger_friendly">手指触摸优化</string>
     <string name="summary_finger_friendly">增大用户界面的元素</string>

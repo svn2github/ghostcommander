@@ -22,6 +22,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
 import android.net.UrlQuerySanitizer;
@@ -149,15 +150,28 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 ViewGroup tb_holder = (ViewGroup)toolbar; 
                 tb_holder.removeAllViews();
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
+                
+                boolean keyboard = c.getResources().getConfiguration().keyboard != Configuration.KEYBOARD_NOKEYS ;
+                Log.v( TAG, "keyboard=" + c.getResources().getConfiguration().keyboard );
+                Log.v( TAG, "keyboardHidden=" + c.getResources().getConfiguration().keyboardHidden );
+                
                 ToolButtons tba = new ToolButtons();
                 tba.restore( sharedPref, c );
                 for( int i = 0; i < tba.size(); i++ ) {
                     ToolButton tb = tba.get(i);
                     int bid = tb.getId();
                     if( tb.isVisible() && ca.isButtonActive( bid ) ) {
-                        Button b = new Button( c, null, fingerFriendly ? 0 : android.R.attr.buttonStyleSmall );
+                        Button b = new Button( c, null, fingerFriendly ? 
+                                android.R.attr.buttonStyle : 
+                                android.R.attr.buttonStyleSmall );
                         b.setId( bid );
-                        b.setText( tb.getCaption() );
+                        String caption = "";
+                        if( keyboard ) {
+                            char ch = ToolButton.getBoundKey( bid );
+                            if( ch != 0 )
+                                caption = ch + " "; 
+                        }
+                        b.setText( caption += tb.getCaption() );
                         b.setOnClickListener( c );
                         tb_holder.addView( b );
                     }
