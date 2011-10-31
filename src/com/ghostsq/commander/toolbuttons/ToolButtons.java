@@ -49,7 +49,7 @@ public class ToolButtons extends ArrayList<ToolButton>
                  R.id.sel_all, 
                  R.id.uns_all, 
                  R.id.enter,   
-                 R.id.addfav,  
+                 R.id.add_fav,  
                  R.id.remount
             };
             for( int bi : bia ) {

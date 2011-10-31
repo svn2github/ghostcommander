@@ -9,7 +9,8 @@ import com.ghostsq.commander.adapters.FSAdapter;
 import com.ghostsq.commander.adapters.FavsAdapter;
 import com.ghostsq.commander.adapters.ZipAdapter;
 import com.ghostsq.commander.favorites.Favorite;
-import com.ghostsq.commander.favorites.Shortcuts;
+import com.ghostsq.commander.favorites.Favorites;
+import com.ghostsq.commander.favorites.LocationBar;
 import com.ghostsq.commander.toolbuttons.ToolButton;
 import com.ghostsq.commander.toolbuttons.ToolButtons;
 import com.ghostsq.commander.utils.Utils;
@@ -74,8 +75,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     private float downX = 0, downY = 0;
     private StringBuffer     quickSearchBuf = null;
     private Toast            quickSearchTip = null;
-    private ArrayList<Favorite> favorites;
-    private Shortcuts        shorcutsFoldersList;
+    private Favorites        favorites;
+    private LocationBar      locationBar;
     private CommanderAdapter destAdapter = null;
     public  boolean sxs, fingerFriendly = false;
     
@@ -105,8 +106,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             right_title.setOnClickListener( this );
             right_title.setOnLongClickListener( this );
         }
-        favorites = new ArrayList<Favorite>();
-        shorcutsFoldersList = new Shortcuts( c, this, favorites );
+        favorites = new Favorites( c.getContext() );
+        locationBar = new LocationBar( c, this, favorites );
         try{ 
 	        quickSearchBuf = new StringBuffer();
 	        quickSearchTip = Toast.makeText( c, "", Toast.LENGTH_SHORT );
@@ -150,8 +151,9 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 ViewGroup tb_holder = (ViewGroup)toolbar; 
                 tb_holder.removeAllViews();
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
-                
-                boolean keyboard = c.getResources().getConfiguration().keyboard != Configuration.KEYBOARD_NOKEYS ;
+                 
+                boolean keyboard = sharedPref.getBoolean( "show_hotkeys", true ) || 
+                                c.getResources().getConfiguration().keyboard != Configuration.KEYBOARD_NOKEYS ;
                 Log.v( TAG, "keyboard=" + c.getResources().getConfiguration().keyboard );
                 Log.v( TAG, "keyboardHidden=" + c.getResources().getConfiguration().keyboardHidden );
                 
@@ -313,8 +315,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     }
     public final void addCurrentToFavorites() {
         String cur_uri = getFolderUri( true );
-        shorcutsFoldersList.addToFavorites( cur_uri );
-        c.showMessage( c.getString( R.string.fav_added, cur_uri ) );
+        favorites.addToFavorites( cur_uri );
+        c.showMessage( c.getString( R.string.fav_added, Favorite.screenPwd( cur_uri ) ) );
     }
     public final int getSelection( boolean one_checked ) {
         return list[current].getSelection( one_checked );
@@ -648,7 +650,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             if( pos < 0 ) return;
             String add = u.buildUpon().appendEncodedPath( ca.getItemName( pos, false ) ).build().toString();
             if( add != null && add.length() > 0 ) {
-                shorcutsFoldersList.addToFavorites( add );
+                favorites.addToFavorites( add );
                 c.showMessage( c.getString( R.string.fav_added, add ) );
             }
         }
@@ -754,7 +756,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 		quickSearchBuf.delete( 0, quickSearchBuf.length() );
 	}
 	public final void openGoPanel() {
-		shorcutsFoldersList.openGoPanel( current, getFolderUri( true ) );
+		locationBar.openGoPanel( current, getFolderUri( true ) );
 	}
     public final void operationFinished() {
         if( null != destAdapter )
@@ -869,7 +871,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     @Override
     public void onItemSelected( AdapterView<?> listView, View itemView, int pos, long id ) {
         //Log.v( TAG, "Selected item " + pos );
-    	shorcutsFoldersList.closeGoPanel();
+    	locationBar.closeGoPanel();
     	int which = list[current].id == listView.getId() ? current : opposite();
         list[which].setCurPos( pos );
     }
@@ -885,7 +887,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public void onItemClick( AdapterView<?> parent, View view, int position, long id ) {
         //Log.v( TAG, "onItemClick" );
         
-    	shorcutsFoldersList.closeGoPanel();
+    	locationBar.closeGoPanel();
     	resetQuickSearch();
     	ListView flv = list[current].flv;
         if( flv != parent ) {
@@ -932,7 +934,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             if( v == list[opposite()].flv)
                 togglePanels( false );
 	        
-	    	shorcutsFoldersList.closeGoPanel();
+	    	locationBar.closeGoPanel();
 	        switch( event.getAction() ) {
 	        case MotionEvent.ACTION_DOWN: {
                     downX = event.getX();
@@ -980,7 +982,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     	//Log.v( TAG, "panel key:" + keyCode + ", uchar:" + event.getUnicodeChar() + ", shift: " + event.isShiftPressed() );
     	
 	    if( v instanceof ListView ) {
-	    	shorcutsFoldersList.closeGoPanel();
+	    	locationBar.closeGoPanel();
 	    	char ch = (char)event.getUnicodeChar();
 	    	if( ch >= 'A' && ch <= 'z' ) {
 	    		quickSearch( ch );
@@ -991,7 +993,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 	        case '(':
 	        case ')': {
 		        	int which = ch == '(' ? LEFT : RIGHT;
-		            shorcutsFoldersList.openGoPanel( which, getFolderUri( isCurrent( which ) ) );
+		            locationBar.openGoPanel( which, getFolderUri( isCurrent( which ) ) );
 		        }
 	        	return true;
             case '*':
@@ -1075,7 +1077,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     	switch( view_id ) {
     	case R.id.left_dir:
     	case R.id.right_dir:
-    		shorcutsFoldersList.closeGoPanel();
+    		locationBar.closeGoPanel();
 	        int which = view_id == titlesIds[LEFT] ? LEFT : RIGHT;
 	        if( which == current ) {
 	            focus();
@@ -1088,10 +1090,9 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     @Override
     public boolean onLongClick( View v ) {
     	int which = v.getId() == titlesIds[LEFT] ? LEFT : RIGHT;
-        shorcutsFoldersList.openGoPanel( which, getFolderUri( isCurrent( which ) ) );
+        locationBar.openGoPanel( which, getFolderUri( isCurrent( which ) ) );
     	return true;
     }
-
 
     /*
      * ListView.OnScrollListener implementation 
@@ -1193,7 +1194,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             CommanderAdapter right_adapter = (CommanderAdapter)list[RIGHT].getListAdapter();
             s.right = right_adapter.toString();
             s.rightItem = right_adapter.getItemName( list[RIGHT].getCurPos(), false );
-            s.favs = shorcutsFoldersList.getAsString();
+            s.favs = favorites.getAsString();
         } catch( Exception e ) {
             Log.e( TAG, "getState()", e );
         }
@@ -1203,10 +1204,10 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 	    if( s == null ) return;
     	resetQuickSearch();
         if( s.favs != null && s.favs.length() > 0 )
-            shorcutsFoldersList.setFromString( s.favs );
+            favorites.setFromString( s.favs );
         else
             if( s.fav_uris != null )
-                shorcutsFoldersList.setFromOldString( s.fav_uris );
+                favorites.setFromOldString( s.fav_uris );
     	current = s.current;
     	//Log.v( TAG, "Restoring left current item: " + s.leftItem );
         NavigateInternal( LEFT,  Uri.parse( s.left  ), s.leftItem );

@@ -21,8 +21,15 @@
   <item type="id" name="sel_all" />
   <item type="id" name="uns_all" />
   <item type="id" name="enter"   />
-  <item type="id" name="addfav"  />
+  <item type="id" name="add_fav" />
   <item type="id" name="remount" />
+
+  <item type="id" name="home" />
+  <item type="id" name="favs" />
+  <item type="id" name="sdcard" />
+  <item type="id" name="root" />
+  <item type="id" name="mount" />
+  <item type="id" name="hidden" />
 </resources>
 
 

@@ -15,6 +15,7 @@ import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
+import com.ghostsq.commander.favorites.Favorite;
 import com.ghostsq.commander.utils.LsItem.LsItemPropComparator;
 import com.ghostsq.commander.utils.FTP;
 import com.ghostsq.commander.utils.LsItem;
@@ -253,7 +254,13 @@ public class FTPAdapter extends CommanderAdapterBase {
     
     @Override
     public String toString() {
-        return uri != null ? uri.toString() : "";
+        if( uri != null ) {
+            if( theUserPass != null )
+                return Favorite.getUriWithAuth( uri, theUserPass.getUserName(), theUserPass.getPassword() ).toString();
+            else
+                return uri.toString(); 
+        }
+        else return "";
     }
     /*
      * CommanderAdapter implementation

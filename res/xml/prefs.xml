@@ -153,94 +153,15 @@
                 android:title="@string/show_toolbar"
                 android:summary="@string/summary_show_toolbar"
                 android:defaultValue="true"/>
+        <CheckBoxPreference
+                android:key="show_hotkeys"
+                android:title="@string/show_hotkeys"
+                android:summary="@string/summary_show_hotkeys"
+                android:defaultValue="true"/>
         <PreferenceScreen
                 android:key="toolbar_preference"
                 android:title="@string/toolbar_preference"
                 android:summary="@string/summary_toolbar_preference">
-            <!--    
-            <CheckBoxPreference
-                    android:key="show_F1"
-                    android:title="@string/show_F1"
-                    android:defaultValue="true"/>
-            <CheckBoxPreference
-                    android:key="show_F2"
-                    android:title="@string/show_F2"
-                    android:defaultValue="true"/>
-            <CheckBoxPreference
-                    android:key="show_F4"
-                    android:title="@string/show_F4"
-                    android:defaultValue="true"/>
-            <CheckBoxPreference
-                    android:key="show_SF4"
-                    android:title="@string/show_SF4"
-                    android:defaultValue="false"/>
-            <CheckBoxPreference
-                    android:key="show_F5"
-                    android:title="@string/show_F5"
-                    android:defaultValue="true"/>
-            <CheckBoxPreference
-                    android:key="show_F6"
-                    android:title="@string/show_F6"
-                    android:defaultValue="true"/>
-            <CheckBoxPreference
-                    android:key="show_F7"
-                    android:title="@string/show_F7"
-                    android:defaultValue="true"/>
-            <CheckBoxPreference
-                    android:key="show_F8"
-                    android:title="@string/show_F8"
-                    android:defaultValue="true"/>
-            <CheckBoxPreference
-                    android:key="show_F9"
-                    android:title="@string/show_F9"
-                    android:defaultValue="true"/>
-            <CheckBoxPreference
-                    android:key="show_F10"
-                    android:title="@string/show_F10"
-                    android:defaultValue="true"/>
-            <CheckBoxPreference
-                    android:key="show_eq"
-                    android:title="@string/show_eq"
-                    android:defaultValue="false"/>
-            <CheckBoxPreference
-                    android:key="show_tgl"
-                    android:title="@string/show_tgl"
-                    android:defaultValue="false"/>
-            <CheckBoxPreference
-                    android:key="show_sz"
-                    android:title="@string/show_sz"
-                    android:defaultValue="true"/>
-
-            <CheckBoxPreference
-                    android:key="show_by_name"
-                    android:title="@string/show_by_name"
-                    android:defaultValue="true"/>
-            <CheckBoxPreference
-                    android:key="show_by_ext"
-                    android:title="@string/show_by_ext"
-                    android:defaultValue="false"/>
-            <CheckBoxPreference
-                    android:key="show_by_size"
-                    android:title="@string/show_by_size"
-                    android:defaultValue="true"/>
-            <CheckBoxPreference
-                    android:key="show_by_date"
-                    android:title="@string/show_by_date"
-                    android:defaultValue="true"/>
-                    
-            <CheckBoxPreference
-                    android:key="show_sel_uns"
-                    android:title="@string/show_sel_uns"
-                    android:defaultValue="false"/>
-            <CheckBoxPreference
-                    android:key="show_enter"
-                    android:title="@string/show_enter"
-                    android:defaultValue="false"/>
-            <CheckBoxPreference
-                    android:key="show_addfav"
-                    android:title="@string/show_addfav"
-                    android:defaultValue="false"/>
-                    -->
         </PreferenceScreen>
         <CheckBoxPreference
                     android:key="arrow_mode"

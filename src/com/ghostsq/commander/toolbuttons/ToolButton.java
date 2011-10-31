@@ -41,7 +41,7 @@ public class ToolButton {
         if( cn.equals( "sel_all" ) ) return        R.id.sel_all;
         if( cn.equals( "uns_all" ) ) return        R.id.uns_all;
         if( cn.equals( "enter"   ) ) return        R.id.enter;
-        if( cn.equals( "addfav"  ) ) return        R.id.addfav;
+        if( cn.equals( "addfav"  ) ) return        R.id.add_fav;
         if( cn.equals( "remount" ) ) return        R.id.remount;
         return 0;
     }
@@ -69,7 +69,7 @@ public class ToolButton {
         case  R.id.sel_all:      return  "sel_all";
         case  R.id.uns_all:      return  "uns_all";
         case  R.id.enter:        return  "enter";
-        case  R.id.addfav:       return  "addfav";
+        case  R.id.add_fav:      return  "addfav";
         case  R.id.remount:      return  "remount";
         }
         return null;
@@ -90,7 +90,7 @@ public class ToolButton {
         case  R.id.F10:          return  '0';
         case  R.id.eq:           return  '=';
         case  R.id.tgl:          return  0;
-        case  R.id.sz:           return  '\'';
+        case  R.id.sz:           return  '"';
         case  R.id.by_name:      return  0;
         case  R.id.by_ext:       return  0;
         case  R.id.by_size:      return  0;
@@ -98,7 +98,7 @@ public class ToolButton {
         case  R.id.sel_all:      return  '+';
         case  R.id.uns_all:      return  '-';
         case  R.id.enter:        return  0;
-        case  R.id.addfav:       return  '*';
+        case  R.id.add_fav:      return  '*';
         case  R.id.remount:      return  0;
         }
         return 0;
@@ -127,7 +127,7 @@ public class ToolButton {
         case  R.id.sel_all:      return  R.string.select_b;
         case  R.id.uns_all:      return  R.string.unselect_b;
         case  R.id.enter:        return  R.string.enter_b;
-        case  R.id.addfav:       return  R.string.add_fav_b;
+        case  R.id.add_fav:      return  R.string.add_fav_b;
         case  R.id.remount:      return  R.string.remount_b;
         }
         return 0;
@@ -156,7 +156,7 @@ public class ToolButton {
         case  R.id.sel_all:      return  false;
         case  R.id.uns_all:      return  false;
         case  R.id.enter:        return  false;
-        case  R.id.addfav:       return  false;
+        case  R.id.add_fav:      return  false;
         case  R.id.remount:      return  false;
         }
         return false;

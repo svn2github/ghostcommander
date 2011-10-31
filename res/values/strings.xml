@@ -274,6 +274,8 @@ copied >5 will produce:
     <string name="summary_show_icons">Show the File Type Icon for each file</string>
     <string name="show_toolbar">Show Toolbar</string>
     <string name="summary_show_toolbar">Show or hide buttons at the bottom of the screen</string>
+    <string name="show_hotkeys">Show Hotkeys</string>
+    <string name="summary_show_hotkeys">Always show the hotkeys on the toolbar buttons</string>
     <string name="toolbar_preference">Choose which buttons to show</string>
     <string name="summary_toolbar_preference">Customize the set of command buttons in the Toolbar</string>
 
@@ -370,12 +372,12 @@ copied >5 will produce:
     <string name="dbox_app_uri">market://search?q=pname:com.ghostsq.commander.dropbox</string>
     
 
-    <string name="donate">Donate</string>
+    <string name="donate">Please donate</string>
     <string name="online_help">Online Help</string>
 
     <string name="donation">A little donation will support the further development.\n
-Tap \"Ok\" to easily do that via PayPal.\n
-\"Cancel\" to enjoy the &#xAB;Ghost Commander&#xBB; file manager for free.\n
+Tap \"Ok\" to be redirected to the PayPal site.\n
+\"Cancel\" to continue enjoy the &#xAB;Ghost Commander&#xBB; file manager for free.\n
     </string>
     <string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
     <string name="help_uri">http://sites.google.com/site/ghostcommander1/info</string>

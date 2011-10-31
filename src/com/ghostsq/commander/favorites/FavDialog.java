@@ -73,8 +73,8 @@ public class FavDialog implements OnClickListener {
                     int sep = username.indexOf( '\\' );
                     if( sep < 0 )
                         sep = username.indexOf( ';' );
+                    de = (EditText)ib.findViewById( R.id.domain_edit );
                     if( sep >= 0 ) {
-                        de = (EditText)ib.findViewById( R.id.domain_edit );
                         de.setText( username.substring( 0, sep ) );
                         username = username.substring( sep+1 );
                     }

@@ -23,22 +23,20 @@ public class Favorite {
     private static String  sep = ",";
     private static Pattern sep_re = Pattern.compile( sep );
     private static String  seed = "5hO@%#O7&!H3#R";
+    private static String  pwScreen = "***";
     
     // fields
     private Uri     uri;
     private String  comment;
     private String  username;
     private PasswordProtection password;
-    
+
+    public Favorite( Uri u ) {
+        init( u );
+    }
     public Favorite( String uri_str, String comment_ ) {
         try {
-            uri = Uri.parse( uri_str );
-            String user_info = uri.getUserInfo();
-            if( user_info != null && user_info.length() > 0 ) {
-                UsernamePasswordCredentials crd = new UsernamePasswordCredentials( user_info );
-                setCredentials( crd.getUserName(), crd.getPassword() );
-                uri = updateCredentials( uri, null );
-            }
+            init( Uri.parse( uri_str ) );
             comment = comment_;
         }
         catch( Exception e ) {
@@ -48,6 +46,23 @@ public class Favorite {
     public Favorite( String raw ) {
         fromString( raw );
     }
+
+    public void init( Uri u ) {
+        try {
+            uri = u;
+            String user_info = uri.getUserInfo();
+            if( user_info != null && user_info.length() > 0 ) {
+                UsernamePasswordCredentials crd = new UsernamePasswordCredentials( user_info );
+                String pw = crd.getPassword();
+                setCredentials( crd.getUserName(), pwScreen.equals( pw ) ? null : pw );
+                uri = updateCredentials( uri, null );
+            }
+        }
+        catch( Exception e ) {
+            e.printStackTrace();
+        }
+    }    
+    
     public boolean fromString( String raw ) {
         if( raw == null ) return false;
         try {
@@ -111,26 +126,34 @@ public class Favorite {
         return uri;
     }
     public Uri getUriWithAuth() {
-        if( username == null ) return uri;
-        String auth = URLEncoder.encode( username );
-        if( password != null )
-            auth += ":" + URLEncoder.encode( new String( password.getPassword() ) );
-        auth += "@" + uri.getEncodedAuthority();
-        return uri.buildUpon().encodedAuthority( auth ).build();
+        return getUriWithAuth( uri, username, new String( password.getPassword() ) );
     }
-    
     public String getUriString( boolean screen_pw ) {
-        if( uri == null ) return null;
-        if( username == null ) return uri.toString();
-        String ui = Uri.encode( username );
-        if( screen_pw )
-            ui += ":***";
-        else
-            if( password != null )
-                ui += ":" + Uri.encode( new String( password.getPassword() ) );
-        return updateCredentials( uri, ui ).toString();
+        try {
+            if( uri == null ) return null;
+            if( username == null ) return uri.toString();
+            if( screen_pw )
+                return getUriWithAuth( uri, username, pwScreen ).toString();
+            else
+                return getUriWithAuth().toString();
+        } catch( Exception e ) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
+    public boolean equals( String test ) {
+        String item = getUriString( false );
+        if( item != null ) {
+            String strip_item = item.trim();
+            if( strip_item.length() == 0 || strip_item.charAt( strip_item.length()-1 ) != '/' )
+                strip_item += "/";
+            if( strip_item.compareTo( test ) == 0 )
+                return true;
+        }
+        return false;
+    }
+    
     public String getUserName() {
         return username;
     }
@@ -183,15 +206,50 @@ public class Favorite {
         if( ui == null || ui.length() == 0 ) return u.toString();
         int pw_pos = ui.indexOf( ':' );
         if( pw_pos < 0 ) return u.toString();
-        ui = ui.substring( 0, pw_pos+1 ) + "***";
+        ui = ui.substring( 0, pw_pos+1 ) + pwScreen;
         return Uri.decode( updateCredentials( u, ui ).toString() );
     }
-    private final static Uri updateCredentials( Uri u, String ui ) {
+    public final static boolean isPwdScreened( Uri u ) {
+        String user_info = u.getUserInfo();
+        if( user_info != null && user_info.length() > 0 ) {
+            UsernamePasswordCredentials crd = new UsernamePasswordCredentials( user_info );
+            if( pwScreen.equals( crd.getPassword() ) ) return true;
+        }
+        return false;
+    }
+    
+    public final Uri borrowPassword( Uri stranger_uri ) {
+        String stranger_user_info = stranger_uri.getUserInfo();
+        if( password != null && stranger_user_info != null && stranger_user_info.length() > 0 ) {
+            UsernamePasswordCredentials stranger_crd = new UsernamePasswordCredentials( stranger_user_info );
+            if( username != null && username.equalsIgnoreCase( stranger_crd.getUserName() ) )
+                return getUriWithAuth( stranger_uri, stranger_crd.getUserName(), new String( password.getPassword() ) );
+        }
+        return null;
+    }
+    public static Uri getUriWithAuth( Uri u, String un, String pw ) {
+        if( un == null ) return u;
+        String auth = URLEncoder.encode( un );
+        if( pw != null )
+            auth += ":" + URLEncoder.encode( pw );
+        return updateCredentials( u, auth );
+    }
+    
+    public final static Uri updateCredentials( Uri u, String ui ) {
         String host = u.getHost();
+        if( host == null ) return u;
         int port = u.getPort();
-        String authority = ui != null ? ui + "@" : ""; 
-        authority += host + ( port >= 0 ? ":" + port : "" ); 
+        String authority = ui != null ? ui + "@" : "";
+        authority += host + ( port >= 0 ? ":" + port : "" );
         return u.buildUpon().encodedAuthority( authority ).build(); 
+    }
+
+    public final static Uri addTrailngSlash( Uri u ) {
+        String path = u.getEncodedPath();
+        if( path == null )
+            path = "/";
+        else Utils.mbAddSl( path );
+        return u.buildUpon().encodedPath( path ).build(); 
     }
 
     // ---------------------------

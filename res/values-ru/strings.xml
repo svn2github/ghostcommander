@@ -192,9 +192,12 @@
 <string name="show_icons">Иконки файлов</string>
 <string name="summary_show_icons">Показывать иконки для файлов</string>
 <string name="show_toolbar">Панель кнопок</string>
-<string name="summary_show_toolbar">Показывать панель с кнопками файловых операций</string>
+<string name="summary_show_toolbar">Включить панель с инструментальными кнопками</string>
+<string name="show_hotkeys">Быстрые клавиши</string>
+<string name="summary_show_hotkeys">Всегда показывать быстрые клавиши на кнопках </string>
+
 <string name="toolbar_preference">Выбор инструментальных кнопок</string>
-<string name="summary_toolbar_preference">Настроить, какие кнопки показывать в инструментальной панели операций</string>
+<string name="summary_toolbar_preference">Kакие кнопки показывать в инструментальной панели и в каком порядке</string>
 <string name="finger_friendly">Управление пальцем</string>
 <string name="summary_finger_friendly">Увеличить элементы интерфейса для управления пальцем</string>
 <string name="prevent_root">Предупреждать на системных каталогах</string>
