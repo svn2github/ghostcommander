@@ -126,7 +126,7 @@ public class Favorite {
         return uri;
     }
     public Uri getUriWithAuth() {
-        return getUriWithAuth( uri, username, new String( password.getPassword() ) );
+        return getUriWithAuth( uri, username, password != null ? new String( password.getPassword() ) : null );
     }
     public String getUriString( boolean screen_pw ) {
         try {
