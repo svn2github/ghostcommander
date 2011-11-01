@@ -46,8 +46,8 @@ public class ZipAdapter extends CommanderAdapterBase {
         parentLink = PLS;
     }
     @Override
-    public String getType() {
-        return "zip";
+    public int getType() {
+        return CA.ZIP;
     }
     @Override
     public boolean readSource( Uri tmp_uri, String pass_back_on_done ) {
@@ -217,21 +217,6 @@ public class ZipAdapter extends CommanderAdapterBase {
     public Uri getUri() {
         return uri;
     }
-    @Override
-    public boolean isButtonActive( int brId ) {
-        if( brId == R.id.F1 ||
-            brId == R.id.F5 ||
-            brId == R.id.F8 ||
-            brId == R.id.F9 ||
-            brId == R.id.F10     ||
-            brId == R.id.by_name ||
-            brId == R.id.by_ext  ||
-            brId == R.id.by_size ||
-            brId == R.id.by_date
-        ) return true;
-        return false;
-    }
-
     @Override
     public void setIdentities( String name, String pass ) {
     }

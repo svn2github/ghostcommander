@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <!-- Buttons -->
   <item type="id" name="F1" />
   <item type="id" name="F2" />
   <item type="id" name="F3" />
@@ -23,9 +24,6 @@
   <item type="id" name="enter"   />
   <item type="id" name="add_fav" />
   <item type="id" name="remount" />
-
-  <item type="id" name="home" />
-  <item type="id" name="favs" />
   <item type="id" name="sdcard" />
   <item type="id" name="root" />
   <item type="id" name="mount" />

@@ -16,7 +16,7 @@ public class ToolButtons extends ArrayList<ToolButton>
     public final void restore( SharedPreferences shared_pref, Context context ) {
         String bcns = shared_pref.getString( pref_key, null );
         if( bcns != null && bcns.length() > 0 ) {
-            // add new buttons here like below:
+            // add new introduced buttons also here like below:
             //if( bcns.indexOf( "enter" ) >= 0 ) bcns += ",enter";
             String[] bcna = bcns.split( "," );
             for( String bcn : bcna ) {
@@ -50,7 +50,13 @@ public class ToolButtons extends ArrayList<ToolButton>
                  R.id.uns_all, 
                  R.id.enter,   
                  R.id.add_fav,  
-                 R.id.remount
+                 R.id.remount,
+                 R.id.home,    
+                 R.id.favs,    
+                 R.id.sdcard,  
+                 R.id.root,   
+                 R.id.mount,   
+                 R.id.hidden                   
             };
             for( int bi : bia ) {
                 ToolButton tb = new ToolButton( bi );

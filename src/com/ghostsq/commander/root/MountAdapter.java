@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.R;
+import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.root.MountsListEngine;
@@ -39,8 +40,8 @@ public class MountAdapter extends CommanderAdapterBase {
     }
     
     @Override
-    public String getType() {
-        return "mount";
+    public int getType() {
+        return CA.MNT;
     }
     
     @Override
@@ -72,14 +73,6 @@ public class MountAdapter extends CommanderAdapterBase {
             menu.add( 0, Commander.OPEN, 0, s( R.string.remount ) );
         }
     }    
-    @Override
-    public boolean isButtonActive( int brId ) {
-        if( brId == R.id.F1 ||
-            brId == R.id.F7 ||
-            brId == R.id.F9 ||
-            brId == R.id.F10 ) return true;
-        return false;
-    }
     @Override
     public boolean readSource( Uri tmp_uri, String pass_back_on_done ) {
         try {

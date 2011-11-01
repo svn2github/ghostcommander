@@ -3,6 +3,7 @@ package com.ghostsq.commander;
 import java.io.File;
 import java.util.ArrayList;
 
+import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.adapters.FSAdapter;
@@ -154,22 +155,24 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                  
                 boolean keyboard = sharedPref.getBoolean( "show_hotkeys", true ) || 
                                 c.getResources().getConfiguration().keyboard != Configuration.KEYBOARD_NOKEYS ;
+                /*
                 Log.v( TAG, "keyboard=" + c.getResources().getConfiguration().keyboard );
                 Log.v( TAG, "keyboardHidden=" + c.getResources().getConfiguration().keyboardHidden );
-                
+                */
                 ToolButtons tba = new ToolButtons();
                 tba.restore( sharedPref, c );
+                int adapter_bit = ca.getType();
                 for( int i = 0; i < tba.size(); i++ ) {
                     ToolButton tb = tba.get(i);
                     int bid = tb.getId();
-                    if( tb.isVisible() && ca.isButtonActive( bid ) ) {
+                    if( tb.isVisible() && ( adapter_bit & tb.getSuitableAdapter() ) != 0 ) {
                         Button b = new Button( c, null, fingerFriendly ? 
                                 android.R.attr.buttonStyle : 
                                 android.R.attr.buttonStyleSmall );
                         b.setId( bid );
                         String caption = "";
                         if( keyboard ) {
-                            char ch = ToolButton.getBoundKey( bid );
+                            char ch = tb.getBoundKey();
                             if( ch != 0 )
                                 caption = ch + " "; 
                         }
@@ -178,52 +181,6 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                         tb_holder.addView( b );
                     }
                 }
-                
-/*                
-                Button b = null;
-                ViewGroup buttonSet = (ViewGroup)toolbar;
-                for( int i = 0; i < buttonSet.getChildCount(); i++ ) {
-                    b = (Button)buttonSet.getChildAt( i );
-                    if( b != null ) {
-                        b.setOnClickListener( c );
-                        boolean def = false;
-                        final String pref_id;
-                        final int id = b.getId();
-                        switch( id ) {
-                        case R.id.F1: pref_id = "show_F1";  def = true;  break;
-                        case R.id.F2: pref_id = "show_F2";  def = true;  break;
-                      //case R.id.F3: pref_id = "show_F3";  def = true;  break;
-                        case R.id.F4: pref_id = "show_F4";  def = true;  break;
-                        case R.id.SF4:pref_id = "show_SF4"; def = false; break;
-                        case R.id.F5: pref_id = "show_F5";  def = true;  break;
-                        case R.id.F6: pref_id = "show_F6";  def = true;  break;
-                        case R.id.F7: pref_id = "show_F7";  def = true;  break;
-                        case R.id.F8: pref_id = "show_F8";  def = true;  break;
-                        case R.id.F9: pref_id = "show_F9";  def = true;  break;
-                        case R.id.F10:pref_id = "show_F10"; def = true;  break;
-                        case R.id.eq: pref_id = "show_eq";  def = false; break;
-                        case R.id.tgl:pref_id = "show_tgl"; def = false; break;
-                        case R.id.sz: pref_id = "show_sz";  def = true;  break;
-                        case R.id.by_name: pref_id = "show_by_name"; def = true; break;
-                        case R.id.by_ext:  pref_id = "show_by_ext";  def = false; break;
-                        case R.id.by_size: pref_id = "show_by_size"; def = true; break;
-                        case R.id.by_date: pref_id = "show_by_date"; def = true; break;
-                        
-                        case R.id.select_all:   pref_id = "show_sel_uns"; def = false; break;
-                        case R.id.unselect_all: pref_id = "show_sel_uns"; def = false; break;
-
-                        case R.id.enter:   pref_id = "show_enter"; def = false; break;
-                        case R.id.add_fav: pref_id = "show_addfav"; def = false; break;
-
-                        case R.id.remount: pref_id = ""; def = true; break;
-                        
-                        default: pref_id = "";
-                        }
-                        boolean a = ca.isButtonActive( id );
-                        b.setVisibility( a && sharedPref.getBoolean( pref_id, def ) ? View.VISIBLE : View.GONE );
-                    }
-                }
-*/                
                 toolbar.setVisibility( View.VISIBLE );
             }
             else {
@@ -259,18 +216,23 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     }
 
     public final void setPanelTitle( String s, int which ) {
-        TextView title = (TextView)c.findViewById( titlesIds[which] );
-        if( title != null ) {
-        	int p_width = mainView.getWidth();
-        	if( p_width > 0 )
-        		title.setMaxWidth( p_width / 2 );
-            if( s == null ) {
-                title.setText( c.getString( R.string.fail ) );
+        try {
+            TextView title = (TextView)c.findViewById( titlesIds[which] );
+            if( title != null ) {
+            	int p_width = mainView.getWidth();
+            	if( p_width > 0 )
+            		title.setMaxWidth( p_width / 2 );
+                if( s == null ) {
+                    title.setText( c.getString( R.string.fail ) );
+                }
+                else {
+                    UrlQuerySanitizer urlqs = new UrlQuerySanitizer();
+                    title.setText( urlqs.unescape( Favorite.screenPwd( s ) ) );
+                }
             }
-            else {
-                UrlQuerySanitizer urlqs = new UrlQuerySanitizer();
-                title.setText( urlqs.unescape( Favorite.screenPwd( s ) ) );
-            }
+        }
+        catch( Exception e ) {
+            e.printStackTrace();
         }
     }
     private final void refreshPanelTitles() {
@@ -409,6 +371,15 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                                             sort_mode | CommanderAdapter.SORT_ASC );
         reStoreChoosedItems();
     }
+    public void toggleHidden() {
+        CommanderAdapter ca = getListAdapter( true );
+        
+        int cur_mode = ca.setMode( 0, 0 );
+        int new_mode = ( cur_mode & CommanderAdapter.MODE_HIDDEN ) == CommanderAdapter.SHOW_MODE ?
+                                         CommanderAdapter.HIDE_MODE : CommanderAdapter.SHOW_MODE;
+        ca.setMode( CommanderAdapter.MODE_HIDDEN, new_mode );
+        refreshList( current );
+    }
     public final void refreshLists() {
         refreshList( current );
         if( sxs )
@@ -533,7 +504,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     	      ( path == null || !path.startsWith( DEFAULT_LOC ) ) ) {
     	    if( warnOnRoot ) {
                 CommanderAdapter ca = list[which].getListAdapter();
-                if( ca != null && "file".equals( ca.getType() ) ) {
+                if( ca != null && CA.FS == ca.getType() ) {
                     String cur_path = ca.toString();
                     if( cur_path != null && cur_path.startsWith( DEFAULT_LOC ) ) {
                 		try {
@@ -796,8 +767,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                     return;
                 }
                 String scheme = dest_uri.getScheme();
-                int type_h = CommanderAdapterBase.GetAdapterTypeHash( scheme );
-                dest_adapter = CommanderAdapterBase.CreateAdapter( type_h, c );
+                int type_id = CA.GetAdapterTypeId( scheme );
+                dest_adapter = CA.CreateAdapter( type_id, c );
                 if( dest_adapter == null ) {
                     c.showError( c.getString( R.string.inv_dest ) );
                     return;

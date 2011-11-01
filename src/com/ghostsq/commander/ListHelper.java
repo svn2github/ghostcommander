@@ -1,5 +1,6 @@
 package com.ghostsq.commander;
 
+import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.adapters.FavsAdapter;
@@ -55,14 +56,14 @@ public class ListHelper {
             CommanderAdapter ca_old = (CommanderAdapter)flv.getAdapter();
             CommanderAdapter ca_new = null;
             String scheme = uri.getScheme();
-            int type_h = CommanderAdapterBase.GetAdapterTypeHash( scheme );
-            if( ca_old == null || type_h != ca_old.getType().hashCode() ) {
-                ca_new = CommanderAdapterBase.CreateAdapter( type_h, p.c );
+            int type_id = CA.GetAdapterTypeId( scheme );
+            if( ca_old == null || type_id != ca_old.getType() ) {
+                ca_new = CA.CreateAdapter( type_id, p.c );
                 if( ca_new == null ) {
                     Log.e( TAG, "Can't create adapter of type '" + scheme + "'" );
                     if( ca_old != null )
                         return;
-                    ca_new = CommanderAdapterBase.CreateAdapter( CommanderAdapterBase.GetAdapterTypeHash( null ), p.c );
+                    ca_new = CA.CreateAdapter( CA.GetAdapterTypeId( null ), p.c );
                 }
                 if( ca_old != null )
                     ca_old.prepareToDestroy();

@@ -34,8 +34,8 @@ public class HomeAdapter extends CommanderAdapterBase {
     }    
     
     @Override
-    public String getType() {
-        return "home";
+    public int getType() {
+        return CA.HOME;
     }
     
     @Override
@@ -49,15 +49,6 @@ public class HomeAdapter extends CommanderAdapterBase {
     public Uri getUri() {
         return Uri.parse( toString() );
     }
-
-    @Override
-    public boolean isButtonActive( int brId ) {
-        if( brId == R.id.F1 ||
-            brId == R.id.F9 ||
-            brId == R.id.F10 ) return true;
-        return false;
-    }
-    
     @Override
     public boolean readSource( Uri tmp_uri, String pbod ) {
         commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pbod ) );

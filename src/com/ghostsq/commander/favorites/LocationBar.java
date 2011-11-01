@@ -146,7 +146,7 @@ public class LocationBar extends BaseAdapter implements Filterable, OnKeyListene
 		if( toChange >= 0 && new_dir.length() > 0 ) {
             Uri u = Uri.parse( new_dir );
             if( Favorite.isPwdScreened( u ) )
-                u = favorites.searchForNotScreenedURI( u );
+                u = favorites.searchForPassword( u );
 			if( toChange != p.getCurrent() )
 				p.togglePanels( false );
 			p.Navigate( toChange, u, null );
@@ -203,13 +203,12 @@ public class LocationBar extends BaseAdapter implements Filterable, OnKeyListene
 				if( star_cb.isChecked() ) {
                     Uri u = Uri.parse( uri_s );
                     if( Favorite.isPwdScreened( u ) ) {
-                        Uri up = favorites.searchForNotScreenedURI( u );
+                        Uri up = favorites.searchForPassword( u );
                         if( !u.equals( up )) 
                             u = up;
                         else {
                             Uri uc = Uri.parse( p.getFolderUri( true ) );
-                            String cui = uc.getUserInfo();
-                            u = Favorite.updateCredentials( u, cui );                                
+                            u = Favorite.updateUserInfo( u, uc.getEncodedUserInfo() );                                
                         }
                     }
                     favorites.add( new Favorite( u ) );

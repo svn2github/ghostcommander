@@ -43,8 +43,8 @@ public class FavsAdapter extends CommanderAdapterBase {
     }    
     
     @Override
-    public String getType() {
-        return "favs";
+    public int getType() {
+        return CA.FAVS;
     }
     
     @Override
@@ -63,17 +63,6 @@ public class FavsAdapter extends CommanderAdapterBase {
     public boolean readSource( Uri tmp_uri, String pbod ) {
         commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pbod ) );
         return true;
-    }
-
-    @Override
-    public boolean isButtonActive( int brId ) {
-        if( brId == R.id.F1 ||
-            brId == R.id.F2 ||
-            brId == R.id.F4 ||
-            brId == R.id.F8 ||
-            brId == R.id.F9 ||
-            brId == R.id.F10 ) return true;
-        return false;
     }
 
     @Override
@@ -172,7 +161,6 @@ public class FavsAdapter extends CommanderAdapterBase {
         commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, null ) );
     }    
 
-    
     private final void createDesktopShortcut( Favorite f ) {
         if( f == null ) return;
         Uri uri = f.getUriWithAuth();
@@ -197,12 +185,12 @@ public class FavsAdapter extends CommanderAdapterBase {
         if( uri != null ) {
             String sch = uri.getScheme();
             if( sch != null && sch.length() != 0 ) {
-                int scheme_h = GetAdapterTypeHash( sch );
-                if(  zip_schema_h == scheme_h )  return R.drawable.zip;     else   
-                if(  ftp_schema_h == scheme_h )  return R.drawable.server;  else   
-                if( root_schema_h == scheme_h )  return R.drawable.root;    else  
-                if(  mnt_schema_h == scheme_h )  return R.drawable.mount;   else  
-                if(  smb_schema_h == scheme_h )  return R.drawable.smb;     else
+                int t_id = CA.GetAdapterTypeId( sch );
+                if( CA.ZIP  == t_id ) return R.drawable.zip;     else   
+                if( CA.FTP  == t_id ) return R.drawable.server;  else   
+                if( CA.ROOT == t_id ) return R.drawable.root;    else  
+                if( CA.MNT  == t_id ) return R.drawable.mount;   else  
+                if( CA.SMB  == t_id ) return R.drawable.smb;     else
                     return R.drawable.folder;
             }
         }

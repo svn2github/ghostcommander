@@ -55,7 +55,7 @@ public class Favorite {
                 UsernamePasswordCredentials crd = new UsernamePasswordCredentials( user_info );
                 String pw = crd.getPassword();
                 setCredentials( crd.getUserName(), pwScreen.equals( pw ) ? null : pw );
-                uri = updateCredentials( uri, null );
+                uri = updateUserInfo( uri, null );
             }
         }
         catch( Exception e ) {
@@ -207,7 +207,7 @@ public class Favorite {
         int pw_pos = ui.indexOf( ':' );
         if( pw_pos < 0 ) return u.toString();
         ui = ui.substring( 0, pw_pos+1 ) + pwScreen;
-        return Uri.decode( updateCredentials( u, ui ).toString() );
+        return Uri.decode( updateUserInfo( u, ui ).toString() );
     }
     public final static boolean isPwdScreened( Uri u ) {
         String user_info = u.getUserInfo();
@@ -229,17 +229,17 @@ public class Favorite {
     }
     public static Uri getUriWithAuth( Uri u, String un, String pw ) {
         if( un == null ) return u;
-        String auth = URLEncoder.encode( un );
+        String ui = URLEncoder.encode( un );
         if( pw != null )
-            auth += ":" + URLEncoder.encode( pw );
-        return updateCredentials( u, auth );
+            ui += ":" + URLEncoder.encode( pw );
+        return updateUserInfo( u, ui );
     }
     
-    public final static Uri updateCredentials( Uri u, String ui ) {
+    public final static Uri updateUserInfo( Uri u, String encoded_ui ) {
         String host = u.getHost();
         if( host == null ) return u;
         int port = u.getPort();
-        String authority = ui != null ? ui + "@" : "";
+        String authority = encoded_ui != null ? encoded_ui + "@" : "";
         authority += host + ( port >= 0 ? ":" + port : "" );
         return u.buildUpon().encodedAuthority( authority ).build(); 
     }

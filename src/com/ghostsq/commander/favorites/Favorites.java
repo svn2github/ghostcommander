@@ -25,7 +25,7 @@ public class Favorites extends ArrayList<Favorite>
         removeFromFavorites( uri_str );
         Uri u = Uri.parse( uri_str );
         if( Favorite.isPwdScreened( u ) )
-            u = searchForNotScreenedURI( u );
+            u = searchForPassword( u );
         add( new Favorite( u ) );
     }
     public final void removeFromFavorites( String uri_s ) {
@@ -39,7 +39,7 @@ public class Favorites extends ArrayList<Favorite>
             if( uri_s != null ) {
                 Uri u = Uri.parse( uri_s );
                 if( u != null ) {
-                    u = Favorite.addTrailngSlash( Favorite.updateCredentials( u, null ) );
+                    u = Favorite.addTrailngSlash( Favorite.updateUserInfo( u, null ) );
                     for( int i = 0; i < size(); i++ ) {
                         if( Favorite.addTrailngSlash( get( i ).getUri() ).equals( u ) )
                             return i;
@@ -52,47 +52,43 @@ public class Favorites extends ArrayList<Favorite>
         return -1;
     }
 
-    public final Uri searchForNotScreenedURI( Uri u ) {
-        String host = u.getHost();
-        String schm = u.getScheme();
-        ArrayList<Integer> matches = new ArrayList<Integer>();
-        for( int i = 0; i < size(); i++ ) {
-            try {
-                Favorite f = get( i );
-                if( f.getUserName() != null ) {
-                    Uri fu = f.getUri();
-                    if( host.equalsIgnoreCase( fu.getHost() ) &&
-                        schm.equals( fu.getScheme() ) )
-                        matches.add( i );
-                }
-            } catch( Exception e ) {}
-        }
-        if( matches.size() > 0 ) {
-            if( matches.size() == 1 ) {
-                Favorite f = get( matches.get( 0 ) );
-                Uri u_p = f.borrowPassword( u );
-                if( u_p != null ) return u_p;
-            } else {
+    public final Uri searchForPassword( Uri u ) {
+        try {
+            String ui = u.getUserInfo(); 
+            if( ui != null && ui.length() > 0 ) {
+                String user = ui.substring( 0, ui.indexOf( ':' ) );
+                String host = u.getHost();
+                String schm = u.getScheme();
                 String path = u.getPath();
-                if( path == null )
-                    path = "/";
-                else Utils.mbAddSl( path );
-                for( int j = 0; j < matches.size(); j++ ) {
-                    Favorite f = get( matches.get( j ) );
-                    Uri fu = f.getUri();
-                    String fp = fu.getPath();
-                    if( fp == null )
-                        fp = "/";
-                    else Utils.mbAddSl( fp );
-                    if( path.equalsIgnoreCase( fp ) ) {
-                        Uri u_p = f.borrowPassword( u );
-                        if( u_p != null ) return u_p;
-                    }
+                if( path == null || path.length() == 0 ) path = "/"; else Utils.mbAddSl( path );
+                int best = -1;
+                for( int i = 0; i < size(); i++ ) {
+                    try {
+                        Favorite f = get( i );
+                        if( user.equalsIgnoreCase( f.getUserName() ) ) {
+                            Uri fu = f.getUri();
+                            if( schm.equals( fu.getScheme() ) ) {
+                                if( best < 0 ) best = i;
+                                if( host.equalsIgnoreCase( fu.getHost() ) ) {
+                                    best = i;
+                                    String fp = fu.getPath();
+                                    if( fp == null || path.length() == 0 ) fp = "/"; else Utils.mbAddSl( fp );
+                                    if( path.equalsIgnoreCase( fp ) )
+                                        break;
+                                }
+                            }
+                        }
+                    } catch( Exception e ) {}
                 }
-                Favorite f = get( matches.get( 0 ) );
-                Uri u_p = f.borrowPassword( u );
-                if( u_p != null ) return u_p;
+                if( best >= 0 ) {
+                    Favorite f = get( best );
+                    Uri u_p = f.borrowPassword( u );
+                    if( u_p != null ) return u_p;
+                }
             }
+        }
+        catch( Exception e ) {
+            e.printStackTrace();
         }
         Log.w( TAG, "Faild to find a suitable Favorite with password!!!" );
         return u;

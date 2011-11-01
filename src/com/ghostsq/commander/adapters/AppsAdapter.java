@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.ghostsq.commander.Commander;
+import com.ghostsq.commander.R;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
 
@@ -25,9 +26,10 @@ public class AppsAdapter extends CommanderAdapterBase {
         super( c, DETAILED_MODE | NARROW_MODE | SHOW_ATTR );
     }
     @Override
-    public String getType() {
-        return "apps";
+    public int getType() {
+        return CA.APPS;
     }
+    
     class ListEngine extends Engine {
         private ApplicationInfo[] items_tmp;
         public  String    pass_back_on_done;

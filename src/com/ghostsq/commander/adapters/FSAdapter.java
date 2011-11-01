@@ -78,8 +78,8 @@ public class FSAdapter extends CommanderAdapterBase {
         items = null;
     }
     @Override
-    public String getType() {
-        return "file";
+    public int getType() {
+        return CA.FS;
     }
 
     @Override
@@ -94,16 +94,6 @@ public class FSAdapter extends CommanderAdapterBase {
         return Uri.parse( dirName );
     }
     
-    @Override
-    public boolean isButtonActive( int brId ) {
-        switch( brId ) {
-            case R.id.F4: 
-            case R.id.SF4:
-            case R.id.sz: 
-                return true;
-        }
-        return super.isButtonActive( brId );
-    }
     @Override
     public boolean readSource( Uri d, String pass_back_on_done ) {
     	try {

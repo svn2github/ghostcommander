@@ -28,6 +28,7 @@ import android.widget.ListView;
 
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.R;
+import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.adapters.FSAdapter;
@@ -50,9 +51,10 @@ public class RootAdapter extends CommanderAdapterBase {
         super( c, SHOW_ATTR );
     }
     @Override
-    public String getType() {
-        return "root";
+    public int getType() {
+        return CA.ROOT;
     }
+    
     class ListEngine extends ExecEngine {
         private LsItem[] items_tmp;
         private String pass_back_on_done;
@@ -194,12 +196,6 @@ public class RootAdapter extends CommanderAdapterBase {
     public Uri getUri() {
         return uri;
     }
-
-    @Override
-    public boolean isButtonActive( int brId ) {
-        return R.id.remount == brId ? true : super.isButtonActive( brId );
-    }
-
     @Override
     public void setIdentities( String name, String pass ) {
         // TODO: may be some day we need to provide a password for su ?

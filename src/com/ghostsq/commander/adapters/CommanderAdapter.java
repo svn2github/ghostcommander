@@ -11,7 +11,7 @@ import android.view.ContextMenu;
 import android.widget.AdapterView;
 
 /**
- *		Interface to abstract list source
+ *		Interface to abstract list source, version at 2011.10.31
  *		It may be a FSAdapter - to browse files or any other network adapter and so on (to do)
  */
 public interface CommanderAdapter {
@@ -76,16 +76,11 @@ public interface CommanderAdapter {
      */
     public void populateContextMenu( ContextMenu menu, AdapterView.AdapterContextMenuInfo acmi, int num );
 
-    /**
-     *   @param brId - resource id of a button
-     */
-    public boolean isButtonActive( int brId );
-
 
     /**
-     * @return the implementation type string  
+     * @return the adapter type bit (see the CA class)   
      */
-    public String getType();
+    public int getType();
 
     /**
      * @param name, pass 

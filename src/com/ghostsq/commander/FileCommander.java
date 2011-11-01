@@ -442,6 +442,16 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         case R.id.favs:
             Navigate( Uri.parse( "favs:" ), null );
             break;
+        case  R.id.sdcard:
+            Navigate( Uri.parse( Panels.DEFAULT_LOC ), null );
+            break;
+        case  R.id.root:
+            Navigate( Uri.parse( "root:" ), null );
+            break;
+        case  R.id.mount:
+            Navigate( Uri.parse( "mount:" ), null );
+            break;
+            
         case FTP_ACT: {
                 Intent i = new Intent( this, ServerForm.class );
                 i.putExtra( "schema", "ftp" );
@@ -505,6 +515,9 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         case R.id.softkbd:
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.toggleSoftInput(0, 0);
+            break;
+        case  R.id.hidden:
+            panels.toggleHidden();
             break;
         default:
             CommanderAdapter ca = panels.getListAdapter( true );

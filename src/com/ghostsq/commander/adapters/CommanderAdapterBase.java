@@ -60,64 +60,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected int     numItems = 0;
     public    int     shownFrom = 0, shownNum = 3;
 
-    // URI shemes hash codes
-    protected static final int  home_schema_h =  "home".hashCode();  
-    protected static final int   zip_schema_h =   "zip".hashCode();  
-    protected static final int   ftp_schema_h =   "ftp".hashCode();  
-    protected static final int  find_schema_h =  "find".hashCode();  
-    protected static final int  root_schema_h =  "root".hashCode();  
-    protected static final int   mnt_schema_h = "mount".hashCode();  
-    protected static final int  apps_schema_h =  "apps".hashCode();
-    protected static final int  favs_schema_h =  "favs".hashCode();
-    protected static final int   smb_schema_h =   "smb".hashCode();
-    protected static final int    gd_schema_h =    "gd".hashCode();
-    protected static final int gdocs_schema_h = "gdocs".hashCode();
-    // adapters names hash codes
-    private static final int type_h_fs    = "file".hashCode();   
-    private static final int type_h_home  = home_schema_h;  
-    private static final int type_h_zip   = zip_schema_h;  
-    private static final int type_h_ftp   = ftp_schema_h; 
-    private static final int type_h_find  = find_schema_h;
-    private static final int type_h_root  = root_schema_h;
-    private static final int type_h_mnt   = mnt_schema_h;
-    private static final int type_h_apps  = apps_schema_h;
-    private static final int type_h_favs  = favs_schema_h;
-    private static final int type_h_smb   = smb_schema_h;
-    private static final int type_h_gdocs = gdocs_schema_h;
-    
-    // the mapping between the scheme and the adapter type name 
-    // because we could let the user to enter short aliases for the scheme instead
-    public final static int GetAdapterTypeHash( String scheme ) {
-        if( scheme == null ) return type_h_fs; 
-        final int scheme_h = scheme.hashCode();
-        if( home_schema_h == scheme_h )  return type_h_home;   
-        if(  zip_schema_h == scheme_h )  return type_h_zip;   
-        if(  ftp_schema_h == scheme_h )  return type_h_ftp;  
-        if( find_schema_h == scheme_h )  return type_h_find;  
-        if( root_schema_h == scheme_h )  return type_h_root;  
-        if(  mnt_schema_h == scheme_h )  return type_h_mnt;  
-        if( apps_schema_h == scheme_h )  return type_h_apps;  
-        if( favs_schema_h == scheme_h )  return type_h_favs;  
-        if(  smb_schema_h == scheme_h )  return type_h_smb;
-        if(   gd_schema_h == scheme_h )  return type_h_gdocs;
-        if(gdocs_schema_h == scheme_h )  return type_h_gdocs;
-        return type_h_fs;
-    }
-
-    public final static CommanderAdapter CreateAdapter( int type_h, Commander c ) {
-        CommanderAdapter ca = null;
-        if( type_h == type_h_fs   ) ca = new FSAdapter( c );    else
-        if( type_h == type_h_home ) ca = new HomeAdapter( c );  else
-        if( type_h == type_h_zip  ) ca = new ZipAdapter( c );   else
-        if( type_h == type_h_ftp  ) ca = new FTPAdapter( c );   else
-        if( type_h == type_h_find ) ca = new FindAdapter( c );  else
-        if( type_h == type_h_root ) ca = new RootAdapter( c );  else
-        if( type_h == type_h_mnt  ) ca = new MountAdapter( c ); else
-        if( type_h == type_h_apps ) ca = new AppsAdapter( c );  else
-        if( type_h == type_h_favs ) ca = new FavsAdapter( c );  else
-        if( type_h == type_h_smb  ) ca = c.CreateExternalAdapter( "samba", "SMBAdapter", Dialogs.SMB_PLG_DIALOG );
-        return ca;
-    }
 
     // Virtual method - to override!
     // derived adapter classes need to override this to take the obtained items array and notify the dataset change
@@ -593,32 +535,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             Log.e( TAG, "populateContextMenu() " + e.getMessage(), e );
         }
     }    
-
-    @Override
-    public boolean isButtonActive( int brId ) {
-        switch( brId ) {
-            case R.id.F1: 
-            case R.id.F2: 
-            case R.id.F5: 
-            case R.id.F6: 
-            case R.id.F7: 
-            case R.id.F8: 
-            case R.id.F9: 
-            case R.id.F10:
-            case R.id.eq: 
-            case R.id.tgl:
-            case R.id.by_name:
-            case R.id.by_ext: 
-            case R.id.by_size:
-            case R.id.by_date:
-            case R.id.sel_all:
-            case R.id.uns_all:
-            case R.id.enter: 
-            case R.id.add_fav:
-                return true;
-        }
-        return false;
-    }
 
     @Override
     public void setIdentities( String name, String pass ) {

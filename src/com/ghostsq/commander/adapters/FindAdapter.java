@@ -27,8 +27,8 @@ public class FindAdapter extends FSAdapter {
         parentLink = PLS;
     }
     @Override
-    public String getType() {
-        return "find";
+    public int getType() {
+        return CA.FIND;
     }
     @Override
     public int setMode( int mask, int mode_ ) {
@@ -211,10 +211,4 @@ public class FindAdapter extends FSAdapter {
         }
         return null;
     }    
-    
-    @Override
-    public boolean isButtonActive( int brId ) {
-        if( brId == R.id.F7 ) return false;
-        return super.isButtonActive( brId );
-    }
 }

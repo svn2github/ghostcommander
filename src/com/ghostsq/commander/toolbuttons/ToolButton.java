@@ -3,6 +3,7 @@ package com.ghostsq.commander.toolbuttons;
 //import com.ghostsq.toolbuttons.R;
 
 import com.ghostsq.commander.R;
+import com.ghostsq.commander.adapters.CA;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -43,6 +44,12 @@ public class ToolButton {
         if( cn.equals( "enter"   ) ) return        R.id.enter;
         if( cn.equals( "addfav"  ) ) return        R.id.add_fav;
         if( cn.equals( "remount" ) ) return        R.id.remount;
+        if( cn.equals( "home"    ) ) return        R.id.home;
+        if( cn.equals( "favs"    ) ) return        R.id.favs;
+        if( cn.equals( "sdcard"  ) ) return        R.id.sdcard;
+        if( cn.equals( "root"    ) ) return        R.id.root;
+        if( cn.equals( "mount"   ) ) return        R.id.mount;
+        if( cn.equals( "hidden"  ) ) return        R.id.hidden;
         return 0;
     }
 
@@ -71,12 +78,18 @@ public class ToolButton {
         case  R.id.enter:        return  "enter";
         case  R.id.add_fav:      return  "addfav";
         case  R.id.remount:      return  "remount";
+        case  R.id.home:         return  "home";
+        case  R.id.favs:         return  "favs";
+        case  R.id.sdcard:       return  "sdcard";
+        case  R.id.root:         return  "root";
+        case  R.id.mount:        return  "mount";
+        case  R.id.hidden:       return  "hidden";
         }
         return null;
     }
 
-    public final static char getBoundKey( int id_ ) {
-        switch( id_ ) {
+    public final char getBoundKey() {
+        switch( id ) {
         case  R.id.F1:           return  '1';
         case  R.id.F2:           return  '2';
         case  R.id.F3:           return  '3';
@@ -129,11 +142,17 @@ public class ToolButton {
         case  R.id.enter:        return  R.string.enter_b;
         case  R.id.add_fav:      return  R.string.add_fav_b;
         case  R.id.remount:      return  R.string.remount_b;
+        case  R.id.home:         return  R.string.home;
+        case  R.id.favs:         return  R.string.favs;
+        case  R.id.sdcard:       return  R.string.sdcard;
+        case  R.id.root:         return  R.string.root;
+        case  R.id.mount:        return  R.string.mount_b;
+        case  R.id.hidden:       return  R.string.hidden;
         }
         return 0;
     }
 
-    public final static boolean getVisible( int id_ ) {
+    public final static boolean getVisibleDefault( int id_ ) {
         switch( id_ ) {
         case  R.id.F1:           return  true;
         case  R.id.F2:           return  true;
@@ -158,8 +177,49 @@ public class ToolButton {
         case  R.id.enter:        return  false;
         case  R.id.add_fav:      return  false;
         case  R.id.remount:      return  false;
+        case  R.id.home:         return  true;
+        case  R.id.favs:         return  false;
+        case  R.id.sdcard:       return  false;
+        case  R.id.root:         return  false;
+        case  R.id.mount:        return  false;
+        case  R.id.hidden:       return  false;
         }
         return false;
+    }
+
+    public final int getSuitableAdapter() {
+        switch( id ) {
+        case  R.id.F1:           return  CA.ALL;
+        case  R.id.F2:           return  CA.REAL | CA.FAVS;
+        case  R.id.F3:           return  0;
+        case  R.id.F4:           return  CA.LOCAL | CA.FAVS;
+        case  R.id.SF4:          return  CA.FS;
+        case  R.id.F5:           return  CA.REAL;
+        case  R.id.F6:           return  CA.REAL;
+        case  R.id.F7:           return  CA.REAL & ~CA.FIND | CA.MNT;
+        case  R.id.F8:           return  CA.REAL | CA.FAVS;
+        case  R.id.F9:           return  CA.ALL;
+        case  R.id.F10:          return  CA.ALL;
+        case  R.id.eq:           return  CA.ALL;
+        case  R.id.tgl:          return  CA.ALL;
+        case  R.id.sz:           return  CA.LOCAL;
+        case  R.id.by_name:      return  CA.REAL;
+        case  R.id.by_ext:       return  CA.REAL;
+        case  R.id.by_size:      return  CA.REAL;
+        case  R.id.by_date:      return  CA.REAL;
+        case  R.id.sel_all:      return  CA.REAL;
+        case  R.id.uns_all:      return  CA.REAL;
+        case  R.id.enter:        return  CA.ALL;
+        case  R.id.add_fav:      return  CA.ALL;
+        case  R.id.remount:      return  CA.ROOT;
+        case  R.id.home:         return  CA.ALL & ~CA.HOME;
+        case  R.id.favs:         return  CA.ALL & ~CA.FAVS;
+        case  R.id.sdcard:       return  CA.ALL;
+        case  R.id.root:         return  CA.ALL & ~CA.ROOT;
+        case  R.id.mount:        return  CA.ROOT | CA.NAV;
+        case  R.id.hidden:       return  CA.REAL;
+        }
+        return 0;
     }
 
     ToolButton( int id_ ) {
@@ -169,7 +229,7 @@ public class ToolButton {
         def_caption_r_id = getCaptionRId( id_ );
         caption = null;
         modified = false;
-        visible = getVisible( id_ );
+        visible = getVisibleDefault( id_ );
     }
     public final int getId() {
         return id;
