@@ -22,6 +22,7 @@ public class MountAdapter extends CommanderAdapterBase {
     // Java compiler creates a thunk function to access to the private owner class member from a subclass
     // to avoid that all the member accessible from the subclasses are public
     public final static String TAG = "MountAdapter";
+    public static final String DEFAULT_LOC = "mount:";
     public  Uri uri = null;
     private int attempts = 0;
     
@@ -64,7 +65,7 @@ public class MountAdapter extends CommanderAdapterBase {
      */
     @Override
     public Uri getUri() {
-        return Uri.parse("mount://");
+        return Uri.parse( DEFAULT_LOC );
     }
 
     @Override
@@ -176,7 +177,7 @@ public class MountAdapter extends CommanderAdapterBase {
     public void openItem( int position ) {
         try {
             if( position == 0 ) {
-                commander.Navigate( Uri.parse( "root://./" ), null );
+                commander.Navigate( Uri.parse( RootAdapter.DEFAULT_LOC ), null );
                 return;
             }
             if( items == null || position < 0 || position > items.length )

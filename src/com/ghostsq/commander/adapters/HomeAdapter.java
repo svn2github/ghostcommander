@@ -2,9 +2,12 @@ package com.ghostsq.commander.adapters;
 
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.FileCommander;
+import com.ghostsq.commander.Panels;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
+import com.ghostsq.commander.root.MountAdapter;
+import com.ghostsq.commander.root.RootAdapter;
 
 import android.net.Uri;
 import android.util.SparseBooleanArray;
@@ -13,6 +16,7 @@ import android.view.ViewGroup;
 
 public class HomeAdapter extends CommanderAdapterBase {
     private final static String TAG = "HomeAdapter";
+    public static final String DEFAULT_LOC = "home:";
     private final static int    FAVS = 0, LOCAL = 1, FTP = 2, SMB = 3, ROOT = 4, MOUNT = 5, APPS = 6, EXIT = 7, LAST = EXIT;
     private boolean root = false;
     
@@ -85,11 +89,11 @@ public class HomeAdapter extends CommanderAdapterBase {
             return;
         String uri_s = null;
         switch( position ) {
-        case FAVS:  uri_s = "favs:";    break; 
-        case LOCAL: uri_s = "/sdcard";  break; 
-        case ROOT:  uri_s = "root:///"; break;
-        case MOUNT: uri_s = "mount:";   break;
-        case APPS:  uri_s = "apps:";    break;
+        case FAVS:  uri_s = "favs:";                    break; 
+        case LOCAL: uri_s = Panels.DEFAULT_LOC;         break; 
+        case ROOT:  uri_s = RootAdapter.DEFAULT_LOC;    break;
+        case MOUNT: uri_s = MountAdapter.DEFAULT_LOC;   break;
+        case APPS:  uri_s = "apps:";                    break;
         case FTP:   commander.dispatchCommand( FileCommander.FTP_ACT ); return;
         case SMB:   commander.dispatchCommand( FileCommander.SMB_ACT ); return;
         case EXIT:  commander.dispatchCommand( R.id.exit ); return;

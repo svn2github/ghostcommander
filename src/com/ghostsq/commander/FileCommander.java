@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.FSAdapter;
 import com.ghostsq.commander.adapters.FindAdapter;
+import com.ghostsq.commander.root.MountAdapter;
+import com.ghostsq.commander.root.RootAdapter;
 import com.ghostsq.commander.toolbuttons.ToolButton;
 import com.ghostsq.commander.utils.Utils;
 
@@ -446,10 +448,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             Navigate( Uri.parse( Panels.DEFAULT_LOC ), null );
             break;
         case  R.id.root:
-            Navigate( Uri.parse( "root:" ), null );
+            Navigate( Uri.parse( RootAdapter.DEFAULT_LOC ), null );
             break;
         case  R.id.mount:
-            Navigate( Uri.parse( "mount:" ), null );
+            Navigate( Uri.parse( MountAdapter.DEFAULT_LOC ), null );
             break;
             
         case FTP_ACT: {
@@ -520,7 +522,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             panels.toggleHidden();
             break;
         case  R.id.rescan:
-            panels.rescanMedia();
+            sendBroadcast( new Intent( Intent.ACTION_MEDIA_MOUNTED, Uri.parse( "file://" + Panels.DEFAULT_LOC ) ) );
             break;
         default:
             CommanderAdapter ca = panels.getListAdapter( true );

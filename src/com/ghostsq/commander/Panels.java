@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
-import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.adapters.FSAdapter;
 import com.ghostsq.commander.adapters.FavsAdapter;
 import com.ghostsq.commander.adapters.ZipAdapter;
@@ -628,15 +627,6 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         }
     }    
 
-    public final void rescanMedia() {
-        CommanderAdapter ca = getListAdapter( true );
-        if( ca != null && ca instanceof FSAdapter ) {
-            String uri_s = "file://" + ca.toString();
-            c.showMessage( "To rescan: " + uri_s );
-            c.sendBroadcast( new Intent( Intent.ACTION_MEDIA_MOUNTED, Uri.parse( uri_s ) ) );
-        }
-    }
-    
     public final void openForEdit( String file_name ) {
         CommanderAdapter ca = getListAdapter( true );
         if( ca instanceof FavsAdapter ) {
@@ -889,7 +879,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             flv.setItemChecked( position, !cis.get( position ) );
             return;
         }
-        if( disableOpenSelectOnly )
+        if( disableOpenSelectOnly && ( ((CommanderAdapter)flv.getAdapter()).getType() & CA.REAL ) != 0 )
             disableOpenSelectOnly = false;
         else { 
             openItem( position );

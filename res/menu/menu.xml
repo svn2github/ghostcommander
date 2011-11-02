@@ -21,8 +21,6 @@
          android:title="@string/oth_sh_this"/>
         <item android:id="@+id/search"
          android:title="@string/search_file"/>
-        <item android:id="@+id/rescan"
-         android:title="@string/rescan"/>
       </menu>
     </item>
 
@@ -75,9 +73,9 @@
         <item android:id="@+id/toggle_panels_mode"
              android:title="@string/toggle_panels_mode"/>
         <item android:id="@+id/softkbd"
-            android:title="@string/softkbd"
-            android:icon="@drawable/panel">
-        </item>
+            android:title="@string/softkbd"/>
+        <item android:id="@+id/rescan"
+         android:title="@string/rescan"/>
         <item android:id="@+id/prefs"
             android:title="@string/prefs"/>
         <item android:id="@+id/donate"

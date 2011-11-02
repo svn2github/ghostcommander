@@ -274,7 +274,7 @@
 <string name="no_such_folder">\"%1$s\" не существует!</string>
 <string name="fav_added">Папка \"%1$s\" добавлена в закладки</string>
 <string name="no_root">Нет root прав.</string>
-
+    
 <string name="home">Домой</string>
 <string name="favs">Закладки</string>
 <string name="local">Локальные файлы</string>
@@ -299,6 +299,8 @@
     \"Ghost Commander - Samba plugin\"\n
     (com.ghostsq.commander.samba.apk) инсталлирован.</string>
 <string name="donate">  Поддержка</string>
+<string name="rescan">Пересканировать медиа-файлы</string>
+   
 <string name="online_help">  Описание в онлайне (EN)</string>
 <string name="donation">Выразите свою благодарность и окажите поддержку 
        путем перевода разработчику любой денежной суммы через систему PayPal.\n

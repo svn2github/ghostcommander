@@ -3,7 +3,9 @@ package com.ghostsq.commander.favorites;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
+import com.ghostsq.commander.Panels;
 import com.ghostsq.commander.R;
+import com.ghostsq.commander.adapters.HomeAdapter;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
@@ -120,8 +122,10 @@ public class Favorites extends ArrayList<Favorite>
         } catch( NoSuchElementException e ) {
             Log.e( TAG, null, e );
         }
-        if( isEmpty() )
-            add( new Favorite( "/sdcard", c.getString( R.string.default_uri_cmnt ) ) );
+        if( isEmpty() ) {
+            add( new Favorite( HomeAdapter.DEFAULT_LOC, c.getString( R.string.home ) ) );
+            add( new Favorite( Panels.DEFAULT_LOC, c.getString( R.string.default_uri_cmnt ) ) );
+        }
     }
 
     public final void setFromString( String stored ) {

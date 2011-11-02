@@ -28,7 +28,7 @@
     <string name="enter">Change Location</string>
     <string name="home">Home</string>
     <string name="sdcard">/sdcard</string>
-        <string name="softkbd">Keyboard</string>
+    <string name="softkbd">Keyboard</string>
     <string name="enter_b">Location</string>
     <string name="add_fav">Favorite the current folder</string>
     <string name="add_fav_b">Favorite</string>
