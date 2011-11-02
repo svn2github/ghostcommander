@@ -36,6 +36,7 @@
     <string name="remount_b">Remount /system</string>
     <string name="remount">Remount</string>
     <string name="hidden">Hidden</string>
+    <string name="rescan">Rescan Media</string>
         
     <string name="favs">Favorites</string>
     <string name="local">Local storage</string>

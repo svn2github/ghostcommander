@@ -39,16 +39,18 @@ public class ToolButtons extends ArrayList<ToolButton>
                  R.id.F8,      
                  R.id.F9,      
                  R.id.F10,     
+                 R.id.sz,      
                  R.id.eq,      
                  R.id.tgl,     
-                 R.id.sz,      
+                 R.id.enter,   
+                 R.id.refresh,
                  R.id.by_name, 
                  R.id.by_ext,  
                  R.id.by_size, 
                  R.id.by_date, 
+                 R.id.hidden,
                  R.id.sel_all, 
                  R.id.uns_all, 
-                 R.id.enter,   
                  R.id.add_fav,  
                  R.id.remount,
                  R.id.home,    
@@ -56,7 +58,7 @@ public class ToolButtons extends ArrayList<ToolButton>
                  R.id.sdcard,  
                  R.id.root,   
                  R.id.mount,   
-                 R.id.hidden                   
+                 R.id.softkbd
             };
             for( int bi : bia ) {
                 ToolButton tb = new ToolButton( bi );

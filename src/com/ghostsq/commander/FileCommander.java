@@ -519,6 +519,9 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         case  R.id.hidden:
             panels.toggleHidden();
             break;
+        case  R.id.rescan:
+            panels.rescanMedia();
+            break;
         default:
             CommanderAdapter ca = panels.getListAdapter( true );
             ca.doIt( id, panels.getSelectedOrChecked() );

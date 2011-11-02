@@ -21,12 +21,8 @@
          android:title="@string/oth_sh_this"/>
         <item android:id="@+id/search"
          android:title="@string/search_file"/>
-        <!--  
-        <item android:id="@+id/ftp"
-         android:title="@string/enter_ftp"/>
-        <item android:id="@+id/smb"
-         android:title="@string/enter_smb"/>
-        -->
+        <item android:id="@+id/rescan"
+         android:title="@string/rescan"/>
       </menu>
     </item>
 

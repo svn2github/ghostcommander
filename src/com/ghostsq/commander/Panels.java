@@ -29,6 +29,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.net.UrlQuerySanitizer;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.text.ClipboardManager;
 import android.util.Log;
@@ -59,7 +60,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                                         View.OnKeyListener
 {
     private final static String TAG = "Panels";
-    public static final String DEFAULT_LOC = "/sdcard";
+    public static final String DEFAULT_LOC = Environment.getExternalStorageDirectory().getAbsolutePath();
     public  final static int LEFT = 0, RIGHT = 1;
     private int     current = LEFT, navigated = -1;
     private final int titlesIds[] = { R.id.left_dir,  R.id.right_dir };
@@ -627,6 +628,15 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         }
     }    
 
+    public final void rescanMedia() {
+        CommanderAdapter ca = getListAdapter( true );
+        if( ca != null && ca instanceof FSAdapter ) {
+            String uri_s = "file://" + ca.toString();
+            c.showMessage( "To rescan: " + uri_s );
+            c.sendBroadcast( new Intent( Intent.ACTION_MEDIA_MOUNTED, Uri.parse( uri_s ) ) );
+        }
+    }
+    
     public final void openForEdit( String file_name ) {
         CommanderAdapter ca = getListAdapter( true );
         if( ca instanceof FavsAdapter ) {

@@ -47,9 +47,11 @@ public class ToolButton {
         if( cn.equals( "home"    ) ) return        R.id.home;
         if( cn.equals( "favs"    ) ) return        R.id.favs;
         if( cn.equals( "sdcard"  ) ) return        R.id.sdcard;
-        if( cn.equals( "root"    ) ) return        R.id.root;
+        if( cn.equals( "rootb"   ) ) return        R.id.root;
         if( cn.equals( "mount"   ) ) return        R.id.mount;
         if( cn.equals( "hidden"  ) ) return        R.id.hidden;
+        if( cn.equals( "refresh" ) ) return        R.id.refresh;
+        if( cn.equals( "softkbd" ) ) return        R.id.softkbd;
         return 0;
     }
 
@@ -81,9 +83,11 @@ public class ToolButton {
         case  R.id.home:         return  "home";
         case  R.id.favs:         return  "favs";
         case  R.id.sdcard:       return  "sdcard";
-        case  R.id.root:         return  "root";
+        case  R.id.root:         return  "rootb";
         case  R.id.mount:        return  "mount";
         case  R.id.hidden:       return  "hidden";
+        case  R.id.refresh:      return  "refresh";
+        case  R.id.softkbd:      return  "softkbd";
         }
         return null;
     }
@@ -148,6 +152,8 @@ public class ToolButton {
         case  R.id.root:         return  R.string.root;
         case  R.id.mount:        return  R.string.mount_b;
         case  R.id.hidden:       return  R.string.hidden;
+        case  R.id.refresh:      return  R.string.refresh;
+        case  R.id.softkbd:      return  R.string.softkbd;
         }
         return 0;
     }
@@ -172,17 +178,7 @@ public class ToolButton {
         case  R.id.by_ext:       return  false;
         case  R.id.by_size:      return  true;
         case  R.id.by_date:      return  true;
-        case  R.id.sel_all:      return  false;
-        case  R.id.uns_all:      return  false;
-        case  R.id.enter:        return  false;
-        case  R.id.add_fav:      return  false;
-        case  R.id.remount:      return  false;
         case  R.id.home:         return  true;
-        case  R.id.favs:         return  false;
-        case  R.id.sdcard:       return  false;
-        case  R.id.root:         return  false;
-        case  R.id.mount:        return  false;
-        case  R.id.hidden:       return  false;
         }
         return false;
     }
@@ -218,6 +214,8 @@ public class ToolButton {
         case  R.id.root:         return  CA.ALL & ~CA.ROOT;
         case  R.id.mount:        return  CA.ROOT | CA.NAV;
         case  R.id.hidden:       return  CA.REAL;
+        case  R.id.refresh:      return  CA.REAL | CA.FAVS;
+        case  R.id.softkbd:      return  CA.ALL;
         }
         return 0;
     }
