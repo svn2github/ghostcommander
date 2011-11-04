@@ -221,6 +221,9 @@ public final class Utils {
         }
         return buf.toString();
     }
+    public final static void changeLanguage( Context c ) {
+        changeLanguage( c, c.getResources() );
+    }
     public final static void changeLanguage( Context c, Resources r ) {
         try {
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
@@ -282,7 +285,8 @@ public final class Utils {
          retrieving(R.string.retrieving),
            deleting(R.string.deleting),
       not_supported(R.string.not_supported),
-         file_exist(R.string.file_exist);
+         file_exist(R.string.file_exist),
+            cant_md(R.string.cant_md);
         
         private int r;
         private RR(int r_) { r = r_; }

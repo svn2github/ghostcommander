@@ -42,7 +42,7 @@ public class FTPAdapter extends CommanderAdapterBase {
         ftp = new FTP();
         try {
             heartBeat = new Timer( "FTP Heartbeat", true );
-            heartBeat.schedule( new Noop(), 200000, 120000 );
+            heartBeat.schedule( new Noop(), 120000, 20000 );
 		} 
         catch( Exception e ) {
 		}
@@ -120,6 +120,42 @@ public class FTPAdapter extends CommanderAdapterBase {
         commander.notifyMe( new Commander.Notify( ftp.getLog(), Commander.OPERATION_FAILED ) );
         return false;
     }
+ 
+    public final static int WAS_IN = 1;
+    public final static int LOGGED_IN = 2;
+    public final static int NO_CONNECT = -1;
+    public final static int NO_LOGIN = -2;
+    
+    public final int connectAndLogin() 
+                      throws UnknownHostException, IOException, InterruptedException {
+        if( ftp.isLoggedIn() ) {
+            String path = uri.getPath();
+            if( path != null )
+                ftp.setCurrentDir( path );
+            return WAS_IN;
+        }
+        int port = uri.getPort();
+        if( port == -1 ) port = 21;
+        String host = uri.getHost();
+        if( ftp.connect( host, port ) ) {
+            if( theUserPass == null || theUserPass.isNotSet() )
+                theUserPass = new FTPCredentials( uri.getUserInfo() );
+            if( ftp.login( theUserPass.getUserName(), theUserPass.getPassword() ) ) {
+                String path = uri.getPath();
+                if( path != null )
+                    ftp.setCurrentDir( path );
+                return LOGGED_IN;
+            }
+            else {
+                ftp.logout( true );
+                ftp.disconnect();
+                Log.w( TAG, "Invalid credentials." );
+                return NO_LOGIN;
+            }
+        }
+        return NO_CONNECT;
+    }
+    
     
     class ListEngine extends Engine {
         private boolean needReconnect;
@@ -147,24 +183,17 @@ public class FTPAdapter extends CommanderAdapterBase {
 	                if( needReconnect  && ftp.isLoggedIn() ) {
 	                    ftp.disconnect();
 	                }
-	                if( !ftp.isLoggedIn() ) {
-	                	int port = uri.getPort();
-	                	if( port == -1 ) port = 21;
-	                	String host = uri.getHost();
-	                    if( ftp.connect( host, port ) ) {
-	                        if( theUserPass == null || theUserPass.isNotSet() )
-	                            theUserPass = new FTPCredentials( uri.getUserInfo() );
-	                        if( ftp.login( theUserPass.getUserName(), theUserPass.getPassword() ) )
-	                            sendProgress( commander.getContext().getString( R.string.ftp_connected,  host, theUserPass.getUserName() ), Commander.OPERATION_STARTED );
-	                        else {
-	                            ftp.logout( true );
-	                            ftp.disconnect();
-	                            sendProgress( uri.toString(), Commander.OPERATION_FAILED_LOGIN_REQUIRED );
-	                            Log.w( TAG, "Invalid credentials." );
-	                            return;
-	                        }
-	                    }
-	                }
+	                
+	                int cl_res = connectAndLogin();
+                    if( cl_res < 0 ) {
+                        if( cl_res == NO_LOGIN ) 
+                            sendProgress( uri.toString(), Commander.OPERATION_FAILED_LOGIN_REQUIRED );
+                        return;
+                    }
+	                if( cl_res == LOGGED_IN )
+	                    sendProgress( commander.getContext().getString( R.string.ftp_connected,  
+	                            uri.getHost(), theUserPass.getUserName() ), Commander.OPERATION_STARTED );
+
 	                if( ftp.isLoggedIn() ) {
 	                    //Log.v( TAG, "ftp is logged in" );
 	                	try { // Uri.builder builds incorrect uri?
@@ -177,11 +206,8 @@ public class FTPAdapter extends CommanderAdapterBase {
 	                	catch( Exception e ) {
 	                	    Log.e( TAG, "Exception on setActiveMode()", e );
 	                	}
-	                	String path = uri.getPath();
-                    	if( path != null )
-                    		ftp.setCurrentDir( path );
                     	items_tmp = ftp.getDirList( null );
-                    	path = ftp.getCurrentDir();
+                    	String path = ftp.getCurrentDir();
 	                    if( path != null ) 
 	                    	synchronized( uri ) {
 	                    		uri = uri.buildUpon().encodedPath( path ).build();
@@ -268,6 +294,10 @@ public class FTPAdapter extends CommanderAdapterBase {
     @Override
     public Uri getUri() {
         return uri;
+    }
+    @Override
+    public void setUri( Uri uri_ ) {
+        uri = uri_;
     }
 
 	@Override
@@ -589,7 +619,10 @@ public class FTPAdapter extends CommanderAdapterBase {
     @Override
     public boolean receiveItems( String[] uris, int move_mode ) {
     	try {
-    		if( !checkReadyness() ) return false;
+    		if( connectAndLogin() < 0 ) {
+    		    commander.notifyMe( new Commander.Notify( s( R.string.ftp_nologin ), Commander.OPERATION_FAILED ) );
+    		    return false;
+    		}
             if( uris == null || uris.length == 0 ) {
             	commander.notifyMe( new Commander.Notify( s( R.string.copy_err ), Commander.OPERATION_FAILED ) );
             	return false;

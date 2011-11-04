@@ -54,6 +54,10 @@ public class HomeAdapter extends CommanderAdapterBase {
         return Uri.parse( toString() );
     }
     @Override
+    public void setUri( Uri uri ) {
+    }
+    
+    @Override
     public boolean readSource( Uri tmp_uri, String pbod ) {
         commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pbod ) );
         return true;

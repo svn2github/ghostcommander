@@ -84,6 +84,10 @@ public class AppsAdapter extends CommanderAdapterBase {
         return Uri.parse( toString() );
     }
     @Override
+    public void setUri( Uri uri ) {
+    }
+    
+    @Override
     public boolean readSource( Uri tmp_uri, String pass_back_on_done ) {
         try {
             if( reader != null ) {

@@ -11,7 +11,7 @@ import android.view.ContextMenu;
 import android.widget.AdapterView;
 
 /**
- *		Interface to abstract list source, version at 2011.10.31
+ *		Interface to abstract list source, version at 2011.11.3
  *		It may be a FSAdapter - to browse files or any other network adapter and so on (to do)
  */
 public interface CommanderAdapter {
@@ -46,6 +46,15 @@ public interface CommanderAdapter {
 	 * @param c - only the default constructor can be called of a foreign loaded class, so we pass the reference to commander here  
 	 */
 	public void Init( Commander c );
+
+    /**
+     * @param uri - the URI of the resource to connect to or work with  
+     */
+    public void setUri( Uri uri );
+    /**
+     * @return current adapter's source URI
+     */
+    public Uri getUri();
 	
 	/**
 	 *  Output mode
@@ -92,11 +101,6 @@ public interface CommanderAdapter {
      * @param pass_back_on_done - the file name to select
      */
 	public boolean readSource( Uri uri, String pass_back_on_done );
-
-	/**
-	 * @return current adapter's source URI
-	 */
-	public Uri getUri();
 
 	/**
      *      Tries to do something with the item (Outside of an adapter we don't know how to process it).

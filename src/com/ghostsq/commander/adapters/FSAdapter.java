@@ -90,8 +90,15 @@ public class FSAdapter extends CommanderAdapterBase {
     /*
      * CommanderAdapter implementation
      */
+
+    @Override
     public Uri getUri() {
         return Uri.parse( dirName );
+    }
+
+    @Override
+    public void setUri( Uri uri ) {
+        dirName = uri.toString();
     }
     
     @Override

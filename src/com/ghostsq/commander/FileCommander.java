@@ -103,7 +103,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         back_exits = sharedPref.getBoolean( "exit_on_back", false );
         lang = sharedPref.getString( "language", "" );
-        Utils.changeLanguage( this, getResources() );
+        Utils.changeLanguage( this );
         String panels_mode = sharedPref.getString( "panels_sxs_mode", "a" );
         sxs_auto = panels_mode.equals( "a" );
         boolean sxs = sxs_auto ? getRotMode() : panels_mode.equals( "y" );
@@ -121,7 +121,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         if( dont_restore )
             dont_restore = false;
         else {
-            Utils.changeLanguage( this, getResources() );
+            Utils.changeLanguage( this );
             SharedPreferences prefs = getPreferences( MODE_PRIVATE );
             Panels.State s = panels.new State();
             s.restore( prefs );
@@ -203,7 +203,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     public void onConfigurationChanged( Configuration newConfig ) {
-        Utils.changeLanguage( this, getResources() );
+        Utils.changeLanguage( this );
         super.onConfigurationChanged( newConfig );
         panels.setLayoutMode( sxs_auto ? newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE : panels.getLayoutMode() );
             
@@ -221,7 +221,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     @Override
     public void onCreateContextMenu( ContextMenu menu, View v, ContextMenuInfo menuInfo ) {
         try {
-            Utils.changeLanguage( this, getResources() );
+            Utils.changeLanguage( this );
             int num = panels.getNumItemsChecked();
             AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo)menuInfo;
             menu.setHeaderTitle( getString( R.string.operation ) );
@@ -274,7 +274,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     @Override
     public boolean onCreateOptionsMenu( Menu menu ) {
         try {
-            Utils.changeLanguage( this, getResources() );
+            Utils.changeLanguage( this );
             // Inflate the currently selected menu XML resource.
             MenuInflater inflater = getMenuInflater();
             inflater.inflate( R.menu.menu, menu );
@@ -303,7 +303,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             String lang_ = sharedPref.getString( "language", "" );
             if( !lang.equalsIgnoreCase( lang_ ) ) {
                 lang = lang_;
-                Utils.changeLanguage( this, getResources() );
+                Utils.changeLanguage( this );
                 showMessage( getString( R.string.restart_to_apply_lang ) );
                 exit = true;
             }
@@ -390,7 +390,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     }
 
     public void dispatchCommand( int id ) {
-        Utils.changeLanguage( this, getResources() );
+        Utils.changeLanguage( this );
         switch( id ) {
         case R.id.keys:
         case R.id.F1:

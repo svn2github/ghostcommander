@@ -70,7 +70,8 @@ public class RootAdapter extends CommanderAdapterBase {
         }       
         public Uri getUri() {
             return src;
-        }       
+        }
+        
         @Override
         public void run() {
             try {
@@ -197,6 +198,11 @@ public class RootAdapter extends CommanderAdapterBase {
     public Uri getUri() {
         return uri;
     }
+    @Override
+    public void setUri( Uri uri_ ) {
+        uri = uri_;
+    }
+    
     @Override
     public void setIdentities( String name, String pass ) {
         // TODO: may be some day we need to provide a password for su ?

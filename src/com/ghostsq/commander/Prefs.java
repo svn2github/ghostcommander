@@ -24,7 +24,7 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
     
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
-        Utils.changeLanguage( this, getResources() );
+        Utils.changeLanguage( this );
         super.onCreate( savedInstanceState );
         
         // Load the preferences from an XML resource

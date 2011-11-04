@@ -3,6 +3,7 @@ package com.ghostsq.commander;
 import org.apache.http.auth.UsernamePasswordCredentials;
 
 import com.ghostsq.commander.R.id;
+import com.ghostsq.commander.favorites.Favorite;
 import com.ghostsq.commander.utils.Utils;
 
 import android.app.AlertDialog;
@@ -47,7 +48,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
         owner.showDialog( dialogId );
     }
     protected final Dialog createDialog( int id ) {
-        Utils.changeLanguage( owner, owner.getResources() );
+        Utils.changeLanguage( owner );
         switch( id ) {
         case SELECT_DIALOG:
         case UNSELECT_DIALOG:
@@ -153,7 +154,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
             Log.e( TAG, "Dialogs corrupted!" );
             return;
         }
-        Utils.changeLanguage( owner, owner.getResources() );
+        Utils.changeLanguage( owner );
         boolean move = false;
         try {
             TextView prompt = (TextView)dialog.findViewById( R.id.prompt );
@@ -221,7 +222,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 if( copy_to != null ) {
                     if( edit != null ) {
                         edit.setWidth( owner.getWidth() - 70 );
-                        edit.setText( copy_to );
+                        edit.setText( Favorite.screenPwd( copy_to ) );
                         if( owner.panels.getNumItemsSelectedOrChecked() == 1 )
                             edit.selectAll();
                     }

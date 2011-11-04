@@ -159,6 +159,9 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 Log.v( TAG, "keyboard=" + c.getResources().getConfiguration().keyboard );
                 Log.v( TAG, "keyboardHidden=" + c.getResources().getConfiguration().keyboardHidden );
                 */
+                
+                Utils.changeLanguage( c );
+                
                 ToolButtons tba = new ToolButtons();
                 tba.restore( sharedPref, c );
                 int adapter_bit = ca.getType();
@@ -738,10 +741,15 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         try {
             if( dest == null ) return;
             SparseBooleanArray items = getSelectedOrChecked();
-            
             CommanderAdapter cur_adapter = getListAdapter( true );
             Uri dest_uri = Uri.parse( dest );
-
+            if( Favorite.isPwdScreened( dest_uri ) ) {
+                dest_uri = Favorite.borrowPassword( dest_uri, Uri.parse( getFolderUri( false ) ) );
+                if( dest_uri == null ) {
+                    c.showError( c.getString( R.string.inv_dest ) );
+                    return;
+                }
+            }
             if( getNumItemsSelectedOrChecked() == 1 ) {
                 int pos = getSelection( true ); 
                 if( pos <= 0 ) return;
@@ -760,23 +768,23 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 }
             }
 
-            CommanderAdapter dest_adapter = getListAdapter( false );
-            if( dest_adapter == null || !dest.equals( dest_adapter.toString() ) ) {
+            CommanderAdapter oth_adapter = getListAdapter( false );
+            if( oth_adapter == null || !dest.equals( Favorite.screenPwd( oth_adapter.toString() ) ) ) {
                 if( dest_uri == null ) {
                     c.showError( c.getString( R.string.inv_dest ) );
                     return;
                 }
                 String scheme = dest_uri.getScheme();
                 int type_id = CA.GetAdapterTypeId( scheme );
-                dest_adapter = CA.CreateAdapter( type_id, c );
-                if( dest_adapter == null ) {
+                oth_adapter = CA.CreateAdapter( type_id, c );
+                if( oth_adapter == null ) {
                     c.showError( c.getString( R.string.inv_dest ) );
                     return;
                 }
-                dest_adapter.readSource( dest_uri, null ); // TODO: call Init() method to set the URI
+                oth_adapter.setUri( dest_uri );
             }
             //c.showDialog( Dialogs.PROGRESS_DIALOG );
-            destAdapter = dest_adapter;
+            destAdapter = oth_adapter;
             cur_adapter.copyItems( items, destAdapter, move );
             // TODO: getCheckedItemPositions() returns an empty array after a failed operation. why? 
             list[current].flv.clearChoices();

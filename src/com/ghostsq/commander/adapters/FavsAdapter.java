@@ -58,6 +58,9 @@ public class FavsAdapter extends CommanderAdapterBase {
     public Uri getUri() {
         return Uri.parse( toString() );
     }
+    @Override
+    public void setUri( Uri uri ) {
+    }
 
     @Override
     public boolean readSource( Uri tmp_uri, String pbod ) {

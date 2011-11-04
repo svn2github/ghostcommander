@@ -218,6 +218,11 @@ public class ZipAdapter extends CommanderAdapterBase {
         return uri;
     }
     @Override
+    public void setUri( Uri uri_ ) {
+        uri = uri_;
+    }
+    
+    @Override
     public void setIdentities( String name, String pass ) {
     }
 	@Override

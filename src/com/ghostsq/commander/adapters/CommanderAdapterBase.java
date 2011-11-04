@@ -137,7 +137,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     	commander = c;
     	Context ctx = c.getContext();
     	mInflater = (LayoutInflater)ctx.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-    	Utils.changeLanguage( ctx, ctx.getResources() );
+    	Utils.changeLanguage( ctx );
     	localeDateFormat = DateFormat.getDateFormat( ctx );
     	localeTimeFormat = DateFormat.getTimeFormat( ctx );
     	density = ctx.getResources().getDisplayMetrics().density;

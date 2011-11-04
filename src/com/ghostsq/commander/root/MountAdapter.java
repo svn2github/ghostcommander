@@ -67,6 +67,9 @@ public class MountAdapter extends CommanderAdapterBase {
     public Uri getUri() {
         return Uri.parse( DEFAULT_LOC );
     }
+    @Override
+    public void setUri( Uri uri ) {
+    }
 
     @Override
     public void populateContextMenu( ContextMenu menu, AdapterView.AdapterContextMenuInfo acmi, int num ) {

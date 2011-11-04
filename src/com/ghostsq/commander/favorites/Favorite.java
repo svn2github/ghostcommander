@@ -227,6 +227,27 @@ public class Favorite {
         }
         return null;
     }
+    
+    public static Uri borrowPassword( Uri us, Uri fu ) {
+        String schm = us.getScheme();
+        if( schm != null && schm.equals( fu.getScheme() ) ) {
+            String host = us.getHost();
+            if( host != null && host.equalsIgnoreCase( fu.getHost() ) ) {
+                String uis = us.getUserInfo();
+                String fui = fu.getUserInfo();
+                if( fui != null && fui.length() > 0 ) {
+                    UsernamePasswordCredentials crds = new UsernamePasswordCredentials( uis );
+                    UsernamePasswordCredentials fcrd = new UsernamePasswordCredentials( fui );
+                    String un = crds.getUserName();
+                    if( un != null && un.equals( fcrd.getUserName() ) )
+                        return getUriWithAuth( us, un, fcrd.getPassword() );
+                }
+                
+            }
+        }
+        return null;
+    }    
+    
     public static Uri getUriWithAuth( Uri u, String un, String pw ) {
         if( un == null ) return u;
         String ui = URLEncoder.encode( un );
@@ -248,7 +269,10 @@ public class Favorite {
         String path = u.getEncodedPath();
         if( path == null )
             path = "/";
-        else Utils.mbAddSl( path );
+        else {
+            String alt_path = Utils.mbAddSl( path );
+            if( path.equals( alt_path ) ) return u;
+        }
         return u.buildUpon().encodedPath( path ).build(); 
     }
 
