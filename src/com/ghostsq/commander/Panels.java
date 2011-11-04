@@ -499,17 +499,20 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         	idialog.dismiss();
         }
     }
+    protected final boolean isSafeLocation( String path ) {
+        return path.startsWith( DEFAULT_LOC ) || path.startsWith( "/sdcard" ) || path.startsWith( "/mnt/" );
+    }
     public final void Navigate( int which, Uri uri, String posTo ) {
     	if( uri == null ) return;
     	String scheme = uri.getScheme(), path = uri.getPath();
     	
     	if( ( scheme == null || scheme.equals( "file") ) && 
-    	      ( path == null || !path.startsWith( DEFAULT_LOC ) ) ) {
+    	      ( path == null || !isSafeLocation( path ) ) ) {
     	    if( warnOnRoot ) {
                 CommanderAdapter ca = list[which].getListAdapter();
                 if( ca != null && CA.FS == ca.getType() ) {
                     String cur_path = ca.toString();
-                    if( cur_path != null && cur_path.startsWith( DEFAULT_LOC ) ) {
+                    if( cur_path != null && isSafeLocation( cur_path ) ) {
                 		try {
                     		new NavDialog( c, which, uri, posTo );
             			} catch( Exception e ) {
@@ -963,7 +966,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 	    if( v instanceof ListView ) {
 	    	locationBar.closeGoPanel();
 	    	char ch = (char)event.getUnicodeChar();
-	    	if( ch >= 'A' && ch <= 'z' ) {
+	    	if( ch >= 'A' && ch <= 'z' || ch == '.' ) {
 	    		quickSearch( ch );
 	    		return true;
 	    	}
