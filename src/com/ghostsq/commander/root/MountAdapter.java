@@ -85,7 +85,7 @@ public class MountAdapter extends CommanderAdapterBase {
             if( uri == null )
                 return false;
             
-            if( worker != null ) {
+            if( reader != null ) {
                 Log.w( TAG, "Busy " + attempts );
                 if( attempts++ < 2 ) {
                     commander.showInfo( s( R.string.busy ) );

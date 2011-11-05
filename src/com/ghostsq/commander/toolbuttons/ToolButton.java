@@ -179,6 +179,7 @@ public class ToolButton {
         case  R.id.by_size:      return  true;
         case  R.id.by_date:      return  true;
         case  R.id.home:         return  true;
+        case  R.id.remount:      return  true;
         }
         return false;
     }

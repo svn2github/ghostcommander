@@ -47,6 +47,9 @@ public class RootAdapter extends CommanderAdapterBase {
     private Uri uri = null;
     private LsItem[] items = null;
     private int attempts = 0;
+    private MountsListEngine systemMountReader;
+    private String systemMountMode;
+    private final static String SYSTEM_PATH = "/system"; 
 
     public RootAdapter( Commander c ) {
         super( c, SHOW_ATTR );
@@ -164,32 +167,56 @@ public class RootAdapter extends CommanderAdapterBase {
     }
     @Override
     protected void onReadComplete() {
-        attempts = 0;
-        if( reader instanceof ListEngine ) {
-            ListEngine list_engine = (ListEngine)reader;
-            items = list_engine.getItems();
-            uri = list_engine.getUri();
-            numItems = items != null ? items.length + 1 : 1;
-            notifyDataSetChanged();
-        } else
-        if( reader instanceof MountsListEngine ) {
-            MountsListEngine list_engine = (MountsListEngine)reader;
-            MountItem[] mounts = list_engine.getItems();
-            int num = mounts != null ? mounts.length : 0;
-            for( int i = 0; i < num; i++ ) {
-                String mp = mounts[i].getMountPoint();
-                if( "/system".equals( mp ) ) {
-                    worker = new RemountEngine( commander.getContext(), workerHandler, mounts[i] );
-                    worker.start();
-                    break;
+        try {
+            attempts = 0;
+            if( reader instanceof ListEngine ) {
+                ListEngine list_engine = (ListEngine)reader;
+                items = list_engine.getItems();
+                uri = list_engine.getUri();
+                numItems = items != null ? items.length + 1 : 1;
+                notifyDataSetChanged();
+                
+                String path = uri.getPath();
+                if( path != null && path.startsWith( SYSTEM_PATH ) ) {
+                    // know the /system mount state
+                    systemMountReader = new MountsListEngine( commander.getContext(), readerHandler, false );
+                    systemMountReader.start();
+                }
+            } else
+            if( systemMountReader != null ) {
+                MountItem[] mounts = systemMountReader.getItems();
+                boolean remount = systemMountReader.toRemount();
+                systemMountReader = null;
+                for( MountItem m : mounts ) {
+                    String mp = m.getMountPoint();
+                    if( SYSTEM_PATH.equals( mp ) ) {
+                        if( remount ) {
+                            worker = new RemountEngine( commander.getContext(), workerHandler, m );
+                            worker.start();
+                        }
+                        else
+                            systemMountMode = m.getMode();
+                        break;
+                    }
                 }
             }
+        } catch( Exception e ) {
+            e.printStackTrace();
         }
     }
     
     @Override
     public String toString() {
-        return uri != null ? uri.toString() : "";
+        if( uri != null ) {
+            if( systemMountMode != null ) {
+                String path = uri.getPath();
+                try {
+                    return uri.buildUpon().fragment( path != null && path.startsWith( SYSTEM_PATH ) ? systemMountMode : null ).build().toString();
+                } catch( Exception e ) {}
+            }            
+            return uri.toString();
+        }
+        return "";
     }
     /*
      * CommanderAdapter implementation
@@ -730,8 +757,8 @@ public class RootAdapter extends CommanderAdapterBase {
                 commander.showError( commander.getContext().getString( R.string.busy ) );
                 return;
             }
-            reader = new MountsListEngine( commander.getContext(), readerHandler, null );
-            reader.start();
+            systemMountReader = new MountsListEngine( commander.getContext(), readerHandler, true );
+            systemMountReader.start();
         }
     }
     

@@ -7,10 +7,6 @@ import java.util.Locale;
 
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.Commander;
-import com.ghostsq.commander.Dialogs;
-import com.ghostsq.commander.adapters.FavsAdapter;
-import com.ghostsq.commander.root.MountAdapter;
-import com.ghostsq.commander.root.RootAdapter;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;

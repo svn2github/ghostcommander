@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.R;
 
+import android.R.bool;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.util.Log;
 class MountsListEngine extends ExecEngine {
     
     public class MountItem {
+        private static final String TAG = "MountItem"; 
         private String  dev = "", mntp = "", type = "", opts = "", r1 = "", r2 = "";
         public MountItem( String string ) {
             String[] flds = string.split( " " );
@@ -46,6 +48,18 @@ class MountsListEngine extends ExecEngine {
         public String getOptions() {
             return opts;
         }
+        public String getMode() {
+            if( opts != null ) {
+                try {
+                    String[] flds = opts.split( "," );
+                    for( String f : flds )
+                        if( f.equals( "rw" ) || f.equals( "ro" ) ) return f;
+                } catch( Exception e ) {
+                    Log.e( TAG, "opts=" + opts, e );
+                }
+            }
+            return null;
+        }
         public String getRest() {
             return type + " " + opts + " " + r1 + " " + r2;
         }
@@ -56,10 +70,21 @@ class MountsListEngine extends ExecEngine {
     
     
     private MountItem[] items_tmp;
-    public  String pass_back_on_done;
+    private String  pass_back_on_done;
+    private boolean system, remount;
     MountsListEngine( Context ctx, Handler h, String pass_back_on_done_ ) {
         super( ctx, h );
         pass_back_on_done = pass_back_on_done_;
+        system = false;
+    }
+    MountsListEngine( Context ctx, Handler h, boolean remount_ ) {    // to return the "/system" mount only
+        super( ctx, h );
+        pass_back_on_done = null;
+        system = true;
+        remount = remount_;
+    }
+    public boolean toRemount() {
+        return remount;
     }
     public MountItem[] getItems() {
         return items_tmp;
@@ -109,6 +134,7 @@ class MountsListEngine extends ExecEngine {
                 throw new Exception();
             String ln = is.readLine();
             if( ln == null ) break;
+            if( system && ln.indexOf( "/system " ) < 0 ) continue;
             MountItem item = new MountItem( ln );
             if( item.isValid() )
                 array.add( item );
