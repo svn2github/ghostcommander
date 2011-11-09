@@ -646,17 +646,17 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         	try {
 	            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
 	            String full_class_name = sharedPref.getString( "editor_activity", c.getString( R.string.value_editor_activity ) );
-	            if( full_class_name != null ) {
-		            Intent i = new Intent( Intent.ACTION_EDIT );
-		            i.setDataAndType( Uri.parse( "file://" + f.getAbsolutePath() ), "text/plain" );
-		            
-		            int last_dot_pos = full_class_name.lastIndexOf('.');
-		            if( last_dot_pos < 0 )
-		            	c.showMessage( "Invalid class name: " + full_class_name );
-		            else {
-			            i.setClassName( full_class_name.substring( 0, last_dot_pos ), full_class_name );
-			            c.startActivity( i );
-		            }
+	            if( full_class_name == null || full_class_name.length() == 0 )
+	                full_class_name = "com.ghostsq.commander.Editor";
+	            Intent i = new Intent( Intent.ACTION_EDIT );
+	            i.setDataAndType( Uri.parse( "file://" + f.getAbsolutePath() ), "text/plain" );
+	            
+	            int last_dot_pos = full_class_name.lastIndexOf('.');
+	            if( last_dot_pos < 0 )
+	            	c.showMessage( "Invalid class name: " + full_class_name );
+	            else {
+                    i.setClassName( full_class_name.substring( 0, last_dot_pos ), full_class_name );
+		            c.startActivity( i );
 	            }
         	}
         	catch( ActivityNotFoundException e ) {
