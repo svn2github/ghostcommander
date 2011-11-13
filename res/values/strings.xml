@@ -266,6 +266,8 @@ copied >5 will produce:
 
     <string name="prefs_label">Settings</string>
     <string name="editor_label">Text Editor</string>
+    <string name="pictvw_label">Picture Viewer</string>
+    
     <string name="advanced">Advanced</string>
     <string name="advanced_settings">Advanced settings</string>
     <string name="summary_advanced_settings">Extra settings for advanced users</string>

@@ -669,6 +669,36 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         else
             c.showMessage( "Not editable" );
     }
+    public final void openForView() {
+        CommanderAdapter ca = getListAdapter( true );
+        if( ca instanceof FavsAdapter ) {
+            FavsAdapter fa = (FavsAdapter)ca;
+            int pos = getSelection( true );
+            if( pos > 0 ) fa.editItem( pos );
+            return;
+        }
+        File f = getCurrentFile();
+        if( f != null && f.isFile() ) {
+            try {
+                String mime = Utils.getMimeByExt( Utils.getFileExt( f.getName() ) );
+                if( mime == null || !mime.startsWith( "image/" ) ) return;                
+                
+                String package_name = "com.ghostsq.commander";
+                String class_name = ".PictureViewer";
+                Intent i = new Intent( Intent.ACTION_VIEW );
+                i.setDataAndType( Uri.parse( "file://" + f.getAbsolutePath() ), mime );
+                i.setClassName( package_name, class_name );
+                c.startActivity( i );
+            }
+            catch( ActivityNotFoundException e ) {
+                c.showMessage( "Activity Not Found: " + e );
+            }
+        }
+        else
+            c.showMessage( "Not editable" );
+    }
+
+    
     public final int getNumItemsChecked() {
         return list[current].getNumItemsChecked();
     }
@@ -999,6 +1029,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 	            c.showDialog( R.id.F2 );
 	            return true;
 	        case '3':
+	            openForView();
 	        	return true;
 	        case '4':
 	            openForEdit( null );

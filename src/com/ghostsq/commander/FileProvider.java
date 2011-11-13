@@ -32,7 +32,7 @@ public class FileProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] as, String s, String[] as1, String s1) {
+    public Cursor query( Uri uri, String[] as, String s, String[] as1, String s1 ) {
         Log.v( TAG, "query( " + uri + " )" );
         if( uri.toString().startsWith( URI_PREFIX ) ) {
             if( as == null || as.length == 0) {

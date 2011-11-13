@@ -8,7 +8,6 @@ import com.ghostsq.commander.adapters.FSAdapter;
 import com.ghostsq.commander.adapters.FindAdapter;
 import com.ghostsq.commander.root.MountAdapter;
 import com.ghostsq.commander.root.RootAdapter;
-import com.ghostsq.commander.toolbuttons.ToolButton;
 import com.ghostsq.commander.utils.Utils;
 
 import dalvik.system.DexClassLoader;
@@ -576,7 +575,6 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             if( op_intent != null ) {
                 String action = op_intent.getAction();
                 if( Intent.ACTION_PICK.equals( action ) ) {
-                    // TODO: op_intent.getData() contains the start picking directory
                     i.setData( Uri.parse( path ) );
                     setResult( RESULT_OK, i );
                     finish();
@@ -591,7 +589,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             }
             String mime = Utils.getMimeByExt( Utils.getFileExt( path ) );
             i.setDataAndType( Uri.fromFile( new File( path ) ), mime );
-            startActivity(i);
+            startActivity( i );
         } catch( ActivityNotFoundException e ) {
             showMessage("Application for open '" + path + "' is not available, ");
         }
