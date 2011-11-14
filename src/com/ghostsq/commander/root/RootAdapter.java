@@ -362,8 +362,15 @@ public class RootAdapter extends CommanderAdapterBase {
                 os.flush();
                 p.waitFor();
                 if( p.exitValue() == 255 )
-                    error( "Exit code 255" );
-                if( recipient_hash != 0 ) {
+                    error( context.getString( R.string.fail ) );
+                if( es.ready() ) {
+                    String err_str = es.readLine();
+                    if( err_str != null && err_str.trim().length() > 0 ) {
+                        error( err_str );
+                        counter = 0;
+                    }
+                }
+                if( counter > 0 && recipient_hash != 0 ) {
                     File temp_dir = new File( dest_folder );
                     File[] temp_content = temp_dir.listFiles();
                     String[] paths = new String[temp_content.length];
@@ -491,18 +498,19 @@ public class RootAdapter extends CommanderAdapterBase {
                 os.flush();
                 p.waitFor();
                 if( p.exitValue() == 255 )
-                    Log.e( TAG, "Deleting batch failed" );
+                    error( context.getString( R.string.fail ) );
                 if( es.ready() ) {
                     String err_str = es.readLine();
-                    if( err_str.trim().length() > 0 ) {
+                    if( err_str != null && err_str.trim().length() > 0 ) {
                         error( err_str );
+                        counter = 0;
                     }
                 }
             }
             catch( Exception e ) {
                 error( "Exception: " + e );
             }
-    		sendResult( Utils.getOpReport( commander.getContext(), counter, R.string.deleted ) );
+    		sendResult( counter > 0 ? Utils.getOpReport( commander.getContext(), counter, R.string.deleted ) : "" );
             super.run();
         }
     }
@@ -607,7 +615,7 @@ public class RootAdapter extends CommanderAdapterBase {
                     Log.i( TAG, to_exec );
                     os.write( to_exec ); // execute command
                     os.flush();
-                    Thread.sleep( 100 );
+                    Thread.sleep( 500 );
                     if( es.ready() ) {
                         String err_str = es.readLine();
                         if( err_str.trim().length() > 0 ) {
@@ -626,7 +634,14 @@ public class RootAdapter extends CommanderAdapterBase {
                 os.flush();
                 p.waitFor();
                 if( p.exitValue() == 255 )
-                    error( "Exit code 255" );
+                    error( context.getString( R.string.fail ) );
+                if( es.ready() ) {
+                    String err_str = es.readLine();
+                    if( err_str != null && err_str.trim().length() > 0 ) {
+                        error( err_str );
+                        counter = 0;
+                    }
+                }
             }
             catch( Exception e ) {
                 error( "Exception: " + e );
@@ -634,7 +649,7 @@ public class RootAdapter extends CommanderAdapterBase {
             if( quiet )
                 sendResult( null );
             else
-                sendResult( Utils.getOpReport( commander.getContext(), counter, move ? R.string.moved : R.string.copied ) );
+                sendResult( counter > 0 ? Utils.getOpReport( commander.getContext(), counter, move ? R.string.moved : R.string.copied ) : "" );
             super.run();
         }
     }

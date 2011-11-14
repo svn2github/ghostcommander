@@ -1,9 +1,15 @@
 package com.ghostsq.commander;
 
 import android.app.Activity;
+import android.content.ContentUris;
+import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.BaseColumns;
+import android.provider.MediaStore;
+import android.provider.MediaStore.Images.Media;
+import android.provider.MediaStore.Images.Thumbnails;
 import android.util.Log;
 import android.view.Display;
 import android.widget.ImageView;
@@ -15,14 +21,16 @@ public class PictureViewer extends Activity {
     private byte[] buf;
     
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.pictvw);
+    public void onCreate( Bundle savedInstanceState ) {
+        Log.v( TAG, "onCreate" );
+        super.onCreate( savedInstanceState );
+        setContentView( R.layout.pictvw );
         buf = new byte[100*1024];
     }
 
     @Override
     protected void onStart() {
+        Log.v( TAG, "onStart" );
         super.onResume();
         ImageView image_view = (ImageView)findViewById( R.id.image_view );
         Uri u = getIntent().getData();
@@ -30,6 +38,27 @@ public class PictureViewer extends Activity {
         String path = u.getPath();
         if( path == null ) return;
         try {
+        
+        
+        
+        String[] proj = { BaseColumns._ID };
+        String where = Media.DATA + " = '" + path + "'";
+        Cursor cursor = managedQuery( Media.EXTERNAL_CONTENT_URI, proj, where, null, null );
+        if( cursor.getCount() > 0 ) {
+            cursor.moveToPosition( 0 );
+            int id = cursor.getInt( cursor.getColumnIndexOrThrow( BaseColumns._ID ) );
+            String[] th_proj = new String[] { BaseColumns._ID };            
+            cursor = Thumbnails.queryMiniThumbnail( getContentResolver(), id, Thumbnails.MINI_KIND, th_proj );
+            if( cursor.getCount() > 0 ) {
+                cursor.moveToPosition( 0 );
+                Uri tcu = ContentUris.withAppendedId( Thumbnails.EXTERNAL_CONTENT_URI, cursor.getLong(0) );
+                image_view.setImageURI( tcu );
+            }
+        }
+            
+        
+        
+ /*       
             Display display = getWindowManager().getDefaultDisplay(); 
             int width = display.getWidth();
             int height = display.getHeight();
@@ -47,6 +76,7 @@ public class PictureViewer extends Activity {
             options.inTempStorage = buf;
             
             BitmapFactory.decodeStream( in, null, options);
+            in.close();
             if( options.outWidth > 0 && options.outHeight > 0 ) {
                 int factor = by_height ? options.outHeight / height : options.outWidth / width;
                 int b;
@@ -58,6 +88,8 @@ public class PictureViewer extends Activity {
             }
             else
                 image_view.setImageBitmap( BitmapFactory.decodeFile( path ) );
+            
+*/            
         } catch( Exception e ) {
             Log.e( TAG, u.toString(), e );
         }

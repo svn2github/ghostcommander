@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.SoftReference;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.FileChannel;
@@ -21,11 +22,14 @@ import com.ghostsq.commander.adapters.Engine;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.utils.Utils;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -34,6 +38,9 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.os.StatFs;
+import android.provider.BaseColumns;
+import android.provider.MediaStore.Images.Media;
+import android.provider.MediaStore.Images.Thumbnails;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -186,6 +193,7 @@ public class FSAdapter extends CommanderAdapterBase {
     class ThumbnailsThread extends Thread {
         private final static int NOTIFY_THUMBNAIL_CHANGED = 653;
         private CommanderAdapterBase owner;
+        private ContentResolver cr;
         private Handler thread_handler;
         private FileItem[] mList;
         private BitmapFactory.Options options;
@@ -204,6 +212,7 @@ public class FSAdapter extends CommanderAdapterBase {
             thread_handler = h;
             mList = list;
             buf = new byte[100*1024];
+            cr = owner.commander.getContext().getContentResolver();
         }
         @Override
         public void run() {
@@ -317,7 +326,7 @@ public class FSAdapter extends CommanderAdapterBase {
             }
         }
         
-        private boolean createThumbnail( String fn, FileItem f, int h ) {
+        private final boolean createThumbnail( String fn, FileItem f, int h ) {
             final String func_name = "createThubnail()"; 
             try {
                 if( h == apk_h ) {
@@ -331,7 +340,52 @@ public class FSAdapter extends CommanderAdapterBase {
                     catch( Exception e ) {
                     }
                     return false;
-                }               
+                }
+                // let's try to take it from the mediastore
+                try {
+                    String[] proj = { BaseColumns._ID };
+                    String where = Media.DATA + " = '" + fn + "'";
+                    Cursor cursor = cr.query( Media.EXTERNAL_CONTENT_URI, proj, where, null, null );
+                    if( cursor != null && cursor.getCount() > 0 ) {
+                        cursor.moveToPosition( 0 );
+                        int id = cursor.getInt( cursor.getColumnIndexOrThrow( BaseColumns._ID ) );
+                        cursor.close();
+                        String[] th_proj = new String[] { BaseColumns._ID };
+                        /*
+                        String[] th_proj = new String[] {
+                            BaseColumns._ID, // 0
+                            Thumbnails.IMAGE_ID, // 1
+                            Thumbnails.WIDTH,
+                            Thumbnails.HEIGHT
+                        };
+                        */            
+                        cursor = Thumbnails.queryMiniThumbnail( cr, id, Thumbnails.MINI_KIND, th_proj );
+                        if( cursor != null && cursor.getCount() > 0 ) {
+                            cursor.moveToPosition( 0 );
+                            /*            
+                            Log.d( TAG, "th id: " + cursor.getLong(0) +  ", org id: " + cursor.getLong(1) + 
+                                   ", w: " + cursor.getLong(2) +  ", h: " + cursor.getLong(3) );
+                            */            
+                            Uri tcu = ContentUris.withAppendedId( Thumbnails.EXTERNAL_CONTENT_URI, cursor.getLong(0) );
+                            cursor.close();
+                            InputStream in = cr.openInputStream( tcu );
+                            BitmapFactory.Options options = new BitmapFactory.Options();
+                            options.inSampleSize = 4;                            
+
+                            Bitmap bitmap = BitmapFactory.decodeStream( in, null, options );
+                            if( bitmap != null ) {
+                                BitmapDrawable drawable = new BitmapDrawable( res, bitmap );
+                                f.setThumbNail( drawable );
+                                in.close();
+                                //Log.v( TAG, "Hooray, we stole the thumbnail from " + tcu );
+                                return true;
+                            }
+                        }
+                    }
+                } catch( Exception e ) {
+                    Log.e( TAG, fn, e );
+                }
+
                 options.inSampleSize = 1;
                 options.inJustDecodeBounds = true;
                 options.outWidth = 0;

@@ -687,7 +687,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 String class_name = ".PictureViewer";
                 Intent i = new Intent( Intent.ACTION_VIEW );
                 i.setDataAndType( Uri.parse( "file://" + f.getAbsolutePath() ), mime );
-                i.setClassName( package_name, class_name );
+                i.setClassName( package_name, package_name + class_name );
                 c.startActivity( i );
             }
             catch( ActivityNotFoundException e ) {

@@ -33,7 +33,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected final static String NOTIFY_ITEMS_TO_RECEIVE = "itms"; 
     protected final static String DEFAULT_DIR = "/sdcard";
     protected final String TAG = getClass().getName();
-    protected Commander commander = null;
+    public    Commander commander = null;
     public    static final String SLS = File.separator;
     public    static final char   SLC = File.separator.charAt( 0 );
     public    static final String PLS = "..";
