@@ -38,27 +38,6 @@ public class PictureViewer extends Activity {
         String path = u.getPath();
         if( path == null ) return;
         try {
-        
-        
-        
-        String[] proj = { BaseColumns._ID };
-        String where = Media.DATA + " = '" + path + "'";
-        Cursor cursor = managedQuery( Media.EXTERNAL_CONTENT_URI, proj, where, null, null );
-        if( cursor.getCount() > 0 ) {
-            cursor.moveToPosition( 0 );
-            int id = cursor.getInt( cursor.getColumnIndexOrThrow( BaseColumns._ID ) );
-            String[] th_proj = new String[] { BaseColumns._ID };            
-            cursor = Thumbnails.queryMiniThumbnail( getContentResolver(), id, Thumbnails.MINI_KIND, th_proj );
-            if( cursor.getCount() > 0 ) {
-                cursor.moveToPosition( 0 );
-                Uri tcu = ContentUris.withAppendedId( Thumbnails.EXTERNAL_CONTENT_URI, cursor.getLong(0) );
-                image_view.setImageURI( tcu );
-            }
-        }
-            
-        
-        
- /*       
             Display display = getWindowManager().getDefaultDisplay(); 
             int width = display.getWidth();
             int height = display.getHeight();
@@ -88,8 +67,6 @@ public class PictureViewer extends Activity {
             }
             else
                 image_view.setImageBitmap( BitmapFactory.decodeFile( path ) );
-            
-*/            
         } catch( Exception e ) {
             Log.e( TAG, u.toString(), e );
         }
