@@ -55,33 +55,41 @@
                 <action android:name="android.intent.action.EDIT" />
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <type android:value="text/plain" />
+                <data android:mimeType="text/plain"/>
             </intent-filter>
         </activity>
         <activity 
-          android:name=".PictureViewer"  
-          android:label="@string/pictvw_label">
+            android:name=".PictureViewer"
+            android:label="@string/pictvw_label">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <type android:value="image/jpeg" />
-                <type android:value="image/png" />
-                <type android:value="image/gif" />
+                <data android:mimeType="image/jpeg" />
+                <data android:mimeType="image/png" />
+                <data android:mimeType="image/gif" />
             </intent-filter>
         </activity>
-        <activity android:name=".Prefs" android:label="@string/prefs_label">
+        <activity
+            android:name=".Prefs"
+            android:label="@string/prefs_label">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
-        <activity android:name=".toolbuttons.ToolButtonsProps" android:label="@string/tblist_label">
-          android:windowSoftInputMode="adjustPan"
+        <activity
+            android:name=".toolbuttons.ToolButtonsProps"
+            android:label="@string/tblist_label">
+          <!--android:windowSoftInputMode="adjustPan"-->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
         </activity>
-		<activity android:name=".ServerForm" android:theme="@android:style/Theme.Dialog"/>		
-        <provider android:name=".FileProvider" android:authorities="com.ghostsq.commander.FileProvider"></provider>
+		<activity
+		    android:name=".ServerForm"
+		    android:theme="@android:style/Theme.Dialog"/>
+        <provider
+            android:name=".FileProvider"
+            android:authorities="com.ghostsq.commander.FileProvider"/>
     </application>
     <uses-sdk android:minSdkVersion="4" />
 </manifest>
