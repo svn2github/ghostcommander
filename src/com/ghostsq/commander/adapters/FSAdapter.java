@@ -350,15 +350,12 @@ public class FSAdapter extends CommanderAdapterBase {
                         cursor.moveToPosition( 0 );
                         int id = cursor.getInt( cursor.getColumnIndexOrThrow( BaseColumns._ID ) );
                         cursor.close();
-                        String[] th_proj = new String[] { BaseColumns._ID };
-                        /*
                         String[] th_proj = new String[] {
-                            BaseColumns._ID, // 0
+                            BaseColumns._ID,     // 0
                             Thumbnails.IMAGE_ID, // 1
-                            Thumbnails.WIDTH,
-                            Thumbnails.HEIGHT
+                            Thumbnails.WIDTH,    // 2
+                            Thumbnails.HEIGHT    // 3
                         };
-                        */            
                         cursor = Thumbnails.queryMiniThumbnail( cr, id, Thumbnails.MINI_KIND, th_proj );
                         if( cursor != null && cursor.getCount() > 0 ) {
                             cursor.moveToPosition( 0 );
@@ -377,7 +374,7 @@ public class FSAdapter extends CommanderAdapterBase {
                                 BitmapDrawable drawable = new BitmapDrawable( res, bitmap );
                                 f.setThumbNail( drawable );
                                 in.close();
-                                //Log.v( TAG, "Hooray, we stole the thumbnail from " + tcu );
+                                Log.v( TAG, "a thumbnail was stolen from " + tcu );
                                 return true;
                             }
                         }
