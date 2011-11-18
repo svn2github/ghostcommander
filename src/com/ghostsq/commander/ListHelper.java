@@ -18,13 +18,15 @@ import android.widget.ListView;
 
 public class ListHelper {
     private final String TAG;
-    public final int which, id;
-    public ListView flv = null;
-    private int currentPosition = -1;
-    private String[] listOfItemsChecked = null;
-    private Panels p;
-
-    ListHelper(int which_, Panels p_) {
+    public  final int which, id;
+    public  ListView   flv = null;
+    private int        currentPosition = -1;
+    private String[]   listOfItemsChecked = null;
+    private Panels     p;
+    private boolean   needRefresh;
+    
+    ListHelper( int which_, Panels p_ ) {
+        needRefresh = true;
         which = which_;
         TAG = "ListHelper" + which;
         p = p_;
@@ -175,6 +177,12 @@ public class ListHelper {
         }
     }
 
+    public final void setNeedRefresh() {
+        needRefresh = true;
+    }
+    public final boolean needRefresh() {
+        return needRefresh;
+    }
     public final void refreshList() {
         try {
             CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
@@ -184,6 +192,7 @@ public class ListHelper {
             flv.clearChoices();
             ca.readSource( null, null );
             flv.invalidateViews();
+            needRefresh = false;
         } catch( Exception e ) {
             Log.e( TAG, "refreshList()", e );
         }

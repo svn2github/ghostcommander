@@ -218,14 +218,12 @@ public class Dialogs implements DialogInterface.OnClickListener {
                         valid = true;
                     prompt.setText( owner.getString( R.string.oper_item_to, op, summ ) );
                 }
-                String copy_to = owner.panels.getFolderUri( false );
-                if( copy_to != null ) {
-                    if( edit != null ) {
-                        edit.setWidth( owner.getWidth() - 70 );
-                        edit.setText( Favorite.screenPwd( copy_to ) );
-                        if( owner.panels.getNumItemsSelectedOrChecked() == 1 )
-                            edit.selectAll();
-                    }
+                if( edit != null ) {
+                    edit.setWidth( owner.getWidth() - 70 );
+                    String cts = Favorite.screenPwd( owner.panels.getFolderUri( false ) );
+                    edit.setText( cts != null ? cts : "" );
+                    if( owner.panels.getNumItemsSelectedOrChecked() == 1 )
+                        edit.selectAll();
                 }
                 break;
             }

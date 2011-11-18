@@ -614,33 +614,43 @@ public class FSAdapter extends CommanderAdapterBase {
                 worker.start();
                 return true;
             }
+            boolean ok = false;
             File f = items[position - 1].f;
             File new_file = new File( dirName, newName );
             if( new_file.exists() ) {
                 if( f.equals( new_file ) ) return false;
-                final String msg$ = commander.getContext().getString( R.string.file_exist, newName );
-                final File from$ = f, to$ = new_file;  
-                worker = new Engine( workerHandler, new Runnable() {
-                    public void run() {
-                        try {
-                            int resolution = worker.askOnFileExist( msg$, commander );
-                            if( ( resolution & Commander.REPLACE ) != 0 ) {
-                                if( to$.delete() && from$.renameTo( to$ ) )
-                                    worker.sendResult( "ok" );
+                String old_ap = f.getAbsolutePath();
+                String new_ap = f.getAbsolutePath();
+                if( old_ap.equalsIgnoreCase( new_ap ) ) {
+                    File tmp_file = new File( dirName, newName + "_TMP_" );
+                    ok = f.renameTo( tmp_file );
+                    ok = tmp_file.renameTo( new_file );
+                } else {
+                    final String msg$ = commander.getContext().getString( R.string.file_exist, newName );
+                    final File from$ = f, to$ = new_file;  
+                    worker = new Engine( workerHandler, new Runnable() {
+                        public void run() {
+                            try {
+                                int resolution = worker.askOnFileExist( msg$, commander );
+                                if( ( resolution & Commander.REPLACE ) != 0 ) {
+                                    if( to$.delete() && from$.renameTo( to$ ) )
+                                        worker.sendResult( "ok" );
+                                }
+                                    
+                            } catch( InterruptedException e ) {
+                                e.printStackTrace();
                             }
-                                
-                        } catch( InterruptedException e ) {
-                            e.printStackTrace();
                         }
-                    }
-                });
-                worker.start();
-                return true;
+                    });
+                    worker.start();
+                    return true;
+                }
             }
-            
-            boolean ok = f.renameTo( new_file );
-            commander.notifyMe( new Commander.Notify( null, ok ? Commander.OPERATION_COMPLETED_REFRESH_REQUIRED : 
-                                                                 Commander.OPERATION_FAILED ) );
+            else
+                ok = f.renameTo( new_file );
+            commander.notifyMe( new Commander.Notify( ok ? null : s( R.string.error ), 
+                    ok ? Commander.OPERATION_COMPLETED_REFRESH_REQUIRED : 
+                         Commander.OPERATION_FAILED ) );
             return ok;
         }
         catch( SecurityException e ) {

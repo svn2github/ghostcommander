@@ -31,8 +31,8 @@ public class ToolButtons extends ArrayList<ToolButton>
             int[] bia = { 
                  R.id.F1,      
                  R.id.F2,      
-                 R.id.F4,      
                  R.id.F3,      
+                 R.id.F4,      
                  R.id.SF4,     
                  R.id.F5,      
                  R.id.F6,      

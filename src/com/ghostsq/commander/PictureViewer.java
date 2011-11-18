@@ -24,8 +24,13 @@ public class PictureViewer extends Activity {
     public void onCreate( Bundle savedInstanceState ) {
         Log.v( TAG, "onCreate" );
         super.onCreate( savedInstanceState );
-        setContentView( R.layout.pictvw );
-        buf = new byte[100*1024];
+        try {
+            setContentView( R.layout.pictvw );
+            buf = new byte[100*1024];
+        }
+        catch( Exception e ) {
+            e.printStackTrace();
+        }
     }
 
     @Override

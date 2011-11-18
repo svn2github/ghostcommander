@@ -116,19 +116,19 @@ public class LocationBar extends BaseAdapter implements Filterable, OnKeyListene
 
 	// --- inner functions ---
 	
-    public final void openGoPanel( int which, String uri_s ) {
+    public final void openGoPanel( int which, Uri uri ) {
 		try {
 			goPanel.setVisibility( View.VISIBLE );
 			toChange = which;
 			AutoCompleteTextView edit = (AutoCompleteTextView)c.findViewById( R.id.uri_edit );
 			if( edit != null ) {
-				edit.setText( Favorite.screenPwd( uri_s ) );
+				edit.setText( Favorite.screenPwd( uri ) );
 				edit.showDropDown();
 				edit.requestFocus();
 			}
 			CheckBox star = (CheckBox)c.findViewById( R.id.star );
             if( star != null )
-            	star.setChecked( favorites.findIgnoreAuth( uri_s ) >= 0 );
+            	star.setChecked( favorites.findIgnoreAuth( uri ) >= 0 );
 		}
 		catch( Exception e ) {
 			c.showMessage( "Error: " + e );
@@ -197,24 +197,24 @@ public class LocationBar extends BaseAdapter implements Filterable, OnKeyListene
 			try {
 				if( toChange < 0 ) break;
 				TextView edit = (TextView)goPanel.findViewById( R.id.uri_edit );
-	            String uri_s = edit.getText().toString().trim();
+	            String     uri_s = edit.getText().toString().trim();
 	            CheckBox star_cb = (CheckBox)v;
-	            favorites.removeFromFavorites( uri_s );
+                Uri u = Uri.parse( uri_s );
+	            favorites.removeFromFavorites( u );
 				if( star_cb.isChecked() ) {
-                    Uri u = Uri.parse( uri_s );
                     if( Favorite.isPwdScreened( u ) ) {
                         Uri up = favorites.searchForPassword( u );
                         if( !u.equals( up )) 
                             u = up;
                         else {
-                            Uri uc = Uri.parse( p.getFolderUri( true ) );
+                            Uri uc = p.getFolderUri( true );
                             u = Favorite.updateUserInfo( u, uc.getEncodedUserInfo() );                                
                         }
                     }
                     favorites.add( new Favorite( u ) );
 				}
 				notifyDataSetChanged();
-				star_cb.setChecked( favorites.findIgnoreAuth( uri_s ) >= 0 );
+				star_cb.setChecked( favorites.findIgnoreAuth( u ) >= 0 );
 				AutoCompleteTextView actv = (AutoCompleteTextView)goPanel.findViewById( R.id.uri_edit );
 				actv.showDropDown();
 				actv.requestFocus();
@@ -236,7 +236,8 @@ public class LocationBar extends BaseAdapter implements Filterable, OnKeyListene
 			TextView edit = (TextView)goPanel.findViewById( R.id.uri_edit );
 			CheckBox star = (CheckBox)goPanel.findViewById( R.id.star );
 			String   addr = edit.getText().toString().trim();
-			star.setChecked( favorites.findIgnoreAuth( addr ) >= 0 );
+			Uri       uri = Uri.parse( addr );
+			star.setChecked( favorites.findIgnoreAuth( uri ) >= 0 );
 		}
 		catch( Exception e ) {
 		}

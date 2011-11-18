@@ -16,44 +16,41 @@ public class Favorites extends ArrayList<Favorite>
 {
     private static final long serialVersionUID = 1L;
     private final static String old_sep = ",", sep = ";";
-    private final String TAG = getClass().getName();
+    private final String TAG = getClass().getSimpleName();
     private final Context c;
 
     public Favorites( Context c_ ) {
         c = c_;
     }
     
-    public final void addToFavorites( String uri_str ) {
-        removeFromFavorites( uri_str );
-        Uri u = Uri.parse( uri_str );
+    public final void addToFavorites( Uri u ) {
+        removeFromFavorites( u );
         if( Favorite.isPwdScreened( u ) )
             u = searchForPassword( u );
         add( new Favorite( u ) );
     }
-    public final void removeFromFavorites( String uri_s ) {
-        int pos = findIgnoreAuth( uri_s );
+    public final void removeFromFavorites( Uri u ) {
+        int pos = findIgnoreAuth( u );
         if( pos >= 0 )
             remove( pos );
     }
 
-    public final int findIgnoreAuth( String uri_s ) {
+    public final int findIgnoreAuth( Uri u ) {
         try {
-            if( uri_s != null ) {
-                Uri u = Uri.parse( uri_s );
-                if( u != null ) {
-                    u = Favorite.addTrailngSlash( Favorite.updateUserInfo( u, null ) );
-                    for( int i = 0; i < size(); i++ ) {
-                        if( Favorite.addTrailngSlash( get( i ).getUri() ).equals( u ) )
-                            return i;
-                    }
+            if( u != null ) {
+                u = Favorite.addTrailngSlash( Favorite.updateUserInfo( u, null ) );
+                for( int i = 0; i < size(); i++ ) {
+                    Uri fu = Favorite.addTrailngSlash( get( i ).getUri() );
+                    if( fu.equals( u ) )
+                        return i;
                 }
             }
         } catch( Exception e ) {
-            Log.e( TAG, "Uri: " + Favorite.screenPwd( uri_s ), e );
+            Log.e( TAG, "Uri: " + Favorite.screenPwd( u ), e );
         }
         return -1;
     }
-
+   
     public final Uri searchForPassword( Uri u ) {
         try {
             String ui = u.getUserInfo(); 

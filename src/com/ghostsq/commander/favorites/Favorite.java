@@ -265,14 +265,14 @@ public class Favorite {
     }
 
     public final static Uri addTrailngSlash( Uri u ) {
-        String path = u.getEncodedPath();
+        String alt_path, path = u.getEncodedPath();
         if( path == null )
-            path = "/";
+            alt_path = "/";
         else {
-            String alt_path = Utils.mbAddSl( path );
-            if( path.equals( alt_path ) ) return u;
+            alt_path = Utils.mbAddSl( path );
+            if( alt_path == null || path.equals( alt_path ) ) return u;
         }
-        return u.buildUpon().encodedPath( path ).build(); 
+        return u.buildUpon().encodedPath( alt_path ).build(); 
     }
 
     // ---------------------------

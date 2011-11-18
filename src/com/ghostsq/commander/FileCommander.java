@@ -449,8 +449,11 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         case  R.id.sdcard:
             Navigate( Uri.parse( Panels.DEFAULT_LOC ), null );
             break;
-        case  R.id.root:
-            Navigate( Uri.parse( RootAdapter.DEFAULT_LOC ), null );
+        case  R.id.root: {
+                Uri cu = panels.getFolderUri( true );
+                Navigate( Uri.parse( RootAdapter.DEFAULT_LOC + 
+                  ( cu == null || cu.getScheme() != null && cu.getScheme().length() > 0 ? "" : cu.getPath() ) ), null );
+            }
             break;
         case  R.id.mount:
             Navigate( Uri.parse( MountAdapter.DEFAULT_LOC ), null );

@@ -42,7 +42,7 @@ public class RootAdapter extends CommanderAdapterBase {
     // Java compiler creates a thunk function to access to the private owner class member from a subclass
     // to avoid that all the member accessible from the subclasses are public
     private final static String TAG = "RootAdapter";
-    public static final String DEFAULT_LOC = "root:/";
+    public static final String DEFAULT_LOC = "root:";
     private final static int CHMOD_CMD = 36793, CMD_CMD = 39716;
     private Uri uri = null;
     private LsItem[] items = null;

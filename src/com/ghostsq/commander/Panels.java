@@ -278,11 +278,6 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         else
             Log.e( TAG, "title view was not found!" );
     }
-    public final void addCurrentToFavorites() {
-        String cur_uri = getFolderUri( true );
-        favorites.addToFavorites( cur_uri );
-        c.showMessage( c.getString( R.string.fav_added, Favorite.screenPwd( cur_uri ) ) );
-    }
     public final int getSelection( boolean one_checked ) {
         return list[current].getSelection( one_checked );
     }
@@ -387,6 +382,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         refreshList( current );
         if( sxs )
             refreshList( opposite() );
+        else
+            list[opposite()].setNeedRefresh();
     }
     public final void refreshList( int which ) {
         list[which].refreshList();
@@ -427,7 +424,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public final void togglePanels( boolean refresh ) {
         //Log.v( TAG, "toggle" );
         setPanelCurrent( opposite() );
-        if( refresh && !sxs )
+        if( !sxs && ( refresh || list[current].needRefresh() ) ) 
             refreshList( current );
     }
     
@@ -617,7 +614,12 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             String in = ca.getItemName( pos, true );
             clipboard.setText( in );
         }
-    }    
+    }
+    public final void addCurrentToFavorites() {
+        Uri uri = getFolderUri( true );
+        favorites.addToFavorites( uri );
+        c.showMessage( c.getString( R.string.fav_added, Favorite.screenPwd( uri ) ) );
+    }
     public final void favFolder() {
         CommanderAdapter ca = getListAdapter( true );
         if( ca == null ) return;
@@ -625,10 +627,10 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         if( u != null ) {
             int pos = getSelection( true );
             if( pos < 0 ) return;
-            String add = u.buildUpon().appendEncodedPath( ca.getItemName( pos, false ) ).build().toString();
-            if( add != null && add.length() > 0 ) {
-                favorites.addToFavorites( add );
-                c.showMessage( c.getString( R.string.fav_added, add ) );
+            Uri to_add = u.buildUpon().appendEncodedPath( ca.getItemName( pos, false ) ).build();
+            if( to_add != null ) {
+                favorites.addToFavorites( to_add );
+                c.showMessage( c.getString( R.string.fav_added, Favorite.screenPwd( to_add ) ) );
             }
         }
     }    
@@ -713,10 +715,9 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     	return checked;
     }
      */
-    public final String getFolderUri( boolean active ) {
+    public final Uri getFolderUri( boolean active ) {
         CommanderAdapter ca = getListAdapter( active );
-        if( ca == null ) return "";
-        return ca.toString();
+        return ca == null ? null : ca.getUri();
     }
     public final String getSelectedItemName() {
         int pos = getSelection( true );
@@ -771,7 +772,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             CommanderAdapter cur_adapter = getListAdapter( true );
             Uri dest_uri = Uri.parse( dest );
             if( Favorite.isPwdScreened( dest_uri ) ) {
-                dest_uri = Favorite.borrowPassword( dest_uri, Uri.parse( getFolderUri( false ) ) );
+                dest_uri = Favorite.borrowPassword( dest_uri, getFolderUri( false ) );
                 if( dest_uri == null ) {
                     c.showError( c.getString( R.string.inv_dest ) );
                     return;
