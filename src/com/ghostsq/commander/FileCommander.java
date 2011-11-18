@@ -221,11 +221,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     public void onCreateContextMenu( ContextMenu menu, View v, ContextMenuInfo menuInfo ) {
         try {
             Utils.changeLanguage( this );
-            int num = panels.getNumItemsChecked();
             AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo)menuInfo;
             menu.setHeaderTitle( getString( R.string.operation ) );
             CommanderAdapter ca = panels.getListAdapter( true );
-            ca.populateContextMenu( menu, acmi, num );
+            ca.populateContextMenu( menu, acmi, panels.getNumItemsChecked() );
         }
         catch( Exception e ) {
             Log.e( TAG, "onCreateContextMenu()", e );
