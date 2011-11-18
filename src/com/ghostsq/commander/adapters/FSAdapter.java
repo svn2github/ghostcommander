@@ -27,7 +27,6 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -254,8 +253,10 @@ public class FSAdapter extends CommanderAdapterBase {
                             n = i;
                         else
                             i--;
-                        if( !proc_visible )
+                        if( !proc_visible ) {
+                            yield();
                             sleep( 10 );
+                        }
                         FileItem f = mList[n];
                         f.need_thumb = false;
 
@@ -348,33 +349,42 @@ public class FSAdapter extends CommanderAdapterBase {
                     Cursor cursor = cr.query( Media.EXTERNAL_CONTENT_URI, proj, where, null, null );
                     if( cursor != null && cursor.getCount() > 0 ) {
                         cursor.moveToPosition( 0 );
-                        int id = cursor.getInt( cursor.getColumnIndexOrThrow( BaseColumns._ID ) );
+                        long id = cursor.getLong( 0 );
                         cursor.close();
                         String[] th_proj = new String[] {
                             BaseColumns._ID,     // 0
-                            Thumbnails.IMAGE_ID, // 1
-                            Thumbnails.WIDTH,    // 2
-                            Thumbnails.HEIGHT    // 3
+                            Thumbnails.WIDTH,    // 1
+                            Thumbnails.HEIGHT,   // 2
+                            Thumbnails.IMAGE_ID  // 3
                         };
                         cursor = Thumbnails.queryMiniThumbnail( cr, id, Thumbnails.MINI_KIND, th_proj );
                         if( cursor != null && cursor.getCount() > 0 ) {
                             cursor.moveToPosition( 0 );
-                            /*            
-                            Log.d( TAG, "th id: " + cursor.getLong(0) +  ", org id: " + cursor.getLong(1) + 
-                                   ", w: " + cursor.getLong(2) +  ", h: " + cursor.getLong(3) );
-                            */            
                             Uri tcu = ContentUris.withAppendedId( Thumbnails.EXTERNAL_CONTENT_URI, cursor.getLong(0) );
+                            int tw = cursor.getInt( 1 );
+                            int th = cursor.getInt( 2 );
+                            //Log.v( TAG, "th id: " + cursor.getLong(0) +  ", org id: " + cursor.getLong(3) + ", w: " + tw +  ", h: " + th );
                             cursor.close();
                             InputStream in = cr.openInputStream( tcu );
-                            BitmapFactory.Options options = new BitmapFactory.Options();
-                            options.inSampleSize = 4;                            
-
+                            
+                            if( tw > 0 && th > 0 ) {
+                                int greatest = Math.max( tw, th );
+                                int factor = greatest / thumb_sz;
+                                int b;
+                                for( b = 0x8000000; b > 0; b >>= 1 )
+                                    if( b < factor ) break;
+                                options.inSampleSize = b;
+                            }
+                            else                            
+                                options.inSampleSize = 4;                            
+                            options.inJustDecodeBounds = false;
+                            options.inTempStorage = buf;
                             Bitmap bitmap = BitmapFactory.decodeStream( in, null, options );
                             if( bitmap != null ) {
                                 BitmapDrawable drawable = new BitmapDrawable( res, bitmap );
                                 f.setThumbNail( drawable );
                                 in.close();
-                                Log.v( TAG, "a thumbnail was stolen from " + tcu );
+                                //Log.v( TAG, "a thumbnail was stolen from " + tcu );
                                 return true;
                             }
                         }

@@ -16,8 +16,7 @@ import android.util.Log;
 import com.ghostsq.commander.adapters.Engine;;
 
 class ExecEngine extends Engine {
-    public final static String TAG = "ExecEngine";
-    public    String sh = "su";
+    protected String sh = "su";
     protected Context context;
     private   String  where, command;
     private   boolean use_busybox = false;

@@ -74,44 +74,39 @@ public class RootAdapter extends CommanderAdapterBase {
         public Uri getUri() {
             return src;
         }
-        
         @Override
         public void run() {
+            String msg = null;
             try {
             	getList( true );
-            }
-            catch( IOException e ) {
-                // try again, without su
+            } catch( IOException e ) {
                 try {
+                    msg = commander.getContext().getString( R.string.no_root );
                     getList( false );
-                    sendProgress( commander.getContext().getString( R.string.no_root ), 
-                            Commander.OPERATION_COMPLETED, pass_back_on_done );
-                }
-                catch( Exception e1 ) {
+                } catch( Exception e1 ) {
                     Log.e( TAG, "Exception even on 'sh' execution", e1 );
-                    sendProgress( commander.getContext().getString( R.string.no_root ), 
-                            Commander.OPERATION_FAILED, pass_back_on_done );
+                    error( commander.getContext().getString( R.string.failed ) + e1.getMessage() );
                 }
             }
             catch( VerifyError e ) {
-                sendProgress( "VerifyError " + e, Commander.OPERATION_FAILED, pass_back_on_done );
+                error( "VerifyError " + e );
                 Log.e( TAG, "VerifyError: ", e );
             }
             catch( Exception e ) {
                 Log.e( TAG, "Exception", e );
             }
             finally {
-            	super.run();
+                doneReading( msg, pass_back_on_done );
             }
         }
-        private void getList( boolean su ) throws Exception {
+        private boolean getList( boolean su ) throws Exception {
+            if( !su ) sh = "sh";
             String path = src.getPath();
             if( path == null ) {
                 path = SLS;
                 src = src.buildUpon().encodedPath( path ).build();
             }
             parentLink = path == null || path.length() == 0 || path.equals( SLS ) ? SLS : "..";
-            if( !su ) sh = "sh";
             Process p = Runtime.getRuntime().exec( sh );
             OutputStreamWriter os = new OutputStreamWriter( p.getOutputStream() );
             BufferedReader is = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
@@ -157,12 +152,14 @@ public class RootAdapter extends CommanderAdapterBase {
                     Arrays.sort( items_tmp, comp );
                 }
                 String res_s = null;
-                if( es.available() > 0 )
+                if( es.available() > 0 ) {
                     res_s = es.readLine();
-                sendProgress( res_s, Commander.OPERATION_COMPLETED, pass_back_on_done );
+                    if( res_s != null & res_s.length() > 0 )
+                        error( res_s );
+                }
+                return true;
             }
-            else
-                sendProgress( "Stopped", Commander.OPERATION_FAILED, pass_back_on_done );
+            return false;
         }
     }
     @Override
@@ -185,18 +182,20 @@ public class RootAdapter extends CommanderAdapterBase {
             } else
             if( systemMountReader != null ) {
                 MountItem[] mounts = systemMountReader.getItems();
-                boolean remount = systemMountReader.toRemount();
-                systemMountReader = null;
-                for( MountItem m : mounts ) {
-                    String mp = m.getMountPoint();
-                    if( SYSTEM_PATH.equals( mp ) ) {
-                        if( remount ) {
-                            worker = new RemountEngine( commander.getContext(), workerHandler, m );
-                            worker.start();
+                if( mounts != null ) {
+                    boolean remount = systemMountReader.toRemount();
+                    systemMountReader = null;
+                    for( MountItem m : mounts ) {
+                        String mp = m.getMountPoint();
+                        if( SYSTEM_PATH.equals( mp ) ) {
+                            if( remount ) {
+                                worker = new RemountEngine( commander.getContext(), workerHandler, m );
+                                worker.start();
+                            }
+                            else
+                                systemMountMode = m.getMode();
+                            break;
                         }
-                        else
-                            systemMountMode = m.getMode();
-                        break;
                     }
                 }
             }

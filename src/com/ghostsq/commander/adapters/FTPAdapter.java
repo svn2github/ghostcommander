@@ -281,7 +281,7 @@ public class FTPAdapter extends CommanderAdapterBase {
     @Override
     public String toString() {
         if( uri != null ) {
-            if( theUserPass != null )
+            if( theUserPass != null && !theUserPass.isNotSet() )
                 return Favorite.getUriWithAuth( uri, theUserPass.getUserName(), theUserPass.getPassword() ).toString();
             else
                 return uri.toString(); 

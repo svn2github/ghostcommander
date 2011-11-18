@@ -83,37 +83,35 @@ class MountsListEngine extends ExecEngine {
         system = true;
         remount = remount_;
     }
-    public boolean toRemount() {
+    public final boolean toRemount() {
         return remount;
     }
-    public MountItem[] getItems() {
+    public final MountItem[] getItems() {
         return items_tmp;
     }       
     @Override
     public void run() {
+        String msg = null;
         try {
-            getList();
+            getList( true );
         }
         catch( Exception e ) {
-            sh = "sh";
             // try again
             try {
-                getList();
-                sendProgress( context.getString( R.string.no_root ), 
-                        Commander.OPERATION_COMPLETED, pass_back_on_done );
+                msg = context.getString( R.string.no_root );
+                getList( false );
             }
             catch( Exception e1 ) {
                 Log.e( TAG, "Exception even on 'sh' execution", e1 );
-                sendProgress( context.getString( R.string.no_root ), 
-                        Commander.OPERATION_FAILED, pass_back_on_done );
             }
         }
         finally {
-            super.run();
+            doneReading( msg, pass_back_on_done );
         }
     }
     
-    private void getList() throws Exception {
+    private final void getList( boolean su ) throws Exception {
+        if( !su ) sh = "sh";
         Process p = Runtime.getRuntime().exec( sh );
         DataOutputStream os = new DataOutputStream( p.getOutputStream() );
         DataInputStream  is = new DataInputStream( p.getInputStream() );
@@ -149,11 +147,11 @@ class MountsListEngine extends ExecEngine {
         if( sz > 0 )
             array.toArray( items_tmp );
         String res_s = null;
-        if( es.available() > 0 )
+        if( es.available() > 0 ) {
             res_s = es.readLine();
-        if( res_s != null && res_s.length() > 0 )
-           Log.e( TAG, "Error on the 'ls' command: " + res_s );
-        sendProgress( res_s, Commander.OPERATION_COMPLETED, pass_back_on_done );
+            if( res_s != null && res_s.length() > 0 )
+               error( res_s );
+        }
     }        
     
 }

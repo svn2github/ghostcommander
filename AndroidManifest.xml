@@ -63,7 +63,6 @@
             android:label="@string/pictvw_label">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="image/jpeg" />
                 <data android:mimeType="image/png" />
                 <data android:mimeType="image/gif" />

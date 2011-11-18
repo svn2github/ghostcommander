@@ -670,15 +670,9 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             c.showMessage( "Not editable" );
     }
     public final void openForView() {
-        CommanderAdapter ca = getListAdapter( true );
-        if( ca instanceof FavsAdapter ) {
-            FavsAdapter fa = (FavsAdapter)ca;
-            int pos = getSelection( true );
-            if( pos > 0 ) fa.editItem( pos );
-            return;
-        }
         File f = getCurrentFile();
-        if( f != null && f.isFile() ) {
+        if( f == null ) return;
+        if( f.isFile() ) {
             try {
                 String mime = Utils.getMimeByExt( Utils.getFileExt( f.getName() ) );
                 if( mime == null || !mime.startsWith( "image/" ) ) return;                
@@ -695,7 +689,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             }
         }
         else
-            c.showMessage( "Not editable" );
+            showSizes();
     }
 
     

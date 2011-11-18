@@ -12,6 +12,7 @@ import android.os.Message;
 import android.util.Log;
 
 public class Engine extends Thread {
+    protected final String TAG = getClass().getSimpleName();
     protected Handler thread_handler;
 	protected boolean stop = false;
 	protected String  errMsg = null;
@@ -50,6 +51,7 @@ public class Engine extends Thread {
     	sendProgress( s, p, -1 );
     }
     protected final void sendProgress( String s, int p1, int p2 ) {
+        Log.v( TAG, "sendProgress: " + s );
         Message msg = thread_handler.obtainMessage();
         Bundle b = new Bundle();
         b.putInt( CommanderAdapterBase.NOTIFY_PRG1, p1 );
@@ -61,6 +63,7 @@ public class Engine extends Thread {
         thread_handler.sendMessage( msg );
     }
     protected final void sendProgress( String s, int p, String cookie ) {
+        Log.v( TAG, "sendProgress: " + s + ", cookie: " + cookie );
         Message msg = thread_handler.obtainMessage();
         Bundle b = new Bundle();
         b.putInt( CommanderAdapterBase.NOTIFY_PRG1, p );
@@ -97,6 +100,13 @@ public class Engine extends Thread {
             sendProgress( report + "\n - " + errMsg, Commander.OPERATION_FAILED );
         else {
             sendProgress( report, Commander.OPERATION_COMPLETED_REFRESH_REQUIRED );
+        }
+    }
+    protected final void doneReading( String msg, String cookie ) {
+        if( errMsg != null )
+            sendProgress( errMsg, Commander.OPERATION_FAILED, cookie );
+        else {
+            sendProgress( msg, Commander.OPERATION_COMPLETED, cookie );
         }
     }
     protected final boolean tooLong( int sec ) {

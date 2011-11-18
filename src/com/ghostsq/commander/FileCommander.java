@@ -114,7 +114,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onStart() {
-        Log.v( TAG, "Starting\n" );
+        //Log.v( TAG, "Starting\n" );
         super.onStart();
         on = true;
         if( dont_restore )
@@ -128,7 +128,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             
             Intent intent = getIntent();
             String action = intent.getAction();
-            Log.v( TAG, "Action: " + action );
+            Log.i( TAG, "Action: " + action );
             if( Intent.ACTION_VIEW.equals( action ) )
                 panels.Navigate( 0, intent.getData(), null );
             
@@ -144,7 +144,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onPause() {
-        Log.v( TAG, "Pausing\n");
+        //Log.v( TAG, "Pausing\n");
         super.onPause();
         on = false;
         SharedPreferences.Editor editor = getPreferences( MODE_PRIVATE ).edit();
@@ -155,21 +155,21 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onResume() {
-        Log.v( TAG, "Resuming\n");
+        //Log.v( TAG, "Resuming\n");
         super.onResume();
         on = true;
     }
     
     @Override
     protected void onStop() {
-        Log.v( TAG, "Stopping\n");
+        //Log.v( TAG, "Stopping\n");
         super.onStop();
         on = false;
     }
 
     @Override
     protected void onDestroy() {
-        Log.v( TAG, "Destroying\n");
+        //Log.v( TAG, "Destroying\n");
         on = false;
         super.onDestroy();
         if( isFinishing() && exit ) {
@@ -352,7 +352,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         switch( keyCode ) {
         case KeyEvent.KEYCODE_TAB:
         case KeyEvent.KEYCODE_VOLUME_DOWN:
-            panels.togglePanels( true );
+            panels.togglePanels( false );
             return true;
         case KeyEvent.KEYCODE_BACK:
         case KeyEvent.KEYCODE_DEL:
@@ -394,6 +394,9 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         case R.id.keys:
         case R.id.F1:
             showInfo( getString( R.string.keys_text ) );
+            break;
+        case R.id.F3:
+            panels.openForView();
             break;
         case R.id.F4:
             panels.openForEdit(null);
@@ -632,7 +635,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             if( dh != null ) {
                 Dialog d = dh.getDialog();
                 if( d != null && d.isShowing() ) {
-                    Log.v( TAG, "Trying to cancel the progress dialog..." );
+                    //Log.v( TAG, "Trying to cancel the progress dialog..." );
                     d.cancel();
                 }
             }
@@ -668,7 +671,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             break;
         case OPERATION_COMPLETED:
             if( progress.cookie != null && progress.cookie.length() > 0 ) {
-                Log.i( TAG, "notify with cookie: " + progress.cookie );
+                //Log.v( TAG, "notify with cookie: " + progress.cookie );
                 int which_panel = progress.cookie.charAt( 0 ) == '1' ? 1 : 0;
                 String item_name = progress.cookie.substring( 1 );
                 panels.recoverAfterRefresh( item_name, which_panel );
