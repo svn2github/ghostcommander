@@ -257,11 +257,16 @@ public class Favorite {
     }
     
     public final static Uri updateUserInfo( Uri u, String encoded_ui ) {
-        if( u == null || encoded_ui == null ) return u;
+        if( u == null ) return null;
         String ea = u.getEncodedAuthority();
         if( ea == null ) return u;
         int at_pos = ea.lastIndexOf( '@' );
-        return u.buildUpon().encodedAuthority( encoded_ui + ( at_pos < 0 ? "@" + ea : ea.substring( at_pos ) ) ).build();
+        if( encoded_ui == null ) {
+            if( at_pos < 0 ) return u;
+            ea = ea.substring( at_pos + 1 );
+        } else
+            ea = encoded_ui + ( at_pos < 0 ? "@" + ea : ea.substring( at_pos ) );
+        return u.buildUpon().encodedAuthority( ea ).build();
     }
 
     public final static Uri addTrailngSlash( Uri u ) {

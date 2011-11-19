@@ -108,7 +108,7 @@ public class FavDialog implements OnClickListener {
                 String serv = se.getText().toString().trim();
                 f.setUri( uri.buildUpon().encodedAuthority( Utils.encodeToAuthority( serv ) ).path( path ).build() );
                 Log.i( TAG, "Uri:" + f.getUri() );
-                String domain = de.getText().toString().trim();
+                String domain = de != null ? de.getText().toString().trim() : "";
                 String usernm = ue.getText().toString().trim();
                 f.setCredentials( domain.length() > 0 ? domain + ";" + usernm : usernm, we.getText().toString().trim() );
                 owner.invalidate();

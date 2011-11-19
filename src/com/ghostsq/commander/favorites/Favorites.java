@@ -33,14 +33,18 @@ public class Favorites extends ArrayList<Favorite>
         int pos = findIgnoreAuth( u );
         if( pos >= 0 )
             remove( pos );
+        else
+            Log.w( TAG, "Can't find in the list of favs:" + u );
     }
 
     public final int findIgnoreAuth( Uri u ) {
         try {
             if( u != null ) {
                 u = Favorite.addTrailngSlash( Favorite.updateUserInfo( u, null ) );
+                //Log.v( TAG, "looking for URI:" + u );
                 for( int i = 0; i < size(); i++ ) {
                     Uri fu = Favorite.addTrailngSlash( get( i ).getUri() );
+                    //Log.v( TAG, "probing URI:" + fu );
                     if( fu.equals( u ) )
                         return i;
                 }

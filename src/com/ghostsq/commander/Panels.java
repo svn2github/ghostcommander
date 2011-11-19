@@ -617,6 +617,25 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     }
     public final void addCurrentToFavorites() {
         Uri uri = getFolderUri( true );
+        /*
+         *   Temporary!!!
+         *   The adapter should return the credentials from the getUri()
+         *   Since we don't update the SMB app now, here is a workaround    
+         */
+        String ui = uri.getUserInfo();
+        if( ui == null || ui.length() == 0 ) {
+            CommanderAdapter ca = getListAdapter( true );
+            Uri uri_ = Uri.parse( ca.toString() );
+            if( uri_ != null ) {
+                String ui_ = uri_.getUserInfo();
+                if( ui_ != null && ui_.length() > 0 )
+                    uri = Favorite.updateUserInfo( uri, ui_ );
+            }
+        }
+        /*
+         * !!! end the temporary code block
+         */
+        
         favorites.addToFavorites( uri );
         c.showMessage( c.getString( R.string.fav_added, Favorite.screenPwd( uri ) ) );
     }
@@ -1144,7 +1163,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     }
     
     class State {
-    	private final static String LP = "LEFT_URI", RP = "RIGHT_URI";
+    	private final static String LP = "LEFT_FAV", RP = "RIGHT_FAV";
     	private final static String LI = "LEFT_ITEM", RI = "RIGHT_ITEM";
     	private final static String CP = "CURRENT_PANEL";
         private final static String FU = "FAV_URIS";
@@ -1181,8 +1200,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             e.putString( FV, favs );
         }
         public void restore( SharedPreferences p ) {
-            left      = p.getString( LP, "home:" );
-            right     = p.getString( RP, DEFAULT_LOC );
+            left      = p.getString( LP, null );
+            right     = p.getString( RP, null );
             leftItem  = p.getString( LI, null );
             rightItem = p.getString( RI, null );
             current   = p.getInt( CP, LEFT );
@@ -1196,11 +1215,12 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         s.current = current;
         try {
             CommanderAdapter  left_adapter = (CommanderAdapter)list[LEFT].getListAdapter();
-            s.left  =  left_adapter.toString();
+            Favorite lcf = new Favorite( left_adapter.getUri() );
+            s.left = lcf.toString();
             s.leftItem  =  left_adapter.getItemName( list[LEFT].getCurPos(), false );
-            //Log.v( TAG, "Saving left current item: " + s.leftItem );
             CommanderAdapter right_adapter = (CommanderAdapter)list[RIGHT].getListAdapter();
-            s.right = right_adapter.toString();
+            Favorite rcf = new Favorite( right_adapter.getUri() );
+            s.right = rcf.toString();
             s.rightItem = right_adapter.getItemName( list[RIGHT].getCurPos(), false );
             s.favs = favorites.getAsString();
         } catch( Exception e ) {
@@ -1217,9 +1237,10 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             if( s.fav_uris != null )
                 favorites.setFromOldString( s.fav_uris );
     	current = s.current;
-    	//Log.v( TAG, "Restoring left current item: " + s.leftItem );
-        NavigateInternal( LEFT,  Uri.parse( s.left  ), s.leftItem );
-        NavigateInternal( RIGHT, Uri.parse( s.right ), s.rightItem );
+    	Uri lu = s.left == null ? Uri.parse( "home:" ) : (new Favorite( s.left )).getUriWithAuth(); 
+    	NavigateInternal( LEFT, lu, s.leftItem );
+    	Uri ru = s.right == null ? Uri.parse( DEFAULT_LOC ) : (new Favorite( s.right )).getUriWithAuth();
+        NavigateInternal( RIGHT, ru, s.rightItem );
         applyColors();
         setPanelCurrent( s.current );
     }
