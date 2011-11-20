@@ -1,7 +1,9 @@
 package com.ghostsq.commander.root;
 
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import com.ghostsq.commander.Commander;
@@ -68,8 +70,8 @@ class MountsListEngine extends ExecEngine {
         }
     }
     
-    
-    private MountItem[] items_tmp;
+    private MountItem[]           items_tmp;
+    private ArrayList<MountItem>  array = new ArrayList<MountItem>();
     private String  pass_back_on_done;
     private boolean system, remount;
     MountsListEngine( Context ctx, Handler h, String pass_back_on_done_ ) {
@@ -112,46 +114,27 @@ class MountsListEngine extends ExecEngine {
     
     private final void getList( boolean su ) throws Exception {
         if( !su ) sh = "sh";
-        Process p = Runtime.getRuntime().exec( sh );
-        DataOutputStream os = new DataOutputStream( p.getOutputStream() );
-        DataInputStream  is = new DataInputStream( p.getInputStream() );
-        DataInputStream  es = new DataInputStream( p.getErrorStream() );
-        os.writeBytes( "mount\n"); // execute command
-        os.flush();
-        for( int i=0; i< 10; i++ ) {
+        
+        execute( "mount", false, 500 );
+
+        int sz = array.size();
+        items_tmp = new MountItem[sz];
+        if( sz > 0 )
+            array.toArray( items_tmp );
+    }        
+
+    @Override
+    protected void procInput( BufferedReader br ) throws IOException, Exception {
+        while( br.ready() ) {
             if( isStopReq() ) 
                 throw new Exception();
-            if( is.available() > 0 ) break;
-            Thread.sleep( 50 );
-        }
-        if( is.available() <= 0 ) // may be an error may be not
-            Log.w( TAG, "No output from the executed command" );
-        ArrayList<MountItem>  array = new ArrayList<MountItem>();
-        while( is.available() > 0 ) {
-            if( isStopReq() ) 
-                throw new Exception();
-            String ln = is.readLine();
+            String ln = br.readLine();
             if( ln == null ) break;
+            if( ln.length() == 0 ) continue;
             if( system && ln.indexOf( "/system " ) < 0 ) continue;
             MountItem item = new MountItem( ln );
             if( item.isValid() )
                 array.add( item );
         }
-        os.writeBytes("exit\n");
-        os.flush();
-        p.waitFor();
-        if( p.exitValue() == 255 )
-            Log.e( TAG, "Process.exitValue() returned 255" );
-        int sz = array.size();
-        items_tmp = new MountItem[sz];
-        if( sz > 0 )
-            array.toArray( items_tmp );
-        String res_s = null;
-        if( es.available() > 0 ) {
-            res_s = es.readLine();
-            if( res_s != null && res_s.length() > 0 )
-               error( res_s );
-        }
-    }        
-    
+   }
 }

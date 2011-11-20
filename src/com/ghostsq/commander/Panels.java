@@ -1163,7 +1163,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     }
     
     class State {
-    	private final static String LP = "LEFT_FAV", RP = "RIGHT_FAV";
+        private final static String LU = "LEFT_URI", RU = "RIGHT_URI";
+    	private final static String LF = "LEFT_FAV", RF = "RIGHT_FAV";
     	private final static String LI = "LEFT_ITEM", RI = "RIGHT_ITEM";
     	private final static String CP = "CURRENT_PANEL";
         private final static String FU = "FAV_URIS";
@@ -1174,16 +1175,18 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         public String   favs, fav_uris;
         
         public void store( Bundle b ) {
-            b.putString( LP, left );
-            b.putString( RP, right );
+            b.putString( LF, left );
+            b.putString( RF, right );
             b.putString( LI, leftItem );
             b.putString( RI, rightItem );
             b.putInt( CP, current );
             b.putString( FV, favs );
+            b.putString( LU, "" );
+            b.putString( RU, "" );
         }
         public void restore( Bundle b ) {
-            left      = b.getString( LP );
-            right     = b.getString( RP );
+            left      = b.getString( LF );
+            right     = b.getString( RF );
             leftItem  = b.getString( LI );
             rightItem = b.getString( RI );
             current   = b.getInt( CP );
@@ -1192,16 +1195,18 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 fav_uris = b.getString( FU );
         }
         public void store( SharedPreferences.Editor e ) {
-            e.putString( LP, left );
-            e.putString( RP, right );
+            e.putString( LF, left );
+            e.putString( RF, right );
             e.putString( LI,  leftItem );
             e.putString( RI, rightItem );
             e.putInt( CP, current );
             e.putString( FV, favs );
+            e.putString( LU, "" );
+            e.putString( RU, "" );
         }
         public void restore( SharedPreferences p ) {
-            left      = p.getString( LP, null );
-            right     = p.getString( RP, null );
+            left      = p.getString( LF, null );
+            right     = p.getString( RF, null );
             leftItem  = p.getString( LI, null );
             rightItem = p.getString( RI, null );
             current   = p.getInt( CP, LEFT );

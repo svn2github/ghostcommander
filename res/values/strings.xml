@@ -50,15 +50,14 @@
     
     <string name="favs_descr">Manage the list of favorite folders and sites. Edit, rename, place a shortcut to the desktop, etc.</string>
     <string name="local_descr">Browse, organize and do whatever you want with the files stored on the inserted SD card or the internal flash memory.</string>
-    <string name="ftp_descr">Connect to an FTP server of your choice and download files from it or upload files to it.</string>
-    <string name="smb_descr">This requires the \"Ghost Commander - Samba Plugin\" application to be installed. If it is, connect to any Windows PC of your local network.</string>
-    <string name="root_descr">If your phone is rooted, use this mode to work with the system content. If you don\'t know what that means, please don\'t open this mode.</string>
+    <string name="ftp_descr">Connect to an FTP server and then download files from or upload files to the connected server.</string>
+    <string name="smb_descr">This requires the \"Ghost Commander - Samba Plugin\" application to be installed and allows you to connect to a shared folder on a Windows PC.</string>
+    <string name="root_descr">If your phone is rooted, use this mode to work with the system content. If you don\'t know what that means, please don\'t use this feature.</string>
     <string name="mount_descr">Browse the list of mounted devices. It allows you to remount to \"rw\" mode and back to \"ro\". Use with caution.</string>
     <string name="apps_descr">List of the installed applications. Not fully implemented yet.</string>
     <string name="exit_descr">Exit this application. </string>
 
     <string name="shortcut">Shortcut to the desktop</string>
-    
     <string name="enter_ftp">Open FTP site</string>
     <string name="enter_smb">Open Samba (Windows) share</string>
     <string name="search_file">/ Search file</string>

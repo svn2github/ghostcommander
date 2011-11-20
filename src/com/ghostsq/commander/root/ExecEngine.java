@@ -3,8 +3,10 @@ package com.ghostsq.commander.root;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.util.regex.Matcher;
 
 import android.content.Context;
@@ -18,10 +20,14 @@ import com.ghostsq.commander.adapters.Engine;;
 class ExecEngine extends Engine {
     protected String sh = "su";
     protected Context context;
+    private   String bb = "";
     private   String  where, command;
     private   boolean use_busybox = false;
     private   int wait_timeout = 500;
     private   StringBuilder result;
+    
+    
+    
     ExecEngine( Context context_, Handler h ) {
         super( h );
         context = context_;
@@ -43,8 +49,7 @@ class ExecEngine extends Engine {
     public void run() {
         try {
             if( command == null ) return;
-            Init( null );
-            execute( command, use_busybox, wait_timeout );
+            execute();
         } catch( Exception e ) {
             error( "Exception: " + e );
         }
@@ -52,55 +57,97 @@ class ExecEngine extends Engine {
                ( errMsg != null ? "\nWere tried to execute '" + command + "'" : null ) );
     }
     
-    protected String getBusyBox() {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( context );
-        return sharedPref.getString( "busybox_path", "busybox" );
+    protected boolean execute( String cmd, boolean use_bb, int timeout ) {
+        command = cmd;
+        use_busybox = use_bb;
+        wait_timeout = timeout;
+        return execute();
     }
     
-    protected void execute( String cmd, boolean use_bb, int timeout ) {
+    protected boolean execute() {
         try {
-            String bb = use_bb ? getBusyBox() + " " : "";
+            Init( null );
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( context );
+            bb = sharedPref.getString( "busybox_path", "busybox" ) + " ";
             Process p = Runtime.getRuntime().exec( sh );
             OutputStreamWriter os = new OutputStreamWriter( p.getOutputStream() );
-            BufferedReader is = result != null ? new BufferedReader( new InputStreamReader( p.getInputStream() ) ) : null;
+            BufferedReader is = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
             BufferedReader es = new BufferedReader( new InputStreamReader( p.getErrorStream() ) );
-            
-            if( where != null ) {
-                os.write( "cd '" + where + "'\n" ); // execute the command
-                os.flush();
-            }
-            String to_exec = bb + cmd + "\n";
-            //Log.v( TAG, "executing: " + to_exec );
-            os.write( to_exec ); // execute the command
-            os.flush();
-            Thread.sleep( timeout );
-
-            if( es.ready() ) {
-                String err_str = es.readLine();
-                if( err_str.trim().length() > 0 ) {
-                    error( err_str );
-                }
-            }
-            if( is != null && result != null )
-                while( is.ready() ) {
-                    if( isStopReq() ) 
-                        throw new Exception();
-                    String ln = is.readLine();
-                    if( ln == null ) break;
-                    result.append( ln );
-                    result.append( "\n" );
-                }
+            if( where != null )
+                outCmd( false, "cd '" + where + "'", os );
+            boolean ok = cmdDialog( os, is, es );
             os.write( "exit\n" );
             os.flush();
             p.waitFor();
-            if( p.exitValue() == 255 )
+            if( p.exitValue() == 255 ) {
                 Log.e( TAG, "Exit code 255" );
+                procError( es );
+                return false;
+            }
+            return ok;
         }
         catch( Exception e ) {
-            Log.e( TAG, "On execution '" + cmd + "'", e );
             error( "Exception: " + e );
         }
+        return false;
     }
+ 
+    protected void outCmd( boolean use_bb, String cmd, OutputStreamWriter os ) 
+              throws IOException, InterruptedException { 
+        String to_exec = ( use_bb ? bb : "" ) + cmd + "\n";
+        Log.v( TAG, "executing: " + to_exec );
+        os.write( to_exec ); // execute the command
+        os.flush();
+        Thread.sleep( wait_timeout );
+     }    
+
+    // to override by a derived class which wants something more complex
+    protected boolean cmdDialog( OutputStreamWriter os, BufferedReader is, BufferedReader es ) { 
+        try {
+            if( command != null )
+                outCmd( use_busybox, command, os );
+            boolean err = procError( es );
+            if( !is.ready() ) // may be an error may be not
+                Log.w( TAG, "No output from the executed command " + command );
+            procInput( is );
+            return !err;
+        } catch( Exception e ) {
+            error( e.getMessage() );
+            if( command != null ) Log.e( TAG, "On execution '" + command + "'", e );
+        }
+        return false;
+    }    
+    
+    // to override by derived classes
+    protected void procInput( BufferedReader br ) 
+              throws IOException, Exception { 
+        if( br != null && result != null )
+            while( br.ready() ) {
+                if( isStopReq() ) 
+                    throw new Exception();
+                String ln = br.readLine();
+                if( ln == null ) break;
+                result.append( ln );
+                result.append( "\n" );
+            }
+    }
+
+    protected boolean procError( BufferedReader es ) throws IOException {
+        if( es.ready() ) {
+            String err_str = es.readLine();
+            if( err_str.trim().length() > 0 ) {
+                error( err_str );
+                return true;
+            }
+        }
+        if( isStopReq() ) {
+            error( "Canceled" );
+            return true;
+        }
+        return false;
+    }
+    
+    
     static String prepFileName( String fn ) {
         return "'" + fn.replaceAll( "'", Matcher.quoteReplacement("'\\''") ) + "'";
     }

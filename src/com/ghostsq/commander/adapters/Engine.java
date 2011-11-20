@@ -51,7 +51,7 @@ public class Engine extends Thread {
     	sendProgress( s, p, -1 );
     }
     protected final void sendProgress( String s, int p1, int p2 ) {
-        Log.v( TAG, "sendProgress: " + s );
+        //Log.v( TAG, "sendProgress: " + s );
         Message msg = thread_handler.obtainMessage();
         Bundle b = new Bundle();
         b.putInt( CommanderAdapterBase.NOTIFY_PRG1, p1 );
