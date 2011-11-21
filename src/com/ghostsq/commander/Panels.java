@@ -579,8 +579,12 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     
     public final void Destroy() {
         Log.i( TAG, "Destroing" );
-        getListAdapter( false ).prepareToDestroy();
-        getListAdapter( true  ).prepareToDestroy();
+        try {
+            getListAdapter( false ).prepareToDestroy();
+            getListAdapter( true  ).prepareToDestroy();
+        } catch( Exception e ) {
+            e.printStackTrace();
+        }
     }
 
     public final void tryToSend() {
@@ -1216,17 +1220,28 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         }
     }
     public State getState() {
+        Log.v( TAG, "getState()");
         State s = new State();
         s.current = current;
         try {
             CommanderAdapter  left_adapter = (CommanderAdapter)list[LEFT].getListAdapter();
-            Favorite lcf = new Favorite( left_adapter.getUri() );
-            s.left = lcf.toString();
-            s.leftItem  =  left_adapter.getItemName( list[LEFT].getCurPos(), false );
+            Uri lu = left_adapter.getUri();
+            if( lu == null )
+                Log.e( TAG, "Left URI is null!" );
+            else {
+                Favorite lcf = new Favorite( lu );
+                s.left = lcf.toString();
+                s.leftItem  =  left_adapter.getItemName( list[LEFT].getCurPos(), false );
+            }
             CommanderAdapter right_adapter = (CommanderAdapter)list[RIGHT].getListAdapter();
-            Favorite rcf = new Favorite( right_adapter.getUri() );
-            s.right = rcf.toString();
-            s.rightItem = right_adapter.getItemName( list[RIGHT].getCurPos(), false );
+            Uri ru = right_adapter.getUri();
+            if( ru == null )
+                Log.e( TAG, "Right URI is null!" );
+            else {
+                Favorite rcf = new Favorite( ru );
+                s.right = rcf.toString();
+                s.rightItem = right_adapter.getItemName( list[RIGHT].getCurPos(), false );
+            }
             s.favs = favorites.getAsString();
         } catch( Exception e ) {
             Log.e( TAG, "getState()", e );

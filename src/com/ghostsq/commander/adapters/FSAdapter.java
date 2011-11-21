@@ -156,7 +156,7 @@ public class FSAdapter extends CommanderAdapterBase {
 
     protected void startThumbnailCreation() {
         if( thumbnail_size_perc > 0 ) {
-            Log.i( TAG, "thumbnails " + thumbnail_size_perc );
+            //Log.i( TAG, "thumbnails " + thumbnail_size_perc );
             if( tht != null )
                 tht.interrupt();
             tht = new ThumbnailsThread( this, new Handler() {
@@ -221,13 +221,13 @@ public class FSAdapter extends CommanderAdapterBase {
                 options = new BitmapFactory.Options();
                 res = commander.getContext().getResources();
                 int fails_count = 0;
-                boolean visible_only = false;
-                for( int a = 1; a < 4; a++ ) {
+                boolean visible_only = mList.length > 500;  // too many icons
+                for( int a = 0; a < 2; a++ ) {
                     boolean succeeded = true;
                     boolean need_update = false, proc_visible = false, proc_invisible = false;
                     int processed = 0;
                     for( int i = 0; i < mList.length ; i++ ) {
-                        visible_only = fails_count > 2;
+                        visible_only = visible_only || fails_count > 2;
                         //if( visible_only ) Log.v( TAG, "thumb on requests only" );
                         int n = -1;
                         while( true ) {

@@ -1,10 +1,8 @@
 package com.ghostsq.commander.root;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -217,6 +215,8 @@ public class RootAdapter extends CommanderAdapterBase {
                 tmp_uri = uri;
             if( tmp_uri == null )
                 return false;
+            uri = tmp_uri;  // since the Superuser application can break the execution,
+                            // it's important to keep the uri 
             if( reader != null ) {
                 if( attempts++ < 2 ) {
                     commander.showInfo( "Busy..." );

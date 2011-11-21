@@ -65,20 +65,25 @@ class ExecEngine extends Engine {
     }
     
     protected boolean execute() {
+        OutputStreamWriter os = null;
+        BufferedReader is = null;
+        BufferedReader es = null;
         try {
             Init( null );
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( context );
             bb = sharedPref.getString( "busybox_path", "busybox" ) + " ";
             Process p = Runtime.getRuntime().exec( sh );
-            OutputStreamWriter os = new OutputStreamWriter( p.getOutputStream() );
-            BufferedReader is = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
-            BufferedReader es = new BufferedReader( new InputStreamReader( p.getErrorStream() ) );
+            os = new OutputStreamWriter( p.getOutputStream() );
+            is = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
+            es = new BufferedReader( new InputStreamReader( p.getErrorStream() ) );
             if( where != null )
                 outCmd( false, "cd '" + where + "'", os );
             boolean ok = cmdDialog( os, is, es );
             os.write( "exit\n" );
             os.flush();
+            Log.v( TAG, "Begin waiting - " + getName() );
             p.waitFor();
+            Log.v( TAG, "End waiting - " + getName() );
             if( p.exitValue() == 255 ) {
                 Log.e( TAG, "Exit code 255" );
                 procError( es );
@@ -88,6 +93,15 @@ class ExecEngine extends Engine {
         }
         catch( Exception e ) {
             error( "Exception: " + e );
+        }
+        finally {
+            try {
+                if( os != null ) os.close();
+                if( is != null ) is.close();
+                if( es != null ) es.close();
+            } catch( IOException e ) {
+                e.printStackTrace();
+            }
         }
         return false;
     }

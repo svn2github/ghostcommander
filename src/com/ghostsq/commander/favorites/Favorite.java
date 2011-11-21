@@ -88,6 +88,7 @@ public class Favorite {
     }
     public String toString() {
         try {
+            if( uri == null ) return "";
             StringBuffer buf = new StringBuffer( 128 );
             buf.append( "URI=" );
             buf.append( escape( uri.toString() ) );

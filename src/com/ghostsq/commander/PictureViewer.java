@@ -28,7 +28,7 @@ public class PictureViewer extends Activity {
             setContentView( R.layout.pictvw );
             buf = new byte[100*1024];
         }
-        catch( Exception e ) {
+        catch( Throwable e ) {
             e.printStackTrace();
         }
     }
@@ -72,7 +72,7 @@ public class PictureViewer extends Activity {
             }
             else
                 image_view.setImageBitmap( BitmapFactory.decodeFile( path ) );
-        } catch( Exception e ) {
+        } catch( Throwable e ) {
             Log.e( TAG, u.toString(), e );
         }
     }

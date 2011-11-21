@@ -2,17 +2,19 @@ package com.ghostsq.commander;
 
 import org.apache.http.auth.UsernamePasswordCredentials;
 
-import com.ghostsq.commander.R.id;
 import com.ghostsq.commander.favorites.Favorite;
 import com.ghostsq.commander.utils.Utils;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.text.Editable;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,103 +50,113 @@ public class Dialogs implements DialogInterface.OnClickListener {
         owner.showDialog( dialogId );
     }
     protected final Dialog createDialog( int id ) {
-        Utils.changeLanguage( owner );
-        switch( id ) {
-        case SELECT_DIALOG:
-        case UNSELECT_DIALOG:
-        case INPUT_DIALOG:
-        case R.id.new_zip:
-        case R.id.F2:
-        case R.id.new_file:
-        case R.id.SF4:
-        case R.id.F5:
-        case R.id.F6:
-        case R.id.F7:
-        case FileCommander.FIND_ACT: {
-            LayoutInflater factory = LayoutInflater.from( owner );
-            final View textEntryView = factory.inflate( R.layout.input, null );
-            dialogObj = new AlertDialog.Builder( owner )
-                .setView( textEntryView )
-                .setTitle( " " )
-                .setPositiveButton( R.string.dialog_ok, this )
-                .setNegativeButton( R.string.dialog_cancel, this )
-                .create();
-            if( dialogObj == null )
-                Log.e( TAG, "Can't create dialog " + id );
-            return dialogObj; 
-        }
-        case LOGIN_DIALOG: {
-            LayoutInflater factory = LayoutInflater.from( owner );
-            final View textEntryView = factory.inflate( R.layout.login, null );
-            return dialogObj = new AlertDialog.Builder( owner )
+        try {
+            Utils.changeLanguage( owner );
+            switch( id ) {
+            case SELECT_DIALOG:
+            case UNSELECT_DIALOG:
+            case INPUT_DIALOG:
+            case R.id.new_zip:
+            case R.id.F2:
+            case R.id.new_file:
+            case R.id.SF4:
+            case R.id.F5:
+            case R.id.F6:
+            case R.id.F7:
+            case FileCommander.FIND_ACT: {
+                LayoutInflater factory = LayoutInflater.from( owner );
+                final View textEntryView = factory.inflate( R.layout.input, null );
+                dialogObj = new AlertDialog.Builder( owner )
                     .setView( textEntryView )
-                    .setTitle( "Login" )
+                    .setTitle( " " )
                     .setPositiveButton( R.string.dialog_ok, this )
                     .setNegativeButton( R.string.dialog_cancel, this )
                     .create();
-        }
-        /*
-        case ARI_DIALOG: {
-            return dialogObj = new AlertDialog.Builder( owner ).setIcon( android.R.drawable.ic_dialog_alert )
-                    .setTitle( R.string.error )
-                    .setMessage( R.string.error )
-                    .setPositiveButton( R.string.dialog_abort, this )
-                    .setNeutralButton( R.string.dialog_retry, this )
-                    .setNegativeButton( R.string.dialog_ignore, this )
-                    .create();
-        }
-        */
-        case FILE_EXIST_DIALOG: {
-            return dialogObj = new AlertDialog.Builder( owner )
-                    .setIcon( android.R.drawable.ic_dialog_alert )
-                    .setTitle( R.string.error )
-                    .setMessage( R.string.error )
-                    .setPositiveButton( R.string.dialog_replace_all, this )
-                    .setNeutralButton( R.string.dialog_skip_all, this )
-                    .setNegativeButton( R.string.dialog_cancel, this )
-                    .create();
-        }
-        case CONFIRM_DIALOG:
-        case R.id.F8:
-        case R.id.donate:
-        case SMB_PLG_DIALOG:
-        case FileCommander.DBOX_APP:
-        {
-            return dialogObj = new AlertDialog.Builder( owner )
-                .setIcon( android.R.drawable.ic_dialog_alert )
-                .setTitle( R.string.confirm )
-                .setMessage( "" )
-                .setPositiveButton( R.string.dialog_ok, this )
-                .setNegativeButton( R.string.dialog_cancel, this )
-                .create();
-        }
-        case PROGRESS_DIALOG: {
-            LayoutInflater factory = LayoutInflater.from( owner );
-            final View progressView = factory.inflate( R.layout.progress, null );
-            return dialogObj = new AlertDialog.Builder( owner )
-                .setView( progressView )
-                .setTitle( R.string.progress )
-                .setNegativeButton( R.string.dialog_cancel, this )
-                .setCancelable( false )
-                .create();
-        }
-        case ALERT_DIALOG: {
-            return dialogObj = new AlertDialog.Builder( owner )
-                .setIcon( android.R.drawable.ic_dialog_alert )
-                .setTitle( R.string.alert )
-                .setMessage( "" )
-                .setPositiveButton( R.string.dialog_ok, this )
-                .create();
-        }
-        case R.id.about:
-        case INFO_DIALOG: {
-            return dialogObj = new AlertDialog.Builder( owner )
-                .setIcon( android.R.drawable.ic_dialog_info )
-                .setTitle( R.string.info )
-                .setMessage( toShowInAlertDialog == null ? "" : toShowInAlertDialog )
-                .setPositiveButton( R.string.dialog_ok, this )
-                .create();
-        }
+                if( dialogObj == null )
+                    Log.e( TAG, "Can't create dialog " + id );
+                return dialogObj; 
+            }
+            case LOGIN_DIALOG: {
+                    LayoutInflater factory = LayoutInflater.from( owner );
+                    final View textEntryView = factory.inflate( R.layout.login, null );
+                    return dialogObj = new AlertDialog.Builder( owner )
+                            .setView( textEntryView )
+                            .setTitle( "Login" )
+                            .setPositiveButton( R.string.dialog_ok, this )
+                            .setNegativeButton( R.string.dialog_cancel, this )
+                            .create();
+                }
+            /*
+            case ARI_DIALOG: {
+                return dialogObj = new AlertDialog.Builder( owner ).setIcon( android.R.drawable.ic_dialog_alert )
+                        .setTitle( R.string.error )
+                        .setMessage( R.string.error )
+                        .setPositiveButton( R.string.dialog_abort, this )
+                        .setNeutralButton( R.string.dialog_retry, this )
+                        .setNegativeButton( R.string.dialog_ignore, this )
+                        .create();
+            }
+            */
+            case FILE_EXIST_DIALOG: {
+                    return dialogObj = new AlertDialog.Builder( owner )
+                            .setIcon( android.R.drawable.ic_dialog_alert )
+                            .setTitle( R.string.error )
+                            .setMessage( R.string.error )
+                            .setPositiveButton( R.string.dialog_replace_all, this )
+                            .setNeutralButton( R.string.dialog_skip_all, this )
+                            .setNegativeButton( R.string.dialog_cancel, this )
+                            .create();
+                }
+            case CONFIRM_DIALOG:
+            case R.id.F8:
+            case R.id.donate:
+            case SMB_PLG_DIALOG:
+            case FileCommander.DBOX_APP: {
+                    return dialogObj = new AlertDialog.Builder( owner )
+                        .setIcon( android.R.drawable.ic_dialog_alert )
+                        .setTitle( R.string.confirm )
+                        .setMessage( "" )
+                        .setPositiveButton( R.string.dialog_ok, this )
+                        .setNegativeButton( R.string.dialog_cancel, this )
+                        .create();
+                }
+            case PROGRESS_DIALOG: {
+                    LayoutInflater factory = LayoutInflater.from( owner );
+                    final View progressView = factory.inflate( R.layout.progress, null );
+                    return dialogObj = new AlertDialog.Builder( owner )
+                        .setView( progressView )
+                        .setTitle( R.string.progress )
+                        .setNegativeButton( R.string.dialog_cancel, this )
+                        .setCancelable( false )
+                        .create();
+                }
+            case ALERT_DIALOG: {
+                    return dialogObj = new AlertDialog.Builder( owner )
+                        .setIcon( android.R.drawable.ic_dialog_alert )
+                        .setTitle( R.string.alert )
+                        .setMessage( "" )
+                        .setPositiveButton( R.string.dialog_ok, this )
+                        .create();
+                }
+            case R.id.about:
+            case INFO_DIALOG: {
+                    AlertDialog.Builder adb = new AlertDialog.Builder( owner )
+                        .setIcon( android.R.drawable.ic_dialog_info )
+                        .setTitle( R.string.info )
+                        .setPositiveButton( R.string.dialog_ok, this );
+                    LayoutInflater factory = LayoutInflater.from( owner );
+                    View tvs = factory.inflate( R.layout.textvw, null );
+                    if( tvs != null ) {
+                        //TextView tv = (TextView)tvs.findViewById( R.id.text_view );                     
+                        //tv.setPadding( 10, 10, 10, 10 );
+                        adb.setView( tvs );
+                    } else
+                        adb.setMessage( "" );
+                    return dialogObj = adb.create();
+                }
+            }
+        } catch( Exception e ) {
+            e.printStackTrace();
         }
         return null;
     }
@@ -317,23 +329,36 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 break;
                 
             case R.id.about:
+                PackageInfo pi = null;
                 try {
-                    AlertDialog ad = (AlertDialog)dialog;
-                    PackageInfo pi = owner.getPackageManager().getPackageInfo( owner.getPackageName(), 0);
-                    ad.setMessage( owner.getString(R.string.about_text, pi.versionName) );
+                    pi = owner.getPackageManager().getPackageInfo( owner.getPackageName(), 0 );
                 } catch( NameNotFoundException e ) {
-                    Log.e( TAG, "Package name not found", e);
+                    Log.e( TAG, "Package name not found", e );
+                }
+                setMessageToBeShown( owner.getString(R.string.about_text, pi != null ? pi.versionName : "?" ), null );
+            case INFO_DIALOG:
+                if( toShowInAlertDialog != null ) {
+                    TextView tv = (TextView )dialog.findViewById( R.id.text_view );
+                    if( tv != null ) {
+                        if( id == R.id.about ) tv.setAutoLinkMask( Linkify.EMAIL_ADDRESSES );
+                        
+                        SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( owner.getContext() );
+                        int fnt_sz = Integer.parseInt( shared_pref != null ? shared_pref.getString( "font_size", "12" ) : "12" );
+                        int fs = ( toShowInAlertDialog.length() > 128 ? 14 : 18 ) + ( fnt_sz - 12 );
+                        tv.setTextSize( fs > 12 ? fs : 12 );
+                        tv.setText( toShowInAlertDialog );
+                    } else 
+                        ( (AlertDialog)dialog ).setMessage( toShowInAlertDialog ); 
+                    toShowInAlertDialog = null;
                 }
                 break;
             case FILE_EXIST_DIALOG:
-            case INFO_DIALOG:
-            case ALERT_DIALOG: {
+            case ALERT_DIALOG:
                 if( toShowInAlertDialog != null ) {
                     AlertDialog ad = (AlertDialog)dialog;
                     ad.setMessage( toShowInAlertDialog );
                     toShowInAlertDialog = null;
                 }
-            }
             }
         } catch( Exception e ) {
             Log.e( TAG, "prepareDialog()", e );

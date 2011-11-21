@@ -125,7 +125,6 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             Panels.State s = panels.new State();
             s.restore( prefs );
             panels.setState( s );
-            
             Intent intent = getIntent();
             String action = intent.getAction();
             Log.i( TAG, "Action: " + action );
@@ -179,14 +178,12 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             System.exit( 0 );
         }
     }
-
-    //these two methods are not called on screen rotation in v1.5, so all the store/restore is called from pause/start 
     @Override
     protected void onSaveInstanceState( Bundle outState ) {
         Log.i( TAG, "Saving Instance State");
         Panels.State s = panels.getState();
-        s.store(outState);
-        super.onSaveInstanceState(outState);
+        s.store( outState );
+        super.onSaveInstanceState( outState );
     }
 
     @Override
@@ -194,10 +191,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         Log.i( TAG, "Restoring Instance State");
         if( savedInstanceState != null ) {
             Panels.State s = panels.new State();
-            s.restore(savedInstanceState);
-            panels.setState(s);
+            s.restore( savedInstanceState );
+            panels.setState( s );
         }
-        super.onRestoreInstanceState(savedInstanceState);
+        super.onRestoreInstanceState( savedInstanceState );
     }
 
     @Override
@@ -530,7 +527,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             break;
         default:
             CommanderAdapter ca = panels.getListAdapter( true );
-            ca.doIt( id, panels.getSelectedOrChecked() );
+            if( ca != null )
+                ca.doIt( id, panels.getSelectedOrChecked() );
         }
     }
     private final void openPrefs() {
@@ -738,7 +736,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     @Override
     public void showInfo( String msg ) {
         if( !on ) return;
-        if( msg.length() < 64 )
+        if( msg.length() < 32 )
             showMessage( msg );
         else {
             Dialogs dh = obtainDialogsInstance( Dialogs.INFO_DIALOG );
