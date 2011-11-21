@@ -57,6 +57,11 @@ class ExecEngine extends Engine {
                ( errMsg != null ? "\nWere tried to execute '" + command + "'" : null ) );
     }
     
+    protected boolean execute( String cmd, boolean use_bb ) {
+        command = cmd;
+        use_busybox = use_bb;
+        return execute();
+    }
     protected boolean execute( String cmd, boolean use_bb, int timeout ) {
         command = cmd;
         use_busybox = use_bb;
@@ -81,11 +86,11 @@ class ExecEngine extends Engine {
             boolean ok = cmdDialog( os, is, es );
             os.write( "exit\n" );
             os.flush();
-            Log.v( TAG, "Begin waiting - " + getName() );
+            //Log.v( TAG, "Begin waiting - " + getName() );
             p.waitFor();
-            Log.v( TAG, "End waiting - " + getName() );
-            if( p.exitValue() == 255 ) {
-                Log.e( TAG, "Exit code 255" );
+            //Log.v( TAG, "End waiting - " + getName() );
+            if( p.exitValue() != 0 ) {
+                Log.e( TAG, "Exit code " + p.exitValue() );
                 procError( es );
                 return false;
             }
@@ -127,7 +132,8 @@ class ExecEngine extends Engine {
             return !err;
         } catch( Exception e ) {
             error( e.getMessage() );
-            if( command != null ) Log.e( TAG, "On execution '" + command + "'", e );
+            if( command != null ) 
+                Log.e( TAG, "Exception '" + e.getMessage() + "' nn execution '" + command + "'" );
         }
         return false;
     }    

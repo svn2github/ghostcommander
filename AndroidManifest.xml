@@ -68,6 +68,14 @@
                 <data android:mimeType="image/gif" />
             </intent-filter>
         </activity>
+        <activity 
+            android:name=".TextViewer"
+            android:label="@string/textvw_label">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".Prefs"
             android:label="@string/prefs_label">

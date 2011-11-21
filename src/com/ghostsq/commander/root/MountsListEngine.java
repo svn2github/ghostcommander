@@ -94,33 +94,23 @@ class MountsListEngine extends ExecEngine {
     @Override
     public void run() {
         String msg = null;
-        try {
-            getList( true );
+        if( !getList( true ) ) {
+            Log.w( TAG, "su failed. let's try just sh" );
+            errMsg = null;
+            msg = context.getString( R.string.no_root );
+            getList( false );
         }
-        catch( Exception e ) {
-            // try again
-            try {
-                msg = context.getString( R.string.no_root );
-                getList( false );
-            }
-            catch( Exception e1 ) {
-                Log.e( TAG, "Exception even on 'sh' execution", e1 );
-            }
-        }
-        finally {
-            doneReading( msg, pass_back_on_done );
-        }
+        doneReading( msg, pass_back_on_done );
     }
-    
-    private final void getList( boolean su ) throws Exception {
+    private final boolean getList( boolean su ) {
         if( !su ) sh = "sh";
-        
-        execute( "mount", false, 500 );
+        if( !execute( "mount", false, 500 ) ) return false;
 
         int sz = array.size();
         items_tmp = new MountItem[sz];
         if( sz > 0 )
             array.toArray( items_tmp );
+        return true;
     }        
 
     @Override

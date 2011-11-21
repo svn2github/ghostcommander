@@ -76,29 +76,16 @@ public class RootAdapter extends CommanderAdapterBase {
         @Override
         public void run() {
             String msg = null;
-            try {
-            	getList( true );
-            } catch( IOException e ) {
-                try {
-                    msg = commander.getContext().getString( R.string.no_root );
-                    getList( false );
-                } catch( Exception e1 ) {
-                    Log.e( TAG, "Exception even on 'sh' execution", e1 );
-                    error( commander.getContext().getString( R.string.failed ) + e1.getMessage() );
-                }
+            if(	!getList( true ) ) {
+                Log.w( TAG, "su failed. let's try just sh" );
+                errMsg = null;
+                msg = commander.getContext().getString( R.string.no_root );
+                if( !getList( false ) )
+                    error( commander.getContext().getString( R.string.cant_cd, src.getPath() ) );
             }
-            catch( VerifyError e ) {
-                error( "VerifyError " + e );
-                Log.e( TAG, "VerifyError: ", e );
-            }
-            catch( Exception e ) {
-                Log.e( TAG, "Exception", e );
-            }
-            finally {
-                doneReading( msg, pass_back_on_done );
-            }
+            doneReading( msg, pass_back_on_done );
         }
-        private boolean getList( boolean su ) throws Exception {
+        private boolean getList( boolean su ) {
             if( !su ) sh = "sh";
             String path = src.getPath();
             if( path == null ) {
@@ -108,7 +95,8 @@ public class RootAdapter extends CommanderAdapterBase {
             parentLink = path == null || path.length() == 0 || path.equals( SLS ) ? SLS : "..";
             array = new ArrayList<LsItem>();
             String to_execute = "ls " + ( ( mode & MODE_HIDDEN ) != HIDE_MODE ? "-a ":"" ) + "-l " + ExecEngine.prepFileName( path );
-            execute( to_execute, su, 500 );
+            if( !execute( to_execute, false ) ) // 'busybox -l' always outs UID/GID as numbers, not names!  
+                return false;   
 
             if( !isStopReq() ) {
                 int sz = array != null ? array.size() : 0;

@@ -344,7 +344,17 @@ public class Dialogs implements DialogInterface.OnClickListener {
                         
                         SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( owner.getContext() );
                         int fnt_sz = Integer.parseInt( shared_pref != null ? shared_pref.getString( "font_size", "12" ) : "12" );
-                        int fs = ( toShowInAlertDialog.length() > 128 ? 14 : 18 ) + ( fnt_sz - 12 );
+                        boolean reduce_size = toShowInAlertDialog.length() > 128;
+                        if( !reduce_size ) {
+                            String[] ss = toShowInAlertDialog.split( "\n" );
+                            for( String s : ss ) {
+                                if( s.length() > 31 ) {
+                                    reduce_size = true;
+                                    break;
+                                }
+                            }
+                        }
+                        int fs = ( reduce_size ? 14 : 18 ) + ( fnt_sz - 12 );
                         tv.setTextSize( fs > 12 ? fs : 12 );
                         tv.setText( toShowInAlertDialog );
                     } else 

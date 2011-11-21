@@ -700,14 +700,21 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         if( f.isFile() ) {
             try {
                 String mime = Utils.getMimeByExt( Utils.getFileExt( f.getName() ) );
-                if( mime == null || !mime.startsWith( "image/" ) ) return;                
-                
+                if( mime == null ) return;                
                 String package_name = "com.ghostsq.commander";
-                String class_name = ".PictureViewer";
-                Intent i = new Intent( Intent.ACTION_VIEW );
-                i.setDataAndType( Uri.parse( "file://" + f.getAbsolutePath() ), mime );
-                i.setClassName( package_name, package_name + class_name );
-                c.startActivity( i );
+                String class_name = null;
+                if( mime.startsWith( "image/" ) )
+                    class_name = ".PictureViewer";
+                else {
+                    class_name = ".TextViewer";
+                    mime = "text/plain";
+                }
+                if( class_name != null ) {
+                    Intent i = new Intent( Intent.ACTION_VIEW );
+                    i.setDataAndType( Uri.parse( "file://" + f.getAbsolutePath() ), mime );
+                    i.setClassName( package_name, package_name + class_name );
+                    c.startActivity( i );
+                }
             }
             catch( ActivityNotFoundException e ) {
                 c.showMessage( "Activity Not Found: " + e );

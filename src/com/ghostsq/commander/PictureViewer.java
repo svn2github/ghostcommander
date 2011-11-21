@@ -36,7 +36,7 @@ public class PictureViewer extends Activity {
     @Override
     protected void onStart() {
         Log.v( TAG, "onStart" );
-        super.onResume();
+        super.onStart();
         ImageView image_view = (ImageView)findViewById( R.id.image_view );
         Uri u = getIntent().getData();
         if( u == null ) return;

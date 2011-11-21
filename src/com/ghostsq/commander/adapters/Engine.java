@@ -89,7 +89,7 @@ public class Engine extends Thread {
         sendReceiveReq( recipient_hash, paths );
     }    
     protected final void error( String err ) {
-        Log.e( getClass().getName(), err == null ? "Unknown error" : err );
+        Log.e( getClass().getSimpleName(), err == null ? "Unknown error" : err );
     	if( errMsg == null )
     		errMsg = err;
     	else
