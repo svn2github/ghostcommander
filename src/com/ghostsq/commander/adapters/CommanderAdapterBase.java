@@ -25,6 +25,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public abstract class CommanderAdapterBase extends BaseAdapter implements CommanderAdapter {
@@ -45,7 +46,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected int     icoWidth = ICON_SIZE, imgWidth = ICON_SIZE;
     protected float   density = 1;
     protected LayoutInflater mInflater = null;
-    private   int     parentWidth, nameWidth, sizeWidth, dateWidth, attrWidth;
+    private   int     parentWidth, nameWidth, sizeWidth, dateWidth, attrWidth, attrWidthShouldBe;
     private   int     fg_color, sl_color;
     private   boolean dirty = true;
     protected int     thumbnail_size_perc = 100, font_size = 18;
@@ -329,13 +330,14 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                         if( sizeView != null ) {
                             sizeView.setTextSize( fnt_sz_rdc );
                             // sizeWidth is pixels, but what's the return of measureText() ???
-                            sizeWidth = (int)sizeView.getPaint().measureText( "9999.9M" );
+                            sizeWidth = (int)sizeView.getPaint().measureText( "99999.9M" );
                         }
                         if( attrView != null ) {
+                            // sizeWidth is pixels, but in what units the return of measureText() ???
+                            attrWidthShouldBe = (int)sizeView.getPaint().measureText( "---------- system system" );
                             if( wm ) {
                                 attrView.setTextSize( fnt_sz_rdc );
-                                // sizeWidth is pixels, but what's the return of measureText() ???
-                                attrWidth = (int)sizeView.getPaint().measureText( "---------- system system" );
+                                attrWidth = attrWidthShouldBe;
                             }
                             else
                                 attrWidth = parent_width - sizeWidth - dateWidth - icoWidth - LEFT_P - RIGHT_P;
@@ -419,20 +421,25 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 }
             }
             if( attrView != null ) {
-                boolean vis = dm && ( attrWidth > 0 );
+                boolean vis = dm;
                 attrView.setVisibility( vis ? View.VISIBLE : View.GONE );
                 if( vis ) {
-                    if( !wm )
+                    if( !wm ) {
                         attrView.setPadding( img_width + 2, 0, 4, 0 ); // not to overlap the icon
+                        if( attrWidth < attrWidthShouldBe ) {
+                            RelativeLayout.LayoutParams rllp = new RelativeLayout.LayoutParams( RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT );
+                            rllp.addRule( RelativeLayout.ALIGN_PARENT_RIGHT );
+                            rllp.addRule( RelativeLayout.BELOW, R.id.fld_date );
+                            attrView.setLayoutParams( rllp );
+                        }
+                    } else
+                        attrView.setWidth( attrWidth );
                     attrView.setTextSize( fnt_sz_rdc );
-                    if( wm ) attrView.setWidth( attrWidth );
                     attrView.setVisibility( View.VISIBLE );
                     attrView.setText( item.attr == null ? "" : item.attr.trim() );
                     attrView.setTextColor( fg_color );
 //attrView.setBackgroundColor( 0xFFFF0000 );  // DEBUG!!!!!!
                 }
-                else
-                    attrView.setVisibility( View.GONE ); 
             }
 
             if( fat ) {

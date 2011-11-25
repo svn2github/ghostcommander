@@ -276,7 +276,7 @@ copied >5 will produce:
     <string name="panels_mode">Side-by-side panels</string>
     <string name="summary_panels_mode">Show both panels side-by-side in a split screen.</string>
     <string name="two_lines">Two lines in a row</string>
-    <string name="summary_two_lines">Always show file attributes on the second line.</string>
+    <string name="summary_two_lines">Always show file attributes below the file name</string>
     <string name="show_icons">File Icons</string>
     <string name="summary_show_icons">Show the File Type Icon for each file</string>
     <string name="show_toolbar">Show Toolbar</string>

@@ -13,7 +13,8 @@
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
 	        android:layout_toRightOf="@id/fld_icon"
-            android:padding="1dip"
+            android:paddingTop="1dip"
+            android:paddingLeft="4dip"
             android:textSize="10sp"
             android:text="very long file name.conf"/>
         <TextView 
@@ -23,6 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="9sp"
+            android:gravity="right"
             android:paddingRight="4dip"
             android:singleLine="true"
             android:ellipsize="none"

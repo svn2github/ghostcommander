@@ -38,6 +38,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.StatFs;
 import android.provider.BaseColumns;
+import android.provider.MediaStore.Images.ImageColumns;
 import android.provider.MediaStore.Images.Media;
 import android.provider.MediaStore.Images.Thumbnails;
 import android.text.format.DateFormat;
@@ -392,7 +393,6 @@ public class FSAdapter extends CommanderAdapterBase {
                 } catch( Exception e ) {
                     Log.e( TAG, fn, e );
                 }
-
                 options.inSampleSize = 1;
                 options.inJustDecodeBounds = true;
                 options.outWidth = 0;

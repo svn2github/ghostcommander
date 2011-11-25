@@ -101,6 +101,7 @@ public class ListHelper {
          * "wants focus. " + focusable + ", " + focusable_tm + ", " + focused +
          * ", " + item_focus );
          */
+        if( flv == null ) return;
         flv.requestFocus();
         flv.requestFocusFromTouch();
     }

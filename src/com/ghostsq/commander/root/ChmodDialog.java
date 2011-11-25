@@ -229,8 +229,9 @@ class ChmodDialog implements OnClickListener {
                 a.append( 't' );  
             }
             if( a.length() > 0 ) {
-                a.append( " " );
+                a.append( " '" );
                 a.append( full_file_name );
+                a.append( "'" );
                 owner.Execute( "chmod " + a.toString(), true );
             }
         }

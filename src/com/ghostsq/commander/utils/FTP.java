@@ -494,12 +494,15 @@ public class FTP {
             }
             BufferedReader dataReader = new BufferedReader( new InputStreamReader( inDataStream ), 4096 );
         	array = new ArrayList<LsItem>(); 
-
+        	
+            final String dot = ".";
+            final String dotdot = "..";
         	while( true ) {
         		String dir_line = dataReader.readLine();
         		if( dir_line == null ) break;
         		LsItem item = new LsItem( dir_line );
-        		if( item.isValid() )
+        		String name = item.getName();
+        		if( item.isValid() && !dotdot.equals( name ) && !dot.equals( name ) )
         			array.add( item );
         	}
         	inDataStream.close();
