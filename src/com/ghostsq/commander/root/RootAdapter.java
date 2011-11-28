@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -49,8 +50,8 @@ public class RootAdapter extends CommanderAdapterBase {
     private String systemMountMode;
     private final static String SYSTEM_PATH = "/system"; 
 
-    public RootAdapter( Commander c ) {
-        super( c, SHOW_ATTR );
+    public RootAdapter( Context ctx_ ) {
+        super( ctx_, SHOW_ATTR );
     }
     @Override
     public int getType() {
@@ -721,5 +722,23 @@ public class RootAdapter extends CommanderAdapterBase {
         if( items == null || items.length < 1 ) return;
         LsItemPropComparator comp = items[0].new LsItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0, ascending );
         Arrays.sort( items, comp );
+    }
+    
+    @Override
+    public CharSequence getFileContent( Uri u ) {
+            try {
+                String path = u.getPath();
+                String command = "cat '" + path + "'";
+                ExecEngine ee = new ExecEngine( ctx, null, null, command, false, 500 );
+                ee.start();
+                CharSequence cs;
+                do {
+                    cs = ee.getResult();
+                } while( cs == null );
+                return cs;
+            } catch( Throwable e ) {
+                e.printStackTrace();
+            }
+        return null;
     }
 }

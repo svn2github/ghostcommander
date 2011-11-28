@@ -1,12 +1,9 @@
 package com.ghostsq.commander.root;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.Reader;
 import java.util.regex.Matcher;
 
 import android.content.Context;
@@ -25,8 +22,7 @@ class ExecEngine extends Engine {
     private   boolean use_busybox = false;
     private   int wait_timeout = 500;
     private   StringBuilder result;
-    
-    
+    private   boolean done = false;
     
     ExecEngine( Context context_, Handler h ) {
         super( h );
@@ -53,8 +49,13 @@ class ExecEngine extends Engine {
         } catch( Exception e ) {
             error( "Exception: " + e );
         }
-        sendResult( result != null && result.length() > 0 ? result.toString() : 
-               ( errMsg != null ? "\nWere tried to execute '" + command + "'" : null ) );
+        synchronized( this ) {
+            done = true;
+            notify();
+        }
+        if( thread_handler != null )
+            sendResult( result != null && result.length() > 0 ? result.toString() : 
+                   ( errMsg != null ? "\nWere tried to execute '" + command + "'" : null ) );
     }
     
     protected boolean execute( String cmd, boolean use_bb ) {
@@ -147,8 +148,7 @@ class ExecEngine extends Engine {
                     throw new Exception();
                 String ln = br.readLine();
                 if( ln == null ) break;
-                result.append( ln );
-                result.append( "\n" );
+                result.append( ln ).append( "\n" );
             }
     }
 
@@ -167,6 +167,12 @@ class ExecEngine extends Engine {
         return false;
     }
     
+    public synchronized CharSequence getResult() {
+        try {
+            wait( 500 );
+        } catch( InterruptedException e ) {}
+        return done ? result : null;
+    }
     
     static String prepFileName( String fn ) {
         return "'" + fn.replaceAll( "'", Matcher.quoteReplacement("'\\''") ) + "'";

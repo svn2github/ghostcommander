@@ -1,12 +1,22 @@
 package com.ghostsq.commander.adapters;
 
+import java.io.File;
+
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.os.Environment;
+import android.util.Log;
+
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.Dialogs;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.root.MountAdapter;
 import com.ghostsq.commander.root.RootAdapter;
 
+import dalvik.system.DexClassLoader;
+
 final public class CA {
+    public static final String TAG = "CA";
     public static final int FS    = 0x00000001;
     public static final int FIND  = 0x00000002;
     public static final int LOCAL = 0x00000003;
@@ -60,6 +70,17 @@ final public class CA {
     }
 
     public final static CommanderAdapter CreateAdapter( int type_id, Commander c ) {
+        CommanderAdapter ca = CreateAdapterInstance( type_id, c.getContext() );
+        if( ca != null )
+            ca.Init( c );
+        else {
+            if( type_id == SMB  )
+                c.showDialog( Dialogs.SMB_PLG_DIALOG );
+        }
+        return ca;
+    }    
+
+    public final static CommanderAdapter CreateAdapterInstance( int type_id, Context c ) {
         CommanderAdapter ca = null;
         if( type_id == FS   ) ca = new FSAdapter( c );    else
         if( type_id == HOME ) ca = new HomeAdapter( c );  else
@@ -70,7 +91,51 @@ final public class CA {
         if( type_id == MNT  ) ca = new MountAdapter( c ); else
         if( type_id == APPS ) ca = new AppsAdapter( c );  else
         if( type_id == FAVS ) ca = new FavsAdapter( c );  else
-        if( type_id == SMB  ) ca = c.CreateExternalAdapter( "samba", "SMBAdapter", Dialogs.SMB_PLG_DIALOG );
+        if( type_id == SMB  ) ca = CreateExternalAdapter( c, "samba", "SMBAdapter" );
         return ca;
     }
+    
+    /**
+     * Tries to load an adapter class from foreign package
+     * @param String type       - adapter type, also the suffix of the plugin application 
+     * @param String class_name - the adapter class name to be loaded
+     * @param int    dialog_id  - resource ID to show dialog if the class can't be loaded
+     */
+    public static CommanderAdapter CreateExternalAdapter( Context ctx, String type, String class_name ) {
+        try {
+            File dex_f = ctx.getDir( type, Context.MODE_PRIVATE );
+            if( dex_f == null || !dex_f.exists() ) {
+                Log.w( TAG, "app.data storage is not accessable, trying to use the SD card" );
+                File sd = Environment.getExternalStorageDirectory();
+                if( sd == null ) return null; // nowhere to store the dex :(
+                dex_f = new File( sd, "temp" );
+                if( !dex_f.exists() )
+                    dex_f.mkdir();
+            }
+            ApplicationInfo ai = ctx.getPackageManager().getApplicationInfo( "com.ghostsq.commander." + type, 0 );
+            
+            Log.i( TAG, type + " package is " + ai.sourceDir );
+            
+            ClassLoader pcl = ctx.getClass().getClassLoader();
+            DexClassLoader cl = new DexClassLoader( ai.sourceDir, dex_f.getAbsolutePath(), null, pcl );
+            //
+            Class<?> adapterClass = cl.loadClass( "com.ghostsq.commander." + type + "." + class_name );
+            try {
+                File[] list = dex_f.listFiles();
+                for( int i = 0; i < list.length; i++ )
+                    list[i].delete();
+            }
+            catch( Exception e ) {
+                Log.w( TAG, "Can't remove the plugin's .dex: ", e );
+            }
+            if( adapterClass != null ) {
+                CommanderAdapter ca = (CommanderAdapter)adapterClass.newInstance();
+                return ca;
+            }
+        }
+        catch( Throwable e ) {
+            Log.e( TAG, type, e );
+        }
+        return null;
+    }    
 }

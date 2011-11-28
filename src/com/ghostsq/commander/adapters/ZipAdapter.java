@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -41,8 +43,8 @@ public class ZipAdapter extends CommanderAdapterBase {
     public  ZipFile      zip = null;
     public  ZipEntry[] items = null;
 
-    public ZipAdapter( Commander c ) {
-        super( c, 0 );
+    public ZipAdapter( Context ctx_ ) {
+        super( ctx_ );
         parentLink = PLS;
     }
     @Override
@@ -58,7 +60,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                 return false;
             if( reader != null ) { // that's not good.
                 if( reader.isAlive() ) {
-                    commander.showInfo( commander.getContext().getString( R.string.busy ) );
+                    commander.showInfo( ctx.getString( R.string.busy ) );
                     reader.interrupt();
                     Thread.sleep( 500 );      
                     if( reader.isAlive() ) 
@@ -244,7 +246,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                 dest = new File( to.toString() );
                 if( !dest.exists() ) dest.mkdirs();
                 if( !dest.isDirectory() )
-                    throw new RuntimeException( commander.getContext().getString( R.string.dest_exist ) );
+                    throw new RuntimeException( ctx.getString( R.string.dest_exist ) );
             } else {
                 dest = new File( createTempDir() );
                 rec_h = setRecipient( to ); 
@@ -289,7 +291,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                 sendReceiveReq( recipient_hash, dest_folder );
                 return;
             }
-			sendResult( Utils.getOpReport( commander.getContext(), total, R.string.unpacked ) );
+			sendResult( Utils.getOpReport( ctx, total, R.string.unpacked ) );
 	        super.run();
 	    }
 	    private final int copyFiles( ZipEntry[] list, String path ) {
@@ -301,7 +303,6 @@ public class ZipAdapter extends CommanderAdapterBase {
                     if( !f.isDirectory() )
                         dir_size += f.getSize();
 	            }
-	            Context ctx = commander.getContext();
 	            double conv = 100./(double)dir_size;
 	        	for( int i = 0; i < list.length; i++ ) {
 	        		ZipEntry entry = list[i];
@@ -423,7 +424,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                 ZipFile zf = new ZipFile( zipFile );
                 int  removed = 0, processed = 0, num_entries = zf.size();
                 long total_size = zipFile.length(), bytes_saved = 0;
-                final String del = commander.getContext().getString( R.string.deleting_a );
+                final String del = ctx.getString( R.string.deleting_a );
                 
                 if( !zipFile.renameTo(old_file) ) {
                     error("could not rename the file " + zipFile.getAbsolutePath() + " to " + old_file.getAbsolutePath() );
@@ -478,14 +479,14 @@ public class ZipAdapter extends CommanderAdapterBase {
                     else {
                         old_file.delete();
                         zip = null;
-                        sendResult( Utils.getOpReport( commander.getContext(), removed, R.string.deleted ) );
+                        sendResult( Utils.getOpReport( ctx, removed, R.string.deleted ) );
                         return;
                     }
                 }
             } catch( Exception e ) {
                 error( e.getMessage() );
             }
-            sendResult( Utils.getOpReport( commander.getContext(), 0, R.string.deleted ) );
+            sendResult( Utils.getOpReport( ctx, 0, R.string.deleted ) );
             super.run();
         }
     }
@@ -494,12 +495,12 @@ public class ZipAdapter extends CommanderAdapterBase {
     public String getItemName( int position, boolean full ) {
         if( items != null && position > 0 && position <= items.length ) {
             if( full ) {
-                String path = toString();
-                if( path != null && path.length() > 0 ) {
-                    if( path.charAt( path.length() - 1 ) != SLC )
-                        path += SLS;
-                    return path + fixName( items[position-1] );
+                if( uri != null ) {
+                    Uri item_uri = uri.buildUpon().encodedFragment( fixName( items[position-1] ) ).build();
+                    if( item_uri != null )
+                        return item_uri.toString();
                 }
+                return null;
             }
             return new File( fixName( items[position-1] ) ).getName();
         }
@@ -643,7 +644,7 @@ public class ZipAdapter extends CommanderAdapterBase {
             } catch( Exception e ) {
                 error( "Exception: " + e.getMessage() );
             }
-    		sendResult( Utils.getOpReport( commander.getContext(), num_files, R.string.packed ) );
+    		sendResult( Utils.getOpReport( ctx, num_files, R.string.packed ) );
             super.run();
         }
         // adds files to the global full_list, and returns the total size 
@@ -684,7 +685,6 @@ public class ZipAdapter extends CommanderAdapterBase {
         private final int addFilesToZip( ArrayList<File> files ) throws IOException {
             File old_file = null;
             try {
-                Context ctx = commander.getContext();
                 byte[] buf = new byte[BLOCK_SIZE];
                 ZipOutputStream out;
                 if( newZip ) {
@@ -843,13 +843,20 @@ public class ZipAdapter extends CommanderAdapterBase {
     
     private final String fixName( ZipEntry entry ) {
         try {
-            String entry_name = entry.getName(); 
+            String entry_name = entry.getName();
+            
             if( android.os.Build.VERSION.SDK_INT >= 10 )
                 return entry_name; // already fixed?
+            
             byte[] ex = entry.getExtra();
             if( ex != null && ex.length == 2 && ex[0] == 1 && ex[1] == 2 ) 
                 return entry_name;
-            byte bytes[] = EncodingUtils.getBytes( entry_name, "iso-8859-1" );
+            byte bytes[];
+/*            
+            bytes = EncodingUtils.getAsciiBytes( entry_name );
+            bytes = EncodingUtils.getBytes( entry_name, "windows-1250" );
+*/            
+            bytes = EncodingUtils.getBytes( entry_name, "iso-8859-1" );
             return new String( bytes );
         } catch( Exception e ) {
             e.printStackTrace();
@@ -877,7 +884,7 @@ public class ZipAdapter extends CommanderAdapterBase {
     private final boolean checkReadyness()   
     {
         if( worker != null ) {
-        	commander.notifyMe( new Commander.Notify( commander.getContext().getString( R.string.busy ), Commander.OPERATION_FAILED ) );
+        	commander.notifyMe( new Commander.Notify( ctx.getString( R.string.busy ), Commander.OPERATION_FAILED ) );
         	return false;
         }
     	return true;
@@ -922,5 +929,41 @@ public class ZipAdapter extends CommanderAdapterBase {
         if( items == null ) return;
         ZipItemPropComparator comp = new ZipItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0, ascending );
         Arrays.sort( items, comp );
+    }
+    @Override
+    public CharSequence getFileContent( Uri u ) {
+        ZipFile zf = null; 
+        try {
+            String zip_path = u.getPath();
+            String entry_name = u.getFragment();
+            if( zip_path != null && entry_name != null ) {
+                zf = new ZipFile( zip_path );
+                ZipEntry ze = zf.getEntry( entry_name );
+                if( ze != null ) {
+                    InputStream is = zf.getInputStream( ze );
+                    if( is != null ) {
+                        int num = is.available();
+                        if( num > 0 ) {
+                            InputStreamReader isr = new InputStreamReader( is );
+                            char[] chars = new char[num];
+                            int n = isr.read( chars );
+                            isr.close();
+                            is.close();
+                            if( n >= 0 ) {
+                                return CharBuffer.wrap( chars );
+                            }
+                        }
+                        is.close();
+                    }
+                }
+            }
+        } catch( Throwable e ) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if( zf != null ) zf.close();
+            } catch( IOException e ) {}
+        }
+        return null;
     }
 }

@@ -342,7 +342,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                     if( tv != null ) {
                         if( id == R.id.about ) tv.setAutoLinkMask( Linkify.EMAIL_ADDRESSES );
                         
-                        SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( owner.getContext() );
+                        SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( owner );
                         int fnt_sz = Integer.parseInt( shared_pref != null ? shared_pref.getString( "font_size", "12" ) : "12" );
                         boolean reduce_size = toShowInAlertDialog.length() > 128;
                         if( !reduce_size ) {
@@ -428,7 +428,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                         if( file_name == null ) return;
                         switch( dialogId ) {
                         case R.id.F2:
-                            owner.panels.renameFile( file_name );
+                            owner.panels.renameItem( file_name );
                             break;
                         case R.id.SF4:
                         case R.id.new_file:

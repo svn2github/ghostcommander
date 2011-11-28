@@ -3,8 +3,6 @@
  */
 package com.ghostsq.commander;
 
-import com.ghostsq.commander.adapters.CommanderAdapter;
-
 import android.content.Context;
 import android.net.Uri;
 
@@ -47,30 +45,26 @@ public interface Commander {
 	public Context getContext();
 
 	/**
-	 * @param err_msg message to show in an alert dialog
+	 * @param msg - message to show in an alert dialog
 	 */
-	public void    showError( String err_msg );
+	public void    showError( String msg );
 
 	/**
-	 * @param msg message to show in an info dialog
+	 * @param msg - message to show in an info dialog
 	 */
 	public void    showInfo( String msg );
 
+    /**
+     * @param id - the dialog id 
+     */
+    public void    showDialog( int dialog_id );
+	
 	/**
      * Navigate the current panel to the specified URI. 
      * @param uri         -  URI to navigate to  
      * @param positionTo  - Select an item with the given name
      */
 	public void    Navigate( Uri uri, String positionTo );
-	
-    /**
-     * Tries to load an adapter class from foreign package
-     * @param String type       - adapter type, also the suffix of the plugin application 
-     * @param String class_name - the adapter class name to be loaded
-     * @param int    dialog_id  - resource ID to show dialog if the class can't be loaded
-     */
-	public CommanderAdapter CreateExternalAdapter( String type, String class_name, int dialog_id );
-
 	
 	/**
 	 * Try to execute a command as if it came from the UI

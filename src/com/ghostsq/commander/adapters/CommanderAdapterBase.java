@@ -11,6 +11,7 @@ import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -34,6 +35,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected final static String NOTIFY_ITEMS_TO_RECEIVE = "itms"; 
     protected final static String DEFAULT_DIR = "/sdcard";
     protected final String TAG = getClass().getName();
+    public    Context   ctx;
     public    Commander commander = null;
     public    static final String SLS = File.separator;
     public    static final char   SLC = File.separator.charAt( 0 );
@@ -75,7 +77,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                     reader = null;
                 }
                 Commander.Notify n_obj = new Commander.Notify( str, code, cookie );
-                commander.notifyMe( n_obj );
+                if( commander != null ) commander.notifyMe( n_obj );
             } catch( Exception e ) {
                 e.printStackTrace();
             }
@@ -102,7 +104,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 int perc2 = b.getInt( CommanderAdapterBase.NOTIFY_PRG2, -1 );
                 String str = b.getString( CommanderAdapterBase.NOTIFY_STR );
                 Commander.Notify n_obj = new Commander.Notify( str, perc1, perc2 );
-                if( commander.notifyMe( n_obj ) )
+                if( commander == null || commander.notifyMe( n_obj ) )
                     worker = null;
             } catch( Exception e ) {
                 e.printStackTrace();
@@ -114,17 +116,17 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected WorkerHandler workerHandler = new WorkerHandler();
     protected ReaderHandler readerHandler = new ReaderHandler();
    
-    protected CommanderAdapterBase() {
-        // don't forget to call the Init( c ) method  if  the default constructor can be called!
+    // the Init( c ) method to be called after the constructor   
+    protected CommanderAdapterBase( Context ctx_ ) {
+        ctx = ctx_;
     }
-    protected CommanderAdapterBase( Commander c, int mode_ ) {
-    	Init( c );
+    protected CommanderAdapterBase( Context ctx_, int mode_ ) {
+        ctx = ctx_;
         mode = mode_;
     }
 
     @Override
 	public void Init( Commander c ) {
-        mode = 0;
         parentWidth = 0;
         nameWidth = 0;
         sizeWidth = 0;
@@ -132,7 +134,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         attrWidth = 0;
         parentLink = SLS;       
     	commander = c;
-    	Context ctx = c.getContext();
     	mInflater = (LayoutInflater)ctx.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
     	Utils.changeLanguage( ctx );
     	localeDateFormat = DateFormat.getDateFormat( ctx );
@@ -533,7 +534,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             if( num <= 1 )
                 menu.add( 0, Commander.COPY_NAME, 0, R.string.copy_name );
             if( item.dir && acmi.position != 0 )
-                menu.add( 0, Commander.FAV_FLD, 0, commander.getContext().getString( R.string.fav_fld, item.name ) );
+                menu.add( 0, Commander.FAV_FLD, 0, ctx.getString( R.string.fav_fld, item.name ) );
         } catch( Exception e ) {
             Log.e( TAG, "populateContextMenu() " + e.getMessage(), e );
         }
@@ -548,6 +549,11 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         // to be implemented in derived classes
     }
     
+    @Override
+    public CharSequence getFileContent( Uri u ) {
+        return null;
+    }    
+    
     protected void reSort() {
         // to override all the derives
     }
@@ -557,7 +563,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     }
 */
     protected final String s( int r_id ) {
-        return commander.getContext().getString( r_id ); 
+        return ctx.getString( r_id ); 
     }
 }
 

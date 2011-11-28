@@ -107,7 +107,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             right_title.setOnClickListener( this );
             right_title.setOnLongClickListener( this );
         }
-        favorites = new Favorites( c.getContext() );
+        favorites = new Favorites( c );
         locationBar = new LocationBar( c, this, favorites );
         try{ 
 	        quickSearchBuf = new StringBuffer();
@@ -140,7 +140,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             if( ca == null ) return;
             if( toolbarShown ) {
                 if( toolbar == null ) {
-                    LayoutInflater inflater = (LayoutInflater)c.getContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+                    LayoutInflater inflater = (LayoutInflater)c.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
                     toolbar = inflater.inflate( R.layout.toolbar, (ViewGroup)mainView, true ).findViewById( R.id.toolbar );
                 }
                 if( toolbar == null ) {
@@ -612,7 +612,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public final void copyName() {
         CommanderAdapter ca = getListAdapter( true );
         if( ca == null ) return;
-        ClipboardManager clipboard = (ClipboardManager)c.getContext().getSystemService( Context.CLIPBOARD_SERVICE );
+        ClipboardManager clipboard = (ClipboardManager)c.getSystemService( Context.CLIPBOARD_SERVICE );
         int pos = getSelection( true );
         if( pos >= 0 ) {
             String in = ca.getItemName( pos, true );
@@ -695,33 +695,41 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             c.showMessage( "Not editable" );
     }
     public final void openForView() {
-        File f = getCurrentFile();
-        if( f == null ) return;
-        if( f.isFile() ) {
-            try {
-                String mime = Utils.getMimeByExt( Utils.getFileExt( f.getName() ) );
-                if( mime == null ) return;                
-                String package_name = "com.ghostsq.commander";
-                String class_name = null;
-                if( mime.startsWith( "image/" ) )
-                    class_name = ".PictureViewer";
-                else {
-                    class_name = ".TextViewer";
-                    mime = "text/plain";
+        try {
+            String n = getSelectedItemName( true );
+            Uri uri;
+            CommanderAdapter ca = getListAdapter( true );
+            if( ca instanceof FSAdapter ) {
+                File f = new File( n );
+                if( !f.exists() ) return;
+                if( !f.isFile() ) {
+                    showSizes();
+                    return;
                 }
-                if( class_name != null ) {
-                    Intent i = new Intent( Intent.ACTION_VIEW );
-                    i.setDataAndType( Uri.parse( "file://" + f.getAbsolutePath() ), mime );
-                    i.setClassName( package_name, package_name + class_name );
-                    c.startActivity( i );
-                }
+                uri = Uri.parse( "file://" + f.getAbsolutePath() ); 
             }
-            catch( ActivityNotFoundException e ) {
-                c.showMessage( "Activity Not Found: " + e );
+            else
+                uri = Uri.parse( n );
+            String mime = Utils.getMimeByExt( Utils.getFileExt( n ) );
+            if( mime == null ) return;                
+            String package_name = "com.ghostsq.commander";
+            String class_name = null;
+            if( mime.startsWith( "image/" ) )
+                class_name = ".PictureViewer";
+            else {
+                class_name = ".TextViewer";
+                mime = "text/plain";
+            }
+            if( class_name != null ) {
+                Intent i = new Intent( Intent.ACTION_VIEW );
+                i.setDataAndType( uri, mime );
+                i.setClassName( package_name, package_name + class_name );
+                c.startActivity( i );
             }
         }
-        else
-            showSizes();
+        catch( Exception e ) {
+            Log.e( TAG, null, e );
+        }
     }
 
     
@@ -750,8 +758,11 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         return ca == null ? null : ca.getUri();
     }
     public final String getSelectedItemName() {
+        return getSelectedItemName( false );
+    }
+    public final String getSelectedItemName( boolean full ) {
         int pos = getSelection( true );
-        return pos < 0 ? null : getListAdapter( true ).getItemName( pos, false );
+        return pos < 0 ? null : getListAdapter( true ).getItemName( pos, full );
     }
 	public final void quickSearch( char ch ) {
 		CommanderAdapter a = getListAdapter( true );
@@ -852,7 +863,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         }
     }
 
-    public final void renameFile( String new_name ) {
+    public final void renameItem( String new_name ) {
         CommanderAdapter adapter = getListAdapter( true );
         int pos = getSelection( true );
         if( pos >= 0 ) {
@@ -885,9 +896,9 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         if( ca instanceof FSAdapter ) {
             SparseBooleanArray cis = getSelectedOrChecked();
             if( cis == null || cis.size() == 0 ) return;
-            //c.showDialog( Dialogs.PROGRESS_DIALOG );
             FSAdapter fsa = (FSAdapter)ca;
             ZipAdapter z = new ZipAdapter( c );
+            z.Init( c );
             destAdapter = z;
             File[] files = fsa.bitsToFiles( cis );
             z.createZip( files, Utils.mbAddSl( ca.toString() ) + new_zip_name );

@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.SoftReference;
+import java.nio.CharBuffer;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
@@ -73,15 +75,9 @@ public class FSAdapter extends CommanderAdapterBase {
              ".gif".hashCode(),  ".GIF".hashCode() 
          };
     
-    public FSAdapter( Commander c ) {
-        super( c, 0 );
+    public FSAdapter( Context ctx_ ) {
+        super( ctx_ );
         dirName = null;
-        items = null;
-    }
-    public FSAdapter( Commander c, Uri d, int mode_ ) {
-    	super( c, mode_ );
-    	dirName = d == null ? DEFAULT_DIR : d.getPath();
-        notifyDataSetChanged();
         items = null;
     }
     @Override
@@ -131,7 +127,7 @@ public class FSAdapter extends CommanderAdapterBase {
                 files_ = dir.listFiles();
                 if( files_ != null ) break;
                 if( err_msg == null )
-                    err_msg = commander.getContext().getString( R.string.no_such_folder, dir_name );
+                    err_msg = ctx.getString( R.string.no_such_folder, dir_name );
                 String parent_path;
                 if( dir == null || ( parent_path = dir.getParent() ) == null || ( d = Uri.parse( parent_path ) ) == null ) {
                     commander.notifyMe( new Commander.Notify( s( R.string.inv_path ), Commander.OPERATION_FAILED ) );
@@ -212,7 +208,7 @@ public class FSAdapter extends CommanderAdapterBase {
             thread_handler = h;
             mList = list;
             buf = new byte[100*1024];
-            cr = owner.commander.getContext().getContentResolver();
+            cr = owner.ctx.getContentResolver();
         }
         @Override
         public void run() {
@@ -220,7 +216,7 @@ public class FSAdapter extends CommanderAdapterBase {
                 if( mList == null ) return;
                 thumb_sz = getImgWidth();
                 options = new BitmapFactory.Options();
-                res = commander.getContext().getResources();
+                res = ctx.getResources();
                 int fails_count = 0;
                 boolean visible_only = mList.length > 500;  // too many icons
                 for( int a = 0; a < 2; a++ ) {
@@ -333,7 +329,7 @@ public class FSAdapter extends CommanderAdapterBase {
             try {
                 if( h == apk_h ) {
                     try {
-                        PackageManager pm = commander.getContext().getPackageManager();
+                        PackageManager pm = ctx.getPackageManager();
                         PackageInfo info = pm.getPackageArchiveInfo( fn, 0 );
                         f.setThumbNail( pm.getApplicationIcon( info.packageName ) );
                         f.thumb_is_icon = true;
@@ -497,7 +493,7 @@ public class FSAdapter extends CommanderAdapterBase {
         public void run() {
         	try {
         	    Init( null );
-        	    Context c = commander.getContext();
+        	    Context c = ctx;
                 StringBuffer result = new StringBuffer( );
         	    if( mList != null && mList.length > 0 ) {
     				long sum = getSizes( mList );
@@ -528,8 +524,8 @@ public class FSAdapter extends CommanderAdapterBase {
                         String date_s;
                         Date date = new Date( mList[0].f.lastModified() );
                         if( Locale.getDefault().getLanguage().compareTo( "en" ) != 0 ) {
-                            java.text.DateFormat locale_date_format = DateFormat.getDateFormat( commander.getContext() );
-                            java.text.DateFormat locale_time_format = DateFormat.getTimeFormat( commander.getContext() );
+                            java.text.DateFormat locale_date_format = DateFormat.getDateFormat( ctx );
+                            java.text.DateFormat locale_time_format = DateFormat.getTimeFormat( ctx );
                             date_s = locale_date_format.format( date ) + " " + locale_time_format.format( date );
                         } else 
                             date_s = (String)DateFormat.format( "MMM dd yyyy hh:mm:ss", date );
@@ -626,7 +622,7 @@ public class FSAdapter extends CommanderAdapterBase {
                     ok = f.renameTo( tmp_file );
                     ok = tmp_file.renameTo( new_file );
                 } else {
-                    final String msg$ = commander.getContext().getString( R.string.file_exist, newName );
+                    final String msg$ = ctx.getString( R.string.file_exist, newName );
                     final File from$ = f, to$ = new_file;  
                     worker = new Engine( workerHandler, new Runnable() {
                         public void run() {
@@ -654,9 +650,33 @@ public class FSAdapter extends CommanderAdapterBase {
             return ok;
         }
         catch( SecurityException e ) {
-            commander.showError( commander.getContext().getString( R.string.sec_err, e.getMessage() ) );
+            commander.showError( ctx.getString( R.string.sec_err, e.getMessage() ) );
             return false;
         }
+    }
+    @Override
+    public CharSequence getFileContent( Uri u ) {
+            try {
+                String path = u.getPath();
+                File f = new File( path );
+                if( f.exists() && f.isFile() ) {
+                    FileReader fr = new FileReader( f );
+                    int sz = (int)f.length();
+                    CharBuffer cb = CharBuffer.allocate( sz );
+                    int n = fr.read( cb );
+                    if( n != sz )
+                        Log.w( TAG, "Chars were read (" + n + ") less than the file (" + path + ") size (" + sz + ")" );
+                    cb.position( 0 );
+                    return cb;
+                }
+            } catch( FileNotFoundException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch( IOException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        return null;
     }
 	@Override
 	public boolean createFile( String fileURI ) {
@@ -667,7 +687,7 @@ public class FSAdapter extends CommanderAdapterBase {
 			                                                     Commander.OPERATION_FAILED ) );
 			return ok;     
 		} catch( Exception e ) {
-		    commander.showError( commander.getContext().getString( R.string.cant_create, fileURI, e.getMessage() ) );
+		    commander.showError( ctx.getString( R.string.cant_create, fileURI, e.getMessage() ) );
 		}
 		return false;
 	}
@@ -682,7 +702,7 @@ public class FSAdapter extends CommanderAdapterBase {
         } catch( Exception e ) {
             Log.e( TAG, "createFolder", e );
         }
-        commander.notifyMe( new Commander.Notify( commander.getContext().getString( R.string.cant_md, new_name ), Commander.OPERATION_FAILED ) );
+        commander.notifyMe( new Commander.Notify( ctx.getString( R.string.cant_md, new_name ), Commander.OPERATION_FAILED ) );
     }
 
     @Override
@@ -720,7 +740,7 @@ public class FSAdapter extends CommanderAdapterBase {
             try {
                 Init( null );
                 int cnt = deleteFiles( mList );
-                sendResult( Utils.getOpReport( commander.getContext(), cnt, R.string.deleted ) );
+                sendResult( Utils.getOpReport( ctx, cnt, R.string.deleted ) );
             }
             catch( Exception e ) {
                 sendProgress( e.getMessage(), Commander.OPERATION_FAILED );
@@ -736,13 +756,13 @@ public class FSAdapter extends CommanderAdapterBase {
                 if( isStopReq() )
                     throw new Exception( s( R.string.canceled ) );
                 File f = l[i];
-                sendProgress( commander.getContext().getString( R.string.deleting, f.getName() ), (int)(cnt * conv) );
+                sendProgress( ctx.getString( R.string.deleting, f.getName() ), (int)(cnt * conv) );
                 if( f.isDirectory() )
                     cnt += deleteFiles( f.listFiles() );
                 if( f.delete() )
                     cnt++;
                 else {
-                    error( commander.getContext().getString( R.string.cant_del, f.getName() ) );
+                    error( ctx.getString( R.string.cant_del, f.getName() ) );
                     break;
                 }
             }
@@ -816,7 +836,7 @@ public class FSAdapter extends CommanderAdapterBase {
         }
         @Override
         public void run() {
-        	sendProgress( commander.getContext().getString( R.string.preparing ), 0, 0 );
+        	sendProgress( ctx.getString( R.string.preparing ), 0, 0 );
         	try {
                 int l = fList.length;
                 FileItem[] x_list = new FileItem[l];
@@ -825,7 +845,7 @@ public class FSAdapter extends CommanderAdapterBase {
 				long sum = getSizes( x_list );
 				conv = 100 / (double)sum;
 				int num = copyFiles( fList, mDest, destIsFullName );
-	            String report = Utils.getOpReport( commander.getContext(), num, move ? R.string.moved : R.string.copied );
+	            String report = Utils.getOpReport( ctx, num, move ? R.string.moved : R.string.copied );
 	            sendResult( report );
 			} catch( Exception e ) {
 				sendProgress( e.getMessage(), Commander.OPERATION_FAILED );
@@ -833,7 +853,7 @@ public class FSAdapter extends CommanderAdapterBase {
 			}
         }
         private final int copyFiles( File[] list, String dest, boolean dest_is_full_name ) throws InterruptedException {
-            Context c = commander.getContext();
+            Context c = ctx;
             for( int i = 0; i < list.length; i++ ) {
                 FileChannel  in = null;
                 FileChannel out = null;
@@ -854,7 +874,7 @@ public class FSAdapter extends CommanderAdapterBase {
                     outFile = dest_is_full_name ? new File( dest ) : new File( dest, fn );
                     if( file.isDirectory() ) {
                         if( depth++ > 40 ) {
-                            error( commander.getContext().getString( R.string.too_deep_hierarchy ) );
+                            error( ctx.getString( R.string.too_deep_hierarchy ) );
                             break;
                         }
                         else

@@ -1,5 +1,8 @@
 package com.ghostsq.commander;
 
+import com.ghostsq.commander.adapters.CA;
+import com.ghostsq.commander.adapters.CommanderAdapter;
+
 import android.app.Activity;
 import android.content.ContentUris;
 import android.database.Cursor;
@@ -39,21 +42,18 @@ public class TextViewer extends Activity {
         Uri u = getIntent().getData();
         if( u != null ) { 
             try {
-                TextView text_view = (TextView)findViewById( R.id.text_view );
-                text_view.setHorizontallyScrolling( true );
-                String path = u.getPath();
-                File f = new File( path );
-                if( f.exists() && f.isFile() ) {
-                    FileReader fr = new FileReader( f );
-                    int sz = (int)f.length();
-                    CharBuffer cb = CharBuffer.allocate( sz );
-                    int n = fr.read( cb );
-                    if( n != sz )
-                        Log.w( TAG, "Chars were read (" + n + ") less than the file (" + path + ") size (" + sz + ")" );
-                    cb.position( 0 );
-                    text_view.setText( cb );
-                    return;
+                int type_id = CA.GetAdapterTypeId( u.getScheme() );
+                CommanderAdapter ca = CA.CreateAdapterInstance( type_id, this );
+                if( ca != null ) {
+                    CharSequence cs = ca.getFileContent( u );
+                    if( cs != null ) {
+                        TextView text_view = (TextView)findViewById( R.id.text_view );
+    //                  text_view.setHorizontallyScrolling( true );
+                      text_view.setText( cs );
+                        return;
+                    }
                 }
+                
             } catch( OutOfMemoryError e ) {
                 Log.e( TAG, u.toString(), e );
                 Toast.makeText(this, getString( R.string.too_big_file, u.getPath() ), Toast.LENGTH_LONG).show();

@@ -8,6 +8,7 @@ import com.ghostsq.commander.R;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
 
+import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -20,10 +21,10 @@ public class AppsAdapter extends CommanderAdapterBase {
     // Java compiler creates a thunk function to access to the private owner class member from a subclass
     // to avoid that all the member accessible from the subclasses are public
     public  ApplicationInfo[] items = null;
-    public final PackageManager pm = commander.getContext().getPackageManager();
+    public final PackageManager pm = ctx.getPackageManager();
     
-    public AppsAdapter( Commander c ) {
-        super( c, DETAILED_MODE | NARROW_MODE | SHOW_ATTR );
+    public AppsAdapter( Context ctx_ ) {
+        super( ctx_, DETAILED_MODE | NARROW_MODE | SHOW_ATTR );
     }
     @Override
     public int getType() {

@@ -9,6 +9,7 @@ import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.favorites.Favorite;
 import com.ghostsq.commander.favorites.FavDialog;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Parcelable;
@@ -23,8 +24,8 @@ public class FavsAdapter extends CommanderAdapterBase {
     private final static int SCUT_CMD = 26945;
     private ArrayList<Favorite> favs;
     
-    public FavsAdapter( Commander c ) {
-        super( c, DETAILED_MODE | NARROW_MODE | SHOW_ATTR | ATTR_ONLY );
+    public FavsAdapter( Context ctx_ ) {
+        super( ctx_, DETAILED_MODE | NARROW_MODE | SHOW_ATTR | ATTR_ONLY );
         numItems = 0;
         favs = null;
         numItems = 1;
@@ -155,7 +156,7 @@ public class FavsAdapter extends CommanderAdapterBase {
     
     public void editItem( int p ) {
         if( favs != null && p > 0 && p <= favs.size() ) {
-            new FavDialog( commander.getContext(), favs.get( p-1 ), this );
+            new FavDialog( ctx, favs.get( p-1 ), this );
         }
     }    
 
@@ -168,7 +169,7 @@ public class FavsAdapter extends CommanderAdapterBase {
         if( f == null ) return;
         Uri uri = f.getUriWithAuth();
         Intent shortcutIntent = new Intent();
-        shortcutIntent.setClassName( commander.getContext(), commander.getClass().getName() );
+        shortcutIntent.setClassName( ctx, commander.getClass().getName() );
         shortcutIntent.setAction( Intent.ACTION_VIEW );
         shortcutIntent.setData( uri );
 
@@ -178,10 +179,10 @@ public class FavsAdapter extends CommanderAdapterBase {
         if( name == null || name.length() == 0 )
             name = f.getUriString( true );
         intent.putExtra( Intent.EXTRA_SHORTCUT_NAME, name );
-        Parcelable iconResource = Intent.ShortcutIconResource.fromContext( commander.getContext(), getDrawableIconId( uri ) );
+        Parcelable iconResource = Intent.ShortcutIconResource.fromContext( ctx, getDrawableIconId( uri ) );
         intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, iconResource);
         intent.setAction( "com.android.launcher.action.INSTALL_SHORTCUT" ); //Intent.ACTION_CREATE_SHORTCUT
-        commander.getContext().sendBroadcast( intent );
+        ctx.sendBroadcast( intent );
     }
 
     private final int getDrawableIconId( Uri uri ) {

@@ -745,51 +745,6 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         }
     }
 
-    @Override
-    public CommanderAdapter CreateExternalAdapter( String type, String class_name, int dialog_id ) {
-        try {
-            File dex_f = getDir( type, Context.MODE_PRIVATE );
-            if( dex_f == null || !dex_f.exists() ) {
-                Log.w( TAG, "app.data storage is not accessable, trying to use the SD card" );
-                File sd = Environment.getExternalStorageDirectory();
-                if( sd == null ) return null; // nowhere to store the dex :(
-                dex_f = new File( sd, "temp" );
-                if( !dex_f.exists() )
-                    dex_f.mkdir();
-            }
-            ApplicationInfo ai = getPackageManager().getApplicationInfo( "com.ghostsq.commander." + type, 0 );
-            
-            Log.i( TAG, type + " package is " + ai.sourceDir );
-            
-            ClassLoader pcl = getClass().getClassLoader();
-            DexClassLoader cl = new DexClassLoader( ai.sourceDir, dex_f.getAbsolutePath(), null, pcl );
-            //
-            Class<?> adapterClass = cl.loadClass( "com.ghostsq.commander." + type + "." + class_name );
-            try {
-                File[] list = dex_f.listFiles();
-                for( int i = 0; i < list.length; i++ )
-                    list[i].delete();
-            }
-            catch( Exception e ) {
-                Log.w( TAG, "Can't remove the plugin's .dex: ", e );
-            }
-            if( adapterClass == null )
-                showError( "Can not load the adapter class of " + type );
-            else {
-                CommanderAdapter ca = (CommanderAdapter)adapterClass.newInstance();
-                ca.Init( this );
-                return ca;
-            }
-        }
-        catch( Exception e ) {
-            Log.e( TAG, type, e );
-        }
-        catch( Error e ) {
-            Log.e( TAG, type, e );
-        }
-        showDialog( dialog_id );
-        return null;
-    }    
     public final void startViewURIActivity( int res_id ) {
         Intent i = new Intent( Intent.ACTION_VIEW );
         i.setData( Uri.parse( getString( res_id ) ) );

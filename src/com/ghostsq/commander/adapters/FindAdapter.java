@@ -12,6 +12,7 @@ import com.ghostsq.commander.R;
 import com.ghostsq.commander.adapters.FSAdapter.FilePropComparator;
 import com.ghostsq.commander.utils.Utils;
 
+import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.net.Uri;
 import android.os.Handler;
@@ -22,8 +23,8 @@ public class FindAdapter extends FSAdapter {
     public final static String TAG = "FindAdapter";
     private Uri uri;
 
-    public FindAdapter( Commander c ) {
-        super( c );
+    public FindAdapter( Context ctx_ ) {
+        super( ctx_ );
         parentLink = PLS;
     }
     @Override
@@ -80,13 +81,13 @@ public class FindAdapter extends FSAdapter {
 
     @Override
     public boolean createFile( String fileURI ) {
-        commander.showError( commander.getContext().getString( R.string.not_supported ) );
+        commander.showError( ctx.getString( R.string.not_supported ) );
         return false;
     }
 
     @Override
     public void createFolder( String string ) {
-        commander.showError( commander.getContext().getString( R.string.not_supported ) );
+        commander.showError( ctx.getString( R.string.not_supported ) );
     }
 
 
@@ -101,14 +102,14 @@ public class FindAdapter extends FSAdapter {
 
     @Override
     public boolean receiveItems( String[] fileURIs, int move_mode ) {
-        commander.notifyMe( new Commander.Notify( commander.getContext().getString( R.string.not_supported ), 
+        commander.notifyMe( new Commander.Notify( ctx.getString( R.string.not_supported ), 
                                 Commander.OPERATION_FAILED ) );
         return false;
     }
 
     @Override
     public void setIdentities( String name, String pass ) {
-        commander.showError( commander.getContext().getString( R.string.not_supported ) );
+        commander.showError( ctx.getString( R.string.not_supported ) );
     }
 
     class SearchEngine extends Engine {
@@ -138,7 +139,7 @@ public class FindAdapter extends FSAdapter {
                 Init( null );
                 result = new ArrayList<File>();
                 searchInFolder( new File( path ) );
-                sendProgress( tooLong( 8 ) ? commander.getContext().getString( R.string.search_done ) : null, 
+                sendProgress( tooLong( 8 ) ? ctx.getString( R.string.search_done ) : null, 
                         Commander.OPERATION_COMPLETED, pass_back_on_done );
             } catch( Exception e ) {
                 sendProgress( e.getMessage(), Commander.OPERATION_FAILED, pass_back_on_done );
@@ -155,7 +156,7 @@ public class FindAdapter extends FSAdapter {
                     return;
                 for( int i = 0; i < subfiles.length; i++ ) {
                     if( stop || isInterrupted() ) 
-                        throw new Exception( commander.getContext().getString( R.string.interrupted ) );
+                        throw new Exception( ctx.getString( R.string.interrupted ) );
                     File f = subfiles[i];
                     
                     if( cards != null && Utils.match( f.getName(), cards ) )
@@ -165,7 +166,7 @@ public class FindAdapter extends FSAdapter {
                     
                     if( f.isDirectory() ) {
                         if( depth++ > 30 )
-                            throw new Exception( commander.getContext().getString( R.string.too_deep_hierarchy ) );
+                            throw new Exception( ctx.getString( R.string.too_deep_hierarchy ) );
                         searchInFolder( f );
                         depth--;
                     }

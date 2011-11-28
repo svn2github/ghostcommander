@@ -9,6 +9,7 @@ import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.root.MountAdapter;
 import com.ghostsq.commander.root.RootAdapter;
 
+import android.content.Context;
 import android.net.Uri;
 import android.util.SparseBooleanArray;
 import android.view.View;
@@ -20,8 +21,8 @@ public class HomeAdapter extends CommanderAdapterBase {
     private final static int    FAVS = 0, LOCAL = 1, FTP = 2, SMB = 3, ROOT = 4, MOUNT = 5, APPS = 6, EXIT = 7, LAST = EXIT;
     private boolean root = false;
     
-    public HomeAdapter( Commander c ) {
-        super( c, DETAILED_MODE | NARROW_MODE | SHOW_ATTR | ATTR_ONLY );
+    public HomeAdapter( Context ctx_ ) {
+        super( ctx_, DETAILED_MODE | NARROW_MODE | SHOW_ATTR | ATTR_ONLY );
         numItems = getNumItems();
     }
 

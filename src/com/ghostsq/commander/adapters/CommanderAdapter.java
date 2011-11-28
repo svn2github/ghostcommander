@@ -1,5 +1,6 @@
 package com.ghostsq.commander.adapters;
 
+import java.nio.CharBuffer;
 import java.util.Date;
 
 import com.ghostsq.commander.Commander;
@@ -11,7 +12,7 @@ import android.view.ContextMenu;
 import android.widget.AdapterView;
 
 /**
- *		Interface to abstract list source, version at 2011.11.3
+ *		Interface to abstract list source, version at 2011.11.27
  *		It may be a FSAdapter - to browse files or any other network adapter and so on (to do)
  */
 public interface CommanderAdapter {
@@ -151,7 +152,16 @@ public interface CommanderAdapter {
 	 */
 	public boolean receiveItems( String[] fileURIs, int move_mode );
 
-	public boolean createFile( String fileURI );
+    /**
+     * @param fileURI - the location of the file  
+     * @return        - the content of the file
+     */
+    public CharSequence getFileContent( Uri fileURI );
+
+    /**
+     * @param fileURI - the location of the file  
+     */
+    public boolean createFile( String fileURI );
 
 	public void createFolder( String string );
 
@@ -160,13 +170,13 @@ public interface CommanderAdapter {
      *         will call Commander.NotifyMe( "requested size info", Commander.OPERATION_COMPLETED ) when done  
      */
 	public boolean deleteItems( SparseBooleanArray cis );
-	
+    
     /**
      * @param command_id - command id to execute
      * @param items - selected or checked items to work with  
      */
-	public void doIt( int command_id, SparseBooleanArray cis );
-
+    public void doIt( int command_id, SparseBooleanArray cis );
+    
     /**
      * to be called before the adapter is going to be destroyed
      */

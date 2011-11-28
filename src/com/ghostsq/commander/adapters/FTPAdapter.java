@@ -37,8 +37,8 @@ public class FTPAdapter extends CommanderAdapterBase {
     private Timer  heartBeat;
     public  FTPCredentials theUserPass = null;
     
-    public FTPAdapter( Commander c ) {
-        super( c, 0 );
+    public FTPAdapter( Context ctx_ ) {
+        super( ctx_ );
         ftp = new FTP();
         try {
             heartBeat = new Timer( "FTP Heartbeat", true );
@@ -191,7 +191,7 @@ public class FTPAdapter extends CommanderAdapterBase {
                         return;
                     }
 	                if( cl_res == LOGGED_IN )
-	                    sendProgress( commander.getContext().getString( R.string.ftp_connected,  
+	                    sendProgress( ctx.getString( R.string.ftp_connected,  
 	                            uri.getHost(), theUserPass.getUserName() ), Commander.OPERATION_STARTED );
 
 	                if( ftp.isLoggedIn() ) {
@@ -351,7 +351,7 @@ public class FTPAdapter extends CommanderAdapterBase {
 				sendProgress( progressMessage, (int)(size * 100 / curFileLen) );
 			//Log.v( TAG, progressMessage + " " + size );
     		if( isStopReq() ) {
-    			error( commander.getContext().getString( R.string.canceled ) );
+    			error( ctx.getString( R.string.canceled ) );
     			return false;
     		}
             Thread.sleep( 1 );
@@ -380,9 +380,9 @@ public class FTPAdapter extends CommanderAdapterBase {
                       sendReceiveReq( recipient_hash, dest_folder );
                       return;
                 }
-                sendResult( Utils.getOpReport( commander.getContext(), total, R.string.downloaded ) );
+                sendResult( Utils.getOpReport( ctx, total, R.string.downloaded ) );
             } catch( InterruptedException e ) {
-                sendResult( commander.getContext().getString( R.string.canceled ) );
+                sendResult( ctx.getString( R.string.canceled ) );
             }
 	        super.run();
 	    }
@@ -390,7 +390,6 @@ public class FTPAdapter extends CommanderAdapterBase {
 	    private final int copyFiles( LsItem[] list, String path ) throws InterruptedException {
 	        int counter = 0;
 	        try {
-	            Context ctx = commander.getContext();
 	        	for( int i = 0; i < list.length; i++ ) {
 	        		if( stop || isInterrupted() ) {
 	        		    error( ctx.getString( R.string.interrupted ) );
@@ -518,13 +517,12 @@ public class FTPAdapter extends CommanderAdapterBase {
         @Override
         public void run() {
         	int total = delFiles( mList, "" );
-        	sendResult( Utils.getOpReport( commander.getContext(), total, R.string.deleted ) );
+        	sendResult( Utils.getOpReport( ctx, total, R.string.deleted ) );
             super.run();
         }
         private final int delFiles( LsItem[] list, String path ) {
             int counter = 0;
             try {
-                Context ctx = commander.getContext();
 	        	for( int i = 0; i < list.length; i++ ) {
 	        		if( stop || isInterrupted() ) {
 	        		    error( ctx.getString( R.string.interrupted ) );
@@ -664,7 +662,7 @@ public class FTPAdapter extends CommanderAdapterBase {
                     if( src_dir != null )
                         src_dir.delete();
                 }
-                sendResult( Utils.getOpReport( commander.getContext(), total, R.string.uploaded ) );
+                sendResult( Utils.getOpReport( ctx, total, R.string.uploaded ) );
                 return;
             } catch( Exception e ) {
                 error( "Exception: " + e.getMessage() );
@@ -678,7 +676,6 @@ public class FTPAdapter extends CommanderAdapterBase {
             if( list == null ) return 0;
             int counter = 0;
             try {
-                Context ctx = commander.getContext();
 	        	for( int i = 0; i < list.length; i++ ) {
 	        		if( stop || isInterrupted() ) {
 	        			error( ctx.getString( R.string.interrupted ) );

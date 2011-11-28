@@ -29,8 +29,8 @@ public class MountAdapter extends CommanderAdapterBase {
     
     public  MountItem[] items = null;
 
-    public MountAdapter( Commander c ) {
-        super( c, DETAILED_MODE | NARROW_MODE | SHOW_ATTR | ATTR_ONLY );
+    public MountAdapter( Context ctx_ ) {
+        super( ctx_, DETAILED_MODE | NARROW_MODE | SHOW_ATTR | ATTR_ONLY );
     }
 
     @Override
