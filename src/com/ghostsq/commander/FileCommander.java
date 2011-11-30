@@ -128,8 +128,14 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             Intent intent = getIntent();
             String action = intent.getAction();
             Log.i( TAG, "Action: " + action );
-            if( Intent.ACTION_VIEW.equals( action ) )
-                panels.Navigate( 0, intent.getData(), null );
+            if( Intent.ACTION_VIEW.equals( action ) ) {
+                Uri uri = intent.getData();
+                if( "application/x-zip-compressed".equals( intent.getType() ) ||
+                                 "application/zip".equals( intent.getType() ) )
+                    uri = uri.buildUpon().scheme( "zip" ).build();
+                panels.Navigate( 0, uri, null );
+                panels.setPanelCurrent( 0 );
+            }
             
             final String FT = "first_time";
             if( prefs.getBoolean( FT, true ) ) {

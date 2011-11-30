@@ -48,6 +48,13 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:scheme="ftp" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:mimeType="application/x-zip-compressed" />
+                <data android:mimeType="application/zip" />
+                </intent-filter>
         </activity>
 		<activity 
             android:name=".Editor"  
@@ -64,9 +71,7 @@
             android:label="@string/pictvw_label">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-                <data android:mimeType="image/jpeg" />
-                <data android:mimeType="image/png" />
-                <data android:mimeType="image/gif" />
+                <data android:mimeType="image/*" />
             </intent-filter>
         </activity>
         <activity 
