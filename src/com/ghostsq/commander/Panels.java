@@ -42,6 +42,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -169,9 +170,13 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                     ToolButton tb = tba.get(i);
                     int bid = tb.getId();
                     if( tb.isVisible() && ( adapter_bit & tb.getSuitableAdapter() ) != 0 ) {
-                        Button b = new Button( c, null, fingerFriendly ? 
-                                android.R.attr.buttonStyle : 
-                                android.R.attr.buttonStyleSmall );
+                        Button b = new Button( c, null, android.R.attr.buttonStyleSmall );
+                        b.setBackgroundResource( R.drawable.tool_button );
+                        b.setTextColor( 0xFFFFFFFF );
+                        LinearLayout.LayoutParams lllp = new LinearLayout.LayoutParams( 
+                                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT );
+                        lllp.rightMargin = 4;
+                        b.setLayoutParams( lllp );
                         b.setId( bid );
                         String caption = "";
                         if( keyboard ) {
