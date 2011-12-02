@@ -8,6 +8,7 @@ import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.root.MountAdapter;
 import com.ghostsq.commander.root.RootAdapter;
+import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
 import android.net.Uri;
@@ -152,6 +153,7 @@ public class HomeAdapter extends CommanderAdapterBase {
 
     @Override
     public Object getItem( int position ) {
+        Utils.changeLanguage( ctx );
         position = translatePosition( position );
         Item item = new Item();
         item.name = "???";

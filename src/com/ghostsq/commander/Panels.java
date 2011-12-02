@@ -25,6 +25,7 @@ import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.net.UrlQuerySanitizer;
 import android.os.Bundle;
@@ -171,12 +172,14 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                     int bid = tb.getId();
                     if( tb.isVisible() && ( adapter_bit & tb.getSuitableAdapter() ) != 0 ) {
                         Button b = new Button( c, null, android.R.attr.buttonStyleSmall );
-                        b.setBackgroundResource( R.drawable.tool_button );
-                        b.setTextColor( 0xFFFFFFFF );
-                        LinearLayout.LayoutParams lllp = new LinearLayout.LayoutParams( 
-                                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT );
-                        lllp.rightMargin = 4;
-                        b.setLayoutParams( lllp );
+                        if( android.os.Build.VERSION.SDK_INT >= 9 ) {
+                            b.setBackgroundResource( R.drawable.tool_button );
+                            b.setTextColor( 0xFFFFFFFF );
+                            LinearLayout.LayoutParams lllp = new LinearLayout.LayoutParams( 
+                                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT );
+                            lllp.rightMargin = 4;
+                            b.setLayoutParams( lllp );
+                        }
                         b.setId( bid );
                         String caption = "";
                         if( keyboard ) {
@@ -259,18 +262,33 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     private final void highlightCurrentTitle() {
         if( mainView == null ) return;
         View title_bar = mainView.findViewById( R.id.titles );
-        if( title_bar != null )
-            title_bar.setBackgroundColor( titleColor );
+        if( title_bar != null ) {
+            int h = title_bar.getHeight();
+            if( h == 0 ) h = 30;
+            Drawable d = Utils.getGradient( h, titleColor );
+            if( d != null )
+                title_bar.setBackgroundDrawable( d );
+            else
+                title_bar.setBackgroundColor( titleColor );
+        }
     	highlightTitle( opposite(), false );
     	highlightTitle( current, true );
     }
     private final void highlightTitle( int which, boolean on ) {
         TextView title = (TextView)mainView.findViewById( titlesIds[which] );
         if( title != null ) {
-            title.setBackgroundColor( on ? selColor : selColor & 0x0FFFFFFF );
-            if( on )
+            if( on ) {
+                int h = title.getHeight();
+                if( h == 0 ) h = 30;
+                Drawable d = Utils.getGradient( h, selColor );
+                if( d != null )
+                    title.setBackgroundDrawable( d );
+                else
+                    title.setBackgroundColor( selColor );
                 title.setTextColor( fgrColor );
+            }
             else {
+                title.setBackgroundColor( selColor & 0x0FFFFFFF );
                 float[] fgr_hsv = new float[3];
                 Color.colorToHSV( fgrColor, fgr_hsv );
                 float[] ttl_hsv = new float[3];

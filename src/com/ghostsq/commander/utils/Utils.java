@@ -9,6 +9,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.Shader;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.webkit.MimeTypeMap;
@@ -273,6 +278,23 @@ public final class Utils {
         return result.toString();
     }
 
+    public final static Drawable getGradient( int height, int color ) {
+        
+        try {
+            ShapeDrawable sd = new ShapeDrawable();
+            float[] hsv = new float[3];
+            Color.colorToHSV( color, hsv );
+            hsv[2] *= 0.75;
+            sd.getPaint().setShader( new LinearGradient( 0, 0, 0, height,
+                    color, Color.HSVToColor( hsv ), Shader.TileMode.CLAMP ) );
+            return sd;
+        }
+        catch( Throwable e ) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
     public enum RR {
                busy(R.string.busy),
            copy_err(R.string.copy_err),
