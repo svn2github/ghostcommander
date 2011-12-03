@@ -1,6 +1,7 @@
 package com.ghostsq.commander.adapters;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -550,7 +551,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     }
     
     @Override
-    public CharSequence getFileContent( Uri u ) {
+    public InputStream getContent( Uri u ) {
         return null;
     }    
     

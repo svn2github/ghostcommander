@@ -931,7 +931,7 @@ public class ZipAdapter extends CommanderAdapterBase {
         Arrays.sort( items, comp );
     }
     @Override
-    public CharSequence getFileContent( Uri u ) {
+    public InputStream getContent( Uri u ) {
         ZipFile zf = null; 
         try {
             String zip_path = u.getPath();
@@ -939,23 +939,7 @@ public class ZipAdapter extends CommanderAdapterBase {
             if( zip_path != null && entry_name != null ) {
                 zf = new ZipFile( zip_path );
                 ZipEntry ze = zf.getEntry( entry_name );
-                if( ze != null ) {
-                    InputStream is = zf.getInputStream( ze );
-                    if( is != null ) {
-                        int num = is.available();
-                        if( num > 0 ) {
-                            InputStreamReader isr = new InputStreamReader( is );
-                            char[] chars = new char[num];
-                            int n = isr.read( chars );
-                            isr.close();
-                            is.close();
-                            if( n >= 0 ) {
-                                return CharBuffer.wrap( chars );
-                            }
-                        }
-                        is.close();
-                    }
-                }
+                if( ze != null ) return zf.getInputStream( ze );
             }
         } catch( Throwable e ) {
             e.printStackTrace();

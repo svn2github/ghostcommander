@@ -1,8 +1,10 @@
 package com.ghostsq.commander.root;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.nio.CharBuffer;
 import java.util.ArrayList;
@@ -725,20 +727,23 @@ public class RootAdapter extends CommanderAdapterBase {
     }
     
     @Override
-    public CharSequence getFileContent( Uri u ) {
-            try {
-                String path = u.getPath();
-                String command = "cat '" + path + "'";
-                ExecEngine ee = new ExecEngine( ctx, null, null, command, false, 500 );
-                ee.start();
-                CharSequence cs;
-                do {
-                    cs = ee.getResult();
-                } while( cs == null );
-                return cs;
-            } catch( Throwable e ) {
-                e.printStackTrace();
-            }
+    public InputStream getContent( Uri u ) {
+        try {
+            String path = u.getPath();
+            String command = "cat '" + path + "'";
+            ExecEngine ee = new ExecEngine( ctx, null, null, command, false, 500 );
+            ee.start();
+            StringBuilder sb;
+            do {
+                sb = ee.getResult();
+                // TODO: break the loop if it wait too long
+            } while( sb == null );
+            String s = sb.toString();
+            ByteArrayInputStream sbis = new ByteArrayInputStream( s.getBytes() );
+            return sbis;
+        } catch( Throwable e ) {
+            e.printStackTrace();
+        }
         return null;
     }
 }

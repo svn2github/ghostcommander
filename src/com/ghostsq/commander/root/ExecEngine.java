@@ -167,7 +167,7 @@ class ExecEngine extends Engine {
         return false;
     }
     
-    public synchronized CharSequence getResult() {
+    public synchronized StringBuilder getResult() {
         try {
             wait( 500 );
         } catch( InterruptedException e ) {}

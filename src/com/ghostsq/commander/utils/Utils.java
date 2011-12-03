@@ -284,7 +284,7 @@ public final class Utils {
             ShapeDrawable sd = new ShapeDrawable();
             float[] hsv = new float[3];
             Color.colorToHSV( color, hsv );
-            hsv[2] *= 0.75;
+            hsv[2] *= 0.6;
             sd.getPaint().setShader( new LinearGradient( 0, 0, 0, height,
                     color, Color.HSVToColor( hsv ), Shader.TileMode.CLAMP ) );
             return sd;

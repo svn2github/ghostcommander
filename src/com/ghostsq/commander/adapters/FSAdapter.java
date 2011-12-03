@@ -655,25 +655,14 @@ public class FSAdapter extends CommanderAdapterBase {
         }
     }
     @Override
-    public CharSequence getFileContent( Uri u ) {
+    public InputStream getContent( Uri u ) {
             try {
                 String path = u.getPath();
                 File f = new File( path );
                 if( f.exists() && f.isFile() ) {
-                    FileReader fr = new FileReader( f );
-                    int sz = (int)f.length();
-                    CharBuffer cb = CharBuffer.allocate( sz );
-                    int n = fr.read( cb );
-                    if( n != sz )
-                        Log.w( TAG, "Chars were read (" + n + ") less than the file (" + path + ") size (" + sz + ")" );
-                    cb.position( 0 );
-                    return cb;
+                    return new FileInputStream( f );
                 }
-            } catch( FileNotFoundException e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch( IOException e ) {
-                // TODO Auto-generated catch block
+            } catch( Throwable e ) {
                 e.printStackTrace();
             }
         return null;

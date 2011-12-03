@@ -1,6 +1,6 @@
 package com.ghostsq.commander.adapters;
 
-import java.nio.CharBuffer;
+import java.io.InputStream;
 import java.util.Date;
 
 import com.ghostsq.commander.Commander;
@@ -12,8 +12,7 @@ import android.view.ContextMenu;
 import android.widget.AdapterView;
 
 /**
- *		Interface to abstract list source, version at 2011.11.27
- *		It may be a FSAdapter - to browse files or any other network adapter and so on (to do)
+ *		CommanderAdapter interface, version at 2011.12.02
  */
 public interface CommanderAdapter {
 
@@ -156,7 +155,7 @@ public interface CommanderAdapter {
      * @param fileURI - the location of the file  
      * @return        - the content of the file
      */
-    public CharSequence getFileContent( Uri fileURI );
+    public InputStream getContent( Uri fileURI );
 
     /**
      * @param fileURI - the location of the file  
