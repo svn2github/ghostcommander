@@ -459,6 +459,10 @@ public class FSAdapter extends CommanderAdapterBase {
     }
 
     @Override
+    public Uri getItemUri( int position ) {
+        return Uri.parse( getItemName( position, true ) );
+    }
+    @Override
     public String getItemName( int position, boolean full ) {
         if( position < 0 || items == null || position > items.length )
             return position == 0 ? parentLink : null;

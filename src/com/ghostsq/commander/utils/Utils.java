@@ -1,6 +1,8 @@
 package com.ghostsq.commander.utils;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Locale;
 
 import com.ghostsq.commander.R;
@@ -16,6 +18,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 public final class Utils {
@@ -253,6 +256,44 @@ public final class Utils {
             e.printStackTrace();
         }
     }
+ 
+    public final static CharSequence readStreamToBuffer( InputStream is, String encoding ) {
+        if( is != null ) {
+            try {
+                int bytes = is.available();
+                if( bytes < 1024 || bytes > 1048576 )
+                    bytes = 10240;
+                char[] chars = new char[bytes];
+                InputStreamReader isr = encoding != null && encoding.length() != 0 ?
+                        new InputStreamReader( is, encoding ) :
+                        new InputStreamReader( is );
+                StringBuffer sb = new StringBuffer( bytes );  
+                int n = -1;
+                while( true ) {
+                    for( int i = 0; i < 20; i++ ) {
+                        if( is.available() > 0 ) break;
+                        Log.v( "readStreamToBuffer", "Waiting the rest " + i );
+                        Thread.sleep( 10 );
+                    }
+                    if( is.available() == 0 ) {
+                        Log.v( "readStreamToBuffer", "No more data!" );
+                        break;
+                    }
+                    n = isr.read( chars, 0, bytes );
+                    Log.v( "readStreamToBuffer", "Have read " + n + " chars" );
+                    if( n < 0 ) break;
+                    sb.append( chars, 0, n );
+                }
+                isr.close();
+                is.close();
+                return sb;
+            } catch( Throwable e ) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+        
     public final static String escapeUriMarkup( String s ) {
         if( s == null || s.length() == 0 ) return s;
         return s.replaceAll( "#", "%23" ).replaceAll( ":", "%3A" );

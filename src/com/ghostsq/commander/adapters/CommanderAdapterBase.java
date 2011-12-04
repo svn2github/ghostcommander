@@ -303,7 +303,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             if( dm ) {
             	if( item.size >= 0 )
             		size = Utils.getHumanSize( item.size );
-            	final String MDHM_date_frm = "MMM dd hh:mm";
+            	final String MDHM_date_frm = "MMM dd kk:mm";
                 if( item.date != null ) {
                     if( long_date ) {
                         date = getLocalDateTimeStr( item.date );
@@ -499,7 +499,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         }
         return null;
     }
-
+    @Override
+    public Uri getItemUri( int position ) {
+        return null;
+    }
     @Override
     public void populateContextMenu( ContextMenu menu, AdapterView.AdapterContextMenuInfo acmi, int num ) {
         try {
@@ -553,7 +556,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     @Override
     public InputStream getContent( Uri u ) {
         return null;
-    }    
+    }
+    @Override
+    public void closeStream( InputStream is ) {
+    }
     
     protected void reSort() {
         // to override all the derives

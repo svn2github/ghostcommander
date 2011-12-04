@@ -68,4 +68,31 @@
         <item>pl</item>
         <item>es</item>
     </string-array>
+
+    <string-array name="encoding">
+        <item>Default</item>
+        <item>windows-1250\n\t - Eastern European</item>
+        <item>windows-1251\n\t - Cyrillic</item>
+        <item>windows-1252\n\t - Western Latin</item>
+        <item>windows-1253\n\t - Greek</item>
+        <item>UTF-8 \n\t - 8bit Unicode</item>
+        <item>UTF-16\n\t - 16bit Unicode</item>
+        <item>UTF-16BE\n\t - 16bit big-endian</item>
+        <item>UTF-16LE\n\t - 16bit little-endian</item>
+        <item>KOI8-R\n\t - Russian UNIX</item>
+        <item>Cp866 \n\t - Russian DOS</item>
+    </string-array>
+    <string-array name="encoding_vals">
+        <item></item>
+        <item>Cp1250</item>
+        <item>Cp1251</item>
+        <item>Cp1252</item>
+        <item>Cp1253</item>
+        <item>UTF8</item>
+        <item>UTF-16</item>
+        <item>UnicodeBigUnmarked</item>
+        <item>UnicodeLittleUnmarked</item>
+        <item>KOI8_R</item>
+        <item>Cp866</item>
+    </string-array>
 </resources>

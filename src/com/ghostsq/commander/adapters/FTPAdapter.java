@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Timer;
@@ -36,7 +39,8 @@ public class FTPAdapter extends CommanderAdapterBase {
     public  LsItem[] items = null;
     private Timer  heartBeat;
     public  FTPCredentials theUserPass = null;
-    
+    private ContentEngine contentEngine;
+
     public FTPAdapter( Context ctx_ ) {
         super( ctx_ );
         ftp = new FTP();
@@ -566,6 +570,12 @@ public class FTPAdapter extends CommanderAdapterBase {
     }
     
     @Override
+    public Uri getItemUri( int position ) {
+        Uri u = getUri();
+        if( u == null ) return null;
+        return u.buildUpon().appendEncodedPath( getItemName( position, false ) ).build();
+    }
+    @Override
     public String getItemName( int position, boolean full ) {
         if( items != null && position > 0 && position <= items.length ) {
             if( full ) {
@@ -846,4 +856,95 @@ public class FTPAdapter extends CommanderAdapterBase {
         LsItemPropComparator comp = items[0].new LsItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0, ascending );
         Arrays.sort( items, comp );
     }
+
+    class ContentEngine extends Thread {
+        private Uri u;
+        private InputStream is = null;
+        private boolean open_done = false;
+        private boolean may_close = false;
+        
+        ContentEngine( Uri u_ ) {
+            u = u_;
+        }
+        @Override
+        public void run() {
+            try {
+                if( connectAndLogin() > 0 ) {
+                    PipedOutputStream pos = new PipedOutputStream();
+                    is = new PipedInputStream( pos );
+                    synchronized( this ) {
+                        open_done = true;
+                    }
+                    Log.v( TAG, "BEFORE retrieve" );
+                    ftp.retrieve( u.getPath(), pos, null );
+                    Log.v( TAG, "AFTER retrieve" );
+                }
+                for( int i = 0; i < 10; i++ ) {
+                    synchronized( this ) {
+                        if( may_close ) break;
+                        wait( 500 );
+                    }
+                }
+                ftp.disconnect();
+            }
+            catch( Exception e ) {
+                Log.e( TAG, null, e );
+            }
+            finally {
+                try {
+                    if( is != null ) is.close();
+                } catch( IOException e ) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        
+        public synchronized InputStream getResult() {
+            try {
+                for( int i = 0; i < 50; i++ ) {
+                    if( open_done )
+                        break;
+                    wait( 100 ); 
+                }
+            } catch( InterruptedException e ) {}
+            return is;
+        }
+        public synchronized void close() {
+            may_close = true;
+            notify();
+        }
+    }    
+
+    @Override
+    public InputStream getContent( Uri u ) {
+        Uri uri_ = null;
+        try {
+            if( uri != null && !uri.getHost().equals( u.getHost() ) )
+                return null;
+            uri_ = uri;
+            uri = u;    // connectAndLogin() works with uri as a data member
+            contentEngine = new ContentEngine( u );
+            contentEngine.start();
+            InputStream is = contentEngine.getResult();
+            if( is == null ) 
+                contentEngine.close();
+            Thread.sleep( 1000 );
+            return is;
+            
+        } catch( Throwable e ) {
+            e.printStackTrace();
+        } finally {
+            if( uri_ != null )
+                uri = uri_;
+        }
+        return null;
+    }
+    @Override
+    public void closeStream( InputStream is ) {
+        if( contentEngine != null ) {
+            contentEngine.close();
+            contentEngine = null;
+        }
+    }
+
 }

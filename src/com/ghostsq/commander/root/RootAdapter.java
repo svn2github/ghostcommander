@@ -5,8 +5,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
 import android.net.Uri;
 import android.util.Log;
@@ -50,7 +51,8 @@ public class RootAdapter extends CommanderAdapterBase {
     private int attempts = 0;
     private MountsListEngine systemMountReader;
     private String systemMountMode;
-    private final static String SYSTEM_PATH = "/system"; 
+    private final static String SYSTEM_PATH = "/system";
+    private ContentEngine contentEngine;
 
     public RootAdapter( Context ctx_ ) {
         super( ctx_, SHOW_ATTR );
@@ -438,19 +440,20 @@ public class RootAdapter extends CommanderAdapterBase {
             return false;
         }
     }
-    
+    @Override
+    public Uri getItemUri( int position ) {
+        if( uri == null ) return null;
+        return uri.buildUpon().appendEncodedPath( getItemName( position, false ) ).build();
+    }
     @Override
     public String getItemName( int position, boolean full ) {
         if( items != null && position > 0 && position <= items.length ) {
             if( full ) {
-                String path = toString();
-                if( path != null && path.length() > 0 ) {
-                    if( path.charAt( path.length() - 1 ) != SLC )
-                        path += SLS;
-                    return path + items[position-1].getName();
-                }
+                Uri item_uri = getItemUri( position );
+                if( item_uri != null )
+                    return item_uri.toString();
             }
-            return items[position-1].getName();
+            else return items[position-1].getName();
         }
         return null;
     }
@@ -484,6 +487,8 @@ public class RootAdapter extends CommanderAdapterBase {
             		cur += SLS;
             commander.Navigate( uri.buildUpon().appendEncodedPath( item.getName() ).build(), null );
         }
+        else
+            new CmdDialog( ctx, item, this );
     }
 
     @Override
@@ -726,24 +731,103 @@ public class RootAdapter extends CommanderAdapterBase {
         Arrays.sort( items, comp );
     }
     
+    class ContentEngine extends Thread {
+        private String file_path;
+        private InputStream is = null;
+        private boolean open_done = false;
+        private boolean may_close = false;
+        
+        ContentEngine( String file_path_ ) {
+            file_path = file_path_;
+        }
+
+        @Override
+        public void run() {
+            OutputStreamWriter osw = null;
+            BufferedReader     ebr = null;
+            try {
+                Process process = Runtime.getRuntime().exec( "su" );
+                osw = new OutputStreamWriter( process.getOutputStream() );
+                ebr = new BufferedReader( new InputStreamReader( process.getErrorStream() ) );
+                is = process.getInputStream();
+                osw.write( "cat '" + file_path + "'\n" );
+                osw.flush();
+                for( int i = 0; i < 10; i++ ) {
+                    if( is.available() > 0 ) break;
+                    Thread.sleep( 100 );
+                }
+                synchronized( this ) {
+                    open_done = true;
+                }
+                for( int i = 0; i < 10; i++ ) {
+                    synchronized( this ) {
+                        if( may_close ) break;
+                        wait( 500 );
+                    }
+                }
+                osw.write( "exit\n" );
+                osw.flush();
+                process.waitFor();
+                if( process.exitValue() != 0 ) {
+                    Log.e( TAG, "Exit code " + process.exitValue() );
+                }
+                if( ebr.ready() ) {
+                    String err_str = ebr.readLine();
+                    if( err_str.trim().length() > 0 ) {
+                        Log.e( TAG, "Error:\n" + err_str );
+                    }
+                }
+            }
+            catch( Exception e ) {
+                Log.e( TAG, null, e );
+            }
+            finally {
+                try {
+                    if( osw != null ) osw.close();
+                    if( ebr != null ) ebr.close();
+                    if( is  != null ) is.close();
+                } catch( IOException e ) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        
+        public synchronized InputStream getResult() {
+            try {
+                for( int i = 0; i < 50; i++ ) {
+                    if( open_done )
+                        break;
+                    wait( 100 ); 
+                }
+            } catch( InterruptedException e ) {}
+            return is;
+        }
+        public synchronized void close() {
+            may_close = true;
+            notify();
+        }
+        
+    }    
     @Override
     public InputStream getContent( Uri u ) {
         try {
             String path = u.getPath();
-            String command = "cat '" + path + "'";
-            ExecEngine ee = new ExecEngine( ctx, null, null, command, false, 500 );
-            ee.start();
-            StringBuilder sb;
-            do {
-                sb = ee.getResult();
-                // TODO: break the loop if it wait too long
-            } while( sb == null );
-            String s = sb.toString();
-            ByteArrayInputStream sbis = new ByteArrayInputStream( s.getBytes() );
-            return sbis;
+            contentEngine = new ContentEngine( path );
+            contentEngine.start();
+            InputStream is = contentEngine.getResult();
+            if( is == null ) 
+                contentEngine.close();
+            return is;
         } catch( Throwable e ) {
             e.printStackTrace();
         }
         return null;
+    }
+    @Override
+    public void closeStream( InputStream is ) {
+        if( contentEngine != null ) {
+            contentEngine.close();
+            contentEngine = null;
+        }
     }
 }

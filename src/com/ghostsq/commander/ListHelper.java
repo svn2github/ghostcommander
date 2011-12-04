@@ -107,6 +107,7 @@ public class ListHelper {
     }
 
     public final void applyColors( int bg_color, int fgrColor, int selColor ) {
+        if( flv == null ) return;
         flv.setBackgroundColor( bg_color );
         flv.setCacheColorHint( bg_color );
         CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();

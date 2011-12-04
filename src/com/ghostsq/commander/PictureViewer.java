@@ -15,6 +15,11 @@ import android.view.Display;
 import android.widget.ImageView;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
+
+import com.ghostsq.commander.adapters.CA;
+import com.ghostsq.commander.adapters.CommanderAdapter;
+import com.ghostsq.commander.utils.Utils;
 
 public class PictureViewer extends Activity {
     private final static String TAG = "PictureViewerActivity";
@@ -43,38 +48,51 @@ public class PictureViewer extends Activity {
         String path = u.getPath();
         if( path == null ) return;
         try {
-            Display display = getWindowManager().getDefaultDisplay(); 
-            int width = display.getWidth();
-            int height = display.getHeight();
-            boolean by_height = height < width;
-            
-            Log.v( TAG, "w=" + width + ", h=" + height );
-            
-            FileInputStream in = new FileInputStream( path );
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            
-            options.inSampleSize = 1;
-            options.inJustDecodeBounds = true;
-            options.outWidth = 0;
-            options.outHeight = 0;
-            options.inTempStorage = buf;
-            
-            BitmapFactory.decodeStream( in, null, options);
-            in.close();
-            if( options.outWidth > 0 && options.outHeight > 0 ) {
-                int factor = by_height ? options.outHeight / height : options.outWidth / width;
-                int b;
-                for( b = 0x8000000; b > 0; b >>= 1 )
-                    if( b < factor ) break;
-                options.inSampleSize = b;
-                options.inJustDecodeBounds = false;
-                image_view.setImageBitmap( BitmapFactory.decodeFile( path, options ) );
+            String schema = u.getScheme();
+            if( schema == null || schema.length() == 0 || schema.equals( "file" ) ) {
+                Display display = getWindowManager().getDefaultDisplay(); 
+                int width = display.getWidth();
+                int height = display.getHeight();
+                boolean by_height = height < width;
+                
+                Log.v( TAG, "w=" + width + ", h=" + height );
+                
+                FileInputStream in = new FileInputStream( path );
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                
+                options.inSampleSize = 1;
+                options.inJustDecodeBounds = true;
+                options.outWidth = 0;
+                options.outHeight = 0;
+                options.inTempStorage = buf;
+                
+                BitmapFactory.decodeStream( in, null, options);
+                in.close();
+                if( options.outWidth > 0 && options.outHeight > 0 ) {
+                    int factor = by_height ? options.outHeight / height : options.outWidth / width;
+                    int b;
+                    for( b = 0x8000000; b > 0; b >>= 1 )
+                        if( b < factor ) break;
+                    options.inSampleSize = b;
+                    options.inJustDecodeBounds = false;
+                    image_view.setImageBitmap( BitmapFactory.decodeFile( path, options ) );
+                }
+                else
+                    image_view.setImageBitmap( BitmapFactory.decodeFile( path ) );
             }
-            else
-                image_view.setImageBitmap( BitmapFactory.decodeFile( path ) );
+            else {
+                int type_id = CA.GetAdapterTypeId( schema );
+                CommanderAdapter ca = CA.CreateAdapterInstance( type_id, this );
+                if( ca != null ) {
+                    InputStream is = ca.getContent( u );
+                    if( is != null ) {
+                        image_view.setImageBitmap( BitmapFactory.decodeStream( is ) );
+                        ca.closeStream( is );
+                    }
+                }
+            }
         } catch( Throwable e ) {
             Log.e( TAG, u.toString(), e );
         }
     }
-    
 }

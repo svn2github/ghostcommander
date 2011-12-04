@@ -353,6 +353,11 @@ copied >5 will produce:
     <string name="save">Save</string>
     <string name="revert">Revert</string>
     <string name="wrap">Wrap long lines</string>
+
+    <string name="go_top">Go Top</string>       
+    <string name="go_end">Go End</string>       
+    <string name="encoding">Encoding</string>       
+        
     <string name="no_such_file">No such file \"%1$s\"</string>
     <string name="too_big_file">The file \"%1$s\" is too big.</string>
     <string name="binary_file">The file \"%1$s\" is binary. You can damage it. Edit on your own risk.</string>    

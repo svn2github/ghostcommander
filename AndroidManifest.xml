@@ -76,7 +76,9 @@
         </activity>
         <activity 
             android:name=".TextViewer"
-            android:label="@string/textvw_label">
+            android:label="@string/textvw_label"
+            android:configChanges="orientation|keyboardHidden"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <data android:mimeType="text/plain" />

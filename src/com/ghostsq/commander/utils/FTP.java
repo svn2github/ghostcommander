@@ -422,6 +422,7 @@ public class FTP {
             long done = 0;
         	while( true ) {
         		n = in.read( buf );
+        		Log.v( TAG, "FTP has read " + n + "bytes" );
         		if( n < 0 ) break;
         		out.write( buf, 0, n );
         		if( report_to != null )

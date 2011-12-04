@@ -5,8 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -42,6 +40,7 @@ public class ZipAdapter extends CommanderAdapterBase {
     public  Uri          uri = null;
     public  ZipFile      zip = null;
     public  ZipEntry[] items = null;
+    private ZipEntry   cachedEntry = null;
 
     public ZipAdapter( Context ctx_ ) {
         super( ctx_ );
@@ -492,17 +491,23 @@ public class ZipAdapter extends CommanderAdapterBase {
     }
     
     @Override
+    public Uri getItemUri( int position ) {
+        if( uri == null ) return null;
+        return uri.buildUpon().encodedFragment( fixName( items[position-1] ) ).build();
+    }
+    
+    @Override
     public String getItemName( int position, boolean full ) {
         if( items != null && position > 0 && position <= items.length ) {
             if( full ) {
                 if( uri != null ) {
-                    Uri item_uri = uri.buildUpon().encodedFragment( fixName( items[position-1] ) ).build();
+                    Uri item_uri = getItemUri( position );
                     if( item_uri != null )
                         return item_uri.toString();
                 }
-                return null;
             }
-            return new File( fixName( items[position-1] ) ).getName();
+            else
+                return new File( fixName( items[position-1] ) ).getName();
         }
         return null;
     }
@@ -932,22 +937,34 @@ public class ZipAdapter extends CommanderAdapterBase {
     }
     @Override
     public InputStream getContent( Uri u ) {
-        ZipFile zf = null; 
         try {
             String zip_path = u.getPath();
+            if( zip_path == null ) return null;
+            String opened_zip_path = uri != null ? uri.getPath() : null;
+            if( opened_zip_path == null )
+                zip = new ZipFile( zip_path );
+            else if( !zip_path.equalsIgnoreCase( opened_zip_path ) )
+                return null;    // do not want to reopen the current zip to something else!
             String entry_name = u.getFragment();
-            if( zip_path != null && entry_name != null ) {
-                zf = new ZipFile( zip_path );
-                ZipEntry ze = zf.getEntry( entry_name );
-                if( ze != null ) return zf.getInputStream( ze );
+            if( entry_name != null ) {
+                cachedEntry = zip.getEntry( entry_name );
+                if( cachedEntry != null ) 
+                    return zip.getInputStream( cachedEntry );
             }
         } catch( Throwable e ) {
             e.printStackTrace();
-        } finally {
-            try {
-                if( zf != null ) zf.close();
-            } catch( IOException e ) {}
         }
         return null;
+    }
+    @Override
+    public void closeStream( InputStream is ) {
+        if( zip != null ) {
+            try {
+                zip.close();
+            } catch( IOException e ) {
+                e.printStackTrace();
+            }
+            zip = null;
+        }
     }
 }

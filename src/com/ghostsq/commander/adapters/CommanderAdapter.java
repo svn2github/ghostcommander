@@ -110,12 +110,18 @@ public interface CommanderAdapter {
 	 */
 	public void openItem( int position );
 	
-	/**
-	 * @param position
-	 * @param full       - true - to return the absolute path, false - only the local name
-	 * @return string representation of the item
-	 */
-	public String getItemName( int position, boolean full );	
+    /**
+     * @param position
+     * @param full       - true - to return the absolute path, false - only the local name
+     * @return string representation of the item
+     */
+    public String getItemName( int position, boolean full );    
+
+    /**
+     * @param position
+     * @return full URI to access the item (with credentials if necessary)
+     */
+    public Uri getItemUri( int position );    
 
 	/**
 	 * @param  cis selected item (files or directories)
@@ -156,6 +162,12 @@ public interface CommanderAdapter {
      * @return        - the content of the file
      */
     public InputStream getContent( Uri fileURI );
+    
+    /**
+     * @param is - input stream obtained by the getContent() method to be closed  
+     */
+    public void closeStream( InputStream is );
+    
 
     /**
      * @param fileURI - the location of the file  
