@@ -68,7 +68,9 @@
         </activity>
         <activity 
             android:name=".PictureViewer"
-            android:label="@string/pictvw_label">
+            android:label="@string/pictvw_label"
+            android:configChanges="orientation|keyboardHidden"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <data android:mimeType="image/*" />

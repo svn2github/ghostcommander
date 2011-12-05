@@ -1,6 +1,7 @@
 package com.ghostsq.commander.adapters;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
@@ -118,6 +119,8 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected ReaderHandler readerHandler = new ReaderHandler();
    
     // the Init( c ) method to be called after the constructor   
+    protected CommanderAdapterBase() {
+    }
     protected CommanderAdapterBase( Context ctx_ ) {
         ctx = ctx_;
     }
@@ -128,6 +131,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
 
     @Override
 	public void Init( Commander c ) {
+        if( ctx == null ) ctx = c.getContext();
         parentWidth = 0;
         nameWidth = 0;
         sizeWidth = 0;
@@ -559,6 +563,12 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     }
     @Override
     public void closeStream( InputStream is ) {
+        try {
+            if( is != null )
+                is.close();
+        } catch( IOException e ) {
+            e.printStackTrace();
+        }
     }
     
     protected void reSort() {

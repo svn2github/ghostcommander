@@ -19,19 +19,19 @@ final public class CA {
     public static final String TAG = "CA";
     public static final int FS    = 0x00000001;
     public static final int FIND  = 0x00000002;
-    public static final int LOCAL = 0x00000003;
+    public static final int LOCAL = FS | FIND;
     public static final int HOME  = 0x00000010;
     public static final int FAVS  = 0x00000020;
-    public static final int NAV   = 0x00000030;
+    public static final int NAV   = FAVS | HOME;
     public static final int ZIP   = 0x00000100;
-    public static final int ARCH  = 0x00000F00;
+    public static final int ARCH  = ZIP;
     public static final int ROOT  = 0x00001000;
     public static final int MNT   = 0x00002000;
     public static final int APPS  = 0x00004000;
     public static final int FTP   = 0x00010000;
     public static final int SMB   = 0x00020000;
     public static final int GDOCS = 0x00040000;
-    public static final int NET   = 0x000F0000;
+    public static final int NET   = FTP | SMB | GDOCS;
     public static final int ALL   = 0xFFFFFFFF;
     public static final int REAL  = LOCAL | ARCH | ROOT | NET;
 

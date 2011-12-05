@@ -967,11 +967,9 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         }
         	
         
-        if( position == 0 ) {
+        if( position == 0 )
             flv.setItemChecked( 0, false ); // parent item never selected
-            list[current].setCurPos( 0 );
-        }
-        
+        list[current].setCurPos( position );
         if( disableAllActions ) {
             disableAllActions = false;
             disableOpenSelectOnly = false;
@@ -1290,6 +1288,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         return s;
     }
 	public void setState( State s ) {
+	    Log.v( TAG, "setState()" );
 	    if( s == null ) return;
     	resetQuickSearch();
         if( s.favs != null && s.favs.length() > 0 )

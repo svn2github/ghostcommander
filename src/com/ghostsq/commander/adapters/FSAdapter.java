@@ -4,11 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.SoftReference;
-import java.nio.CharBuffer;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
@@ -369,7 +367,7 @@ public class FSAdapter extends CommanderAdapterBase {
                                 int factor = greatest / thumb_sz;
                                 int b;
                                 for( b = 0x8000000; b > 0; b >>= 1 )
-                                    if( b < factor ) break;
+                                    if( b <= factor ) break;
                                 options.inSampleSize = b;
                             }
                             else                            
@@ -417,6 +415,8 @@ public class FSAdapter extends CommanderAdapterBase {
                         return true;
                     }
                 }
+                else
+                    Log.w( TAG, "failed to get an image bounds" );
                 fis.close();
                 Log.e( TAG, func_name + " failed for " + fn );
             } catch( RuntimeException rte ) {

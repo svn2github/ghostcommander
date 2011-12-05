@@ -188,7 +188,7 @@ public class ToolButton {
         switch( id ) {
         case  R.id.F1:           return  CA.ALL;
         case  R.id.F2:           return  CA.REAL | CA.FAVS;
-        case  R.id.F3:           return  CA.LOCAL | CA.ROOT | CA.ZIP | CA.FTP;
+        case  R.id.F3:           return  CA.REAL;
         case  R.id.F4:           return  CA.LOCAL | CA.FAVS;
         case  R.id.SF4:          return  CA.FS;
         case  R.id.F5:           return  CA.REAL;

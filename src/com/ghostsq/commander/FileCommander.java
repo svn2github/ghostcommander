@@ -50,7 +50,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     
     private ArrayList<Dialogs> dialogs;
     public  Panels  panels;
-    private boolean on = false, exit = false, dont_restore = false, sxs_auto = true, show_confirm = true, back_exits = false;
+    private boolean on = false, exit = false, dont_restore = false, view_processed = false, 
+                    sxs_auto = true, show_confirm = true, back_exits = false;
     private String  lang = ""; // just need to issue a warning on change
     private int     file_exist_resolution = Commander.UNKNOWN;
     private NotificationManager notMan = null;
@@ -97,7 +98,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         super.onCreate( savedInstanceState );
         
         requestWindowFeature( Window.FEATURE_NO_TITLE );
-        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
+        // TODO: show progress when there is no title
+//        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         dialogs = new ArrayList<Dialogs>( Dialogs.numDialogTypes );
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         back_exits = sharedPref.getBoolean( "exit_on_back", false );
@@ -128,13 +130,14 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             Intent intent = getIntent();
             String action = intent.getAction();
             Log.i( TAG, "Action: " + action );
-            if( Intent.ACTION_VIEW.equals( action ) ) {
+            if( !view_processed && Intent.ACTION_VIEW.equals( action ) ) {
                 Uri uri = intent.getData();
                 if( "application/x-zip-compressed".equals( intent.getType() ) ||
                                  "application/zip".equals( intent.getType() ) )
                     uri = uri.buildUpon().scheme( "zip" ).build();
                 panels.Navigate( 0, uri, null );
                 panels.setPanelCurrent( 0 );
+                view_processed = true;
             }
             
             final String FT = "first_time";
@@ -733,10 +736,16 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     
     @Override
     public void showError( String errMsg ) {
-        if( !on ) return;
-        Dialogs dh = obtainDialogsInstance( Dialogs.ALERT_DIALOG );
-        dh.setMessageToBeShown( errMsg, null );
-        dh.showDialog();
+        try {
+            if( !on ) return;
+            Dialogs dh = obtainDialogsInstance( Dialogs.ALERT_DIALOG );
+            dh.setMessageToBeShown( errMsg, null );
+            dh.showDialog();
+            return;
+        } catch( Exception e ) {
+            e.printStackTrace();
+        }
+        showMessage( errMsg );
     }
 
     @Override
