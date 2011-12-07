@@ -15,6 +15,7 @@ import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.net.Uri;
 import android.preference.PreferenceManager;
@@ -322,7 +323,24 @@ public final class Utils {
         return result.toString();
     }
 
-    public final static Drawable getGradient( int height, int color ) {
+    public final static Drawable getShader( int color ) {
+        try {
+            float[] hsv = new float[3];
+            Color.colorToHSV( color, hsv );
+            hsv[2] *= 0.6;
+
+            int[] cc = new int[2];
+            cc[0] = color;
+            cc[1] = Color.HSVToColor( hsv );
+            return new GradientDrawable( GradientDrawable.Orientation.TOP_BOTTOM, cc );
+        }
+        catch( Throwable e ) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    public final static Drawable getGradient_( int height, int color ) {
         
         try {
             ShapeDrawable sd = new ShapeDrawable();

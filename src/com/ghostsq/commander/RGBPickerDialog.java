@@ -7,23 +7,32 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 
 public class RGBPickerDialog extends AlertDialog implements DialogInterface.OnClickListener,
-                                                            SeekBar.OnSeekBarChangeListener {
+        OnCheckedChangeListener, SeekBar.OnSeekBarChangeListener {
     private final static String TAG = "RGB";
     public interface ColorChangeListener {
         void colorChanged(int color);
     }
 
     private ColorChangeListener colorChangeListener;
-    private int curColor;
+    private int curColor, defColor;
+    private CheckBox dccb;
+    private View    sliders;
+    private SeekBar r_seek;
+    private SeekBar g_seek;
+    private SeekBar b_seek;
     private View preview;
 
-    RGBPickerDialog( Context context, ColorChangeListener listener, int color ) {
+    RGBPickerDialog( Context context, ColorChangeListener listener, int color, int def_color ) {
         super(context);
         colorChangeListener = listener;
         curColor = color;
+        defColor = def_color;
         Context c = getContext();
         setTitle( c.getString( R.string.pick_color ) );
         LayoutInflater factory = LayoutInflater.from( c );
@@ -35,9 +44,11 @@ public class RGBPickerDialog extends AlertDialog implements DialogInterface.OnCl
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SeekBar r_seek = (SeekBar)findViewById( R.id.r_seek );
-        SeekBar g_seek = (SeekBar)findViewById( R.id.g_seek );
-        SeekBar b_seek = (SeekBar)findViewById( R.id.b_seek );
+        sliders = findViewById( R.id.rgb_sliders ); 
+        r_seek = (SeekBar)findViewById( R.id.r_seek );
+        r_seek = (SeekBar)findViewById( R.id.r_seek );
+        g_seek = (SeekBar)findViewById( R.id.g_seek );
+        b_seek = (SeekBar)findViewById( R.id.b_seek );
         if( r_seek != null ) {
             r_seek.setOnSeekBarChangeListener( this );
             r_seek.setProgress( Color.red( curColor ) );
@@ -53,8 +64,35 @@ public class RGBPickerDialog extends AlertDialog implements DialogInterface.OnCl
         preview = findViewById(R.id.preview);
         if( preview != null )
             preview.setBackgroundColor( curColor );
+
+        if( defColor != 0 ) {
+            View dcv = findViewById( R.id.default_color );
+            if( dcv != null ) {
+                dcv.setVisibility( View.VISIBLE );
+                dccb = (CheckBox)dcv;
+                dccb.setOnCheckedChangeListener( this );
+                dccb.setChecked( curColor == 0 );
+            }
+        }
     }
     
+    @Override
+    public void onCheckedChanged( CompoundButton buttonView, boolean isChecked ) {
+        if( isChecked ) {
+            curColor = 0;
+            sliders.setVisibility( View.GONE );
+        } else {
+            if( curColor == 0 ) {
+                curColor = defColor;
+                r_seek.setProgress( Color.red( curColor ) );
+                g_seek.setProgress( Color.green( curColor ) );
+                b_seek.setProgress( Color.blue( curColor ) );
+            }
+            preview.setBackgroundColor( curColor );
+            sliders.setVisibility( View.VISIBLE );
+        }
+    }
+
     // SeekBar.OnSeekBarChangeListener methods
     @Override 
     public void onProgressChanged( SeekBar seekBar, int progress, boolean fromUser ) {
@@ -71,20 +109,17 @@ public class RGBPickerDialog extends AlertDialog implements DialogInterface.OnCl
             curColor = Color.rgb( Color.red( curColor ), Color.green( curColor ), progress );
             break;
         }
-        if( preview != null )
-            preview.setBackgroundColor( curColor );
+        preview.setBackgroundColor( curColor );
     }
 
     @Override
     public void onStartTrackingTouch( SeekBar seekBar ) {
         // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void onStopTrackingTouch( SeekBar seekBar ) {
         // TODO Auto-generated method stub
-        
     }
     
     @Override // DialogInterface.OnClickListener

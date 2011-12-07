@@ -2,4 +2,9 @@
 <resources>
      <color name="black">#000</color>
      <color name="darkGray">#222</color>
+
+     <color name="amber">#F84</color>
+     <color name="blood">#C65</color>
+     <color name="blue">#44F</color>
+         
 </resources>

@@ -99,6 +99,7 @@
     <string name="fail"> FAILED </string>
     <string name="failed">Error:\n</string>
     <string name="default_uri_cmnt">Default location</string>
+    <string name="default_color">Default</string>
     <string name="fav_comment">Comment</string>
     <string name="fav_dialog">Edit Favorite</string>  
 
@@ -329,9 +330,11 @@ copied >5 will produce:
     <string name="bgr_color_picker">Background color</string>
     <string name="summary_bgr_color_picker">Choose a desired color for the background</string>
     <string name="fgr_color_picker">Foreground color</string>
-    <string name="summary_fgr_color_picker">Choose a desired color for the file names</string>
+    <string name="summary_fgr_color_picker">Choose a color for the file names and attributes</string>
+    <string name="cur_color_picker">Focused color</string>
+    <string name="summary_cur_color_picker">Choose a color for current focused item</string>
     <string name="sel_color_picker">Selected color</string>
-    <string name="summary_sel_color_picker">Choose a desired color for selected files and the panel\'s title</string>
+    <string name="summary_sel_color_picker">Choose a color for selected files and the panel\'s title</string>
     <string name="ttl_color_picker">Title color</string>
     <string name="summary_ttl_color_picker">Panel title background color</string>
     <string name="pick_color">Set color</string>

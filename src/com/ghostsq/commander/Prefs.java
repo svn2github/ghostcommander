@@ -17,6 +17,7 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
     public static final String BGR_COLORS = "bgr_color_picker"; 
     public static final String FGR_COLORS = "fgr_color_picker"; 
     public static final String SEL_COLORS = "sel_color_picker"; 
+    public static final String CUR_COLORS = "cur_color_picker";
     public static final String TTL_COLORS = "ttl_color_picker";
     public static final String TOOLBUTTONS = "toolbar_preference";
     private SharedPreferences color_pref = null;
@@ -37,6 +38,9 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
         if( color_picker_pref != null )
             color_picker_pref.setOnPreferenceClickListener( this );
         color_picker_pref = (Preference)findPreference( SEL_COLORS );
+        if( color_picker_pref != null )
+            color_picker_pref.setOnPreferenceClickListener( this );
+        color_picker_pref = (Preference)findPreference( CUR_COLORS );
         if( color_picker_pref != null )
             color_picker_pref.setOnPreferenceClickListener( this );
         color_picker_pref = (Preference)findPreference( TTL_COLORS );
@@ -62,7 +66,8 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
             else {
                 color_pref = getSharedPreferences( COLORS_PREFS, Activity.MODE_PRIVATE );
                 int color = color_pref.getInt( color_pref_key, getDefaultColor( color_pref_key ) );
-                new RGBPickerDialog( this, this, color ).show();
+                new RGBPickerDialog( this, this, color, 
+                        color_pref_key.equals( CUR_COLORS ) ? 0xFFFFC300 : 0 ).show();
             }
             return true;
         } catch( Exception e ) {
@@ -85,6 +90,7 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
         if( key.equals( BGR_COLORS ) ) return 0xFF191919;
         if( key.equals( FGR_COLORS ) ) return 0xFFF0F0F0;
         if( key.equals( SEL_COLORS ) ) return 0xFF4169E1;
+        if( key.equals( CUR_COLORS ) ) return 0x00000000;   // system
         if( key.equals( TTL_COLORS ) ) return 0xFF555555;
         return 0;
     }

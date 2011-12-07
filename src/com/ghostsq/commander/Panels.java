@@ -72,7 +72,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public  PanelsView  panelsView = null;
     private int titleColor = Prefs.getDefaultColor( Prefs.TTL_COLORS ), 
                   fgrColor = Prefs.getDefaultColor( Prefs.FGR_COLORS ),
-                  selColor = Prefs.getDefaultColor( Prefs.SEL_COLORS );
+                  selColor = Prefs.getDefaultColor( Prefs.SEL_COLORS ),
+                  curColor = Prefs.getDefaultColor( Prefs.CUR_COLORS );
     private boolean warnOnRoot = true, rootOnRoot = false, arrowsLegacy = false, toolbarShown = false;
     private boolean disableOpenSelectOnly = false, disableAllActions = false;
     private float downX = 0, downY = 0;
@@ -172,6 +173,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                     int bid = tb.getId();
                     if( tb.isVisible() && ( adapter_bit & tb.getSuitableAdapter() ) != 0 ) {
                         Button b = new Button( c, null, android.R.attr.buttonStyleSmall );
+                        b.setId( bid );
                         if( android.os.Build.VERSION.SDK_INT >= 9 ) {
                             b.setBackgroundResource( R.drawable.tool_button );
                             b.setTextColor( 0xFFFFFFFF );
@@ -180,7 +182,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                             lllp.rightMargin = 4;
                             b.setLayoutParams( lllp );
                         }
-                        b.setId( bid );
+                        b.setFocusable( false );
                         String caption = "";
                         if( keyboard ) {
                             char ch = tb.getBoundKey();
@@ -265,7 +267,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         if( title_bar != null ) {
             int h = title_bar.getHeight();
             if( h == 0 ) h = 30;
-            Drawable d = Utils.getGradient( h, titleColor );
+            Drawable d = Utils.getShader( titleColor );
             if( d != null )
                 title_bar.setBackgroundDrawable( d );
             else
@@ -280,7 +282,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             if( on ) {
                 int h = title.getHeight();
                 if( h == 0 ) h = 30;
-                Drawable d = Utils.getGradient( h, selColor );
+                Drawable d = Utils.getShader( selColor );
                 if( d != null )
                     title.setBackgroundDrawable( d );
                 else
@@ -345,8 +347,9 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             selColor = Prefs.getDefaultColor( Prefs.SEL_COLORS );
           titleColor = Prefs.getDefaultColor( Prefs.TTL_COLORS );
         if( color_pref != null ) {
-            bg_color = color_pref.getInt( Prefs.BGR_COLORS, bg_color );
+            bg_color = color_pref.getInt( Prefs.BGR_COLORS,  bg_color );
             fgrColor = color_pref.getInt( Prefs.FGR_COLORS,  fgrColor );
+            curColor = color_pref.getInt( Prefs.CUR_COLORS,  curColor );
             selColor = color_pref.getInt( Prefs.SEL_COLORS,  selColor );
           titleColor = color_pref.getInt( Prefs.TTL_COLORS,titleColor );
         }
@@ -355,8 +358,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             if( div != null)
                 div.setBackgroundColor( titleColor );
         }
-        list[LEFT].applyColors( bg_color, fgrColor, selColor );
-        list[RIGHT].applyColors( bg_color, fgrColor, selColor );
+         list[LEFT].applyColors( bg_color, fgrColor, selColor, curColor );
+        list[RIGHT].applyColors( bg_color, fgrColor, selColor, curColor );
         highlightCurrentTitle();
     }
     public final void applySettings( SharedPreferences sharedPref, boolean init ) {

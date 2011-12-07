@@ -2,12 +2,12 @@ package com.ghostsq.commander;
 
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
-import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.adapters.FavsAdapter;
 import com.ghostsq.commander.adapters.HomeAdapter;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -106,10 +106,16 @@ public class ListHelper {
         flv.requestFocusFromTouch();
     }
 
-    public final void applyColors( int bg_color, int fgrColor, int selColor ) {
+    public final void applyColors( int bg_color, int fgrColor, int selColor, int curColor ) {
         if( flv == null ) return;
         flv.setBackgroundColor( bg_color );
         flv.setCacheColorHint( bg_color );
+        if( curColor != 0 ) {
+            Drawable d = Utils.getShader( curColor );
+            if( d != null )
+                flv.setSelector( d );
+        }
+        
         CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
         if( ca != null ) {
             ca.setMode( CommanderAdapter.SET_TXT_COLOR, fgrColor );
