@@ -115,8 +115,8 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     };    
 
     protected Engine  reader = null, worker = null;
-    protected WorkerHandler workerHandler = new WorkerHandler();
-    protected ReaderHandler readerHandler = new ReaderHandler();
+    protected WorkerHandler workerHandler = null;
+    protected ReaderHandler readerHandler = null;
    
     // the Init( c ) method to be called after the constructor   
     protected CommanderAdapterBase() {
@@ -131,14 +131,19 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
 
     @Override
 	public void Init( Commander c ) {
-        if( ctx == null ) ctx = c.getContext();
+        if( c != null ) {
+            commander = c;
+            workerHandler = new WorkerHandler();
+            readerHandler = new ReaderHandler();
+            if( ctx == null ) ctx = c.getContext();
+        }
+        
         parentWidth = 0;
         nameWidth = 0;
         sizeWidth = 0;
         dateWidth = 0;
         attrWidth = 0;
         parentLink = SLS;       
-    	commander = c;
     	mInflater = (LayoutInflater)ctx.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
     	Utils.changeLanguage( ctx );
     	localeDateFormat = DateFormat.getDateFormat( ctx );

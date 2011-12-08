@@ -93,7 +93,6 @@ public class PictureViewer extends Activity {
         
         @Override
         protected Bitmap doInBackground( Uri... uu ) {
-            Looper.prepare();
             Uri u = null;
             try {
                 buf = new byte[16*1024];
@@ -109,6 +108,7 @@ public class PictureViewer extends Activity {
                             ByteArrayOutputStream baos = null;
                             for( int sz = 5242880; sz > 81920; sz >>= 1 ) {
                                 try {
+                                    Log.v( "readStreamToBuffer", "Reserving byte stream as big as " + sz );
                                     baos = new ByteArrayOutputStream( sz );
                                     if( baos != null ) break;
                                 }
@@ -168,8 +168,8 @@ public class PictureViewer extends Activity {
                     if( options.outWidth > 0 && options.outHeight > 0 ) {
                         int factor = by_height ? options.outHeight / height : options.outWidth / width;
                         int b;
-                        for( b = 1; b < 0x8000000; b <<= 1 )
-                            if( b >= factor ) break;
+                        for( b = 0x8000000; b > 1; b >>= 1 )
+                            if( b <= factor ) break;
                         if( itsLowMemory && !local && b > 1 )
                             b <<= 1;    // is it better show a smaller picture then crash on out of memory?
                         Log.v( TAG, "aligned factor=" + b );
@@ -200,6 +200,7 @@ public class PictureViewer extends Activity {
         @Override
         protected void onPostExecute( Bitmap bmp ) {
             dialog.cancel();
+            dialog = null;
             if( bmp == null ) {
                 Toast.makeText( ctx, msg != null ? msg : ctx.getString( R.string.error ), 
                        Toast.LENGTH_LONG ).show();

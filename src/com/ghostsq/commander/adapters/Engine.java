@@ -52,6 +52,7 @@ public class Engine extends Thread {
     }
     protected final void sendProgress( String s, int p1, int p2 ) {
         //Log.v( TAG, "sendProgress: " + s );
+        if( thread_handler == null ) return;
         Message msg = thread_handler.obtainMessage();
         Bundle b = new Bundle();
         b.putInt( CommanderAdapterBase.NOTIFY_PRG1, p1 );
@@ -63,7 +64,8 @@ public class Engine extends Thread {
         thread_handler.sendMessage( msg );
     }
     protected final void sendProgress( String s, int p, String cookie ) {
-        Log.v( TAG, "sendProgress: " + s + ", cookie: " + cookie );
+        if( thread_handler == null ) return;
+        //Log.v( TAG, "sendProgress: " + s + ", cookie: " + cookie );
         Message msg = thread_handler.obtainMessage();
         Bundle b = new Bundle();
         b.putInt( CommanderAdapterBase.NOTIFY_PRG1, p );
@@ -74,6 +76,7 @@ public class Engine extends Thread {
         thread_handler.sendMessage( msg );
     }
     protected final void sendReceiveReq( int rcpt_hash, String[] items ) {
+        if( thread_handler == null ) return;
         Message msg = thread_handler.obtainMessage();
         Bundle b = new Bundle();
         b.putInt( CommanderAdapterBase.NOTIFY_RECEIVER_HASH, rcpt_hash );
