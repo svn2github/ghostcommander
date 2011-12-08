@@ -28,6 +28,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.net.UrlQuerySanitizer;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -174,7 +175,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                     if( tb.isVisible() && ( adapter_bit & tb.getSuitableAdapter() ) != 0 ) {
                         Button b = new Button( c, null, android.R.attr.buttonStyleSmall );
                         b.setId( bid );
-                        if( android.os.Build.VERSION.SDK_INT >= 9 ) {
+                        final int GINGERBREAD = 9;
+                        if( android.os.Build.VERSION.SDK_INT >= GINGERBREAD ) {
                             b.setBackgroundResource( R.drawable.tool_button );
                             b.setTextColor( 0xFFFFFFFF );
                             LinearLayout.LayoutParams lllp = new LinearLayout.LayoutParams( 

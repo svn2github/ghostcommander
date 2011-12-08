@@ -162,9 +162,9 @@ public class ToolButton {
         switch( id_ ) {
         case  R.id.F1:           return  true;
         case  R.id.F2:           return  true;
-        case  R.id.F3:           return  false;
+        case  R.id.F3:           return  true;
         case  R.id.F4:           return  true;
-        case  R.id.SF4:          return  true;
+        case  R.id.SF4:          return  false;
         case  R.id.F5:           return  true;
         case  R.id.F6:           return  true;
         case  R.id.F7:           return  true;

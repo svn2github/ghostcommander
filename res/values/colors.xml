@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-     <color name="black">#000</color>
-     <color name="darkGray">#222</color>
+    <color name="black">#000</color>
+    <color name="darkGray">#222</color>
 
-     <color name="amber">#F84</color>
-     <color name="blood">#C65</color>
-     <color name="blue">#44F</color>
-         
+    <color name="amber">#F84</color>
+    <color name="blood">#C65</color>
+    <color name="blue">#44F</color>
+
+    <color name="bgr_def">#FF191919</color>    
+    <color name="fgr_def">#FFF0F0F0</color>    
+	<color name="sel_def">#FF4169E1</color>    
+	<color name="cur_def">#FFFFC300</color>    
+	<color name="ttl_def">#FF555555</color>    
 </resources>

@@ -279,7 +279,7 @@ public final class Utils {
                     if( available_supported ) {
                         for( int i = 0; i < 10; i++ ) {
                             if( is.available() > 0 ) break;
-                            Log.v( "readStreamToBuffer", "Waiting the rest " + i );
+                            //Log.v( "readStreamToBuffer", "Waiting the rest " + i );
                             Thread.sleep( 20 );
                         }
                         if( is.available() == 0 ) {
