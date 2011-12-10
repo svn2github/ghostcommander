@@ -26,7 +26,9 @@ import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 
@@ -38,8 +40,8 @@ public class FTPAdapter extends CommanderAdapterBase {
     public  Uri uri = null;
     public  LsItem[] items = null;
     private Timer  heartBeat;
+    public    boolean noHeartBeats = false;
     public  FTPCredentials theUserPass = null;
-    private ContentEngine contentEngine;
 
     public FTPAdapter( Context ctx_ ) {
         super( ctx_ );
@@ -58,7 +60,7 @@ public class FTPAdapter extends CommanderAdapterBase {
     class Noop extends TimerTask {
 		@Override
 		public void run() {
-			if( reader == null && worker == null && ftp.isLoggedIn() )
+			if( !noHeartBeats && reader == null && worker == null && ftp.isLoggedIn() )
 				synchronized( ftp ) {
 					try {
                         ftp.heartBeat();
@@ -125,27 +127,27 @@ public class FTPAdapter extends CommanderAdapterBase {
         return false;
     }
  
-    public final static int WAS_IN = 1;
-    public final static int LOGGED_IN = 2;
-    public final static int NO_CONNECT = -1;
-    public final static int NO_LOGIN = -2;
+    public final static int WAS_IN      =  1;
+    public final static int LOGGED_IN   =  2;
+    public final static int NO_CONNECT  = -1;
+    public final static int NO_LOGIN    = -2;
     
-    public final int connectAndLogin() 
+    public final int connectAndLogin( Uri u ) 
                       throws UnknownHostException, IOException, InterruptedException {
         if( ftp.isLoggedIn() ) {
-            String path = uri.getPath();
+            String path = u.getPath();
             if( path != null )
                 ftp.setCurrentDir( path );
             return WAS_IN;
         }
-        int port = uri.getPort();
+        int port = u.getPort();
         if( port == -1 ) port = 21;
-        String host = uri.getHost();
+        String host = u.getHost();
         if( ftp.connect( host, port ) ) {
             if( theUserPass == null || theUserPass.isNotSet() )
-                theUserPass = new FTPCredentials( uri.getUserInfo() );
+                theUserPass = new FTPCredentials( u.getUserInfo() );
             if( ftp.login( theUserPass.getUserName(), theUserPass.getPassword() ) ) {
-                String path = uri.getPath();
+                String path = u.getPath();
                 if( path != null )
                     ftp.setCurrentDir( path );
                 return LOGGED_IN;
@@ -188,7 +190,7 @@ public class FTPAdapter extends CommanderAdapterBase {
 	                    ftp.disconnect();
 	                }
 	                
-	                int cl_res = connectAndLogin();
+	                int cl_res = connectAndLogin( uri );
                     if( cl_res < 0 ) {
                         if( cl_res == NO_LOGIN ) 
                             sendProgress( uri.toString(), Commander.OPERATION_FAILED_LOGIN_REQUIRED );
@@ -625,7 +627,7 @@ public class FTPAdapter extends CommanderAdapterBase {
     @Override
     public boolean receiveItems( String[] uris, int move_mode ) {
     	try {
-    		if( connectAndLogin() < 0 ) {
+    		if( connectAndLogin( uri ) < 0 ) {
     		    commander.notifyMe( new Commander.Notify( s( R.string.ftp_nologin ), Commander.OPERATION_FAILED ) );
     		    return false;
     		}
@@ -857,94 +859,30 @@ public class FTPAdapter extends CommanderAdapterBase {
         Arrays.sort( items, comp );
     }
 
-    class ContentEngine extends Thread {
-        private Uri u;
-        private InputStream is = null;
-        private boolean open_done = false;
-        private boolean may_close = false;
-        
-        ContentEngine( Uri u_ ) {
-            u = u_;
-        }
-        @Override
-        public void run() {
-            try {
-                if( connectAndLogin() > 0 ) {
-                    PipedOutputStream pos = new PipedOutputStream();
-                    is = new PipedInputStream( pos );
-                    synchronized( this ) {
-                        open_done = true;
-                    }
-                    Log.v( TAG, "BEFORE retrieve" );
-                    ftp.retrieve( u.getPath(), pos, null );
-                    Log.v( TAG, "AFTER retrieve" );
-                }
-                for( int i = 0; i < 10; i++ ) {
-                    synchronized( this ) {
-                        if( may_close ) break;
-                        wait( 500 );
-                    }
-                }
-                ftp.disconnect();
-            }
-            catch( Exception e ) {
-                Log.e( TAG, null, e );
-            }
-            finally {
-                try {
-                    if( is != null ) is.close();
-                } catch( IOException e ) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        
-        public synchronized InputStream getResult() {
-            try {
-                for( int i = 0; i < 50; i++ ) {
-                    if( open_done )
-                        break;
-                    wait( 100 ); 
-                }
-            } catch( InterruptedException e ) {}
-            return is;
-        }
-        public synchronized void close() {
-            may_close = true;
-            notify();
-        }
-    }    
-
     @Override
     public InputStream getContent( Uri u ) {
-        Uri uri_ = null;
         try {
             if( uri != null && !uri.getHost().equals( u.getHost() ) )
                 return null;
-            uri_ = uri;
-            uri = u;    // connectAndLogin() works with uri as a data member
-            contentEngine = new ContentEngine( u );
-            contentEngine.start();
-            InputStream is = contentEngine.getResult();
-            if( is == null ) 
-                contentEngine.close();
-            Thread.sleep( 1000 );
-            return is;
-            
-        } catch( Throwable e ) {
-            e.printStackTrace();
-        } finally {
-            if( uri_ != null )
-                uri = uri_;
+            synchronized( ftp ) {
+                if( connectAndLogin( u ) > 0 ) {
+                    noHeartBeats = true;
+                    return ftp.prepRetr( u.getPath() );
+                }
+            }
+        } catch( Exception e ) {
+            Log.e( TAG, u.getPath(), e );
         }
         return null;
     }
     @Override
     public void closeStream( InputStream is ) {
-        if( contentEngine != null ) {
-            contentEngine.close();
-            contentEngine = null;
+        try {
+            noHeartBeats = false;
+            if( is != null )
+                is.close();
+        } catch( IOException e ) {
+            e.printStackTrace();
         }
     }
-
 }

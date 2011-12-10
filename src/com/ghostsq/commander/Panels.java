@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.FSAdapter;
+import com.ghostsq.commander.adapters.FTPAdapter;
 import com.ghostsq.commander.adapters.FavsAdapter;
 import com.ghostsq.commander.adapters.ZipAdapter;
 import com.ghostsq.commander.favorites.Favorite;

@@ -68,6 +68,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     }
     
     protected class ReaderHandler extends Handler {
+        @Override
         public void handleMessage( Message msg ) {
             try {
                 Bundle b = msg.getData();
@@ -87,6 +88,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     };    
 
     protected class WorkerHandler extends Handler {
+        @Override
         public void handleMessage( Message msg ) {
             try {
                 Bundle b = msg.getData();

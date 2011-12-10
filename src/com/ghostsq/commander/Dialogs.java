@@ -371,7 +371,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 }
             }
         } catch( Exception e ) {
-            Log.e( TAG, "prepareDialog()", e );
+            Log.e( TAG, null, e );
         }
     }
 
@@ -386,6 +386,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
             }
             ProgressBar p_bar = (ProgressBar)dialogObj.findViewById( R.id.progress_bar );
             TextView perc_t = (TextView)dialogObj.findViewById( R.id.percent );
+
             if( progress >= 0 )
                 p_bar.setProgress( progress );
             if( progressSec >= 0 )
@@ -394,7 +395,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 perc_t.setText( "" + ( progressSec > 0 ? progressSec : progress ) + "%" );
             }
         } catch( ClassCastException e ) {
-            owner.showMessage( "ClassCastException: " + e );
+            Log.e( TAG, null, e );
         }
     }
 

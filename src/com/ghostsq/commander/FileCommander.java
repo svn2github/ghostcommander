@@ -623,7 +623,6 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         Dialogs dh = getDialogsInstance( Dialogs.PROGRESS_DIALOG );
         
         if( progress.status >= 0 ) {
-            //dh = obtainDialogsInstance( Dialogs.PROGRESS_DIALOG );
             if( on ) {
                 if( dh != null ) {
                     Dialog d = dh.getDialog();

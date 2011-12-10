@@ -402,21 +402,27 @@ public class FTP {
         }
         return false;
     }
-    public final boolean retrieve( String fn, OutputStream out, FTP.ProgressSink report_to ) throws InterruptedException {
+    public final InputStream prepRetr( String fn ) throws InterruptedException {
     	dataSocket = null;
-    	InputStream in = null;
         try {
         	if( !isLoggedIn() )
-        		return false;
+        		return null;
         	executeCommand( "TYPE I" );
         	dataSocket = executeDataCommand( "RETR " + fn );
-            if( dataSocket == null )
-            	return false;
-            in = dataSocket.getInputStream();
-            if( in == null ) {
-                debugPrint( "data socket does not give up the input stream to download a file" );
-                return false;
-            }
+            if( dataSocket != null )
+                return dataSocket.getInputStream();
+        }
+        catch( IOException e ) {
+            debugPrint( e.getLocalizedMessage() );
+        }
+        cleanUpDataCommand( dataSocket != null );
+        return null;
+    }
+    public final boolean retrieve( String fn, OutputStream out, FTP.ProgressSink report_to ) throws InterruptedException {
+        InputStream in = prepRetr( fn );
+        if( in == null )
+            return false;
+        try {
             byte buf[] = new byte[BLOCK_SIZE];
             int  n = 0;
             long done = 0;
@@ -425,11 +431,12 @@ public class FTP {
         		Log.v( TAG, "FTP has read " + n + "bytes" );
         		if( n < 0 ) break;
         		out.write( buf, 0, n );
-        		if( report_to != null )
+        		if( report_to != null ) {
         			if( !report_to.completed( done += n ) ) {
         			    executeCommand( "ABOR" );
         				return false;
         			}
+        		}
         	}
         	return true;
         }

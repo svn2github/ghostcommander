@@ -1,42 +1,34 @@
 package com.ghostsq.commander;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.ContentUris;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Looper;
-import android.provider.BaseColumns;
-import android.provider.MediaStore;
-import android.provider.MediaStore.Images.Media;
-import android.provider.MediaStore.Images.Thumbnails;
 import android.util.Log;
 import android.view.Display;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.lang.ref.SoftReference;
 
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
-import com.ghostsq.commander.utils.Utils;
 
 public class PictureViewer extends Activity {
     private final static String TAG = "PictureViewerActivity";
     public  ImageView image_view;
-    
+    public  Dialog dialogObj; 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         Log.v( TAG, "onCreate" );
@@ -64,8 +56,6 @@ public class PictureViewer extends Activity {
         super.onStart();
         Uri u = getIntent().getData();
         if( u == null ) return;
-        String path = u.getPath();
-        if( path == null ) return;
         new Loader( this ).execute( u );
     }
 
@@ -74,10 +64,44 @@ public class PictureViewer extends Activity {
         super.onStop();
     }
     
-    
-    private class Loader extends AsyncTask<Uri, Void, Bitmap> {
+    @Override
+    protected Dialog onCreateDialog( int id ) {
+        LayoutInflater factory = LayoutInflater.from( this );
+        final View progressView = factory.inflate( R.layout.progress, null );
+        super.onCreateDialog( id );
+        return dialogObj = new AlertDialog.Builder( this )
+            .setView( progressView )
+            .setTitle( R.string.progress )
+            .setCancelable( false )
+            .create();
+    }
+    public void setProgress( String string, int progress, int progressSec ) {
+        if( dialogObj == null )
+            return;
+        try {
+            if( string != null ) {
+                TextView t = (TextView)dialogObj.findViewById( R.id.text );
+                if( t != null )
+                    t.setText( string );
+            }
+            ProgressBar p_bar = (ProgressBar)dialogObj.findViewById( R.id.progress_bar );
+            TextView perc_t = (TextView)dialogObj.findViewById( R.id.percent );
+
+            if( progress >= 0 )
+                p_bar.setProgress( progress );
+            if( progressSec >= 0 )
+                p_bar.setSecondaryProgress( progressSec );
+            if( perc_t != null ) {
+                perc_t.setText( "" + ( progressSec > 0 ? progressSec : progress ) + "%" );
+            }
+            Thread.sleep( 100 );
+        } catch( Exception e ) {
+            Log.e( TAG, null, e );
+        }
+    }
+
+    private class Loader extends AsyncTask<Uri, Integer, Bitmap> {
         private Context ctx;
-        private ProgressDialog dialog;
         private CommanderAdapter ca;
         private byte[] buf;
         private boolean itsLowMemory;
@@ -87,15 +111,16 @@ public class PictureViewer extends Activity {
             ctx = ctx_;
         }
         
-        protected void onPreExecute(){
-            dialog = ProgressDialog.show( ctx, "", "Loading...", true, true );
+        protected void onPreExecute() {
+            PictureViewer.this.showDialog( 1 );
         }
         
         @Override
         protected Bitmap doInBackground( Uri... uu ) {
             Uri u = null;
             try {
-                buf = new byte[16*1024];
+                final int BUF_SIZE = 16*1024; 
+                buf = new byte[BUF_SIZE];
                 u = uu[0];
                 String schema = u.getScheme();
                 ca = CA.CreateAdapterInstance( CA.GetAdapterTypeId( schema ), ctx );            
@@ -105,7 +130,9 @@ public class PictureViewer extends Activity {
                     if( !local ) {   // let's try to pre-cache
                         try {
                             InputStream is = ca.getContent( u );
-                            ByteArrayOutputStream baos = null;
+                            if( is == null ) return null;
+                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                            /*
                             for( int sz = 5242880; sz > 81920; sz >>= 1 ) {
                                 try {
                                     Log.v( "readStreamToBuffer", "Reserving byte stream as big as " + sz );
@@ -117,15 +144,19 @@ public class PictureViewer extends Activity {
                                 }
                                 itsLowMemory = true;
                             }
+                            */
                             if( baos != null ) {
-                                int n;
-                                boolean available_supported = is.available() > 0;
+                                int n, tot = 0;
+                                boolean available_supported = false && is.available() > 0;
                                 while( ( n = is.read( buf, 0, buf.length ) ) != -1 ) {
+                                    publishProgress( tot += n );
+                                    //Log.v( "readStreamToBuffer", "Read " + n + " bytes" );
+                                    Thread.sleep( 1 );
                                     baos.write( buf, 0, n );
                                     if( available_supported ) {
                                         for( int i = 0; i < 10; i++ ) {
                                             if( is.available() > 0 ) break;
-                                            //Log.v( "readStreamToBuffer", "Waiting the rest " + i );
+                                            Log.v( "readStreamToBuffer", "Waiting the rest " + i );
                                             Thread.sleep( 20 );
                                         }
                                         if( is.available() == 0 ) {
@@ -196,11 +227,16 @@ public class PictureViewer extends Activity {
             }
             return null;
         }
-         
+        
+        @Override
+        protected void onProgressUpdate( Integer... v ) {
+            PictureViewer.this.setProgress( "test", v[0] / 45000, -1 );
+       }
+        
         @Override
         protected void onPostExecute( Bitmap bmp ) {
-            dialog.cancel();
-            dialog = null;
+            dialogObj.cancel();
+            dialogObj = null;
             if( bmp == null ) {
                 Toast.makeText( ctx, msg != null ? msg : ctx.getString( R.string.error ), 
                        Toast.LENGTH_LONG ).show();
