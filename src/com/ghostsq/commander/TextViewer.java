@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,7 +23,7 @@ import java.io.InputStream;
 public class TextViewer extends Activity {
     private final static String TAG = "TextViewerActivity";
     private final static String SP_ENC = "encoding";
-    final static int MENU_END = 1, MENU_TOP = 2, MENU_ENC = 3;
+    final static int MENU_BOT = 595, MENU_TOP = 590, MENU_ENC = 363;
     private ScrollView scrollView;
     private Uri uri;
     public  String encoding;
@@ -30,8 +31,15 @@ public class TextViewer extends Activity {
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
+        boolean ct_enabled = requestWindowFeature( Window.FEATURE_CUSTOM_TITLE );
         setContentView( R.layout.textvw );
-        scrollView = (ScrollView)findViewById( R.id.scroll_view ); 
+        if( ct_enabled ) {
+            getWindow().setFeatureInt( Window.FEATURE_CUSTOM_TITLE, R.layout.atitle );
+            TextView act_name_tv = (TextView)findViewById( R.id.act_name );
+            if( act_name_tv != null )
+                act_name_tv.setText( R.string.textvw_label );
+        }
+        scrollView = (ScrollView)findViewById( R.id.scroll_view );
     }
 
     @Override
@@ -43,6 +51,10 @@ public class TextViewer extends Activity {
         uri = getIntent().getData();
         if( !loadData() )
             finish();
+        TextView file_name_tv = (TextView)findViewById( R.id.file_name );
+        if( file_name_tv!= null )
+            file_name_tv.setText( " - " + uri.getPath() );
+        
     }
 
     @Override
@@ -69,16 +81,17 @@ public class TextViewer extends Activity {
     }
     
     @Override
-    public boolean onCreateOptionsMenu( Menu menu ) {
-        menu.add( Menu.NONE, MENU_TOP, Menu.NONE, getString( R.string.go_top   ) ).setIcon(android.R.drawable.ic_media_previous );
-        menu.add( Menu.NONE, MENU_END, Menu.NONE, getString( R.string.go_end   ) ).setIcon(android.R.drawable.ic_media_next );
-        menu.add( Menu.NONE, MENU_ENC, Menu.NONE, getString( R.string.encoding ) ).setIcon(android.R.drawable.ic_menu_sort_alphabetically );
+    public boolean onPrepareOptionsMenu( Menu menu ) {
+        menu.clear();
+        menu.add( Menu.NONE, MENU_TOP, Menu.NONE, getString( R.string.go_top   ) ).setIcon( android.R.drawable.ic_media_previous );
+        menu.add( Menu.NONE, MENU_BOT, Menu.NONE, getString( R.string.go_end   ) ).setIcon( android.R.drawable.ic_media_next );
+        menu.add( Menu.NONE, MENU_ENC, Menu.NONE, Utils.getEncodingDescr( this, encoding, false ) ).setIcon( android.R.drawable.ic_menu_sort_alphabetically );
         return true;
     }
     @Override
     public boolean onMenuItemSelected( int featureId, MenuItem item ) {
         switch( item.getItemId() ) {
-        case MENU_END:
+        case MENU_BOT:
             scrollView.fullScroll( View.FOCUS_DOWN );
             return true;
         case MENU_TOP:
@@ -135,5 +148,4 @@ public class TextViewer extends Activity {
         }
         return false;
     }
-
 }

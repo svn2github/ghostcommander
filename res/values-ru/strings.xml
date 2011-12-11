@@ -265,6 +265,7 @@
 <string name="nothing_to_open">Не ясно что редактировать</string>
 <string name="remind_to_save">Не забудьте сохранить изменения через меню</string>
 <string name="save">Сохранить</string>
+<string name="save_as">Сохранить как...</string>
 <string name="revert">Восстановить</string>
 <string name="wrap">Длинные строки</string>
 <string name="no_such_file">Нет такого файла \"%1$s\"</string>

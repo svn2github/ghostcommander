@@ -2,10 +2,12 @@ package com.ghostsq.commander.root;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +16,6 @@ import android.os.Handler;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
 import android.net.Uri;
 import android.util.Log;
@@ -731,14 +732,19 @@ public class RootAdapter extends CommanderAdapterBase {
         Arrays.sort( items, comp );
     }
     
+    /* --- ContentEngine --- */
+    
     class ContentEngine extends Thread {
         private String file_path;
-        private InputStream is = null;
+        private InputStream  is = null;
+        private OutputStream os = null;
+        private boolean mode_read = true;
         private boolean open_done = false;
         private boolean may_close = false;
         
-        ContentEngine( String file_path_ ) {
+        ContentEngine( String file_path_, boolean mode_read_ ) {
             file_path = file_path_;
+            mode_read = mode_read_; 
         }
 
         @Override
@@ -747,14 +753,20 @@ public class RootAdapter extends CommanderAdapterBase {
             BufferedReader     ebr = null;
             try {
                 Process process = Runtime.getRuntime().exec( "su" );
-                osw = new OutputStreamWriter( process.getOutputStream() );
+                OutputStream os = process.getOutputStream();
+                osw = new OutputStreamWriter( os );
                 ebr = new BufferedReader( new InputStreamReader( process.getErrorStream() ) );
-                is = process.getInputStream();
-                osw.write( "cat '" + file_path + "'\n" );
-                osw.flush();
-                for( int i = 0; i < 10; i++ ) {
-                    if( is.available() > 0 ) break;
-                    Thread.sleep( 100 );
+                if( mode_read ) {
+                    is = process.getInputStream();
+                    osw.write( "cat '" + file_path + "'\n" );
+                    osw.flush();
+                    for( int i = 0; i < 10; i++ ) {
+                        if( is.available() > 0 ) break;
+                        Thread.sleep( 100 );
+                    }
+                } else {
+                    osw.write( "cat >'" + file_path + "'\n" );
+                    osw.flush();
                 }
                 synchronized( this ) {
                     open_done = true;
@@ -764,6 +776,11 @@ public class RootAdapter extends CommanderAdapterBase {
                         if( may_close ) break;
                         wait( 500 );
                     }
+                }
+                if( !mode_read ) {
+                    final int END_OF_TRANSMISSION = 4; 
+                    os.write( END_OF_TRANSMISSION );
+                    Thread.sleep( 100 );
                 }
                 osw.write( "exit\n" );
                 osw.flush();
@@ -792,16 +809,23 @@ public class RootAdapter extends CommanderAdapterBase {
             }
         }
         
-        public synchronized InputStream getResult() {
+        public synchronized boolean waitUntilOpen() {
             try {
                 for( int i = 0; i < 50; i++ ) {
                     if( open_done )
-                        break;
+                        return true;
                     wait( 100 ); 
                 }
             } catch( InterruptedException e ) {}
-            return is;
+            return false;
         }
+        public InputStream getInput() {
+            return waitUntilOpen() ? is : null;
+        }
+        public OutputStream getOutput() {
+            return waitUntilOpen() ? os : null;
+        }
+        
         public synchronized void close() {
             may_close = true;
             notify();
@@ -811,20 +835,40 @@ public class RootAdapter extends CommanderAdapterBase {
     @Override
     public InputStream getContent( Uri u ) {
         try {
+            if( u == null ) return null;
             String path = u.getPath();
-            contentEngine = new ContentEngine( path );
+            contentEngine = new ContentEngine( path, true );
             contentEngine.start();
-            InputStream is = contentEngine.getResult();
+            InputStream is = contentEngine.getInput();
             if( is == null ) 
                 contentEngine.close();
             return is;
         } catch( Throwable e ) {
-            e.printStackTrace();
+            Log.e( TAG, u.toString(), e );
         }
         return null;
     }
+    
     @Override
-    public void closeStream( InputStream is ) {
+    public OutputStream saveContent( Uri u ) {
+        try {
+            if( u == null ) return null;
+            String path = u.getPath();
+            contentEngine = new ContentEngine( path, false );
+            contentEngine.start();
+            OutputStream os = contentEngine.getOutput();
+            if( os == null ) 
+                contentEngine.close();
+            return os;
+        } catch( Throwable e ) {
+            Log.e( TAG, u.toString(), e );
+        }
+        return null;
+    }
+    
+    
+    @Override
+    public void closeStream( Closeable is ) {
         if( contentEngine != null ) {
             contentEngine.close();
             contentEngine = null;

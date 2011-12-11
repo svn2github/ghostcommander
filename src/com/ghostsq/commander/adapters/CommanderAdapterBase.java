@@ -1,8 +1,10 @@
 package com.ghostsq.commander.adapters;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -139,7 +141,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             readerHandler = new ReaderHandler();
             if( ctx == null ) ctx = c.getContext();
         }
-        
         parentWidth = 0;
         nameWidth = 0;
         sizeWidth = 0;
@@ -563,13 +564,17 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     public void doIt( int command_id, SparseBooleanArray cis ) {
         // to be implemented in derived classes
     }
-    
+
     @Override
     public InputStream getContent( Uri u ) {
         return null;
     }
     @Override
-    public void closeStream( InputStream is ) {
+    public OutputStream saveContent( Uri fileURI ) {
+        return null;
+    }
+    @Override
+    public void closeStream( Closeable is ) {
         try {
             if( is != null )
                 is.close();

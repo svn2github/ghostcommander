@@ -695,33 +695,48 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             if( pos > 0 ) fa.editItem( pos );
             return;
         }
-        File f = file_name == null ? getCurrentFile() : new File( file_name );
-        if( f != null && f.isFile() ) {
-        	try {
-	            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
-	            String full_class_name = sharedPref.getString( "editor_activity", c.getString( R.string.value_editor_activity ) );
-	            if( full_class_name == null || full_class_name.length() == 0 )
-	                full_class_name = "com.ghostsq.commander.Editor";
-	            Intent i = new Intent( Intent.ACTION_EDIT );
-	            i.setDataAndType( Uri.parse( "file://" + f.getAbsolutePath() ), "text/plain" );
-	            
-	            int last_dot_pos = full_class_name.lastIndexOf('.');
-	            if( last_dot_pos < 0 )
-	            	c.showMessage( "Invalid class name: " + full_class_name );
-	            else {
-                    i.setClassName( full_class_name.substring( 0, last_dot_pos ), full_class_name );
-		            c.startActivity( i );
-	            }
-        	}
-        	catch( ActivityNotFoundException e ) {
-        		c.showMessage( "Activity Not Found: " + e );
-        	}
-        	catch( IndexOutOfBoundsException e ) {
-        		c.showMessage( "Bad activity class name: " + e );
-        	}
+
+        try {
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
+            final String GC_EDITOR = c.getString( R.string.value_editor_activity );
+            String full_class_name = sharedPref.getString( "editor_activity", GC_EDITOR );
+            if( full_class_name == null || full_class_name.length() == 0 )
+                full_class_name = GC_EDITOR;
+            int last_dot_pos = full_class_name.lastIndexOf('.');
+            if( last_dot_pos < 0 ) {
+                c.showMessage( "Invalid class name: " + full_class_name );
+                return;
+            }
+            else {
+                Uri u;
+                if( file_name == null || file_name.length() == 0 )
+                    u = ca.getItemUri( getSelection( true ) );
+                else
+                    u = Uri.parse( file_name );
+                if( u == null ) return;
+                String scheme = u.getScheme();
+                boolean local = CA.isLocal( scheme );
+                boolean editable = local;
+                if( !editable && full_class_name.equals( GC_EDITOR ) )
+                     editable = "root".equals( scheme );
+                if( !editable ) {
+                    c.showMessage( c.getString( R.string.edit_err ) );
+                    return;
+                }
+                if( local )
+                    u = Uri.parse( "file://" + u.getPath() );
+                Intent i = new Intent( Intent.ACTION_EDIT );
+                i.setDataAndType( u, "text/plain" );
+                i.setClassName( full_class_name.substring( 0, last_dot_pos ), full_class_name );
+                c.startActivity( i );
+            }
         }
-        else
-            c.showMessage( "Not editable" );
+        catch( ActivityNotFoundException e ) {
+            c.showMessage( "Activity Not Found: " + e );
+        }
+        catch( IndexOutOfBoundsException e ) {
+            c.showMessage( "Bad activity class name: " + e );
+        }
     }
     public final void openForView() {
         try {
@@ -760,7 +775,6 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             Log.e( TAG, null, e );
         }
     }
-
     
     public final int getNumItemsChecked() {
         return list[current].getNumItemsChecked();

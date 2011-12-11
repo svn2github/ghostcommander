@@ -297,7 +297,30 @@ public final class Utils {
         }
         return null;
     }
-        
+
+    public final static String getEncodingDescr( Context ctx, String enc_name, boolean full ) {
+        if( enc_name == null ) enc_name = "";
+        Resources res = ctx.getResources();
+        if( res == null ) return null;
+        String[] enc_dsc_arr = res.getStringArray(R.array.encoding);
+        String[] enc_nms_arr = res.getStringArray(R.array.encoding_vals);
+        try {
+            for( int i = 0; i < enc_nms_arr.length; i++ ) {
+                if( enc_name.equals( enc_nms_arr[i] ) ) {
+                    String enc_desc = enc_dsc_arr[i];
+                    if( full ) 
+                        return enc_desc;
+                    else {
+                        int nlp = enc_desc.indexOf( '\n' );
+                        if( nlp < 0 ) return enc_desc;
+                        return enc_desc.substring( 0, nlp );
+                    }
+                     
+                }
+            }
+        } catch( Exception e ) {}
+        return null;
+    }
     public final static String escapeUriMarkup( String s ) {
         if( s == null || s.length() == 0 ) return s;
         return s.replaceAll( "#", "%23" ).replaceAll( ":", "%3A" );
@@ -339,24 +362,7 @@ public final class Utils {
         }
         return null;
     }
-    
-    public final static Drawable getGradient_( int height, int color ) {
-        
-        try {
-            ShapeDrawable sd = new ShapeDrawable();
-            float[] hsv = new float[3];
-            Color.colorToHSV( color, hsv );
-            hsv[2] *= 0.6;
-            sd.getPaint().setShader( new LinearGradient( 0, 0, 0, height,
-                    color, Color.HSVToColor( hsv ), Shader.TileMode.CLAMP ) );
-            return sd;
-        }
-        catch( Throwable e ) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    
+   
     public enum RR {
                busy(R.string.busy),
            copy_err(R.string.copy_err),

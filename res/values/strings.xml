@@ -354,12 +354,14 @@ copied >5 will produce:
     <string name="nothing_to_open">Nothing to open</string>
     <string name="remind_to_save">Don\'t forget to Save your changes (using the menu)</string>
     <string name="save">Save</string>
+    <string name="save_as">Save as...</string>
     <string name="revert">Revert</string>
     <string name="wrap">Wrap long lines</string>
 
     <string name="go_top">Go Top</string>       
     <string name="go_end">Go End</string>       
     <string name="encoding">Encoding</string>       
+    <string name="encoding_set">The Encoding is set to \"%1$s\". Please reload. If you save, the original encoding will be changed to the chosen one.</string>       
         
     <string name="no_such_file">No such file \"%1$s\"</string>
     <string name="too_big_file">The file \"%1$s\" is too big.</string>

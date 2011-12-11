@@ -1,6 +1,8 @@
 package com.ghostsq.commander.adapters;
 
+import java.io.Closeable;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Date;
 
 import com.ghostsq.commander.Commander;
@@ -162,15 +164,21 @@ public interface CommanderAdapter {
      * @return        - the content of the file
      */
     public InputStream getContent( Uri fileURI );
+
+    /**
+     * @param fileURI - the location of the file
+     * @return  stream to data be written 
+     */
+    public OutputStream saveContent( Uri fileURI );
     
     /**
-     * @param is - input stream obtained by the getContent() method to be closed  
+     * @param s - the stream obtained by the getContent() or saveContent() methods to be closed by calling this  
      */
-    public void closeStream( InputStream is );
+    public void closeStream( Closeable s );
     
 
     /**
-     * @param fileURI - the location of the file  
+     * @param fileURI - the location of the file to create  
      */
     public boolean createFile( String fileURI );
 

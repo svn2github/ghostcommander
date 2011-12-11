@@ -1,5 +1,6 @@
 package com.ghostsq.commander.adapters;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -957,7 +958,7 @@ public class ZipAdapter extends CommanderAdapterBase {
         return null;
     }
     @Override
-    public void closeStream( InputStream is ) {
+    public void closeStream( Closeable is ) {
         if( zip != null ) {
             try {
                 zip.close();

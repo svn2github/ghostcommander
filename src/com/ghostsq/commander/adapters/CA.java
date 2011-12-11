@@ -69,6 +69,10 @@ final public class CA {
         return FS;
     }
 
+    public final static boolean isLocal( String scheme ) {
+        return scheme == null || scheme.length() == 0 || "file".equals( scheme ) || "find".equals( scheme );
+    }
+    
     public final static CommanderAdapter CreateAdapter( int type_id, Commander c ) {
         CommanderAdapter ca = CreateAdapterInstance( type_id, c.getContext() );
         if( ca != null )

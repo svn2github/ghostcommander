@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.ref.SoftReference;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.FileChannel;
@@ -385,7 +386,7 @@ public class FSAdapter extends CommanderAdapterBase {
                         }
                     }
                 } catch( Exception e ) {
-                    Log.e( TAG, fn, e );
+                    //Log.e( TAG, fn, e );
                 }
                 options.inSampleSize = 1;
                 options.inJustDecodeBounds = true;
@@ -671,6 +672,19 @@ public class FSAdapter extends CommanderAdapterBase {
             }
         return null;
     }
+    @Override
+    public OutputStream saveContent( Uri u ) {
+        if( u != null ) {
+            File f = new File( u.getPath() );
+            try {
+                return new FileOutputStream( f );
+            } catch( FileNotFoundException e ) {
+                Log.e( TAG, u.getPath(), e );
+            }
+        }
+        return null;
+    }
+    
 	@Override
 	public boolean createFile( String fileURI ) {
 		try {

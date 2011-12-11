@@ -1,6 +1,7 @@
 package com.ghostsq.commander.adapters;
 
 import java.lang.System;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -46,13 +47,20 @@ public class FTPAdapter extends CommanderAdapterBase {
     public FTPAdapter( Context ctx_ ) {
         super( ctx_ );
         ftp = new FTP();
-        try {
-            heartBeat = new Timer( "FTP Heartbeat", true );
-            heartBeat.schedule( new Noop(), 120000, 20000 );
-		} 
-        catch( Exception e ) {
-		}
     }
+    @Override
+    public void Init( Commander c ) {
+        super.Init( c );
+        if( c != null ) {
+            try {
+                heartBeat = new Timer( "FTP Heartbeat", true );
+                heartBeat.schedule( new Noop(), 120000, 20000 );
+            } 
+            catch( Exception e ) {
+            }
+        }
+    }
+    
     @Override
     public int getType() {
         return CA.FTP;
@@ -876,7 +884,7 @@ public class FTPAdapter extends CommanderAdapterBase {
         return null;
     }
     @Override
-    public void closeStream( InputStream is ) {
+    public void closeStream( Closeable is ) {
         try {
             noHeartBeats = false;
             if( is != null )

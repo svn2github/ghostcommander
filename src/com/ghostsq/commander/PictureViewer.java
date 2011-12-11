@@ -1,42 +1,42 @@
 package com.ghostsq.commander;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
-import android.view.Display;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 
+import com.example.touch.TouchImageView;
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 
 public class PictureViewer extends Activity {
     private final static String TAG = "PictureViewerActivity";
     public  ImageView image_view;
-    public  Dialog dialogObj; 
+    public  boolean   touch = false;
     @Override
     public void onCreate( Bundle savedInstanceState ) {
-        Log.v( TAG, "onCreate" );
         super.onCreate( savedInstanceState );
         try {
-            requestWindowFeature( Window.FEATURE_NO_TITLE );
-            setContentView( R.layout.pictvw );
-            image_view = (ImageView)findViewById( R.id.image_view );
+          requestWindowFeature( Window.FEATURE_NO_TITLE );
+          touch = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.FROYO;
+          if( touch )
+              image_view = new TouchImageView( this );
+          else
+              image_view = new ImageView( this );
+          setContentView( image_view );
         }
         catch( Throwable e ) {
             e.printStackTrace();
@@ -46,17 +46,15 @@ public class PictureViewer extends Activity {
     @Override
     public void onLowMemory() {
         Log.w( TAG, "Low Memory!" );
-//        itsLowMemory = true;
         super.onLowMemory();
     }
 
     @Override
     protected void onStart() {
-        Log.v( TAG, "onStart" );
         super.onStart();
         Uri u = getIntent().getData();
         if( u == null ) return;
-        new Loader( this ).execute( u );
+        new LoaderThread( this, u ).start();
     }
 
     @Override
@@ -64,187 +62,141 @@ public class PictureViewer extends Activity {
         super.onStop();
     }
     
-    @Override
-    protected Dialog onCreateDialog( int id ) {
-        LayoutInflater factory = LayoutInflater.from( this );
-        final View progressView = factory.inflate( R.layout.progress, null );
-        super.onCreateDialog( id );
-        return dialogObj = new AlertDialog.Builder( this )
-            .setView( progressView )
-            .setTitle( R.string.progress )
-            .setCancelable( false )
-            .create();
-    }
-    public void setProgress( String string, int progress, int progressSec ) {
-        if( dialogObj == null )
-            return;
-        try {
-            if( string != null ) {
-                TextView t = (TextView)dialogObj.findViewById( R.id.text );
-                if( t != null )
-                    t.setText( string );
-            }
-            ProgressBar p_bar = (ProgressBar)dialogObj.findViewById( R.id.progress_bar );
-            TextView perc_t = (TextView)dialogObj.findViewById( R.id.percent );
-
-            if( progress >= 0 )
-                p_bar.setProgress( progress );
-            if( progressSec >= 0 )
-                p_bar.setSecondaryProgress( progressSec );
-            if( perc_t != null ) {
-                perc_t.setText( "" + ( progressSec > 0 ? progressSec : progress ) + "%" );
-            }
-            Thread.sleep( 100 );
-        } catch( Exception e ) {
-            Log.e( TAG, null, e );
-        }
-    }
-
-    private class Loader extends AsyncTask<Uri, Integer, Bitmap> {
+    private class LoaderThread extends Thread {
         private Context ctx;
-        private CommanderAdapter ca;
         private byte[] buf;
-        private boolean itsLowMemory;
-        private String msg;
+        private String msgText;
+        private Uri u;
+        private Bitmap bmp;
+        private DoneHandler h = new DoneHandler();
+        private ProgressDialog pd;
         
-        Loader( Context ctx_ ) {
+        protected class DoneHandler extends Handler {
+            @Override
+            public void handleMessage( Message msg ) {
+                try {
+                    Bundle b = msg.getData();
+                    int p = b.getInt( "p" );
+                    if( p < 0 )
+                        postExecute();
+                    else
+                        progressUpdate( p );
+                } catch( Exception e ) {
+                    e.printStackTrace();
+                }
+            }
+        };    
+        
+        LoaderThread( Context ctx_, Uri u_ ) {
             ctx = ctx_;
+            u = u_;
+            setName( "PictureLoader" );
+            //setPriority( Thread.MAX_PRIORITY );
+            preExecute();
         }
         
-        protected void onPreExecute() {
-            PictureViewer.this.showDialog( 1 );
+        protected void preExecute() {
+            pd = ProgressDialog.show( ctx, "", "Loading...", true, true );
         }
         
         @Override
-        protected Bitmap doInBackground( Uri... uu ) {
-            Uri u = null;
+        public void run() {
             try {
-                final int BUF_SIZE = 16*1024; 
+                final int BUF_SIZE = 100*1024; 
                 buf = new byte[BUF_SIZE];
-                u = uu[0];
+                
+                File f = null;
+                setPriority( Thread.MAX_PRIORITY );
                 String schema = u.getScheme();
-                ca = CA.CreateAdapterInstance( CA.GetAdapterTypeId( schema ), ctx );            
-                if( ca != null ) {
-                    byte[] source = null;
-                    boolean local = ( ca.getType() & CA.LOCAL ) != 0;
-                    if( !local ) {   // let's try to pre-cache
-                        try {
-                            InputStream is = ca.getContent( u );
-                            if( is == null ) return null;
-                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                            /*
-                            for( int sz = 5242880; sz > 81920; sz >>= 1 ) {
-                                try {
-                                    Log.v( "readStreamToBuffer", "Reserving byte stream as big as " + sz );
-                                    baos = new ByteArrayOutputStream( sz );
-                                    if( baos != null ) break;
-                                }
-                                catch( Error e ) {
-                                    Log.w( TAG, "Can't reserve " + sz + "B", e );
-                                }
-                                itsLowMemory = true;
+                boolean local = CA.isLocal( schema );
+                if( local ) {   // pre-cache in a file
+                    f = new File( u.getPath() );
+                } else {
+                    CommanderAdapter ca = CA.CreateAdapterInstance( CA.GetAdapterTypeId( schema ), ctx );            
+                    if( ca == null ) return; 
+                    // output - temporary file
+                    File pictvw_f = ctx.getDir( "pictvw", Context.MODE_PRIVATE );
+                    if( pictvw_f == null ) return;
+                    f = new File( pictvw_f, "file.tmp" );
+                    FileOutputStream fos = new FileOutputStream( f );
+                    // input - the content from adapter
+                    InputStream is = ca.getContent( u );
+                    if( is == null ) return;
+                    int n;
+                    boolean available_supported = is.available() > 0;
+                    while( ( n = is.read( buf ) ) != -1 ) {
+                        //Log.v( "readStreamToBuffer", "Read " + n + " bytes" );
+                        //sendProgress( tot += n );
+                        Thread.sleep( 1 );
+                        fos.write( buf, 0, n );
+                        if( available_supported ) {
+                            for( int i = 0; i < 10; i++ ) {
+                                if( is.available() > 0 ) break;
+                                //Log.v( "readStreamToBuffer", "Waiting the rest " + i );
+                                Thread.sleep( 20 );
                             }
-                            */
-                            if( baos != null ) {
-                                int n, tot = 0;
-                                boolean available_supported = false && is.available() > 0;
-                                while( ( n = is.read( buf, 0, buf.length ) ) != -1 ) {
-                                    publishProgress( tot += n );
-                                    //Log.v( "readStreamToBuffer", "Read " + n + " bytes" );
-                                    Thread.sleep( 1 );
-                                    baos.write( buf, 0, n );
-                                    if( available_supported ) {
-                                        for( int i = 0; i < 10; i++ ) {
-                                            if( is.available() > 0 ) break;
-                                            Log.v( "readStreamToBuffer", "Waiting the rest " + i );
-                                            Thread.sleep( 20 );
-                                        }
-                                        if( is.available() == 0 ) {
-                                            Log.v( "readStreamToBuffer", "No more data!" );
-                                            break;
-                                        }
-                                    }
-                                }
-                                ca.closeStream( is );
-                                baos.flush();
-                                source = baos.toByteArray();
-                                baos.close();
+                            if( is.available() == 0 ) {
+                                //Log.v( "readStreamToBuffer", "No more data!" );
+                                break;
                             }
-                        } catch( Throwable e ) {
-                            Log.e( TAG, u.toString(), e );
                         }
                     }
-                    
-                    Display display = getWindowManager().getDefaultDisplay(); 
-                    int width = display.getWidth();
-                    int height = display.getHeight();
-                    boolean by_height = height < width;
-                    //Log.v( TAG, "w=" + width + ", h=" + height );
+                    ca.closeStream( is );
+                    fos.close();
+                }
+                if( f != null ) {
                     BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inSampleSize = 1;
-                    options.inJustDecodeBounds = true;
-                    options.outWidth = 0;
-                    options.outHeight = 0;
                     options.inTempStorage = buf;
-                    if( source != null )
-                        BitmapFactory.decodeByteArray( source, 0, source.length, options );
-                    else {
-                        InputStream is = ca.getContent( u );
-                        if( is != null ) {
-                            BitmapFactory.decodeStream( is, null, options );
-                            ca.closeStream( is );
+                    for( int b = 1; b < 0x80000; b <<= 1 ) {
+                        try {
+                            options.inSampleSize = b;
+                            bmp = BitmapFactory.decodeFile( f.getAbsolutePath(), options );
+                        } catch( Throwable e ) {}
+                        if( bmp != null ) {
+                            if( !local )
+                                f.delete();
+                            return;
                         }
                     }
-                    Log.v( TAG, "w=" + options.outWidth + ", h=" + options.outHeight );
-                    if( options.outWidth > 0 && options.outHeight > 0 ) {
-                        int factor = by_height ? options.outHeight / height : options.outWidth / width;
-                        int b;
-                        for( b = 0x8000000; b > 1; b >>= 1 )
-                            if( b <= factor ) break;
-                        if( itsLowMemory && !local && b > 1 )
-                            b <<= 1;    // is it better show a smaller picture then crash on out of memory?
-                        Log.v( TAG, "aligned factor=" + b );
-                        options.inSampleSize = b;
-                        options.inJustDecodeBounds = false;
-                        Bitmap bmp = null;
-                        if( source != null )
-                            bmp = BitmapFactory.decodeByteArray( source, 0, source.length, options );
-                        else {
-                            InputStream is = ca.getContent( u );
-                            if( is != null ) {
-                                bmp = BitmapFactory.decodeStream( is, null, options );
-                                ca.closeStream( is );
-                            }
-                        }
-                        return bmp;                            
-                    }
-                    else
-                        Log.w( TAG, "failed to get the image bounds!" );
                 }
             } catch( Throwable e ) {
                 Log.e( TAG, u != null ? u.toString() : null, e );
-                msg = e.getLocalizedMessage();
+                msgText = e.getLocalizedMessage();
+            } finally {
+                sendProgress( -1 );
             }
-            return null;
         }
         
-        @Override
-        protected void onProgressUpdate( Integer... v ) {
-            PictureViewer.this.setProgress( "test", v[0] / 45000, -1 );
-       }
+        protected void sendProgress( int v ) {
+            Message msg = h.obtainMessage();
+            Bundle b = new Bundle();
+            b.putInt( "p", v );
+            msg.setData( b );
+            h.sendMessage( msg );
+        }
         
-        @Override
-        protected void onPostExecute( Bitmap bmp ) {
-            dialogObj.cancel();
-            dialogObj = null;
-            if( bmp == null ) {
-                Toast.makeText( ctx, msg != null ? msg : ctx.getString( R.string.error ), 
-                       Toast.LENGTH_LONG ).show();
+        protected void progressUpdate( int v ) {
+            Log.v( TAG, "progressUpdate" + v );
+        }
+        
+        protected void postExecute() {
+            try {
+                Log.v( TAG, "postExecute" );
+                pd.cancel();
+                if( bmp != null ) {
+                    image_view.setImageBitmap( bmp );
+                    if( touch )
+                        ((TouchImageView)image_view).setMaxZoom(4f);
+                    return;
+                }
+            } catch( Throwable e ) {
+                e.printStackTrace();
             }
-            else {
-                image_view.setImageBitmap( bmp );
-            }
+            Toast.makeText( ctx, msgText != null ? msgText : ctx.getString( R.string.error ), 
+                   Toast.LENGTH_LONG ).show();
         }
  
     }
+
+
 }
