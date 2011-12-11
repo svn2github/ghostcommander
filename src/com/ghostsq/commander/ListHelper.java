@@ -111,7 +111,7 @@ public class ListHelper {
         flv.setBackgroundColor( bg_color );
         flv.setCacheColorHint( bg_color );
         if( curColor != 0 ) {
-            Drawable d = Utils.getShader( curColor );
+            Drawable d = Utils.getShading( curColor );
             if( d != null )
                 flv.setSelector( d );
         }

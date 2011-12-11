@@ -251,6 +251,8 @@ copied >5 will produce:
     <string name="domain">Domain:</string>
     <string name="username">User Name:</string>
     <string name="password">Password:</string>
+    <string name="user">User</string>
+    <string name="group">Group</string>
     <string name="connect">Connect</string>
     <string name="cancel">Cancel</string>
     <string name="ftp_connected">Connected to \"%1$s\",\n Logged in as \"%2$s\"</string>

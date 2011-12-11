@@ -297,8 +297,11 @@ public final class Utils {
         }
         return null;
     }
-
-    public final static String getEncodingDescr( Context ctx, String enc_name, boolean full ) {
+    
+    public final static int ENC_DESC_MODE_NUMB  = 0;
+    public final static int ENC_DESC_MODE_BRIEF = 1;
+    public final static int ENC_DESC_MODE_FULL  = 2;
+    public final static String getEncodingDescr( Context ctx, String enc_name, int mode ) {
         if( enc_name == null ) enc_name = "";
         Resources res = ctx.getResources();
         if( res == null ) return null;
@@ -307,8 +310,10 @@ public final class Utils {
         try {
             for( int i = 0; i < enc_nms_arr.length; i++ ) {
                 if( enc_name.equals( enc_nms_arr[i] ) ) {
+                    if( mode == ENC_DESC_MODE_NUMB )
+                        return "" + i;
                     String enc_desc = enc_dsc_arr[i];
-                    if( full ) 
+                    if( mode == ENC_DESC_MODE_FULL ) 
                         return enc_desc;
                     else {
                         int nlp = enc_desc.indexOf( '\n' );
@@ -346,7 +351,7 @@ public final class Utils {
         return result.toString();
     }
 
-    public final static Drawable getShader( int color ) {
+    public final static Drawable getShading( int color ) {
         try {
             float[] hsv = new float[3];
             Color.colorToHSV( color, hsv );

@@ -89,7 +89,8 @@ public class Editor extends Activity {
         menu.add( Menu.NONE, MENU_SVAS, Menu.NONE, getString( R.string.save_as  ) ).setIcon( android.R.drawable.ic_menu_save );
         menu.add( Menu.NONE, MENU_RELD, Menu.NONE, getString( R.string.revert   ) ).setIcon( android.R.drawable.ic_menu_revert );
         menu.add( Menu.NONE, MENU_WRAP, Menu.NONE, getString( R.string.wrap     ) ).setIcon( R.drawable.wrap );
-        menu.add( Menu.NONE, MENU_ENC,  Menu.NONE, Utils.getEncodingDescr( this, encoding, false ) ).setIcon(android.R.drawable.ic_menu_sort_alphabetically );
+        menu.add( Menu.NONE, MENU_ENC,  Menu.NONE, Utils.getEncodingDescr( this, encoding, 
+                                                      Utils.ENC_DESC_MODE_BRIEF ) ).setIcon(android.R.drawable.ic_menu_sort_alphabetically );
         menu.add( Menu.NONE, MENU_EXIT, Menu.NONE, getString( R.string.exit     ) ).setIcon( android.R.drawable.ic_notification_clear_all );
 	    return true;
     }
@@ -130,16 +131,18 @@ public class Editor extends Activity {
         case MENU_RELD:
             loadData();
             return true;
-        case MENU_ENC:
-            new AlertDialog.Builder( this )
-                .setTitle( R.string.encoding )
-                .setItems( R.array.encoding, new DialogInterface.OnClickListener() {
-                    public void onClick( DialogInterface dialog, int i ) {
-                        encoding = getResources().getStringArray( R.array.encoding_vals )[i];
-                        Log.i( TAG, "Chosen encoding: " + encoding );
-                        Editor.this.showMessage( getString( R.string.encoding_set, encoding ) );
-                    }
-                }).show();
+        case MENU_ENC: {
+                int cen = Integer.parseInt( Utils.getEncodingDescr( this, encoding, Utils.ENC_DESC_MODE_NUMB ) );
+                new AlertDialog.Builder( this )
+                    .setTitle( R.string.encoding )
+                    .setSingleChoiceItems( R.array.encoding, cen, new DialogInterface.OnClickListener() {
+                        public void onClick( DialogInterface dialog, int i ) {
+                            encoding = getResources().getStringArray( R.array.encoding_vals )[i];
+                            Log.i( TAG, "Chosen encoding: " + encoding );
+                            Editor.this.showMessage( getString( R.string.encoding_set, encoding ) );
+                        }
+                    }).show();
+            }
             return true;
         case MENU_WRAP: 
             try {
@@ -186,52 +189,7 @@ public class Editor extends Activity {
         }
         return false;
     }
-    
-/*    
-    private final boolean Load()
-    {
-        BufferedReader reader = null;
-        try {
-            EditText te = (EditText)findViewById( R.id.editor );
-            te.setText( "" );
-            File file = new File( path );
-            if( !file.exists() ) {
-                showMessage( getString( R.string.no_such_file, path ) );
-                return false;
-            }
-            if( file.length() > 1000000 ) {
-                showMessage( getString( R.string.too_big_file, path ) );
-                return false;
-            }
-            
-            reader = new BufferedReader(new FileReader(file));
-            String text = null, sep = System.getProperty("line.separator");
-            boolean binary = false;
-            // repeat until all lines is read
-            while( ( text = reader.readLine() ) != null ) {
-            	if( text.indexOf( 0 ) >= 0 )
-            		binary = true;
-                te.append(text);
-                te.append(sep);
-            }
-            if( binary )
-            	showMessage( getString( R.string.binary_file, path ) );
-            return true;
-        } catch( Exception e ) {
-        	showMessage( getString( R.string.cant_open ) + "\n" + e.getMessage() );
-        } 
-        finally {
-            try {
-                if(reader != null) {
-                    reader.close();
-                }
-            } catch( IOException e ) {
-            	showMessage( "IOException: " + e );
-            }
-        }
-        return false;
-    }
-    */
+
     private final boolean Save( Uri save_uri )
     {
         if( save_uri == null || ca == null ) return false;
@@ -247,6 +205,7 @@ public class Editor extends Activity {
             int len = e.length();
             if( len < BUF_SIZE ) {
                 osw.write( e.toString() );
+                osw.flush();
             } else {
                 char[] chars = new char[BUF_SIZE];
                 int start = 0, end = BUF_SIZE;
@@ -259,7 +218,8 @@ public class Editor extends Activity {
                         end = len-1;
                 }
             }
-            osw.close();
+Log.v( TAG, "Data is sent to the stream" );            
+            //osw.close();
             ca.closeStream( os );
             return true;
         } catch( Throwable e ) {

@@ -85,7 +85,8 @@ public class TextViewer extends Activity {
         menu.clear();
         menu.add( Menu.NONE, MENU_TOP, Menu.NONE, getString( R.string.go_top   ) ).setIcon( android.R.drawable.ic_media_previous );
         menu.add( Menu.NONE, MENU_BOT, Menu.NONE, getString( R.string.go_end   ) ).setIcon( android.R.drawable.ic_media_next );
-        menu.add( Menu.NONE, MENU_ENC, Menu.NONE, Utils.getEncodingDescr( this, encoding, false ) ).setIcon( android.R.drawable.ic_menu_sort_alphabetically );
+        menu.add( Menu.NONE, MENU_ENC, Menu.NONE, Utils.getEncodingDescr( this, encoding, 
+                                                     Utils.ENC_DESC_MODE_BRIEF ) ).setIcon( android.R.drawable.ic_menu_sort_alphabetically );
         return true;
     }
     @Override
@@ -97,16 +98,18 @@ public class TextViewer extends Activity {
         case MENU_TOP:
             scrollView.fullScroll( View.FOCUS_UP );
             return true;
-        case MENU_ENC:
-            new AlertDialog.Builder( this )
-                .setTitle( R.string.encoding )
-                .setItems( R.array.encoding, new DialogInterface.OnClickListener() {
-                    public void onClick( DialogInterface dialog, int i ) {
-                        encoding = getResources().getStringArray( R.array.encoding_vals )[i];
-                        Log.i( TAG, "Chosen encoding: " + encoding );
-                        loadData();
-                    }
-                }).show();
+        case MENU_ENC: {
+                int cen = Integer.parseInt( Utils.getEncodingDescr( this, encoding, Utils.ENC_DESC_MODE_NUMB ) );
+                new AlertDialog.Builder( this )
+                    .setTitle( R.string.encoding )
+                    .setSingleChoiceItems( R.array.encoding, cen, new DialogInterface.OnClickListener() {
+                        public void onClick( DialogInterface dialog, int i ) {
+                            encoding = getResources().getStringArray( R.array.encoding_vals )[i];
+                            Log.i( TAG, "Chosen encoding: " + encoding );
+                            loadData();
+                        }
+                    }).show();
+            }
             return true;
             /*
         case WRAP: 

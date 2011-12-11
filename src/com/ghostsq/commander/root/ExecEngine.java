@@ -55,7 +55,7 @@ class ExecEngine extends Engine {
         }
         if( thread_handler != null )
             sendResult( result != null && result.length() > 0 ? result.toString() : 
-                   ( errMsg != null ? "\nWere tried to execute '" + command + "'" : null ) );
+                   ( errMsg != null ? "\nFailed to execute \"" + command + "\"" : null ) );
     }
     
     protected boolean execute( String cmd, boolean use_bb ) {
@@ -90,9 +90,12 @@ class ExecEngine extends Engine {
             //Log.v( TAG, "Begin waiting - " + getName() );
             p.waitFor();
             //Log.v( TAG, "End waiting - " + getName() );
-            if( p.exitValue() != 0 ) {
-                Log.e( TAG, "Exit code " + p.exitValue() );
+            int ev = p.exitValue();
+            if( ev != 0 ) {
+                Log.e( TAG, "Exit code " + ev );
                 procError( es );
+                if( errMsg == null || errMsg.length() == 0 )
+                    error( "Exit code " + ev );
                 return false;
             }
             return ok;

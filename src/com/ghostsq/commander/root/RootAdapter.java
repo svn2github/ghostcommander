@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.Closeable;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -54,6 +55,7 @@ public class RootAdapter extends CommanderAdapterBase {
     private String systemMountMode;
     private final static String SYSTEM_PATH = "/system";
     private ContentEngine contentEngine;
+    private File tmp_f, dst_f;
 
     public RootAdapter( Context ctx_ ) {
         super( ctx_, SHOW_ATTR );
@@ -749,14 +751,15 @@ public class RootAdapter extends CommanderAdapterBase {
 
         @Override
         public void run() {
+            setName( "ContentEngine " + ( mode_read ? "read" : "write" ) );
             OutputStreamWriter osw = null;
             BufferedReader     ebr = null;
             try {
                 Process process = Runtime.getRuntime().exec( "su" );
-                OutputStream os = process.getOutputStream();
-                osw = new OutputStreamWriter( os );
+                os = process.getOutputStream();
                 ebr = new BufferedReader( new InputStreamReader( process.getErrorStream() ) );
                 if( mode_read ) {
+                    osw = new OutputStreamWriter( os );
                     is = process.getInputStream();
                     osw.write( "cat '" + file_path + "'\n" );
                     osw.flush();
@@ -765,26 +768,38 @@ public class RootAdapter extends CommanderAdapterBase {
                         Thread.sleep( 100 );
                     }
                 } else {
-                    osw.write( "cat >'" + file_path + "'\n" );
-                    osw.flush();
+                    String cmd = "cat >'" + file_path + "'\n";
+                    os.write( cmd.getBytes() );
+                    os.flush();
                 }
                 synchronized( this ) {
                     open_done = true;
                 }
-                for( int i = 0; i < 10; i++ ) {
+                for( int i = 0; i < 20; i++ ) {
                     synchronized( this ) {
                         if( may_close ) break;
                         wait( 500 );
                     }
                 }
-                if( !mode_read ) {
+                if( mode_read ) {
+                    osw.write( "exit\n" );
+                    osw.flush();
+                } else {
+Log.v( TAG, "Sending EOT byte" );
                     final int END_OF_TRANSMISSION = 4; 
+                    os.write( '\n' );
                     os.write( END_OF_TRANSMISSION );
+                    os.write( 3 );
+                    os.write( 3 );
+                    os.flush();
+Log.v( TAG, "Sending the exit command" );
+                    os.write( "\nexit\n".getBytes() );
+                    os.flush();
                     Thread.sleep( 100 );
                 }
-                osw.write( "exit\n" );
-                osw.flush();
+Log.v( TAG, "Waitng the process exits" );
                 process.waitFor();
+Log.v( TAG, "The process has exited" );
                 if( process.exitValue() != 0 ) {
                     Log.e( TAG, "Exit code " + process.exitValue() );
                 }
@@ -854,12 +869,24 @@ public class RootAdapter extends CommanderAdapterBase {
         try {
             if( u == null ) return null;
             String path = u.getPath();
+            
+            dst_f = new File( path );
+            File root_f = ctx.getDir( "root", Context.MODE_PRIVATE );
+            if( root_f == null )
+                return null;
+            tmp_f = new File( root_f, dst_f.getName() );
+            return new FileOutputStream( tmp_f );
+            
+            
+            
+            /*
             contentEngine = new ContentEngine( path, false );
             contentEngine.start();
             OutputStream os = contentEngine.getOutput();
             if( os == null ) 
                 contentEngine.close();
             return os;
+            */
         } catch( Throwable e ) {
             Log.e( TAG, u.toString(), e );
         }
@@ -868,7 +895,16 @@ public class RootAdapter extends CommanderAdapterBase {
     
     
     @Override
-    public void closeStream( Closeable is ) {
+    public void closeStream( Closeable s ) {
+        if( s instanceof FileOutputStream ) {
+            if( tmp_f == null || dst_f == null ) return;
+            String command = "mv '" + tmp_f.getAbsolutePath() + "' '" + dst_f.getAbsolutePath() + "'"; 
+            worker = new ExecEngine( ctx, workerHandler, null, command, true, 500 );
+            worker.start();
+            return;
+        }
+        
+        
         if( contentEngine != null ) {
             contentEngine.close();
             contentEngine = null;

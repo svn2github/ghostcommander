@@ -14,14 +14,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.TextView;
 
 class ChmodDialog implements OnClickListener {
     public final static String TAG = "ChmodDialog";
-    private LsItem   item;
-    private boolean  ur,  uw,  ux,  us,  gr,  gw,  gx,  gs,  or,  ow,  ox,  ot;
-    private CheckBox urc, uwc, uxc, usc, grc, gwc, gxc, gsc, orc, owc, oxc, otc;
-    private String   full_file_name;
+    private LsItem      item;
+    private Permissions p;
+    private CheckBox    urc, uwc, uxc, usc, grc, gwc, gxc, gsc, orc, owc, oxc, otc;
+    private EditText    ue, ge;
+    private String      full_file_name;
     private RootAdapter owner;
     ChmodDialog( Context c, LsItem item_, Uri uri, RootAdapter owner_ ) {
         try {
@@ -36,89 +38,43 @@ class ChmodDialog implements OnClickListener {
             if( cdv != null ) {
                 TextView fnv = (TextView)cdv.findViewById( R.id.file_name );
                 fnv.setText( full_file_name );
+                p = new Permissions( a );
                 {
                     urc = (CheckBox)cdv.findViewById( R.id.UR );
-                    ur = a.charAt( 1 ) == 'r';
-                    if( ur ) urc.setChecked( true );
+                    if( p.ur ) urc.setChecked( true );
                     uwc = (CheckBox)cdv.findViewById( R.id.UW );
-                    uw = a.charAt( 2 ) == 'w';
-                    if( uw ) uwc.setChecked( true );
+                    if( p.uw ) uwc.setChecked( true );
                     uxc = (CheckBox)cdv.findViewById( R.id.UX );
                     usc = (CheckBox)cdv.findViewById( R.id.US );
-                    char uxl = a.charAt( 3 );
-                    if( uxl == 'x' ) {
-                        ux = true;
-                        us = false;
-                    } else 
-                    if( uxl == 's' ) {
-                        ux = true;
-                        us = true;
-                    } else if( uxl == 'S' ) {
-                        ux = false;
-                        us = true;
-                    } else {
-                        ux = false;
-                        us = false;
-                    }
-                    if( ux ) uxc.setChecked( true );
-                    if( us ) usc.setChecked( true );
+                    if( p.ux ) uxc.setChecked( true );
+                    if( p.us ) usc.setChecked( true );
                 } {
                     grc = (CheckBox)cdv.findViewById( R.id.GR );
-                    gr = a.charAt( 4 ) == 'r';
-                    if( gr ) grc.setChecked( true );
+                    if( p.gr ) grc.setChecked( true );
                     gwc = (CheckBox)cdv.findViewById( R.id.GW );
-                    gw = a.charAt( 5 ) == 'w';
-                    if( gw ) gwc.setChecked( true );
+                    if( p.gw ) gwc.setChecked( true );
                     gxc = (CheckBox)cdv.findViewById( R.id.GX );
                     gsc = (CheckBox)cdv.findViewById( R.id.GS );
-                    char gxl = a.charAt( 6 );
-                    if( gxl == 'x' ) {
-                        gx = true;
-                        gs = false;
-                    } else 
-                    if( gxl == 's' ) {
-                        gx = true;
-                        gs = true;
-                    } else 
-                    if( gxl == 'S' ) {
-                        gx = false;
-                        gs = true;
-                    } else {
-                        gx = false;
-                        gs = false;
-                    }
-                    if( gx ) gxc.setChecked( true );
-                    if( gs ) gsc.setChecked( true );
+                    if( p.gx ) gxc.setChecked( true );
+                    if( p.gs ) gsc.setChecked( true );
                 } {
                     orc = (CheckBox)cdv.findViewById( R.id.OR );
-                    or = a.charAt( 7 ) == 'r';
-                    if( or ) orc.setChecked( true );
+                    if( p.or ) orc.setChecked( true );
                     owc = (CheckBox)cdv.findViewById( R.id.OW );
-                    ow = a.charAt( 8 ) == 'w';
-                    if( ow ) owc.setChecked( true );
+                    if( p.ow ) owc.setChecked( true );
                     oxc = (CheckBox)cdv.findViewById( R.id.OX );
                     otc = (CheckBox)cdv.findViewById( R.id.OT );
-                    char otl = a.charAt( 9 );
-                    if( otl == 'x' ) {
-                        ox = true;
-                        ot = false;
-                    } else 
-                    if( otl == 't' ) {
-                        ox = true;
-                        ot = true;
-                    } else 
-                    if( otl == 'T' ) {
-                        ox = false;
-                        ot = true;
-                    } else {
-                        ox = false;
-                        ot = false;
-                    }
-                    if( ox ) oxc.setChecked( true );
-                    if( ot ) otc.setChecked( true );
+                    if( p.ox ) oxc.setChecked( true );
+                    if( p.ot ) otc.setChecked( true );
+                } {
+                    ue = (EditText)cdv.findViewById( R.id.user_edit );
+                    ge = (EditText)cdv.findViewById( R.id.group_edit );
+                    ue.setText( p.user );
+                    ge.setText( p.group );
                 }
+
                 new AlertDialog.Builder( c )
-                    .setTitle( "chmod" )
+                    .setTitle( "chmod/chown" )
                     .setView( cdv )
                     .setPositiveButton( R.string.dialog_ok, this )
                     .setNegativeButton( R.string.dialog_cancel, this )
@@ -131,109 +87,35 @@ class ChmodDialog implements OnClickListener {
     @Override
     public void onClick( DialogInterface idialog, int whichButton ) {
         if( whichButton == DialogInterface.BUTTON_POSITIVE ) {
-            StringBuilder a = new StringBuilder();
-            boolean nur = urc.isChecked(); 
-            boolean nuw = uwc.isChecked(); 
-            boolean nux = uxc.isChecked(); 
-            boolean nus = usc.isChecked(); 
-            boolean ngr = grc.isChecked(); 
-            boolean ngw = gwc.isChecked(); 
-            boolean ngx = gxc.isChecked(); 
-            boolean ngs = gsc.isChecked(); 
-            boolean nor = orc.isChecked(); 
-            boolean now = owc.isChecked(); 
-            boolean nox = oxc.isChecked(); 
-            boolean not = otc.isChecked();
-            
-            if( nur != ur ) {
-                a.append( 'u' );
-                a.append( nur ? '+' : '-' );
-                a.append( 'r' );  
+            Permissions np = new Permissions( null ); 
+            np.ur = urc.isChecked(); 
+            np.uw = uwc.isChecked(); 
+            np.ux = uxc.isChecked(); 
+            np.us = usc.isChecked(); 
+            np.gr = grc.isChecked(); 
+            np.gw = gwc.isChecked(); 
+            np.gx = gxc.isChecked(); 
+            np.gs = gsc.isChecked(); 
+            np.or = orc.isChecked(); 
+            np.ow = owc.isChecked(); 
+            np.ox = oxc.isChecked(); 
+            np.ot = otc.isChecked();
+            np.user  = ue.getText().toString();
+            np.group = ge.getText().toString();
+            String cmd = null;
+            StringBuilder a = p.generateChownString( np );
+            if( a != null && a.length() > 0 ) {
+                a.append( " '" ).append( full_file_name ).append( "'\n" );
+                cmd = "chown " + a.toString();
             }
-            if( nuw != uw ) {
-                if( a.length() > 0 )
-                    a.append( ',' );
-                a.append( 'u' );
-                a.append( nuw ? '+' : '-' );
-                a.append( 'w' );  
+            a = p.generateChmodString( np );
+            if( a != null && a.length() > 0 ) {
+                a.append( " '" ).append( full_file_name ).append( "'" );
+                if( cmd == null ) cmd = "";
+                cmd += "busybox chmod " + a.toString();
             }
-            if( nux != ux ) {
-                if( a.length() > 0 )
-                    a.append( ',' );
-                a.append( 'u' );
-                a.append( nux ? '+' : '-' );
-                a.append( 'x' );  
-            }
-            if( nus != us ) {
-                if( a.length() > 0 )
-                    a.append( ',' );
-                a.append( 'u' );
-                a.append( nus ? '+' : '-' );
-                a.append( 's' );  
-            }
-            
-            if( ngr != gr ) {
-                if( a.length() > 0 )
-                    a.append( ',' );
-                a.append( 'g' );
-                a.append( ngr ? '+' : '-' );
-                a.append( 'r' );  
-            }
-            if( ngw != gw ) {
-                if( a.length() > 0 )
-                    a.append( ',' );
-                a.append( 'g' );
-                a.append( ngw ? '+' : '-' );
-                a.append( 'w' );  
-            }
-            if( ngx != gx ) {
-                if( a.length() > 0 )
-                    a.append( ',' );
-                a.append( 'g' );
-                a.append( ngx ? '+' : '-' );
-                a.append( 'x' );  
-            }
-            if( ngs != gs ) {
-                if( a.length() > 0 )
-                    a.append( ',' );
-                a.append( 'g' );
-                a.append( ngs ? '+' : '-' );
-                a.append( 's' );  
-            }
-            
-            if( nor != or ) {
-                if( a.length() > 0 )
-                    a.append( ',' );
-                a.append( 'o' );
-                a.append( nor ? '+' : '-' );
-                a.append( 'r' );  
-            }
-            if( now != ow ) {
-                if( a.length() > 0 )
-                    a.append( ',' );
-                a.append( 'o' );
-                a.append( now ? '+' : '-' );
-                a.append( 'w' );  
-            }
-            if( nox != ox ) {
-                if( a.length() > 0 )
-                    a.append( ',' );
-                a.append( 'o' );
-                a.append( nox ? '+' : '-' );
-                a.append( 'x' );  
-            }
-            if( not != ot ) {
-                if( a.length() > 0 )
-                    a.append( ',' );
-                a.append( not ? '+' : '-' );
-                a.append( 't' );  
-            }
-            if( a.length() > 0 ) {
-                a.append( " '" );
-                a.append( full_file_name );
-                a.append( "'" );
-                owner.Execute( "chmod " + a.toString(), true );
-            }
+            if( cmd != null )
+                owner.Execute( cmd, false );
         }
         idialog.dismiss();
     }

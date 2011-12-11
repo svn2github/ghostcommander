@@ -270,7 +270,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         if( title_bar != null ) {
             int h = title_bar.getHeight();
             if( h == 0 ) h = 30;
-            Drawable d = Utils.getShader( titleColor );
+            Drawable d = Utils.getShading( titleColor );
             if( d != null )
                 title_bar.setBackgroundDrawable( d );
             else
@@ -285,7 +285,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             if( on ) {
                 int h = title.getHeight();
                 if( h == 0 ) h = 30;
-                Drawable d = Utils.getShader( selColor );
+                Drawable d = Utils.getShading( selColor );
                 if( d != null )
                     title.setBackgroundDrawable( d );
                 else
