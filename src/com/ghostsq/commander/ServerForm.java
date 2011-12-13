@@ -38,9 +38,9 @@ public class ServerForm extends Activity implements View.OnClickListener {
             setTitle( getString( R.string.connect ) + " " + ( type == Type.SMB ? "Windows PC" : schema ) );
             requestWindowFeature( Window.FEATURE_LEFT_ICON );
             setContentView( R.layout.server );
-            getWindow().setLayout (LayoutParams.FILL_PARENT /* width */, LayoutParams.WRAP_CONTENT /* height */);
-            
-            getWindow().setFeatureDrawableResource( Window.FEATURE_LEFT_ICON, android.R.drawable.ic_dialog_dialer );
+            getWindow().setLayout(LayoutParams.FILL_PARENT /* width */, LayoutParams.WRAP_CONTENT /* height */);            
+            getWindow().setFeatureDrawableResource( Window.FEATURE_LEFT_ICON, 
+             type == Type.SMB ? R.drawable.smb : R.drawable.server );
             
             server_edit = (EditText)findViewById( R.id.server_edit );
             path_edit = (EditText)findViewById( R.id.path_edit );
@@ -153,7 +153,7 @@ public class ServerForm extends Activity implements View.OnClickListener {
                 uri_b.path( path_edit.getText().toString().trim() );
                 if( type == Type.FTP && active_ftp_cb.isChecked() )
                     uri_b.appendQueryParameter( "a", "true" );
-                setResult( RESULT_OK, (new Intent()).setAction( uri_b.build().toString() ) );
+                setResult( RESULT_OK, (new Intent()).setData( uri_b.build() ) );
             }
             else
                 setResult( RESULT_CANCELED );

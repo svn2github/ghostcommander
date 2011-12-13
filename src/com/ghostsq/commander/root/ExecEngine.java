@@ -14,7 +14,7 @@ import android.util.Log;
 
 import com.ghostsq.commander.adapters.Engine;;
 
-class ExecEngine extends Engine {
+public class ExecEngine extends Engine {
     protected String sh = "su";
     protected Context context;
     private   String bb = "";

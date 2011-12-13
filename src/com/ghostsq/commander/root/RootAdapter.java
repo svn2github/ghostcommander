@@ -14,9 +14,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import android.os.Handler;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
 import android.net.Uri;
 import android.util.Log;
@@ -651,7 +653,7 @@ public class RootAdapter extends CommanderAdapterBase {
         super.populateContextMenu( menu, acmi, num );
         try {
             if( acmi.position > 0 )
-                menu.add( 0, CHMOD_CMD, 0, "chmod" );
+                menu.add( 0, CHMOD_CMD, 0, R.string.perms_label );
             menu.add( 0, CMD_CMD, 0, commander.getContext().getString( R.string.execute_command ) ); 
         } catch( Exception e ) {
             Log.e( TAG, null, e );
@@ -660,26 +662,35 @@ public class RootAdapter extends CommanderAdapterBase {
 
     @Override
     public void doIt( int command_id, SparseBooleanArray cis ) {
-        if( CHMOD_CMD == command_id || CMD_CMD == command_id ) {
-            if( isWorkerStillAlive() )
-                return;
-            LsItem[] items_todo = bitsToItems( cis );
-            boolean selected_one = items_todo != null && items_todo.length > 0 && items_todo[0] != null;
-            if( CHMOD_CMD == command_id ) {
-                if( selected_one )
-                    new ChmodDialog( commander.getContext(), items_todo[0], uri, this );
-                else
-                    commander.showError( commander.getContext().getString( R.string.select_some ) );
+        try {
+            if( CHMOD_CMD == command_id || CMD_CMD == command_id ) {
+                if( isWorkerStillAlive() )
+                    return;
+                LsItem[] items_todo = bitsToItems( cis );
+                boolean selected_one = items_todo != null && items_todo.length > 0 && items_todo[0] != null;
+                if( CHMOD_CMD == command_id ) {
+                    if( selected_one ) {
+                        Intent i = new Intent( ctx, EditPermissions.class );
+                        i.putExtra( "perm", items_todo[0].getAttr() );
+                        i.putExtra( "path", Utils.mbAddSl( uri.getPath() ) + items_todo[0].getName() );
+                        ((Activity)commander).startActivityForResult( i, Commander.OPERATION_COMPLETED_REFRESH_REQUIRED );
+                        // an ugly hack!!! redesign!!!
+                    }
+                    else
+                        commander.showError( commander.getContext().getString( R.string.select_some ) );
+                }
+                else if( CMD_CMD == command_id )
+                    new CmdDialog( commander.getContext(), selected_one ? items_todo[0] : null, this );
+            } else if( R.id.remount == command_id ) {
+                if( reader != null && reader.isAlive() ) {
+                    commander.showError( commander.getContext().getString( R.string.busy ) );
+                    return;
+                }
+                systemMountReader = new MountsListEngine( commander.getContext(), readerHandler, true );
+                systemMountReader.start();
             }
-            else if( CMD_CMD == command_id )
-                new CmdDialog( commander.getContext(), selected_one ? items_todo[0] : null, this );
-        } else if( R.id.remount == command_id ) {
-            if( reader != null && reader.isAlive() ) {
-                commander.showError( commander.getContext().getString( R.string.busy ) );
-                return;
-            }
-            systemMountReader = new MountsListEngine( commander.getContext(), readerHandler, true );
-            systemMountReader.start();
+        } catch( Exception e ) {
+            Log.e( TAG, "Can't do the command " + command_id, e );
         }
     }
     

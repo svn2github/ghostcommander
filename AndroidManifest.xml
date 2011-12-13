@@ -106,7 +106,11 @@
 		<activity
 		    android:name=".ServerForm"
 		    android:theme="@android:style/Theme.Dialog"/>
-        <provider
+		<activity
+		    android:name=".root.EditPermissions"
+            android:label="@string/perms_label"
+            android:theme="@android:style/Theme.Dialog"/>
+		<provider
             android:name=".FileProvider"
             android:authorities="com.ghostsq.commander.FileProvider"/>
     </application>

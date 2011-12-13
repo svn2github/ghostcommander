@@ -432,9 +432,9 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 if( title != null ) {
                     title.setTextSize( font_size );
                     if( finger_friendly )
-                        title.setPadding( 8, 6, 8, 6 );
+                        title.setPadding( 8, 10, 8, 10 );
                     else
-                        title.setPadding( 8, 1, 8, 1 );
+                        title.setPadding( 8, 4, 8, 4 );
                 }
                 if( list[p] != null )
                     list[p].setFingerFriendly( finger_friendly );
@@ -739,8 +739,9 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         }
     }
     public final void openForView() {
+        String n = getSelectedItemName( true );
+        if( n == null ) return;
         try {
-            String n = getSelectedItemName( true );
             Uri uri;
             CommanderAdapter ca = getListAdapter( true );
             if( ca instanceof FSAdapter ) {
@@ -756,23 +757,13 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 uri = Uri.parse( n );
             String mime = Utils.getMimeByExt( Utils.getFileExt( n ) );
             if( mime == null ) return;                
-            String package_name = "com.ghostsq.commander";
-            String class_name = null;
-            if( mime.startsWith( "image/" ) )
-                class_name = ".PictureViewer";
-            else {
-                class_name = ".TextViewer";
-                mime = "text/plain";
-            }
-            if( class_name != null ) {
-                Intent i = new Intent( Intent.ACTION_VIEW );
-                i.setDataAndType( uri, mime );
-                i.setClassName( package_name, package_name + class_name );
-                c.startActivity( i );
-            }
+            Intent i = new Intent( c, mime.startsWith( "image/" ) ? 
+                    PictureViewer.class : TextViewer.class );
+            i.setDataAndType( uri, mime );
+            c.startActivity( i );
         }
         catch( Exception e ) {
-            Log.e( TAG, null, e );
+            Log.e( TAG, "Can't view the file " + n, e );
         }
     }
     

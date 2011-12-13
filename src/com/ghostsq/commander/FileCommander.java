@@ -20,13 +20,11 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
 import android.content.res.Configuration;
 import android.view.ContextMenu;
 import android.view.Display;
@@ -300,31 +298,38 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onActivityResult( int requestCode, int resultCode, Intent data ) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if( requestCode == REQUEST_CODE_PREFERENCES ) {
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-            back_exits = sharedPref.getBoolean( "exit_on_back", false );
-            String lang_ = sharedPref.getString( "language", "" );
-            if( !lang.equalsIgnoreCase( lang_ ) ) {
-                lang = lang_;
-                Utils.changeLanguage( this );
-                showMessage( getString( R.string.restart_to_apply_lang ) );
-                exit = true;
+        super.onActivityResult( requestCode, resultCode, data );
+        switch( requestCode ) { 
+        case REQUEST_CODE_PREFERENCES: {
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+                back_exits = sharedPref.getBoolean( "exit_on_back", false );
+                String lang_ = sharedPref.getString( "language", "" );
+                if( !lang.equalsIgnoreCase( lang_ ) ) {
+                    lang = lang_;
+                    Utils.changeLanguage( this );
+                    showMessage( getString( R.string.restart_to_apply_lang ) );
+                    exit = true;
+                }
+                panels.applySettings( sharedPref, false );
+                String panels_mode = sharedPref.getString( "panels_sxs_mode", "a" );
+                sxs_auto = panels_mode.equals( "a" );
+                boolean sxs = sxs_auto ? getRotMode() : panels_mode.equals( "y" );
+                panels.setLayoutMode( sxs );
+                panels.showToolbar( sharedPref.getBoolean("show_toolbar", true ) );
+                setConfirmMode( sharedPref );
             }
-            panels.applySettings( sharedPref, false );
-            String panels_mode = sharedPref.getString( "panels_sxs_mode", "a" );
-            sxs_auto = panels_mode.equals( "a" );
-            boolean sxs = sxs_auto ? getRotMode() : panels_mode.equals( "y" );
-            panels.setLayoutMode( sxs );
-            panels.showToolbar( sharedPref.getBoolean("show_toolbar", true ) );
-            setConfirmMode( sharedPref );
-        }
-        else
-        if( requestCode == REQUEST_CODE_SRV_FORM ) {
-            if( resultCode == RESULT_OK ) {
-                dont_restore = true;
-                Navigate( Uri.parse( data.getAction() ), null );
+            break;
+        case REQUEST_CODE_SRV_FORM: {
+                if( resultCode == RESULT_OK ) {
+                    dont_restore = true;
+                    Navigate( data.getData(), null );
+                }
             }
+            break;
+        case OPERATION_COMPLETED_REFRESH_REQUIRED:
+            Log.i( TAG, "An activity ends. Refresh required." );
+            panels.refreshLists();
+            break;
         }
     }
 
