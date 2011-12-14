@@ -526,6 +526,7 @@ public class FSAdapter extends CommanderAdapterBase {
                         result.append( c.getString( R.string.sz_dirnum, dirs, ( dirs > 1 ? c.getString( R.string.sz_dirsfx_p ) : c.getString( R.string.sz_dirsfx_s ) ) ) );
                     if( mList.length == 1 ) {
                         result.append( c.getString( R.string.sz_lastmod ) );
+                        result.append( " " );
                         String date_s;
                         Date date = new Date( mList[0].f.lastModified() );
                         if( Locale.getDefault().getLanguage().compareTo( "en" ) != 0 ) {
@@ -546,7 +547,7 @@ public class FSAdapter extends CommanderAdapterBase {
                             }
                             byte[] digest = digester.digest();
                             in.close();
-                            result.append( "\nMD5: " );
+                            result.append( "\nMD5:\n " );
                             result.append( Utils.toHexString( digest ) );
                         }
                         

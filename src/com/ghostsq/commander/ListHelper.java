@@ -260,12 +260,11 @@ public class ListHelper {
     }
 
     public final void setSelection( int i, int y_ ) {
-        flv.setSelectionFromTop( i, y_ );
-        final ListView final_flv = flv;
-        final int position = i, y = y_;
-        final_flv.post( new Runnable() {
+        final ListView flv$ = flv;
+        final int position$ = i, y$ = y_;
+        flv$.post( new Runnable() {
             public void run() {
-                final_flv.setSelectionFromTop( position, y );
+                flv$.setSelectionFromTop( position$, y$ > 0 ? y$ : flv$.getHeight() / 2 );
             }
         } );
         currentPosition = i;
