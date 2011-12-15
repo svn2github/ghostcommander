@@ -137,6 +137,7 @@ public class Editor extends Activity {
                     .setTitle( R.string.encoding )
                     .setSingleChoiceItems( R.array.encoding, cen, new DialogInterface.OnClickListener() {
                         public void onClick( DialogInterface dialog, int i ) {
+                            dialog.dismiss();
                             encoding = getResources().getStringArray( R.array.encoding_vals )[i];
                             Log.i( TAG, "Chosen encoding: " + encoding );
                             Editor.this.showMessage( getString( R.string.encoding_set, encoding ) );

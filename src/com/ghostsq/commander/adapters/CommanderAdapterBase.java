@@ -11,6 +11,7 @@ import java.util.Locale;
 
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.Commander;
+import com.ghostsq.commander.root.RootAdapter;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
@@ -527,26 +528,21 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 return;
             }
             boolean fs_adapter = this instanceof FSAdapter || this instanceof FindAdapter;
-            if( fs_adapter ) { 
+            if( fs_adapter )
                 menu.add( 0, R.id.sz, 0, R.string.show_size );
-                if( num <= 1 && file ) {
-                    menu.add( 0, Commander.SEND_TO, 0, R.string.send_to );
-                    menu.add( 0, R.id.F4, 0, R.string.edit_title );
-                }
-            }
             if( num <= 1 )
-                menu.add( 0, R.id.F2, 0, R.string.rename_title );
-            menu.add( 0, R.id.F5, 0, R.string.copy_title );
-            if( fs_adapter ) {
-                menu.add( 0, R.id.F6, 0, R.string.move_title );
-            }
-            menu.add( 0, R.id.F8, 0, R.string.delete_title );
-            if( fs_adapter ) { 
-                if( file && num <= 1 ) 
-                    menu.add( 0, Commander.OPEN_WITH, 0, R.string.open_with );
-            }
-            
-            menu.add( 0, R.id.new_zip, 0, R.string.new_zip );
+                menu.add( 0, R.id.F3, 0, R.string.F3 );
+            if( ( fs_adapter || this instanceof RootAdapter ) && num <= 1 && file ) 
+                menu.add( 0, R.id.F4, 0, R.string.F4 );
+            if( fs_adapter && num <= 1 && file )  
+                menu.add( 0, Commander.SEND_TO, 0, R.string.send_to );
+            menu.add( 0, R.id.F5, 0, R.string.F5 );
+            menu.add( 0, R.id.F6, 0, R.string.F6 );
+            menu.add( 0, R.id.F8, 0, R.string.F8 );
+            if( fs_adapter && file && num <= 1 ) 
+                menu.add( 0, Commander.OPEN_WITH, 0, R.string.open_with );
+            if( fs_adapter )            
+                menu.add( 0, R.id.new_zip, 0, R.string.new_zip );
             if( num <= 1 )
                 menu.add( 0, Commander.COPY_NAME, 0, R.string.copy_name );
             if( item.dir && acmi.position != 0 )

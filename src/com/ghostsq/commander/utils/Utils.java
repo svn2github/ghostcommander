@@ -3,6 +3,8 @@ package com.ghostsq.commander.utils;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.Locale;
 
 import com.ghostsq.commander.R;
@@ -265,9 +267,18 @@ public final class Utils {
                 if( bytes < 1024 || bytes > 1048576 )
                     bytes = 10240;
                 char[] chars = new char[bytes];
-                InputStreamReader isr = encoding != null && encoding.length() != 0 ?
-                        new InputStreamReader( is, encoding ) :
-                        new InputStreamReader( is );
+                InputStreamReader isr = null; 
+                if( encoding != null && encoding.length() != 0 ) {
+                    try {
+                        isr = new InputStreamReader( is, encoding );
+                    }
+                    catch( UnsupportedEncodingException e ) {
+                        Log.e( "GC", encoding, e );
+                        isr = new InputStreamReader( is );
+                    }
+                }
+                else 
+                    isr = new InputStreamReader( is );
                 StringBuffer sb = new StringBuffer( bytes );  
                 int n = -1;
                 boolean available_supported = is.available() > 0;

@@ -2,14 +2,20 @@ package com.ghostsq.commander;
 
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
+import com.ghostsq.commander.adapters.CommanderAdapterBase;
+import com.ghostsq.commander.root.ExecEngine;
 import com.ghostsq.commander.utils.Utils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -106,6 +112,7 @@ public class TextViewer extends Activity {
                         public void onClick( DialogInterface dialog, int i ) {
                             encoding = getResources().getStringArray( R.array.encoding_vals )[i];
                             Log.i( TAG, "Chosen encoding: " + encoding );
+                            dialog.dismiss();
                             loadData();
                         }
                     }).show();
@@ -129,7 +136,33 @@ public class TextViewer extends Activity {
     private final boolean loadData() {
         if( uri != null ) { 
             try {
-                int type_id = CA.GetAdapterTypeId( uri.getScheme() );
+                String scheme = uri.getScheme();
+                if( "exec".equals( scheme ) ) {
+                    
+                    Intent i = getIntent();
+                    if( i == null ) return false;
+                    String cmd = i.getStringExtra( "cmd" );
+                    
+                    Context ctx = this;
+                    ExecEngine ee = new ExecEngine( ctx, new Handler() {
+                                @Override
+                                public void handleMessage( Message msg ) {
+                                    try {
+                                        Bundle b = msg.getData();
+                                        String r = b.getString( CommanderAdapterBase.NOTIFY_STR );
+                                        if( r != null ) {
+                                            TextView text_view = (TextView)findViewById( R.id.text_view );
+                                            text_view.setText( r );
+                                        }
+                                    } catch( Exception e ) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }, null, cmd, false,  500 ); 
+                    ee.start();
+                    return true;
+                }               
+                int type_id = CA.GetAdapterTypeId( scheme );
                 CommanderAdapter ca = CA.CreateAdapterInstance( type_id, this );
                 if( ca != null ) {
                     InputStream is = ca.getContent( uri );

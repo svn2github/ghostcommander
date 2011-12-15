@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import android.os.Handler;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -34,6 +33,7 @@ import android.widget.ListView;
 
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.R;
+import com.ghostsq.commander.TextViewer;
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
@@ -243,7 +243,17 @@ public class RootAdapter extends CommanderAdapterBase {
     }
 	@Override
 	public void reqItemsSize( SparseBooleanArray cis ) {
-		commander.notifyMe( new Commander.Notify( "Not supported.", Commander.OPERATION_FAILED ) );
+        LsItem[] s_items = bitsToItems( cis );
+        if( s_items != null && s_items.length > 0 ) {
+            Intent in = new Intent( ctx, TextViewer.class );
+            in.setData( Uri.parse( "exec:" ) );
+            String s = "";
+            String path = Utils.mbAddSl( uri.getPath() );
+            for( int i = 0; i < s_items.length; i++ )
+                s += " " + path + s_items[i].getName();
+            in.putExtra( "cmd", "stat " + s );
+    	    commander.issue( in, 0 );
+        }
 	}
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
@@ -323,6 +333,7 @@ public class RootAdapter extends CommanderAdapterBase {
             try {
                 int num = list.length;
                 double conv = 100./(double)num;
+                String esc_dest = ExecEngine.prepFileName( dest_folder );
                 for( int i = 0; i < num; i++ ) {
                     LsItem f = list[i];
                     if( f == null ) continue;
@@ -330,9 +341,19 @@ public class RootAdapter extends CommanderAdapterBase {
                     String full_name = src_base_path + file_name;
                     String cmd = move ? " mv -f" : ( f.isDirectory() ? " cp -r" : " cp" );
                     String to_exec = cmd + " " + ExecEngine.prepFileName( full_name ) 
-                                       + " " + ExecEngine.prepFileName( dest_folder );
+                                         + " " + esc_dest;
                     outCmd( true, to_exec, os );
                     if( procError( es ) ) return false;
+                    
+                    File dst_file = new File( dest_folder, f.getName() );
+                    String dst_path = dst_file.getAbsolutePath(); 
+                    
+                    Permissions src_p = new Permissions( f.getAttr() );
+                    String chown_cmd = "chown " + src_p.generateChownString().append(" ").append( dst_path ).toString();
+                    outCmd( false, chown_cmd, os );
+                    String chmod_cmd = "chmod " + src_p.generateChmodString().append(" ").append( dst_path ).toString();
+                    outCmd( true, chmod_cmd, os );
+                    
                     sendProgress( "'" + file_name + "'", (int)(i * conv) );
                     counter++;
                 }
@@ -543,15 +564,42 @@ public class RootAdapter extends CommanderAdapterBase {
         protected boolean cmdDialog( OutputStreamWriter os, BufferedReader is, BufferedReader es ) { 
             try {
                 String cmd = move ? " mv" : " cp -r";
+                String esc_dest = prepFileName( dest );
                 int num = src_full_names.length;
                 double conv = 100./(double)num;
                 for( int i = 0; i < num; i++ ) {
                     String full_name = src_full_names[i];
                     if( full_name == null ) continue;
-                    String to_exec = cmd + " " + prepFileName( full_name ) + " " + prepFileName( dest );
+                    String esc_fn = prepFileName( full_name );
+                    String ls_cmd = "ls -l " + esc_fn;
+                    outCmd( false, ls_cmd, os );
+                    String str = null; 
+                    while( is.ready() ) {
+                        str = is.readLine();
+                        if( str != null && str.trim().length() > 0 )
+                            Log.v( TAG, ">>>" + str ); 
+                    }
+                    LsItem src_item = null;
+                    if( str != null )
+                        src_item = new LsItem( str ); 
+                    
+                    String to_exec = cmd + " " + esc_fn + " " + esc_dest;
                     outCmd( true, to_exec, os );
                     if( procError( es ) ) return false;
-                    if( !quiet ) sendProgress( "'" + full_name + "'   ", (int)(i * conv) );
+                    
+                    if( src_item != null ) {
+                        File src_file = new File( full_name );
+                        File dst_file = new File( dest, src_file.getName() );
+                        String dst_path = dst_file.getAbsolutePath(); 
+                        
+                        Permissions src_p = new Permissions( src_item.getAttr() );
+                        String chown_cmd = "chown " + src_p.generateChownString().append(" ").append( dst_path ).toString();
+                        outCmd( false, chown_cmd, os );
+                        String chmod_cmd = "chmod " + src_p.generateChmodString().append(" ").append( dst_path ).toString();
+                        outCmd( true, chmod_cmd, os );
+                    }
+                    
+                    if( !quiet ) sendProgress( esc_fn + "   ", (int)(i * conv) );
                     counter++;
                 }
                 return true;
@@ -673,8 +721,7 @@ public class RootAdapter extends CommanderAdapterBase {
                         Intent i = new Intent( ctx, EditPermissions.class );
                         i.putExtra( "perm", items_todo[0].getAttr() );
                         i.putExtra( "path", Utils.mbAddSl( uri.getPath() ) + items_todo[0].getName() );
-                        ((Activity)commander).startActivityForResult( i, Commander.OPERATION_COMPLETED_REFRESH_REQUIRED );
-                        // an ugly hack!!! redesign!!!
+                        commander.issue( i, Commander.OPERATION_COMPLETED_REFRESH_REQUIRED );
                     }
                     else
                         commander.showError( commander.getContext().getString( R.string.select_some ) );
@@ -694,7 +741,7 @@ public class RootAdapter extends CommanderAdapterBase {
         }
     }
     
-    public void Execute( String command, boolean bb ) {
+    public void execute( String command, boolean bb ) {
         if( isWorkerStillAlive() )
             commander.notifyMe( new Commander.Notify( "Busy", Commander.OPERATION_FAILED ) );
         else {
@@ -703,6 +750,13 @@ public class RootAdapter extends CommanderAdapterBase {
         }
     }
 
+    public void executeToViewer( String command, boolean bb ) {
+            Intent in = new Intent( ctx, TextViewer.class );
+            in.setData( Uri.parse( "exec:" ) );
+            in.putExtra( "cmd", "cd " + uri.getPath() + " ; " + ( bb ? "busybox " : "" ) + command );
+            commander.issue( in, 0 );
+    }    
+    
     class CmdDialog implements OnClickListener {
         private LsItem   item;
         private RootAdapter owner;
@@ -733,7 +787,7 @@ public class RootAdapter extends CommanderAdapterBase {
         @Override
         public void onClick( DialogInterface idialog, int whichButton ) {
             if( whichButton == DialogInterface.BUTTON_POSITIVE )
-                owner.Execute( ctv.getText().toString(), bbc.isChecked() );
+                owner.executeToViewer( ctv.getText().toString(), bbc.isChecked() );
             idialog.dismiss();
         }
     }
@@ -800,8 +854,6 @@ Log.v( TAG, "Sending EOT byte" );
                     final int END_OF_TRANSMISSION = 4; 
                     os.write( '\n' );
                     os.write( END_OF_TRANSMISSION );
-                    os.write( 3 );
-                    os.write( 3 );
                     os.flush();
 Log.v( TAG, "Sending the exit command" );
                     os.write( "\nexit\n".getBytes() );
@@ -914,8 +966,6 @@ Log.v( TAG, "The process has exited" );
             worker.start();
             return;
         }
-        
-        
         if( contentEngine != null ) {
             contentEngine.close();
             contentEngine = null;

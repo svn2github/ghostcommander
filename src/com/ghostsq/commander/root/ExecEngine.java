@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.ghostsq.commander.TextViewer;
 import com.ghostsq.commander.adapters.Engine;;
 
 public class ExecEngine extends Engine {
@@ -24,14 +25,14 @@ public class ExecEngine extends Engine {
     private   StringBuilder result;
     private   boolean done = false;
     
-    ExecEngine( Context context_, Handler h ) {
+    protected ExecEngine( Context context_, Handler h ) {
         super( h );
         context = context_;
         where = null;
         command = null;
         result = null;
     }
-    ExecEngine( Context context_, Handler h, String where_, String command_, boolean use_bb, int timeout ) {
+    public ExecEngine( Context context_, Handler h, String where_, String command_, boolean use_bb, int timeout ) {
         super( h );
         context = context_;
         where = where_;
@@ -156,7 +157,7 @@ public class ExecEngine extends Engine {
     }
 
     protected boolean procError( BufferedReader es ) throws IOException {
-        if( es.ready() ) {
+        while( es.ready() ) {
             String err_str = es.readLine();
             if( err_str.trim().length() > 0 ) {
                 error( err_str );

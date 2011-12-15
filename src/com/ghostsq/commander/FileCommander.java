@@ -297,6 +297,14 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     }
 
     @Override
+    public void issue( Intent in, int ret ) {
+        if( ret == 0 )
+            startActivity( in );
+        else
+            startActivityForResult( in, ret );
+    }
+    
+    @Override
     protected void onActivityResult( int requestCode, int resultCode, Intent data ) {
         super.onActivityResult( requestCode, resultCode, data );
         switch( requestCode ) { 

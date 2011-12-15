@@ -4,6 +4,7 @@
 package com.ghostsq.commander;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 
 /**
@@ -39,10 +40,16 @@ public interface Commander {
 
     public final static int  OPEN = 903, OPEN_WITH = 902, SEND_TO = 236, COPY_NAME = 390, FAV_FLD = 414;
 	
-	/**
-	 * @return current UI context
-	 */
-	public Context getContext();
+    /**
+     * @return current UI context
+     */
+    public Context getContext();
+
+    /**
+     * @param in  - an intent to launch
+     * @param ret - if not zero,  startActivityForResult( in, ret ) will be called
+     */
+    public void issue( Intent in, int ret );
 
 	/**
 	 * @param msg - message to show in an alert dialog

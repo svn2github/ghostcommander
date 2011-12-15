@@ -72,7 +72,7 @@ public class Permissions {
     }
     
     public String toString() {
-        StringBuilder a = new StringBuilder();
+        StringBuilder a = new StringBuilder( 64 );
         a.append( "-" );
         a.append( ur ? "r" : "-" ).append( uw ? "w" : "-" ).append( ux ? ( us ? "s" : "x" ) : ( us ? "S" : "-" ) );
         a.append( gr ? "r" : "-" ).append( gw ? "w" : "-" ).append( gx ? ( us ? "s" : "x" ) : ( us ? "S" : "-" ) );
@@ -81,8 +81,24 @@ public class Permissions {
         return a.toString();
     }
     
+    StringBuilder generateChmodString() {
+        StringBuilder a = new StringBuilder( 256 );
+        a.append( 'u' ).append( ur ? '+' : '-' ).append( 'r' ).append( ',' );
+        a.append( 'u' ).append( uw ? '+' : '-' ).append( 'w' ).append( ',' );
+        a.append( 'u' ).append( ux ? '+' : '-' ).append( 'x' ).append( ',' );
+        a.append( 'u' ).append( us ? '+' : '-' ).append( 's' ).append( ',' );
+        a.append( 'g' ).append( gr ? '+' : '-' ).append( 'r' ).append( ',' );
+        a.append( 'g' ).append( gw ? '+' : '-' ).append( 'w' ).append( ',' );
+        a.append( 'g' ).append( gx ? '+' : '-' ).append( 'x' ).append( ',' );
+        a.append( 'g' ).append( gs ? '+' : '-' ).append( 's' ).append( ',' );
+        a.append( 'o' ).append( or ? '+' : '-' ).append( 'r' ).append( ',' );
+        a.append( 'o' ).append( ow ? '+' : '-' ).append( 'w' ).append( ',' );
+        a.append( 'o' ).append( ox ? '+' : '-' ).append( 'x' ).append( ',' );
+        a.append( ot ? '+' : '-' ).append( 't' );  
+        return a;
+    }
     StringBuilder generateChmodString( Permissions np ) {
-        StringBuilder a = new StringBuilder();
+        StringBuilder a = new StringBuilder( 256 );
         if( np.ur != ur ) {
             a.append( 'u' ).append( np.ur ? '+' : '-' ).append( 'r' );  
         }
@@ -146,10 +162,15 @@ public class Permissions {
         }
         return a;
     }
+    StringBuilder generateChownString() {
+        StringBuilder a = new StringBuilder( 256 );
+        a.append( user ).append( "." ).append( group );
+        return a;
+    }
     StringBuilder generateChownString( Permissions np ) {
         if( np.user  == null || np.user.length()  == 0 ) return null;
         if( np.group == null || np.group.length() == 0 ) return null;
-        StringBuilder a = new StringBuilder();
+        StringBuilder a = new StringBuilder( 256 );
         a.append( np.user ).append( "." ).append( np.group );
         return a;
     }
