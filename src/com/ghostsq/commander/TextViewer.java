@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,6 +40,11 @@ public class TextViewer extends Activity {
         super.onCreate( savedInstanceState );
         boolean ct_enabled = requestWindowFeature( Window.FEATURE_CUSTOM_TITLE );
         setContentView( R.layout.textvw );
+        SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
+        int fs = Integer.parseInt( shared_pref != null ? shared_pref.getString( "font_size", "12" ) : "12" );
+        TextView text_view = (TextView)findViewById( R.id.text_view );
+        text_view.setTextSize( fs );
+        
         if( ct_enabled ) {
             getWindow().setFeatureInt( Window.FEATURE_CUSTOM_TITLE, R.layout.atitle );
             TextView act_name_tv = (TextView)findViewById( R.id.act_name );
@@ -58,8 +64,9 @@ public class TextViewer extends Activity {
         if( !loadData() )
             finish();
         TextView file_name_tv = (TextView)findViewById( R.id.file_name );
-        if( file_name_tv!= null )
-            file_name_tv.setText( " - " + uri.getPath() );
+        String path = uri.getPath();
+        if( file_name_tv != null && path != null )
+            file_name_tv.setText( " - " + path );
         
     }
 

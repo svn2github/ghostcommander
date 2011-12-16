@@ -1,7 +1,6 @@
 package com.ghostsq.commander;
 
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -17,8 +16,11 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -28,7 +30,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Editor extends Activity {
+public class Editor extends Activity implements TextWatcher {
     private final static String TAG = "EditorActivity";
     private final static String SP_ENC = "encoding";
 	final static int MENU_SAVE = 214, MENU_SVAS = 212, MENU_RELD = 439, MENU_WRAP = 241, MENU_ENC = 363, MENU_EXIT = 323;
@@ -37,41 +39,41 @@ public class Editor extends Activity {
 	private boolean horScroll = true;
 	private Uri uri;
 	private CommanderAdapter ca;
-	private static boolean reminded = false;
+	private boolean dirty = false;
 	public  String encoding;
 	
     /** Called when the activity is first created. */
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        SharedPreferences prefs = getPreferences( MODE_PRIVATE );
-        if( prefs != null )
-            encoding = prefs.getString( SP_ENC, "" );
-        
-        
-        boolean ct_enabled = requestWindowFeature( Window.FEATURE_CUSTOM_TITLE );
-        setContentView(R.layout.editor);
-        te = (EditText)findViewById( R.id.editor );
-        if( ct_enabled ) {
-            getWindow().setFeatureInt( Window.FEATURE_CUSTOM_TITLE, R.layout.atitle );
-            TextView act_name_tv = (TextView)findViewById( R.id.act_name );
-            if( act_name_tv != null )
-                act_name_tv.setText( R.string.editor_label );
+        try {
+            SharedPreferences prefs = getPreferences( MODE_PRIVATE );
+            if( prefs != null )
+                encoding = prefs.getString( SP_ENC, "" );
+            boolean ct_enabled = requestWindowFeature( Window.FEATURE_CUSTOM_TITLE );
+            setContentView(R.layout.editor);
+            te = (EditText)findViewById( R.id.editor );
+            te.addTextChangedListener( this );
+            
+            SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
+            int fs = Integer.parseInt( shared_pref != null ? shared_pref.getString( "font_size", "12" ) : "12" );
+            te.setTextSize( fs );
+            if( ct_enabled ) {
+                getWindow().setFeatureInt( Window.FEATURE_CUSTOM_TITLE, R.layout.atitle );
+                TextView act_name_tv = (TextView)findViewById( R.id.act_name );
+                if( act_name_tv != null )
+                    act_name_tv.setText( R.string.editor_label );
+            }
+            uri = getIntent().getData();
+            if( !loadData() )
+                finish();
+            TextView file_name_tv = (TextView)findViewById( R.id.file_name );
+            if( file_name_tv!= null )
+                file_name_tv.setText( " - " + uri.getPath() );
         }
-    }
-    @Override
-    protected void onStart() {
-        super.onStart();
-        SharedPreferences prefs = getPreferences( MODE_PRIVATE );
-        if( prefs != null )
-            encoding = prefs.getString( SP_ENC, "" );
-        uri = getIntent().getData();
-        if( !loadData() )
-            finish();
-        TextView file_name_tv = (TextView)findViewById( R.id.file_name );
-        if( file_name_tv!= null )
-            file_name_tv.setText( " - " + uri.getPath() );
+        catch( Exception e ) {
+            Log.e( TAG, "", e );
+        }
     }
     
     @Override
@@ -81,6 +83,38 @@ public class Editor extends Activity {
         editor.putString( SP_ENC, encoding == null ? "" : encoding );
         editor.commit();
     }
+
+    @Override
+    public boolean onKeyDown( int keyCode, KeyEvent event ) {
+        switch( keyCode ) {
+        case KeyEvent.KEYCODE_BACK:
+            if( dirty ) {
+                DialogInterface.OnClickListener ocl = new DialogInterface.OnClickListener() {
+                        public void onClick( DialogInterface dialog, int which_button ) {
+                            if( which_button == DialogInterface.BUTTON_POSITIVE ) {
+                                try {
+                                    if( !Editor.this.Save( uri ) )
+                                        Editor.this.showMessage( Editor.this.getString( R.string.cant_save ) );
+                                } catch( Exception e ) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            Editor.this.finish();
+                        }
+                    };
+                new AlertDialog.Builder( this )
+                        .setIcon( android.R.drawable.ic_dialog_alert )
+                        .setTitle( R.string.save )
+                        .setMessage( R.string.not_saved )
+                        .setPositiveButton( R.string.save, ocl )
+                        .setNegativeButton( R.string.dialog_cancel, ocl )
+                        .show();
+                return true;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+    
     
     @Override
     public boolean onPrepareOptionsMenu( Menu menu ) {
@@ -177,6 +211,7 @@ public class Editor extends Activity {
                         CharSequence cs = Utils.readStreamToBuffer( is, encoding );
                         ca.closeStream( is );
                         te.setText( cs );
+                        dirty = false; 
                         return true;
                     }
                 }
@@ -219,13 +254,25 @@ public class Editor extends Activity {
                         end = len-1;
                 }
             }
-Log.v( TAG, "Data is sent to the stream" );            
-            //osw.close();
+            //Log.v( TAG, "Data is sent to the stream" );            
             ca.closeStream( os );
+            dirty = false; 
+            File f = new File( save_uri.getPath() );
+            showMessage( getString( R.string.saved, f.getName() ) );
             return true;
         } catch( Throwable e ) {
             Log.e( TAG, Favorite.screenPwd( save_uri ), e );
         }
         return false;
+    }
+    @Override
+    public void afterTextChanged( Editable s ) {
+        dirty = true;
+    }
+    @Override
+    public void beforeTextChanged( CharSequence s, int start, int count, int after ) {
+    }
+    @Override
+    public void onTextChanged( CharSequence s, int start, int before, int count ) {
     }
 }

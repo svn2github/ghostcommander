@@ -182,7 +182,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                             b.setTextColor( 0xFFFFFFFF );
                             LinearLayout.LayoutParams lllp = new LinearLayout.LayoutParams( 
                                     LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT );
-                            lllp.rightMargin = 4;
+                            lllp.rightMargin = 2;
                             b.setLayoutParams( lllp );
                         }
                         b.setFocusable( false );
@@ -697,6 +697,24 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         }
 
         try {
+            Uri u;
+            if( file_name == null || file_name.length() == 0 ) {
+                int pos = getSelection( true );
+                CommanderAdapter.Item item = (CommanderAdapter.Item)((ListAdapter)ca).getItem( pos );
+                if( item == null ) {
+                    c.showError( c.getString( R.string.cant_open ) );
+                    return;
+                }
+                if( item.dir ) {
+                    c.showError( c.getString( R.string.cant_open_dir, item.name ) );
+                    return;
+                }
+                u = ca.getItemUri( pos );
+            }
+            else 
+                u = Uri.parse( file_name );
+            if( u == null ) return;
+
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
             final String GC_EDITOR = c.getString( R.string.value_editor_activity );
             String full_class_name = sharedPref.getString( "editor_activity", GC_EDITOR );
@@ -708,12 +726,6 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 return;
             }
             else {
-                Uri u;
-                if( file_name == null || file_name.length() == 0 )
-                    u = ca.getItemUri( getSelection( true ) );
-                else
-                    u = Uri.parse( file_name );
-                if( u == null ) return;
                 String scheme = u.getScheme();
                 boolean local = CA.isLocal( scheme );
                 boolean editable = local;
@@ -739,13 +751,16 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         }
     }
     public final void openForView() {
-        String n = getSelectedItemName( true );
-        if( n == null ) return;
+        int pos = getSelection( true );
+        if( pos < 0 ) return;
+        String name = null;
         try {
-            Uri uri;
             CommanderAdapter ca = getListAdapter( true );
+            name = ca.getItemName( pos, true );
+            if( name == null ) return;
+            Uri uri;
             if( ca instanceof FSAdapter ) {
-                File f = new File( n );
+                File f = new File( name );
                 if( !f.exists() ) return;
                 if( !f.isFile() ) {
                     showSizes();
@@ -754,8 +769,17 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 uri = Uri.parse( "file://" + f.getAbsolutePath() ); 
             }
             else
-                uri = Uri.parse( n );
-            String mime = Utils.getMimeByExt( Utils.getFileExt( n ) );
+                uri = Uri.parse( name );
+            CommanderAdapter.Item item = (CommanderAdapter.Item)((ListAdapter)ca).getItem( pos );
+            if( item.dir ) {
+                c.showError( c.getString( R.string.cant_open_dir, name ) );
+                return;
+            }
+            if( item.size <= 0 ) {
+                c.showError( c.getString( R.string.cant_view_empt, name ) );
+                return;
+            }
+            String mime = Utils.getMimeByExt( Utils.getFileExt( name ) );
             if( mime == null ) return;                
             Intent i = new Intent( c, mime.startsWith( "image/" ) ? 
                     PictureViewer.class : TextViewer.class );
@@ -763,7 +787,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             c.startActivity( i );
         }
         catch( Exception e ) {
-            Log.e( TAG, "Can't view the file " + n, e );
+            Log.e( TAG, "Can't view the file " + name, e );
         }
     }
     

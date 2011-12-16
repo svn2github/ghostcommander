@@ -76,6 +76,7 @@
 <string name="dialog_select">Пометить</string>
 <string name="dialog_unselect">Снять пометку</string>
 <string name="operation">Операция</string>
+<string name="view_title">Просмотр</string>
 <string name="edit_title">Редактор</string>
 <string name="newf_prompt">Имя нового файла</string>
 <string name="mkdir_title">Создание папки</string>
@@ -263,7 +264,7 @@
 <string name="summary_busybox_location">В случае если он находится не в пути поиска.</string>
 <string name="execute_command">Исполнить команду</string>
 <string name="nothing_to_open">Не ясно что редактировать</string>
-<string name="remind_to_save">Не забудьте сохранить изменения через меню</string>
+<string name="remind_to_save">Не забудьте сохранить изменения!</string>
 <string name="save">Сохранить</string>
 <string name="save_as">Сохранить как...</string>
 <string name="revert">Восстановить</string>

@@ -531,15 +531,15 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             boolean root_adapter = this instanceof RootAdapter;
             if( fs_adapter || root_adapter )
                 menu.add( 0, R.id.sz, 0, R.string.show_size );
-            if( num <= 1 )
-                menu.add( 0, R.id.F3, 0, R.string.F3 );
+            if( num <= 1 && file )
+                menu.add( 0, R.id.F3, 0, R.string.view_title );
             if( ( fs_adapter || root_adapter ) && num <= 1 && file ) 
-                menu.add( 0, R.id.F4, 0, R.string.F4 );
+                menu.add( 0, R.id.F4, 0, R.string.edit_title );
             if( fs_adapter && num <= 1 && file )  
                 menu.add( 0, Commander.SEND_TO, 0, R.string.send_to );
-            menu.add( 0, R.id.F5, 0, R.string.F5 );
-            menu.add( 0, R.id.F6, 0, R.string.F6 );
-            menu.add( 0, R.id.F8, 0, R.string.F8 );
+            menu.add( 0, R.id.F5, 0, R.string.copy_title );
+            menu.add( 0, R.id.F6, 0, R.string.move_title );
+            menu.add( 0, R.id.F8, 0, R.string.delete_title );
             if( fs_adapter && file && num <= 1 ) 
                 menu.add( 0, Commander.OPEN_WITH, 0, R.string.open_with );
             if( fs_adapter )            

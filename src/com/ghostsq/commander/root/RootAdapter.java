@@ -252,7 +252,7 @@ public class RootAdapter extends CommanderAdapterBase {
             String s = "";
             String path = Utils.mbAddSl( uri.getPath() );
             for( int i = 0; i < s_items.length; i++ )
-                s += " " + path + s_items[i].getName();
+                s += " " + ExecEngine.prepFileName( path + s_items[i].getName() );
             in.putExtra( "cmd", getBusyBoxPath() + "stat " + s );
     	    commander.issue( in, 0 );
         }
@@ -581,19 +581,20 @@ public class RootAdapter extends CommanderAdapterBase {
                     File dst_file = new File( dest, src_file.getName() );
                     String esc_dst_fn = prepFileName( dst_file.getAbsolutePath() ); 
                     String esc_src_fn = prepFileName( full_name );
-                    String probe_fn = permByDest ? esc_dst_fn : esc_src_fn;
-                    String ls_cmd = "ls -l " + probe_fn;
-                    outCmd( false, ls_cmd, os );
-                    String str = null; 
-                    while( is.ready() ) {
-                        str = is.readLine();
-                        if( str != null && str.trim().length() > 0 )
-                            Log.v( TAG, ">>>" + str ); 
-                    }
                     LsItem probe_item = null;
-                    if( str != null )
-                        probe_item = new LsItem( str ); 
-                    
+                    if( permByDest || !move ) {
+                        String probe_fn = permByDest ? esc_dst_fn : esc_src_fn;
+                        String ls_cmd = "ls -l " + probe_fn;
+                        outCmd( false, ls_cmd, os );
+                        String str = null; 
+                        while( is.ready() ) {
+                            str = is.readLine();
+                            if( str != null && str.trim().length() > 0 )
+                                Log.v( TAG, ">>>" + str ); 
+                        }
+                        if( str != null )
+                            probe_item = new LsItem( str ); 
+                    }                    
                     String to_exec = cmd + " " + esc_src_fn + " " + esc_dest;
                     outCmd( true, to_exec, os );
                     if( procError( es ) ) return false;
@@ -838,23 +839,26 @@ public class RootAdapter extends CommanderAdapterBase {
                 if( mode_read ) {
                     osw = new OutputStreamWriter( os );
                     is = process.getInputStream();
-                    osw.write( "cat '" + file_path + "'\n" );
+                    
+                    osw.write( "cat " + ExecEngine.prepFileName( file_path ) + "\n" );
                     osw.flush();
                     for( int i = 0; i < 10; i++ ) {
                         if( is.available() > 0 ) break;
+                        Log.v( TAG, "Waiting the stream starts " + i );
                         Thread.sleep( 100 );
                     }
                 } else {
-                    String cmd = "cat >'" + file_path + "'\n";
+                    String cmd = "cat >" + ExecEngine.prepFileName( file_path ) + "\n";
                     os.write( cmd.getBytes() );
                     os.flush();
                 }
                 synchronized( this ) {
                     open_done = true;
                 }
-                for( int i = 0; i < 20; i++ ) {
+                for( int i = 0; i < 10; i++ ) {
                     synchronized( this ) {
                         if( may_close ) break;
+                        Log.v( TAG, "Waiting the stream can be closed " + i );
                         wait( 500 );
                     }
                 }

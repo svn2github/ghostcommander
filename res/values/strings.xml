@@ -121,6 +121,7 @@
     <string name="dialog_unselect">Unselect</string>
     
     <string name="operation">Operation</string>
+    <string name="view_title">View</string>
     <string name="edit_title">Edit</string>
     <string name="newf_prompt">New file name</string>
     <string name="mkdir_title">MkDir</string>
@@ -357,6 +358,8 @@ copied >5 will produce:
     
     <string name="nothing_to_open">Nothing to open</string>
     <string name="remind_to_save">Don\'t forget to Save your changes (using the menu)</string>
+    <string name="saved">\"%1$s\" saved.</string>
+    <string name="not_saved">Save the changes?</string>
     <string name="save">Save</string>
     <string name="save_as">Save as...</string>
     <string name="revert">Revert</string>
@@ -370,6 +373,8 @@ copied >5 will produce:
     <string name="no_such_file">No such file \"%1$s\"</string>
     <string name="too_big_file">The file \"%1$s\" is too big.</string>
     <string name="binary_file">The file \"%1$s\" is binary. You can damage it. Edit on your own risk.</string>    
+    <string name="cant_open_dir">\"%1$s\" is a directory.</string>    
+    <string name="cant_view_empt">File \"%1$s\" is empty.</string>    
     <string name="cant_open">Can not open the file.</string>    
     <string name="cant_save">Can not save the file.</string>
     <string name="nav_warn">You\'re opening a system folder. Tampering with it may lead to a failure. Proceed at this time?</string>
