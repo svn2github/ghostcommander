@@ -14,10 +14,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
 import android.net.Uri;
 import android.util.Log;
@@ -251,7 +253,7 @@ public class RootAdapter extends CommanderAdapterBase {
             String path = Utils.mbAddSl( uri.getPath() );
             for( int i = 0; i < s_items.length; i++ )
                 s += " " + path + s_items[i].getName();
-            in.putExtra( "cmd", "stat " + s );
+            in.putExtra( "cmd", getBusyBoxPath() + "stat " + s );
     	    commander.issue( in, 0 );
         }
 	}
@@ -540,6 +542,7 @@ public class RootAdapter extends CommanderAdapterBase {
         private String   dest;
         private boolean move = false;
         private boolean quiet;
+        private boolean permByDest = false;
         private int counter = 0;
         
         CopyToEngine( Context ctx, Handler h, String[] list, boolean move_, String dest_, boolean quiet_ ) {
@@ -550,6 +553,10 @@ public class RootAdapter extends CommanderAdapterBase {
             quiet = quiet_;
         }
 
+        public final void setPermByDest() {
+            permByDest = true;
+        }
+        
         @Override
         public void run() {
             if( !execute() )
@@ -570,8 +577,12 @@ public class RootAdapter extends CommanderAdapterBase {
                 for( int i = 0; i < num; i++ ) {
                     String full_name = src_full_names[i];
                     if( full_name == null ) continue;
-                    String esc_fn = prepFileName( full_name );
-                    String ls_cmd = "ls -l " + esc_fn;
+                    File src_file = new File( full_name );
+                    File dst_file = new File( dest, src_file.getName() );
+                    String esc_dst_fn = prepFileName( dst_file.getAbsolutePath() ); 
+                    String esc_src_fn = prepFileName( full_name );
+                    String probe_fn = permByDest ? esc_dst_fn : esc_src_fn;
+                    String ls_cmd = "ls -l " + probe_fn;
                     outCmd( false, ls_cmd, os );
                     String str = null; 
                     while( is.ready() ) {
@@ -579,27 +590,23 @@ public class RootAdapter extends CommanderAdapterBase {
                         if( str != null && str.trim().length() > 0 )
                             Log.v( TAG, ">>>" + str ); 
                     }
-                    LsItem src_item = null;
+                    LsItem probe_item = null;
                     if( str != null )
-                        src_item = new LsItem( str ); 
+                        probe_item = new LsItem( str ); 
                     
-                    String to_exec = cmd + " " + esc_fn + " " + esc_dest;
+                    String to_exec = cmd + " " + esc_src_fn + " " + esc_dest;
                     outCmd( true, to_exec, os );
                     if( procError( es ) ) return false;
                     
-                    if( src_item != null ) {
-                        File src_file = new File( full_name );
-                        File dst_file = new File( dest, src_file.getName() );
-                        String dst_path = dst_file.getAbsolutePath(); 
-                        
-                        Permissions src_p = new Permissions( src_item.getAttr() );
-                        String chown_cmd = "chown " + src_p.generateChownString().append(" ").append( dst_path ).toString();
+                    if( probe_item != null ) {
+                        Permissions src_p = new Permissions( probe_item.getAttr() );
+                        String chown_cmd = "chown " + src_p.generateChownString().append(" ").append( esc_dst_fn ).toString();
                         outCmd( false, chown_cmd, os );
-                        String chmod_cmd = "chmod " + src_p.generateChmodString().append(" ").append( dst_path ).toString();
+                        String chmod_cmd = "chmod " + src_p.generateChmodString().append(" ").append( esc_dst_fn ).toString();
                         outCmd( true, chmod_cmd, os );
                     }
                     
-                    if( !quiet ) sendProgress( esc_fn + "   ", (int)(i * conv) );
+                    if( !quiet ) sendProgress( full_name + "   ", (int)(i * conv) );
                     counter++;
                 }
                 return true;
@@ -750,10 +757,15 @@ public class RootAdapter extends CommanderAdapterBase {
         }
     }
 
+    public final String getBusyBoxPath() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( ctx );
+        return sharedPref.getString( "busybox_path", "busybox" ) + " ";            
+    }
+    
     public void executeToViewer( String command, boolean bb ) {
             Intent in = new Intent( ctx, TextViewer.class );
             in.setData( Uri.parse( "exec:" ) );
-            in.putExtra( "cmd", "cd " + uri.getPath() + " ; " + ( bb ? "busybox " : "" ) + command );
+            in.putExtra( "cmd", "cd " + uri.getPath() + " ; " + ( bb ? getBusyBoxPath() : "" ) + command );
             commander.issue( in, 0 );
     }    
     
@@ -961,8 +973,11 @@ Log.v( TAG, "The process has exited" );
     public void closeStream( Closeable s ) {
         if( s instanceof FileOutputStream ) {
             if( tmp_f == null || dst_f == null ) return;
-            String command = "mv '" + tmp_f.getAbsolutePath() + "' '" + dst_f.getAbsolutePath() + "'"; 
-            worker = new ExecEngine( ctx, workerHandler, null, command, true, 500 );
+            
+            CopyToEngine cte = new CopyToEngine( ctx, workerHandler, new String[] { tmp_f.getAbsolutePath() },
+                    true, dst_f.getParent(), true );
+            cte.setPermByDest();
+            worker = cte;
             worker.start();
             return;
         }

@@ -528,11 +528,12 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 return;
             }
             boolean fs_adapter = this instanceof FSAdapter || this instanceof FindAdapter;
-            if( fs_adapter )
+            boolean root_adapter = this instanceof RootAdapter;
+            if( fs_adapter || root_adapter )
                 menu.add( 0, R.id.sz, 0, R.string.show_size );
             if( num <= 1 )
                 menu.add( 0, R.id.F3, 0, R.string.F3 );
-            if( ( fs_adapter || this instanceof RootAdapter ) && num <= 1 && file ) 
+            if( ( fs_adapter || root_adapter ) && num <= 1 && file ) 
                 menu.add( 0, R.id.F4, 0, R.string.F4 );
             if( fs_adapter && num <= 1 && file )  
                 menu.add( 0, Commander.SEND_TO, 0, R.string.send_to );
