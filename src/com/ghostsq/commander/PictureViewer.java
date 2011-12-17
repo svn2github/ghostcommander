@@ -96,7 +96,7 @@ public class PictureViewer extends Activity {
         }
         
         protected void preExecute() {
-            pd = ProgressDialog.show( ctx, "", "Loading...", true, true );
+            pd = ProgressDialog.show( ctx, "", getString( R.string.loading ), true, true );
         }
         
         @Override

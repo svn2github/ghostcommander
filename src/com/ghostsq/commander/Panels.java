@@ -723,14 +723,14 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             int last_dot_pos = full_class_name.lastIndexOf('.');
             if( last_dot_pos < 0 ) {
                 c.showMessage( "Invalid class name: " + full_class_name );
-                return;
+                full_class_name = GC_EDITOR;
             }
-            else {
+            {
                 String scheme = u.getScheme();
                 boolean local = CA.isLocal( scheme );
                 boolean editable = local;
                 if( !editable && full_class_name.equals( GC_EDITOR ) )
-                     editable = "root".equals( scheme );
+                     editable = "root".equals( scheme ) || "smb".equals( scheme );
                 if( !editable ) {
                     c.showMessage( c.getString( R.string.edit_err ) );
                     return;
@@ -1318,7 +1318,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         }
         return s;
     }
-	public void setState( State s ) {
+	public void setState( State s, int dont_restore ) {
 	    Log.v( TAG, "setState()" );
 	    if( s == null ) return;
     	resetQuickSearch();
@@ -1327,11 +1327,16 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         else
             if( s.fav_uris != null )
                 favorites.setFromOldString( s.fav_uris );
-    	current = s.current;
-    	Uri lu = s.left == null ? Uri.parse( "home:" ) : (new Favorite( s.left )).getUriWithAuth(); 
-    	NavigateInternal( LEFT, lu, s.leftItem );
-    	Uri ru = s.right == null ? Uri.parse( DEFAULT_LOC ) : (new Favorite( s.right )).getUriWithAuth();
-        NavigateInternal( RIGHT, ru, s.rightItem );
+        if( dont_restore != LEFT && dont_restore != RIGHT )
+    	    current = s.current;
+    	if( dont_restore != LEFT ) {
+        	Uri lu = s.left == null ? Uri.parse( "home:" ) : (new Favorite( s.left )).getUriWithAuth(); 
+        	NavigateInternal( LEFT, lu, s.leftItem );
+    	}
+    	if( dont_restore != RIGHT ) {
+        	Uri ru = s.right == null ? Uri.parse( DEFAULT_LOC ) : (new Favorite( s.right )).getUriWithAuth();
+            NavigateInternal( RIGHT, ru, s.rightItem );
+    	}
         applyColors();
         setPanelCurrent( s.current );
     }

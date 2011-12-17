@@ -10,8 +10,6 @@ import com.ghostsq.commander.root.MountAdapter;
 import com.ghostsq.commander.root.RootAdapter;
 import com.ghostsq.commander.utils.Utils;
 
-import dalvik.system.DexClassLoader;
-
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Dialog;
@@ -48,7 +46,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     
     private ArrayList<Dialogs> dialogs;
     public  Panels  panels;
-    private boolean on = false, exit = false, dont_restore = false, view_processed = false, 
+    private boolean on = false, exit = false, dont_restore = false, view_action = false, 
                     sxs_auto = true, show_confirm = true, back_exits = false;
     private String  lang = ""; // just need to issue a warning on change
     private int     file_exist_resolution = Commander.UNKNOWN;
@@ -121,30 +119,34 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             dont_restore = false;
         else {
             Utils.changeLanguage( this );
+
             SharedPreferences prefs = getPreferences( MODE_PRIVATE );
             Panels.State s = panels.new State();
             s.restore( prefs );
-            panels.setState( s );
+            
             Intent intent = getIntent();
             String action = intent.getAction();
             Log.i( TAG, "Action: " + action );
-            if( !view_processed && Intent.ACTION_VIEW.equals( action ) ) {
+            int use_panel = -1;
+            if( !view_action && Intent.ACTION_VIEW.equals( action ) ) {
                 Uri uri = intent.getData();
                 if( "application/x-zip-compressed".equals( intent.getType() ) ||
                                  "application/zip".equals( intent.getType() ) )
                     uri = uri.buildUpon().scheme( "zip" ).build();
-                panels.Navigate( 0, uri, null );
-                panels.setPanelCurrent( 0 );
-                view_processed = true;
+                use_panel = Panels.LEFT;
+                panels.Navigate( use_panel, uri, null );    
+                view_action = true;
             }
-            
+            panels.setState( s, use_panel );
             final String FT = "first_time";
-            if( prefs.getBoolean( FT, true ) ) {
+            if( !view_action && prefs.getBoolean( FT, true ) ) {
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putBoolean( FT, false );
                 editor.commit();
                 showInfo( getString( R.string.keys_text) );
             }
+            if( view_action )
+                panels.setPanelCurrent( use_panel );
         }
     }
 
@@ -199,7 +201,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         if( savedInstanceState != null ) {
             Panels.State s = panels.new State();
             s.restore( savedInstanceState );
-            panels.setState( s );
+            panels.setState( s, -1 );
         }
         super.onRestoreInstanceState( savedInstanceState );
     }
@@ -593,30 +595,42 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     }
 
     @Override
-    public void Open( String path ) {
+    public void Open( Uri uri ) {
         try {
-            Intent i = new Intent( Intent.ACTION_VIEW );
-            Intent op_intent = getIntent();
-            if( op_intent != null ) {
-                String action = op_intent.getAction();
-                if( Intent.ACTION_PICK.equals( action ) ) {
-                    i.setData( Uri.parse( path ) );
-                    setResult( RESULT_OK, i );
-                    finish();
+            if( uri == null ) return;
+            String scheme = uri.getScheme();
+            if( scheme == null || scheme.length() == 0 ) { 
+                String path = uri.getPath();
+                Intent i = new Intent( Intent.ACTION_VIEW );
+                Intent op_intent = getIntent();
+                if( op_intent != null ) {
+                    String action = op_intent.getAction();
+                    if( Intent.ACTION_PICK.equals( action ) ) {
+                        i.setData( uri );
+                        setResult( RESULT_OK, i );
+                        finish();
+                        return;
+                    }
+                    if( Intent.ACTION_GET_CONTENT.equals( action ) ) {
+                        i.setData( Uri.parse( FileProvider.URI_PREFIX + path ) );
+                        setResult( RESULT_OK, i );
+                        finish();
+                        return;
+                    }
+                }
+                String ext = Utils.getFileExt( path );
+                if( ext != null && ext.compareToIgnoreCase( ".zip" ) == 0 ) {
+                    Navigate( uri.buildUpon().scheme( "zip" ).build(), null );
                     return;
                 }
-                if( Intent.ACTION_GET_CONTENT.equals( action ) ) {
-                    i.setData( Uri.parse( FileProvider.URI_PREFIX + path ) );
-                    setResult( RESULT_OK, i );
-                    finish();
-                    return;
-                }
+                String mime = Utils.getMimeByExt( ext );
+                i.setDataAndType( uri.buildUpon().scheme( "file" ).build(), mime );
+                startActivity( i );
             }
-            String mime = Utils.getMimeByExt( Utils.getFileExt( path ) );
-            i.setDataAndType( Uri.fromFile( new File( path ) ), mime );
-            startActivity( i );
         } catch( ActivityNotFoundException e ) {
-            showMessage("Application for open '" + path + "' is not available, ");
+            showMessage("Application for open '" + uri.toString() + "' is not available, ");
+        } catch( Exception e ) {
+            Log.e( TAG, uri.toString(), e );
         }
     }
 

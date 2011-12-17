@@ -78,6 +78,7 @@
 <string name="operation">Операция</string>
 <string name="view_title">Просмотр</string>
 <string name="edit_title">Редактор</string>
+<string name="edit_err">Не редактируемо.</string>
 <string name="newf_prompt">Имя нового файла</string>
 <string name="mkdir_title">Создание папки</string>
 <string name="mkdir_prompt">Имя новой папки</string>
@@ -115,6 +116,7 @@
 <string name="unpacking">Распаковывается \n\"%s\"...</string>
 <string name="unpacked_p">Распакован \n\"%s\"   </string>
 <string name="packing">Упаковывается \n\"%s\"...</string>
+<string name="loading">Загрузка...</string>
 <string name="retrieving">Скачивается \n\"%s\"...</string>
 <string name="uploading">Закачивается \n\"%s\"...</string>
 <string name="uploaded_p">Закачан \n\"%s\"   </string>

@@ -83,7 +83,7 @@ public interface Commander {
 	 * Execute (launch) the specified item.  
 	 * @param uri to open by sending an Intent
 	 */
-	public void Open( String uri );
+	public void Open( Uri uri );
 
     /**
      * The waiting thread call after it sent the OPERATION_SUSPENDED_FILE_EXIST notification

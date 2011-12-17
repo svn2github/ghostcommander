@@ -446,16 +446,10 @@ public class FSAdapter extends CommanderAdapterBase {
         else {
             File file = items[position - 1].f;
             if( file == null ) return;
-            if( file.isDirectory() ) {
+            if( file.isDirectory() )
                 commander.Navigate( Uri.parse( Utils.escapeUriMarkup( file.getAbsolutePath() ) ), null );
-            }
-            else {
-                String ext = Utils.getFileExt( file.getName() );
-                if( ext != null && ext.compareToIgnoreCase( ".zip" ) == 0 )
-                    commander.Navigate( (new Uri.Builder()).scheme( "zip" ).authority( "" ).path( file.getAbsolutePath() ).build(), null );
-                else
-                    commander.Open( file.getAbsolutePath() );
-            }
+            else
+                commander.Open( Uri.parse( file.getAbsolutePath() ) );
         }
     }
 
