@@ -818,67 +818,66 @@ public class RootAdapter extends CommanderAdapterBase {
         private String file_path;
         private InputStream  is = null;
         private OutputStream os = null;
-        private boolean mode_read = true;
         private boolean open_done = false;
         private boolean may_close = false;
         
-        ContentEngine( String file_path_, boolean mode_read_ ) {
+        ContentEngine( String file_path_ ) {
             file_path = file_path_;
-            mode_read = mode_read_; 
         }
 
         @Override
         public void run() {
-            setName( "ContentEngine " + ( mode_read ? "read" : "write" ) );
+            setName( "ContentEngine" );
             OutputStreamWriter osw = null;
             BufferedReader     ebr = null;
             try {
                 Process process = Runtime.getRuntime().exec( "su" );
                 os = process.getOutputStream();
                 ebr = new BufferedReader( new InputStreamReader( process.getErrorStream() ) );
-                if( mode_read ) {
-                    osw = new OutputStreamWriter( os );
-                    is = process.getInputStream();
-                    
-                    osw.write( "cat " + ExecEngine.prepFileName( file_path ) + "\n" );
-                    osw.flush();
-                    for( int i = 0; i < 10; i++ ) {
-                        if( is.available() > 0 ) break;
-                        Log.v( TAG, "Waiting the stream starts " + i );
-                        Thread.sleep( 100 );
-                    }
-                } else {
-                    String cmd = "cat >" + ExecEngine.prepFileName( file_path ) + "\n";
-                    os.write( cmd.getBytes() );
-                    os.flush();
+                osw = new OutputStreamWriter( os );
+                is = process.getInputStream();
+                
+                osw.write( "cat " + ExecEngine.prepFileName( file_path ) + "\n" );
+                osw.flush();
+                for( int i = 0; i < 5; i++ ) {
+                    Thread.sleep( 10 );
+                    if( is.available() > 0 ) break;
+                    //Log.v( TAG, "Waiting the stream starts " + i );
                 }
+                boolean empty = is.available() <= 0; 
                 synchronized( this ) {
                     open_done = true;
                 }
-                for( int i = 0; i < 10; i++ ) {
+                for( int i = 0; i < 4; i++ ) {
+                    //Log.v( TAG, "Waiting loop " + i );
                     synchronized( this ) {
-                        if( may_close ) break;
-                        Log.v( TAG, "Waiting the stream can be closed " + i );
+                        //Log.v( TAG, "Waiting the stream can be closed " + i );
                         wait( 500 );
+                        if( empty ) {
+                            //Log.v( TAG, "We know the stream is empty, so won't let other thread waste precious time!" );
+                            break;
+                        }
+                        if( may_close ) {
+                            //Log.v( TAG, "Reading finished, now may be closed" );
+                            break;
+                        }
+                        /*
+                        try {
+                            Log.v( TAG, "Checking is there any data " + i );
+                            if( is.available() > 0 ) // there still data
+                                i = 0;
+                        }
+                        catch( IOException e ) {
+                            Log.e( TAG, "waiting " + i, e );
+                        }
+                        */
                     }
                 }
-                if( mode_read ) {
-                    osw.write( "exit\n" );
-                    osw.flush();
-                } else {
-Log.v( TAG, "Sending EOT byte" );
-                    final int END_OF_TRANSMISSION = 4; 
-                    os.write( '\n' );
-                    os.write( END_OF_TRANSMISSION );
-                    os.flush();
-Log.v( TAG, "Sending the exit command" );
-                    os.write( "\nexit\n".getBytes() );
-                    os.flush();
-                    Thread.sleep( 100 );
-                }
-Log.v( TAG, "Waitng the process exits" );
+                osw.write( "exit\n" );
+                osw.flush();
+                //Log.v( TAG, "Waitng the process exits" );
                 process.waitFor();
-Log.v( TAG, "The process has exited" );
+                //Log.v( TAG, "The process has exited" );
                 if( process.exitValue() != 0 ) {
                     Log.e( TAG, "Exit code " + process.exitValue() );
                 }
@@ -931,7 +930,7 @@ Log.v( TAG, "The process has exited" );
         try {
             if( u == null ) return null;
             String path = u.getPath();
-            contentEngine = new ContentEngine( path, true );
+            contentEngine = new ContentEngine( path );
             contentEngine.start();
             InputStream is = contentEngine.getInput();
             if( is == null ) 
@@ -955,17 +954,6 @@ Log.v( TAG, "The process has exited" );
                 return null;
             tmp_f = new File( root_f, dst_f.getName() );
             return new FileOutputStream( tmp_f );
-            
-            
-            
-            /*
-            contentEngine = new ContentEngine( path, false );
-            contentEngine.start();
-            OutputStream os = contentEngine.getOutput();
-            if( os == null ) 
-                contentEngine.close();
-            return os;
-            */
         } catch( Throwable e ) {
             Log.e( TAG, u.toString(), e );
         }

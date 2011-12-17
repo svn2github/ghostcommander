@@ -18,6 +18,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,7 +31,7 @@ import java.io.InputStream;
 public class TextViewer extends Activity {
     private final static String TAG = "TextViewerActivity";
     private final static String SP_ENC = "encoding";
-    final static int MENU_BOT = 595, MENU_TOP = 590, MENU_ENC = 363;
+    final static int VIEW_BOT = 595, VIEW_TOP = 590, VIEW_ENC = 363;
     private ScrollView scrollView;
     private Uri uri;
     public  String encoding;
@@ -38,20 +39,33 @@ public class TextViewer extends Activity {
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        boolean ct_enabled = requestWindowFeature( Window.FEATURE_CUSTOM_TITLE );
-        setContentView( R.layout.textvw );
-        SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
-        int fs = Integer.parseInt( shared_pref != null ? shared_pref.getString( "font_size", "12" ) : "12" );
-        TextView text_view = (TextView)findViewById( R.id.text_view );
-        text_view.setTextSize( fs );
-        
-        if( ct_enabled ) {
-            getWindow().setFeatureInt( Window.FEATURE_CUSTOM_TITLE, R.layout.atitle );
-            TextView act_name_tv = (TextView)findViewById( R.id.act_name );
-            if( act_name_tv != null )
-                act_name_tv.setText( R.string.textvw_label );
+        try {
+            boolean ct_enabled = requestWindowFeature( Window.FEATURE_CUSTOM_TITLE );
+            setContentView( R.layout.textvw );
+            SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
+            int fs = Integer.parseInt( shared_pref != null ? shared_pref.getString( "font_size", "12" ) : "12" );
+            TextView text_view = (TextView)findViewById( R.id.text_view );
+            text_view.setTextSize( fs );
+            
+            SharedPreferences color_pref = getSharedPreferences( Prefs.COLORS_PREFS, Activity.MODE_PRIVATE );
+            int bg_color = Prefs.getDefaultColor( Prefs.BGR_COLORS );
+            int fg_color = Prefs.getDefaultColor( Prefs.FGR_COLORS );
+            bg_color = color_pref.getInt( Prefs.BGR_COLORS, bg_color );
+            fg_color = color_pref.getInt( Prefs.FGR_COLORS, fg_color );
+            text_view.setBackgroundColor( bg_color );
+            text_view.setTextColor( fg_color );
+            
+            if( ct_enabled ) {
+                getWindow().setFeatureInt( Window.FEATURE_CUSTOM_TITLE, R.layout.atitle );
+                TextView act_name_tv = (TextView)findViewById( R.id.act_name );
+                if( act_name_tv != null )
+                    act_name_tv.setText( R.string.textvw_label );
+            }
+            scrollView = (ScrollView)findViewById( R.id.scroll_view );
         }
-        scrollView = (ScrollView)findViewById( R.id.scroll_view );
+        catch( Exception e ) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -92,26 +106,46 @@ public class TextViewer extends Activity {
         Log.i( TAG, "Restored State " + encoding );
         super.onRestoreInstanceState( savedInstanceState );
     }
+
+    @Override
+    public boolean onKeyDown( int keyCode, KeyEvent event ) {
+        char c = (char)event.getUnicodeChar();
+        switch( c ) {
+        case 'q':
+            finish();
+            return true;
+        case 'g':
+            return dispatchCommand( VIEW_TOP );
+        case 'G':
+            return dispatchCommand( VIEW_BOT );
+        }
+        return super.onKeyDown( keyCode, event );
+    }
     
     @Override
     public boolean onPrepareOptionsMenu( Menu menu ) {
         menu.clear();
-        menu.add( Menu.NONE, MENU_TOP, Menu.NONE, getString( R.string.go_top   ) ).setIcon( android.R.drawable.ic_media_previous );
-        menu.add( Menu.NONE, MENU_BOT, Menu.NONE, getString( R.string.go_end   ) ).setIcon( android.R.drawable.ic_media_next );
-        menu.add( Menu.NONE, MENU_ENC, Menu.NONE, Utils.getEncodingDescr( this, encoding, 
+        menu.add( Menu.NONE, VIEW_TOP, Menu.NONE, getString( R.string.go_top   ) ).setIcon( android.R.drawable.ic_media_previous );
+        menu.add( Menu.NONE, VIEW_BOT, Menu.NONE, getString( R.string.go_end   ) ).setIcon( android.R.drawable.ic_media_next );
+        menu.add( Menu.NONE, VIEW_ENC, Menu.NONE, Utils.getEncodingDescr( this, encoding, 
                                                      Utils.ENC_DESC_MODE_BRIEF ) ).setIcon( android.R.drawable.ic_menu_sort_alphabetically );
         return true;
     }
     @Override
     public boolean onMenuItemSelected( int featureId, MenuItem item ) {
-        switch( item.getItemId() ) {
-        case MENU_BOT:
+        if( dispatchCommand( item.getItemId() ) ) return true; 
+        return super.onMenuItemSelected( featureId, item );
+    }
+
+    public boolean dispatchCommand( int id ) {
+        switch( id ) {
+        case VIEW_BOT:
             scrollView.fullScroll( View.FOCUS_DOWN );
             return true;
-        case MENU_TOP:
+        case VIEW_TOP:
             scrollView.fullScroll( View.FOCUS_UP );
             return true;
-        case MENU_ENC: {
+        case VIEW_ENC: {
                 int cen = Integer.parseInt( Utils.getEncodingDescr( this, encoding, Utils.ENC_DESC_MODE_NUMB ) );
                 new AlertDialog.Builder( this )
                     .setTitle( R.string.encoding )
@@ -137,9 +171,9 @@ public class TextViewer extends Activity {
             } 
             */
         }
-        return super.onMenuItemSelected(featureId, item);
-    }
-
+        return false;
+    }    
+    
     private final boolean loadData() {
         if( uri != null ) { 
             try {

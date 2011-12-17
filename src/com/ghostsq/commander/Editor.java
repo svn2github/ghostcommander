@@ -58,6 +58,15 @@ public class Editor extends Activity implements TextWatcher {
             SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
             int fs = Integer.parseInt( shared_pref != null ? shared_pref.getString( "font_size", "12" ) : "12" );
             te.setTextSize( fs );
+            
+            SharedPreferences color_pref = getSharedPreferences( Prefs.COLORS_PREFS, Activity.MODE_PRIVATE );
+            int bg_color = Prefs.getDefaultColor( Prefs.BGR_COLORS );
+            int fg_color = Prefs.getDefaultColor( Prefs.FGR_COLORS );
+            bg_color = color_pref.getInt( Prefs.BGR_COLORS, bg_color );
+            fg_color = color_pref.getInt( Prefs.FGR_COLORS, fg_color );
+            te.setBackgroundColor( bg_color );
+            te.setTextColor( fg_color );            
+            
             if( ct_enabled ) {
                 getWindow().setFeatureInt( Window.FEATURE_CUSTOM_TITLE, R.layout.atitle );
                 TextView act_name_tv = (TextView)findViewById( R.id.act_name );
@@ -114,8 +123,7 @@ public class Editor extends Activity implements TextWatcher {
         }
         return super.onKeyDown(keyCode, event);
     }
-    
-    
+        
     @Override
     public boolean onPrepareOptionsMenu( Menu menu ) {
         menu.clear();

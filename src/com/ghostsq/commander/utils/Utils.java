@@ -273,7 +273,7 @@ public final class Utils {
                         isr = new InputStreamReader( is, encoding );
                     }
                     catch( UnsupportedEncodingException e ) {
-                        Log.e( "GC", encoding, e );
+                        Log.w( "GC", encoding, e );
                         isr = new InputStreamReader( is );
                     }
                 }
@@ -284,23 +284,24 @@ public final class Utils {
                 boolean available_supported = is.available() > 0;
                 while( true ) {
                     n = isr.read( chars, 0, bytes );
-                    Log.v( "readStreamToBuffer", "Have read " + n + " chars" );
+                    //Log.v( "readStreamToBuffer", "Have read " + n + " chars" );
                     if( n < 0 ) break;
+                    for( int i = 0; i < n; i++ ) {
+                        if( chars[i] == 0x0D ) chars[i] = ' ';
+                    }
                     sb.append( chars, 0, n );
                     if( available_supported ) {
                         for( int i = 0; i < 10; i++ ) {
                             if( is.available() > 0 ) break;
-                            Log.v( "readStreamToBuffer", "Waiting the rest " + i );
+                            //Log.v( "readStreamToBuffer", "Waiting the rest " + i );
                             Thread.sleep( 20 );
                         }
                         if( is.available() == 0 ) {
-                            Log.v( "readStreamToBuffer", "No more data!" );
+                            //Log.v( "readStreamToBuffer", "No more data!" );
                             break;
                         }
                     }
                 }
-                isr.close();
-                is.close();
                 return sb;
             } catch( Throwable e ) {
                 e.printStackTrace();

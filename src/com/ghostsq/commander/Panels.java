@@ -775,10 +775,6 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 c.showError( c.getString( R.string.cant_open_dir, name ) );
                 return;
             }
-            if( item.size <= 0 ) {
-                c.showError( c.getString( R.string.cant_view_empt, name ) );
-                return;
-            }
             String mime = Utils.getMimeByExt( Utils.getFileExt( name ) );
             if( mime == null ) return;                
             Intent i = new Intent( c, mime.startsWith( "image/" ) ? 
