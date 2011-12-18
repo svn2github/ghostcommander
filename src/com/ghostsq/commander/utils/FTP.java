@@ -363,17 +363,26 @@ public class FTP {
     		return false;
     	return executeCommand( "RNTO " + to );
     }
-    public final boolean store( String fn, InputStream in, FTP.ProgressSink report_to ) throws InterruptedException {
+    public final OutputStream prepStore( String fn ) {
     	
     	dataSocket = null;
         try {
         	if( !isLoggedIn() )
-        		return false;
+        		return null;
         	executeCommand( "TYPE I" );
         	dataSocket = executeDataCommand( "STOR " + fn );
-            if( dataSocket == null )
-            	return false;
-            OutputStream out = dataSocket.getOutputStream();
+            if( dataSocket != null )
+                return dataSocket.getOutputStream();
+        }
+        catch( Exception e ) {
+            debugPrint( "Exception: " + e );
+        }
+        return null;
+    }
+    public final boolean store( String fn, InputStream in, FTP.ProgressSink report_to ) 
+            throws InterruptedException {
+        try {
+            OutputStream out = prepStore( fn );
             if( out == null ) {
                 debugPrint( "data socket does not give up the output stream to upload a file" );
                 return false;

@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.net.UnknownHostException;
@@ -884,11 +885,27 @@ public class FTPAdapter extends CommanderAdapterBase {
         return null;
     }
     @Override
-    public void closeStream( Closeable is ) {
+    public OutputStream saveContent( Uri u ) {
+        try {
+            if( uri != null && !uri.getHost().equals( u.getHost() ) )
+                return null;
+            synchronized( ftp ) {
+                if( connectAndLogin( u ) > 0 ) {
+                    noHeartBeats = true;
+                    return ftp.prepStore( u.getPath() );
+                }
+            }
+        } catch( Exception e ) {
+            Log.e( TAG, u.getPath(), e );
+        }
+        return null;
+    }
+    @Override
+    public void closeStream( Closeable s ) {
         try {
             noHeartBeats = false;
-            if( is != null )
-                is.close();
+            if( s != null )
+                s.close();
         } catch( IOException e ) {
             e.printStackTrace();
         }

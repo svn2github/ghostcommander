@@ -12,10 +12,10 @@
             <corners
                 android:radius="2dp" />
             <padding
-                android:left="10dp"
-                android:top="5dp"
-                android:right="10dp"
-                android:bottom="5dp" />
+                android:left="6dp"
+                android:top="8dp"
+                android:right="6dp"
+                android:bottom="8dp" />
         </shape>
     </item>
     <item android:state_focused="true" >
@@ -30,10 +30,10 @@
             <corners
                 android:radius="2dp" />
             <padding
-                android:left="10dp"
-                android:top="5dp"
-                android:right="10dp"
-                android:bottom="5dp" />
+                android:left="6dp"
+                android:top="8dp"
+                android:right="6dp"
+                android:bottom="8dp" />
         </shape>
     </item>
     <item>        
@@ -48,10 +48,10 @@
             <corners
                 android:radius="2dp" />
             <padding
-                android:left="10dp"
-                android:top="5dp"
-                android:right="10dp"
-                android:bottom="5dp" />
+                android:left="6dp"
+                android:top="8dp"
+                android:right="6dp"
+                android:bottom="8dp" />
         </shape>
     </item>
 </selector>

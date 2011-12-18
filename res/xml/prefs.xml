@@ -84,11 +84,19 @@
                 android:title="@string/two_lines"
                 android:summary="@string/summary_two_lines"
                 android:defaultValue="false"/>
-        <CheckBoxPreference
+        <ListPreference
+                android:key="finger_friendly_a"
+                android:title="@string/finger_friendly"
+                android:summary="@string/summary_finger_friendly" 
+                android:entries="@array/panels_mode"
+                android:entryValues="@array/panels_mode_vals"
+                android:dialogTitle="@string/finger_friendly" 
+                android:defaultValue="y"/>                
+        <!--    CheckBoxPreference
                 android:key="finger_friendly"
                 android:title="@string/finger_friendly"
                 android:summary="@string/summary_finger_friendly"
-                android:defaultValue="true"/>
+                android:defaultValue="true"/-->
         <CheckBoxPreference
                 android:key="show_icons"
                 android:title="@string/show_icons"

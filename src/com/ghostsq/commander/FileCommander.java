@@ -145,7 +145,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 editor.commit();
                 showInfo( getString( R.string.keys_text) );
             }
-            if( view_action )
+            if( use_panel >= 0 && view_action )
                 panels.setPanelCurrent( use_panel );
         }
     }
@@ -211,16 +211,14 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         Utils.changeLanguage( this );
         super.onConfigurationChanged( newConfig );
         panels.setLayoutMode( sxs_auto ? newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE : panels.getLayoutMode() );
-            
-        
-/*// TODO: hide the numbers from the virtual buttons if there is no physical keyboard
+        /*
         // Checks whether a hardware keyboard is available
         if (newConfig.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO) {
             Toast.makeText(this, "keyboard visible", Toast.LENGTH_SHORT).show();
         } else if (newConfig.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_YES) {
             Toast.makeText(this, "keyboard hidden", Toast.LENGTH_SHORT).show();
         }
-*/
+        */
     }    
     
     @Override

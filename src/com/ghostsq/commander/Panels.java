@@ -36,12 +36,14 @@ import android.preference.PreferenceManager;
 import android.text.ClipboardManager;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -160,13 +162,11 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                  
                 boolean keyboard = sharedPref.getBoolean( "show_hotkeys", true ) || 
                                 c.getResources().getConfiguration().keyboard != Configuration.KEYBOARD_NOKEYS ;
-                /*
-                Log.v( TAG, "keyboard=" + c.getResources().getConfiguration().keyboard );
-                Log.v( TAG, "keyboardHidden=" + c.getResources().getConfiguration().keyboardHidden );
-                */
+
+                final int GINGERBREAD = 9;
+                final boolean bb = android.os.Build.VERSION.SDK_INT >= GINGERBREAD;
                 
                 Utils.changeLanguage( c );
-                
                 ToolButtons tba = new ToolButtons();
                 tba.restore( sharedPref, c );
                 int adapter_bit = ca.getType();
@@ -176,8 +176,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                     if( tb.isVisible() && ( adapter_bit & tb.getSuitableAdapter() ) != 0 ) {
                         Button b = new Button( c, null, android.R.attr.buttonStyleSmall );
                         b.setId( bid );
-                        final int GINGERBREAD = 9;
-                        if( android.os.Build.VERSION.SDK_INT >= GINGERBREAD ) {
+                        if( bb ) {
                             b.setBackgroundResource( R.drawable.tool_button );
                             b.setTextColor( 0xFFFFFFFF );
                             LinearLayout.LayoutParams lllp = new LinearLayout.LayoutParams( 
@@ -369,7 +368,19 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         try {
             applyColors();
             String fnt_sz = sharedPref.getString( "font_size", "12" );
-        	setFingerFriendly( sharedPref.getBoolean( "finger_friendly", true ), Integer.parseInt( fnt_sz ) );
+            
+            String ffs = sharedPref.getString( "finger_friendly_a", "y" );
+            boolean ff = false;
+            if( "a".equals( ffs ) ) {
+                Display disp = c.getWindowManager().getDefaultDisplay();
+                Configuration config = c.getResources().getConfiguration();
+                ff = config.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_YES || 
+                     disp.getWidth() < disp.getHeight();
+            }
+            else
+                ff = "y".equals( ffs );
+            
+        	setFingerFriendly( ff, Integer.parseInt( fnt_sz ) );
         	warnOnRoot =  sharedPref.getBoolean( "prevent_root", true );
             rootOnRoot = sharedPref.getBoolean( "root_root", false );
             arrowsLegacy = sharedPref.getBoolean( "arrow_mode", false );
@@ -695,7 +706,6 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             if( pos > 0 ) fa.editItem( pos );
             return;
         }
-
         try {
             Uri u;
             if( file_name == null || file_name.length() == 0 ) {
@@ -730,7 +740,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 boolean local = CA.isLocal( scheme );
                 boolean editable = local;
                 if( !editable && full_class_name.equals( GC_EDITOR ) )
-                     editable = "root".equals( scheme ) || "smb".equals( scheme );
+                     editable = "root".equals( scheme ) || "smb".equals( scheme ) || "ftp".equals( scheme );
                 if( !editable ) {
                     c.showMessage( c.getString( R.string.edit_err ) );
                     return;

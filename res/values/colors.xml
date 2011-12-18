@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#000</color>
-    <color name="darkGray">#222</color>
-
-    <color name="amber">#F84</color>
-    <color name="blood">#C65</color>
-    <color name="blue">#44F</color>
+    <color name="darkGray">#FF2A2A2A</color>
 
     <color name="bgr_def">#FF191919</color>    
     <color name="fgr_def">#FFF0F0F0</color>    

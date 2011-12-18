@@ -75,11 +75,6 @@ public class ListHelper {
                 }
                 flv.setAdapter( (ListAdapter)ca_new );
                 flv.setOnKeyListener( p );
-                /*
-                 * ca_new.setMode( CommanderAdapter.MODE_WIDTH, p.sxs &&
-                 * display_w ? CommanderAdapter.NARROW_MODE :
-                 * CommanderAdapter.WIDE_MODE );
-                 */
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( p.c );
                 applySettings( sharedPref );
                 ca_old = ca_new;
@@ -132,12 +127,21 @@ public class ListHelper {
             int w = p.c.getWindowManager().getDefaultDisplay().getWidth();
             if( p.sxs )
                 w /= 2;
+            final int WIDTH_THRESHOLD = 480;
             ca.setMode( CommanderAdapter.MODE_WIDTH,
-                    ( p.sxs && w < 480 ) || sharedPref.getBoolean( "two_lines", false ) ? CommanderAdapter.NARROW_MODE
+                    ( p.sxs && w < WIDTH_THRESHOLD ) || sharedPref.getBoolean( "two_lines", false ) ? CommanderAdapter.NARROW_MODE
                             : CommanderAdapter.WIDE_MODE );
 
             boolean show_icons = sharedPref.getBoolean( "show_icons", true );
-            ca.setMode( CommanderAdapter.MODE_ICONS, show_icons ? CommanderAdapter.ICON_MODE : CommanderAdapter.TEXT_MODE );
+            int icon_mode;
+            if( show_icons ) {
+                icon_mode = CommanderAdapter.ICON_MODE;
+                if( p.sxs && !p.fingerFriendly && w < WIDTH_THRESHOLD )
+                    icon_mode |= CommanderAdapter.ICON_TINY;
+            }
+            else
+                icon_mode = CommanderAdapter.TEXT_MODE;
+            ca.setMode( CommanderAdapter.MODE_ICONS, icon_mode );
 
             ca.setMode( CommanderAdapter.MODE_CASE, sharedPref.getBoolean( "case_ignore", true ) ? CommanderAdapter.CASE_IGNORE
                     : CommanderAdapter.CASE_SENS );

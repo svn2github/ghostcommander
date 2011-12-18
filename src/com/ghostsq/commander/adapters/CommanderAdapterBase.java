@@ -157,9 +157,13 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     
     private final void calcWidths() {
         try {
-            icoWidth = ( mode & MODE_ICONS ) == ICON_MODE ? 
-                    (int)( density * ( ( mode & MODE_FINGERF ) == FAT_MODE || 
-                                       ( mode & WIDE_MODE ) != WIDE_MODE ? ICON_SIZE : ICON_SIZE / 2 ) ) : 0;
+            if( ( mode & ICON_MODE ) == ICON_MODE ) {
+                icoWidth = (int)( density * ICON_SIZE );
+                if( ( ICON_TINY & mode ) != 0 )
+                    icoWidth >>= 1;
+            }
+            else 
+                icoWidth = 0;
             imgWidth = thumbnail_size_perc > 0 && thumbnail_size_perc != 100 ? icoWidth * thumbnail_size_perc / 100 : icoWidth;
         } catch( Exception e ) {
             e.printStackTrace();
@@ -436,12 +440,13 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 }
             }
             if( attrView != null ) {
+                String attr_text = item.attr != null ? item.attr.trim() : "";
                 boolean vis = dm;
                 attrView.setVisibility( vis ? View.VISIBLE : View.GONE );
                 if( vis ) {
                     if( !wm ) {
                         attrView.setPadding( img_width + 2, 0, 4, 0 ); // not to overlap the icon
-                        if( attrWidth < attrWidthShouldBe ) {
+                        if( attrWidth < attrWidthShouldBe && attr_text.length() > 0 ) {
                             RelativeLayout.LayoutParams rllp = new RelativeLayout.LayoutParams( RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT );
                             rllp.addRule( RelativeLayout.ALIGN_PARENT_RIGHT );
                             rllp.addRule( RelativeLayout.BELOW, R.id.fld_date );
@@ -451,7 +456,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                         attrView.setWidth( attrWidth );
                     attrView.setTextSize( fnt_sz_rdc );
                     attrView.setVisibility( View.VISIBLE );
-                    attrView.setText( item.attr == null ? "" : item.attr.trim() );
+                    attrView.setText( attr_text );
                     attrView.setTextColor( fg_color );
 //attrView.setBackgroundColor( 0xFFFF0000 );  // DEBUG!!!!!!
                 }
@@ -567,7 +572,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         return null;
     }
     @Override
-    public OutputStream saveContent( Uri fileURI ) {
+    public OutputStream saveContent( Uri u ) {
         return null;
     }
     @Override
