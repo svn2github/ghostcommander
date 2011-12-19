@@ -249,7 +249,10 @@
 <string name="restart_to_apply_lang">Перезапустите приложение для полной смены языка интерфейса</string>
 
 <string name="arrow_mode">Стрелки Влево/Вправо</string>
-<string name="summary_arrow_mode">это Переключение и Пометка</string>
+<string name="summary_arrow_mode">работают как Переключение и Пометка</string>
+<string name="volume_mode">Кнопки громкости</string>
+<string name="summary_volume_mode">работают как Переключение и Пометка</string>
+
 <string name="exit_on_back">Выход по "Back"</string>
 <string name="summary_exit_on_back">Выход из приложения по нажатию системной кнопки "Back"</string>
 

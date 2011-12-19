@@ -326,8 +326,10 @@ copied >5 will produce:
     
     <string name="show_hidden">Show hidden files</string>
     <string name="summary_show_hidden">If not checked, files beginning with a dot won\'t be shown</string>
-    <string name="arrow_mode">Arrow commands</string>
+    <string name="arrow_mode">Override Arrows buttons</string>
     <string name="summary_arrow_mode">Left/Right arrow does toggle/select</string>
+    <string name="volume_mode">Override Volume buttons</string>
+    <string name="summary_volume_mode">The volume change buttons do toggle/select</string>
     <string name="exit_on_back">"Back" exits</string>
     <string name="summary_exit_on_back">Exit the application on pressing the system "Back" button</string>
 

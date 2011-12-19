@@ -1,6 +1,5 @@
 package com.ghostsq.commander;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import com.ghostsq.commander.adapters.CommanderAdapter;
@@ -369,9 +368,14 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         }
         switch( keyCode ) {
         case KeyEvent.KEYCODE_TAB:
-        case KeyEvent.KEYCODE_VOLUME_DOWN:
             panels.togglePanels( false );
             return true;
+        case KeyEvent.KEYCODE_VOLUME_DOWN:
+            if( panels.volumeLegacy ) {
+                panels.togglePanels( false );
+                return true;
+            }
+            break;
         case KeyEvent.KEYCODE_BACK:
         case KeyEvent.KEYCODE_DEL:
             if( back_exits ){
@@ -384,7 +388,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             showSearchDialog();
             return false;
         }
-        return super.onKeyDown(keyCode, event);
+        return super.onKeyDown( keyCode, event );
     }
 
     @Override
@@ -622,7 +626,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                     return;
                 }
                 String mime = Utils.getMimeByExt( ext );
-                i.setDataAndType( uri.buildUpon().scheme( "file" ).build(), mime );
+                i.setDataAndType( uri.buildUpon().scheme( "file" ).authority( "" ).build(), mime );
                 startActivity( i );
             }
         } catch( ActivityNotFoundException e ) {

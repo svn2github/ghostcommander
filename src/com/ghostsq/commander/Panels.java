@@ -78,8 +78,10 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                   fgrColor = Prefs.getDefaultColor( Prefs.FGR_COLORS ),
                   selColor = Prefs.getDefaultColor( Prefs.SEL_COLORS ),
                   curColor = Prefs.getDefaultColor( Prefs.CUR_COLORS );
-    private boolean warnOnRoot = true, rootOnRoot = false, arrowsLegacy = false, toolbarShown = false;
+    private boolean arrowsLegacy = false, warnOnRoot = true, rootOnRoot = false, toolbarShown = false;
+    public  boolean volumeLegacy = true;
     private boolean disableOpenSelectOnly = false, disableAllActions = false;
+    public  int fnt_sz = 12;
     private float downX = 0, downY = 0;
     private StringBuffer     quickSearchBuf = null;
     private Toast            quickSearchTip = null;
@@ -170,11 +172,13 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 ToolButtons tba = new ToolButtons();
                 tba.restore( sharedPref, c );
                 int adapter_bit = ca.getType();
+                int bfs = fnt_sz + ( fingerFriendly ? 2 : 1 );
                 for( int i = 0; i < tba.size(); i++ ) {
                     ToolButton tb = tba.get(i);
                     int bid = tb.getId();
                     if( tb.isVisible() && ( adapter_bit & tb.getSuitableAdapter() ) != 0 ) {
                         Button b = new Button( c, null, android.R.attr.buttonStyleSmall );
+                        b.setTextSize( bfs );
                         b.setId( bid );
                         if( bb ) {
                             b.setBackgroundResource( R.drawable.tool_button );
@@ -367,7 +371,11 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public final void applySettings( SharedPreferences sharedPref, boolean init ) {
         try {
             applyColors();
-            String fnt_sz = sharedPref.getString( "font_size", "12" );
+            String fnt_sz_s = sharedPref.getString( "font_size", "12" );
+            try {
+                fnt_sz = Integer.parseInt( fnt_sz_s );
+            }
+            catch( NumberFormatException e ) {}
             
             String ffs = sharedPref.getString( "finger_friendly_a", "y" );
             boolean ff = false;
@@ -380,10 +388,11 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             else
                 ff = "y".equals( ffs );
             
-        	setFingerFriendly( ff, Integer.parseInt( fnt_sz ) );
+        	setFingerFriendly( ff, fnt_sz );
         	warnOnRoot =  sharedPref.getBoolean( "prevent_root", true );
             rootOnRoot = sharedPref.getBoolean( "root_root", false );
-            arrowsLegacy = sharedPref.getBoolean( "arrow_mode", false );
+            arrowsLegacy = sharedPref.getBoolean( "arrow_legc", false );
+            volumeLegacy = sharedPref.getBoolean( "volume_legc", true );            
             toolbarShown = sharedPref.getBoolean( "show_toolbar", true );
             if( !init ) {
                 list[LEFT].applySettings( sharedPref );
@@ -1163,13 +1172,20 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 		    	}
 		    	return false;
             case KeyEvent.KEYCODE_DPAD_RIGHT:
-                if( !arrowsLegacy ) return false;
+                if( arrowsLegacy ) {
+                    list[current].checkItem( true );
+                    return true;
+                }
+                break;
             case KeyEvent.KEYCODE_VOLUME_UP:
-	            list[current].checkItem( true );
-	            return true;
+                if( volumeLegacy ) {
+    	            list[current].checkItem( true );
+    	            return true;
+                }
+                break;
             case KeyEvent.KEYCODE_DPAD_LEFT:
 	            if( arrowsLegacy ) { 
-	                togglePanels( true );
+	                togglePanels( false );
 	                return true;    
 	            }
 	        default:

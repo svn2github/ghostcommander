@@ -53,7 +53,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected int     icoWidth = ICON_SIZE, imgWidth = ICON_SIZE;
     protected float   density = 1;
     protected LayoutInflater mInflater = null;
-    private   int     parentWidth, nameWidth, sizeWidth, dateWidth, attrWidth, attrWidthShouldBe;
+    private   int     parentWidth, nameWidth, sizeWidth, dateWidth, attrWidth;
     private   int     fg_color, sl_color;
     private   boolean dirty = true;
     protected int     thumbnail_size_perc = 100, font_size = 18;
@@ -353,11 +353,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                         }
                         if( attrView != null ) {
                             // sizeWidth is pixels, but in what units the return of measureText() ???
-                            attrWidthShouldBe = (int)sizeView.getPaint().measureText( "---------- system system" );
-                            if( wm ) {
-                                attrView.setTextSize( fnt_sz_rdc );
-                                attrWidth = attrWidthShouldBe;
-                            }
+                            attrView.setTextSize( fnt_sz_rdc );
+                            int a_w = (int)attrView.getPaint().measureText( "---------- system system" );
+                            if( wm )
+                                attrWidth = a_w;  // if name width gets too narrow, it sacrifices the attr field!  
                             else
                                 attrWidth = parent_width - sizeWidth - dateWidth - icoWidth - LEFT_P - RIGHT_P;
                         }
@@ -440,18 +439,24 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 }
             }
             if( attrView != null ) {
-                String attr_text = item.attr != null ? item.attr.trim() : "";
-                boolean vis = dm;
+                boolean vis = dm && attrWidth > 0;
                 attrView.setVisibility( vis ? View.VISIBLE : View.GONE );
-                if( vis ) {
+                if( vis) {
+                    String attr_text = item.attr != null ? item.attr.trim() : "";
                     if( !wm ) {
                         attrView.setPadding( img_width + 2, 0, 4, 0 ); // not to overlap the icon
-                        if( attrWidth < attrWidthShouldBe && attr_text.length() > 0 ) {
-                            RelativeLayout.LayoutParams rllp = new RelativeLayout.LayoutParams( RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT );
+                        RelativeLayout.LayoutParams rllp = new RelativeLayout.LayoutParams( 
+                                                               RelativeLayout.LayoutParams.WRAP_CONTENT, 
+                                                               RelativeLayout.LayoutParams.WRAP_CONTENT );
+                        if( attr_text.length() > 0 && attrWidth * 1.5 < (int)attrView.getPaint().measureText( attr_text ) ) {
                             rllp.addRule( RelativeLayout.ALIGN_PARENT_RIGHT );
                             rllp.addRule( RelativeLayout.BELOW, R.id.fld_date );
-                            attrView.setLayoutParams( rllp );
+                        } else {
+                            rllp.addRule( RelativeLayout.BELOW, R.id.fld_name );
+                            rllp.addRule( RelativeLayout.LEFT_OF, R.id.fld_size );
+                            rllp.addRule( RelativeLayout.ALIGN_TOP, R.id.fld_size );
                         }
+                        attrView.setLayoutParams( rllp );
                     } else
                         attrView.setWidth( attrWidth );
                     attrView.setTextSize( fnt_sz_rdc );

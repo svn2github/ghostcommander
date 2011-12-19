@@ -114,9 +114,11 @@ public class AppsAdapter extends CommanderAdapterBase {
     @Override
     public boolean readSource( Uri tmp_uri, String pbod ) {
         try {
+            numItems = 1;
             appInfos = null;
             actInfos = null;
             prvInfos = null;
+            mode &= ~ATTR_ONLY;
             if( reader != null ) {
                 if( reader.reqStop() ) { // that's not good.
                     Thread.sleep( 500 );      // will it end itself?
@@ -145,6 +147,7 @@ public class AppsAdapter extends CommanderAdapterBase {
             else {
                 List<String> ps = uri.getPathSegments();
                 if( ps != null && ps.size() == 1 ) {
+                    mode |= ATTR_ONLY;
                     PackageInfo pi = pm.getPackageInfo( a, PackageManager.GET_ACTIVITIES | 
                                                            PackageManager.GET_PROVIDERS );
                     if( compTypes[ACTIVITIES].equals( ps.get( 0 ) ) ) {

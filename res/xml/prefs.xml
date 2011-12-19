@@ -92,11 +92,6 @@
                 android:entryValues="@array/panels_mode_vals"
                 android:dialogTitle="@string/finger_friendly" 
                 android:defaultValue="y"/>                
-        <!--    CheckBoxPreference
-                android:key="finger_friendly"
-                android:title="@string/finger_friendly"
-                android:summary="@string/summary_finger_friendly"
-                android:defaultValue="true"/-->
         <CheckBoxPreference
                 android:key="show_icons"
                 android:title="@string/show_icons"
@@ -177,10 +172,15 @@
                 android:summary="@string/summary_toolbar_preference">
         </PreferenceScreen>
         <CheckBoxPreference
-                    android:key="arrow_mode"
+                    android:key="arrow_legc"
                     android:title="@string/arrow_mode"
                     android:summary="@string/summary_arrow_mode"
                     android:defaultValue="false"/>
+        <CheckBoxPreference
+                    android:key="volume_legc"
+                    android:title="@string/volume_mode"
+                    android:summary="@string/summary_volume_mode"
+                    android:defaultValue="true"/>
         <CheckBoxPreference
                     android:key="exit_on_back"
                     android:title="@string/exit_on_back"

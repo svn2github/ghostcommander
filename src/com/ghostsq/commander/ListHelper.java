@@ -132,11 +132,17 @@ public class ListHelper {
                     ( p.sxs && w < WIDTH_THRESHOLD ) || sharedPref.getBoolean( "two_lines", false ) ? CommanderAdapter.NARROW_MODE
                             : CommanderAdapter.WIDE_MODE );
 
+            ca.setMode( CommanderAdapter.SET_FONT_SIZE, p.fnt_sz );
+
+            String sfx = p.sxs ? "_SbS" : "_Ovr";
+            boolean detail_mode = sharedPref.getBoolean( which == Panels.LEFT ? "left_detailed" + sfx : "right_detailed" + sfx,
+                    true );
+            
             boolean show_icons = sharedPref.getBoolean( "show_icons", true );
             int icon_mode;
             if( show_icons ) {
                 icon_mode = CommanderAdapter.ICON_MODE;
-                if( w < WIDTH_THRESHOLD && ( p.sxs || ( !p.fingerFriendly && 
+                if( detail_mode && w <= WIDTH_THRESHOLD && p.fnt_sz <= 16 && ( p.sxs || ( !p.fingerFriendly && 
                         ( ( m & CommanderAdapter.MODE_WIDTH ) == CommanderAdapter.WIDE_MODE ) ) ) )
                     icon_mode |= CommanderAdapter.ICON_TINY;        
             }
@@ -147,9 +153,6 @@ public class ListHelper {
             ca.setMode( CommanderAdapter.MODE_CASE, sharedPref.getBoolean( "case_ignore", true ) ? CommanderAdapter.CASE_IGNORE
                     : CommanderAdapter.CASE_SENS );
 
-            String sfx = p.sxs ? "_SbS" : "_Ovr";
-            boolean detail_mode = sharedPref.getBoolean( which == Panels.LEFT ? "left_detailed" + sfx : "right_detailed" + sfx,
-                    true );
             ca.setMode( CommanderAdapter.MODE_DETAILS, detail_mode ? CommanderAdapter.DETAILED_MODE : CommanderAdapter.SIMPLE_MODE );
             String sort = sharedPref.getString( which == Panels.LEFT ? "left_sorting" : "right_sorting", "n" );
             ca.setMode( CommanderAdapter.MODE_SORTING, sort.compareTo( "s" ) == 0 ? CommanderAdapter.SORT_SIZE : sort
@@ -164,9 +167,6 @@ public class ListHelper {
             if( show_icons && sharedPref.getBoolean( "show_thumbnails", true ) )
                 thubnails_size = Integer.parseInt( sharedPref.getString( "thumbnails_size", "200" ) );
             ca.setMode( CommanderAdapter.SET_TBN_SIZE, thubnails_size );
-
-            String fnt_sz = sharedPref.getString( "font_size", "12" );
-            ca.setMode( CommanderAdapter.SET_FONT_SIZE, Integer.parseInt( fnt_sz ) );
 
             if( ca instanceof HomeAdapter )
                 ca.setMode( CommanderAdapter.MODE_ROOT, sharedPref.getBoolean( "show_root", false ) ? CommanderAdapter.ROOT_MODE
