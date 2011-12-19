@@ -253,7 +253,7 @@ public class RootAdapter extends CommanderAdapterBase {
             String path = Utils.mbAddSl( uri.getPath() );
             for( int i = 0; i < s_items.length; i++ )
                 s += " " + ExecEngine.prepFileName( path + s_items[i].getName() );
-            in.putExtra( "cmd", getBusyBoxPath() + "stat " + s );
+            in.putExtra( "cmd", getBusyBoxPath() + "stat " + s + " ; df" );
     	    commander.issue( in, 0 );
         }
 	}

@@ -128,7 +128,7 @@ public class ListHelper {
             if( p.sxs )
                 w /= 2;
             final int WIDTH_THRESHOLD = 480;
-            ca.setMode( CommanderAdapter.MODE_WIDTH,
+            int m = ca.setMode( CommanderAdapter.MODE_WIDTH,
                     ( p.sxs && w < WIDTH_THRESHOLD ) || sharedPref.getBoolean( "two_lines", false ) ? CommanderAdapter.NARROW_MODE
                             : CommanderAdapter.WIDE_MODE );
 
@@ -136,8 +136,9 @@ public class ListHelper {
             int icon_mode;
             if( show_icons ) {
                 icon_mode = CommanderAdapter.ICON_MODE;
-                if( p.sxs && !p.fingerFriendly && w < WIDTH_THRESHOLD )
-                    icon_mode |= CommanderAdapter.ICON_TINY;
+                if( w < WIDTH_THRESHOLD && ( p.sxs || ( !p.fingerFriendly && 
+                        ( ( m & CommanderAdapter.MODE_WIDTH ) == CommanderAdapter.WIDE_MODE ) ) ) )
+                    icon_mode |= CommanderAdapter.ICON_TINY;        
             }
             else
                 icon_mode = CommanderAdapter.TEXT_MODE;
