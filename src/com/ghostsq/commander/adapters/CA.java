@@ -118,7 +118,7 @@ final public class CA {
             }
             ApplicationInfo ai = ctx.getPackageManager().getApplicationInfo( "com.ghostsq.commander." + type, 0 );
             
-            Log.i( TAG, type + " package is " + ai.sourceDir );
+            //Log.i( TAG, type + " package is " + ai.sourceDir );
             
             ClassLoader pcl = ctx.getClass().getClassLoader();
             DexClassLoader cl = new DexClassLoader( ai.sourceDir, dex_f.getAbsolutePath(), null, pcl );

@@ -254,7 +254,7 @@ public class RootAdapter extends CommanderAdapterBase {
             for( int i = 0; i < s_items.length; i++ )
                 s += " " + ExecEngine.prepFileName( path + s_items[i].getName() );
             in.putExtra( "cmd", getBusyBoxPath() + "stat " + s + " ; df" );
-    	    commander.issue( in, 0 );
+    	    commander.issue( in, CMD_CMD );
         }
 	}
     @Override
@@ -767,7 +767,7 @@ public class RootAdapter extends CommanderAdapterBase {
             Intent in = new Intent( ctx, TextViewer.class );
             in.setData( Uri.parse( "exec:" ) );
             in.putExtra( "cmd", "cd " + uri.getPath() + " ; " + ( bb ? getBusyBoxPath() : "" ) + command );
-            commander.issue( in, 0 );
+            commander.issue( in, CMD_CMD );
     }    
     
     class CmdDialog implements OnClickListener {

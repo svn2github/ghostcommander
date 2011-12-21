@@ -12,6 +12,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -179,9 +182,15 @@ public class TextViewer extends Activity {
             try {
                 String scheme = uri.getScheme();
                 if( "exec".equals( scheme ) ) {
-                    
                     Intent i = getIntent();
-                    if( i == null ) return false;
+                    
+                    String pn_foreign = getCallingPackage();
+                    final String pn_this = "com.ghostsq.commander";
+                    if( !pn_this.equals( pn_foreign ) ) {
+                        Log.w( TAG, "Some other application (" + pn_foreign + ") tries to exploit this!" );
+                        return false;
+                    }
+                    
                     String cmd = i.getStringExtra( "cmd" );
                     
                     Context ctx = this;
