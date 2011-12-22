@@ -8,6 +8,7 @@ import com.ghostsq.commander.utils.Utils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -211,18 +212,26 @@ public class TextViewer extends Activity {
                             }, null, cmd, false,  500 ); 
                     ee.start();
                     return true;
-                }               
-                int type_id = CA.GetAdapterTypeId( scheme );
-                CommanderAdapter ca = CA.CreateAdapterInstance( type_id, this );
-                if( ca != null ) {
-                    InputStream is = ca.getContent( uri );
-                    if( is != null ) {
-                        CharSequence cs = Utils.readStreamToBuffer( is, encoding );
+                }
+                CommanderAdapter ca = null;
+                InputStream is = null;
+                if( ContentResolver.SCHEME_CONTENT.equals( scheme ) ) {
+                    is = getContentResolver().openInputStream( uri ); 
+                } else {
+                    int type_id = CA.GetAdapterTypeId( scheme );
+                    ca = CA.CreateAdapterInstance( type_id, this );
+                    if( ca != null )
+                        is = ca.getContent( uri );
+                }
+                if( is != null ) {
+                    CharSequence cs = Utils.readStreamToBuffer( is, encoding );
+                    if( ca != null ) 
                         ca.closeStream( is );
-                        TextView text_view = (TextView)findViewById( R.id.text_view );
-                        text_view.setText( cs );
-                        return true;
-                    }
+                    else
+                        is.close();
+                    TextView text_view = (TextView)findViewById( R.id.text_view );
+                    text_view.setText( cs );
+                    return true;
                 }
             } catch( OutOfMemoryError e ) {
                 Log.e( TAG, uri.toString(), e );
