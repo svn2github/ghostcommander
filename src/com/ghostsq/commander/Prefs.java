@@ -4,8 +4,10 @@ import com.ghostsq.commander.toolbuttons.ToolButtonsProps;
 import com.ghostsq.commander.utils.Utils;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -90,13 +92,23 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
         }
     }
     public int getDefaultColor( String key, boolean alt ) {
-        if( key.equals( CUR_COLORS ) ) return alt ? getResources().getColor( R.color.cur_def ) : 0;
+        return getDefaultColor( this, key, alt );
+    }
+    public static int getDefaultColor( Context ctx, String key, boolean alt ) {
+        Resources r = ctx.getResources();
+        if( key.equals( CUR_COLORS ) ) return alt ? r.getColor( R.color.cur_def ) : 0;
+        if( key.equals( BTN_COLORS ) ) {
+            final int GINGERBREAD = 9;
+            if( android.os.Build.VERSION.SDK_INT >= GINGERBREAD )
+                return r.getColor( R.color.btn_def );
+            else
+                return alt ? r.getColor( R.color.btn_odf ) : 0;
+        }
         if( alt ) return 0;
-        if( key.equals( BGR_COLORS ) ) return getResources().getColor( R.color.bgr_def );
-        if( key.equals( FGR_COLORS ) ) return getResources().getColor( R.color.fgr_def );
-        if( key.equals( SEL_COLORS ) ) return getResources().getColor( R.color.sel_def );
-        if( key.equals( TTL_COLORS ) ) return getResources().getColor( R.color.ttl_def );
-        if( key.equals( BTN_COLORS ) ) return getResources().getColor( R.color.btn_def );
+        if( key.equals( BGR_COLORS ) ) return r.getColor( R.color.bgr_def );
+        if( key.equals( FGR_COLORS ) ) return r.getColor( R.color.fgr_def );
+        if( key.equals( SEL_COLORS ) ) return r.getColor( R.color.sel_def );
+        if( key.equals( TTL_COLORS ) ) return r.getColor( R.color.ttl_def );
         return 0;
     }
 }

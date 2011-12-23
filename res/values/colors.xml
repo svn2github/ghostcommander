@@ -6,7 +6,9 @@
     <color name="bgr_def">#FF191919</color>    
     <color name="fgr_def">#FFF0F0F0</color>    
 	<color name="sel_def">#FF4169E1</color>    
-	<color name="cur_def">#FFFFC300</color>    
+	<color name="cur_def">#FFFF8000</color>    
     <color name="ttl_def">#FF555555</color>    
     <color name="btn_def">#FF2A2A2A</color>    
+    <color name="btn_odf">#FFFFFFFF</color>    
+    <color name="toolbar">#333</color>    
 </resources>

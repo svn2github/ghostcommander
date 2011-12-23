@@ -267,11 +267,11 @@ public class AppsAdapter extends CommanderAdapterBase {
                 ApplicationInfo ai = appInfos[position - 1];
                 item.dir = false;
                 item.name = ai.loadLabel( pm ).toString();
-                item.size = -1;
                 item.sel = false;
                 
                 File asdf = new File( ai.sourceDir );
                 item.date = new Date( asdf.lastModified() );
+                item.size = asdf.length();
                 item.attr = ai.packageName;
                 item.setThumbNail( ai.loadIcon( pm ) );
                 item.thumb_is_icon = true;
@@ -300,5 +300,10 @@ public class AppsAdapter extends CommanderAdapterBase {
                 item.name = compTypes[position - 1];
         }
         return item;
+    }
+
+    @Override
+    protected int getPredictedAttributesLength() {
+        return 36;   // "com.softwaremanufacturer.productname"
     }
 }

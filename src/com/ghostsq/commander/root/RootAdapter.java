@@ -683,6 +683,12 @@ public class RootAdapter extends CommanderAdapterBase {
         }
         return getView( convertView, parent, item );
     }
+
+    @Override
+    protected int getPredictedAttributesLength() {
+        return 24;   // "---------- system system"
+    }
+    
     private final LsItem[] bitsToItems( SparseBooleanArray cis ) {
     	try {
             int counter = 0;

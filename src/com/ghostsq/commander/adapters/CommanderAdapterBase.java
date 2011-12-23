@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -59,7 +60,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected int     thumbnail_size_perc = 100, font_size = 18;
     protected int     mode = 0;
     protected boolean ascending = true;
-    protected String  parentLink;
+    protected String  parentLink = SLS;
     private   CommanderAdapter recipient = null;
     protected int     numItems = 0;
     public    int     shownFrom = 0, shownNum = 3;
@@ -147,7 +148,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         sizeWidth = 0;
         dateWidth = 0;
         attrWidth = 0;
-        parentLink = SLS;       
     	mInflater = (LayoutInflater)ctx.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
     	Utils.changeLanguage( ctx );
     	localeDateFormat = DateFormat.getDateFormat( ctx );
@@ -284,6 +284,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         }
         return "(ERR)";
     }
+
+    protected int getPredictedAttributesLength() {
+        return 0;
+    }
     
     protected View getView( View convertView, ViewGroup parent, Item item ) {
         View row_view = null;
@@ -295,6 +299,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             boolean wm = (mode & MODE_WIDTH) == WIDE_MODE;
             boolean dm = ( mode & MODE_DETAILS ) == DETAILED_MODE;
             boolean ao = ( ATTR_ONLY & mode ) != 0;
+            boolean a3r = false;
             boolean current_wide = convertView != null && convertView.getId() == R.id.row_layout;
             if( convertView == null || 
         		( (  wm && !current_wide ) || 
@@ -354,11 +359,17 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                         if( attrView != null ) {
                             // sizeWidth is pixels, but in what units the return of measureText() ???
                             attrView.setTextSize( fnt_sz_rdc );
-                            int a_w = (int)attrView.getPaint().measureText( "---------- system system" );
-                            if( wm )
-                                attrWidth = a_w;  // if name width gets too narrow, it sacrifices the attr field!  
+                            
+                            int al = getPredictedAttributesLength();
+                            if( al > 0 ) {
+                                char[] dummy = new char[al];
+                                Arrays.fill( dummy, 'W');
+                                attrWidth = (int)attrView.getPaint().measureText( new String( dummy ) );
+                                if( !wm )
+                                    a3r = attrWidth > parent_width - sizeWidth - dateWidth - icoWidth - LEFT_P - RIGHT_P;
+                            }
                             else
-                                attrWidth = parent_width - sizeWidth - dateWidth - icoWidth - LEFT_P - RIGHT_P;
+                                attrWidth = 0;
                         }
                     }
                 }
@@ -445,20 +456,22 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                     String attr_text = item.attr != null ? item.attr.trim() : "";
                     if( !wm ) {
                         attrView.setPadding( img_width + 2, 0, 4, 0 ); // not to overlap the icon
-                        RelativeLayout.LayoutParams rllp = new RelativeLayout.LayoutParams( 
-                                                               RelativeLayout.LayoutParams.WRAP_CONTENT, 
-                                                               RelativeLayout.LayoutParams.WRAP_CONTENT );
-                        if( attr_text.length() > 0 && attrWidth * 1.5 < (int)attrView.getPaint().measureText( attr_text ) ) {
-                            rllp.addRule( RelativeLayout.ALIGN_PARENT_RIGHT );
-                            rllp.addRule( RelativeLayout.BELOW, R.id.fld_date );
-                        } else {
-                            rllp.addRule( RelativeLayout.BELOW, R.id.fld_name );
-                            rllp.addRule( RelativeLayout.LEFT_OF, R.id.fld_size );
-                            rllp.addRule( RelativeLayout.ALIGN_TOP, R.id.fld_size );
+                         {
+                            RelativeLayout.LayoutParams rllp = new RelativeLayout.LayoutParams( 
+                                                                   RelativeLayout.LayoutParams.WRAP_CONTENT, 
+                                                                   RelativeLayout.LayoutParams.WRAP_CONTENT );
+                            if( a3r ) {
+                                rllp.addRule( RelativeLayout.ALIGN_PARENT_RIGHT );
+                                rllp.addRule( RelativeLayout.BELOW, R.id.fld_date );
+                            } else {
+                                rllp.addRule( RelativeLayout.BELOW, R.id.fld_name );
+                                rllp.addRule( RelativeLayout.LEFT_OF, R.id.fld_size );
+                                rllp.addRule( RelativeLayout.ALIGN_TOP, R.id.fld_size );
+                            }
+                            attrView.setLayoutParams( rllp );
                         }
-                        attrView.setLayoutParams( rllp );
-                    } else
-                        attrView.setWidth( attrWidth );
+                    }
+                    attrView.setWidth( attrWidth );
                     attrView.setTextSize( fnt_sz_rdc );
                     attrView.setVisibility( View.VISIBLE );
                     attrView.setText( attr_text );
@@ -532,28 +545,31 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             Item item = (Item)getItem( acmi.position );
             boolean file = !item.dir && acmi.position != 0; 
             if( acmi.position == 0 ) {
-                menu.add(0, R.id.enter, 0, R.string.enter );
-                menu.add(0, R.id.eq, 0, R.string.oth_sh_this );
+                menu.add(0, R.id.enter,   0, R.string.enter );
+                menu.add(0, R.id.eq,      0, R.string.oth_sh_this );
                 menu.add(0, R.id.add_fav, 0, R.string.add_fav );
                 return;
             }
-            boolean fs_adapter = this instanceof FSAdapter || this instanceof FindAdapter;
-            boolean root_adapter = this instanceof RootAdapter;
-            if( fs_adapter || root_adapter )
+            int t = getType();
+            if( ( t & ( CA.LOCAL | CA.ROOT ) ) != 0 )
                 menu.add( 0, R.id.sz, 0, R.string.show_size );
-            if( num <= 1 && file )
+            if( num <= 1 && file ) {
+                if( ( t & CA.REAL ) != 0 ) 
+                    menu.add( 0, R.id.F2, 0, R.string.rename_title );
                 menu.add( 0, R.id.F3, 0, R.string.view_title );
-            if( ( fs_adapter || root_adapter ) && num <= 1 && file ) 
-                menu.add( 0, R.id.F4, 0, R.string.edit_title );
-            if( fs_adapter && num <= 1 && file )  
-                menu.add( 0, Commander.SEND_TO, 0, R.string.send_to );
+                if( ( t & ( CA.LOCAL | CA.ROOT | CA.NET ) ) != 0 ) 
+                    menu.add( 0, R.id.F4, 0, R.string.edit_title );
+                if( ( t & CA.LOCAL ) != 0 )  
+                    menu.add( 0, Commander.SEND_TO, 0, R.string.send_to );
+            }
             menu.add( 0, R.id.F5, 0, R.string.copy_title );
             menu.add( 0, R.id.F6, 0, R.string.move_title );
             menu.add( 0, R.id.F8, 0, R.string.delete_title );
-            if( fs_adapter && file && num <= 1 ) 
-                menu.add( 0, Commander.OPEN_WITH, 0, R.string.open_with );
-            if( fs_adapter )            
+            if( ( t & CA.FS ) != 0 ) {
+                if( file && num <= 1 )
+                    menu.add( 0, Commander.OPEN_WITH, 0, R.string.open_with );
                 menu.add( 0, R.id.new_zip, 0, R.string.new_zip );
+            }
             if( num <= 1 )
                 menu.add( 0, Commander.COPY_NAME, 0, R.string.copy_name );
             if( item.dir && acmi.position != 0 )

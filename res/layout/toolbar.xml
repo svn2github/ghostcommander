@@ -9,7 +9,7 @@
          android:orientation="horizontal"
          android:layout_width="1000dip" 
          android:layout_height="wrap_content"
-         android:background="#333"
+         android:background="@color/toolbar"
          android:paddingTop="1dp">
          android:paddingBottom="1dp">
     </LinearLayout>

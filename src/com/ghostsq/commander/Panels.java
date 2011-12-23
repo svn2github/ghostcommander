@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -90,11 +91,11 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     
     public Panels( FileCommander c_, boolean sxs_ ) {
         c = c_;
-        
-        ttlColor = c.getResources().getColor( R.color.ttl_def ); 
-        fgrColor = c.getResources().getColor( R.color.fgr_def );
-        selColor = c.getResources().getColor( R.color.sel_def );
-        btnColor = c.getResources().getColor( R.color.btn_def );
+        Resources  r = c.getResources();
+        ttlColor = r.getColor( R.color.ttl_def ); 
+        fgrColor = r.getColor( R.color.fgr_def );
+        selColor = r.getColor( R.color.sel_def );
+        btnColor = Prefs.getDefaultColor( c, Prefs.BTN_COLORS, false );
         curColor = 0;
         
         current = LEFT;
@@ -193,9 +194,6 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 boolean keyboard = sharedPref.getBoolean( "show_hotkeys", true ) || 
                                 c.getResources().getConfiguration().keyboard != Configuration.KEYBOARD_NOKEYS ;
 
-                final int GINGERBREAD = 9;
-                final boolean bb = true || android.os.Build.VERSION.SDK_INT >= GINGERBREAD;
-                
                 Utils.changeLanguage( c );
                 ToolButtons tba = new ToolButtons();
                 tba.restore( sharedPref, c );
@@ -205,24 +203,30 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                     ToolButton tb = tba.get(i);
                     int bid = tb.getId();
                     if( tb.isVisible() && ( adapter_bit & tb.getSuitableAdapter() ) != 0 ) {
-                        Button b = new Button( c, null, android.R.attr.buttonStyleSmall );
-                        b.setTextSize( bfs );
-                        b.setId( bid );
-                        int vp = fingerFriendly ? 10 : 6;
-                        b.setPadding( 6, vp, 6, vp );
-                        if( bb ) {
+                        Button b = null;
+                        if( btnColor != 0x00000000 ) {
+                            b = new Button( c, null, android.R.attr.buttonStyleSmall );
+                            int vp = fingerFriendly ? 10 : 6;
+                            b.setPadding( 6, vp, 6, vp );
+                            float bbb = Utils.getBrightness( btnColor );
+                            b.setTextColor( bbb > 0.8f ? 0xFF000000 : 0xFFFFFFFF );
+                            b.setTextSize( bfs );
                             Drawable bd = createButtonStates();
                             if( bd != null )
                                 b.setBackgroundDrawable( bd );
                             else
                                 b.setBackgroundResource( R.drawable.tool_button );
-                            float bbb = Utils.getBrightness( btnColor );
-                            b.setTextColor( bbb > 0.8f ? 0xFF000000 : 0xFFFFFFFF );
                             LinearLayout.LayoutParams lllp = new LinearLayout.LayoutParams( 
                                     LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT );
                             lllp.rightMargin = 2;
                             b.setLayoutParams( lllp );
                         }
+                        else {
+                            b = new Button( c, null, fingerFriendly ?         
+                                      android.R.attr.buttonStyle :                     
+                                      android.R.attr.buttonStyleSmall );                                  
+                        }
+                        b.setId( bid );
                         b.setFocusable( false );
                         String caption = "";
                         if( keyboard ) {
@@ -770,16 +774,16 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             String full_class_name = null;
             String scheme = u.getScheme();
             boolean local = CA.isLocal( scheme );
-            boolean embed = false;
-            if( !local && "root".equals( scheme ) || "smb".equals( scheme ) || "ftp".equals( scheme ) ) { 
-                full_class_name = GC_EDITOR;
-            } else {
-                c.showMessage( c.getString( R.string.edit_err ) );
-                return;
-            }
             if( local )
                 u = u.buildUpon().scheme( "file" ).authority( "" ).build();
-
+            else {
+                if( "root".equals( scheme ) || "smb".equals( scheme ) || "ftp".equals( scheme ) ) 
+                    full_class_name = GC_EDITOR;
+                else {
+                    c.showMessage( c.getString( R.string.edit_err ) );
+                    return;
+                }
+            }
             Intent i = new Intent( Intent.ACTION_EDIT );
             if( full_class_name == null ) {
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );

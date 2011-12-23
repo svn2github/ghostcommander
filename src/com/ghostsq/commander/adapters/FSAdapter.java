@@ -1018,6 +1018,11 @@ public class FSAdapter extends CommanderAdapterBase {
         return null;
     }
 
+    @Override
+    protected int getPredictedAttributesLength() {
+        return 12;   // "1024 x 1024"
+    }
+    
     /*
      *  ListAdapter implementation
      */
