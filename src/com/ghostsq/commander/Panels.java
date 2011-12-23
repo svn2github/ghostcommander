@@ -27,9 +27,10 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.net.Uri;
 import android.net.UrlQuerySanitizer;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -74,10 +75,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public  View mainView, toolbar = null;
     public  ViewFlipper mFlipper_   = null;
     public  PanelsView  panelsView = null;
-    private int titleColor = Prefs.getDefaultColor( Prefs.TTL_COLORS ), 
-                  fgrColor = Prefs.getDefaultColor( Prefs.FGR_COLORS ),
-                  selColor = Prefs.getDefaultColor( Prefs.SEL_COLORS ),
-                  curColor = Prefs.getDefaultColor( Prefs.CUR_COLORS );
+    private int ttlColor, fgrColor, selColor, curColor, btnColor;
     private boolean arrowsLegacy = false, warnOnRoot = true, rootOnRoot = false, toolbarShown = false;
     public  boolean volumeLegacy = true;
     private boolean disableOpenSelectOnly = false, disableAllActions = false;
@@ -92,6 +90,13 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     
     public Panels( FileCommander c_, boolean sxs_ ) {
         c = c_;
+        
+        ttlColor = c.getResources().getColor( R.color.ttl_def ); 
+        fgrColor = c.getResources().getColor( R.color.fgr_def );
+        selColor = c.getResources().getColor( R.color.sel_def );
+        btnColor = c.getResources().getColor( R.color.btn_def );
+        curColor = 0;
+        
         current = LEFT;
         c.setContentView( R.layout.alt );
         mainView = c.findViewById( R.id.main );
@@ -144,6 +149,29 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public final void showToolbar( boolean show ) {
         toolbarShown = show;
     }
+
+    private final Drawable createButtonStates() {
+        try {
+            float bbb = Utils.getBrightness( btnColor );
+            int sc = Utils.setBrightness( btnColor, 0.2f );            
+            StateListDrawable states = new StateListDrawable();
+            GradientDrawable bpd = Utils.getShadingEx( btnColor, 1f );
+            bpd.setStroke( 1, sc );
+            bpd.setCornerRadius( 2 );
+            GradientDrawable bnd = Utils.getShadingEx( btnColor, bbb < 0.4f ? 0f : 0.6f );
+            bnd.setStroke( 1, sc );
+            bnd.setCornerRadius( 2 );
+            states.addState(new int[] { android.R.attr.state_pressed }, bpd );
+            states.addState(new int[] { }, bnd );
+            return states;
+        }
+        catch( Exception e ) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    
     public final void setToolbarButtons( CommanderAdapter ca ) {
         try {
             if( ca == null ) return;
@@ -153,7 +181,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                     toolbar = inflater.inflate( R.layout.toolbar, (ViewGroup)mainView, true ).findViewById( R.id.toolbar );
                 }
                 if( toolbar == null ) {
-                    Log.e( TAG, "Toolbar infaltion has failed!" );
+                    Log.e( TAG, "Toolbar inflation has failed!" );
                     return;
                 }
                 toolbar.setVisibility( View.INVISIBLE );
@@ -166,7 +194,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                                 c.getResources().getConfiguration().keyboard != Configuration.KEYBOARD_NOKEYS ;
 
                 final int GINGERBREAD = 9;
-                final boolean bb = android.os.Build.VERSION.SDK_INT >= GINGERBREAD;
+                final boolean bb = true || android.os.Build.VERSION.SDK_INT >= GINGERBREAD;
                 
                 Utils.changeLanguage( c );
                 ToolButtons tba = new ToolButtons();
@@ -180,9 +208,16 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                         Button b = new Button( c, null, android.R.attr.buttonStyleSmall );
                         b.setTextSize( bfs );
                         b.setId( bid );
+                        int vp = fingerFriendly ? 10 : 6;
+                        b.setPadding( 6, vp, 6, vp );
                         if( bb ) {
-                            b.setBackgroundResource( R.drawable.tool_button );
-                            b.setTextColor( 0xFFFFFFFF );
+                            Drawable bd = createButtonStates();
+                            if( bd != null )
+                                b.setBackgroundDrawable( bd );
+                            else
+                                b.setBackgroundResource( R.drawable.tool_button );
+                            float bbb = Utils.getBrightness( btnColor );
+                            b.setTextColor( bbb > 0.8f ? 0xFF000000 : 0xFFFFFFFF );
                             LinearLayout.LayoutParams lllp = new LinearLayout.LayoutParams( 
                                     LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT );
                             lllp.rightMargin = 2;
@@ -273,11 +308,11 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         if( title_bar != null ) {
             int h = title_bar.getHeight();
             if( h == 0 ) h = 30;
-            Drawable d = Utils.getShading( titleColor );
+            Drawable d = Utils.getShading( ttlColor );
             if( d != null )
                 title_bar.setBackgroundDrawable( d );
             else
-                title_bar.setBackgroundColor( titleColor );
+                title_bar.setBackgroundColor( ttlColor );
         }
     	highlightTitle( opposite(), false );
     	highlightTitle( current, true );
@@ -300,7 +335,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 float[] fgr_hsv = new float[3];
                 Color.colorToHSV( fgrColor, fgr_hsv );
                 float[] ttl_hsv = new float[3];
-                Color.colorToHSV( titleColor, ttl_hsv );
+                Color.colorToHSV( ttlColor, ttl_hsv );
                 fgr_hsv[1] *= 0.5;
                 fgr_hsv[2] = ( fgr_hsv[2] + ttl_hsv[2] ) / 2;
                 title.setTextColor( Color.HSVToColor( fgr_hsv ) );
@@ -348,21 +383,19 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     }
     public final void applyColors() {
         SharedPreferences color_pref = c.getSharedPreferences( Prefs.COLORS_PREFS, Activity.MODE_PRIVATE );
-        int bg_color = Prefs.getDefaultColor( Prefs.BGR_COLORS );
-            fgrColor = Prefs.getDefaultColor( Prefs.FGR_COLORS );
-            selColor = Prefs.getDefaultColor( Prefs.SEL_COLORS );
-          titleColor = Prefs.getDefaultColor( Prefs.TTL_COLORS );
+        int bg_color = c.getResources().getColor( R.color.bgr_def );
         if( color_pref != null ) {
             bg_color = color_pref.getInt( Prefs.BGR_COLORS,  bg_color );
             fgrColor = color_pref.getInt( Prefs.FGR_COLORS,  fgrColor );
             curColor = color_pref.getInt( Prefs.CUR_COLORS,  curColor );
             selColor = color_pref.getInt( Prefs.SEL_COLORS,  selColor );
-          titleColor = color_pref.getInt( Prefs.TTL_COLORS,titleColor );
+            ttlColor = color_pref.getInt( Prefs.TTL_COLORS,  ttlColor );
+            btnColor = color_pref.getInt( Prefs.BTN_COLORS,  btnColor );
         }
         if( sxs ) {
             View div = mainView.findViewById( R.id.divider );
             if( div != null)
-                div.setBackgroundColor( titleColor );
+                div.setBackgroundColor( ttlColor );
         }
          list[LEFT].applyColors( bg_color, fgrColor, selColor, curColor );
         list[RIGHT].applyColors( bg_color, fgrColor, selColor, curColor );
@@ -733,34 +766,35 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             else 
                 u = Uri.parse( file_name );
             if( u == null ) return;
-
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
             final String GC_EDITOR = c.getString( R.string.value_editor_activity );
-            String full_class_name = sharedPref.getString( "editor_activity", GC_EDITOR );
-            if( full_class_name == null || full_class_name.length() == 0 )
+            String full_class_name = null;
+            String scheme = u.getScheme();
+            boolean local = CA.isLocal( scheme );
+            boolean embed = false;
+            if( !local && "root".equals( scheme ) || "smb".equals( scheme ) || "ftp".equals( scheme ) ) { 
                 full_class_name = GC_EDITOR;
-            int last_dot_pos = full_class_name.lastIndexOf('.');
-            if( last_dot_pos < 0 ) {
-                c.showMessage( "Invalid class name: " + full_class_name );
-                full_class_name = GC_EDITOR;
+            } else {
+                c.showMessage( c.getString( R.string.edit_err ) );
+                return;
             }
-            {
-                String scheme = u.getScheme();
-                boolean local = CA.isLocal( scheme );
-                boolean editable = local;
-                if( !editable && full_class_name.equals( GC_EDITOR ) )
-                     editable = "root".equals( scheme ) || "smb".equals( scheme ) || "ftp".equals( scheme );
-                if( !editable ) {
-                    c.showMessage( c.getString( R.string.edit_err ) );
-                    return;
+            if( local )
+                u = u.buildUpon().scheme( "file" ).authority( "" ).build();
+
+            Intent i = new Intent( Intent.ACTION_EDIT );
+            if( full_class_name == null ) {
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
+                full_class_name = sharedPref.getString( "editor_activity", GC_EDITOR );
+            }
+            if( full_class_name.length() > 0 ) {
+                int last_dot_pos = full_class_name.lastIndexOf('.');
+                if( last_dot_pos < 0 ) {
+                    c.showMessage( "Invalid class name: " + full_class_name );
+                    full_class_name = GC_EDITOR;
                 }
-                if( local )
-                    u = Uri.parse( "file://" + u.getPath() );
-                Intent i = new Intent( Intent.ACTION_EDIT );
-                i.setDataAndType( u, "text/plain" );
                 i.setClassName( full_class_name.substring( 0, last_dot_pos ), full_class_name );
-                c.startActivity( i );
             }
+            i.setDataAndType( u, "text/plain" );
+            c.startActivity( i );
         }
         catch( ActivityNotFoundException e ) {
             c.showMessage( "Activity Not Found: " + e );

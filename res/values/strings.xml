@@ -345,6 +345,8 @@ copied >5 will produce:
     <string name="summary_sel_color_picker">Choose a color for selected files and the panel\'s title</string>
     <string name="ttl_color_picker">Title color</string>
     <string name="summary_ttl_color_picker">Panel title background color</string>
+    <string name="btn_color_picker">Buttons color</string>
+    <string name="summary_btn_color_picker">Tool buttons background color</string>
     <string name="pick_color">Set color</string>
 
     <string name="language">Interface Language</string>

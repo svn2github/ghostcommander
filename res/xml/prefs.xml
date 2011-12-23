@@ -139,12 +139,17 @@
                     android:title="@string/sel_color_picker"
                     android:summary="@string/summary_sel_color_picker">
             </PreferenceScreen>
-                <PreferenceScreen
+            <PreferenceScreen
                     android:key="ttl_color_picker"
                     android:title="@string/ttl_color_picker"
                     android:summary="@string/summary_ttl_color_picker">
             </PreferenceScreen>
-	    </PreferenceScreen>
+            <PreferenceScreen
+                    android:key="btn_color_picker"
+                    android:title="@string/btn_color_picker"
+                    android:summary="@string/summary_btn_color_picker">
+            </PreferenceScreen>
+            	    </PreferenceScreen>
         <ListPreference
                 android:key="language"
                 android:title="@string/language"

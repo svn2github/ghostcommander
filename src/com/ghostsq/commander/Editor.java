@@ -60,8 +60,8 @@ public class Editor extends Activity implements TextWatcher {
             te.setTextSize( fs );
             
             SharedPreferences color_pref = getSharedPreferences( Prefs.COLORS_PREFS, Activity.MODE_PRIVATE );
-            int bg_color = Prefs.getDefaultColor( Prefs.BGR_COLORS );
-            int fg_color = Prefs.getDefaultColor( Prefs.FGR_COLORS );
+            int bg_color = getResources().getColor( R.color.bgr_def );
+            int fg_color = getResources().getColor( R.color.fgr_def );
             bg_color = color_pref.getInt( Prefs.BGR_COLORS, bg_color );
             fg_color = color_pref.getInt( Prefs.FGR_COLORS, fg_color );
             te.setBackgroundColor( bg_color );

@@ -363,15 +363,27 @@ public final class Utils {
         return result.toString();
     }
 
-    public final static Drawable getShading( int color ) {
+    public final static float getBrightness( int color ) {
+        float[] hsv = new float[3];
+        Color.colorToHSV( color, hsv );
+        return hsv[2];
+    }
+    
+    public final static int setBrightness( int color, float drop ) {
+        float[] hsv = new float[3];
+        Color.colorToHSV( color, hsv );
+        hsv[2] *= drop;
+        return Color.HSVToColor( hsv );        
+    }
+    
+    public final static GradientDrawable getShading( int color ) {
+        return getShadingEx( color, 0.6f );
+    }
+    public final static GradientDrawable getShadingEx( int color, float drop ) {
         try {
-            float[] hsv = new float[3];
-            Color.colorToHSV( color, hsv );
-            hsv[2] *= 0.6;
-
             int[] cc = new int[2];
             cc[0] = color;
-            cc[1] = Color.HSVToColor( hsv );
+            cc[1] = setBrightness( color, drop );
             return new GradientDrawable( GradientDrawable.Orientation.TOP_BOTTOM, cc );
         }
         catch( Throwable e ) {

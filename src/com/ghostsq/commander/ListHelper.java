@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.Display;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -123,8 +124,9 @@ public class ListHelper {
             CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
             if( ca == null )
                 return;
-
-            int w = p.c.getWindowManager().getDefaultDisplay().getWidth();
+            Display disp = p.c.getWindowManager().getDefaultDisplay();
+            int w = disp.getWidth();
+            int h = disp.getHeight();
             if( p.sxs )
                 w /= 2;
             final int WIDTH_THRESHOLD = 480;
@@ -142,8 +144,8 @@ public class ListHelper {
             int icon_mode;
             if( show_icons ) {
                 icon_mode = CommanderAdapter.ICON_MODE;
-                if( detail_mode && w <= WIDTH_THRESHOLD && p.fnt_sz <= 16 && ( p.sxs || ( !p.fingerFriendly && 
-                        ( ( m & CommanderAdapter.MODE_WIDTH ) == CommanderAdapter.WIDE_MODE ) ) ) )
+                if( detail_mode && ( h <= WIDTH_THRESHOLD || w <= WIDTH_THRESHOLD ) && p.fnt_sz < 16 && 
+                    ( p.sxs || ( !p.fingerFriendly && ( ( m & CommanderAdapter.MODE_WIDTH ) == CommanderAdapter.WIDE_MODE ) ) ) )
                     icon_mode |= CommanderAdapter.ICON_TINY;        
             }
             else

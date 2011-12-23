@@ -19,6 +19,7 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
     public static final String SEL_COLORS = "sel_color_picker"; 
     public static final String CUR_COLORS = "cur_color_picker";
     public static final String TTL_COLORS = "ttl_color_picker";
+    public static final String BTN_COLORS = "btn_color_picker";
     public static final String TOOLBUTTONS = "toolbar_preference";
     private SharedPreferences color_pref = null;
     private String color_pref_key = null;
@@ -46,6 +47,9 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
         color_picker_pref = (Preference)findPreference( TTL_COLORS );
         if( color_picker_pref != null )
             color_picker_pref.setOnPreferenceClickListener( this );
+        color_picker_pref = (Preference)findPreference( BTN_COLORS );
+        if( color_picker_pref != null )
+            color_picker_pref.setOnPreferenceClickListener( this );
 
         Preference tool_buttons_pref;
         tool_buttons_pref = (Preference)findPreference( TOOLBUTTONS );
@@ -65,9 +69,8 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
             }
             else {
                 color_pref = getSharedPreferences( COLORS_PREFS, Activity.MODE_PRIVATE );
-                int color = color_pref.getInt( color_pref_key, getDefaultColor( color_pref_key ) );
-                new RGBPickerDialog( this, this, color, 
-                        color_pref_key.equals( CUR_COLORS ) ? 0xFFFFC300 : 0 ).show();
+                int color = color_pref.getInt( color_pref_key, getDefaultColor( color_pref_key, false ) );
+                new RGBPickerDialog( this, this, color, getDefaultColor( color_pref_key, true ) ).show();
             }
             return true;
         } catch( Exception e ) {
@@ -86,12 +89,14 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
             color_pref_key = null;
         }
     }
-    public static int getDefaultColor( String key ) {
-        if( key.equals( BGR_COLORS ) ) return 0xFF191919;
-        if( key.equals( FGR_COLORS ) ) return 0xFFF0F0F0;
-        if( key.equals( SEL_COLORS ) ) return 0xFF4169E1;
-        if( key.equals( CUR_COLORS ) ) return 0x00000000;   // system
-        if( key.equals( TTL_COLORS ) ) return 0xFF555555;
+    public int getDefaultColor( String key, boolean alt ) {
+        if( key.equals( CUR_COLORS ) ) return alt ? getResources().getColor( R.color.cur_def ) : 0;
+        if( alt ) return 0;
+        if( key.equals( BGR_COLORS ) ) return getResources().getColor( R.color.bgr_def );
+        if( key.equals( FGR_COLORS ) ) return getResources().getColor( R.color.fgr_def );
+        if( key.equals( SEL_COLORS ) ) return getResources().getColor( R.color.sel_def );
+        if( key.equals( TTL_COLORS ) ) return getResources().getColor( R.color.ttl_def );
+        if( key.equals( BTN_COLORS ) ) return getResources().getColor( R.color.btn_def );
         return 0;
     }
 }

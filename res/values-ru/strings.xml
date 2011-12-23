@@ -243,6 +243,8 @@
 <string name="summary_sel_color_picker">Выбор цвета для помеченых файлов</string>
 <string name="ttl_color_picker">Цвет заголовка</string>
 <string name="summary_ttl_color_picker">Выбор цвета для заголовка панелей</string>
+<string name="btn_color_picker">Цвет кнопок</string>
+<string name="summary_btn_color_picker">Выбор цвета для кнопок</string>
 <string name="pick_color">Выбрать цвет</string>
 <string name="language">Язык интерфейса</string>
 <string name="summary_language">Изменить язык программы на отличный от системного</string>
