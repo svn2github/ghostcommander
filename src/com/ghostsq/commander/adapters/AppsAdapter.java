@@ -1,8 +1,11 @@
 package com.ghostsq.commander.adapters;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import com.ghostsq.commander.Commander;
@@ -11,6 +14,7 @@ import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.ConfigurationInfo;
@@ -27,8 +31,8 @@ public class AppsAdapter extends CommanderAdapterBase {
     public static final String DEFAULT_LOC = "apps:";
 // Java compiler creates a thunk function to access to the private owner class member from a subclass
     // to avoid that all the member accessible from the subclasses are public
-    public final PackageManager pm = ctx.getPackageManager();
-    public  ApplicationInfo[] appInfos = null;
+    public final PackageManager     pm = ctx.getPackageManager();
+    public  ApplicationInfo[]       appInfos = null;
     private final int ACTIVITIES = 0, PROVIDERS = 1; 
     private final String[]          compTypes = { "Activities", "Providers" };
     private ActivityInfo[]          actInfos = null;
@@ -90,6 +94,7 @@ public class AppsAdapter extends CommanderAdapterBase {
         if( reader instanceof ListEngine ) {
             ListEngine list_engine = (ListEngine)reader;
             appInfos = list_engine.getItems();
+            reSort();
             numItems = appInfos != null ? appInfos.length : 0;
             notifyDataSetChanged();
         }
@@ -152,6 +157,7 @@ public class AppsAdapter extends CommanderAdapterBase {
                                                            PackageManager.GET_PROVIDERS );
                     if( compTypes[ACTIVITIES].equals( ps.get( 0 ) ) ) {
                         actInfos = pi.activities != null ? pi.activities : new ActivityInfo[0];
+                        reSort();
                         numItems = actInfos.length + 1;
                         commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pbod ) );
                         return true;
@@ -171,6 +177,62 @@ public class AppsAdapter extends CommanderAdapterBase {
         commander.notifyMe( new Commander.Notify( "Fail", Commander.OPERATION_FAILED ) );
         return false;
     }
+    
+    @Override
+    protected void reSort() {
+        if( appInfos != null ) { 
+            ApplicationInfoComparator comp = new ApplicationInfoComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0, ascending );
+            Arrays.sort( appInfos, comp );
+        }
+        else if( actInfos != null ) {
+            ActivityInfoComparator comp = new ActivityInfoComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0, ascending );
+            Arrays.sort( actInfos, comp );
+        }
+        else if( prvInfos != null ) {
+        }
+        else {
+        }
+    }
+
+    private static <T> ArrayList<T> bitsToInfos( SparseBooleanArray cis, T[] items ) {
+        try {
+            ArrayList<T> al = new ArrayList<T>();
+            for( int i = 0; i < cis.size(); i++ ) {
+                if( cis.valueAt( i ) ) {
+                    int k = cis.keyAt( i );
+                    if( k > 0 )
+                        al.add( items[ k - 1 ] );
+                }
+            }
+            return al;
+        } catch( Exception e ) {
+            Log.e( TAG, "bitsToNames()'s Exception: " + e );
+        }
+        return null;
+    }
+    
+    private final ApplicationInfo[] bitsToApplicationInfos( SparseBooleanArray cis ) {
+        try {
+            int counter = 0;
+            for( int i = 0; i < cis.size(); i++ )
+                if( cis.valueAt( i ) )
+                    counter++;
+            ApplicationInfo[] subItems = new ApplicationInfo[counter];
+            int j = 0;
+            for( int i = 0; i < cis.size(); i++ )
+                if( cis.valueAt( i ) ) {
+                    int k = cis.keyAt( i );
+                    if( k > 0 )
+                        subItems[j++] = appInfos[ k - 1 ];
+                }
+            return subItems;
+        } catch( Exception e ) {
+            Log.e( TAG, "bitsToNames()'s Exception: " + e );
+        }
+        return null;
+    }
+    
+    
     @Override
     public void reqItemsSize( SparseBooleanArray cis ) {
         notErr();
@@ -191,7 +253,14 @@ public class AppsAdapter extends CommanderAdapterBase {
     }
     @Override
     public boolean deleteItems( SparseBooleanArray cis ) {
-        return notErr();
+        if( appInfos == null ) return false;
+        ArrayList<ApplicationInfo> al = bitsToInfos( cis, appInfos );
+        if( al == null ) return false;
+        for( int i = 0; i < al.size(); i++ ) {
+            Intent in = new Intent( Intent.ACTION_DELETE, Uri.parse( "package:" + al.get( i ).packageName ) );
+            commander.issue( in, 0 );
+        }
+        return true;
     }
     @Override
     public boolean receiveItems( String[] full_names, int move_mode ) {
@@ -305,5 +374,76 @@ public class AppsAdapter extends CommanderAdapterBase {
     @Override
     protected int getPredictedAttributesLength() {
         return 36;   // "com.softwaremanufacturer.productname"
+    }
+
+    private class ApplicationInfoComparator implements Comparator<ApplicationInfo> {
+        int     type;
+        boolean ascending;
+        ApplicationInfo.DisplayNameComparator aidnc;
+        
+        public ApplicationInfoComparator( int type_, boolean case_ignore_, boolean ascending_ ) {
+            aidnc = new ApplicationInfo.DisplayNameComparator( pm );
+            type = type_;
+            ascending = ascending_;
+        }
+        @Override
+        public int compare( ApplicationInfo ai1, ApplicationInfo ai2 ) {
+            int ext_cmp = 0;
+            try {
+                switch( type ) {
+                case CommanderAdapter.SORT_EXT:
+                    if( ai1.packageName != null )
+                        ext_cmp = ai1.packageName.compareTo( ai2.packageName );
+                    break;
+                case CommanderAdapter.SORT_SIZE:  {
+                        File asdf1 = new File( ai1.sourceDir );
+                        File asdf2 = new File( ai2.sourceDir );
+                        ext_cmp = asdf1.length() - asdf2.length() < 0 ? -1 : 1;
+                    }
+                    break;
+                case CommanderAdapter.SORT_DATE: {
+                        File asdf1 = new File( ai1.sourceDir );
+                        File asdf2 = new File( ai2.sourceDir );
+                        ext_cmp = asdf1.lastModified() - asdf2.lastModified() < 0 ? -1 : 1;
+                    }
+                    break;
+                }
+                if( ext_cmp == 0 )
+                    ext_cmp = aidnc.compare( ai1, ai2 );
+            } catch( Exception e ) {
+            }
+            return ascending ? ext_cmp : -ext_cmp;
+        }
+    }
+
+    private class ActivityInfoComparator implements Comparator<ActivityInfo> {
+        private int     type;
+        private boolean ascending;
+        public  final PackageManager pm_;
+        
+        public ActivityInfoComparator( int type_, boolean case_ignore_, boolean ascending_ ) {
+            pm_ = pm;
+            type = type_;
+            ascending = ascending_;
+        }
+        @Override
+        public int compare( ActivityInfo ai1, ActivityInfo ai2 ) {
+            int ext_cmp = 0;
+            try {
+                switch( type ) {
+                case CommanderAdapter.SORT_EXT:
+                    if( ai1.packageName != null )
+                        ext_cmp = ai1.name.compareTo( ai2.name );
+                    break;
+                }
+                if( ext_cmp == 0 ) {
+                    String cn1 = ai1.loadLabel( pm_ ).toString();
+                    String cn2 = ai2.loadLabel( pm_ ).toString();
+                    ext_cmp = cn1.compareTo( cn2 );
+                }
+            } catch( Exception e ) {
+            }
+            return ascending ? ext_cmp : -ext_cmp;
+        }
     }
 }
