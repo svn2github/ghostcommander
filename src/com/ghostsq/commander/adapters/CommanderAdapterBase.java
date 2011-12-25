@@ -238,7 +238,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     }
 
     protected boolean notErr() {
-        commander.notifyMe( new Commander.Notify( "Not supported.", Commander.OPERATION_FAILED ) );
+        commander.notifyMe( new Commander.Notify( s( R.string.not_supported ), Commander.OPERATION_FAILED ) );
         return false;
     }
     
@@ -276,7 +276,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         return getView( convertView, parent, item );
     }
 
-    private String getLocalDateTimeStr( Date date ) {
+    protected String getLocalDateTimeStr( Date date ) {
         try {
             return localeDateFormat.format( date ) + " " + localeTimeFormat.format( date );
         } catch( Exception e ) {
@@ -551,16 +551,18 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 return;
             }
             int t = getType();
-            if( ( t & ( CA.LOCAL | CA.ROOT ) ) != 0 )
+            if( ( t & ( CA.LOCAL | CA.ROOT | CA.APPS ) ) != 0 )
                 menu.add( 0, R.id.sz, 0, R.string.show_size );
-            if( num <= 1 && file ) {
+            if( num <= 1 ) {
                 if( ( t & CA.REAL ) != 0 ) 
                     menu.add( 0, R.id.F2, 0, R.string.rename_title );
-                menu.add( 0, R.id.F3, 0, R.string.view_title );
-                if( ( t & ( CA.LOCAL | CA.ROOT | CA.NET ) ) != 0 ) 
-                    menu.add( 0, R.id.F4, 0, R.string.edit_title );
-                if( ( t & CA.LOCAL ) != 0 )  
-                    menu.add( 0, Commander.SEND_TO, 0, R.string.send_to );
+                if( file ) {
+                    menu.add( 0, R.id.F3, 0, R.string.view_title );
+                    if( ( t & ( CA.LOCAL | CA.ROOT | CA.NET ) ) != 0 ) 
+                        menu.add( 0, R.id.F4, 0, R.string.edit_title );
+                    if( ( t & CA.LOCAL ) != 0 )  
+                        menu.add( 0, Commander.SEND_TO, 0, R.string.send_to );
+                }
             }
             menu.add( 0, R.id.F5, 0, R.string.copy_title );
             menu.add( 0, R.id.F6, 0, R.string.move_title );

@@ -389,6 +389,22 @@ copied >5 will produce:
 
     <string name="no_root">Not root?</string>
 
+    <string name="pkg_name">Package name</string>
+    <string name="version">Version</string>
+    <string name="version_code">Version code</string>
+    <string name="target_sdk">Target SDK</string>
+    <string name="inst_date">Date</string>
+    <string name="pkg_size">Size</string>
+    <string name="process">Process name</string>
+    <string name="app_class">App. class</string>
+    <string name="affinity">Task Affinity</string>
+    <string name="permission">Permission</string>
+    <string name="flags">Flags</string>
+        
+        
+        
+        
+        
     <string name="smb_missed">
     Can not load the Samba adapter.\n
     Please make sure the package\n

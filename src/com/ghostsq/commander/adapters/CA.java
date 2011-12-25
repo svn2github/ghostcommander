@@ -34,6 +34,7 @@ final public class CA {
     public static final int NET   = FTP | SMB | GDOCS;
     public static final int ALL   = 0xFFFFFFFF;
     public static final int REAL  = LOCAL | ARCH | ROOT | NET;
+    public static final int CHKBL  = REAL | APPS;
 
     // URI schemes hash codes
     protected static final int  home_schema_h =  "home".hashCode();  

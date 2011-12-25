@@ -1053,8 +1053,6 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             togglePanels( false );
           	Log.e( TAG, "onItemClick. current=" + current + ", parent=" + parent.getId() );
         }
-        	
-        
         if( position == 0 )
             flv.setItemChecked( 0, false ); // parent item never selected
         list[current].setCurPos( position );
@@ -1065,7 +1063,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             flv.setItemChecked( position, !cis.get( position ) );
             return;
         }
-        if( disableOpenSelectOnly && ( ((CommanderAdapter)flv.getAdapter()).getType() & CA.REAL ) != 0 )
+        if( disableOpenSelectOnly && ( ((CommanderAdapter)flv.getAdapter()).getType() & CA.CHKBL ) != 0 )
             disableOpenSelectOnly = false;
         else { 
             openItem( position );
