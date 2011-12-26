@@ -5,7 +5,6 @@ import android.util.Log;
 
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.root.MountsListEngine.MountItem;
-import com.ghostsq.commander.utils.Utils;
 
 public class RemountEngine extends ExecEngine {
     MountItem mount;
@@ -26,12 +25,10 @@ public class RemountEngine extends ExecEngine {
             for( int i = 0; i < flds.length; i++ ) {
                 if( flds[i].equals( "rw" ) ) {
                     mode = "ro";
-                    flds[i] = mode; 
                     break;
                 }
                 if( flds[i].equals( "ro" ) ) {
                     mode = "rw";
-                    flds[i] = mode;
                     break;
                 }
             }
@@ -39,7 +36,7 @@ public class RemountEngine extends ExecEngine {
                 error( "No ro/rw options found" );
                 return;
             }
-            cmd = "mount -o remount," + Utils.join( flds, "," ) + " " + mount.getName();
+            cmd = "mount -o remount," + mode + " " + mount.getName();
             execute( cmd, false, 500 );
             
         }

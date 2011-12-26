@@ -19,6 +19,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.text.format.DateFormat;
@@ -39,7 +40,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     public    final static String NOTIFY_STR = "str", NOTIFY_PRG1 = "prg1", NOTIFY_PRG2 = "prg2", NOTIFY_COOKIE = "cookie"; 
     public    final static String NOTIFY_RECEIVER_HASH = "hash";
     protected final static String NOTIFY_ITEMS_TO_RECEIVE = "itms"; 
-    protected final static String DEFAULT_DIR = "/sdcard";
+    protected final static String DEFAULT_DIR = Environment.getExternalStorageDirectory().getAbsolutePath();
     protected final String TAG = getClass().getName();
     public    Context   ctx;
     public    Commander commander = null;

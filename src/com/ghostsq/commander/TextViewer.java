@@ -35,7 +35,8 @@ import java.io.InputStream;
 public class TextViewer extends Activity {
     private final static String TAG = "TextViewerActivity";
     private final static String SP_ENC = "encoding";
-    final static int VIEW_BOT = 595, VIEW_TOP = 590, VIEW_ENC = 363;
+    public  final static String STRKEY = "string";
+    private final static int VIEW_BOT = 595, VIEW_TOP = 590, VIEW_ENC = 363;
     private ScrollView scrollView;
     private Uri uri;
     public  String encoding;
@@ -181,10 +182,22 @@ public class TextViewer extends Activity {
     private final boolean loadData() {
         if( uri != null ) { 
             try {
-                String scheme = uri.getScheme();
+                final TextView text_view = (TextView)findViewById( R.id.text_view );                
+                final String   scheme = uri.getScheme();
+                if( STRKEY.equals( scheme ) ) {
+                    Intent i = getIntent();
+                    Bundle b = i.getBundleExtra( STRKEY );
+                    if( b != null ) {
+                        String str = b.getString( STRKEY );
+                        if( str != null ) {
+                            text_view.setText( str );
+                            return true;
+                        }
+                    }
+                    return false;
+                }
                 if( "exec".equals( scheme ) ) {
                     Intent i = getIntent();
-                    
                     String pn_foreign = getCallingPackage();
                     final String pn_this = "com.ghostsq.commander";
                     if( !pn_this.equals( pn_foreign ) ) {
@@ -202,7 +215,6 @@ public class TextViewer extends Activity {
                                         Bundle b = msg.getData();
                                         String r = b.getString( CommanderAdapterBase.NOTIFY_STR );
                                         if( r != null ) {
-                                            TextView text_view = (TextView)findViewById( R.id.text_view );
                                             text_view.setText( r );
                                         }
                                     } catch( Exception e ) {
@@ -229,7 +241,6 @@ public class TextViewer extends Activity {
                         ca.closeStream( is );
                     else
                         is.close();
-                    TextView text_view = (TextView)findViewById( R.id.text_view );
                     text_view.setText( cs );
                     return true;
                 }

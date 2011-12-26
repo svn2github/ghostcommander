@@ -13,6 +13,7 @@ import java.util.zip.ZipFile;
 
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.R;
+import com.ghostsq.commander.TextViewer;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.utils.Utils;
@@ -26,7 +27,10 @@ import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Resources;
+import android.content.res.Resources.NotFoundException;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -425,8 +429,15 @@ public class AppsAdapter extends CommanderAdapterBase {
                 else if( position-1 == MANIFEST ) {
                     String p = uri.getAuthority();
                     ApplicationInfo ai = pm.getApplicationInfo( p, 0 );
-                    String m = extractManifest( ai.publicSourceDir );
-                    commander.showInfo( m );
+                    String m = extractManifest( ai.publicSourceDir, ai );
+                    if( m != null ) {
+                        Intent in = new Intent( ctx, TextViewer.class );
+                        in.setData( Uri.parse( "string:" ) );
+                        Bundle b = new Bundle();
+                        b.putString( TextViewer.STRKEY, m );
+                        in.putExtra( TextViewer.STRKEY, b );
+                        commander.issue( in, 0 );
+                    }
                 }
                 else if( position <= compTypes.length ) {
                     commander.Navigate( uri.buildUpon().path( compTypes[position - 1] ).build(), null );
@@ -496,8 +507,12 @@ public class AppsAdapter extends CommanderAdapterBase {
             }
         }
         else {
-            if( position <= compTypes.length )
-                item.name = compTypes[position - 1];
+            if( position <= compTypes.length ) {
+                int i = position-1;
+                item.name = compTypes[i];
+                if( i == ACTIVITIES || i == PROVIDERS )
+                    item.dir = true;
+            }
         }
         return item;
     }
@@ -578,7 +593,7 @@ public class AppsAdapter extends CommanderAdapterBase {
         }
     }
     
-    private final String extractManifest( String zip_path ) {
+    private final String extractManifest( String zip_path, ApplicationInfo ai ) {
         try {
             if( zip_path == null ) return null;
             ZipFile  zip = new ZipFile( zip_path );
@@ -592,7 +607,7 @@ public class AppsAdapter extends CommanderAdapterBase {
                     while( ( n = is.read( buf ) ) != -1 )
                         baos.write( buf, 0, n );
                     is.close( );
-                    return decompressXML( baos.toByteArray() );
+                    return decompressXML( baos.toByteArray(), ai != null ? pm.getResourcesForApplication( ai ) : null );
                 }
             }
         } catch( Throwable e ) {
@@ -607,7 +622,7 @@ public class AppsAdapter extends CommanderAdapterBase {
     public static int endDocTag = 0x00100101;
     public static int startTag =  0x00100102;
     public static int endTag =    0x00100103;
-    public String decompressXML( byte[] xml ) {
+    public String decompressXML( byte[] xml, Resources rr ) {
         StringBuffer xml_sb = new StringBuffer( 8192 ); 
         // Compressed XML file/bytes starts with 24x bytes of data,
         // 9 32 bit words in little endian order (LSB first):
@@ -700,15 +715,23 @@ public class AppsAdapter extends CommanderAdapterBase {
               off += 5*4;  // Skip over the 5 words of an attribute
         
               String attrName = compXmlString(xml, sitOff, stOff, attrNameSi);
-              String attrValue = attrValueSi!=-1
-                ? compXmlString(xml, sitOff, stOff, attrValueSi)
-                : "resourceID 0x"+Integer.toHexString(attrResId);
-              sb.append(" "+attrName+"=\""+attrValue+"\"");
+              String attrValue= null;
+              if( attrValueSi != -1 )
+                  attrValue = compXmlString(xml, sitOff, stOff, attrValueSi);
+              else {
+                  if( rr != null )
+                    try {
+                        attrValue = rr.getString( attrResId );
+                    } catch( NotFoundException e ) {}
+                  if( attrValue == null )
+                      attrValue = "0x"+Integer.toHexString( attrResId );
+              }
+              sb.append( "\n" ).append( spaces( indent+1 ) ).append( attrName ).append( "=\"" ).append( attrValue ).append( "\"" );
               //tr.add(attrName, attrValue);
             }
             xml_sb.append( "\n" ).append( spaces( indent ) ).append( "<" ).append( name );
             if( sb.length() > 0 )
-                xml_sb.append( "\n" ).append( spaces( indent+1 ) ).append( sb );
+                xml_sb.append( sb );
             xml_sb.append( ">" );
             indent++;
         

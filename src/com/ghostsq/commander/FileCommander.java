@@ -1,5 +1,11 @@
 package com.ghostsq.commander;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 import com.ghostsq.commander.adapters.CommanderAdapter;
@@ -17,8 +23,10 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -45,7 +53,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     
     private ArrayList<Dialogs> dialogs;
     public  Panels  panels;
-    private boolean on = false, exit = false, dont_restore = false, view_action = false, 
+    private boolean on = false, exit = false, dont_restore = false, viewActProcessed = false, 
                     sxs_auto = true, show_confirm = true, back_exits = false;
     private String  lang = ""; // just need to issue a warning on change
     private int     file_exist_resolution = Commander.UNKNOWN;
@@ -127,24 +135,65 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             String action = intent.getAction();
             Log.i( TAG, "Action: " + action );
             int use_panel = -1;
-            if( !view_action && Intent.ACTION_VIEW.equals( action ) ) {
+            if( !viewActProcessed && Intent.ACTION_VIEW.equals( action ) ) {
                 Uri uri = intent.getData();
-                if( "application/x-zip-compressed".equals( intent.getType() ) ||
-                                 "application/zip".equals( intent.getType() ) )
+                Log.v( TAG, "Intent URI: " + uri );
+                String file_name = null;
+                String type = intent.getType();
+                if( "application/x-zip-compressed".equals( type ) ||
+                                 "application/zip".equals( type ) )
                     uri = uri.buildUpon().scheme( "zip" ).build();
+                else if( ContentResolver.SCHEME_CONTENT.equals( uri.getScheme() ) ) {
+                    // unknown content is being passed. Let's just save it
+                    try {
+                        InputStream is = getContentResolver().openInputStream( uri );
+                        if( is != null ) {
+                            File dwf = new File( Panels.DEFAULT_LOC, "download" );
+                            if( !dwf.exists() )
+                                dwf.mkdirs();
+                            
+                            String fn = uri.getLastPathSegment();
+                            File f = null;
+                            for( int i = 0; i < 99; i++ ) {
+                                file_name = i == 0 ? fn : fn + "_" + i;
+                                f = new File( dwf, file_name );
+                                if( f.exists() ) continue;
+                                if( f.createNewFile() )
+                                    break;
+                                f = null;
+                            }
+                            if( f!= null ) {
+                                BufferedOutputStream bos = new BufferedOutputStream( new FileOutputStream( f ), 8192 );
+                                byte[] buf = new byte[4096];
+                                int n;
+                                while( ( n = is.read( buf ) ) != -1 )
+                                    bos.write( buf, 0, n );
+                                bos.close( );
+                                is.close( );
+                                uri = Uri.fromFile( dwf );
+                                showMessage( getString( R.string.copied_f, f.toString() ) );
+                            }
+                            else
+                                showError( getString( R.string.not_accs, fn ) );
+                        }
+                    } catch( Exception e ) {
+                        showError( getString( R.string.not_accs, "" ) );    // TODO more verbose
+                    }
+                }
+                
                 use_panel = Panels.LEFT;
-                panels.Navigate( use_panel, uri, null );    
-                view_action = true;
+                panels.Navigate( use_panel, uri, file_name );    
+                viewActProcessed = true;
             }
             panels.setState( s, use_panel );
             final String FT = "first_time";
-            if( !view_action && prefs.getBoolean( FT, true ) ) {
+            if( !viewActProcessed && prefs.getBoolean( FT, true ) ) {
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putBoolean( FT, false );
                 editor.commit();
                 showInfo( getString( R.string.keys_text) );
             }
-            if( use_panel >= 0 && view_action )
+            if( use_panel >= 0 && viewActProcessed )
                 panels.setPanelCurrent( use_panel );
         }
     }
