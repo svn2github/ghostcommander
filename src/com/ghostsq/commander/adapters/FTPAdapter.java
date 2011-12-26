@@ -495,8 +495,10 @@ public class FTPAdapter extends CommanderAdapterBase {
     	synchronized( ftp ) {
     		ftp.clearLog();
     		try {
-                if( ftp.makeDir( string ) )
+                if( ftp.makeDir( string ) ) {
                     commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED_REFRESH_REQUIRED ) );
+                    return;
+                }
             } catch( InterruptedException e ) {
                 e.printStackTrace();
             }

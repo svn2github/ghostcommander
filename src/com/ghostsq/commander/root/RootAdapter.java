@@ -20,6 +20,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -293,7 +296,8 @@ public class RootAdapter extends CommanderAdapterBase {
 	    private String   dest_folder;
 	    private boolean  move;
 	    private String   src_base_path;
-	    private int      recipient_hash;
+        private int      recipient_hash; 
+        private String   uid;
 	    CopyFromEngine( Context ctx, Handler h, LsItem[] list_, String dest, boolean move_, int recipient_h ) {
 	    	super( ctx, h );
 	        list = list_;
@@ -306,6 +310,18 @@ public class RootAdapter extends CommanderAdapterBase {
 	        if( src_base_path.charAt( src_base_path.length()-1 ) != SLC )
 	            src_base_path += SLS;
 	        recipient_hash = recipient_h;
+	        if( recipient_hash != 0 )
+                try {
+        	        PackageManager pm = ctx.getPackageManager();
+        	        if( pm != null ) {
+        	            ApplicationInfo ai;
+                        ai = pm.getApplicationInfo( ctx.getPackageName(), 0 );
+                        if( ai != null )
+                            uid = "" + ai.uid;
+        	        }
+        	    } catch( NameNotFoundException e ) {
+                    e.printStackTrace();
+                }
 	    }
 	    @Override
 	    public void run() {
@@ -346,13 +362,13 @@ public class RootAdapter extends CommanderAdapterBase {
                     outCmd( true, to_exec, os );
                     if( procError( es ) ) return false;
                     
-                    File dst_file = new File( dest_folder, f.getName() );
-                    String dst_path = dst_file.getAbsolutePath(); 
-                    
-                    Permissions src_p = new Permissions( f.getAttr() );
-                    String chown_cmd = "chown " + src_p.generateChownString().append(" ").append( dst_path ).toString();
-                    outCmd( false, chown_cmd, os );
-                    String chmod_cmd = "chmod " + src_p.generateChmodString().append(" ").append( dst_path ).toString();
+                    File    dst_file = new File( dest_folder, f.getName() );
+                    String  dst_path = dst_file.getAbsolutePath(); 
+                    Permissions perm = uid != null ? new Permissions( uid, uid, "-rw-rw----" ) :
+                                                     new Permissions( f.getAttr() );
+                    String chown_cmd = "chown " + perm.generateChownString().append(" ").append( dst_path ).toString();
+                    outCmd( uid != null, chown_cmd, os );
+                    String chmod_cmd = "chmod " + perm.generateChmodString().append(" ").append( dst_path ).toString();
                     outCmd( true, chmod_cmd, os );
                     
                     sendProgress( "'" + file_name + "'", (int)(i * conv) );

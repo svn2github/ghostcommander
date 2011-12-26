@@ -3,8 +3,28 @@ package com.ghostsq.commander.root;
 public class Permissions {
     public boolean  ur,  uw,  ux,  us,  gr,  gw,  gx,  gs,  or,  ow,  ox,  ot;
     public String   user, group;
+    Permissions( String u, String g, String a ) {
+        Init( a );
+        user = u;
+        group = g;
+    }
     Permissions( String a ) {
-        if( a == null ) return;  // can we assume all the flags will be false?
+        if( a == null ) return;
+        Init( a );
+        String[] aa = a.substring( 10 ).split( "\\s+" );
+        if( aa != null ) {
+            if( aa.length >= 3 ) {
+                user = aa[1];
+                group = aa[2];
+            } else {
+                user = aa[0];
+                if( aa.length > 1 )
+                    group = aa[1];
+            }
+        }       
+    }
+
+    private void Init( String a ) {
         ur = a.charAt( 1 ) == 'r';
         uw = a.charAt( 2 ) == 'w';
         char uxl = a.charAt( 3 );
@@ -58,17 +78,6 @@ public class Permissions {
             ox = false;
             ot = false;
         }
-        String[] aa = a.substring( 10 ).split( "\\s+" );
-        if( aa != null ) {
-            if( aa.length >= 3 ) {
-                user = aa[1];
-                group = aa[2];
-            } else {
-                user = aa[0];
-                if( aa.length > 1 )
-                    group = aa[1];
-            }
-        }       
     }
     
     public String toString() {
