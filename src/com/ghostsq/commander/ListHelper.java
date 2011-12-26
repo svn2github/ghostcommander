@@ -141,12 +141,19 @@ public class ListHelper {
                     true );
             
             boolean show_icons = sharedPref.getBoolean( "show_icons", true );
+            boolean same_line = ( m & CommanderAdapter.MODE_WIDTH ) == CommanderAdapter.WIDE_MODE;
             int icon_mode;
             if( show_icons ) {
                 icon_mode = CommanderAdapter.ICON_MODE;
-                if( detail_mode && ( h <= WIDTH_THRESHOLD || w <= WIDTH_THRESHOLD ) && p.fnt_sz < 16 && 
-                    ( p.sxs || ( !p.fingerFriendly && ( ( m & CommanderAdapter.MODE_WIDTH ) == CommanderAdapter.WIDE_MODE ) ) ) )
-                    icon_mode |= CommanderAdapter.ICON_TINY;        
+                if( p.fnt_sz < 18 ) {
+                    if( h * w < 320 * 480 ) // old or small 
+                        icon_mode |= CommanderAdapter.ICON_TINY;
+                    else 
+                    if( h * w < 480 * 800 ) {   // medium
+                        if( detail_mode && !p.fingerFriendly && same_line )
+                            icon_mode |= CommanderAdapter.ICON_TINY;
+                    }
+                }
             }
             else
                 icon_mode = CommanderAdapter.TEXT_MODE;

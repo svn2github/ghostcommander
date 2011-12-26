@@ -482,11 +482,11 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             }
 
             if( fat ) {
-                int vp = (int)( 6 * density );
+                int vp = (int)( 5 * density );
                 row_view.setPadding( LEFT_P, vp, RIGHT_P, vp );
             }
             else 
-                row_view.setPadding( LEFT_P, 4, RIGHT_P, 4 );
+                row_view.setPadding( LEFT_P, 3, RIGHT_P, 3 );
             
             row_view.setTag( null );
 //Log.v( TAG, "p:" + parent_width + ",i:" + img_width + ",n:" + nameWidth + ",d:" + dateWidth + ",s:" + sizeWidth + ",a:" + attrWidth );            
