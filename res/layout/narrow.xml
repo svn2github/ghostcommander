@@ -27,8 +27,7 @@
             android:gravity="right"
             android:paddingRight="4dip"
             android:singleLine="true"
-            android:ellipsize="none"
-            android:text="04.12.2012 10:44"/>
+            android:ellipsize="none"/>
         <TextView 
             android:id="@+id/fld_size"
             android:layout_below="@id/fld_name"
@@ -40,8 +39,7 @@
             android:textSize="9sp"
             android:paddingRight="6dip"
             android:singleLine="true"
-            android:ellipsize="none"
-            android:text="9999Kb"/>
+            android:ellipsize="none"/>
         <TextView
             android:id="@+id/fld_attr"
             android:layout_below="@id/fld_name"
@@ -51,8 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="9sp"
-            android:gravity="right"
-            android:text="-rwxr-xr-x 1 system system "/>
+            android:gravity="right"/>
 </RelativeLayout>
 
     

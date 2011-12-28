@@ -16,6 +16,7 @@ import com.ghostsq.commander.root.RootAdapter;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -56,9 +57,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected float   density = 1;
     protected LayoutInflater mInflater = null;
     private   int     parentWidth, nameWidth, sizeWidth, dateWidth, attrWidth;
-    private   int     fg_color, sl_color;
+    private   boolean a3r = false;
     private   boolean dirty = true;
     protected int     thumbnail_size_perc = 100, font_size = 18;
+    private   int     fg_color, sl_color;
     protected int     mode = 0;
     protected boolean ascending = true;
     protected String  parentLink = SLS;
@@ -300,7 +302,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             boolean wm = (mode & MODE_WIDTH) == WIDE_MODE;
             boolean dm = ( mode & MODE_DETAILS ) == DETAILED_MODE;
             boolean ao = ( ATTR_ONLY & mode ) != 0;
-            boolean a3r = false;
             boolean current_wide = convertView != null && convertView.getId() == R.id.row_layout;
             if( convertView == null || 
         		( (  wm && !current_wide ) || 
@@ -364,10 +365,17 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                             int al = getPredictedAttributesLength();
                             if( al > 0 ) {
                                 char[] dummy = new char[al];
-                                Arrays.fill( dummy, 'W');
+                                Arrays.fill( dummy, 'c');
+                                if( this instanceof RootAdapter )   // hack, redesign
+                                    attrView.setTypeface( Typeface.create( "monospace", Typeface.NORMAL ) );
                                 attrWidth = (int)attrView.getPaint().measureText( new String( dummy ) );
-                                if( !wm )
-                                    a3r = attrWidth > parent_width - sizeWidth - dateWidth - icoWidth - LEFT_P - RIGHT_P;
+                                if( !wm ) {
+                                    int remain = parent_width - sizeWidth - dateWidth - icoWidth - LEFT_P - RIGHT_P;
+                                    a3r = attrWidth > remain;
+                                    attrWidth = remain;
+                                    if( a3r )
+                                        attrWidth += sizeWidth + dateWidth;
+                                }
                             }
                             else
                                 attrWidth = 0;
@@ -376,7 +384,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 }
             }
             if( item.sel )
-                row_view.setBackgroundColor( sl_color & 0xCFFFFFFF  );
+                row_view.setBackgroundColor( sl_color & 0xCFFFFFFF );
             int img_width = icoWidth;
             if( imgView != null ) {
                 if( icoWidth > 0 ) {
@@ -464,10 +472,12 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                             if( a3r ) {
                                 rllp.addRule( RelativeLayout.ALIGN_PARENT_RIGHT );
                                 rllp.addRule( RelativeLayout.BELOW, R.id.fld_date );
+                                attrView.setGravity( 0x05 ); // RIGHT
                             } else {
                                 rllp.addRule( RelativeLayout.BELOW, R.id.fld_name );
                                 rllp.addRule( RelativeLayout.LEFT_OF, R.id.fld_size );
                                 rllp.addRule( RelativeLayout.ALIGN_TOP, R.id.fld_size );
+                                attrView.setGravity( 0x03 ); // LEFT
                             }
                             attrView.setLayoutParams( rllp );
                         }
@@ -477,6 +487,8 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                     attrView.setVisibility( View.VISIBLE );
                     attrView.setText( attr_text );
                     attrView.setTextColor( fg_color );
+                    if( this instanceof RootAdapter )
+                        attrView.setTypeface( Typeface.create( "monospace", Typeface.NORMAL ) );
 //attrView.setBackgroundColor( 0xFFFF0000 );  // DEBUG!!!!!!
                 }
             }
@@ -552,23 +564,27 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 return;
             }
             int t = getType();
-            if( ( t & ( CA.LOCAL | CA.ROOT | CA.APPS ) ) != 0 )
+            if( CA.suitable( R.id.sz, t ) )
                 menu.add( 0, R.id.sz, 0, R.string.show_size );
             if( num <= 1 ) {
-                if( ( t & CA.REAL ) != 0 ) 
+                if( CA.suitable( R.id.F2, t ) ) 
                     menu.add( 0, R.id.F2, 0, R.string.rename_title );
                 if( file ) {
-                    menu.add( 0, R.id.F3, 0, R.string.view_title );
-                    if( ( t & ( CA.LOCAL | CA.ROOT | CA.NET ) ) != 0 ) 
+                    if( CA.suitable( R.id.F3, t ) )
+                        menu.add( 0, R.id.F3, 0, R.string.view_title );
+                    if( CA.suitable( R.id.F4, t ) ) 
                         menu.add( 0, R.id.F4, 0, R.string.edit_title );
                     if( ( t & CA.LOCAL ) != 0 )  
                         menu.add( 0, Commander.SEND_TO, 0, R.string.send_to );
                 }
             }
-            menu.add( 0, R.id.F5, 0, R.string.copy_title );
-            menu.add( 0, R.id.F6, 0, R.string.move_title );
-            menu.add( 0, R.id.F8, 0, R.string.delete_title );
-            if( ( t & CA.FS ) != 0 ) {
+            if( CA.suitable( R.id.F5, t ) )
+                menu.add( 0, R.id.F5, 0, R.string.copy_title );
+            if( CA.suitable( R.id.F6, t ) )
+                menu.add( 0, R.id.F6, 0, R.string.move_title );
+            if( CA.suitable( R.id.F8, t ) )
+                menu.add( 0, R.id.F8, 0, R.string.delete_title );
+            if( ( t & CA.LOCAL ) != 0 ) {
                 if( file && num <= 1 )
                     menu.add( 0, Commander.OPEN_WITH, 0, R.string.open_with );
                 menu.add( 0, R.id.new_zip, 0, R.string.new_zip );

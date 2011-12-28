@@ -1363,7 +1363,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             else {
                 Favorite lcf = new Favorite( lu );
                 s.left = lcf.toString();
-                s.leftItem  =  left_adapter.getItemName( list[LEFT].getCurPos(), false );
+                int pos = list[LEFT].getCurPos();
+                s.leftItem = pos >= 0 ? left_adapter.getItemName( pos, false ) : "";
             }
             CommanderAdapter right_adapter = (CommanderAdapter)list[RIGHT].getListAdapter();
             Uri ru = right_adapter.getUri();
@@ -1372,7 +1373,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             else {
                 Favorite rcf = new Favorite( ru );
                 s.right = rcf.toString();
-                s.rightItem = right_adapter.getItemName( list[RIGHT].getCurPos(), false );
+                int pos = list[RIGHT].getCurPos();
+                s.rightItem = pos >= 0 ? right_adapter.getItemName( pos, false ) : "";
             }
             s.favs = favorites.getAsString();
         } catch( Exception e ) {

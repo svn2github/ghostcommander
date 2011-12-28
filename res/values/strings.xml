@@ -25,7 +25,7 @@
     <string name="tgl">Toggle</string>
     <string name="sz">Size</string>
     <string name="refresh">Refresh</string>
-    <string name="enter">Change Location</string>
+    <string name="enter">Change location</string>
     <string name="home">Home</string>
     <string name="sdcard">/sdcard</string>
     <string name="softkbd">Keyboard</string>
@@ -36,7 +36,7 @@
     <string name="remount_b">Remount /system</string>
     <string name="remount">Remount</string>
     <string name="hidden">Hidden</string>
-    <string name="rescan">Rescan Media</string>
+    <string name="rescan">Rescan media</string>
         
     <string name="favs">Favorites</string>
     <string name="local">Local storage</string>
@@ -88,7 +88,7 @@
     <string name="go_button">Go</string>
     <string name="show_size">Info</string>
     <string name="send_to">Send to...</string>
-    <string name="open_with">Open With...</string>
+    <string name="open_with">Open with...</string>
     <string name="copy_name">Copy name to Clipboard</string>
     <string name="fav_fld">Favorite the folder \"%s\"</string>
     
@@ -101,7 +101,7 @@
     <string name="default_uri_cmnt">Default location</string>
     <string name="default_color">Default</string>
     <string name="fav_comment">Comment</string>
-    <string name="fav_dialog">Edit Favorite</string>  
+    <string name="fav_dialog">Edit favorite</string>
 
     <string name="dialog_yes">Yes</string>
     <string name="dialog_no">No</string>
@@ -114,12 +114,13 @@
     <string name="dialog_retry">Retry</string>
     <string name="dialog_ignore">Ignore</string>
 
-    <string name="dialog_replace_all">Replace All</string>
-    <string name="dialog_skip_all">Skip All</string>
+    <string name="dialog_replace_all">Replace all</string>
+    <string name="dialog_skip_all">Skip all</string>
 
     <string name="dialog_select">Select</string>
     <string name="dialog_unselect">Unselect</string>
-    
+    <string name="launch">Launch</string>
+        
     <string name="operation">Operation</string>
     <string name="view_title">View</string>
     <string name="edit_title">Edit</string>
@@ -222,16 +223,16 @@ copied >5 will produce:
  -->
 
 
-    <string name="sz_folder">Folder \"%1$s\":\n %2$d files,</string>
-    <string name="sz_file">File \"%s\":</string>
-    <string name="sz_files">Found files: %d </string>
-    <string name="sz_Nbytes">\nSize: %1$sb</string>
-    <string name="sz_bytes">\n ( %d bytes )</string>
-    <string name="sz_dirnum">,\nin %1$d director%2$s</string>
-    <string name="sz_dirsfx_s">y.</string>
-    <string name="sz_dirsfx_p">ies.</string>
-    <string name="sz_lastmod">\nLast modified:\n </string>
-    <string name="sz_total">Total: %1$sbytes,\nFree: %2$sbytes.</string>
+    <string name="sz_folder">Folder \"%1$s\"\n%2$d files </string>
+    <string name="sz_dirnum">&#xA0;in %1$d director%2$s</string>
+    <string name="sz_dirsfx_s">y</string>
+    <string name="sz_dirsfx_p">ies</string>
+        <string name="sz_file">File:&#xA0;\"%s\"</string>
+    <string name="sz_files">Files: %d </string>
+    <string name="sz_Nbytes">\nSize:&#xA0;%1$s</string>
+    <string name="sz_bytes">&#xA0;(%db)</string>
+    <string name="sz_lastmod">\n\nLast modified:\n </string>
+    <string name="sz_total">Total: %1$s\nFree: %2$s</string>
 
     <string name="busy">Busy!</string>
     

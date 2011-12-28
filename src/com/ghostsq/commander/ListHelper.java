@@ -137,20 +137,21 @@ public class ListHelper {
             ca.setMode( CommanderAdapter.SET_FONT_SIZE, p.fnt_sz );
 
             String sfx = p.sxs ? "_SbS" : "_Ovr";
-            boolean detail_mode = sharedPref.getBoolean( which == Panels.LEFT ? "left_detailed" + sfx : "right_detailed" + sfx,
-                    true );
+            boolean detail_mode = sharedPref.getBoolean( which == Panels.LEFT ? "left_detailed" + sfx : "right_detailed" + sfx, true );
             
             boolean show_icons = sharedPref.getBoolean( "show_icons", true );
             boolean same_line = ( m & CommanderAdapter.MODE_WIDTH ) == CommanderAdapter.WIDE_MODE;
             int icon_mode;
             if( show_icons ) {
                 icon_mode = CommanderAdapter.ICON_MODE;
-                if( p.fnt_sz < 18 ) {
-                    if( h * w < 320 * 480 ) // old or small 
+                if( p.fnt_sz < 18 && !p.fingerFriendly ) {
+                    int sq = h * w;
+                    //Log.v( TAG, "sq=" + sq );
+                    if( sq <= 400 * 480 ) // old or small or sxs on medium 
                         icon_mode |= CommanderAdapter.ICON_TINY;
                     else 
-                    if( h * w < 480 * 800 ) {   // medium
-                        if( detail_mode && !p.fingerFriendly && same_line )
+                    if( sq <= 480 * 854 ) {   // medium
+                        if( same_line )
                             icon_mode |= CommanderAdapter.ICON_TINY;
                     }
                 }

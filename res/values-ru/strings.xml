@@ -58,7 +58,7 @@
 <string name="copy_name">Копировать имя в буфер</string>
 <string name="fav_fld">Закладка на папку \"%s\"</string>
 <string name="shortcut">Поместить на десктоп</string>
-
+<string name="launch">Запустить</string>
 <string name="wait"> жди... </string>
 <string name="fail"> (ошибка) </string>
 <string name="failed">Ошибка:\n</string>
@@ -148,16 +148,16 @@
 <string name="were"/>
 <string name="was"/>
 <string name="nothing">Ни один файл не</string>
-<string name="sz_folder">Папка \"%1$s\":\nвключает файлов: %2$d,</string>
-<string name="sz_file">Файл \"%s\":</string>
-<string name="sz_files">Найдено файлов: %d </string>
-<string name="sz_Nbytes">\nОбъемом: %1$sБ</string>
-<string name="sz_bytes">\n(%dБ)</string>
-<string name="sz_dirnum">,\nв %1$d папк%2$s</string>
+<string name="sz_folder">Папка \"%1$s\"\n%2$d файлов</string>
+<string name="sz_dirnum">&#xA0;в %1$d папк%2$s</string>
 <string name="sz_dirsfx_s">е.</string>
 <string name="sz_dirsfx_p">ах.</string>
-<string name="sz_lastmod">\nДата изменения:\n </string>
-<string name="sz_total">Раздел: %1$sБ,\nСвободно: %2$sБ.</string>
+<string name="sz_file">Файл \"%s\":</string>
+<string name="sz_files">Найдено файлов: %d </string>
+<string name="sz_Nbytes">\nОбъем: %1$s</string>
+<string name="sz_bytes">&#xA0;(%dБ)</string>
+<string name="sz_lastmod">\n\nДата изменения:\n </string>
+<string name="sz_total">Раздел: %1$s,\nСвободно: %2$s.</string>
 <string name="busy">Занят!</string>
 <string name="cd_title">Смена папки</string>
 <string name="cd_prompt">Сменить текущую папку на:</string>

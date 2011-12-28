@@ -43,6 +43,7 @@ import android.provider.MediaStore.Images.ImageColumns;
 import android.provider.MediaStore.Images.Media;
 import android.provider.MediaStore.Images.Thumbnails;
 import android.text.format.DateFormat;
+import android.text.format.Formatter;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 
@@ -506,18 +507,19 @@ public class FSAdapter extends CommanderAdapterBase {
         				}
                     if( mList.length == 1 ) {
                         File f = mList[0].f;
-                        if( f.isDirectory() )
+                        if( f.isDirectory() ) {
                             result.append( c.getString( R.string.sz_folder, f.getName(), num ) );
+                            if( dirs > 0 )
+                                result.append( c.getString( R.string.sz_dirnum, dirs, ( dirs > 1 ? c.getString( R.string.sz_dirsfx_p ) : c.getString( R.string.sz_dirsfx_s ) ) ) );
+                        }
                         else
                             result.append( c.getString( R.string.sz_file, f.getName() ) );
                     } else
                         result.append( c.getString( R.string.sz_files, num ) );
                     if( sum > 0 )
-                        result.append( c.getString( R.string.sz_Nbytes, Utils.getHumanSize(sum).trim() ) );
+                        result.append( c.getString( R.string.sz_Nbytes, Formatter.formatFileSize( ctx, sum ).trim() ) );
                     if( sum > 1024 )
                         result.append( c.getString( R.string.sz_bytes, sum ) );
-                    if( dirs > 0 )
-                        result.append( c.getString( R.string.sz_dirnum, dirs, ( dirs > 1 ? c.getString( R.string.sz_dirsfx_p ) : c.getString( R.string.sz_dirsfx_s ) ) ) );
                     if( mList.length == 1 ) {
                         result.append( c.getString( R.string.sz_lastmod ) );
                         result.append( " " );
@@ -541,7 +543,7 @@ public class FSAdapter extends CommanderAdapterBase {
                             }
                             byte[] digest = digester.digest();
                             in.close();
-                            result.append( "\nMD5:" );
+                            result.append( "\n\nMD5:\n" );
                             result.append( Utils.toHexString( digest ) );
                         }
                         
@@ -550,7 +552,8 @@ public class FSAdapter extends CommanderAdapterBase {
         	    }
                 StatFs stat = new StatFs( dirName );
                 long block_size = stat.getBlockSize( );
-                result.append( c.getString( R.string.sz_total, Utils.getHumanSize( stat.getBlockCount() * block_size ), Utils.getHumanSize( stat.getAvailableBlocks() * block_size ) ) );
+                result.append( c.getString( R.string.sz_total, Formatter.formatFileSize( ctx, stat.getBlockCount() * block_size ), 
+                                                               Formatter.formatFileSize( ctx, stat.getAvailableBlocks() * block_size ) ) );
                 
 				sendProgress( result.toString(), Commander.OPERATION_COMPLETED, Commander.OPERATION_REPORT_IMPORTANT );
 			} catch( Exception e ) {

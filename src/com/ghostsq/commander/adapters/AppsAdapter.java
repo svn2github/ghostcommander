@@ -34,11 +34,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.ContextMenu;
+import android.widget.AdapterView;
 
 public class AppsAdapter extends CommanderAdapterBase {
     private final static String TAG = "AppsAdapter";
     public static final String DEFAULT_LOC = "apps:";
-// Java compiler creates a thunk function to access to the private owner class member from a subclass
+    public static final int LAUNCH_CMD = 9176, MANAGE_CMD = 7161;
+    // Java compiler creates a thunk function to access to the private owner class member from a subclass
     // to avoid that all the member accessible from the subclasses are public
     public final PackageManager     pm = ctx.getPackageManager();
     public  ApplicationInfo[]       appInfos = null;
@@ -205,6 +208,7 @@ public class AppsAdapter extends CommanderAdapterBase {
 
     private static <T> ArrayList<T> bitsToInfos( SparseBooleanArray cis, T[] items ) {
         try {
+            if( items == null ) return null;
             ArrayList<T> al = new ArrayList<T>();
             for( int i = 0; i < cis.size(); i++ ) {
                 if( cis.valueAt( i ) ) {
@@ -432,6 +436,43 @@ public class AppsAdapter extends CommanderAdapterBase {
     public boolean renameItem( int position, String newName, boolean c ) {
         return notErr();
     }
+
+    @Override
+    public void populateContextMenu( ContextMenu menu, AdapterView.AdapterContextMenuInfo acmi, int num ) {
+        try {
+            if( acmi.position > 0 && appInfos != null ) {
+                String name = appInfos[acmi.position-1].loadLabel( pm ).toString();
+                menu.add( 0, LAUNCH_CMD, 0, ctx.getString( R.string.launch ) + " \"" + name + "\"" );
+                menu.add( 0, MANAGE_CMD, 0, compTypes[MANAGE] );
+            }
+        } catch( Exception e ) {
+            Log.e( TAG, null, e );
+        }
+        super.populateContextMenu( menu, acmi, num );
+    }    
+
+    @Override
+    public void doIt( int command_id, SparseBooleanArray cis ) {
+        try {
+            ArrayList<ApplicationInfo> al = bitsToInfos( cis, appInfos );
+            if( al == null || al.size() == 0 ) return;
+            ApplicationInfo ai = al.get(0);
+            if( ai == null ) return;
+            if( MANAGE_CMD == command_id ) {
+                managePackage( ai.packageName );
+                return;
+            }
+            if( LAUNCH_CMD == command_id ) {
+                Intent in = pm.getLaunchIntentForPackage( ai.packageName );
+                commander.issue( in, 0 );
+                return;
+            }
+            
+            
+        } catch( Exception e ) {
+            Log.e( TAG, "Can't do the command " + command_id, e );
+        }
+    }
     
     @Override
     public void openItem( int position ) {
@@ -463,25 +504,7 @@ public class AppsAdapter extends CommanderAdapterBase {
                     commander.Navigate( Uri.parse( DEFAULT_LOC ), uri.getAuthority() );
                 }
                 else if( position-1 == MANAGE ) {
-                    String p = uri.getAuthority();
-                    Intent in = new Intent( Intent.ACTION_VIEW );
-                    in.setClassName( "com.android.settings", "com.android.settings.InstalledAppDetails" );
-                    in.putExtra( "com.android.settings.ApplicationPkgName", p );
-                    in.putExtra( "pkg", p );
-
-                    List<ResolveInfo> acts = pm.queryIntentActivities( in, 0 );
-                    if( acts.size( ) > 0 )
-                        commander.issue( in, 0 );
-                    else {
-                        in = new Intent( "android.settings.APPLICATION_DETAILS_SETTINGS", Uri.fromParts( "package", p, null ) );
-                        acts = pm.queryIntentActivities( in, 0 );
-                        if( acts.size( ) > 0 )
-                            commander.issue( in, 0 );
-                        else {
-                            Log.e( TAG, "Failed to resolve activity for InstalledAppDetails" );
-                        }
-                    }
-                    
+                    managePackage( uri.getAuthority() );    
                 }
                 else if( position-1 == MANIFEST ) {
                     String p = uri.getAuthority();
@@ -505,20 +528,53 @@ public class AppsAdapter extends CommanderAdapterBase {
         }
     }
 
+    private final void managePackage( String p ) {
+        try {
+            Intent in = new Intent( Intent.ACTION_VIEW );
+            in.setClassName( "com.android.settings", "com.android.settings.InstalledAppDetails" );
+            in.putExtra( "com.android.settings.ApplicationPkgName", p );
+            in.putExtra( "pkg", p );
+
+            List<ResolveInfo> acts = pm.queryIntentActivities( in, 0 );
+            if( acts.size( ) > 0 )
+                commander.issue( in, 0 );
+            else {
+                in = new Intent( "android.settings.APPLICATION_DETAILS_SETTINGS", Uri.fromParts( "package", p, null ) );
+                acts = pm.queryIntentActivities( in, 0 );
+                if( acts.size( ) > 0 )
+                    commander.issue( in, 0 );
+                else {
+                    Log.e( TAG, "Failed to resolve activity for InstalledAppDetails" );
+                }
+            }
+        }
+        catch( Exception e ) {
+            e.printStackTrace();
+        }
+    }
+    
     @Override
     public String getItemName( int position, boolean full ) {
+        if( position < 0 )
+            return null;
         if( position == 0 )
             return parentLink;
-        if( appInfos != null ) {
-            return position <= appInfos.length ? appInfos[position - 1].packageName : null;
+        try {
+            if( appInfos != null ) {
+                return position <= appInfos.length ? appInfos[position - 1].packageName : null;
+            }
+            if( actInfos != null ) {
+                return position <= actInfos.length ? actInfos[position - 1].name : null;
+            }
+            if( prvInfos != null ) {
+                return position <= prvInfos.length ? prvInfos[position - 1].toString() : null;
+            }
+            return position <= compTypes.length ? compTypes[position - 1] : null;
         }
-        if( actInfos != null ) {
-            return position <= actInfos.length ? actInfos[position - 1].name : null;
+        catch( Exception e ) {
+            Log.e( TAG, "pos=" + position, e );
         }
-        if( prvInfos != null ) {
-            return position <= prvInfos.length ? prvInfos[position - 1].toString() : null;
-        }
-        return position <= compTypes.length ? compTypes[position - 1] : null;
+        return null;
     }
 
     @Override

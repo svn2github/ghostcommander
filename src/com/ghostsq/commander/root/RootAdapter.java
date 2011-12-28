@@ -701,7 +701,7 @@ public class RootAdapter extends CommanderAdapterBase {
 
     @Override
     protected int getPredictedAttributesLength() {
-        return 24;   // "---------- system system"
+        return 28;   // "---------- system   system"
     }
     
     private final LsItem[] bitsToItems( SparseBooleanArray cis ) {
