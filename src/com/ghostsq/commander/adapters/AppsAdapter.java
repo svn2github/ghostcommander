@@ -20,6 +20,7 @@ import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -33,6 +34,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.util.LogPrinter;
 import android.util.SparseBooleanArray;
 import android.view.ContextMenu;
 import android.widget.AdapterView;
@@ -49,7 +51,8 @@ public class AppsAdapter extends CommanderAdapterBase {
     private final String[]          compTypes = { "Manage", "Activities", "Providers", "Manifest" };
     private ActivityInfo[]          actInfos = null;
     private ProviderInfo[]          prvInfos = null;
-    
+    private List<ResolveInfo>       byAllIntents;
+    private ResolveInfo[]           resInfos = null;
     
     private Uri uri;
     
@@ -131,10 +134,13 @@ public class AppsAdapter extends CommanderAdapterBase {
     @Override
     public boolean readSource( Uri tmp_uri, String pbod ) {
         try {
+            notifyDataSetChanged();     // to prevent the invalid state exception
+            dirty = true;
             numItems = 1;
             appInfos = null;
             actInfos = null;
             prvInfos = null;
+            resInfos = null;
             mode &= ~ATTR_ONLY;
             if( reader != null ) {
                 if( reader.reqStop() ) { // that's not good.
@@ -152,9 +158,10 @@ public class AppsAdapter extends CommanderAdapterBase {
                 commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
                 reader = new ListEngine( readerHandler, pbod );
                 reader.start();
+                setMode( ATTR_ONLY, 0 );
                 return true;
             }
-            
+            setMode( 0, ATTR_ONLY );
             String path = uri.getPath();
             if( path == null || path.length() <= 1 ) {
                 numItems = compTypes.length + 1;
@@ -163,22 +170,26 @@ public class AppsAdapter extends CommanderAdapterBase {
             }
             else {
                 List<String> ps = uri.getPathSegments();
-                if( ps != null && ps.size() == 1 ) {
+                if( ps != null && ps.size() >= 1 ) {
                     mode |= ATTR_ONLY;
                     PackageInfo pi = pm.getPackageInfo( a, PackageManager.GET_ACTIVITIES | 
                                                            PackageManager.GET_PROVIDERS );
                     if( compTypes[ACTIVITIES].equals( ps.get( 0 ) ) ) {
-                        actInfos = pi.activities != null ? pi.activities : new ActivityInfo[0];
-                        reSort();
-                        numItems = actInfos.length + 1;
-                        commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pbod ) );
-                        return true;
+                        if( ps.size() >= 2 ) {
+                            resInfos = getResolvers( ps.get( 1 ) );
+                            if( resInfos != null )
+                                numItems = resInfos.length + 1;
+                        } else {
+                            actInfos = pi.activities != null ? pi.activities : new ActivityInfo[0];
+                            reSort();
+                            numItems = actInfos.length + 1;
+                        }
                     } else if( compTypes[PROVIDERS].equals( ps.get( 0 ) ) ) {
                         prvInfos = pi.providers != null ? pi.providers : new ProviderInfo[0];
                         numItems = prvInfos.length + 1;
-                        commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pbod ) );
-                        return true;
                     } 
+                    commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pbod ) );
+                    return true;
                 }
             }
         }
@@ -206,6 +217,125 @@ public class AppsAdapter extends CommanderAdapterBase {
         }
     }
 
+    private final ResolveInfo[] getResolvers( String act_name ) {
+        if( act_name == null ) return null;
+        if( byAllIntents == null ) {
+            byAllIntents = new ArrayList<ResolveInfo>();
+            List<ResolveInfo> tmp_list;
+            Intent in;
+            final int fl = PackageManager.GET_INTENT_FILTERS | PackageManager.GET_RESOLVED_FILTER;
+            tmp_list = pm.queryIntentActivities( new Intent( Intent.ACTION_MAIN ), fl );
+            byAllIntents.addAll( tmp_list );
+
+            tmp_list = pm.queryIntentActivities( new Intent( Intent.ACTION_PICK ), fl );
+            byAllIntents.addAll( tmp_list );
+
+            tmp_list = pm.queryIntentActivities( new Intent( Intent.ACTION_INSERT ), fl );
+            byAllIntents.addAll( tmp_list );
+
+            tmp_list = pm.queryIntentActivities( new Intent( Intent.ACTION_SEND ), fl );
+            byAllIntents.addAll( tmp_list );
+
+            tmp_list = pm.queryIntentActivities( new Intent( Intent.ACTION_EDIT ), fl );
+            byAllIntents.addAll( tmp_list );
+
+            tmp_list = pm.queryIntentActivities( new Intent( Intent.ACTION_SEARCH ), fl );
+            byAllIntents.addAll( tmp_list );
+
+            tmp_list = pm.queryIntentActivities( new Intent( Intent.ACTION_WEB_SEARCH ), fl );
+            byAllIntents.addAll( tmp_list );
+
+            tmp_list = pm.queryIntentActivities( new Intent( Intent.ACTION_VIEW, Uri.parse( "http:" ) ), fl );
+            byAllIntents.addAll( tmp_list );
+
+            tmp_list = pm.queryIntentActivities( new Intent( Intent.ACTION_VIEW, Uri.parse( "mailto:" ) ), fl );
+            byAllIntents.addAll( tmp_list );
+
+            tmp_list = pm.queryIntentActivities( new Intent( Intent.ACTION_VIEW, Uri.parse( "ftp:" ) ), fl );
+            byAllIntents.addAll( tmp_list );
+            
+            tmp_list = pm.queryIntentActivities( new Intent( Intent.ACTION_VIEW, Uri.parse( "file:" ) ), fl );
+            byAllIntents.addAll( tmp_list );
+            
+            tmp_list = pm.queryIntentActivities( new Intent( Intent.ACTION_VIEW, Uri.parse( "content:" ) ), fl );
+            byAllIntents.addAll( tmp_list );
+            
+            tmp_list = pm.queryIntentActivities( new Intent( Intent.ACTION_VIEW, Uri.parse( "ftp:" ) ), fl );
+            byAllIntents.addAll( tmp_list );
+            
+            in = new Intent( Intent.ACTION_VIEW );
+            in.setType("*/*");
+            tmp_list = pm.queryIntentActivities( in, fl );
+            byAllIntents.addAll( tmp_list );
+            
+            in = new Intent( Intent.ACTION_EDIT );
+            in.setType("*/*");
+            tmp_list = pm.queryIntentActivities( in, fl );
+            byAllIntents.addAll( tmp_list );
+
+            in = new Intent( Intent.ACTION_GET_CONTENT );
+            in.setType("*/*");
+            tmp_list = pm.queryIntentActivities( in, fl );
+            byAllIntents.addAll( tmp_list );
+            
+        }
+        List<ResolveInfo> act_res = new ArrayList<ResolveInfo>();
+        for( int i = 0; i < byAllIntents.size(); i++ ) {
+            ResolveInfo r = byAllIntents.get(i);
+            if( act_name.equals( r.activityInfo.name ) ) {
+                boolean exist = false;
+                IntentFilter inf = r.filter;
+                if( inf != null ) {
+                    for( int j = 0; j < act_res.size(); j++ ) {
+                        exist = compareIntentFilters( inf, act_res.get( j ).filter );
+                        if( exist ) break;
+                    }
+                }
+                if( !exist ) 
+                    act_res.add( r );
+            }
+        }
+        /*
+        LogPrinter lp = new LogPrinter(Log.INFO, TAG );
+        for( int j = 0; j < act_res.size(); j++ ) 
+            act_res.get( j ).dump( lp, "RI/");
+        */
+        ResolveInfo[] a = new ResolveInfo[act_res.size()];
+        return act_res.toArray( a );
+    }
+    
+    private static boolean compareIntentFilters( IntentFilter if1, IntentFilter if2 ) {
+        try {
+            int ca1 = if1.countActions();
+            int ca2 = if2.countActions();
+            if( ca1 != ca2 ) return false;
+            for( int i = 0; i< ca1; i++ )
+                if( !if1.getAction( i ).equals( if2.getAction( i ) ) ) return false;
+            
+            int cc1 = if1.countCategories();
+            int cc2 = if2.countCategories();
+            if( cc1 != cc2 ) return false;
+            for( int i = 0; i< cc1; i++ )
+                if( !if1.getCategory( i ).equals( if2.getCategory( i ) ) ) return false;
+            
+            int cd1 = if1.countDataTypes();
+            int cd2 = if2.countDataTypes();
+            if( cd1 != cd2 ) return false;
+            for( int i = 0; i< cd1; i++ )
+                if( !if1.getDataType( i ).equals( if2.getDataType( i ) ) ) return false;
+            
+            int cs1 = if1.countDataSchemes();
+            int cs2 = if2.countDataSchemes();
+            if( cs1 != cs2 ) return false;
+            for( int i = 0; i< cs1; i++ )
+                if( !if1.getDataScheme( i ).equals( if2.getDataScheme( i ) ) ) return false;
+            return true;
+        }
+        catch( Exception e ) {
+        }
+        return false;
+    }
+    
     private static <T> ArrayList<T> bitsToInfos( SparseBooleanArray cis, T[] items ) {
         try {
             if( items == null ) return null;
@@ -224,27 +354,6 @@ public class AppsAdapter extends CommanderAdapterBase {
         return null;
     }
     
-    private final ApplicationInfo[] bitsToApplicationInfos( SparseBooleanArray cis ) {
-        try {
-            int counter = 0;
-            for( int i = 0; i < cis.size(); i++ )
-                if( cis.valueAt( i ) )
-                    counter++;
-            ApplicationInfo[] subItems = new ApplicationInfo[counter];
-            int j = 0;
-            for( int i = 0; i < cis.size(); i++ )
-                if( cis.valueAt( i ) ) {
-                    int k = cis.keyAt( i );
-                    if( k > 0 )
-                        subItems[j++] = appInfos[ k - 1 ];
-                }
-            return subItems;
-        } catch( Exception e ) {
-            Log.e( TAG, "bitsToNames()'s Exception: " + e );
-        }
-        return null;
-    }
-
     private String[] flagsStrs = {
         "SYSTEM",
         "DEBUGGABLE",
@@ -384,7 +493,7 @@ public class AppsAdapter extends CommanderAdapterBase {
             if( ai.permission != null )
               sb.append( "\n" ).append( s( R.string.permission ) ).append( cs ).append( ai.permission );
             if( flags != null )
-              sb.append( "\n" ).append( s( R.string.flags ) ).append( cs ).append( flags );
+              sb.append( "\n\n" ).append( s( R.string.flags ) ).append( cs ).append( flags );
             sb.append( "\n" );
         }
         commander.notifyMe( new Commander.Notify( sb.toString(), Commander.OPERATION_COMPLETED, Commander.OPERATION_REPORT_IMPORTANT ) );
@@ -490,13 +599,26 @@ public class AppsAdapter extends CommanderAdapterBase {
                     commander.Navigate( uri.buildUpon().path( null ).build(), compTypes[ACTIVITIES] );
                 }
                 else if( position <= actInfos.length ) {
-                    // ???
+                    ActivityInfo act = actInfos[position-1];
+                    if( act.exported )
+                        commander.Navigate( uri.buildUpon().appendPath( act.name ).build(), null );
+                    else
+                        commander.showInfo( s( R.string.not_exported ) );
                 }
             } else if( prvInfos != null ) {
                 if( position == 0 ) {
                     commander.Navigate( uri.buildUpon().path( null ).build(), compTypes[PROVIDERS] );
                 }
                 else if( position <= prvInfos.length ) {
+                    // ???
+                }
+            } else if( resInfos != null ) {
+                if( position == 0 ) {
+                    List<String> paths = uri.getPathSegments();
+                    String actn = paths != null ? paths.get( paths.size()-1 ) : null;
+                    commander.Navigate( uri.buildUpon().path( compTypes[ACTIVITIES] ).build(), actn );
+                }
+                else if( position <= resInfos.length ) {
                     // ???
                 }
             } else {
@@ -560,16 +682,20 @@ public class AppsAdapter extends CommanderAdapterBase {
         if( position == 0 )
             return parentLink;
         try {
+            int idx = position - 1;
             if( appInfos != null ) {
-                return position <= appInfos.length ? appInfos[position - 1].packageName : null;
+                return position <= appInfos.length ? appInfos[idx].packageName : null;
             }
             if( actInfos != null ) {
-                return position <= actInfos.length ? actInfos[position - 1].name : null;
+                return position <= actInfos.length ? actInfos[idx].name : null;
             }
             if( prvInfos != null ) {
-                return position <= prvInfos.length ? prvInfos[position - 1].toString() : null;
+                return position <= prvInfos.length ? prvInfos[idx].toString() : null;
             }
-            return position <= compTypes.length ? compTypes[position - 1] : null;
+            if( resInfos != null ) {
+                return position <= resInfos.length ? resInfos[idx].toString() : null;
+            }
+            return position <= compTypes.length ? compTypes[idx] : null;
         }
         catch( Exception e ) {
             Log.e( TAG, "pos=" + position, e );
@@ -617,6 +743,62 @@ public class AppsAdapter extends CommanderAdapterBase {
                 item.attr = pi.name;
                 item.setThumbNail( pi.loadIcon( pm ) );
                 item.thumb_is_icon = true;
+            }
+        }
+        else if( resInfos != null ) {
+            try {
+                if( position <= resInfos.length ) {
+                    ResolveInfo ri = resInfos[position - 1];
+                    IntentFilter inf = ri.filter;
+                    if( inf != null ) {
+                        String action = inf.getAction( 0 );
+                        item.name = action != null ? action : inf.toString();
+                        StringBuilder sb = new StringBuilder( 128 );
+                        int n = inf.countDataTypes();
+                        if( n > 0 ) {
+                            sb.append( "types=" );
+                            for( int i = 0; i< n; i++ ) {
+                                if( i != 0 )
+                                    sb.append( ", " );
+                                String dt = inf.getDataType( i ); 
+                                sb.append( dt );
+                            }
+                            sb.append( "; " );
+                        }
+                        n = inf.countCategories();
+                        if( n > 0 ) {
+                            sb.append( "categories=" );
+                            for( int i = 0; i< n; i++ ) {
+                                if( i != 0 )
+                                    sb.append( ", " );
+                                String ct = inf.getCategory( i ); 
+                                sb.append( ct );
+                            }
+                            sb.append( "; " );
+                        }
+                        
+                        n = inf.countDataSchemes();
+                        if( n > 0 ) {
+                            sb.append( "schemes=" );
+                            for( int i = 0; i< n; i++ ) {
+                                if( i != 0 )
+                                    sb.append( ", " );
+                                String ds = inf.getDataScheme( i ); 
+                                sb.append( ds );
+                            }
+                        }
+                        item.attr = sb.toString();
+                    }
+                    else {
+                        item.name = ri.loadLabel( pm ).toString();
+                        item.attr = ri.toString();
+                    }
+                    item.setThumbNail( ri.loadIcon( pm ) );
+                    item.thumb_is_icon = true;
+                }
+            }
+            catch( Exception e ) {
+                Log.e( TAG, "pos=" + position, e );
             }
         }
         else {

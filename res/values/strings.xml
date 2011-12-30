@@ -401,6 +401,8 @@ copied >5 will produce:
     <string name="affinity">Task Affinity</string>
     <string name="permission">Permission</string>
     <string name="flags">Flags</string>
+    <string name="not_exported">Activity is not exported</string>
+        
         
         
         

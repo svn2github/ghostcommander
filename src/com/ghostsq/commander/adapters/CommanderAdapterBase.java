@@ -58,7 +58,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected LayoutInflater mInflater = null;
     private   int     parentWidth, nameWidth, sizeWidth, dateWidth, attrWidth;
     private   boolean a3r = false;
-    private   boolean dirty = true;
+    protected boolean dirty = true;
     protected int     thumbnail_size_perc = 100, font_size = 18;
     private   int     fg_color, sl_color;
     protected int     mode = 0;
@@ -322,7 +322,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             TextView dateView =  (TextView)row_view.findViewById( R.id.fld_date );
             TextView sizeView =  (TextView)row_view.findViewById( R.id.fld_size );
 
-            float fnt_sz_rdc = font_size - font_size/4;   // reduced font size
+            float fnt_sz_rdc = font_size * 0.75f;   // reduced font size
             String name = item.name, size = "", date = "";
             if( dm ) {
             	if( item.size >= 0 )
@@ -343,7 +343,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                     if( ao ) {
                         sizeWidth = 0;
                         dateWidth = 0;
-                        attrWidth = wm ? ( parent_width - imgWidth ) / 2 : parent_width - LEFT_P - RIGHT_P;
+                        attrWidth = wm ? ( parent_width - icoWidth ) / 2 : parent_width - LEFT_P - RIGHT_P - icoWidth;
                     }
                     else {
                         if( dateView != null ) {
@@ -360,21 +360,25 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                         }
                         if( attrView != null ) {
                             // sizeWidth is pixels, but in what units the return of measureText() ???
-                            attrView.setTextSize( fnt_sz_rdc );
-                            
                             int al = getPredictedAttributesLength();
                             if( al > 0 ) {
                                 char[] dummy = new char[al];
                                 Arrays.fill( dummy, 'c');
-                                if( this instanceof RootAdapter )   // hack, redesign
+                                if( this instanceof RootAdapter ) {  // hack, redesign
                                     attrView.setTypeface( Typeface.create( "monospace", Typeface.NORMAL ) );
+                                    attrView.setTextSize( fnt_sz_rdc * 0.9f );
+                                }
+                                else
+                                    attrView.setTextSize( fnt_sz_rdc );
                                 attrWidth = (int)attrView.getPaint().measureText( new String( dummy ) );
                                 if( !wm ) {
                                     int remain = parent_width - sizeWidth - dateWidth - icoWidth - LEFT_P - RIGHT_P;
                                     a3r = attrWidth > remain;
+                                    Log.v( TAG, "aw=" + attrWidth + ",sl=" + remain + ",a3r=" + a3r );
                                     attrWidth = remain;
-                                    if( a3r )
+                                    if( a3r ) {
                                         attrWidth += sizeWidth + dateWidth;
+                                    }
                                 }
                             }
                             else
@@ -427,8 +431,8 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 if( wm ) {
                     nameWidth = parent_width - img_width - dateWidth - sizeWidth - attrWidth - LEFT_P - RIGHT_P;
                     if( nameWidth < 200 ) {
+                        nameWidth += attrWidth; // sacrifice the attr. field 
                         attrWidth = 0;
-                        nameWidth = parent_width - img_width - dateWidth - sizeWidth - LEFT_P - RIGHT_P; 
                     }
                     nameView.setWidth( nameWidth );
                 }
@@ -464,7 +468,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 if( vis) {
                     String attr_text = item.attr != null ? item.attr.trim() : "";
                     if( !wm ) {
-                        attrView.setPadding( img_width + 2, 0, 4, 0 ); // not to overlap the icon
+                        //attrView.setPadding( img_width + 2, 0, 4, 0 ); // not to overlap the icon
                          {
                             RelativeLayout.LayoutParams rllp = new RelativeLayout.LayoutParams( 
                                                                    RelativeLayout.LayoutParams.WRAP_CONTENT, 
@@ -475,7 +479,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                                 attrView.setGravity( 0x05 ); // RIGHT
                             } else {
                                 rllp.addRule( RelativeLayout.BELOW, R.id.fld_name );
-                                rllp.addRule( RelativeLayout.LEFT_OF, R.id.fld_size );
+                                rllp.addRule( RelativeLayout.ALIGN_LEFT, R.id.fld_name );
                                 rllp.addRule( RelativeLayout.ALIGN_TOP, R.id.fld_size );
                                 attrView.setGravity( 0x03 ); // LEFT
                             }
@@ -487,8 +491,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                     attrView.setVisibility( View.VISIBLE );
                     attrView.setText( attr_text );
                     attrView.setTextColor( fg_color );
-                    if( this instanceof RootAdapter )
+                    if( this instanceof RootAdapter ) {
                         attrView.setTypeface( Typeface.create( "monospace", Typeface.NORMAL ) );
+                        attrView.setTextSize( fnt_sz_rdc * 0.9f );
+                    }
 //attrView.setBackgroundColor( 0xFFFF0000 );  // DEBUG!!!!!!
                 }
             }

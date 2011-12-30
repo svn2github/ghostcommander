@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.ghostsq.commander"
-      android:versionName="1.39.3b2" 
+      android:versionName="1.39.3b3" 
       android:versionCode="153"
       android:label="@string/app_name"
       android:sharedUserId="com.ghostsq.commander.userId"
@@ -46,6 +46,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="ftp" />
             </intent-filter>
             <intent-filter>
@@ -90,17 +91,11 @@
         <activity
             android:name=".Prefs"
             android:label="@string/prefs_label">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".toolbuttons.ToolButtonsProps"
             android:label="@string/tblist_label">
           <!--android:windowSoftInputMode="adjustPan"-->
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
         </activity>
 		<activity
 		    android:name=".ServerForm"

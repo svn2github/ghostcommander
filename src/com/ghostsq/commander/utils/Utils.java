@@ -51,7 +51,7 @@ public final class Utils {
         { ".php", "text/php" },
 		{ ".png", "image/png" },
         { ".ra",  "audio/x-pn-realaudio" },
-        { ".ram",  "audio/x-pn-realaudio" },
+        { ".ram", "audio/x-pn-realaudio" },
         { ".rar", "application/x-rar-compressed" },
         { ".rtf", "application/rtf" },
         { ".svg", "image/svg+xml" },
