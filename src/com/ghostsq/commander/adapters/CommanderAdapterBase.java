@@ -16,6 +16,7 @@ import com.ghostsq.commander.root.RootAdapter;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -23,6 +24,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.util.SparseBooleanArray;

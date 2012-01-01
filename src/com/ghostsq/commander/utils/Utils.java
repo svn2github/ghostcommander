@@ -6,6 +6,11 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Locale;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 import com.ghostsq.commander.R;
 
@@ -308,6 +313,18 @@ public final class Utils {
             }
         }
         return null;
+    }
+    public final static boolean copyBytes( InputStream  is, OutputStream os ) {
+        try {
+            byte[] buf = new byte[4096];
+            int n;
+            while( ( n = is.read( buf ) ) != -1 )
+                os.write( buf, 0, n );
+            return true;
+        } catch( Exception e ) {
+            e.printStackTrace();
+        }
+        return false;        
     }
     
     public final static int ENC_DESC_MODE_NUMB  = 0;

@@ -55,6 +55,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:mimeType="application/x-zip-compressed" />
                 <data android:mimeType="application/zip" />
+                <data android:pathPattern=".*\.zip" />
                 </intent-filter>
         </activity>
 		<activity 
@@ -99,6 +100,7 @@
         </activity>
 		<activity
 		    android:name=".ServerForm"
+            android:label="@string/connect"
 		    android:theme="@android:style/Theme.Dialog"/>
 		<activity
 		    android:name=".root.EditPermissions"

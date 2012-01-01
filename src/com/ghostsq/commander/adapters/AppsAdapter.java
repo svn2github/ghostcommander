@@ -18,6 +18,7 @@ import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.utils.Utils;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -30,6 +31,9 @@ import android.content.pm.ResolveInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -42,7 +46,7 @@ import android.widget.AdapterView;
 public class AppsAdapter extends CommanderAdapterBase {
     private final static String TAG = "AppsAdapter";
     public static final String DEFAULT_LOC = "apps:";
-    public static final int LAUNCH_CMD = 9176, MANAGE_CMD = 7161;
+    public static final int LAUNCH_CMD = 9176, MANAGE_CMD = 7161, SHRCT_CMD = 2694;
     // Java compiler creates a thunk function to access to the private owner class member from a subclass
     // to avoid that all the member accessible from the subclasses are public
     public final PackageManager     pm = ctx.getPackageManager();
@@ -549,10 +553,15 @@ public class AppsAdapter extends CommanderAdapterBase {
     @Override
     public void populateContextMenu( ContextMenu menu, AdapterView.AdapterContextMenuInfo acmi, int num ) {
         try {
-            if( acmi.position > 0 && appInfos != null ) {
-                String name = appInfos[acmi.position-1].loadLabel( pm ).toString();
-                menu.add( 0, LAUNCH_CMD, 0, ctx.getString( R.string.launch ) + " \"" + name + "\"" );
-                menu.add( 0, MANAGE_CMD, 0, compTypes[MANAGE] );
+            if( acmi.position > 0 ) { 
+                if( appInfos != null ) {
+                    String name = appInfos[acmi.position-1].loadLabel( pm ).toString();
+                    menu.add( 0, LAUNCH_CMD, 0, ctx.getString( R.string.launch ) + " \"" + name + "\"" );
+                    menu.add( 0, MANAGE_CMD, 0, compTypes[MANAGE] );
+                }
+                else if( actInfos != null ) {
+                    menu.add( 0, SHRCT_CMD, 0, ctx.getString( R.string.shortcut ) );
+                }
             }
         } catch( Exception e ) {
             Log.e( TAG, null, e );
@@ -563,21 +572,41 @@ public class AppsAdapter extends CommanderAdapterBase {
     @Override
     public void doIt( int command_id, SparseBooleanArray cis ) {
         try {
-            ArrayList<ApplicationInfo> al = bitsToInfos( cis, appInfos );
-            if( al == null || al.size() == 0 ) return;
-            ApplicationInfo ai = al.get(0);
-            if( ai == null ) return;
-            if( MANAGE_CMD == command_id ) {
-                managePackage( ai.packageName );
-                return;
+            if( appInfos != null ) {
+                ArrayList<ApplicationInfo> al = bitsToInfos( cis, appInfos );
+                if( al == null || al.size() == 0 ) return;
+                ApplicationInfo ai = al.get(0);
+                if( ai == null ) return;
+                if( MANAGE_CMD == command_id ) {
+                    managePackage( ai.packageName );
+                    return;
+                }
+                if( LAUNCH_CMD == command_id ) {
+                    Intent in = pm.getLaunchIntentForPackage( ai.packageName );
+                    commander.issue( in, 0 );
+                    return;
+                }
             }
-            if( LAUNCH_CMD == command_id ) {
-                Intent in = pm.getLaunchIntentForPackage( ai.packageName );
-                commander.issue( in, 0 );
-                return;
+            else if( actInfos != null ) {
+                ArrayList<ActivityInfo> al = bitsToInfos( cis, actInfos );
+                if( al == null || al.size() == 0 ) return;
+                if( SHRCT_CMD == command_id ) {
+                    for( int i = 0; i < al.size(); i++ ) {
+                        ActivityInfo ai = al.get( i );
+                        if( ai != null ) {
+                            Bitmap ico = null;
+                            Drawable drawable = ai.loadIcon( pm );
+                            if( drawable instanceof BitmapDrawable ) {
+                                BitmapDrawable bd = (BitmapDrawable)drawable;
+                                ico = bd.getBitmap();
+                            }
+                            createDesktopShortcut( new ComponentName( ai.applicationInfo.packageName, ai.name ), 
+                                                                      ai.loadLabel( pm ).toString(), ico );
+                        }
+                    }
+                    return;
+                }
             }
-            
-            
         } catch( Exception e ) {
             Log.e( TAG, "Can't do the command " + command_id, e );
         }
@@ -901,7 +930,7 @@ public class AppsAdapter extends CommanderAdapterBase {
                     int n;
                     while( ( n = is.read( buf ) ) != -1 )
                         baos.write( buf, 0, n );
-                    is.close( );
+                    is.close();
                     return decompressXML( baos.toByteArray(), ai != null ? pm.getResourcesForApplication( ai ) : null );
                 }
             }
@@ -914,10 +943,10 @@ public class AppsAdapter extends CommanderAdapterBase {
     // http://stackoverflow.com/questions/2097813/how-to-parse-the-androidmanifest-xml-file-inside-an-apk-package
     // decompressXML -- Parse the 'compressed' binary form of Android XML docs 
     // such as for AndroidManifest.xml in .apk files
-    public static int endDocTag = 0x00100101;
-    public static int startTag =  0x00100102;
-    public static int endTag =    0x00100103;
-    public String decompressXML( byte[] xml, Resources rr ) {
+    private final static int endDocTag = 0x00100101;
+    private final static int startTag =  0x00100102;
+    private final static int endTag =    0x00100103;
+    private final String decompressXML( byte[] xml, Resources rr ) {
         StringBuffer xml_sb = new StringBuffer( 8192 ); 
         // Compressed XML file/bytes starts with 24x bytes of data,
         // 9 32 bit words in little endian order (LSB first):
@@ -1051,13 +1080,13 @@ public class AppsAdapter extends CommanderAdapterBase {
     } // end of decompressXML
     
     
-    public String compXmlString(byte[] xml, int sitOff, int stOff, int strInd) {
+    private final String compXmlString(byte[] xml, int sitOff, int stOff, int strInd) {
       if (strInd < 0) return null;
       int strOff = stOff + LEW(xml, sitOff+strInd*4);
       return compXmlStringAt(xml, strOff);
     }
     
-    public String spaces( int i ) {
+    private final String spaces( int i ) {
         char[] dummy = new char[i*2];
         Arrays.fill( dummy, ' ' );
         return new String( dummy );
@@ -1066,7 +1095,7 @@ public class AppsAdapter extends CommanderAdapterBase {
     // compXmlStringAt -- Return the string stored in StringTable format at
     // offset strOff.  This offset points to the 16 bit string length, which 
     // is followed by that number of 16 bit (Unicode) chars.
-    public String compXmlStringAt(byte[] arr, int strOff) {
+    private final String compXmlStringAt(byte[] arr, int strOff) {
       int strLen = arr[strOff+1]<<8&0xff00 | arr[strOff]&0xff;
       byte[] chars = new byte[strLen];
       for (int ii=0; ii<strLen; ii++) {
@@ -1078,9 +1107,23 @@ public class AppsAdapter extends CommanderAdapterBase {
     
     // LEW -- Return value of a Little Endian 32 bit word from the byte array
     //   at offset off.
-    public int LEW(byte[] arr, int off) {
+    private final int LEW(byte[] arr, int off) {
       return arr[off+3]<<24&0xff000000 | arr[off+2]<<16&0xff0000
         | arr[off+1]<<8&0xff00 | arr[off]&0xFF;
     } // end of LEW
 
+    
+    private final void createDesktopShortcut( ComponentName cn, String name, Bitmap ico ) {
+        Intent shortcutIntent = new Intent();
+        shortcutIntent.setComponent( cn );
+        shortcutIntent.setData( uri );
+        Intent intent = new Intent();
+        intent.putExtra( Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent );
+        intent.putExtra( Intent.EXTRA_SHORTCUT_NAME, name );
+        if( ico != null )
+            intent.putExtra( Intent.EXTRA_SHORTCUT_ICON, ico );
+        intent.setAction( "com.android.launcher.action.INSTALL_SHORTCUT" ); //Intent.ACTION_CREATE_SHORTCUT
+        ctx.sendBroadcast( intent );
+    }
+    
 }

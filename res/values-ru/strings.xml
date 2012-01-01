@@ -261,6 +261,9 @@
 <string name="show_confirm">Подтверждения</string>
 <string name="summary_show_confirm">Выдавать подтверждения о совершении файловых операций</string>
 <string name="prefs_label">Настройки</string>
+<string name="save_prefs">Сохранить настройки</string>
+<string name="rest_prefs">Восстановить настройки</string>
+
 <string name="editor_label">Текстовый редактор</string>
 <string name="advanced">Дополнительнo</string>
 

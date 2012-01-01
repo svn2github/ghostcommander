@@ -23,7 +23,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
@@ -346,10 +345,15 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     public void issue( Intent in, int ret ) {
-        if( ret == 0 )
-            startActivity( in );
-        else
-            startActivityForResult( in, ret );
+        if( in == null ) return;
+        try {
+            if( ret == 0 )
+                startActivity( in );
+            else
+                startActivityForResult( in, ret );
+        } catch( Exception e ) {
+            Log.e( TAG, in.getDataString(), e );
+        }
     }
     
     @Override
