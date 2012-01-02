@@ -438,11 +438,15 @@ public class FSAdapter extends CommanderAdapterBase {
     @Override
     public void openItem( int position ) {
         if( position == 0 ) {
-            if( dirName == null ) return;
-            File cur_dir_file = new File( dirName );
-            String parent_dir = cur_dir_file.getParent();
-            commander.Navigate( Uri.parse( Utils.escapeUriMarkup( parentLink != SLS ? ( parent_dir != null ? parent_dir : DEFAULT_DIR ) : SLS ) ),
-                                cur_dir_file.getName() );
+            if( parentLink == SLS ) 
+                commander.Navigate( Uri.parse( HomeAdapter.DEFAULT_LOC ), null );
+            else {
+                if( dirName == null ) return;
+                File cur_dir_file = new File( dirName );
+                String parent_dir = cur_dir_file.getParent();
+                commander.Navigate( Uri.parse( Utils.escapeUriMarkup( parent_dir != null ? parent_dir : DEFAULT_DIR ) ),
+                                    cur_dir_file.getName() );
+            }
         }
         else {
             File file = items[position - 1].f;

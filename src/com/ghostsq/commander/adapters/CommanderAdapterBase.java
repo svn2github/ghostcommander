@@ -40,42 +40,42 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public abstract class CommanderAdapterBase extends BaseAdapter implements CommanderAdapter {
-    public    final static String NOTIFY_STR = "str", NOTIFY_PRG1 = "prg1", NOTIFY_PRG2 = "prg2", NOTIFY_COOKIE = "cookie"; 
-    public    final static String NOTIFY_RECEIVER_HASH = "hash";
-    protected final static String NOTIFY_ITEMS_TO_RECEIVE = "itms"; 
+    public final static String NOTIFY_STR = "str", NOTIFY_PRG1 = "prg1", NOTIFY_PRG2 = "prg2", NOTIFY_COOKIE = "cookie";
+    public final static String NOTIFY_RECEIVER_HASH = "hash";
+    protected final static String NOTIFY_ITEMS_TO_RECEIVE = "itms";
     protected final static String DEFAULT_DIR = Environment.getExternalStorageDirectory().getAbsolutePath();
     protected final String TAG = getClass().getName();
-    public    Context   ctx;
-    public    Commander commander = null;
-    public    static final String SLS = File.separator;
-    public    static final char   SLC = File.separator.charAt( 0 );
-    public    static final String PLS = "..";
-    private   static final boolean long_date = Locale.getDefault().getLanguage().compareTo( "en" ) != 0;
-    private   java.text.DateFormat localeDateFormat;
-    private   java.text.DateFormat localeTimeFormat;
-    
-    protected static final int ICON_SIZE = 32;
-    protected int     icoWidth = ICON_SIZE, imgWidth = ICON_SIZE;
-    protected float   density = 1;
-    protected LayoutInflater mInflater = null;
-    private   int     parentWidth, nameWidth, sizeWidth, dateWidth, attrWidth;
-    private   boolean a3r = false;
-    protected boolean dirty = true;
-    protected int     thumbnail_size_perc = 100, font_size = 18;
-    private   int     fg_color, sl_color;
-    protected int     mode = 0;
-    protected boolean ascending = true;
-    protected String  parentLink = SLS;
-    private   CommanderAdapter recipient = null;
-    protected int     numItems = 0;
-    public    int     shownFrom = 0, shownNum = 3;
+    public Context ctx;
+    public Commander commander = null;
+    public static final String SLS = File.separator;
+    public static final char SLC = File.separator.charAt( 0 );
+    public static final String PLS = "..";
+    private static final boolean long_date = Locale.getDefault().getLanguage().compareTo( "en" ) != 0;
+    private java.text.DateFormat localeDateFormat;
+    private java.text.DateFormat localeTimeFormat;
 
+    protected static final int ICON_SIZE = 32;
+    protected int icoWidth = ICON_SIZE, imgWidth = ICON_SIZE;
+    protected float density = 1;
+    protected LayoutInflater mInflater = null;
+    private int parentWidth, nameWidth, sizeWidth, dateWidth, attrWidth;
+    private boolean a3r = false;
+    protected boolean dirty = true;
+    protected int thumbnail_size_perc = 100, font_size = 18;
+    private int fg_color, sl_color;
+    protected int mode = 0;
+    protected boolean ascending = true;
+    protected String parentLink = SLS;
+    private CommanderAdapter recipient = null;
+    protected int numItems = 0;
+    public int shownFrom = 0, shownNum = 3;
 
     // Virtual method - to override!
-    // derived adapter classes need to override this to take the obtained items array and notify the dataset change
-    protected void onReadComplete() {  
+    // derived adapter classes need to override this to take the obtained items
+    // array and notify the dataset change
+    protected void onReadComplete() {
     }
-    
+
     protected class ReaderHandler extends Handler {
         @Override
         public void handleMessage( Message msg ) {
@@ -89,12 +89,13 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                     reader = null;
                 }
                 Commander.Notify n_obj = new Commander.Notify( str, code, cookie );
-                if( commander != null ) commander.notifyMe( n_obj );
+                if( commander != null )
+                    commander.notifyMe( n_obj );
             } catch( Exception e ) {
                 e.printStackTrace();
             }
         }
-    };    
+    };
 
     protected class WorkerHandler extends Handler {
         @Override
@@ -110,7 +111,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                                 recipient.receiveItems( items, MODE_MOVE_DEL_SRC_DIR );
                         }
                         recipient = null;
-                    }                   
+                    }
                     return;
                 }
                 int perc1 = b.getInt( CommanderAdapterBase.NOTIFY_PRG1 );
@@ -123,68 +124,74 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 e.printStackTrace();
             }
         }
-    };    
+    };
 
-    protected Engine  reader = null, worker = null;
+    protected Engine reader = null, worker = null;
     protected WorkerHandler workerHandler = null;
     protected ReaderHandler readerHandler = null;
-   
-    // the Init( c ) method to be called after the constructor   
+
+    // the Init( c ) method to be called after the constructor
     protected CommanderAdapterBase() {
     }
-    protected CommanderAdapterBase( Context ctx_ ) {
+
+    protected CommanderAdapterBase(Context ctx_) {
         ctx = ctx_;
     }
-    protected CommanderAdapterBase( Context ctx_, int mode_ ) {
+
+    protected CommanderAdapterBase(Context ctx_, int mode_) {
         ctx = ctx_;
         mode = mode_;
     }
 
     @Override
-	public void Init( Commander c ) {
+    public void Init( Commander c ) {
         if( c != null ) {
             commander = c;
             workerHandler = new WorkerHandler();
             readerHandler = new ReaderHandler();
-            if( ctx == null ) ctx = c.getContext();
+            if( ctx == null )
+                ctx = c.getContext();
         }
         parentWidth = 0;
         nameWidth = 0;
         sizeWidth = 0;
         dateWidth = 0;
         attrWidth = 0;
-    	mInflater = (LayoutInflater)ctx.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-    	Utils.changeLanguage( ctx );
-    	localeDateFormat = DateFormat.getDateFormat( ctx );
-    	localeTimeFormat = DateFormat.getTimeFormat( ctx );
-    	density = ctx.getResources().getDisplayMetrics().density;
-	}
-    
+        mInflater = (LayoutInflater)ctx.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+        Utils.changeLanguage( ctx );
+        localeDateFormat = DateFormat.getDateFormat( ctx );
+        localeTimeFormat = DateFormat.getTimeFormat( ctx );
+        density = ctx.getResources().getDisplayMetrics().density;
+    }
+
     private final void calcWidths() {
         try {
             if( ( mode & ICON_MODE ) == ICON_MODE ) {
                 icoWidth = (int)( density * ICON_SIZE );
                 if( ( ICON_TINY & mode ) != 0 )
                     icoWidth >>= 1;
-            }
-            else 
+            } else
                 icoWidth = 0;
             imgWidth = thumbnail_size_perc > 0 && thumbnail_size_perc != 100 ? icoWidth * thumbnail_size_perc / 100 : icoWidth;
         } catch( Exception e ) {
             e.printStackTrace();
         }
     }
-    
+
     public int getImgWidth() {
         return imgWidth;
     }
-    
+
     @Override
     public int setMode( int mask, int val ) {
         if( ( mask & SET_MODE_COLORS ) != 0 ) {
             switch( mask & SET_MODE_COLORS ) {
-            case SET_TXT_COLOR: fg_color = val; break;
-            case SET_SEL_COLOR: sl_color = val; break;
+            case SET_TXT_COLOR:
+                fg_color = val;
+                break;
+            case SET_SEL_COLOR:
+                sl_color = val;
+                break;
             }
             return 0;
         }
@@ -199,21 +206,19 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         }
         if( ( mask & ( MODE_FINGERF | MODE_ICONS ) ) != 0 )
             calcWidths();
-        
+
         mode &= ~mask;
         mode |= val;
         if( mask == LIST_STATE ) {
             /*
-            Log.v( TAG, ( mode & LIST_STATE ) == STATE_IDLE ? 
-                    "list    I D L E  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" :
-                    "list    B U S Y  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
-                    // Android v2.3.3 has a bug (again!)
-            */
-        }
-        else
+             * Log.v( TAG, ( mode & LIST_STATE ) == STATE_IDLE ?
+             * "list    I D L E  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" :
+             * "list    B U S Y  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" ); //
+             * Android v2.3.3 has a bug (again!)
+             */
+        } else
             dirty = true;
-        if( ( mask & MODE_SORT_DIR ) != 0 ||
-            ( mask & MODE_SORTING )  != 0 ) {
+        if( ( mask & MODE_SORT_DIR ) != 0 || ( mask & MODE_SORTING ) != 0 ) {
             if( ( mask & MODE_SORT_DIR ) != 0 )
                 ascending = ( val & MODE_SORT_DIR ) == SORT_ASC;
             reSort();
@@ -221,12 +226,14 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         }
         return mode;
     }
+
     @Override
     public void terminateOperation() {
         Log.i( TAG, "terminateOperation()" );
         if( worker != null )
             worker.reqStop();
     }
+
     @Override
     public void prepareToDestroy() {
         Log.i( TAG, "prepareToDestroy()" );
@@ -238,7 +245,8 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     }
 
     public final boolean isWorkerStillAlive() {
-        if( worker == null ) return false;
+        if( worker == null )
+            return false;
         return worker.reqStop();
     }
 
@@ -246,7 +254,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         commander.notifyMe( new Commander.Notify( s( R.string.not_supported ), Commander.OPERATION_FAILED ) );
         return false;
     }
-    
+
     protected final String createTempDir() {
         Date d = new Date();
         File temp_dir = new File( DEFAULT_DIR + "/temp/gc_" + d.getHours() + d.getMinutes() + d.getSeconds() );
@@ -258,14 +266,14 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         if( recipient != null )
             Log.e( TAG, "Recipient is not null!!!" );
         recipient = to;
-        return recipient.hashCode(); 
-    }    
+        return recipient.hashCode();
+    }
 
     @Override
     public int getCount() {
         return numItems;
     }
-    
+
     @Override
     public long getItemId( int position ) {
         return position;
@@ -274,7 +282,8 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     @Override
     public View getView( int position, View convertView, ViewGroup parent ) {
         Item item = (Item)getItem( position );
-        if( item == null ) return null;
+        if( item == null )
+            return null;
         ListView flv = (ListView)parent;
         SparseBooleanArray cis = flv.getCheckedItemPositions();
         item.sel = cis != null ? cis.get( position ) : false;
@@ -293,7 +302,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected int getPredictedAttributesLength() {
         return 0;
     }
-    
+
     protected View getView( View convertView, ViewGroup parent, Item item ) {
         View row_view = null;
         try {
@@ -417,8 +426,18 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                         }
                         try {
                             imgView.setMaxWidth( img_width );
-                            imgView.setImageResource( item.icon_id != -1 ? item.icon_id : 
-                               ( item.dir || item.name.equals( SLS ) || item.name.equals( PLS ) ? R.drawable.folder : getIconId( name ) ) );
+                            int ico_id;
+                            if( item.icon_id != -1 )
+                                ico_id = item.icon_id;
+                            else {
+                                if( item.name.equals( SLS ) || item.name.equals( PLS ) )
+                                    ico_id = R.drawable.up;
+                                else if( item.dir )
+                                    ico_id = R.drawable.folder;
+                                else
+                                    ico_id = getIconId( name );
+                            }
+                            imgView.setImageResource( ico_id );
                         }
                         catch( OutOfMemoryError e ) {
                             Log.e( TAG, "", e );
@@ -516,29 +535,36 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         }
         return row_view;
     }
-    
+
     protected final static int getIconId( String file ) {
         if( file.indexOf( " -> " ) > 0 )
             return R.drawable.link;
         String ext = Utils.getFileExt( file );
         if( ".apk".equalsIgnoreCase( ext ) || ".dex".equalsIgnoreCase( ext ) )
-            return R.drawable.and;        
+            return R.drawable.and;
         if( ".zip".equalsIgnoreCase( ext ) || ".jar".equalsIgnoreCase( ext ) )
-            return R.drawable.zip;        
+            return R.drawable.zip;
         if( ".pdf".equalsIgnoreCase( ext ) )
-            return R.drawable.pdf;        
+            return R.drawable.pdf;
         if( ".vcf".equalsIgnoreCase( ext ) )
-            return R.drawable.book;        
+            return R.drawable.book;
+        if( ".xml".equalsIgnoreCase( ext ) || ".html".equalsIgnoreCase( ext ) || ".htm".equalsIgnoreCase( ext ) )
+            return R.drawable.xml;
         String mime = Utils.getMimeByExt( ext );
         String type = mime.substring( 0, mime.indexOf( '/' ) );
-        if( type.compareTo( "text" ) == 0 )  return R.drawable.text; 
-        if( type.compareTo( "image" ) == 0 ) return R.drawable.image; 
-        if( type.compareTo( "audio" ) == 0 ) return R.drawable.audio; 
-        if( type.compareTo( "video" ) == 0 ) return R.drawable.video; 
-        if( type.compareTo( "application" ) == 0 ) return R.drawable.application; 
+        if( type.compareTo( "text" ) == 0 )
+            return R.drawable.text;
+        if( type.compareTo( "image" ) == 0 )
+            return R.drawable.image;
+        if( type.compareTo( "audio" ) == 0 )
+            return R.drawable.audio;
+        if( type.compareTo( "video" ) == 0 )
+            return R.drawable.video;
+        if( type.compareTo( "application" ) == 0 )
+            return R.drawable.application;
         return R.drawable.unkn;
     }
-    
+
     protected final String[] bitsToNames( SparseBooleanArray cis ) {
         try {
             int counter = 0;
@@ -556,33 +582,35 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         }
         return null;
     }
+
     @Override
     public Uri getItemUri( int position ) {
         return null;
     }
+
     @Override
     public void populateContextMenu( ContextMenu menu, AdapterView.AdapterContextMenuInfo acmi, int num ) {
         try {
             Item item = (Item)getItem( acmi.position );
-            boolean file = !item.dir && acmi.position != 0; 
+            boolean file = !item.dir && acmi.position != 0;
             if( acmi.position == 0 ) {
-                menu.add(0, R.id.enter,   0, R.string.enter );
-                menu.add(0, R.id.eq,      0, R.string.oth_sh_this );
-                menu.add(0, R.id.add_fav, 0, R.string.add_fav );
+                menu.add( 0, R.id.enter, 0, R.string.enter );
+                menu.add( 0, R.id.eq, 0, R.string.oth_sh_this );
+                menu.add( 0, R.id.add_fav, 0, R.string.add_fav );
                 return;
             }
             int t = getType();
             if( CA.suitable( R.id.sz, t ) )
                 menu.add( 0, R.id.sz, 0, R.string.show_size );
             if( num <= 1 ) {
-                if( CA.suitable( R.id.F2, t ) ) 
+                if( CA.suitable( R.id.F2, t ) )
                     menu.add( 0, R.id.F2, 0, R.string.rename_title );
                 if( file ) {
                     if( CA.suitable( R.id.F3, t ) )
                         menu.add( 0, R.id.F3, 0, R.string.view_title );
-                    if( CA.suitable( R.id.F4, t ) ) 
+                    if( CA.suitable( R.id.F4, t ) )
                         menu.add( 0, R.id.F4, 0, R.string.edit_title );
-                    if( ( t & CA.LOCAL ) != 0 )  
+                    if( ( t & CA.LOCAL ) != 0 )
                         menu.add( 0, Commander.SEND_TO, 0, R.string.send_to );
                 }
             }
@@ -604,7 +632,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         } catch( Exception e ) {
             Log.e( TAG, "populateContextMenu() " + e.getMessage(), e );
         }
-    }    
+    }
 
     @Override
     public void setIdentities( String name, String pass ) {
@@ -619,10 +647,12 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     public InputStream getContent( Uri u ) {
         return null;
     }
+
     @Override
     public OutputStream saveContent( Uri u ) {
         return null;
     }
+
     @Override
     public void closeStream( Closeable is ) {
         try {
@@ -632,17 +662,16 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             e.printStackTrace();
         }
     }
-    
+
     protected void reSort() {
         // to override all the derives
     }
-/*
-    public final void showMessage( String s ) {
-        Toast.makeText( commander.getContext(), s, Toast.LENGTH_LONG ).show();
-    }
-*/
+
+    /*
+     * public final void showMessage( String s ) { Toast.makeText(
+     * commander.getContext(), s, Toast.LENGTH_LONG ).show(); }
+     */
     protected final String s( int r_id ) {
-        return ctx.getString( r_id ); 
+        return ctx.getString( r_id );
     }
 }
-

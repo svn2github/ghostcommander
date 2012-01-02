@@ -121,15 +121,12 @@ public class HomeAdapter extends CommanderAdapterBase {
     private int getNumItems() {
         int num = LAST + 1;
         if( !root ) num -= 2;
-        num--; // skip also apps
         return num;
     }
     
     private int translatePosition( int p ) {
         if( !root && p >= ROOT )
             p += 2;
-        if( p >= APPS ) // temporary
-            p += 1;
         return p;
     }
    
@@ -142,7 +139,7 @@ public class HomeAdapter extends CommanderAdapterBase {
         case SMB:   return s( R.string.smb );
         case ROOT:  return s( R.string.root );
         case MOUNT: return s( R.string.mount );
-        //case APPS:  return s( R.string.apps );
+        case APPS:  return s( R.string.apps );
         case EXIT:  return s( R.string.exit );
         }
         return null;
@@ -169,17 +166,17 @@ public class HomeAdapter extends CommanderAdapterBase {
             case ROOT:  item.icon_id = R.drawable.root;     break;
             case MOUNT: item.icon_id = R.drawable.mount;    break;
             case EXIT:  item.icon_id = R.drawable.exit;     break;
-            //case APPS:  item.icon_id = R.drawable.apps; break;
+            case APPS:  item.icon_id = R.drawable.android;  break;
             }
             switch( position ) {
-            case FAVS:  item.attr = s( R.string.favs_descr );  break;  
+            case FAVS:  item.attr = s( R.string.favs_descr  ); break;  
             case LOCAL: item.attr = s( R.string.local_descr ); break;  
-            case FTP:   item.attr = s( R.string.ftp_descr );   break;
-            case SMB:   item.attr = s( R.string.smb_descr );   break;
-            case ROOT:  item.attr = s( R.string.root_descr );  break;
+            case FTP:   item.attr = s( R.string.ftp_descr   ); break;
+            case SMB:   item.attr = s( R.string.smb_descr   ); break;
+            case ROOT:  item.attr = s( R.string.root_descr  ); break;
             case MOUNT: item.attr = s( R.string.mount_descr ); break;
-            case EXIT:  item.attr = s( R.string.exit_descr );  break;
-            //case APPS:  item.icon_id = R.drawable.apps; break;
+            case EXIT:  item.attr = s( R.string.exit_descr  ); break;
+            case APPS:  item.attr = s( R.string.apps_descr  ); break;
             }
         }
         return item;

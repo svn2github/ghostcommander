@@ -181,7 +181,7 @@ public class FavsAdapter extends CommanderAdapterBase {
         intent.putExtra( Intent.EXTRA_SHORTCUT_NAME, name );
         Parcelable iconResource = Intent.ShortcutIconResource.fromContext( ctx, getDrawableIconId( uri ) );
         intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, iconResource);
-        intent.setAction( "com.android.launcher.action.INSTALL_SHORTCUT" ); //Intent.ACTION_CREATE_SHORTCUT
+        intent.setAction( "com.android.launcher.action.INSTALL_SHORTCUT" );
         ctx.sendBroadcast( intent );
     }
 

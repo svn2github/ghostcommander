@@ -386,6 +386,12 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 }
             }
             break;
+        case R.id.create_shortcut: 
+            if( data != null ) {
+                data.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+                sendBroadcast( data );
+            }
+            break;
         case OPERATION_COMPLETED_REFRESH_REQUIRED:
             Log.i( TAG, "An activity ends. Refresh required." );
             panels.refreshLists();

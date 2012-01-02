@@ -3,7 +3,7 @@
     <color name="black">#000</color>
     <color name="darkGray">#FF2A2A2A</color>
 
-    <color name="bgr_def">#FF191919</color>    
+    <color name="bgr_def">#FF000000</color>    
     <color name="fgr_def">#FFF0F0F0</color>    
 	<color name="sel_def">#FF4169E1</color>    
 	<color name="cur_def">#FFFF8000</color>    

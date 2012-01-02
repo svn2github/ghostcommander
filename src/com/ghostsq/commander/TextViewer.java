@@ -16,6 +16,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -51,6 +52,7 @@ public class TextViewer extends Activity {
             int fs = Integer.parseInt( shared_pref != null ? shared_pref.getString( "font_size", "12" ) : "12" );
             TextView text_view = (TextView)findViewById( R.id.text_view );
             text_view.setTextSize( fs );
+            text_view.setTypeface( Typeface.create( "monospace", Typeface.NORMAL ) );
             
             SharedPreferences color_pref = getSharedPreferences( Prefs.COLORS_PREFS, Activity.MODE_PRIVATE );
             int bg_color = getResources().getColor( R.color.bgr_def );

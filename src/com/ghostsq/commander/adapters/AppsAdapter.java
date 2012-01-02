@@ -2,7 +2,11 @@ package com.ghostsq.commander.adapters;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.StringBufferInputStream;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +32,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.ServiceInfo;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.Bitmap;
@@ -38,7 +42,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.util.LogPrinter;
 import android.util.SparseBooleanArray;
 import android.view.ContextMenu;
 import android.widget.AdapterView;
@@ -51,12 +54,17 @@ public class AppsAdapter extends CommanderAdapterBase {
     // to avoid that all the member accessible from the subclasses are public
     public final PackageManager     pm = ctx.getPackageManager();
     public  ApplicationInfo[]       appInfos = null;
-    private final int MANAGE = 0, ACTIVITIES = 1, PROVIDERS = 2, MANIFEST = 3; 
-    private final String[]          compTypes = { "Manage", "Activities", "Providers", "Manifest" };
+    private PackageInfo             packageInfo = null;
+    private final String MANAGE = "Manage", ACTIVITIES = "Activities", PROVIDERS = "Providers", SERVICES = "Services",  
+                         MANIFEST = "Manifest", SHORTCUTS = "Shortcuts";
+    private Item[]                  compItems = null;
     private ActivityInfo[]          actInfos = null;
     private ProviderInfo[]          prvInfos = null;
+    private ServiceInfo[]           srvInfos = null;
     private List<ResolveInfo>       byAllIntents;
     private ResolveInfo[]           resInfos = null;
+
+    
     
     private Uri uri;
     
@@ -71,7 +79,7 @@ public class AppsAdapter extends CommanderAdapterBase {
     
     @Override
     public int setMode( int mask, int val ) {
-        if( ( mask & ( MODE_WIDTH | MODE_DETAILS | MODE_ATTR ) ) == 0 )
+        if( ( mask & ( MODE_WIDTH /*| MODE_DETAILS | MODE_ATTR*/ ) ) == 0 )
             super.setMode( mask, val );
         return mode;
     }    
@@ -141,11 +149,14 @@ public class AppsAdapter extends CommanderAdapterBase {
             notifyDataSetChanged();     // to prevent the invalid state exception
             dirty = true;
             numItems = 1;
+            compItems = null;            
             appInfos = null;
             actInfos = null;
             prvInfos = null;
+            srvInfos = null;
             resInfos = null;
-            mode &= ~ATTR_ONLY;
+            packageInfo = null;
+            super.setMode( ATTR_ONLY, 0 );
             if( reader != null ) {
                 if( reader.reqStop() ) { // that's not good.
                     Thread.sleep( 500 );      // will it end itself?
@@ -162,23 +173,85 @@ public class AppsAdapter extends CommanderAdapterBase {
                 commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
                 reader = new ListEngine( readerHandler, pbod );
                 reader.start();
-                setMode( ATTR_ONLY, 0 );
+                
                 return true;
             }
-            setMode( 0, ATTR_ONLY );
             String path = uri.getPath();
             if( path == null || path.length() <= 1 ) {
-                numItems = compTypes.length + 1;
+                ArrayList<Item> ial = new ArrayList<Item>(); 
+                numItems = 1;
+                Item manage_item = new Item();
+                manage_item.name = MANAGE;
+                manage_item.icon_id = R.drawable.and;
+                ial.add( manage_item );
+                Item manifest_item = new Item();
+                manifest_item.name = MANIFEST;
+                manifest_item.icon_id = R.drawable.xml;
+                ial.add( manifest_item );
+                PackageInfo pi = pm.getPackageInfo( a, PackageManager.GET_ACTIVITIES | 
+                                                       PackageManager.GET_PROVIDERS | 
+                                                       PackageManager.GET_SERVICES );
+                Drawable ico = pm.getApplicationIcon( a );
+                if( pi.activities != null && pi.activities.length > 0 ) {
+                    Item activities_item = new Item();
+                    activities_item.name = ACTIVITIES;
+                    //activities_item.setThumbNail( ico );
+                    activities_item.thumb_is_icon = true;
+                    activities_item.dir = true;
+                    activities_item.size = pi.activities.length;
+                    ial.add( activities_item );
+                }
+                if( pi.providers != null && pi.providers.length > 0 ) {
+                    Item providers_item = new Item();
+                    providers_item.name = PROVIDERS;
+                    //providers_item.setThumbNail( ico );
+                    providers_item.thumb_is_icon = true;
+                    providers_item.dir = true;
+                    providers_item.size = pi.providers.length;
+                    ial.add( providers_item );
+                }
+                if( pi.services != null && pi.services.length > 0 ) {
+                    Item services_item = new Item();
+                    services_item.name = SERVICES;
+                    //services_item.setThumbNail( ico );
+                    services_item.thumb_is_icon = true;
+                    services_item.dir = true;
+                    services_item.size = pi.services.length;
+                    ial.add( services_item );
+                }
+                final int fl = PackageManager.GET_INTENT_FILTERS | PackageManager.GET_RESOLVED_FILTER;
+                Intent in = new Intent( Intent.ACTION_CREATE_SHORTCUT );
+                List<ResolveInfo> resolves = pm.queryIntentActivities( in, fl );
+                for( ResolveInfo res : resolves ) {
+                    try {
+                        if( a.equals( res.activityInfo.applicationInfo.packageName ) ) {
+                            Item shortcuts_item = new Item();
+                            shortcuts_item.name = SHORTCUTS;
+                            shortcuts_item.setThumbNail( ico );
+                            shortcuts_item.thumb_is_icon = true;
+                            shortcuts_item.attr = resolves.get( 0 ).activityInfo.name;
+                            shortcuts_item.origin = new ComponentName( a, res.activityInfo.name );
+                            ial.add( shortcuts_item );
+                            break;
+                        }
+                    } catch( Exception e ) {
+                        e.printStackTrace();
+                    }
+                }
+                compItems = new Item[ial.size()];
+                ial.toArray( compItems );
+                numItems = compItems.length + 1;
                 commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pbod ) );
                 return true;
             }
             else {
+                super.setMode( 0, ATTR_ONLY );
                 List<String> ps = uri.getPathSegments();
                 if( ps != null && ps.size() >= 1 ) {
-                    mode |= ATTR_ONLY;
                     PackageInfo pi = pm.getPackageInfo( a, PackageManager.GET_ACTIVITIES | 
-                                                           PackageManager.GET_PROVIDERS );
-                    if( compTypes[ACTIVITIES].equals( ps.get( 0 ) ) ) {
+                                                           PackageManager.GET_PROVIDERS | 
+                                                           PackageManager.GET_SERVICES );
+                    if( ACTIVITIES.equals( ps.get( 0 ) ) ) {
                         if( ps.size() >= 2 ) {
                             resInfos = getResolvers( ps.get( 1 ) );
                             if( resInfos != null )
@@ -188,9 +261,12 @@ public class AppsAdapter extends CommanderAdapterBase {
                             reSort();
                             numItems = actInfos.length + 1;
                         }
-                    } else if( compTypes[PROVIDERS].equals( ps.get( 0 ) ) ) {
+                    } else if( PROVIDERS.equals( ps.get( 0 ) ) ) {
                         prvInfos = pi.providers != null ? pi.providers : new ProviderInfo[0];
                         numItems = prvInfos.length + 1;
+                    } else if( SERVICES.equals( ps.get( 0 ) ) ) {
+                        srvInfos = pi.services != null ? pi.services : new ServiceInfo[0];
+                        numItems = srvInfos.length + 1;
                     } 
                     commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pbod ) );
                     return true;
@@ -340,7 +416,7 @@ public class AppsAdapter extends CommanderAdapterBase {
         return false;
     }
     
-    private static <T> ArrayList<T> bitsToInfos( SparseBooleanArray cis, T[] items ) {
+    private static <T> ArrayList<T> bitsToItems( SparseBooleanArray cis, T[] items ) {
         try {
             if( items == null ) return null;
             ArrayList<T> al = new ArrayList<T>();
@@ -430,7 +506,7 @@ public class AppsAdapter extends CommanderAdapterBase {
     @Override
     public void reqItemsSize( SparseBooleanArray cis ) {
         if( appInfos == null ) return;
-        ArrayList<ApplicationInfo> al = bitsToInfos( cis, appInfos );
+        ArrayList<ApplicationInfo> al = bitsToItems( cis, appInfos );
         if( al == null || al.size() == 0 ) {
             notErr();
             return;
@@ -505,19 +581,50 @@ public class AppsAdapter extends CommanderAdapterBase {
 
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
-        if( appInfos == null ) return notErr();
-        ArrayList<ApplicationInfo> al = bitsToInfos( cis, appInfos );
-        if( al == null || al.size() == 0 ) {
-            commander.notifyMe( new Commander.Notify( s( R.string.copy_err ), Commander.OPERATION_FAILED ) );
-            return false;
+        if( appInfos != null ) { 
+            ArrayList<ApplicationInfo> al = bitsToItems( cis, appInfos );
+            if( al == null || al.size() == 0 ) {
+                commander.notifyMe( new Commander.Notify( s( R.string.copy_err ), Commander.OPERATION_FAILED ) );
+                return false;
+            }
+            String[] paths = new String[al.size()];
+            for( int i = 0; i < al.size(); i++ )
+                paths[i] = al.get( i ).sourceDir;
+            
+            boolean ok = to.receiveItems( paths, MODE_COPY );
+            if( !ok ) commander.notifyMe( new Commander.Notify( Commander.OPERATION_FAILED ) );
+            return ok;
         }
-        String[] paths = new String[al.size()];
-        for( int i = 0; i < al.size(); i++ )
-            paths[i] = al.get( i ).sourceDir;
-        
-        boolean ok = to.receiveItems( paths, MODE_COPY );
-        if( !ok ) commander.notifyMe( new Commander.Notify( Commander.OPERATION_FAILED ) );
-        return ok;
+        if( compItems != null ) {
+            ArrayList<Item> il = bitsToItems( cis, compItems );
+            if( il != null ) {
+                for( int i = 0; i < il.size(); i++ ) {
+                    if( MANIFEST.equals( il.get( i ).name ) ) {
+                        try {
+                            ApplicationInfo ai = pm.getApplicationInfo( uri.getAuthority(), 0 );
+                            String m = extractManifest( ai.publicSourceDir, ai );
+                            if( m != null && m.length() > 0 ) {
+                                String tmp_fn = ai.packageName + ".xml";
+                                FileOutputStream fos = ctx.openFileOutput( tmp_fn, Context.MODE_WORLD_WRITEABLE|Context.MODE_WORLD_READABLE);
+                                if( fos != null ) {
+                                    OutputStreamWriter osw = new OutputStreamWriter( fos );
+                                    osw.write( m );
+                                    osw.close();
+                                    String[] paths = new String[1];
+                                    paths[0] = ctx.getFileStreamPath( tmp_fn ).getAbsolutePath();
+                                    boolean ok = to.receiveItems( paths, MODE_COPY );
+                                    if( !ok ) commander.notifyMe( new Commander.Notify( Commander.OPERATION_FAILED ) );
+                                    return ok;
+                                }
+                            }
+                        } catch( Exception e ) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
+        return notErr();
     }
         
     @Override
@@ -532,7 +639,7 @@ public class AppsAdapter extends CommanderAdapterBase {
     @Override
     public boolean deleteItems( SparseBooleanArray cis ) {
         if( appInfos == null ) return notErr();
-        ArrayList<ApplicationInfo> al = bitsToInfos( cis, appInfos );
+        ArrayList<ApplicationInfo> al = bitsToItems( cis, appInfos );
         if( al == null ) return false;
         for( int i = 0; i < al.size(); i++ ) {
             Intent in = new Intent( Intent.ACTION_DELETE, Uri.parse( "package:" + al.get( i ).packageName ) );
@@ -557,7 +664,7 @@ public class AppsAdapter extends CommanderAdapterBase {
                 if( appInfos != null ) {
                     String name = appInfos[acmi.position-1].loadLabel( pm ).toString();
                     menu.add( 0, LAUNCH_CMD, 0, ctx.getString( R.string.launch ) + " \"" + name + "\"" );
-                    menu.add( 0, MANAGE_CMD, 0, compTypes[MANAGE] );
+                    menu.add( 0, MANAGE_CMD, 0, MANAGE );
                 }
                 else if( actInfos != null ) {
                     menu.add( 0, SHRCT_CMD, 0, ctx.getString( R.string.shortcut ) );
@@ -573,7 +680,7 @@ public class AppsAdapter extends CommanderAdapterBase {
     public void doIt( int command_id, SparseBooleanArray cis ) {
         try {
             if( appInfos != null ) {
-                ArrayList<ApplicationInfo> al = bitsToInfos( cis, appInfos );
+                ArrayList<ApplicationInfo> al = bitsToItems( cis, appInfos );
                 if( al == null || al.size() == 0 ) return;
                 ApplicationInfo ai = al.get(0);
                 if( ai == null ) return;
@@ -588,7 +695,7 @@ public class AppsAdapter extends CommanderAdapterBase {
                 }
             }
             else if( actInfos != null ) {
-                ArrayList<ActivityInfo> al = bitsToInfos( cis, actInfos );
+                ArrayList<ActivityInfo> al = bitsToItems( cis, actInfos );
                 if( al == null || al.size() == 0 ) return;
                 if( SHRCT_CMD == command_id ) {
                     for( int i = 0; i < al.size(); i++ ) {
@@ -625,7 +732,7 @@ public class AppsAdapter extends CommanderAdapterBase {
                 }
             } else if( actInfos != null ) {
                 if( position == 0 ) {
-                    commander.Navigate( uri.buildUpon().path( null ).build(), compTypes[ACTIVITIES] );
+                    commander.Navigate( uri.buildUpon().path( null ).build(), ACTIVITIES );
                 }
                 else if( position <= actInfos.length ) {
                     ActivityInfo act = actInfos[position-1];
@@ -634,9 +741,9 @@ public class AppsAdapter extends CommanderAdapterBase {
                     else
                         commander.showInfo( s( R.string.not_exported ) );
                 }
-            } else if( prvInfos != null ) {
+            } else if( prvInfos != null || srvInfos != null ) {
                 if( position == 0 ) {
-                    commander.Navigate( uri.buildUpon().path( null ).build(), compTypes[PROVIDERS] );
+                    commander.Navigate( uri.buildUpon().path( null ).build(), PROVIDERS );
                 }
                 else if( position <= prvInfos.length ) {
                     // ???
@@ -645,7 +752,7 @@ public class AppsAdapter extends CommanderAdapterBase {
                 if( position == 0 ) {
                     List<String> paths = uri.getPathSegments();
                     String actn = paths != null ? paths.get( paths.size()-1 ) : null;
-                    commander.Navigate( uri.buildUpon().path( compTypes[ACTIVITIES] ).build(), actn );
+                    commander.Navigate( uri.buildUpon().path( ACTIVITIES ).build(), actn );
                 }
                 else if( position <= resInfos.length ) {
                     // ???
@@ -653,11 +760,13 @@ public class AppsAdapter extends CommanderAdapterBase {
             } else {
                 if( position == 0 ) {
                     commander.Navigate( Uri.parse( DEFAULT_LOC ), uri.getAuthority() );
+                    return;
                 }
-                else if( position-1 == MANAGE ) {
+                String name = getItemName( position, false );
+                if( MANAGE.equals( name ) ) {
                     managePackage( uri.getAuthority() );    
                 }
-                else if( position-1 == MANIFEST ) {
+                else if( MANIFEST.equals( name ) ) {
                     String p = uri.getAuthority();
                     ApplicationInfo ai = pm.getApplicationInfo( p, 0 );
                     String m = extractManifest( ai.publicSourceDir, ai );
@@ -670,9 +779,15 @@ public class AppsAdapter extends CommanderAdapterBase {
                         commander.issue( in, 0 );
                     }
                 }
-                else if( position <= compTypes.length ) {
-                    commander.Navigate( uri.buildUpon().path( compTypes[position - 1] ).build(), null );
+                else if( SHORTCUTS.equals( name ) ) {
+                    Item item = (Item)getItem( position );
+                    if( item == null || item.origin ==  null ) return;
+                    Intent in = new Intent( Intent.ACTION_CREATE_SHORTCUT );
+                    in.setComponent( (ComponentName)item.origin );
+                    commander.issue( in, R.id.create_shortcut );
                 }
+                else 
+                    commander.Navigate( uri.buildUpon().path( name ).build(), null );
             }
         } catch( Exception e ) {
             Log.e( TAG, uri.toString() + " " + position, e );
@@ -715,16 +830,21 @@ public class AppsAdapter extends CommanderAdapterBase {
             if( appInfos != null ) {
                 return position <= appInfos.length ? appInfos[idx].packageName : null;
             }
+            if( compItems != null ) {
+                return position <= compItems.length ? compItems[idx].name : null;
+            }
             if( actInfos != null ) {
                 return position <= actInfos.length ? actInfos[idx].name : null;
             }
             if( prvInfos != null ) {
                 return position <= prvInfos.length ? prvInfos[idx].toString() : null;
             }
+            if( srvInfos != null ) {
+                return position <= srvInfos.length ? srvInfos[idx].toString() : null;
+            }
             if( resInfos != null ) {
                 return position <= resInfos.length ? resInfos[idx].toString() : null;
             }
-            return position <= compTypes.length ? compTypes[idx] : null;
         }
         catch( Exception e ) {
             Log.e( TAG, "pos=" + position, e );
@@ -771,6 +891,15 @@ public class AppsAdapter extends CommanderAdapterBase {
                 item.name = pi.loadLabel( pm ).toString(); 
                 item.attr = pi.name;
                 item.setThumbNail( pi.loadIcon( pm ) );
+                item.thumb_is_icon = true;
+            }
+        }
+        else if( srvInfos != null ) {
+            if( position <= srvInfos.length ) {
+                ServiceInfo si = srvInfos[position - 1];
+                item.name = si.loadLabel( pm ).toString(); 
+                item.attr = si.name;
+                item.setThumbNail( si.loadIcon( pm ) );
                 item.thumb_is_icon = true;
             }
         }
@@ -831,12 +960,8 @@ public class AppsAdapter extends CommanderAdapterBase {
             }
         }
         else {
-            if( position <= compTypes.length ) {
-                int i = position-1;
-                item.name = compTypes[i];
-                if( i == ACTIVITIES || i == PROVIDERS )
-                    item.dir = true;
-            }
+            if( position <= compItems.length )
+                return compItems[position-1];
         }
         return item;
     }
@@ -1122,8 +1247,7 @@ public class AppsAdapter extends CommanderAdapterBase {
         intent.putExtra( Intent.EXTRA_SHORTCUT_NAME, name );
         if( ico != null )
             intent.putExtra( Intent.EXTRA_SHORTCUT_ICON, ico );
-        intent.setAction( "com.android.launcher.action.INSTALL_SHORTCUT" ); //Intent.ACTION_CREATE_SHORTCUT
+        intent.setAction( "com.android.launcher.action.INSTALL_SHORTCUT" );
         ctx.sendBroadcast( intent );
     }
-    
 }

@@ -770,7 +770,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             else 
                 u = Uri.parse( file_name );
             if( u == null ) return;
-            final String GC_EDITOR = c.getString( R.string.value_editor_activity );
+            final String GC_EDITOR = Editor.class.getName();
             String full_class_name = null;
             String scheme = u.getScheme();
             boolean local = CA.isLocal( scheme );
