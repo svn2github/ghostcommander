@@ -31,10 +31,13 @@ public interface CommanderAdapter {
         public int      icon_id = -1;
         private Drawable thumbnail;
         private long     thumbnail_used;
-        public boolean  isThumbNail()  { return thumbnail != null; }
-        public Drawable getThumbNail()             { thumbnail_used = System.currentTimeMillis(); return thumbnail; }
-        public void     setThumbNail( Drawable t ) { thumbnail_used = System.currentTimeMillis(); thumbnail = t; }
-        public boolean  remThumbnailIfOld( int ttl ) { 
+        public Item() {}
+        public Item( String name_ )    { name = name_; }
+        public final boolean  isThumbNail()  { return thumbnail != null; }
+        public final Drawable getThumbNail()             { thumbnail_used = System.currentTimeMillis(); return thumbnail; }
+        public final void     setThumbNail( Drawable t ) { thumbnail_used = System.currentTimeMillis(); thumbnail = t; }
+        public final void     setIcon( Drawable t ) { setThumbNail( t ); thumb_is_icon = true; }
+        public final boolean  remThumbnailIfOld( int ttl ) { 
             if( thumbnail != null && !need_thumb && System.currentTimeMillis() - thumbnail_used > ttl ) {
                 thumbnail = null;
                 return true;

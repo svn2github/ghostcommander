@@ -331,8 +331,8 @@ public class FSAdapter extends CommanderAdapterBase {
                     try {
                         PackageManager pm = ctx.getPackageManager();
                         PackageInfo info = pm.getPackageArchiveInfo( fn, 0 );
-                        f.setThumbNail( pm.getApplicationIcon( info.packageName ) );
-                        f.thumb_is_icon = true;
+                        f.setIcon( info != null ? pm.getApplicationIcon( info.packageName ) :
+                                                       pm.getDefaultActivityIcon() );
                         return true;
                     }
                     catch( Exception e ) {

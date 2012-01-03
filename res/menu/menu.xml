@@ -78,8 +78,6 @@
          android:title="@string/rescan"/>
         <item android:id="@+id/prefs"
             android:title="@string/prefs"/>
-        <item android:id="@+id/save_prefs"
-            android:title="@string/save_prefs"/>
         <item android:id="@+id/donate"
             android:title="@string/donate"/>
         <item android:id="@+id/exit"

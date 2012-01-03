@@ -42,6 +42,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.util.LogPrinter;
 import android.util.SparseBooleanArray;
 import android.view.ContextMenu;
 import android.widget.AdapterView;
@@ -180,94 +181,78 @@ public class AppsAdapter extends CommanderAdapterBase {
             if( path == null || path.length() <= 1 ) {
                 ArrayList<Item> ial = new ArrayList<Item>(); 
                 numItems = 1;
-                Item manage_item = new Item();
-                manage_item.name = MANAGE;
+                Item manage_item = new Item( MANAGE );
+                manage_item.setIcon( pm.getApplicationIcon( "com.android.settings" ) );
                 manage_item.icon_id = R.drawable.and;
                 ial.add( manage_item );
-                Item manifest_item = new Item();
-                manifest_item.name = MANIFEST;
+                Item manifest_item = new Item( MANIFEST );
                 manifest_item.icon_id = R.drawable.xml;
                 ial.add( manifest_item );
                 PackageInfo pi = pm.getPackageInfo( a, PackageManager.GET_ACTIVITIES | 
                                                        PackageManager.GET_PROVIDERS | 
                                                        PackageManager.GET_SERVICES );
-                Drawable ico = pm.getApplicationIcon( a );
                 if( pi.activities != null && pi.activities.length > 0 ) {
-                    Item activities_item = new Item();
-                    activities_item.name = ACTIVITIES;
-                    //activities_item.setThumbNail( ico );
-                    activities_item.thumb_is_icon = true;
+                    Item activities_item = new Item( ACTIVITIES );
                     activities_item.dir = true;
                     activities_item.size = pi.activities.length;
                     ial.add( activities_item );
                 }
                 if( pi.providers != null && pi.providers.length > 0 ) {
-                    Item providers_item = new Item();
-                    providers_item.name = PROVIDERS;
-                    //providers_item.setThumbNail( ico );
-                    providers_item.thumb_is_icon = true;
+                    Item providers_item = new Item( PROVIDERS );
                     providers_item.dir = true;
                     providers_item.size = pi.providers.length;
                     ial.add( providers_item );
                 }
                 if( pi.services != null && pi.services.length > 0 ) {
-                    Item services_item = new Item();
-                    services_item.name = SERVICES;
-                    //services_item.setThumbNail( ico );
-                    services_item.thumb_is_icon = true;
+                    Item services_item = new Item( SERVICES );
                     services_item.dir = true;
                     services_item.size = pi.services.length;
                     ial.add( services_item );
                 }
-                final int fl = PackageManager.GET_INTENT_FILTERS | PackageManager.GET_RESOLVED_FILTER;
-                Intent in = new Intent( Intent.ACTION_CREATE_SHORTCUT );
-                List<ResolveInfo> resolves = pm.queryIntentActivities( in, fl );
-                for( ResolveInfo res : resolves ) {
-                    try {
-                        if( a.equals( res.activityInfo.applicationInfo.packageName ) ) {
-                            Item shortcuts_item = new Item();
-                            shortcuts_item.name = SHORTCUTS;
-                            shortcuts_item.setThumbNail( ico );
-                            shortcuts_item.thumb_is_icon = true;
-                            shortcuts_item.attr = resolves.get( 0 ).activityInfo.name;
-                            shortcuts_item.origin = new ComponentName( a, res.activityInfo.name );
-                            ial.add( shortcuts_item );
-                            break;
-                        }
-                    } catch( Exception e ) {
-                        e.printStackTrace();
-                    }
-                }
+                Item shortcuts_item = new Item( SHORTCUTS );
+                shortcuts_item.dir = true;
+                ial.add( shortcuts_item );
+                
+                // all items were created
+                
                 compItems = new Item[ial.size()];
                 ial.toArray( compItems );
                 numItems = compItems.length + 1;
                 commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pbod ) );
                 return true;
             }
-            else {
+            else { // the URI path contains something
                 super.setMode( 0, ATTR_ONLY );
                 List<String> ps = uri.getPathSegments();
                 if( ps != null && ps.size() >= 1 ) {
-                    PackageInfo pi = pm.getPackageInfo( a, PackageManager.GET_ACTIVITIES | 
-                                                           PackageManager.GET_PROVIDERS | 
-                                                           PackageManager.GET_SERVICES );
-                    if( ACTIVITIES.equals( ps.get( 0 ) ) ) {
-                        if( ps.size() >= 2 ) {
-                            resInfos = getResolvers( ps.get( 1 ) );
-                            if( resInfos != null )
-                                numItems = resInfos.length + 1;
-                        } else {
-                            actInfos = pi.activities != null ? pi.activities : new ActivityInfo[0];
-                            reSort();
-                            numItems = actInfos.length + 1;
+                    if( SHORTCUTS.equals( ps.get( 0 ) ) ) {
+                        Intent[] ins = new Intent[2];  
+                        ins[0] = new Intent( Intent.ACTION_MAIN );
+                        ins[1] = new Intent( Intent.ACTION_CREATE_SHORTCUT );
+                        resInfos = getResolvers( ins, a );
+                        numItems = resInfos.length + 1;
+                    } else {
+                        PackageInfo pi = pm.getPackageInfo( a, PackageManager.GET_ACTIVITIES | 
+                                                               PackageManager.GET_PROVIDERS | 
+                                                               PackageManager.GET_SERVICES );
+                        if( ACTIVITIES.equals( ps.get( 0 ) ) ) {
+                            if( ps.size() >= 2 ) {
+                                resInfos = getResolvers( ps.get( 1 ) );
+                                if( resInfos != null )
+                                    numItems = resInfos.length + 1;
+                            } else {
+                                actInfos = pi.activities != null ? pi.activities : new ActivityInfo[0];
+                                reSort();
+                                numItems = actInfos.length + 1;
+                            }
+                        } else if( PROVIDERS.equals( ps.get( 0 ) ) ) {
+                            prvInfos = pi.providers != null ? pi.providers : new ProviderInfo[0];
+                            numItems = prvInfos.length + 1;
+                        } else if( SERVICES.equals( ps.get( 0 ) ) ) {
+                            srvInfos = pi.services != null ? pi.services : new ServiceInfo[0];
+                            numItems = srvInfos.length + 1;
                         }
-                    } else if( PROVIDERS.equals( ps.get( 0 ) ) ) {
-                        prvInfos = pi.providers != null ? pi.providers : new ProviderInfo[0];
-                        numItems = prvInfos.length + 1;
-                    } else if( SERVICES.equals( ps.get( 0 ) ) ) {
-                        srvInfos = pi.services != null ? pi.services : new ServiceInfo[0];
-                        numItems = srvInfos.length + 1;
-                    } 
+                    }
                     commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pbod ) );
                     return true;
                 }
@@ -296,7 +281,28 @@ public class AppsAdapter extends CommanderAdapterBase {
         else {
         }
     }
-
+    
+    private final ResolveInfo[] getResolvers( Intent[] ins, String package_name ) {
+        try {
+            final int fl = PackageManager.GET_INTENT_FILTERS | PackageManager.GET_RESOLVED_FILTER;
+            List<ResolveInfo> tmp_list = new ArrayList<ResolveInfo>();
+            for( Intent in : ins ) {
+                List<ResolveInfo> resolves = pm.queryIntentActivities( in, fl );
+                for( ResolveInfo res : resolves ) {
+                    if( package_name.equals( res.activityInfo.applicationInfo.packageName ) )
+                        tmp_list.add( res );
+                }
+            }
+            if( tmp_list.size() > 0 ) {
+                ResolveInfo[] ret = new ResolveInfo[tmp_list.size()];
+                return tmp_list.toArray( ret );
+            }
+        } catch( Exception e ) {
+            Log.e( TAG, "For: " + package_name, e );
+        }
+        return null;
+    }    
+    
     private final ResolveInfo[] getResolvers( String act_name ) {
         if( act_name == null ) return null;
         if( byAllIntents == null ) {
@@ -375,11 +381,11 @@ public class AppsAdapter extends CommanderAdapterBase {
                     act_res.add( r );
             }
         }
-        /*
+
         LogPrinter lp = new LogPrinter(Log.INFO, TAG );
         for( int j = 0; j < act_res.size(); j++ ) 
             act_res.get( j ).dump( lp, "RI/");
-        */
+
         ResolveInfo[] a = new ResolveInfo[act_res.size()];
         return act_res.toArray( a );
     }
@@ -478,17 +484,17 @@ public class AppsAdapter extends CommanderAdapterBase {
         case  1012: return "install";        /* group for installing packages */
         case  1013: return "media";          /* mediaserver process */
         case  1014: return "dhcp";           /* dhcp client */
-        case  1015: return "sdcard_rw";     /* external storage write access */
-        case  1016: return "vpn";           /* vpn system */
-        case  1017: return "keystore";      /* keystore subsystem */
-        case  1018: return "usb";           /* USB devices */
-        case  1019: return "drm";           /* DRM server */
-        case  1020: return "available";     /* available for use */
-        case  1021: return "gps";           /* GPS daemon */
-        case  1023: return "media_rw";      /* internal media storage write access */
-        case  1024: return "mtp";           /* MTP USB driver access */
-        case  1025: return "nfc";           /* nfc subsystem */
-        case  1026: return "drmrpc";        /* group for drm rpc */                    
+        case  1015: return "sdcard_rw";      /* external storage write access */
+        case  1016: return "vpn";            /* vpn system */
+        case  1017: return "keystore";       /* keystore subsystem */
+        case  1018: return "usb";            /* USB devices */
+        case  1019: return "drm";            /* DRM server */
+        case  1020: return "available";      /* available for use */
+        case  1021: return "gps";            /* GPS daemon */
+        case  1023: return "media_rw";       /* internal media storage write access */
+        case  1024: return "mtp";            /* MTP USB driver access */
+        case  1025: return "nfc";            /* nfc subsystem */
+        case  1026: return "drmrpc";         /* group for drm rpc */                    
         case  2000: return "shell";          /* adb and debug shell user */
         case  2001: return "cache";          /* cache access */
         case  2002: return "diag";           /* access to diagnostic resources */
@@ -751,11 +757,35 @@ public class AppsAdapter extends CommanderAdapterBase {
             } else if( resInfos != null ) {
                 if( position == 0 ) {
                     List<String> paths = uri.getPathSegments();
-                    String actn = paths != null ? paths.get( paths.size()-1 ) : null;
-                    commander.Navigate( uri.buildUpon().path( ACTIVITIES ).build(), actn );
+                    if( paths == null )
+                        commander.Navigate( uri.buildUpon().path( null ).build(), null );
+                    String p = paths.size() > 1 ? paths.get( paths.size()-2 ) : null; 
+                    String n = paths.get( paths.size()-1 );
+                    commander.Navigate( uri.buildUpon().path( p ).build(), n );
                 }
                 else if( position <= resInfos.length ) {
-                    // ???
+                    ResolveInfo  ri = resInfos[position - 1];
+                    ActivityInfo ai = ri.activityInfo;
+                    if( ri.filter.hasAction( Intent.ACTION_CREATE_SHORTCUT ) ) {
+                        Intent in = new Intent( Intent.ACTION_CREATE_SHORTCUT );
+                        in.setComponent( new ComponentName( ai.packageName, ai.name ) );
+                        commander.issue( in, R.id.create_shortcut );
+                    }
+                    else if( ri.filter.hasAction( Intent.ACTION_MAIN ) ) {
+                        Intent in = new Intent(Intent.ACTION_MAIN );
+                        in.setComponent( new ComponentName( ai.packageName, ai.name ) );
+                        commander.issue( in, 0 );
+                        /*
+                        Bitmap ico = null;
+                        Drawable drawable = ai.loadIcon( pm );
+                        if( drawable instanceof BitmapDrawable ) {
+                            BitmapDrawable bd = (BitmapDrawable)drawable;
+                            ico = bd.getBitmap();
+                        }
+                        createDesktopShortcut( new ComponentName( ai.packageName, ai.name ), 
+                                ai.loadLabel( pm ).toString(), ico );
+                        */
+                    }
                 }
             } else {
                 if( position == 0 ) {
@@ -778,13 +808,6 @@ public class AppsAdapter extends CommanderAdapterBase {
                         in.putExtra( TextViewer.STRKEY, b );
                         commander.issue( in, 0 );
                     }
-                }
-                else if( SHORTCUTS.equals( name ) ) {
-                    Item item = (Item)getItem( position );
-                    if( item == null || item.origin ==  null ) return;
-                    Intent in = new Intent( Intent.ACTION_CREATE_SHORTCUT );
-                    in.setComponent( (ComponentName)item.origin );
-                    commander.issue( in, R.id.create_shortcut );
                 }
                 else 
                     commander.Navigate( uri.buildUpon().path( name ).build(), null );
@@ -872,8 +895,7 @@ public class AppsAdapter extends CommanderAdapterBase {
                 item.date = new Date( asdf.lastModified() );
                 item.size = asdf.length();
                 item.attr = ai.packageName;
-                item.setThumbNail( ai.loadIcon( pm ) );
-                item.thumb_is_icon = true;
+                item.setIcon( ai.loadIcon( pm ) );
             }
         }
         else if( actInfos != null ) {
@@ -881,8 +903,7 @@ public class AppsAdapter extends CommanderAdapterBase {
                 ActivityInfo ai = actInfos[position - 1];
                 item.name = ai.loadLabel( pm ).toString(); 
                 item.attr = ai.name;
-                item.setThumbNail( ai.loadIcon( pm ) );
-                item.thumb_is_icon = true;
+                item.setIcon( ai.loadIcon( pm ) );
             }
         }
         else if( prvInfos != null ) {
@@ -890,8 +911,7 @@ public class AppsAdapter extends CommanderAdapterBase {
                 ProviderInfo pi = prvInfos[position - 1];
                 item.name = pi.loadLabel( pm ).toString(); 
                 item.attr = pi.name;
-                item.setThumbNail( pi.loadIcon( pm ) );
-                item.thumb_is_icon = true;
+                item.setIcon( pi.loadIcon( pm ) );
             }
         }
         else if( srvInfos != null ) {
@@ -899,8 +919,7 @@ public class AppsAdapter extends CommanderAdapterBase {
                 ServiceInfo si = srvInfos[position - 1];
                 item.name = si.loadLabel( pm ).toString(); 
                 item.attr = si.name;
-                item.setThumbNail( si.loadIcon( pm ) );
-                item.thumb_is_icon = true;
+                item.setIcon( si.loadIcon( pm ) );
             }
         }
         else if( resInfos != null ) {
@@ -909,50 +928,58 @@ public class AppsAdapter extends CommanderAdapterBase {
                     ResolveInfo ri = resInfos[position - 1];
                     IntentFilter inf = ri.filter;
                     if( inf != null ) {
-                        String action = inf.getAction( 0 );
-                        item.name = action != null ? action : inf.toString();
-                        StringBuilder sb = new StringBuilder( 128 );
-                        int n = inf.countDataTypes();
-                        if( n > 0 ) {
-                            sb.append( "types=" );
-                            for( int i = 0; i< n; i++ ) {
-                                if( i != 0 )
-                                    sb.append( ", " );
-                                String dt = inf.getDataType( i ); 
-                                sb.append( dt );
-                            }
-                            sb.append( "; " );
+                        if( ri.filter.hasAction( Intent.ACTION_CREATE_SHORTCUT ) ||
+                            ri.filter.hasAction( Intent.ACTION_MAIN ) ) {
+                            ActivityInfo ai = ri.activityInfo;
+                            item.name = ai.loadLabel( pm ).toString(); 
+                            item.attr = ai.name;
+                            item.setIcon( ai.loadIcon( pm ) );
                         }
-                        n = inf.countCategories();
-                        if( n > 0 ) {
-                            sb.append( "categories=" );
-                            for( int i = 0; i< n; i++ ) {
-                                if( i != 0 )
-                                    sb.append( ", " );
-                                String ct = inf.getCategory( i ); 
-                                sb.append( ct );
+                        else {
+                            String action = inf.getAction( 0 );
+                            item.name = action != null ? action : inf.toString();
+                            StringBuilder sb = new StringBuilder( 128 );
+                            int n = inf.countDataTypes();
+                            if( n > 0 ) {
+                                sb.append( "types=" );
+                                for( int i = 0; i< n; i++ ) {
+                                    if( i != 0 )
+                                        sb.append( ", " );
+                                    String dt = inf.getDataType( i ); 
+                                    sb.append( dt );
+                                }
+                                sb.append( "; " );
                             }
-                            sb.append( "; " );
-                        }
-                        
-                        n = inf.countDataSchemes();
-                        if( n > 0 ) {
-                            sb.append( "schemes=" );
-                            for( int i = 0; i< n; i++ ) {
-                                if( i != 0 )
-                                    sb.append( ", " );
-                                String ds = inf.getDataScheme( i ); 
-                                sb.append( ds );
+                            n = inf.countCategories();
+                            if( n > 0 ) {
+                                sb.append( "categories=" );
+                                for( int i = 0; i< n; i++ ) {
+                                    if( i != 0 )
+                                        sb.append( ", " );
+                                    String ct = inf.getCategory( i ); 
+                                    sb.append( ct );
+                                }
+                                sb.append( "; " );
                             }
+                            
+                            n = inf.countDataSchemes();
+                            if( n > 0 ) {
+                                sb.append( "schemes=" );
+                                for( int i = 0; i< n; i++ ) {
+                                    if( i != 0 )
+                                        sb.append( ", " );
+                                    String ds = inf.getDataScheme( i ); 
+                                    sb.append( ds );
+                                }
+                            }
+                            item.attr = sb.toString();
                         }
-                        item.attr = sb.toString();
                     }
                     else {
                         item.name = ri.loadLabel( pm ).toString();
                         item.attr = ri.toString();
                     }
-                    item.setThumbNail( ri.loadIcon( pm ) );
-                    item.thumb_is_icon = true;
+                    item.setIcon( ri.loadIcon( pm ) );
                 }
             }
             catch( Exception e ) {
