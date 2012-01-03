@@ -4,9 +4,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringBufferInputStream;
+import java.io.StringReader;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,17 +17,23 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.TextViewer;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
+import com.ghostsq.commander.utils.MnfUtils;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.IntentFilter.MalformedMimeTypeException;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -41,6 +49,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PatternMatcher;
 import android.util.Log;
 import android.util.LogPrinter;
 import android.util.SparseBooleanArray;
@@ -64,7 +73,8 @@ public class AppsAdapter extends CommanderAdapterBase {
     private ServiceInfo[]           srvInfos = null;
     private List<ResolveInfo>       byAllIntents;
     private ResolveInfo[]           resInfos = null;
-
+    private IntentFilter[]          intFilters = null;
+    private MnfUtils                manUtl = null;
     
     
     private Uri uri;
@@ -156,6 +166,7 @@ public class AppsAdapter extends CommanderAdapterBase {
             prvInfos = null;
             srvInfos = null;
             resInfos = null;
+            intFilters = null;
             packageInfo = null;
             super.setMode( ATTR_ONLY, 0 );
             if( reader != null ) {
@@ -171,6 +182,7 @@ public class AppsAdapter extends CommanderAdapterBase {
                 uri = tmp_uri;
             String a = uri.getAuthority(); 
             if( a == null || a.length() == 0 ) {    // enumerate the applications
+                manUtl = null;
                 commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
                 reader = new ListEngine( readerHandler, pbod );
                 reader.start();
@@ -231,20 +243,21 @@ public class AppsAdapter extends CommanderAdapterBase {
                         ins[1] = new Intent( Intent.ACTION_CREATE_SHORTCUT );
                         resInfos = getResolvers( ins, a );
                         numItems = resInfos.length + 1;
+                    } else 
+                    if( ps.size() >= 2 && ACTIVITIES.equals( ps.get( 0 ) ) ) {
+                        if( manUtl == null )
+                            manUtl = new MnfUtils( pm, a );
+                        intFilters = manUtl.getIntentFilters( ps.get( 1 ) );
+                        if( intFilters != null )
+                            numItems = intFilters.length + 1;
                     } else {
                         PackageInfo pi = pm.getPackageInfo( a, PackageManager.GET_ACTIVITIES | 
                                                                PackageManager.GET_PROVIDERS | 
                                                                PackageManager.GET_SERVICES );
                         if( ACTIVITIES.equals( ps.get( 0 ) ) ) {
-                            if( ps.size() >= 2 ) {
-                                resInfos = getResolvers( ps.get( 1 ) );
-                                if( resInfos != null )
-                                    numItems = resInfos.length + 1;
-                            } else {
-                                actInfos = pi.activities != null ? pi.activities : new ActivityInfo[0];
-                                reSort();
-                                numItems = actInfos.length + 1;
-                            }
+                            actInfos = pi.activities != null ? pi.activities : new ActivityInfo[0];
+                            reSort();
+                            numItems = actInfos.length + 1;
                         } else if( PROVIDERS.equals( ps.get( 0 ) ) ) {
                             prvInfos = pi.providers != null ? pi.providers : new ProviderInfo[0];
                             numItems = prvInfos.length + 1;
@@ -266,6 +279,7 @@ public class AppsAdapter extends CommanderAdapterBase {
         return false;
     }
     
+   
     @Override
     protected void reSort() {
         if( appInfos != null ) { 
@@ -302,125 +316,6 @@ public class AppsAdapter extends CommanderAdapterBase {
         }
         return null;
     }    
-    
-    private final ResolveInfo[] getResolvers( String act_name ) {
-        if( act_name == null ) return null;
-        if( byAllIntents == null ) {
-            byAllIntents = new ArrayList<ResolveInfo>();
-            List<ResolveInfo> tmp_list;
-            Intent in;
-            final int fl = PackageManager.GET_INTENT_FILTERS | PackageManager.GET_RESOLVED_FILTER;
-            tmp_list = pm.queryIntentActivities( new Intent( Intent.ACTION_MAIN ), fl );
-            byAllIntents.addAll( tmp_list );
-
-            tmp_list = pm.queryIntentActivities( new Intent( Intent.ACTION_PICK ), fl );
-            byAllIntents.addAll( tmp_list );
-
-            tmp_list = pm.queryIntentActivities( new Intent( Intent.ACTION_INSERT ), fl );
-            byAllIntents.addAll( tmp_list );
-
-            tmp_list = pm.queryIntentActivities( new Intent( Intent.ACTION_SEND ), fl );
-            byAllIntents.addAll( tmp_list );
-
-            tmp_list = pm.queryIntentActivities( new Intent( Intent.ACTION_EDIT ), fl );
-            byAllIntents.addAll( tmp_list );
-
-            tmp_list = pm.queryIntentActivities( new Intent( Intent.ACTION_SEARCH ), fl );
-            byAllIntents.addAll( tmp_list );
-
-            tmp_list = pm.queryIntentActivities( new Intent( Intent.ACTION_WEB_SEARCH ), fl );
-            byAllIntents.addAll( tmp_list );
-
-            tmp_list = pm.queryIntentActivities( new Intent( Intent.ACTION_VIEW, Uri.parse( "http:" ) ), fl );
-            byAllIntents.addAll( tmp_list );
-
-            tmp_list = pm.queryIntentActivities( new Intent( Intent.ACTION_VIEW, Uri.parse( "mailto:" ) ), fl );
-            byAllIntents.addAll( tmp_list );
-
-            tmp_list = pm.queryIntentActivities( new Intent( Intent.ACTION_VIEW, Uri.parse( "ftp:" ) ), fl );
-            byAllIntents.addAll( tmp_list );
-            
-            tmp_list = pm.queryIntentActivities( new Intent( Intent.ACTION_VIEW, Uri.parse( "file:" ) ), fl );
-            byAllIntents.addAll( tmp_list );
-            
-            tmp_list = pm.queryIntentActivities( new Intent( Intent.ACTION_VIEW, Uri.parse( "content:" ) ), fl );
-            byAllIntents.addAll( tmp_list );
-            
-            tmp_list = pm.queryIntentActivities( new Intent( Intent.ACTION_VIEW, Uri.parse( "ftp:" ) ), fl );
-            byAllIntents.addAll( tmp_list );
-            
-            in = new Intent( Intent.ACTION_VIEW );
-            in.setType("*/*");
-            tmp_list = pm.queryIntentActivities( in, fl );
-            byAllIntents.addAll( tmp_list );
-            
-            in = new Intent( Intent.ACTION_EDIT );
-            in.setType("*/*");
-            tmp_list = pm.queryIntentActivities( in, fl );
-            byAllIntents.addAll( tmp_list );
-
-            in = new Intent( Intent.ACTION_GET_CONTENT );
-            in.setType("*/*");
-            tmp_list = pm.queryIntentActivities( in, fl );
-            byAllIntents.addAll( tmp_list );
-            
-        }
-        List<ResolveInfo> act_res = new ArrayList<ResolveInfo>();
-        for( int i = 0; i < byAllIntents.size(); i++ ) {
-            ResolveInfo r = byAllIntents.get(i);
-            if( act_name.equals( r.activityInfo.name ) ) {
-                boolean exist = false;
-                IntentFilter inf = r.filter;
-                if( inf != null ) {
-                    for( int j = 0; j < act_res.size(); j++ ) {
-                        exist = compareIntentFilters( inf, act_res.get( j ).filter );
-                        if( exist ) break;
-                    }
-                }
-                if( !exist ) 
-                    act_res.add( r );
-            }
-        }
-
-        LogPrinter lp = new LogPrinter(Log.INFO, TAG );
-        for( int j = 0; j < act_res.size(); j++ ) 
-            act_res.get( j ).dump( lp, "RI/");
-
-        ResolveInfo[] a = new ResolveInfo[act_res.size()];
-        return act_res.toArray( a );
-    }
-    
-    private static boolean compareIntentFilters( IntentFilter if1, IntentFilter if2 ) {
-        try {
-            int ca1 = if1.countActions();
-            int ca2 = if2.countActions();
-            if( ca1 != ca2 ) return false;
-            for( int i = 0; i< ca1; i++ )
-                if( !if1.getAction( i ).equals( if2.getAction( i ) ) ) return false;
-            
-            int cc1 = if1.countCategories();
-            int cc2 = if2.countCategories();
-            if( cc1 != cc2 ) return false;
-            for( int i = 0; i< cc1; i++ )
-                if( !if1.getCategory( i ).equals( if2.getCategory( i ) ) ) return false;
-            
-            int cd1 = if1.countDataTypes();
-            int cd2 = if2.countDataTypes();
-            if( cd1 != cd2 ) return false;
-            for( int i = 0; i< cd1; i++ )
-                if( !if1.getDataType( i ).equals( if2.getDataType( i ) ) ) return false;
-            
-            int cs1 = if1.countDataSchemes();
-            int cs2 = if2.countDataSchemes();
-            if( cs1 != cs2 ) return false;
-            for( int i = 0; i< cs1; i++ )
-                if( !if1.getDataScheme( i ).equals( if2.getDataScheme( i ) ) ) return false;
-            return true;
-        }
-        catch( Exception e ) {
-        }
-        return false;
-    }
     
     private static <T> ArrayList<T> bitsToItems( SparseBooleanArray cis, T[] items ) {
         try {
@@ -608,7 +503,9 @@ public class AppsAdapter extends CommanderAdapterBase {
                     if( MANIFEST.equals( il.get( i ).name ) ) {
                         try {
                             ApplicationInfo ai = pm.getApplicationInfo( uri.getAuthority(), 0 );
-                            String m = extractManifest( ai.publicSourceDir, ai );
+                            if( manUtl == null )
+                                manUtl = new MnfUtils( pm, ai.packageName );
+                            String m = manUtl.extractManifest();
                             if( m != null && m.length() > 0 ) {
                                 String tmp_fn = ai.packageName + ".xml";
                                 FileOutputStream fos = ctx.openFileOutput( tmp_fn, Context.MODE_WORLD_WRITEABLE|Context.MODE_WORLD_READABLE);
@@ -787,6 +684,19 @@ public class AppsAdapter extends CommanderAdapterBase {
                         */
                     }
                 }
+            } else 
+            if( intFilters != null ) {
+                if( position == 0 ) {
+                    List<String> paths = uri.getPathSegments();
+                    if( paths == null )
+                        commander.Navigate( uri.buildUpon().path( null ).build(), null );
+                    String p = paths.size() > 1 ? paths.get( paths.size()-2 ) : null; 
+                    String n = paths.get( paths.size()-1 );
+                    commander.Navigate( uri.buildUpon().path( p ).build(), n );
+                }
+                else {
+                    // ???
+                }
             } else {
                 if( position == 0 ) {
                     commander.Navigate( Uri.parse( DEFAULT_LOC ), uri.getAuthority() );
@@ -797,9 +707,11 @@ public class AppsAdapter extends CommanderAdapterBase {
                     managePackage( uri.getAuthority() );    
                 }
                 else if( MANIFEST.equals( name ) ) {
-                    String p = uri.getAuthority();
-                    ApplicationInfo ai = pm.getApplicationInfo( p, 0 );
-                    String m = extractManifest( ai.publicSourceDir, ai );
+                    String a = uri.getAuthority();
+                    ApplicationInfo ai = pm.getApplicationInfo( a, 0 );
+                    if( manUtl == null )
+                        manUtl = new MnfUtils( pm, a );
+                    String m = manUtl.extractManifest();
                     if( m != null ) {
                         Intent in = new Intent( ctx, TextViewer.class );
                         in.setData( Uri.parse( "string:" ) );
@@ -868,6 +780,9 @@ public class AppsAdapter extends CommanderAdapterBase {
             if( resInfos != null ) {
                 return position <= resInfos.length ? resInfos[idx].toString() : null;
             }
+            if( intFilters != null ) {
+                return position <= intFilters.length ? intFilters[idx].toString() : null;
+            }
         }
         catch( Exception e ) {
             Log.e( TAG, "pos=" + position, e );
@@ -935,45 +850,6 @@ public class AppsAdapter extends CommanderAdapterBase {
                             item.attr = ai.name;
                             item.setIcon( ai.loadIcon( pm ) );
                         }
-                        else {
-                            String action = inf.getAction( 0 );
-                            item.name = action != null ? action : inf.toString();
-                            StringBuilder sb = new StringBuilder( 128 );
-                            int n = inf.countDataTypes();
-                            if( n > 0 ) {
-                                sb.append( "types=" );
-                                for( int i = 0; i< n; i++ ) {
-                                    if( i != 0 )
-                                        sb.append( ", " );
-                                    String dt = inf.getDataType( i ); 
-                                    sb.append( dt );
-                                }
-                                sb.append( "; " );
-                            }
-                            n = inf.countCategories();
-                            if( n > 0 ) {
-                                sb.append( "categories=" );
-                                for( int i = 0; i< n; i++ ) {
-                                    if( i != 0 )
-                                        sb.append( ", " );
-                                    String ct = inf.getCategory( i ); 
-                                    sb.append( ct );
-                                }
-                                sb.append( "; " );
-                            }
-                            
-                            n = inf.countDataSchemes();
-                            if( n > 0 ) {
-                                sb.append( "schemes=" );
-                                for( int i = 0; i< n; i++ ) {
-                                    if( i != 0 )
-                                        sb.append( ", " );
-                                    String ds = inf.getDataScheme( i ); 
-                                    sb.append( ds );
-                                }
-                            }
-                            item.attr = sb.toString();
-                        }
                     }
                     else {
                         item.name = ri.loadLabel( pm ).toString();
@@ -985,6 +861,48 @@ public class AppsAdapter extends CommanderAdapterBase {
             catch( Exception e ) {
                 Log.e( TAG, "pos=" + position, e );
             }
+        }
+        else if( intFilters != null ) {
+            if( position <= intFilters.length ) {
+                IntentFilter inf = intFilters[position - 1];
+                String action = inf.getAction( 0 );
+                item.name = action != null ? action : inf.toString();
+                StringBuilder sb = new StringBuilder( 128 );
+                int n = inf.countDataTypes();
+                if( n > 0 ) {
+                    sb.append( "types=" );
+                    for( int i = 0; i< n; i++ ) {
+                        if( i != 0 )
+                            sb.append( ", " );
+                        String dt = inf.getDataType( i ); 
+                        sb.append( dt );
+                    }
+                    sb.append( "; " );
+                }
+                n = inf.countCategories();
+                if( n > 0 ) {
+                    sb.append( "categories=" );
+                    for( int i = 0; i< n; i++ ) {
+                        if( i != 0 )
+                            sb.append( ", " );
+                        String ct = inf.getCategory( i ); 
+                        sb.append( ct );
+                    }
+                    sb.append( "; " );
+                }
+                
+                n = inf.countDataSchemes();
+                if( n > 0 ) {
+                    sb.append( "schemes=" );
+                    for( int i = 0; i< n; i++ ) {
+                        if( i != 0 )
+                            sb.append( ", " );
+                        String ds = inf.getDataScheme( i ); 
+                        sb.append( ds );
+                    }
+                }
+                item.attr = sb.toString();
+            }            
         }
         else {
             if( position <= compItems.length )
@@ -1068,202 +986,6 @@ public class AppsAdapter extends CommanderAdapterBase {
             return ascending ? ext_cmp : -ext_cmp;
         }
     }
-    
-    private final String extractManifest( String zip_path, ApplicationInfo ai ) {
-        try {
-            if( zip_path == null ) return null;
-            ZipFile  zip = new ZipFile( zip_path );
-            ZipEntry entry = zip.getEntry( "AndroidManifest.xml" );
-            if( entry != null ) {
-                InputStream is = zip.getInputStream( entry );
-                if( is != null ) {
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream( (int)entry.getSize() );
-                    byte[] buf = new byte[4096];
-                    int n;
-                    while( ( n = is.read( buf ) ) != -1 )
-                        baos.write( buf, 0, n );
-                    is.close();
-                    return decompressXML( baos.toByteArray(), ai != null ? pm.getResourcesForApplication( ai ) : null );
-                }
-            }
-        } catch( Throwable e ) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    // http://stackoverflow.com/questions/2097813/how-to-parse-the-androidmanifest-xml-file-inside-an-apk-package
-    // decompressXML -- Parse the 'compressed' binary form of Android XML docs 
-    // such as for AndroidManifest.xml in .apk files
-    private final static int endDocTag = 0x00100101;
-    private final static int startTag =  0x00100102;
-    private final static int endTag =    0x00100103;
-    private final String decompressXML( byte[] xml, Resources rr ) {
-        StringBuffer xml_sb = new StringBuffer( 8192 ); 
-        // Compressed XML file/bytes starts with 24x bytes of data,
-        // 9 32 bit words in little endian order (LSB first):
-        //   0th word is 03 00 08 00
-        //   3rd word SEEMS TO BE:  Offset at then of StringTable
-        //   4th word is: Number of strings in string table
-        // WARNING: Sometime I indiscriminently display or refer to word in 
-        //   little endian storage format, or in integer format (ie MSB first).
-        int numbStrings = LEW(xml, 4*4);
-        
-        // StringIndexTable starts at offset 24x, an array of 32 bit LE offsets
-        // of the length/string data in the StringTable.
-        int sitOff = 0x24;  // Offset of start of StringIndexTable
-        
-        // StringTable, each string is represented with a 16 bit little endian 
-        // character count, followed by that number of 16 bit (LE) (Unicode) chars.
-        int stOff = sitOff + numbStrings*4;  // StringTable follows StrIndexTable
-        
-        // XMLTags, The XML tag tree starts after some unknown content after the
-        // StringTable.  There is some unknown data after the StringTable, scan
-        // forward from this point to the flag for the start of an XML start tag.
-        int xmlTagOff = LEW(xml, 3*4);  // Start from the offset in the 3rd word.
-        // Scan forward until we find the bytes: 0x02011000(x00100102 in normal int)
-        for (int ii=xmlTagOff; ii<xml.length-4; ii+=4) {
-          if (LEW(xml, ii) == startTag) { 
-            xmlTagOff = ii;  break;
-          }
-        } // end of hack, scanning for start of first start tag
-        
-        // XML tags and attributes:
-        // Every XML start and end tag consists of 6 32 bit words:
-        //   0th word: 02011000 for startTag and 03011000 for endTag 
-        //   1st word: a flag?, like 38000000
-        //   2nd word: Line of where this tag appeared in the original source file
-        //   3rd word: FFFFFFFF ??
-        //   4th word: StringIndex of NameSpace name, or FFFFFFFF for default NS
-        //   5th word: StringIndex of Element Name
-        //   (Note: 01011000 in 0th word means end of XML document, endDocTag)
-        
-        // Start tags (not end tags) contain 3 more words:
-        //   6th word: 14001400 meaning?? 
-        //   7th word: Number of Attributes that follow this tag(follow word 8th)
-        //   8th word: 00000000 meaning??
-        
-        // Attributes consist of 5 words: 
-        //   0th word: StringIndex of Attribute Name's Namespace, or FFFFFFFF
-        //   1st word: StringIndex of Attribute Name
-        //   2nd word: StringIndex of Attribute Value, or FFFFFFF if ResourceId used
-        //   3rd word: Flags?
-        //   4th word: str ind of attr value again, or ResourceId of value
-        
-        // TMP, dump string table to tr for debugging
-        //tr.addSelect("strings", null);
-        //for (int ii=0; ii<numbStrings; ii++) {
-        //  // Length of string starts at StringTable plus offset in StrIndTable
-        //  String str = compXmlString(xml, sitOff, stOff, ii);
-        //  tr.add(String.valueOf(ii), str);
-        //}
-        //tr.parent();
-        
-        // Step through the XML tree element tags and attributes
-        int off = xmlTagOff;
-        int indent = 0;
-        int startTagLineNo = -2;
-        while( off < xml.length ) {
-          int tag0 = LEW(xml, off);
-          //int tag1 = LEW(xml, off+1*4);
-          int lineNo = LEW(xml, off+2*4);
-          //int tag3 = LEW(xml, off+3*4);
-          int nameNsSi = LEW(xml, off+4*4);
-          int nameSi = LEW(xml, off+5*4);
-        
-          if (tag0 == startTag) { // XML START TAG
-            int tag6 = LEW(xml, off+6*4);  // Expected to be 14001400
-            int numbAttrs = LEW(xml, off+7*4);  // Number of Attributes to follow
-            //int tag8 = LEW(xml, off+8*4);  // Expected to be 00000000
-            off += 9*4;  // Skip over 6+3 words of startTag data
-            String name = compXmlString(xml, sitOff, stOff, nameSi);
-            //tr.addSelect(name, null);
-            startTagLineNo = lineNo;
-        
-            // Look for the Attributes
-            StringBuffer sb = new StringBuffer();
-            for (int ii=0; ii<numbAttrs; ii++) {
-              int attrNameNsSi = LEW(xml, off);  // AttrName Namespace Str Ind, or FFFFFFFF
-              int attrNameSi = LEW(xml, off+1*4);  // AttrName String Index
-              int attrValueSi = LEW(xml, off+2*4); // AttrValue Str Ind, or FFFFFFFF
-              int attrFlags = LEW(xml, off+3*4);  
-              int attrResId = LEW(xml, off+4*4);  // AttrValue ResourceId or dup AttrValue StrInd
-              off += 5*4;  // Skip over the 5 words of an attribute
-        
-              String attrName = compXmlString(xml, sitOff, stOff, attrNameSi);
-              String attrValue= null;
-              if( attrValueSi != -1 )
-                  attrValue = compXmlString(xml, sitOff, stOff, attrValueSi);
-              else {
-                  if( rr != null )
-                    try {
-                        attrValue = rr.getString( attrResId );
-                    } catch( NotFoundException e ) {}
-                  if( attrValue == null )
-                      attrValue = "0x"+Integer.toHexString( attrResId );
-              }
-              sb.append( "\n" ).append( spaces( indent+1 ) ).append( attrName ).append( "=\"" ).append( attrValue ).append( "\"" );
-              //tr.add(attrName, attrValue);
-            }
-            xml_sb.append( "\n" ).append( spaces( indent ) ).append( "<" ).append( name );
-            if( sb.length() > 0 )
-                xml_sb.append( sb );
-            xml_sb.append( ">" );
-            indent++;
-        
-          } else if (tag0 == endTag) { // XML END TAG
-            indent--;
-            off += 6*4;  // Skip over 6 words of endTag data
-            String name = compXmlString(xml, sitOff, stOff, nameSi);
-            xml_sb.append( "\n" ).append( spaces( indent ) ).append( "</" ).append( name ).append( ">" );
-//            prtIndent(indent, "</"+name+">  (line "+startTagLineNo+"-"+lineNo+")");
-            //tr.parent();  // Step back up the NobTree
-        
-          } else if (tag0 == endDocTag) {  // END OF XML DOC TAG
-            break;
-        
-          } else {
-            Log.e( TAG, "  Unrecognized tag code '"+Integer.toHexString(tag0) +"' at offset "+off);
-            break;
-          }
-        } // end of while loop scanning tags and attributes of XML tree
-        Log.v( TAG, "    end at offset "+off );
-        return xml_sb.toString();
-    } // end of decompressXML
-    
-    
-    private final String compXmlString(byte[] xml, int sitOff, int stOff, int strInd) {
-      if (strInd < 0) return null;
-      int strOff = stOff + LEW(xml, sitOff+strInd*4);
-      return compXmlStringAt(xml, strOff);
-    }
-    
-    private final String spaces( int i ) {
-        char[] dummy = new char[i*2];
-        Arrays.fill( dummy, ' ' );
-        return new String( dummy );
-    }
-    
-    // compXmlStringAt -- Return the string stored in StringTable format at
-    // offset strOff.  This offset points to the 16 bit string length, which 
-    // is followed by that number of 16 bit (Unicode) chars.
-    private final String compXmlStringAt(byte[] arr, int strOff) {
-      int strLen = arr[strOff+1]<<8&0xff00 | arr[strOff]&0xff;
-      byte[] chars = new byte[strLen];
-      for (int ii=0; ii<strLen; ii++) {
-        chars[ii] = arr[strOff+2+ii*2];
-      }
-      return new String(chars);  // Hack, just use 8 byte chars
-    } // end of compXmlStringAt
-    
-    
-    // LEW -- Return value of a Little Endian 32 bit word from the byte array
-    //   at offset off.
-    private final int LEW(byte[] arr, int off) {
-      return arr[off+3]<<24&0xff000000 | arr[off+2]<<16&0xff0000
-        | arr[off+1]<<8&0xff00 | arr[off]&0xFF;
-    } // end of LEW
-
     
     private final void createDesktopShortcut( ComponentName cn, String name, Bitmap ico ) {
         Intent shortcutIntent = new Intent();
