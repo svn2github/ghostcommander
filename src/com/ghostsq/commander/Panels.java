@@ -189,6 +189,11 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 
                 ViewGroup tb_holder = (ViewGroup)toolbar; 
                 tb_holder.removeAllViews();
+                /*
+                if( btnColor == 0x00000000 ) {
+                    tb_holder.layout( l, t, r, b )
+                }
+                */
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
                  
                 boolean keyboard = sharedPref.getBoolean( "show_hotkeys", true ) || 
@@ -203,6 +208,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                     ToolButton tb = tba.get(i);
                     int bid = tb.getId();
                     if( tb.isVisible() && ( adapter_bit & tb.getSuitableAdapter() ) != 0 ) {
+                        LinearLayout.LayoutParams lllp = new LinearLayout.LayoutParams( 
+                                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT );
                         Button b = null;
                         if( btnColor != 0x00000000 ) {
                             b = new Button( c, null, android.R.attr.buttonStyleSmall );
@@ -216,16 +223,16 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                                 b.setBackgroundDrawable( bd );
                             else
                                 b.setBackgroundResource( R.drawable.tool_button );
-                            LinearLayout.LayoutParams lllp = new LinearLayout.LayoutParams( 
-                                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT );
                             lllp.rightMargin = 2;
-                            b.setLayoutParams( lllp );
                         }
                         else {
                             b = new Button( c, null, fingerFriendly ?         
                                       android.R.attr.buttonStyle :                     
-                                      android.R.attr.buttonStyleSmall );                                  
+                                      android.R.attr.buttonStyleSmall );
+                            lllp.rightMargin = -2;  // a button has invisible background around it
                         }
+                        b.setLayoutParams( lllp );
+                        
                         b.setId( bid );
                         b.setFocusable( false );
                         String caption = "";

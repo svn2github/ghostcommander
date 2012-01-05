@@ -364,7 +364,7 @@ public class FTPAdapter extends CommanderAdapterBase {
 		public boolean completed( long size ) throws InterruptedException {
 			if( curFileLen > 0 )
 				sendProgress( progressMessage, (int)(size * 100 / curFileLen) );
-			//Log.v( TAG, progressMessage + " " + size );
+			Log.v( TAG, progressMessage + " " + size );
     		if( isStopReq() ) {
     			error( ctx.getString( R.string.canceled ) );
     			return false;
@@ -707,7 +707,8 @@ public class FTPAdapter extends CommanderAdapterBase {
 	        		File f = list[i];
 	        		if( f != null && f.exists() ) {
 	        			if( f.isFile() ) {
-	        				sendProgress( ctx.getString( R.string.uploading, f.getName() ), 0 );
+	        			    progressMessage = ctx.getString( R.string.uploading, f.getName() );
+	        				sendProgress( progressMessage, 0 );
 	        				String fn = f.getAbsolutePath().substring( basePathLen );
 	    					FileInputStream in = new FileInputStream( f );
 	    					setCurFileLength( f.length() );
@@ -718,6 +719,7 @@ public class FTPAdapter extends CommanderAdapterBase {
 		    						break;
 		    					}
 	    		        	}
+	    		        	progressMessage = "";
 	        			}
 	        			else
 	        			if( f.isDirectory() ) {

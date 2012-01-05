@@ -81,8 +81,8 @@
     <string name="prefs">Settings</string>
     <string name="save_prefs">Backup settings</string>
     <string name="rest_prefs">Restore settings</string>
-    <string name="prefs_saved">Preferences have been saved.</string>
-    <string name="prefs_restr">Preferences have been restored. Please restart.</string>
+    <string name="prefs_saved">The preferences have been saved.</string>
+    <string name="prefs_restr">The preferences have been restored.</string>
         
     <string name="about">About</string>
     <string name="keys">Shortcut keys</string>
