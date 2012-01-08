@@ -8,7 +8,8 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
+        android:layout_height="fill_parent"
+        android:paddingRight="3dip" >
         <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -30,231 +31,24 @@
                 android:background="@color/bgr_def"
                 android:text="@string/color_sample" />
         </RelativeLayout>
-        
-        <View 
+        <View
+            android:layout_alignParentBottom="true" 
             android:layout_width="fill_parent"
             android:layout_height="1dip"
+            android:layout_marginTop="8dip"
             android:background="@android:drawable/divider_horizontal_dim_dark"/>
-            
-        <RelativeLayout
+                
+        <LinearLayout
+            android:id="@+id/types_container"
+            android:orientation="vertical"
             android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
+        </LinearLayout>
+        <Button
+            android:id="@+id/add_new_type"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="5dip"
-            android:paddingBottom="5dip">
-            <TextView
-                android:id="@+id/t1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:text="@string/typemasks" />
-            <TextView
-                android:id="@+id/s1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:paddingLeft="10dip"
-                android:paddingRight="10dip"
-                android:background="@color/bgr_def"
-                android:text="@string/color_sample" />
-            <Button
-                android:id="@+id/b1"
-                android:layout_below="@id/t1"
-                android:layout_alignParentRight="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/color" />
-            <EditText
-                android:id="@+id/types1"
-                android:scrollHorizontally="true"
-                android:layout_below="@id/t1"
-                android:layout_alignParentLeft="true"  
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/b1">
-            </EditText>
-	     </RelativeLayout>
-
-        <View 
-            android:layout_width="fill_parent"
-            android:layout_height="1dip"
-            android:background="@android:drawable/divider_horizontal_dim_dark"/>
+            android:text="@string/add_new_type" />
             
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="5dip"
-            android:paddingBottom="5dip">
-            <TextView
-                android:id="@+id/t2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:text="@string/typemasks" />
-            <TextView
-                android:id="@+id/s2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:paddingLeft="10dip"
-                android:paddingRight="10dip"
-                android:background="@color/bgr_def"
-                android:text="@string/color_sample" />
-            <Button
-                android:id="@+id/b2"
-                android:layout_below="@id/t2"
-                android:layout_alignParentRight="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/color" />
-            <EditText
-                android:id="@+id/types2"
-                android:scrollHorizontally="true"
-                android:layout_below="@id/t2"
-                android:layout_alignParentLeft="true"  
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/b2">
-            </EditText>
-	     </RelativeLayout>
-
-        <View 
-            android:layout_width="fill_parent"
-            android:layout_height="1dip"
-            android:background="@android:drawable/divider_horizontal_dim_dark"/>
-            
-            
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="5dip"
-            android:paddingBottom="5dip">
-            <TextView
-                android:id="@+id/t3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:text="@string/typemasks" />
-            <TextView
-                android:id="@+id/s3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:paddingLeft="10dip"
-                android:paddingRight="10dip"
-                android:background="@color/bgr_def"
-                android:text="@string/color_sample" />
-            <Button
-                android:id="@+id/b3"
-                android:layout_below="@id/t3"
-                android:layout_alignParentRight="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/color" />
-            <EditText
-                android:id="@+id/types3"
-                android:scrollHorizontally="true"
-                android:layout_below="@id/t3"
-                android:layout_alignParentLeft="true"  
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/b3">
-            </EditText>
-        </RelativeLayout>
-
-        <View 
-            android:layout_width="fill_parent"
-            android:layout_height="1dip"
-            android:background="@android:drawable/divider_horizontal_dim_dark"/>
-            
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="5dip"
-            android:paddingBottom="5dip">
-            <TextView
-                android:id="@+id/t4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:text="@string/typemasks" />
-            <TextView
-                android:id="@+id/s4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:paddingLeft="10dip"
-                android:paddingRight="10dip"
-                android:background="@color/bgr_def"
-                android:text="@string/color_sample" />
-            <Button
-                android:id="@+id/b4"
-                android:layout_below="@id/t4"
-                android:layout_alignParentRight="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/color" />
-            <EditText
-                android:id="@+id/types4"
-                android:scrollHorizontally="true"
-                android:layout_below="@id/t4"
-                android:layout_alignParentLeft="true"  
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/b4">
-            </EditText>
-       </RelativeLayout>
-
-        <View 
-            android:layout_width="fill_parent"
-            android:layout_height="1dip"
-            android:background="@android:drawable/divider_horizontal_dim_dark"/>
-            
-       <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="5dip"
-            android:paddingBottom="5dip">
-            <TextView
-                android:id="@+id/t5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:text="@string/typemasks" />
-            <TextView
-                android:id="@+id/s5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:paddingLeft="10dip"
-                android:paddingRight="10dip"
-                android:background="@color/bgr_def"
-                android:text="@string/color_sample" />
-            <Button
-                android:id="@+id/b5"
-                android:layout_below="@id/t5"
-                android:layout_alignParentRight="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/color" />
-            <EditText
-                android:id="@+id/types5"
-                android:scrollHorizontally="true"
-                android:layout_below="@id/t5"
-                android:layout_alignParentLeft="true"  
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/b5">
-            </EditText>
-       </RelativeLayout>
-  </LinearLayout>
+   </LinearLayout>
 </ScrollView>

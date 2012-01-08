@@ -108,6 +108,8 @@
     <string name="base_color">Base color</string>
     <string name="typemasks">File masks</string>
     <string name="color_sample">Sample</string>
+    <string name="add_new_type">Add new</string>
+        
         
     <string name="fav_comment">Comment:</string>
     <string name="fav_dialog">Edit favorite</string>

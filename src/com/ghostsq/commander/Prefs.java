@@ -131,11 +131,6 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
         if( key.equals( SEL_COLORS ) ) return r.getColor( R.color.sel_def );
         if( key.equals( TTL_COLORS ) ) return r.getColor( R.color.ttl_def );
         if( key.equals( FGR_COLORS ) ) return r.getColor( R.color.fgr_def );
-        if( key.equals( FileTypes.FG1_COLORS ) ) return r.getColor( R.color.fg1_def );
-        if( key.equals( FileTypes.FG2_COLORS ) ) return r.getColor( R.color.fg2_def );
-        if( key.equals( FileTypes.FG3_COLORS ) ) return r.getColor( R.color.fg3_def );
-        if( key.equals( FileTypes.FG4_COLORS ) ) return r.getColor( R.color.fg4_def );
-        if( key.equals( FileTypes.FG5_COLORS ) ) return r.getColor( R.color.fg5_def );
         return 0;
     }
 
