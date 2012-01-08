@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
+import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.adapters.FSAdapter;
 import com.ghostsq.commander.adapters.FTPAdapter;
 import com.ghostsq.commander.adapters.FavsAdapter;
@@ -410,6 +411,18 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         }
          list[LEFT].applyColors( bg_color, fgrColor, selColor, curColor );
         list[RIGHT].applyColors( bg_color, fgrColor, selColor, curColor );
+        
+        Resources  r = c.getResources();
+        CommanderAdapterBase.setTypeMaskColor( 0, color_pref.getString( FileTypes.TYPES1, FileTypes.getDefMasks( 1 ) ), 
+                                                  color_pref.getInt( FileTypes.FG1_COLORS, r.getColor( R.color.fg1_def ) ) );
+        CommanderAdapterBase.setTypeMaskColor( 1, color_pref.getString( FileTypes.TYPES2, FileTypes.getDefMasks( 2 ) ), 
+                                                  color_pref.getInt( FileTypes.FG2_COLORS, r.getColor( R.color.fg2_def ) ) );
+        CommanderAdapterBase.setTypeMaskColor( 2, color_pref.getString( FileTypes.TYPES3, FileTypes.getDefMasks( 3 ) ), 
+                                                  color_pref.getInt( FileTypes.FG3_COLORS, r.getColor( R.color.fg3_def ) ) );
+        CommanderAdapterBase.setTypeMaskColor( 3, color_pref.getString( FileTypes.TYPES4, FileTypes.getDefMasks( 4 ) ), 
+                                                  color_pref.getInt( FileTypes.FG4_COLORS, r.getColor( R.color.fg4_def ) ) );
+        CommanderAdapterBase.setTypeMaskColor( 4, color_pref.getString( FileTypes.TYPES5, FileTypes.getDefMasks( 5 ) ), 
+                                                  color_pref.getInt( FileTypes.FG5_COLORS, r.getColor( R.color.fg5_def ) ) );
         highlightCurrentTitle();
     }
     public final void applySettings( SharedPreferences sharedPref, boolean init ) {
@@ -1206,6 +1219,11 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 return true;
 	        }
 	    	switch( keyCode ) {
+            case KeyEvent.KEYCODE_BACK:
+            case KeyEvent.KEYCODE_DEL:
+                if( !c.backExit() )
+                    goUp();
+                return true;
 	        case KeyEvent.KEYCODE_DPAD_UP:
 	        case KeyEvent.KEYCODE_DPAD_DOWN:	
 		    	resetQuickSearch();

@@ -9,14 +9,20 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import com.ghostsq.commander.FileTypes;
+import com.ghostsq.commander.Prefs;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.root.RootAdapter;
 import com.ghostsq.commander.utils.Utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -69,6 +75,24 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     private CommanderAdapter recipient = null;
     protected int numItems = 0;
     public int shownFrom = 0, shownNum = 3;
+    
+    public  static int[]        typeColors   = new int[5];
+    private static Pattern[][]  filePatterns = new Pattern[5][];
+    
+    public static void setTypeMaskColor( int i, String s, int color ) {
+        try {
+            typeColors[i] = color;
+            String [] masks = s.split( ";" );
+            int n = masks.length;
+            filePatterns[i] = new Pattern[n];
+            for( int j = 0; j < n; j++ ) {
+                String re = masks[j].replace( ".", "\\." ).replace( "*", ".*" );
+                filePatterns[i][j] = Pattern.compile( re, Pattern.CASE_INSENSITIVE );
+            }
+        } catch( Exception e ) {
+            Log.e( "CommanderAdapterBase", "i=" + i + " s=" + s, e );
+        }
+    }
 
     // Virtual method - to override!
     // derived adapter classes need to override this to take the obtained items
@@ -447,6 +471,23 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 else
                     imgView.setVisibility( View.GONE );
             }
+            
+            int fg_color_m = fg_color;
+            try {
+                for( int i = 0; i < 5; i++ ) {
+                    for( int j = 0; j < filePatterns[i].length; j++ ) {
+                         Matcher m = filePatterns[i][j].matcher( name );
+                         if( m != null && m.matches() ) {
+                             fg_color_m = typeColors[i];
+                             break;
+                         }
+                         if( fg_color_m != fg_color )
+                             break;
+                    }
+                }
+            } catch( Exception e ) {
+            }
+            
             if( nameView != null ) {
                 nameView.setTextSize( font_size );
                 if( wm ) {
@@ -458,7 +499,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                     nameView.setWidth( nameWidth );
                 }
                 nameView.setText( name != null ? name : "???" );
-                nameView.setTextColor( fg_color );
+                nameView.setTextColor( fg_color_m );
 //nameView.setBackgroundColor( 0xFFFF00FF );  // DEBUG!!!!!!
             }
             if( dateView != null ) {
@@ -468,7 +509,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                     dateView.setTextSize( fnt_sz_rdc );
                     dateView.setWidth( dateWidth );
                     dateView.setText( date );
-                    dateView.setTextColor( fg_color );
+                    dateView.setTextColor( fg_color_m );
 //dateView.setBackgroundColor( 0xFF00AA00 );  // DEBUG!!!!!!
                 }
             }
@@ -479,7 +520,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                     sizeView.setTextSize( fnt_sz_rdc );
                     sizeView.setWidth( sizeWidth );
                     sizeView.setText( size );
-                    sizeView.setTextColor( fg_color );
+                    sizeView.setTextColor( fg_color_m );
 //sizeView.setBackgroundColor( 0xFF0000FF );  // DEBUG!!!!!!
                 }
             }
@@ -511,7 +552,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                     attrView.setTextSize( fnt_sz_rdc );
                     attrView.setVisibility( View.VISIBLE );
                     attrView.setText( attr_text );
-                    attrView.setTextColor( fg_color );
+                    attrView.setTextColor( fg_color_m );
                     if( this instanceof RootAdapter ) {
                         attrView.setTypeface( Typeface.create( "monospace", Typeface.NORMAL ) );
                         attrView.setTextSize( fnt_sz_rdc * 0.9f );

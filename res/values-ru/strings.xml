@@ -232,6 +232,8 @@
 <string name="summary_show_hidden">Файлы начинающиеся на точку показывать наравне с остальными</string>
 <string name="colors">Настройка цветов</string>
 <string name="default_color">Общесистемный</string>
+<string name="base_color">Основной цвет</string>
+<string name="color">Цвет</string>    
 <string name="summary_colors">Установить ваши любимые цвета для текста, фона, и т.д.</string>
 <string name="bgr_color_picker">Цвет фона</string>
 <string name="summary_bgr_color_picker">Выбор цвета для фона панелей</string>
@@ -261,6 +263,7 @@
 <string name="show_confirm">Подтверждения</string>
 <string name="summary_show_confirm">Выдавать подтверждения о совершении файловых операций</string>
 <string name="prefs_label">Настройки</string>
+<string name="filetypes_label">Цвета по типам</string>
 <string name="save_prefs">Сохранить настройки</string>
 <string name="rest_prefs">Восстановить настройки</string>
 

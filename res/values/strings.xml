@@ -105,6 +105,10 @@
     <string name="failed">Error:\n</string>
     <string name="default_uri_cmnt">Default location</string>
     <string name="default_color">Default</string>
+    <string name="base_color">Base color</string>
+    <string name="typemasks">File masks</string>
+    <string name="color_sample">Sample</string>
+        
     <string name="fav_comment">Comment:</string>
     <string name="fav_dialog">Edit favorite</string>
 
@@ -279,6 +283,7 @@ copied >5 will produce:
     <string name="summary_show_confirm">Show a confirmation dialog after each completed operation</string>
 
     <string name="prefs_label">Settings</string>
+    <string name="filetypes_label">Colors by types</string>        
     <string name="editor_label">Text Editor</string>
     <string name="pictvw_label">Picture Viewer</string>
     <string name="textvw_label">Text Viewer</string>
@@ -357,7 +362,8 @@ copied >5 will produce:
     <string name="btn_color_picker">Buttons</string>
     <string name="summary_btn_color_picker">Choose a tool button background color</string>
     <string name="pick_color">Set color</string>
-
+    <string name="color">Color</string>
+        
     <string name="language">Interface language</string>
     <string name="summary_language">Override the system language default</string>
     <string name="restart_to_apply_lang">Please restart the application to apply the new language</string>        
@@ -408,11 +414,6 @@ copied >5 will produce:
     <string name="permission">Permission</string>
     <string name="flags">Flags</string>
     <string name="not_exported">Activity is not exported</string>
-        
-        
-        
-        
-        
         
     <string name="smb_missed">
     Cannot load the Samba adapter.\n

@@ -40,7 +40,7 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
     public  static final String BTN_COLORS = "btn_color_picker";
     public  static final String TOOLBUTTONS = "toolbar_preference";
     private SharedPreferences color_pref = null;
-    private String color_pref_key = null;
+    private String pref_key = null;
     
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -79,16 +79,22 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
     @Override
     public boolean onPreferenceClick( Preference preference ) {
         try {
-            color_pref_key = preference.getKey();
-            if( TOOLBUTTONS.equals( color_pref_key ) ) {
+            pref_key = preference.getKey();
+            if( TOOLBUTTONS.equals( pref_key ) ) {
                 Intent intent = new Intent( Intent.ACTION_MAIN );
                 intent.setClass( this, ToolButtonsProps.class );
                 startActivity( intent );
             }
+            else
+            if( FGR_COLORS.equals( pref_key ) ) {
+                Intent intent = new Intent( Intent.ACTION_MAIN );
+                intent.setClass( this, FileTypes.class );
+                startActivity( intent );
+            }
             else {
                 color_pref = getSharedPreferences( COLORS_PREFS, Activity.MODE_PRIVATE );
-                int color = color_pref.getInt( color_pref_key, getDefaultColor( color_pref_key, false ) );
-                new RGBPickerDialog( this, this, color, getDefaultColor( color_pref_key, true ) ).show();
+                int color = color_pref.getInt( pref_key, getDefaultColor( pref_key, false ) );
+                new RGBPickerDialog( this, this, color, getDefaultColor( pref_key, true ) ).show();
             }
             return true;
         } catch( Exception e ) {
@@ -99,12 +105,12 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
 
     @Override
     public void colorChanged( int color ) {
-        if( color_pref != null && color_pref_key != null ) {
+        if( color_pref != null && pref_key != null ) {
             SharedPreferences.Editor editor = color_pref.edit();
-            editor.putInt( color_pref_key, color );
+            editor.putInt( pref_key, color );
             editor.commit();
             color_pref = null;
-            color_pref_key = null;
+            pref_key = null;
         }
     }
     public int getDefaultColor( String key, boolean alt ) {
@@ -122,9 +128,14 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
         }
         if( alt ) return 0;
         if( key.equals( BGR_COLORS ) ) return r.getColor( R.color.bgr_def );
-        if( key.equals( FGR_COLORS ) ) return r.getColor( R.color.fgr_def );
         if( key.equals( SEL_COLORS ) ) return r.getColor( R.color.sel_def );
         if( key.equals( TTL_COLORS ) ) return r.getColor( R.color.ttl_def );
+        if( key.equals( FGR_COLORS ) ) return r.getColor( R.color.fgr_def );
+        if( key.equals( FileTypes.FG1_COLORS ) ) return r.getColor( R.color.fg1_def );
+        if( key.equals( FileTypes.FG2_COLORS ) ) return r.getColor( R.color.fg2_def );
+        if( key.equals( FileTypes.FG3_COLORS ) ) return r.getColor( R.color.fg3_def );
+        if( key.equals( FileTypes.FG4_COLORS ) ) return r.getColor( R.color.fg4_def );
+        if( key.equals( FileTypes.FG5_COLORS ) ) return r.getColor( R.color.fg5_def );
         return 0;
     }
 

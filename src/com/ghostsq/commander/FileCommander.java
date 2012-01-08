@@ -435,14 +435,6 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 return true;
             }
             break;
-        case KeyEvent.KEYCODE_BACK:
-        case KeyEvent.KEYCODE_DEL:
-            if( back_exits ){
-                finish();
-                return true;
-            }
-            panels.goUp();
-            return false;
         case KeyEvent.KEYCODE_SEARCH:
             showSearchDialog();
             return false;
@@ -469,6 +461,14 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         dispatchCommand( button.getId() );
     }
 
+    public final boolean backExit() {
+        if( back_exits ) {
+            finish();
+            return true;
+        }
+        return false;
+    }
+    
     public void dispatchCommand( int id ) {
         Utils.changeLanguage( this );
         switch( id ) {
