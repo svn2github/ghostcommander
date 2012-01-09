@@ -7,7 +7,6 @@ import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.adapters.FSAdapter;
-import com.ghostsq.commander.adapters.FTPAdapter;
 import com.ghostsq.commander.adapters.FavsAdapter;
 import com.ghostsq.commander.adapters.ZipAdapter;
 import com.ghostsq.commander.favorites.Favorite;
@@ -77,7 +76,6 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public  View mainView, toolbar = null;
     public  ViewFlipper mFlipper_   = null;
     public  PanelsView  panelsView = null;
-    private int ttlColor, fgrColor, selColor, curColor, btnColor;
     private boolean arrowsLegacy = false, warnOnRoot = true, rootOnRoot = false, toolbarShown = false;
     public  boolean volumeLegacy = true;
     private boolean disableOpenSelectOnly = false, disableAllActions = false;
@@ -89,16 +87,11 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     private LocationBar      locationBar;
     private CommanderAdapter destAdapter = null;
     public  boolean sxs, fingerFriendly = false;
+    public  ColorsKeeper     ck;
     
     public Panels( FileCommander c_, boolean sxs_ ) {
         c = c_;
-        Resources  r = c.getResources();
-        ttlColor = r.getColor( R.color.ttl_def ); 
-        fgrColor = r.getColor( R.color.fgr_def );
-        selColor = r.getColor( R.color.sel_def );
-        btnColor = Prefs.getDefaultColor( c, Prefs.BTN_COLORS, false );
-        curColor = 0;
-        
+        ck = new ColorsKeeper( c );
         current = LEFT;
         c.setContentView( R.layout.alt );
         mainView = c.findViewById( R.id.main );
@@ -154,13 +147,13 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 
     private final Drawable createButtonStates() {
         try {
-            float bbb = Utils.getBrightness( btnColor );
-            int sc = Utils.setBrightness( btnColor, 0.2f );            
+            float bbb = Utils.getBrightness( ck.btnColor );
+            int sc = Utils.setBrightness( ck.btnColor, 0.2f );            
             StateListDrawable states = new StateListDrawable();
-            GradientDrawable bpd = Utils.getShadingEx( btnColor, 1f );
+            GradientDrawable bpd = Utils.getShadingEx( ck.btnColor, 1f );
             bpd.setStroke( 1, sc );
             bpd.setCornerRadius( 2 );
-            GradientDrawable bnd = Utils.getShadingEx( btnColor, bbb < 0.4f ? 0f : 0.6f );
+            GradientDrawable bnd = Utils.getShadingEx( ck.btnColor, bbb < 0.4f ? 0f : 0.6f );
             bnd.setStroke( 1, sc );
             bnd.setCornerRadius( 2 );
             states.addState(new int[] { android.R.attr.state_pressed }, bpd );
@@ -212,11 +205,11 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                         LinearLayout.LayoutParams lllp = new LinearLayout.LayoutParams( 
                                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT );
                         Button b = null;
-                        if( btnColor != 0x00000000 ) {
+                        if( ck.btnColor != 0x00000000 ) {
                             b = new Button( c, null, android.R.attr.buttonStyleSmall );
                             int vp = fingerFriendly ? 10 : 6;
                             b.setPadding( 6, vp, 6, vp );
-                            float bbb = Utils.getBrightness( btnColor );
+                            float bbb = Utils.getBrightness( ck.btnColor );
                             b.setTextColor( bbb > 0.8f ? 0xFF000000 : 0xFFFFFFFF );
                             b.setTextSize( bfs );
                             Drawable bd = createButtonStates();
@@ -320,11 +313,11 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         if( title_bar != null ) {
             int h = title_bar.getHeight();
             if( h == 0 ) h = 30;
-            Drawable d = Utils.getShading( ttlColor );
+            Drawable d = Utils.getShading( ck.ttlColor );
             if( d != null )
                 title_bar.setBackgroundDrawable( d );
             else
-                title_bar.setBackgroundColor( ttlColor );
+                title_bar.setBackgroundColor( ck.ttlColor );
         }
     	highlightTitle( opposite(), false );
     	highlightTitle( current, true );
@@ -333,21 +326,19 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         TextView title = (TextView)mainView.findViewById( titlesIds[which] );
         if( title != null ) {
             if( on ) {
-                int h = title.getHeight();
-                if( h == 0 ) h = 30;
-                Drawable d = Utils.getShading( selColor );
+                Drawable d = Utils.getShading( ck.selColor );
                 if( d != null )
                     title.setBackgroundDrawable( d );
                 else
-                    title.setBackgroundColor( selColor );
-                title.setTextColor( fgrColor );
+                    title.setBackgroundColor( ck.selColor );
+                title.setTextColor( ck.fgrColor );
             }
             else {
-                title.setBackgroundColor( selColor & 0x0FFFFFFF );
+                title.setBackgroundColor( ck.selColor & 0x0FFFFFFF );
                 float[] fgr_hsv = new float[3];
-                Color.colorToHSV( fgrColor, fgr_hsv );
+                Color.colorToHSV( ck.fgrColor, fgr_hsv );
                 float[] ttl_hsv = new float[3];
-                Color.colorToHSV( ttlColor, ttl_hsv );
+                Color.colorToHSV( ck.ttlColor, ttl_hsv );
                 fgr_hsv[1] *= 0.5;
                 fgr_hsv[2] = ( fgr_hsv[2] + ttl_hsv[2] ) / 2;
                 title.setTextColor( Color.HSVToColor( fgr_hsv ) );
@@ -394,25 +385,17 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         return mainView.getWidth();
     }
     public final void applyColors() {
-        SharedPreferences color_pref = c.getSharedPreferences( Prefs.COLORS_PREFS, Activity.MODE_PRIVATE );
-        int bg_color = c.getResources().getColor( R.color.bgr_def );
-        if( color_pref != null ) {
-            bg_color = color_pref.getInt( Prefs.BGR_COLORS,  bg_color );
-            fgrColor = color_pref.getInt( Prefs.FGR_COLORS,  fgrColor );
-            curColor = color_pref.getInt( Prefs.CUR_COLORS,  curColor );
-            selColor = color_pref.getInt( Prefs.SEL_COLORS,  selColor );
-            ttlColor = color_pref.getInt( Prefs.TTL_COLORS,  ttlColor );
-            btnColor = color_pref.getInt( Prefs.BTN_COLORS,  btnColor );
-        }
+        ck.restore();
         if( sxs ) {
             View div = mainView.findViewById( R.id.divider );
             if( div != null)
-                div.setBackgroundColor( ttlColor );
+                div.setBackgroundColor( ck.ttlColor );
         }
-         list[LEFT].applyColors( bg_color, fgrColor, selColor, curColor );
-        list[RIGHT].applyColors( bg_color, fgrColor, selColor, curColor );
+         list[LEFT].applyColors( ck );
+        list[RIGHT].applyColors( ck );
         
-        CommanderAdapterBase.setTypeMaskColors( c, color_pref );
+        ck.restoreTypeColors();
+        CommanderAdapterBase.setTypeMaskColors( ck );
         highlightCurrentTitle();
     }
     public final void applySettings( SharedPreferences sharedPref, boolean init ) {

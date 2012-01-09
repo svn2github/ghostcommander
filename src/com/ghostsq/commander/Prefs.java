@@ -35,6 +35,7 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
     public  static final String BGR_COLORS = "bgr_color_picker"; 
     public  static final String FGR_COLORS = "fgr_color_picker"; 
     public  static final String SEL_COLORS = "sel_color_picker"; 
+    public  static final String SFG_COLORS = "sfg_color_picker"; 
     public  static final String CUR_COLORS = "cur_color_picker";
     public  static final String TTL_COLORS = "ttl_color_picker";
     public  static final String BTN_COLORS = "btn_color_picker";
@@ -57,6 +58,9 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
         if( color_picker_pref != null )
             color_picker_pref.setOnPreferenceClickListener( this );
         color_picker_pref = (Preference)findPreference( SEL_COLORS );
+        if( color_picker_pref != null )
+            color_picker_pref.setOnPreferenceClickListener( this );
+        color_picker_pref = (Preference)findPreference( SFG_COLORS );
         if( color_picker_pref != null )
             color_picker_pref.setOnPreferenceClickListener( this );
         color_picker_pref = (Preference)findPreference( CUR_COLORS );
@@ -129,6 +133,7 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
         if( alt ) return 0;
         if( key.equals( BGR_COLORS ) ) return r.getColor( R.color.bgr_def );
         if( key.equals( SEL_COLORS ) ) return r.getColor( R.color.sel_def );
+        if( key.equals( SFG_COLORS ) ) return r.getColor( R.color.fgr_def );
         if( key.equals( TTL_COLORS ) ) return r.getColor( R.color.ttl_def );
         if( key.equals( FGR_COLORS ) ) return r.getColor( R.color.fgr_def );
         return 0;

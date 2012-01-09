@@ -243,7 +243,9 @@
 <string name="cur_color_picker">Цвет Фокусного элемента</string>
 <string name="summary_cur_color_picker">Выбор цвета для текущего выделеного файла</string>
 <string name="sel_color_picker">Цвет Пометки</string>
-<string name="summary_sel_color_picker">Выбор цвета для помеченых файлов</string>
+<string name="summary_sel_color_picker">Выбор цвета фона помеченых файлов и заголовка активной панели</string>
+<string name="sfg_color_picker">Цвет текста Пометки</string>
+<string name="summary_sfg_color_picker">Выбор цвета текста для помеченых файлов и заголовка активной панели</string>
 <string name="ttl_color_picker">Цвет заголовка</string>
 <string name="summary_ttl_color_picker">Выбор цвета для заголовка панелей</string>
 <string name="btn_color_picker">Цвет кнопок</string>

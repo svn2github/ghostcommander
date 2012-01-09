@@ -1,0 +1,143 @@
+package com.ghostsq.commander;
+
+import java.util.ArrayList;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
+
+public class ColorsKeeper {
+    private  Context c;
+    private  SharedPreferences   colorPref = null;
+    public   int ttlColor, bgrColor, fgrColor, selColor, sfgColor, curColor, btnColor;
+    
+    public class FileTypeColor {
+        private static final String   TYPES_pref = "types";
+        private static final String FGR_COL_pref = "fgr_color";
+        public  String  masks;
+        public  int     color;
+        public  boolean masksDirty = false, colorDirty = false;
+        public  FileTypeColor() {
+            color = 0;
+        }
+        public  FileTypeColor( String m, int c ) {
+            masks = m;
+            color = c;
+        }
+        public final void setMasks( String m ) {
+            masks = m;
+            masksDirty = true;
+        }
+        public final void setColor( int c ) {
+            color = c;
+            colorDirty = true;
+        }
+        public final boolean restore( Context ctx, SharedPreferences pref, int i ) {
+            try {
+                color = colorPref.getInt(  FGR_COL_pref + i, getDefColor( ctx, i ) );
+                masks = colorPref.getString( TYPES_pref + i, getDefMasks( i ) );
+                return masks != null; 
+            }
+            catch( Exception e ) {
+            }
+            return false;
+        }
+        public final void store( SharedPreferences.Editor editor, int i ) {
+            if( colorDirty ) {
+                String pref_key = FGR_COL_pref + i;
+                editor.putInt( pref_key, color );
+            }
+            if( masksDirty ) {
+                String pref_key = TYPES_pref + i;
+                editor.putString( pref_key, masks );
+            }
+        }
+        public final String getDefMasks( int i ) {
+            switch( i ) {
+            case 1: return "*.gif;*.jpg;*.png;*.bmp";
+            case 2: return "*.avi;*.mov;*.mp4;*.mpeg";
+            case 3: return "*.mp3;*.wav;*.ra;*.mid*";
+            case 4: return "*.htm*;*.xml;*.pdf;*.csv;*.doc*;*.xls*";
+            case 5: return "*.apk;*.zip;*.jar;*.rar;*.bz2;*.gz;*.tgz";
+            }
+            return null;
+        }
+        public int getDefColor( Context ctx, int i ) {
+            Resources r = ctx.getResources();
+            switch( i ) {
+            case 1: return r.getColor( R.color.fg1_def );
+            case 2: return r.getColor( R.color.fg2_def );
+            case 3: return r.getColor( R.color.fg3_def );
+            case 4: return r.getColor( R.color.fg4_def );
+            case 5: return r.getColor( R.color.fg5_def );
+            default:return r.getColor( R.color.fgr_def );
+            }
+        }
+    }
+    public  ArrayList<FileTypeColor>  ftColors;
+    
+    public ColorsKeeper( Context c_ ) {
+        c = c_;
+        colorPref = c.getSharedPreferences( Prefs.COLORS_PREFS, Activity.MODE_PRIVATE );
+        Resources  r = c.getResources();
+        ttlColor = r.getColor( R.color.ttl_def ); 
+        bgrColor = r.getColor( R.color.bgr_def );
+        fgrColor = r.getColor( R.color.fgr_def );
+        selColor = r.getColor( R.color.sel_def );
+        btnColor = Prefs.getDefaultColor( c, Prefs.BTN_COLORS, false );
+        curColor = 0;
+    }
+    
+    public final void store() {
+        SharedPreferences.Editor editor = colorPref.edit();
+        editor.putInt( Prefs.BGR_COLORS, bgrColor );
+        editor.putInt( Prefs.FGR_COLORS, fgrColor );
+        editor.putInt( Prefs.CUR_COLORS, curColor );
+        editor.putInt( Prefs.SEL_COLORS, selColor );
+        editor.putInt( Prefs.SFG_COLORS, sfgColor );
+        editor.putInt( Prefs.TTL_COLORS, ttlColor );
+        editor.putInt( Prefs.BTN_COLORS, btnColor );
+        editor.commit();
+    }
+
+    public final void restore() {
+        bgrColor = colorPref.getInt( Prefs.BGR_COLORS,  bgrColor );
+        fgrColor = colorPref.getInt( Prefs.FGR_COLORS,  fgrColor );
+        curColor = colorPref.getInt( Prefs.CUR_COLORS,  curColor );
+        selColor = colorPref.getInt( Prefs.SEL_COLORS,  selColor );
+        sfgColor = colorPref.getInt( Prefs.SFG_COLORS,  sfgColor );
+        ttlColor = colorPref.getInt( Prefs.TTL_COLORS,  ttlColor );
+        btnColor = colorPref.getInt( Prefs.BTN_COLORS,  btnColor );
+    }
+    
+    public final void storeTypeColors() {    // dirty only!
+        SharedPreferences.Editor editor = colorPref.edit();
+        for( int i = 1; i <= ftColors.size(); i++ ) {
+            FileTypeColor ftc = ftColors.get( i - 1 );
+            ftc.store( editor, i );
+        }
+        editor.commit();
+    }
+    public final int restoreTypeColors() {
+        try {
+            if( ftColors == null  ) {
+                ftColors = new ArrayList<FileTypeColor>( 5 );
+                for( int i = 1; i < 999; i++ ) {
+                    FileTypeColor ftc = new FileTypeColor();
+                    if( !ftc.restore( c, colorPref, i ) ) break;
+                    ftColors.add( ftc );
+                }
+            }
+            return ftColors.size();
+        } catch( Exception e ) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public final int addTypeColor() {
+        ftColors.add( new FileTypeColor( "", fgrColor ) );
+        return ftColors.size();        
+    }
+}

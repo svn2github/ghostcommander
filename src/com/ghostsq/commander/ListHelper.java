@@ -102,20 +102,20 @@ public class ListHelper {
         flv.requestFocusFromTouch();
     }
 
-    public final void applyColors( int bg_color, int fgrColor, int selColor, int curColor ) {
+    public final void applyColors( ColorsKeeper ck ) {
         if( flv == null ) return;
-        flv.setBackgroundColor( bg_color );
-        flv.setCacheColorHint( bg_color );
-        if( curColor != 0 ) {
-            Drawable d = Utils.getShadingEx( curColor, 0.9f );
+        flv.setBackgroundColor( ck.bgrColor );
+        flv.setCacheColorHint( ck.bgrColor );
+        if( ck.curColor != 0 ) {
+            Drawable d = Utils.getShadingEx( ck.curColor, 0.9f );
             if( d != null )
                 flv.setSelector( d );
         }
         
         CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
         if( ca != null ) {
-            ca.setMode( CommanderAdapter.SET_TXT_COLOR, fgrColor );
-            ca.setMode( CommanderAdapter.SET_SEL_COLOR, selColor );
+            ca.setMode( CommanderAdapter.SET_TXT_COLOR, ck.fgrColor );
+            ca.setMode( CommanderAdapter.SET_SEL_COLOR, ck.selColor );
         }
     }
 

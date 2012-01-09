@@ -12,9 +12,11 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.ghostsq.commander.ColorsKeeper;
 import com.ghostsq.commander.FileTypes;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.Commander;
+import com.ghostsq.commander.ColorsKeeper.FileTypeColor;
 import com.ghostsq.commander.root.RootAdapter;
 import com.ghostsq.commander.utils.Utils;
 
@@ -75,14 +77,16 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     public  static int[]        typeColors   = new int[0];
     private static Pattern[][]  filePatterns = new Pattern[0][];
     
-    public static void setTypeMaskColors( Context ctx_, SharedPreferences color_pref ) {
+    public static void setTypeMaskColors( ColorsKeeper ck ) {
         try {
-            int n = FileTypes.readStored( ctx_, color_pref );
+            int n = ck.ftColors.size();
             typeColors   = new int[n];
             filePatterns = new Pattern[n][];
             for( int i = 0; i < n; i++ ) {
-                int    color = FileTypes.colors.get( i );
-                String smask = FileTypes.tmasks.get( i );
+                ColorsKeeper.FileTypeColor ftc = ck.ftColors.get( i );
+                if( ftc == null ) break;
+                int    color = ftc.color;
+                String smask = ftc.masks;
                 if( smask == null ) break;
                 typeColors[i] = color;
                 String[] masks = smask.split( ";" );

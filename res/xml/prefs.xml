@@ -140,6 +140,11 @@
                     android:summary="@string/summary_sel_color_picker">
             </PreferenceScreen>
             <PreferenceScreen
+                    android:key="sfg_color_picker"
+                    android:title="@string/sfg_color_picker"
+                    android:summary="@string/summary_sfg_color_picker">
+            </PreferenceScreen>
+                <PreferenceScreen
                     android:key="ttl_color_picker"
                     android:title="@string/ttl_color_picker"
                     android:summary="@string/summary_ttl_color_picker">
