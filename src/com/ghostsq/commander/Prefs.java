@@ -22,6 +22,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,53 +33,67 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
 {
     private static final String TAG = "GhostCommander.Prefs"; 
     public  static final String COLORS_PREFS = "colors"; 
-    public  static final String BGR_COLORS = "bgr_color_picker"; 
-    public  static final String FGR_COLORS = "fgr_color_picker"; 
-    public  static final String SEL_COLORS = "sel_color_picker"; 
-    public  static final String SFG_COLORS = "sfg_color_picker"; 
-    public  static final String CUR_COLORS = "cur_color_picker";
-    public  static final String TTL_COLORS = "ttl_color_picker";
-    public  static final String BTN_COLORS = "btn_color_picker";
     public  static final String TOOLBUTTONS = "toolbar_preference";
-    private SharedPreferences color_pref = null;
+//    private SharedPreferences color_pref = null;
+    private ColorsKeeper      ck;
     private String pref_key = null;
     
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
-        Utils.changeLanguage( this );
-        super.onCreate( savedInstanceState );
-        
-        // Load the preferences from an XML resource
-        addPreferencesFromResource( R.xml.prefs );
-        Preference color_picker_pref;
-        color_picker_pref = (Preference)findPreference( BGR_COLORS );
-        if( color_picker_pref != null )
-            color_picker_pref.setOnPreferenceClickListener( this );
-        color_picker_pref = (Preference)findPreference( FGR_COLORS );
-        if( color_picker_pref != null )
-            color_picker_pref.setOnPreferenceClickListener( this );
-        color_picker_pref = (Preference)findPreference( SEL_COLORS );
-        if( color_picker_pref != null )
-            color_picker_pref.setOnPreferenceClickListener( this );
-        color_picker_pref = (Preference)findPreference( SFG_COLORS );
-        if( color_picker_pref != null )
-            color_picker_pref.setOnPreferenceClickListener( this );
-        color_picker_pref = (Preference)findPreference( CUR_COLORS );
-        if( color_picker_pref != null )
-            color_picker_pref.setOnPreferenceClickListener( this );
-        color_picker_pref = (Preference)findPreference( TTL_COLORS );
-        if( color_picker_pref != null )
-            color_picker_pref.setOnPreferenceClickListener( this );
-        color_picker_pref = (Preference)findPreference( BTN_COLORS );
-        if( color_picker_pref != null )
-            color_picker_pref.setOnPreferenceClickListener( this );
+        try {
+            Utils.changeLanguage( this );
+            super.onCreate( savedInstanceState );
+  
+            ck = new ColorsKeeper( this );
+            
+            // Load the preferences from an XML resource
+            addPreferencesFromResource( R.xml.prefs );
+            Preference color_picker_pref;
+            color_picker_pref = (Preference)findPreference( ColorsKeeper.BGR_COLORS );
+            if( color_picker_pref != null )
+                color_picker_pref.setOnPreferenceClickListener( this );
+            color_picker_pref = (Preference)findPreference( ColorsKeeper.FGR_COLORS );
+            if( color_picker_pref != null )
+                color_picker_pref.setOnPreferenceClickListener( this );
+            color_picker_pref = (Preference)findPreference( ColorsKeeper.SEL_COLORS );
+            if( color_picker_pref != null )
+                color_picker_pref.setOnPreferenceClickListener( this );
+            color_picker_pref = (Preference)findPreference( ColorsKeeper.SFG_COLORS );
+            if( color_picker_pref != null )
+                color_picker_pref.setOnPreferenceClickListener( this );
+            color_picker_pref = (Preference)findPreference( ColorsKeeper.CUR_COLORS );
+            if( color_picker_pref != null )
+                color_picker_pref.setOnPreferenceClickListener( this );
+            color_picker_pref = (Preference)findPreference( ColorsKeeper.TTL_COLORS );
+            if( color_picker_pref != null )
+                color_picker_pref.setOnPreferenceClickListener( this );
+            color_picker_pref = (Preference)findPreference( ColorsKeeper.BTN_COLORS );
+            if( color_picker_pref != null )
+                color_picker_pref.setOnPreferenceClickListener( this );
 
-        Preference tool_buttons_pref;
-        tool_buttons_pref = (Preference)findPreference( TOOLBUTTONS );
-        if( tool_buttons_pref != null )
-            tool_buttons_pref.setOnPreferenceClickListener( this );
+            Preference tool_buttons_pref;
+            tool_buttons_pref = (Preference)findPreference( TOOLBUTTONS );
+            if( tool_buttons_pref != null )
+                tool_buttons_pref.setOnPreferenceClickListener( this );
+        }
+        catch( Exception e ) {
+            Log.e( TAG, null, e );
+        }
     }
-
+    @Override
+    protected void onStart() {
+        super.onStart();
+        ck.restore();        
+    }
+    @Override
+    protected void onPause() {
+        try {
+            super.onPause();
+            ck.store();
+        } catch( Exception e ) {
+            Log.e( TAG, null, e );
+        }
+    }
 
     @Override
     public boolean onPreferenceClick( Preference preference ) {
@@ -90,15 +105,13 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
                 startActivity( intent );
             }
             else
-            if( FGR_COLORS.equals( pref_key ) ) {
+            if( ColorsKeeper.FGR_COLORS.equals( pref_key ) ) {
                 Intent intent = new Intent( Intent.ACTION_MAIN );
                 intent.setClass( this, FileTypes.class );
                 startActivity( intent );
             }
             else {
-                color_pref = getSharedPreferences( COLORS_PREFS, Activity.MODE_PRIVATE );
-                int color = color_pref.getInt( pref_key, getDefaultColor( pref_key, false ) );
-                new RGBPickerDialog( this, this, color, getDefaultColor( pref_key, true ) ).show();
+                new RGBPickerDialog( this, this, ck.getColor( pref_key ), getDefaultColor( pref_key, true ) ).show();
             }
             return true;
         } catch( Exception e ) {
@@ -109,11 +122,8 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
 
     @Override
     public void colorChanged( int color ) {
-        if( color_pref != null && pref_key != null ) {
-            SharedPreferences.Editor editor = color_pref.edit();
-            editor.putInt( pref_key, color );
-            editor.commit();
-            color_pref = null;
+        if( pref_key != null ) {
+            ck.setColor( pref_key, color );
             pref_key = null;
         }
     }
@@ -122,8 +132,8 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
     }
     public static int getDefaultColor( Context ctx, String key, boolean alt ) {
         Resources r = ctx.getResources();
-        if( key.equals( CUR_COLORS ) ) return alt ? r.getColor( R.color.cur_def ) : 0;
-        if( key.equals( BTN_COLORS ) ) {
+        if( key.equals( ColorsKeeper.CUR_COLORS ) ) return alt ? r.getColor( R.color.cur_def ) : 0;
+        if( key.equals( ColorsKeeper.BTN_COLORS ) ) {
             final int GINGERBREAD = 9;
             if( android.os.Build.VERSION.SDK_INT >= GINGERBREAD )
                 return r.getColor( R.color.btn_def );
@@ -131,11 +141,11 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
                 return alt ? r.getColor( R.color.btn_odf ) : 0;
         }
         if( alt ) return 0;
-        if( key.equals( BGR_COLORS ) ) return r.getColor( R.color.bgr_def );
-        if( key.equals( SEL_COLORS ) ) return r.getColor( R.color.sel_def );
-        if( key.equals( SFG_COLORS ) ) return r.getColor( R.color.fgr_def );
-        if( key.equals( TTL_COLORS ) ) return r.getColor( R.color.ttl_def );
-        if( key.equals( FGR_COLORS ) ) return r.getColor( R.color.fgr_def );
+        if( key.equals( ColorsKeeper.BGR_COLORS ) ) return r.getColor( R.color.bgr_def );
+        if( key.equals( ColorsKeeper.SEL_COLORS ) ) return r.getColor( R.color.sel_def );
+        if( key.equals( ColorsKeeper.SFG_COLORS ) ) return r.getColor( R.color.fgr_def );
+        if( key.equals( ColorsKeeper.TTL_COLORS ) ) return r.getColor( R.color.ttl_def );
+        if( key.equals( ColorsKeeper.FGR_COLORS ) ) return r.getColor( R.color.fgr_def );
         return 0;
     }
 

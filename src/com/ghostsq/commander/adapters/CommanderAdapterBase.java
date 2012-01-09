@@ -66,7 +66,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     private boolean a3r = false;
     protected boolean dirty = true;
     protected int thumbnail_size_perc = 100, font_size = 18;
-    private int fg_color, sl_color;
+    //private int fg_color, sl_color;
     protected int mode = 0;
     protected boolean ascending = true;
     protected String parentLink = SLS;
@@ -74,11 +74,13 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected int numItems = 0;
     public int shownFrom = 0, shownNum = 3;
     
-    public  static int[]        typeColors   = new int[0];
+    private static ColorsKeeper ck;
+    private static int[]        typeColors   = new int[0];
     private static Pattern[][]  filePatterns = new Pattern[0][];
     
-    public static void setTypeMaskColors( ColorsKeeper ck ) {
+    public static void setTypeMaskColors( ColorsKeeper ck_ ) {
         try {
+            ck = ck_;
             int n = ck.ftColors.size();
             typeColors   = new int[n];
             filePatterns = new Pattern[n][];
@@ -215,6 +217,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
 
     @Override
     public int setMode( int mask, int val ) {
+        /*
         if( ( mask & SET_MODE_COLORS ) != 0 ) {
             switch( mask & SET_MODE_COLORS ) {
             case SET_TXT_COLOR:
@@ -226,6 +229,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             }
             return 0;
         }
+        */
         if( ( mask & SET_FONT_SIZE ) != 0 ) {
             font_size = val;
             return 0;
@@ -429,8 +433,8 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                     }
                 }
             }
-            if( item.sel )
-                row_view.setBackgroundColor( sl_color & 0xCFFFFFFF );
+            if( item.sel && ck != null )
+                row_view.setBackgroundColor( ck.selColor & 0xCFFFFFFF );
             int img_width = icoWidth;
             if( imgView != null ) {
                 if( icoWidth > 0 ) {
@@ -478,7 +482,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 else
                     imgView.setVisibility( View.GONE );
             }
-            
+            int fg_color = ck != null ? ( item.sel ? ck.sfgColor : ck.fgrColor ) : ctx.getResources().getColor( R.color.fgr_def );
             int fg_color_m = fg_color;
             try {
                 for( int i = 0; i < typeColors.length; i++ ) {

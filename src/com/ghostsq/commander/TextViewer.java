@@ -53,14 +53,11 @@ public class TextViewer extends Activity {
             TextView text_view = (TextView)findViewById( R.id.text_view );
             text_view.setTextSize( fs );
             text_view.setTypeface( Typeface.create( "monospace", Typeface.NORMAL ) );
-            
-            SharedPreferences color_pref = getSharedPreferences( Prefs.COLORS_PREFS, Activity.MODE_PRIVATE );
-            int bg_color = getResources().getColor( R.color.bgr_def );
-            int fg_color = getResources().getColor( R.color.fgr_def );
-            bg_color = color_pref.getInt( Prefs.BGR_COLORS, bg_color );
-            fg_color = color_pref.getInt( Prefs.FGR_COLORS, fg_color );
-            text_view.setBackgroundColor( bg_color );
-            text_view.setTextColor( fg_color );
+
+            ColorsKeeper ck = new ColorsKeeper( this );
+            ck.restore();
+            text_view.setBackgroundColor( ck.bgrColor );
+            text_view.setTextColor( ck.fgrColor );
             
             if( ct_enabled ) {
                 getWindow().setFeatureInt( Window.FEATURE_CUSTOM_TITLE, R.layout.atitle );

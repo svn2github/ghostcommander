@@ -331,7 +331,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                     title.setBackgroundDrawable( d );
                 else
                     title.setBackgroundColor( ck.selColor );
-                title.setTextColor( ck.fgrColor );
+                title.setTextColor( ck.sfgColor );
             }
             else {
                 title.setBackgroundColor( ck.selColor & 0x0FFFFFFF );

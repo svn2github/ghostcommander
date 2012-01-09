@@ -59,13 +59,10 @@ public class Editor extends Activity implements TextWatcher {
             int fs = Integer.parseInt( shared_pref != null ? shared_pref.getString( "font_size", "12" ) : "12" );
             te.setTextSize( fs );
             
-            SharedPreferences color_pref = getSharedPreferences( Prefs.COLORS_PREFS, Activity.MODE_PRIVATE );
-            int bg_color = getResources().getColor( R.color.bgr_def );
-            int fg_color = getResources().getColor( R.color.fgr_def );
-            bg_color = color_pref.getInt( Prefs.BGR_COLORS, bg_color );
-            fg_color = color_pref.getInt( Prefs.FGR_COLORS, fg_color );
-            te.setBackgroundColor( bg_color );
-            te.setTextColor( fg_color );            
+            ColorsKeeper ck = new ColorsKeeper( this );
+            ck.restore();
+            te.setBackgroundColor( ck.bgrColor );
+            te.setTextColor( ck.fgrColor );
             
             if( ct_enabled ) {
                 getWindow().setFeatureInt( Window.FEATURE_CUSTOM_TITLE, R.layout.atitle );
