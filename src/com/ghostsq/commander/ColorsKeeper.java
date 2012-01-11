@@ -93,6 +93,7 @@ public final class ColorsKeeper {
         bgrColor = r.getColor( R.color.bgr_def );
         fgrColor = r.getColor( R.color.fgr_def );
         selColor = r.getColor( R.color.sel_def );
+        sfgColor = r.getColor( R.color.fgr_def );
         btnColor = Prefs.getDefaultColor( ctx, BTN_COLORS, false );
         curColor = 0;
     }
