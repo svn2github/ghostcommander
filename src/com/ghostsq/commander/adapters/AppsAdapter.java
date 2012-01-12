@@ -26,9 +26,11 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PermissionInfo;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -47,19 +49,16 @@ public class AppsAdapter extends CommanderAdapterBase {
     // Java compiler creates a thunk function to access to the private owner class member from a subclass
     // to avoid that all the member accessible from the subclasses are public
     public final PackageManager     pm = ctx.getPackageManager();
-    public  ApplicationInfo[]       appInfos = null;
-    private PackageInfo             packageInfo = null;
+    public  PackageInfo[]           pkgInfos = null;
     private final String MANAGE = "Manage", ACTIVITIES = "Activities", PROVIDERS = "Providers", SERVICES = "Services",  
                          MANIFEST = "Manifest", SHORTCUTS = "Shortcuts";
     private Item[]                  compItems = null;
     private ActivityInfo[]          actInfos = null;
     private ProviderInfo[]          prvInfos = null;
     private ServiceInfo[]           srvInfos = null;
-    private List<ResolveInfo>       byAllIntents;
     private ResolveInfo[]           resInfos = null;
     private IntentFilter[]          intFilters = null;
     private MnfUtils                manUtl = null;
-    
     
     private Uri uri;
     
@@ -80,24 +79,23 @@ public class AppsAdapter extends CommanderAdapterBase {
     }    
     
     class ListEngine extends Engine {
-        private ApplicationInfo[] items_tmp;
-        public  String    pass_back_on_done;
+        private PackageInfo[] items_tmp;
+        public  String        pass_back_on_done;
         ListEngine( Handler h, String pass_back_on_done_ ) {
             super( h );
             pass_back_on_done = pass_back_on_done_;
         }
-        public ApplicationInfo[] getItems() {
+        public PackageInfo[] getItems() {
             return items_tmp;
         }       
         @Override
         public void run() {
             try {
                 Init( null );
-                List<ApplicationInfo> allApps = pm.getInstalledApplications( 0 );
-                items_tmp = new ApplicationInfo[allApps.size()];
-                allApps.toArray( items_tmp );
-                if( ( mode & MODE_SORTING ) == SORT_NAME )
-                    Arrays.sort( items_tmp, new ApplicationInfo.DisplayNameComparator( pm ) );
+                List<PackageInfo> all_packages = pm.getInstalledPackages( 0 );
+                items_tmp = new PackageInfo[all_packages.size()];
+                all_packages.toArray( items_tmp );
+                Arrays.sort( items_tmp, new PackageInfoComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0, ascending ) );
                 sendProgress( null, Commander.OPERATION_COMPLETED, pass_back_on_done );
             }
             catch( Exception e ) {
@@ -115,9 +113,9 @@ public class AppsAdapter extends CommanderAdapterBase {
     protected void onReadComplete() {
         if( reader instanceof ListEngine ) {
             ListEngine list_engine = (ListEngine)reader;
-            appInfos = list_engine.getItems();
+            pkgInfos = list_engine.getItems();
             reSort();
-            numItems = appInfos != null ? appInfos.length : 0;
+            numItems = pkgInfos != null ? pkgInfos.length+1 : 1;
             notifyDataSetChanged();
         }
     }
@@ -141,17 +139,15 @@ public class AppsAdapter extends CommanderAdapterBase {
     @Override
     public boolean readSource( Uri tmp_uri, String pbod ) {
         try {
-            notifyDataSetChanged();     // to prevent the invalid state exception
             dirty = true;
             numItems = 1;
             compItems = null;            
-            appInfos = null;
+            pkgInfos = null;
             actInfos = null;
             prvInfos = null;
             srvInfos = null;
             resInfos = null;
             intFilters = null;
-            packageInfo = null;
             super.setMode( ATTR_ONLY, 0 );
             if( reader != null ) {
                 if( reader.reqStop() ) { // that's not good.
@@ -259,6 +255,9 @@ public class AppsAdapter extends CommanderAdapterBase {
             commander.showError( "Exception: " + e );
             e.printStackTrace();
         }
+        finally {
+            notifyDataSetChanged();
+        }
         commander.notifyMe( new Commander.Notify( "Fail", Commander.OPERATION_FAILED ) );
         return false;
     }
@@ -266,9 +265,9 @@ public class AppsAdapter extends CommanderAdapterBase {
    
     @Override
     protected void reSort() {
-        if( appInfos != null ) { 
-            ApplicationInfoComparator comp = new ApplicationInfoComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0, ascending );
-            Arrays.sort( appInfos, comp );
+        if( pkgInfos != null ) { 
+            PackageInfoComparator comp = new PackageInfoComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0, ascending );
+            Arrays.sort( pkgInfos, comp );
         }
         else if( actInfos != null ) {
             ActivityInfoComparator comp = new ActivityInfoComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0, ascending );
@@ -390,91 +389,125 @@ public class AppsAdapter extends CommanderAdapterBase {
     
     @Override
     public void reqItemsSize( SparseBooleanArray cis ) {
-        if( appInfos == null ) return;
-        ArrayList<ApplicationInfo> al = bitsToItems( cis, appInfos );
-        if( al == null || al.size() == 0 ) {
+        if( pkgInfos == null ) return;
+        ArrayList<PackageInfo> pl = bitsToItems( cis, pkgInfos );
+        if( pl == null || pl.size() == 0 ) {
             notErr();
             return;
         }
         final String cs = ": ";
         StringBuffer sb = new StringBuffer( 1024 );
-        for( int i = 0; i < al.size(); i++ ) {
-            ApplicationInfo ai = al.get( i );
-            String v = null;
-            int    vc = 0;
-            String size = null;
-            String date = null;
-            String flags = null;
-            String gids = null;            
+        for( int i = 0; i < pl.size(); i++ ) {
             try {
-                PackageInfo pi = pm.getPackageInfo( ai.packageName, PackageManager.GET_GIDS );
-                v = pi.versionName;
-                vc = pi.versionCode;
-                File asdf = new File( ai.sourceDir );
-                date = getLocalDateTimeStr( new Date( asdf.lastModified() ) );
-                size = Utils.getHumanSize( asdf.length() );
-                StringBuffer fsb = new StringBuffer( 512 );
-                int ff = ai.flags;
-                for( int fi = 0; fi < flagsStrs.length; fi++ ) {
-                    if( ( ( 1<<fi ) & ff ) != 0 ) {
-                        if( fsb.length() > 0 )
-                            fsb.append( " | " );
-                        fsb.append( flagsStrs[fi] );
+                PackageInfo pi = pm.getPackageInfo( pl.get( i ).packageName, PackageManager.GET_GIDS | 
+                                                                             PackageManager.GET_PERMISSIONS );
+                String v = null;
+                int    vc = 0;
+                String size = null;
+                String date = null;
+                String flags = null;
+                String gids = null;            
+                try {
+                    v  = pi.versionName;
+                    vc = pi.versionCode;
+                    if( pi.gids != null && pi.gids.length > 0 ) {
+                        StringBuffer gsb = new StringBuffer( 128 );
+                        for( int gi = 0; gi < pi.gids.length; gi++ ) {
+                            if( gi > 0 )
+                                gsb.append( ", " );
+                            int g = pi.gids[gi];
+                            gsb.append( g ).append( "(" ).append( getGroupName( g ) ).append( ")" );
+                        }
+                        gids = gsb.toString();
+                    }
+                    
+                } catch( Exception e ) {}
+
+                sb.append( s( R.string.pkg_name ) ).append( cs ).append( pi.packageName );
+                if( v != null ) 
+                  sb.append( "\n" ).append( s( R.string.version ) ).append( cs ).append( v );
+                if( vc > 0 )
+                  sb.append( "\n" ).append( s( R.string.version_code ) ).append( cs ).append( vc );
+                
+                ApplicationInfo ai = pi.applicationInfo;
+                if( ai != null ) {
+                    File asdf = new File( ai.sourceDir );
+                    date = getLocalDateTimeStr( new Date( asdf.lastModified() ) );
+                    size = Utils.getHumanSize( asdf.length() );
+                    StringBuffer fsb = new StringBuffer( 512 );
+                    int ff = ai.flags;
+                    for( int fi = 0; fi < flagsStrs.length; fi++ ) {
+                        if( ( ( 1<<fi ) & ff ) != 0 ) {
+                            if( fsb.length() > 0 )
+                                fsb.append( " | " );
+                            fsb.append( flagsStrs[fi] );
+                        }
+                    }
+                    fsb.append( " (" ).append( Integer.toHexString( ff ) ).append( ")" );
+                    flags = fsb.toString();
+
+                    sb.append( "\n" ).append( s( R.string.target_sdk ) ).append( cs ).append( ai.targetSdkVersion );
+                    sb.append( "\n" ).append( "UID" ).append( cs ).append( ai.uid );
+                    if( gids != null )
+                      sb.append( "\n" ).append( "GIDs" ).append( cs ).append( gids );
+                    sb.append( "\n" ).append( s( R.string.location ) ).append( cs ).append( ai.sourceDir );
+                    if( date != null )
+                      sb.append( "\n" ).append( s( R.string.inst_date ) ).append( cs ).append( date );
+                    if( size  != null )
+                      sb.append( "\n" ).append( s( R.string.pkg_size ) ).append( cs ).append( size );
+                    sb.append( "\n" ).append( s( R.string.process ) ).append( cs ).append( ai.processName );
+                    if( ai.className != null )
+                      sb.append( "\n" ).append( s( R.string.app_class ) ).append( cs ).append( ai.className );
+                    if( ai.taskAffinity != null )
+                      sb.append( "\n" ).append( s( R.string.affinity ) ).append( cs ).append( ai.taskAffinity );
+                }
+                StringBuffer psb = new StringBuffer( 512 );
+                if( pi.requestedPermissions != null ) {
+                    for( int rpi = 0; rpi < pi.requestedPermissions.length; rpi++ ) {
+                        if( rpi > 0 )
+                            psb.append( ", " );
+                        String p = pi.requestedPermissions[rpi];
+                        if( p.startsWith( "android.permission." ) )
+                            p = p.substring( 19 );
+                        psb.append( p );
                     }
                 }
-                fsb.append( " (" ).append( Integer.toHexString( ff ) ).append( ")" );
-                flags = fsb.toString();
-                if( pi.gids != null && pi.gids.length > 0 ) {
-                    StringBuffer gsb = new StringBuffer( 128 );
-                    for( int gi = 0; gi < pi.gids.length; gi++ ) {
-                        if( gi > 0 )
-                            gsb.append( ", " );
-                        int g = pi.gids[gi];
-                        gsb.append( g ).append( "(" ).append( getGroupName( g ) ).append( ")" );
+                if( pi.permissions != null ) {
+                    psb.append( "\nDeclared:\n" );
+                    for( int dpi = 0; dpi < pi.permissions.length; dpi++ ) {
+                        if( dpi > 0 )
+                            psb.append( ", " );
+                        psb.append( pi.permissions[dpi].toString() );
                     }
-                    gids = gsb.toString();
                 }
                 
-            } catch( Exception e ) {}
-            sb.append( s( R.string.pkg_name ) ).append( cs ).append( ai.packageName );
-            if( v != null ) 
-              sb.append( "\n" ).append( s( R.string.version ) ).append( cs ).append( v );
-            if( vc > 0 )
-              sb.append( "\n" ).append( s( R.string.version_code ) ).append( cs ).append( vc );
-            sb.append( "\n" ).append( s( R.string.target_sdk ) ).append( cs ).append( ai.targetSdkVersion );
-            sb.append( "\n" ).append( "UID" ).append( cs ).append( ai.uid );
-            if( gids != null )
-              sb.append( "\n" ).append( "GIDs" ).append( cs ).append( gids );
-            sb.append( "\n" ).append( s( R.string.location ) ).append( cs ).append( ai.sourceDir );
-            if( date != null )
-              sb.append( "\n" ).append( s( R.string.inst_date ) ).append( cs ).append( date );
-            if( size  != null )
-              sb.append( "\n" ).append( s( R.string.pkg_size ) ).append( cs ).append( size );
-            sb.append( "\n" ).append( s( R.string.process ) ).append( cs ).append( ai.processName );
-            if( ai.className != null )
-              sb.append( "\n" ).append( s( R.string.app_class ) ).append( cs ).append( ai.className );
-            if( ai.taskAffinity != null )
-              sb.append( "\n" ).append( s( R.string.affinity ) ).append( cs ).append( ai.taskAffinity );
-            if( ai.permission != null )
-              sb.append( "\n" ).append( s( R.string.permission ) ).append( cs ).append( ai.permission );
-            if( flags != null )
-              sb.append( "\n\n" ).append( s( R.string.flags ) ).append( cs ).append( flags );
-            sb.append( "\n" );
+                if( psb.length() > 0 )
+                  sb.append( "\n" ).append( s( R.string.permissions ) ).append( cs ).append( psb.toString() );
+                if( flags != null )
+                  sb.append( "\n\n" ).append( s( R.string.flags ) ).append( cs ).append( flags );
+                sb.append( "\n" );
+            }
+            catch( Exception e ) {
+                e.printStackTrace();
+            }
         }
         commander.notifyMe( new Commander.Notify( sb.toString(), Commander.OPERATION_COMPLETED, Commander.OPERATION_REPORT_IMPORTANT ) );
     }
 
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
-        if( appInfos != null ) { 
-            ArrayList<ApplicationInfo> al = bitsToItems( cis, appInfos );
-            if( al == null || al.size() == 0 ) {
+        if( pkgInfos != null ) { 
+            ArrayList<PackageInfo> pl = bitsToItems( cis, pkgInfos );
+            if( pl == null || pl.size() == 0 ) {
                 commander.notifyMe( new Commander.Notify( s( R.string.copy_err ), Commander.OPERATION_FAILED ) );
                 return false;
             }
-            String[] paths = new String[al.size()];
-            for( int i = 0; i < al.size(); i++ )
-                paths[i] = al.get( i ).sourceDir;
+            String[] paths = new String[pl.size()];
+            for( int i = 0; i < pl.size(); i++ ) {
+                ApplicationInfo ai = pl.get( i ).applicationInfo;
+                if( ai != null )
+                    paths[i] = ai.sourceDir;
+            }
             
             boolean ok = to.receiveItems( paths, MODE_COPY );
             if( !ok ) commander.notifyMe( new Commander.Notify( Commander.OPERATION_FAILED ) );
@@ -525,8 +558,8 @@ public class AppsAdapter extends CommanderAdapterBase {
     }
     @Override
     public boolean deleteItems( SparseBooleanArray cis ) {
-        if( appInfos == null ) return notErr();
-        ArrayList<ApplicationInfo> al = bitsToItems( cis, appInfos );
+        if( pkgInfos == null ) return notErr();
+        ArrayList<PackageInfo> al = bitsToItems( cis, pkgInfos );
         if( al == null ) return false;
         for( int i = 0; i < al.size(); i++ ) {
             Intent in = new Intent( Intent.ACTION_DELETE, Uri.parse( "package:" + al.get( i ).packageName ) );
@@ -548,9 +581,12 @@ public class AppsAdapter extends CommanderAdapterBase {
     public void populateContextMenu( ContextMenu menu, AdapterView.AdapterContextMenuInfo acmi, int num ) {
         try {
             if( acmi.position > 0 ) { 
-                if( appInfos != null ) {
-                    String name = appInfos[acmi.position-1].loadLabel( pm ).toString();
-                    menu.add( 0, LAUNCH_CMD, 0, ctx.getString( R.string.launch ) + " \"" + name + "\"" );
+                if( pkgInfos != null ) {
+                    ApplicationInfo ai = pkgInfos[acmi.position-1].applicationInfo;
+                    if( ai != null ) {
+                        String name = ai.loadLabel( pm ).toString();
+                        menu.add( 0, LAUNCH_CMD, 0, ctx.getString( R.string.launch ) + " \"" + name + "\"" );
+                    }
                     menu.add( 0, MANAGE_CMD, 0, MANAGE );
                 }
                 else if( actInfos != null ) {
@@ -566,10 +602,10 @@ public class AppsAdapter extends CommanderAdapterBase {
     @Override
     public void doIt( int command_id, SparseBooleanArray cis ) {
         try {
-            if( appInfos != null ) {
-                ArrayList<ApplicationInfo> al = bitsToItems( cis, appInfos );
-                if( al == null || al.size() == 0 ) return;
-                ApplicationInfo ai = al.get(0);
+            if( pkgInfos != null ) {
+                ArrayList<PackageInfo> pl = bitsToItems( cis, pkgInfos );
+                if( pl == null || pl.size() == 0 ) return;
+                ApplicationInfo ai = pl.get(0).applicationInfo;
                 if( ai == null ) return;
                 if( MANAGE_CMD == command_id ) {
                     managePackage( ai.packageName );
@@ -609,13 +645,13 @@ public class AppsAdapter extends CommanderAdapterBase {
     @Override
     public void openItem( int position ) {
         try {
-            if( appInfos != null  ) {
+            if( pkgInfos != null  ) {
                 if( position == 0 ) {
                     commander.Navigate( Uri.parse( HomeAdapter.DEFAULT_LOC ), null );
                 }
-                else if( position <= appInfos.length ) {
-                    ApplicationInfo ai = appInfos[position - 1];
-                    commander.Navigate( uri.buildUpon().authority( ai.packageName ).build(), null );
+                else if( position <= pkgInfos.length ) {
+                    PackageInfo pi = pkgInfos[position - 1];
+                    commander.Navigate( uri.buildUpon().authority( pi.packageName ).build(), null );
                 }
             } else if( actInfos != null ) {
                 if( position == 0 ) {
@@ -746,8 +782,8 @@ public class AppsAdapter extends CommanderAdapterBase {
             return parentLink;
         try {
             int idx = position - 1;
-            if( appInfos != null ) {
-                return position <= appInfos.length ? appInfos[idx].packageName : null;
+            if( pkgInfos != null ) {
+                return position <= pkgInfos.length ? pkgInfos[idx].packageName : null;
             }
             if( compItems != null ) {
                 return position <= compItems.length ? compItems[idx].name : null;
@@ -783,17 +819,18 @@ public class AppsAdapter extends CommanderAdapterBase {
             return item;
         }
         item.name = "???";
-        if( appInfos != null ) { 
-            if( position >= 0 && position <= appInfos.length ) {
-                ApplicationInfo ai = appInfos[position - 1];
+        if( pkgInfos != null ) { 
+            if( position >= 0 && position <= pkgInfos.length ) {
+                PackageInfo pi = pkgInfos[position - 1];
+                ApplicationInfo ai = pi.applicationInfo;
                 item.dir = false;
-                item.name = ai.loadLabel( pm ).toString();
+                item.name = ai != null ? ai.loadLabel( pm ).toString() : pi.packageName;
                 item.sel = false;
-                
                 File asdf = new File( ai.sourceDir );
                 item.date = new Date( asdf.lastModified() );
                 item.size = asdf.length();
-                item.attr = ai.packageName;
+                if( ai != null )
+                    item.attr = ai.packageName;
                 item.setIcon( ai.loadIcon( pm ) );
             }
         }
@@ -900,42 +937,41 @@ public class AppsAdapter extends CommanderAdapterBase {
         return 36;   // "com.softwaremanufacturer.productname"
     }
 
-    private class ApplicationInfoComparator implements Comparator<ApplicationInfo> {
+    private class PackageInfoComparator implements Comparator<PackageInfo> {
         int     type;
         boolean ascending;
         ApplicationInfo.DisplayNameComparator aidnc;
         
-        public ApplicationInfoComparator( int type_, boolean case_ignore_, boolean ascending_ ) {
+        public PackageInfoComparator( int type_, boolean case_ignore_, boolean ascending_ ) {
             aidnc = new ApplicationInfo.DisplayNameComparator( pm );
             type = type_;
             ascending = ascending_;
         }
         @Override
-        public int compare( ApplicationInfo ai1, ApplicationInfo ai2 ) {
+        public int compare( PackageInfo pi1, PackageInfo pi2 ) {
             int ext_cmp = 0;
             try {
                 switch( type ) {
                 case CommanderAdapter.SORT_EXT:
-                    if( ai1.packageName != null )
-                        ext_cmp = ai1.packageName.compareTo( ai2.packageName );
+                    if( pi1.packageName != null )
+                        ext_cmp = pi1.packageName.compareTo( pi2.packageName );
                     break;
                 case CommanderAdapter.SORT_SIZE:  {
-                        File asdf1 = new File( ai1.sourceDir );
-                        File asdf2 = new File( ai2.sourceDir );
+                        File asdf1 = new File( pi1.applicationInfo.sourceDir );
+                        File asdf2 = new File( pi2.applicationInfo.sourceDir );
                         ext_cmp = asdf1.length() - asdf2.length() < 0 ? -1 : 1;
                     }
                     break;
                 case CommanderAdapter.SORT_DATE: {
-                        File asdf1 = new File( ai1.sourceDir );
-                        File asdf2 = new File( ai2.sourceDir );
+                        File asdf1 = new File( pi1.applicationInfo.sourceDir );
+                        File asdf2 = new File( pi2.applicationInfo.sourceDir );
                         ext_cmp = asdf1.lastModified() - asdf2.lastModified() < 0 ? -1 : 1;
                     }
                     break;
                 }
                 if( ext_cmp == 0 )
-                    ext_cmp = aidnc.compare( ai1, ai2 );
-            } catch( Exception e ) {
-            }
+                    ext_cmp = aidnc.compare( pi1.applicationInfo, pi2.applicationInfo );
+            } catch( Exception e ) {}
             return ascending ? ext_cmp : -ext_cmp;
         }
     }

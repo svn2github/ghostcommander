@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.ghostsq.commander"
-      android:versionName="1.39.4b2" 
-      android:versionCode="156"
+      android:versionName="1.39.4b3" 
+      android:versionCode="157"
       android:label="@string/app_name"
       android:sharedUserId="com.ghostsq.commander.userId"
       android:installLocation="auto">

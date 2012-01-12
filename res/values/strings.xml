@@ -415,7 +415,7 @@ copied >5 will produce:
     <string name="process">Process name</string>
     <string name="app_class">App. class</string>
     <string name="affinity">Task Affinity</string>
-    <string name="permission">Permission</string>
+    <string name="permissions">Permissions</string>
     <string name="flags">Flags</string>
     <string name="not_exported">Activity is not exported</string>
         

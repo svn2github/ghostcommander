@@ -30,7 +30,8 @@ final public class CA {
     public static final int APPS  = 0x00004000;
     public static final int FTP   = 0x00010000;
     public static final int SMB   = 0x00020000;
-    public static final int GDOCS = 0x00040000;
+    public static final int DBOX  = 0x00040000;
+    public static final int GDOCS = 0x00080000;
     public static final int NET   = FTP | SMB | GDOCS;
     public static final int ALL   = 0xFFFFFFFF;
     public static final int REAL  = LOCAL | ARCH | ROOT | NET;
@@ -46,6 +47,7 @@ final public class CA {
     protected static final int  apps_schema_h =  "apps".hashCode();
     protected static final int  favs_schema_h =  "favs".hashCode();
     protected static final int   smb_schema_h =   "smb".hashCode();
+    protected static final int  dbox_schema_h =  "dbox".hashCode();
     protected static final int    gd_schema_h =    "gd".hashCode();
     protected static final int gdocs_schema_h = "gdocs".hashCode();
 
@@ -65,6 +67,7 @@ final public class CA {
         if( apps_schema_h == scheme_h )  return APPS;
         if( favs_schema_h == scheme_h )  return FAVS;
         if(  smb_schema_h == scheme_h )  return SMB;
+        if( dbox_schema_h == scheme_h )  return DBOX;
         if(   gd_schema_h == scheme_h )  return GDOCS;
         if(gdocs_schema_h == scheme_h )  return GDOCS;
         return FS;
@@ -96,7 +99,8 @@ final public class CA {
         if( type_id == MNT  ) ca = new MountAdapter( c ); else
         if( type_id == APPS ) ca = new AppsAdapter( c );  else
         if( type_id == FAVS ) ca = new FavsAdapter( c );  else
-        if( type_id == SMB  ) ca = CreateExternalAdapter( c, "samba", "SMBAdapter" );
+        if( type_id == SMB  ) ca = CreateExternalAdapter( c, "samba",  "SMBAdapter" );
+        if( type_id == DBOX ) ca = CreateExternalAdapter( c, "dropbox","DBoxAdapter" );
         return ca;
     }
     
