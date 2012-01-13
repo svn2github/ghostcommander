@@ -42,7 +42,7 @@
     <string name="local">Local storage</string>
     <string name="ftp">FTP site</string>
     <string name="smb">Samba (Windows) share</string>
-    <string name="root">root mode</string>
+    <string name="root">The root mode</string>
     <string name="mount">Mount points</string>
     <string name="mount_b">Mounts</string>
     <string name="apps">Applications</string>

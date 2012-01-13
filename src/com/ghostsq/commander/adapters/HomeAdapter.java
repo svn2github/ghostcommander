@@ -161,7 +161,7 @@ public class HomeAdapter extends CommanderAdapterBase {
             switch( position ) {
             case FAVS:  item.icon_id = R.drawable.favs;     break;  
             case LOCAL: item.icon_id = R.drawable.sd;       break;  
-            case FTP:   item.icon_id = R.drawable.server;   break;
+            case FTP:   item.icon_id = R.drawable.ftp;      break;
             case SMB:   item.icon_id = R.drawable.smb;      break;
             case ROOT:  item.icon_id = R.drawable.root;     break;
             case MOUNT: item.icon_id = R.drawable.mount;    break;
