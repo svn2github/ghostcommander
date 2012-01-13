@@ -12,7 +12,9 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -249,14 +251,26 @@ public class RootAdapter extends CommanderAdapterBase {
 	public void reqItemsSize( SparseBooleanArray cis ) {
         LsItem[] s_items = bitsToItems( cis );
         if( s_items != null && s_items.length > 0 ) {
-            Intent in = new Intent( ctx, TextViewer.class );
-            in.setData( Uri.parse( "exec:" ) );
-            String s = "";
             String path = Utils.mbAddSl( uri.getPath() );
+            StringBuilder sb = new StringBuilder( 128 );
+            sb.append( "stat " );
             for( int i = 0; i < s_items.length; i++ )
-                s += " " + ExecEngine.prepFileName( path + s_items[i].getName() );
-            in.putExtra( "cmd", getBusyBoxPath() + "stat " + s + " ; df" );
-    	    commander.issue( in, CMD_CMD );
+                sb.append( " " ).append( ExecEngine.prepFileName( path + s_items[i].getName() ) );
+            sb.append( " ; echo ; df" );
+            ExecEngine ee = new ExecEngine( ctx, new Handler() {
+                    @Override
+                    public void handleMessage( Message msg ) {
+                        try {
+                            Intent in = new Intent( ctx, TextViewer.class );
+                            in.setData( Uri.parse( TextViewer.STRURI ) );
+                            in.putExtra( TextViewer.STRKEY, msg.getData() );
+                            commander.issue( in, 0 );
+                        } catch( Exception e ) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, null, sb.toString(), true,  500 ); 
+            ee.start();
         }
 	}
     @Override
@@ -785,10 +799,26 @@ public class RootAdapter extends CommanderAdapterBase {
     }
     
     public void executeToViewer( String command, boolean bb ) {
-            Intent in = new Intent( ctx, TextViewer.class );
-            in.setData( Uri.parse( "exec:" ) );
-            in.putExtra( "cmd", "cd " + uri.getPath() + " ; " + ( bb ? getBusyBoxPath() : "" ) + command );
-            commander.issue( in, CMD_CMD );
+        ExecEngine ee = new ExecEngine( ctx, new Handler() {
+                @Override
+                public void handleMessage( Message msg ) {
+                    try {
+                        Bundle b = msg.getData();
+                        String str = b.getString( CommanderAdapterBase.NOTIFY_STR );
+                        if( str == null || str.length() == 0 )
+                            commander.notifyMe( new Commander.Notify( ctx.getString( R.string.nothing ), Commander.OPERATION_COMPLETED ) );
+                        else {
+                            Intent in = new Intent( ctx, TextViewer.class );
+                            in.setData( Uri.parse( TextViewer.STRURI ) );
+                            in.putExtra( TextViewer.STRKEY, b );
+                            commander.issue( in, 0 );
+                        }
+                    } catch( Exception e ) {
+                        e.printStackTrace();
+                    }
+                }
+            }, uri.getPath(), command, bb, 500 ); 
+        ee.start();
     }    
     
     class CmdDialog implements OnClickListener {

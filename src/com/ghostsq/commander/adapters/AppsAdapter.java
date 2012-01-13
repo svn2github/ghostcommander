@@ -219,8 +219,8 @@ public class AppsAdapter extends CommanderAdapterBase {
                 if( ps != null && ps.size() >= 1 ) {
                     if( SHORTCUTS.equals( ps.get( 0 ) ) ) {
                         Intent[] ins = new Intent[2];  
-                        ins[0] = new Intent( Intent.ACTION_MAIN );
-                        ins[1] = new Intent( Intent.ACTION_CREATE_SHORTCUT );
+                        ins[0] = new Intent( Intent.ACTION_CREATE_SHORTCUT );
+                        ins[1] = new Intent( Intent.ACTION_MAIN );
                         resInfos = getResolvers( ins, a );
                         numItems = resInfos.length + 1;
                     } else 
@@ -589,8 +589,10 @@ public class AppsAdapter extends CommanderAdapterBase {
                     }
                     menu.add( 0, MANAGE_CMD, 0, MANAGE );
                 }
-                else if( actInfos != null ) {
-                    menu.add( 0, SHRCT_CMD, 0, ctx.getString( R.string.shortcut ) );
+                else if( resInfos != null ) {
+                    ResolveInfo ri = resInfos[acmi.position-1];
+                    if( ri.filter != null && ri.filter.matchAction( Intent.ACTION_MAIN ) )
+                        menu.add( 0, SHRCT_CMD, 0, ctx.getString( R.string.shortcut ) );
                 }
             }
         } catch( Exception e ) {
@@ -617,12 +619,12 @@ public class AppsAdapter extends CommanderAdapterBase {
                     return;
                 }
             }
-            else if( actInfos != null ) {
-                ArrayList<ActivityInfo> al = bitsToItems( cis, actInfos );
-                if( al == null || al.size() == 0 ) return;
+            else if( resInfos != null ) {
                 if( SHRCT_CMD == command_id ) {
-                    for( int i = 0; i < al.size(); i++ ) {
-                        ActivityInfo ai = al.get( i );
+                    ArrayList<ResolveInfo> rl = bitsToItems( cis, resInfos );
+                    if( rl == null || rl.size() == 0 ) return;
+                    for( int i = 0; i < rl.size(); i++ ) {
+                        ActivityInfo ai = rl.get( i ).activityInfo;
                         if( ai != null ) {
                             Bitmap ico = null;
                             Drawable drawable = ai.loadIcon( pm );
@@ -734,7 +736,7 @@ public class AppsAdapter extends CommanderAdapterBase {
                     String m = manUtl.extractManifest();
                     if( m != null ) {
                         Intent in = new Intent( ctx, TextViewer.class );
-                        in.setData( Uri.parse( "string:" ) );
+                        in.setData( Uri.parse( TextViewer.STRURI ) );
                         Bundle b = new Bundle();
                         b.putString( TextViewer.STRKEY, m );
                         in.putExtra( TextViewer.STRKEY, b );
@@ -837,7 +839,9 @@ public class AppsAdapter extends CommanderAdapterBase {
         else if( actInfos != null ) {
             if( position <= actInfos.length ) {
                 ActivityInfo ai = actInfos[position - 1];
-                item.name = ai.loadLabel( pm ).toString(); 
+                item.name = ai.loadLabel( pm ).toString();
+                if( !ai.exported )
+                    item.name += " - private"; 
                 item.attr = ai.name;
                 item.setIcon( ai.loadIcon( pm ) );
             }
@@ -864,13 +868,14 @@ public class AppsAdapter extends CommanderAdapterBase {
                     ResolveInfo ri = resInfos[position - 1];
                     IntentFilter inf = ri.filter;
                     if( inf != null ) {
-                        if( ri.filter.hasAction( Intent.ACTION_CREATE_SHORTCUT ) ||
-                            ri.filter.hasAction( Intent.ACTION_MAIN ) ) {
-                            ActivityInfo ai = ri.activityInfo;
-                            item.name = ai.loadLabel( pm ).toString(); 
-                            item.attr = ai.name;
-                            item.setIcon( ai.loadIcon( pm ) );
-                        }
+                        ActivityInfo ai = ri.activityInfo;
+                        item.name = ai.loadLabel( pm ).toString(); 
+                        item.attr = ai.name;
+                        item.setIcon( ai.loadIcon( pm ) );
+                        if( ri.filter.hasAction( Intent.ACTION_CREATE_SHORTCUT )  )
+                            item.name += " - CREATE_SHORTCUT";
+                        if( ri.filter.hasAction( Intent.ACTION_MAIN ) )
+                            item.name += " - MAIN";
                     }
                     else {
                         item.name = ri.loadLabel( pm ).toString();

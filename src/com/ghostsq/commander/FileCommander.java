@@ -134,8 +134,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             String action = intent.getAction();
             Log.i( TAG, "Action: " + action );
             int use_panel = -1;
-            if( !viewActProcessed && Intent.ACTION_VIEW.equals( action ) ) {
-                Uri uri = intent.getData();
+            Uri uri = intent.getData();
+            if( uri != null && !viewActProcessed && Intent.ACTION_VIEW.equals( action ) ) {
                 Log.v( TAG, "Intent URI: " + uri );
                 String file_name = null;
                 String type = intent.getType();

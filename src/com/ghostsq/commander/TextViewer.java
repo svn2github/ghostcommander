@@ -3,7 +3,6 @@ package com.ghostsq.commander;
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
-import com.ghostsq.commander.root.ExecEngine;
 import com.ghostsq.commander.utils.Utils;
 
 import android.app.Activity;
@@ -13,9 +12,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -36,6 +32,7 @@ import java.io.InputStream;
 public class TextViewer extends Activity {
     private final static String TAG = "TextViewerActivity";
     private final static String SP_ENC = "encoding";
+    public  final static String STRURI = "string:";
     public  final static String STRKEY = "string";
     private final static int VIEW_BOT = 595, VIEW_TOP = 590, VIEW_ENC = 363;
     private ScrollView scrollView;
@@ -82,10 +79,11 @@ public class TextViewer extends Activity {
         if( !loadData() )
             finish();
         TextView file_name_tv = (TextView)findViewById( R.id.file_name );
-        String path = uri.getPath();
-        if( file_name_tv != null && path != null )
-            file_name_tv.setText( " - " + path );
-        
+        if( uri != null ) {
+            String path = uri.getPath();
+            if( file_name_tv != null && path != null && path.length() > 0 )
+                file_name_tv.setText( " - " + path );
+        }
     }
 
     @Override
@@ -188,41 +186,14 @@ public class TextViewer extends Activity {
                     Bundle b = i.getBundleExtra( STRKEY );
                     if( b != null ) {
                         String str = b.getString( STRKEY );
+                        if( str == null )
+                            str = b.getString( CommanderAdapterBase.NOTIFY_STR );
                         if( str != null ) {
                             text_view.setText( str );
                             return true;
                         }
                     }
                     return false;
-                }
-                if( "exec".equals( scheme ) ) {
-                    Intent i = getIntent();
-                    String pn_foreign = getCallingPackage();
-                    final String pn_this = "com.ghostsq.commander";
-                    if( !pn_this.equals( pn_foreign ) ) {
-                        Log.w( TAG, "Some other application (" + pn_foreign + ") tries to exploit this!" );
-                        return false;
-                    }
-                    
-                    String cmd = i.getStringExtra( "cmd" );
-                    
-                    Context ctx = this;
-                    ExecEngine ee = new ExecEngine( ctx, new Handler() {
-                                @Override
-                                public void handleMessage( Message msg ) {
-                                    try {
-                                        Bundle b = msg.getData();
-                                        String r = b.getString( CommanderAdapterBase.NOTIFY_STR );
-                                        if( r != null ) {
-                                            text_view.setText( r );
-                                        }
-                                    } catch( Exception e ) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }, null, cmd, false,  500 ); 
-                    ee.start();
-                    return true;
                 }
                 CommanderAdapter ca = null;
                 InputStream is = null;
