@@ -13,15 +13,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.ghostsq.commander.ColorsKeeper;
-import com.ghostsq.commander.FileTypes;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.Commander;
-import com.ghostsq.commander.ColorsKeeper.FileTypeColor;
 import com.ghostsq.commander.root.RootAdapter;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;

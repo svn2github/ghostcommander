@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:padding="10dip">
+
+    <CheckBox
+        android:id="@+id/for_dirs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:checked="true"
+        android:text="@string/for_dirs" />
+    <CheckBox
+        android:id="@+id/for_files"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/for_dirs"
+        android:layout_alignLeft="@id/for_dirs"
+        android:layout_marginTop="-10dip"
+        android:checked="true"
+        android:text="@string/for_files" />
+    
+    <TextView
+        android:id="@+id/filemask_prompt"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@id/for_dirs"
+        android:text="@string/filemask" />
+    <EditText
+        android:id="@+id/edit_field"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/filemask_prompt"
+        android:layout_toLeftOf="@id/for_dirs"
+        android:layout_marginRight="10dp"
+        android:autoText="false"
+        android:capitalize="none"
+        android:gravity="fill_horizontal"
+        android:inputType="textUri"
+        android:scrollHorizontally="true" />
+
+    <RelativeLayout
+        android:id="@+id/search_params"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/for_files"
+        android:layout_marginTop="-10dip" 
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/content_prompt"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:text="@string/content" />
+        <EditText
+            android:id="@+id/edit_content"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/content_prompt"
+            android:autoText="false"
+            android:capitalize="none"
+            android:gravity="fill_horizontal"
+            android:scrollHorizontally="true" />
+
+        <TableLayout
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:layout_below="@id/edit_content"
+          android:stretchColumns="1">
+          <TableRow
+              android:layout_width="fill_parent">
+             <TextView
+                android:id="@+id/bigger_prompt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/bigger_than"/>
+            <EditText
+                android:id="@+id/edit_bigger"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:scrollHorizontally="true" />
+
+            <CheckBox
+                android:id="@+id/mod_after"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/mod_after" />
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:id="@+id/mod_after_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="\?" />
+            </TableRow>
+
+            <TableRow 
+                android:layout_width="fill_parent">
+              <TextView
+                  android:id="@+id/smaller_prompt"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_gravity="top"
+                  android:text="@string/smaller_than" />
+              <EditText
+                  android:id="@+id/edit_smaller"
+                  android:layout_width="fill_parent"
+                  android:layout_height="wrap_content"
+                  android:scrollHorizontally="true" />
+
+              <CheckBox
+                  android:id="@+id/mod_before"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="@string/mod_before" />
+              <Button
+                  style="?android:attr/buttonStyleSmall"
+                  android:id="@+id/mod_after_date"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="\?" />
+              </TableRow>
+          </TableLayout>        
+        </RelativeLayout>
+</RelativeLayout>

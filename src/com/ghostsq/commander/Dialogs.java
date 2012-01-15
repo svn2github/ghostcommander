@@ -18,6 +18,7 @@ import android.text.util.Linkify;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -53,8 +54,6 @@ public class Dialogs implements DialogInterface.OnClickListener {
         try {
             Utils.changeLanguage( owner );
             switch( id ) {
-            case SELECT_DIALOG:
-            case UNSELECT_DIALOG:
             case INPUT_DIALOG:
             case R.id.new_zip:
             case R.id.F2:
@@ -76,6 +75,21 @@ public class Dialogs implements DialogInterface.OnClickListener {
                     Log.e( TAG, "Can't create dialog " + id );
                 return dialogObj; 
             }
+            case SELECT_DIALOG:
+            case UNSELECT_DIALOG: {
+                LayoutInflater factory = LayoutInflater.from( owner );
+                final View textEntryView = factory.inflate( R.layout.search, null );
+                dialogObj = new AlertDialog.Builder( owner )
+                    .setView( textEntryView )
+                    .setTitle( " " )
+                    .setPositiveButton( R.string.dialog_ok, this )
+                    .setNegativeButton( R.string.dialog_cancel, this )
+                    .create();
+                if( dialogObj == null )
+                    Log.e( TAG, "Can't create dialog " + id );
+                return dialogObj; 
+            }
+
             case LOGIN_DIALOG: {
                     LayoutInflater factory = LayoutInflater.from( owner );
                     final View textEntryView = factory.inflate( R.layout.login, null );
@@ -276,8 +290,6 @@ public class Dialogs implements DialogInterface.OnClickListener {
             case UNSELECT_DIALOG:
             case SELECT_DIALOG: {
                 dialog.setTitle( id == SELECT_DIALOG ? R.string.dialog_select : R.string.dialog_unselect );
-                if( prompt != null )
-                    prompt.setText( "" );
                 if( edit != null ) {
                     Editable edit_text = edit.getText();
                     if( edit_text.length() == 0 )
@@ -454,9 +466,12 @@ public class Dialogs implements DialogInterface.OnClickListener {
                             }
                             break;
                         case UNSELECT_DIALOG:
-                        case SELECT_DIALOG:
-                            owner.panels.checkItems( dialogId == SELECT_DIALOG, file_name );
-                            break;
+                        case SELECT_DIALOG: {
+                                CheckBox for_dirs  = (CheckBox)dialogObj.findViewById( R.id.for_dirs );
+                                CheckBox for_files = (CheckBox)dialogObj.findViewById( R.id.for_files );
+                                owner.panels.checkItems( dialogId == SELECT_DIALOG, file_name, for_dirs.isChecked(), for_files.isChecked() );
+                                break;
+                            }
                         }
                     }
                     break;

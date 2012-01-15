@@ -63,11 +63,12 @@ public final class ColorsKeeper {
         }
         public final String getDefMasks( int i ) {
             switch( i ) {
-            case 1: return "*.gif;*.jpg;*.png;*.bmp";
-            case 2: return "*.avi;*.mov;*.mp4;*.mpeg";
-            case 3: return "*.mp3;*.wav;*.ra;*.mid*";
-            case 4: return "*.htm*;*.xml;*.pdf;*.csv;*.doc*;*.xls*";
-            case 5: return "*.apk;*.zip;*.jar;*.rar;*.bz2;*.gz;*.tgz";
+            case 1: return "/*;*/";     // directories
+            case 2: return "*.gif;*.jpg;*.png;*.bmp";
+            case 3: return "*.avi;*.mov;*.mp4;*.mpeg";
+            case 4: return "*.mp3;*.wav;*.ra;*.mid*";
+            case 5: return "*.htm*;*.xml;*.pdf;*.csv;*.doc*;*.xls*";
+            case 6: return "*.apk;*.zip;*.jar;*.rar;*.bz2;*.gz;*.tgz";
             }
             return null;
         }
@@ -79,6 +80,7 @@ public final class ColorsKeeper {
             case 3: return r.getColor( R.color.fg3_def );
             case 4: return r.getColor( R.color.fg4_def );
             case 5: return r.getColor( R.color.fg5_def );
+            case 6: return r.getColor( R.color.fg6_def );
             default:return r.getColor( R.color.fgr_def );
             }
         }

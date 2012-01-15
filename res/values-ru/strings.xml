@@ -75,6 +75,16 @@
 <string name="dialog_skip_all">Не заменять</string>
 <string name="dialog_select">Пометить</string>
 <string name="dialog_unselect">Снять пометку</string>
+<string name="filemask">Маска</string>
+<string name="for_files">Файлы</string>
+<string name="for_dirs">Папки</string>    
+<string name="content">Содержит текст</string>    
+<string name="bigger_than">Больше чем:</string>
+<string name="smaller_than">Меньше чем:</string>
+<string name="mod_after">Позже</string>
+<string name="mod_before">Раньше</string>
+    
+    
 <string name="operation">Операция</string>
 <string name="view_title">Просмотр</string>
 <string name="edit_title">Редактор</string>

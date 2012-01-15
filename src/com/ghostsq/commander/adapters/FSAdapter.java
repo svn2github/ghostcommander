@@ -1058,7 +1058,7 @@ public class FSAdapter extends CommanderAdapterBase {
                         //item.origin = f.f;
                         item.dir  = f.f.isDirectory();
                         if( item.dir ) {
-                            if( ( mode & MODE_ICONS ) == ICON_MODE )  
+                            if( ( mode & ICON_MODE ) == ICON_MODE )  
                                 item.name = f.f.getName() + SLS;
                             else
                                 item.name = SLS + f.f.getName();

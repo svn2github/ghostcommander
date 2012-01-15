@@ -130,8 +130,16 @@
 
     <string name="dialog_select">Select</string>
     <string name="dialog_unselect">Unselect</string>
-    <string name="launch">Launch</string>
+    <string name="filemask">File mask:</string>
+    <string name="for_files">Files</string>
+    <string name="for_dirs">Folders</string>
+    <string name="content">Content:</string>
+    <string name="bigger_than">Bigger\nthan:</string>
+    <string name="smaller_than">Smaller\nthan:</string>        
+    <string name="mod_after">After</string>
+    <string name="mod_before">Before</string>
         
+    <string name="launch">Launch</string>
     <string name="operation">Operations</string>
     <string name="view_title">View</string>
     <string name="edit_title">Edit</string>
@@ -170,7 +178,6 @@
     <string name="too_deep_hierarchy">The file hierarchy is too deep</string>
     <string name="nothing_found">No files found</string>
     <string name="preparing">Preparing...</string>
-
 
     <string name="copying">Copying\n\"%s\"...</string>
     <string name="copied_f">Copied\n\"%s\"&#xA0;&#xA0;&#xA0;</string>

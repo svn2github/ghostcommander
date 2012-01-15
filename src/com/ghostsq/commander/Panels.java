@@ -532,8 +532,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         storeChoosedItems();
         getListAdapter( true ).reqItemsSize( getSelectedOrChecked() );
 	}
-    public final void checkItems( boolean set, String mask ) {
-        list[current].checkItems( set, mask );
+    public final void checkItems( boolean set, String mask, boolean dir, boolean file ) {
+        list[current].checkItems( set, mask, dir, file );
     }
     class NavDialog implements OnClickListener {
         private   final Uri sdcard = Uri.parse(DEFAULT_LOC);
