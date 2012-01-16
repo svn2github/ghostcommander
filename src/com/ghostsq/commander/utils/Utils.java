@@ -38,6 +38,8 @@ public final class Utils {
 		{ ".bmp", "image/bmp" },
         { ".csv", "text/csv" },
         { ".doc", "application/msword" },
+        { ".epub","application/epub" },
+        { ".fb2", "application/fb2" },
 		{ ".gif", "image/gif" },
 		{ ".gz",  "application/gzip" },
 		{ ".htm", "text/html" },

@@ -1,12 +1,19 @@
 package com.ghostsq.commander;
 
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 import org.apache.http.auth.UsernamePasswordCredentials;
 
 import com.ghostsq.commander.favorites.Favorite;
 import com.ghostsq.commander.utils.Utils;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -14,11 +21,14 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.text.Editable;
+import android.text.format.DateFormat;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -62,7 +72,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
             case R.id.F5:
             case R.id.F6:
             case R.id.F7:
-            case FileCommander.FIND_ACT: {
+            {
                 LayoutInflater factory = LayoutInflater.from( owner );
                 final View textEntryView = factory.inflate( R.layout.input, null );
                 dialogObj = new AlertDialog.Builder( owner )
@@ -71,10 +81,9 @@ public class Dialogs implements DialogInterface.OnClickListener {
                     .setPositiveButton( R.string.dialog_ok, this )
                     .setNegativeButton( R.string.dialog_cancel, this )
                     .create();
-                if( dialogObj == null )
-                    Log.e( TAG, "Can't create dialog " + id );
                 return dialogObj; 
             }
+            case FileCommander.FIND_ACT:
             case SELECT_DIALOG:
             case UNSELECT_DIALOG: {
                 LayoutInflater factory = LayoutInflater.from( owner );
@@ -85,11 +94,8 @@ public class Dialogs implements DialogInterface.OnClickListener {
                     .setPositiveButton( R.string.dialog_ok, this )
                     .setNegativeButton( R.string.dialog_cancel, this )
                     .create();
-                if( dialogObj == null )
-                    Log.e( TAG, "Can't create dialog " + id );
                 return dialogObj; 
             }
-
             case LOGIN_DIALOG: {
                     LayoutInflater factory = LayoutInflater.from( owner );
                     final View textEntryView = factory.inflate( R.layout.login, null );
@@ -100,17 +106,6 @@ public class Dialogs implements DialogInterface.OnClickListener {
                             .setNegativeButton( R.string.dialog_cancel, this )
                             .create();
                 }
-            /*
-            case ARI_DIALOG: {
-                return dialogObj = new AlertDialog.Builder( owner ).setIcon( android.R.drawable.ic_dialog_alert )
-                        .setTitle( R.string.error )
-                        .setMessage( R.string.error )
-                        .setPositiveButton( R.string.dialog_abort, this )
-                        .setNeutralButton( R.string.dialog_retry, this )
-                        .setNegativeButton( R.string.dialog_ignore, this )
-                        .create();
-            }
-            */
             case FILE_EXIST_DIALOG: {
                     return dialogObj = new AlertDialog.Builder( owner )
                             .setIcon( android.R.drawable.ic_dialog_alert )
@@ -170,11 +165,47 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 }
             }
         } catch( Exception e ) {
-            e.printStackTrace();
+            Log.e( TAG, "id=" + id, e );
+        } finally {
+            if( dialogObj == null )
+                Log.e( TAG, "Failed. id=" + id );
         }
         return null;
     }
 
+    class DatePickerButton implements View.OnClickListener {
+        java.text.DateFormat df;
+        Calendar cal = Calendar.getInstance();
+        Button   button;
+        
+        public DatePickerButton( Context ctx, Button button_ ) {
+            df = DateFormat.getDateFormat( ctx );
+            button = button_;
+            CharSequence cs = button.getText();
+            if( cs == null || cs.length() == 0 )
+                button.setText( df.format( cal.getTime() ) );
+            button.setOnClickListener( this );
+        }
+        @Override
+        public void onClick( View v ) {
+              Date d = null;
+              try {
+                   d = df.parse( button.getText().toString() );
+              } catch( Exception e ) {}                                
+              cal.setTime( d == null ? new Date() : d );
+              new DatePickerDialog( owner, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet( DatePicker vw, int y, int m, int d ) {
+                        Calendar cda = new GregorianCalendar( y, m, d );
+                        button.setText( df.format( cda.getTime() ) );
+                    }
+              }, cal.get(  Calendar.YEAR ) , 
+                 cal.get(  Calendar.MONTH ), 
+                 cal.get(  Calendar.DAY_OF_MONTH ) ).show();
+        }
+    }
+    
+    
     protected void prepareDialog( int id, Dialog dialog ) {
         if( dialog != dialogObj ) {
             Log.e( TAG, "Dialogs corrupted!" );
@@ -285,6 +316,17 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 dialog.setTitle( R.string.search_title );
                 if( prompt != null )
                     prompt.setText( R.string.search_prompt );
+                
+                View search_params = dialog.findViewById( R.id.search_params );
+                if( search_params != null )
+                    search_params.setVisibility( View.VISIBLE );
+                Button mod_after_date = (Button)dialog.findViewById( R.id.mod_after_date );
+                if( mod_after_date != null )
+                    new DatePickerButton( owner, mod_after_date );
+
+                Button mod_before_date = (Button)dialog.findViewById( R.id.mod_before_date );
+                if( mod_before_date != null )
+                    new DatePickerButton( owner, mod_before_date );
                 break;
             }
             case UNSELECT_DIALOG:
@@ -457,11 +499,46 @@ public class Dialogs implements DialogInterface.OnClickListener {
                         case R.id.new_zip:
                             owner.panels.createZip( file_name.trim() );
                             break;
-                        case FileCommander.FIND_ACT: {
+                        case FileCommander.FIND_ACT: 
+                            if( file_name.length() > 0 ) {
+                                StringBuilder sb = new StringBuilder( 128 );
+                                sb.append( "q=" ).append( file_name );
+                                try {
+                                    boolean dirs  = ((CheckBox)dialogObj.findViewById( R.id.for_dirs  )).isChecked();
+                                    boolean files = ((CheckBox)dialogObj.findViewById( R.id.for_files )).isChecked();
+                                    if( dirs != files ) {
+                                        sb.append( dirs ? "&d=true" : "&f=true" );
+                                    } else 
+                                        if( !dirs ) break;
+                                    String cs = ((EditText)dialogObj.findViewById( R.id.edit_content )).getText().toString();
+                                    if( cs.length() > 0 )
+                                        sb.append( "&c=" ).append( cs );
+
+                                    String bts = ((EditText)dialogObj.findViewById( R.id.edit_bigger  )).getText().toString();
+                                    if( bts.length() > 0 )
+                                        sb.append( "&l=" ).append( bts );
+                                    String sts = ((EditText)dialogObj.findViewById( R.id.edit_smaller )).getText().toString();
+                                    if( sts.length() > 0 )
+                                        sb.append( "&s=" ).append( sts );
+                                    
+                                    if( ((CheckBox)dialogObj.findViewById( R.id.mod_after )).isChecked() ) {
+                                        CharSequence macs = ((Button)dialogObj.findViewById( R.id.mod_after_date )).getText();
+                                        if( macs.length() > 0 )
+                                            sb.append( "&a=" ).append( macs );
+                                    }
+                                    if( ((CheckBox)dialogObj.findViewById( R.id.mod_before )).isChecked() ) {
+                                        CharSequence mbcs = ((Button)dialogObj.findViewById( R.id.mod_before_date )).getText();
+                                        if( mbcs.length() > 0 )
+                                            sb.append( "&b=" ).append( mbcs );
+                                    }
+                                } catch( Exception e ) {
+                                    Log.e( TAG, file_name, e );
+                                }
+                                
                                 Uri.Builder uri_b = new Uri.Builder()
                                     .scheme( "find" )
                                     .path( cookie )
-                                    .encodedQuery( "q=" + file_name );
+                                    .encodedQuery( sb.toString() );
                                 owner.Navigate( uri_b.build(), null );
                             }
                             break;
