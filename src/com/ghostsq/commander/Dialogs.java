@@ -317,6 +317,11 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 if( prompt != null )
                     prompt.setText( R.string.search_prompt );
                 
+                if( edit != null ) {
+                    Editable edit_text = edit.getText();
+                    if( edit_text.length() == 0 )
+                        edit.setText( "*" );
+                }
                 View search_params = dialog.findViewById( R.id.search_params );
                 if( search_params != null )
                     search_params.setVisibility( View.VISIBLE );
