@@ -264,6 +264,8 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         Log.i( TAG, "terminateOperation()" );
         if( worker != null )
             worker.reqStop();
+        if( reader != null )
+            reader.reqStop();
     }
 
     @Override
@@ -271,8 +273,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         Log.i( TAG, "prepareToDestroy()" );
         terminateOperation();
         worker = null;
-        if( reader != null )
-            reader.reqStop();
         reader = null;
     }
 

@@ -87,9 +87,14 @@ public class Dialogs implements DialogInterface.OnClickListener {
             case SELECT_DIALOG:
             case UNSELECT_DIALOG: {
                 LayoutInflater factory = LayoutInflater.from( owner );
-                final View textEntryView = factory.inflate( R.layout.search, null );
+                final View searchView = factory.inflate( R.layout.search, null );
+                if( id == FileCommander.FIND_ACT ) {
+                    View search_params = searchView.findViewById( R.id.search_params );
+                    if( search_params != null )
+                        search_params.setVisibility( View.VISIBLE );
+                }
                 dialogObj = new AlertDialog.Builder( owner )
-                    .setView( textEntryView )
+                    .setView( searchView )
                     .setTitle( " " )
                     .setPositiveButton( R.string.dialog_ok, this )
                     .setNegativeButton( R.string.dialog_cancel, this )
@@ -322,9 +327,6 @@ public class Dialogs implements DialogInterface.OnClickListener {
                     if( edit_text.length() == 0 )
                         edit.setText( "*" );
                 }
-                View search_params = dialog.findViewById( R.id.search_params );
-                if( search_params != null )
-                    search_params.setVisibility( View.VISIBLE );
                 Button mod_after_date = (Button)dialog.findViewById( R.id.mod_after_date );
                 if( mod_after_date != null )
                     new DatePickerButton( owner, mod_after_date );

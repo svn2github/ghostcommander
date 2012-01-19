@@ -1299,8 +1299,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     }
     
     class State {
-        private final static String LU = "LEFT_URI", RU = "RIGHT_URI";
-    	private final static String LF = "LEFT_FAV", RF = "RIGHT_FAV";
+        private final static String LU = "LEFT_URI",  RU = "RIGHT_URI";
+    	private final static String LF = "LEFT_FAV",  RF = "RIGHT_FAV";
     	private final static String LI = "LEFT_ITEM", RI = "RIGHT_ITEM";
     	private final static String CP = "CURRENT_PANEL";
         private final static String FU = "FAV_URIS";

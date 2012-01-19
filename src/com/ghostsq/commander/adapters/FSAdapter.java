@@ -96,7 +96,7 @@ public class FSAdapter extends CommanderAdapterBase {
 
     @Override
     public Uri getUri() {
-        return Uri.parse( dirName );
+        return Uri.parse( Utils.escapeUriMarkup( dirName ) );
     }
 
     @Override
@@ -451,16 +451,17 @@ public class FSAdapter extends CommanderAdapterBase {
         else {
             File file = items[position - 1].f;
             if( file == null ) return;
+            Uri open_uri = Uri.parse( Utils.escapeUriMarkup( file.getAbsolutePath() ) );
             if( file.isDirectory() )
-                commander.Navigate( Uri.parse( Utils.escapeUriMarkup( file.getAbsolutePath() ) ), null );
+                commander.Navigate( open_uri, null );
             else
-                commander.Open( Uri.parse( file.getAbsolutePath() ) );
+                commander.Open( open_uri );
         }
     }
 
     @Override
     public Uri getItemUri( int position ) {
-        return Uri.parse( getItemName( position, true ) );
+        return Uri.parse( Utils.escapeUriMarkup( getItemName( position, true ) ) );
     }
     @Override
     public String getItemName( int position, boolean full ) {

@@ -2,26 +2,18 @@ package com.ghostsq.commander.adapters;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.zip.ZipEntry;
 
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.R;
-import com.ghostsq.commander.adapters.FSAdapter.FilePropComparator;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
 import android.net.Uri;
 import android.os.Handler;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 
@@ -74,11 +66,12 @@ public class FindAdapter extends FSAdapter {
                     try {
                         se.smaller_than = Long.parseLong( uri.getQueryParameter( "s" ) );
                     } catch( Exception e ) {}
+                    java.text.DateFormat df = DateFormat.getDateFormat( ctx );
                     try {
-                        se.after_date  = Long.parseLong( uri.getQueryParameter( "a" ) );
+                        se.after_date  = df.parse( uri.getQueryParameter( "a" ) );
                     } catch( Exception e ) {}
                     try {
-                        se.before_date = Long.parseLong( uri.getQueryParameter( "b" ) );
+                        se.before_date = df.parse( uri.getQueryParameter( "b" ) );
                     } catch( Exception e ) {}
                     
                     reader.start();
@@ -148,9 +141,11 @@ public class FindAdapter extends FSAdapter {
         private int     depth = 0;
         private String  pass_back_on_done;
         public  String  match, content;
-        public  long    larger_than, smaller_than, after_date, before_date;
+        public  long    larger_than, smaller_than; 
+        public  Date    after_date, before_date;
         private boolean dirs = true, files = true; 
         private ArrayList<File> result;
+        private int     progress = 0;
         
         SearchEngine( Handler h, String match_, String path_, String pass_back_on_done_ ) {
             super( h );
@@ -166,8 +161,6 @@ public class FindAdapter extends FSAdapter {
             pass_back_on_done = pass_back_on_done_;
             larger_than = 0; 
            smaller_than = Long.MAX_VALUE; 
-             after_date = 0;
-            before_date = 0;
         }
         
         final void setTypes( boolean files_only ) {
@@ -207,7 +200,7 @@ public class FindAdapter extends FSAdapter {
                     if( stop || isInterrupted() ) 
                         throw new Exception( ctx.getString( R.string.interrupted ) );
                     File f = subfiles[i];
-                    sendProgress( f.getAbsolutePath(), (int)(i * conv) );
+                    sendProgress( f.getAbsolutePath(), progress = (int)(i * conv) );
                     Log.v( TAG, "Looking at file " + f.getAbsolutePath() );
                     addIfMatched( f );
                     if( f.isDirectory() ) {
@@ -231,10 +224,9 @@ public class FindAdapter extends FSAdapter {
                 } else {
                     if( !files ) return;
                 }
-                
                 long modified = f.lastModified();
-                if( after_date  != 0 && modified < after_date  ) return;  
-                if( before_date != 0 && modified > before_date ) return;  
+                if(  after_date != null && modified <  after_date.getTime() ) return;  
+                if( before_date != null && modified > before_date.getTime() ) return;  
 
                 long size = f.length();
                 if( size < larger_than || size > smaller_than ) 
@@ -244,7 +236,7 @@ public class FindAdapter extends FSAdapter {
                     return;
                 if( match != null && !f.getName().toLowerCase().contains( match ) )
                     return;
-                if( content != null && !dir && !findIn( f, content ) )
+                if( content != null && !dir && !searchInsideFile( f, content ) )
                     return;
                 result.add( f );
             }
@@ -253,11 +245,13 @@ public class FindAdapter extends FSAdapter {
             }
         }
 
-        private final boolean findIn( File f, String s ) {
+        private final boolean searchInsideFile( File f, String s ) {
             try {
                 BufferedReader br = new BufferedReader( new FileReader( f ) ); 
-                      int ch = 0;
-                final int  l = s.length(); 
+                final  int  l = s.length();
+                int    ch = 0;
+                int    cnt = 0, p = 0;
+                double conv = 100./f.length();
                 while( true ) {
                     for( int i = 0; i < l; i++ ) {
                         ch = br.read();
@@ -273,6 +267,10 @@ public class FindAdapter extends FSAdapter {
                         if( i >= l-1 )
                             return true;
                     }
+                    int np = (int)(cnt++ * conv);
+                    if( np - 10 > p )
+                        sendProgress( f.getAbsolutePath(), progress, p = np );
+                    sleep( 1 );
                 }
             }
             catch( Exception e ) {
