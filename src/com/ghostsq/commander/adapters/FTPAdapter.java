@@ -38,11 +38,11 @@ public class FTPAdapter extends CommanderAdapterBase {
     private final static String TAG = "FTPAdapter";
     // Java compiler creates a thunk function to access to the private owner class member from a subclass
     // to avoid that all the member accessible from the subclasses are public
-    public  FTP ftp;
-    public  Uri uri = null;
+    public  FTP      ftp;
+    public  Uri      uri = null;
     public  LsItem[] items = null;
-    private Timer  heartBeat;
-    public    boolean noHeartBeats = false;
+    private Timer    heartBeat;
+    public  boolean  noHeartBeats = false;
     public  FTPCredentials theUserPass = null;
 
     public FTPAdapter( Context ctx_ ) {
@@ -352,19 +352,28 @@ public class FTPAdapter extends CommanderAdapterBase {
 
     class CopyEngine extends Engine implements FTP.ProgressSink 
     {
-        private long    curFileLen = 0;
+        private long startTime;
+        private long curFileLen = 0, curFileDone = 0;
         String progressMessage = null;
     	CopyEngine( Handler h ) {
     		super( h );
+    		startTime = System.currentTimeMillis();
     	}
     	protected void setCurFileLength( long len ) {
-    		curFileLen = len;
+    	    curFileDone = 0;
+    		curFileLen  = len;
     	}
 		@Override
 		public boolean completed( long size ) throws InterruptedException {
-			if( curFileLen > 0 )
-				sendProgress( progressMessage, (int)(size * 100 / curFileLen) );
-			Log.v( TAG, progressMessage + " " + size );
+			if( curFileLen > 0 ) {
+			    curFileDone += size;
+			    long cur_time = System.currentTimeMillis();
+			    long time_delta = cur_time - startTime;
+			    int  speed = time_delta == 0 ? 0 : (int)( 1000 * size / time_delta ); 
+				sendProgress( progressMessage, (int)( curFileDone * 100 / curFileLen ), -1, speed );
+				startTime = cur_time;
+			}
+			//Log.v( TAG, progressMessage + " " + size );
     		if( isStopReq() ) {
     			error( ctx.getString( R.string.canceled ) );
     			return false;

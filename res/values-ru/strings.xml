@@ -127,6 +127,7 @@
 <string name="unpacked_p">Распакован \n\"%s\"   </string>
 <string name="packing">Упаковывается \n\"%s\"...</string>
 <string name="loading">Загрузка...</string>
+<string name="second">с</string>
 <string name="retrieving">Скачивается \n\"%s\"...</string>
 <string name="uploading">Закачивается \n\"%s\"...</string>
 <string name="uploaded_p">Закачан \n\"%s\"   </string>

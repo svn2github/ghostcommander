@@ -42,7 +42,7 @@ public interface Commander {
 
     public final static int  OPEN = 903, OPEN_WITH = 902, SEND_TO = 236, COPY_NAME = 390, FAV_FLD = 414;
     
-    public final static String NOTIFY_COOKIE = "cookie";
+    public final static String NOTIFY_COOKIE = "cookie", NOTIFY_SPEED = "speed";
 	
     /**
      * @return current UI context

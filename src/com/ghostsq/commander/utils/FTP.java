@@ -389,13 +389,12 @@ public class FTP {
             }
             byte buf[] = new byte[BLOCK_SIZE];
             int  n = 0;
-            long done = 0;
         	while( true ) {
         		n = in.read( buf );
         		if( n < 0 ) break;
         		out.write( buf, 0, n );
         		if( report_to != null )
-        			if( !report_to.completed( done += n ) ) {
+        			if( !report_to.completed( n ) ) {
         				delete( fn );
         				return false;
         			}
@@ -434,14 +433,13 @@ public class FTP {
         try {
             byte buf[] = new byte[BLOCK_SIZE];
             int  n = 0;
-            long done = 0;
         	while( true ) {
         		n = in.read( buf );
-        		Log.v( TAG, "FTP has read " + n + "bytes" );
+        		//Log.v( TAG, "FTP has read " + n + "bytes" );
         		if( n < 0 ) break;
         		out.write( buf, 0, n );
         		if( report_to != null ) {
-        			if( !report_to.completed( done += n ) ) {
+        			if( !report_to.completed( n ) ) {
         			    executeCommand( "ABOR" );
         				return false;
         			}

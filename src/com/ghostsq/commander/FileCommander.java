@@ -708,29 +708,22 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             if( progress.obj != null )
                 string = (String)progress.obj;
             String cookie = null;
-            {
-                Bundle b = progress.getData();
-                cookie = b.getString( NOTIFY_COOKIE );
-            }
-            
+            Bundle b = progress.getData();
+            cookie = b.getString( NOTIFY_COOKIE );
             if( progress.what == Commander.OPERATION_STARTED ) {
                 setProgressBarIndeterminateVisibility( true );
                 if( string != null && string.length() > 0 )
                     showMessage( string );
                 return false;
             }
-            Dialogs dh = getDialogsInstance( Dialogs.PROGRESS_DIALOG );
-            
+            Dialogs dh = null;
             if( progress.what == OPERATION_IN_PROGRESS && progress.arg1 >= 0 ) {
                 if( on ) {
+                    dh = obtainDialogsInstance( Dialogs.PROGRESS_DIALOG );
                     if( dh != null ) {
-                        Dialog d = dh.getDialog();
-                        if( d != null && d.isShowing() ) {
-                            dh.setProgress( string, progress.arg1, progress.arg2 );
-                            return false;
-                        }
+                        dh.showDialog();
+                        dh.setProgress( string, progress.arg1, progress.arg2, b.getInt( NOTIFY_SPEED ) );
                     }
-                    showDialog( Dialogs.PROGRESS_DIALOG );
                 }
                 else {
                     if( string != null && string.length() > 0 )
@@ -738,15 +731,9 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 }
                 return false;
             }
-            else {
-                if( dh != null ) {
-                    Dialog d = dh.getDialog();
-                    if( d != null && d.isShowing() ) {
-                        //Log.v( TAG, "Trying to cancel the progress dialog..." );
-                        d.cancel();
-                    }
-                }
-            }
+            dh = getDialogsInstance( Dialogs.PROGRESS_DIALOG );
+            if( dh != null )
+                dh.cancelDialog();
             if( notMan != null ) notMan.cancel( 1 ); 
             setProgressBarIndeterminateVisibility( false );
             panels.operationFinished();

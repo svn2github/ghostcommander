@@ -44,6 +44,8 @@ public class Dialogs implements DialogInterface.OnClickListener {
     private Dialog dialogObj;
     private FileCommander owner;
     private boolean valid = true;
+    private int  progressCounter = 0;
+    private long progressAcSpeed = 0;
 
     Dialogs( FileCommander owner_, int id ) {
         owner = owner_;
@@ -57,7 +59,14 @@ public class Dialogs implements DialogInterface.OnClickListener {
         return dialogObj;
     }
     public final void showDialog() {
-        owner.showDialog( dialogId );
+        if( dialogObj == null || !dialogObj.isShowing() )
+            owner.showDialog( dialogId );
+    }
+    public final void cancelDialog() {
+        if( dialogObj != null && dialogObj.isShowing() )
+            dialogObj.cancel();
+        progressCounter = 0;
+        progressAcSpeed = 0;
     }
     protected final Dialog createDialog( int id ) {
         try {
@@ -435,7 +444,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
         }
     }
 
-    public void setProgress( String string, int progress, int progressSec ) {
+    public void setProgress( String string, int progress, int progressSec, int speed ) {
         if( dialogObj == null )
             return;
         try {
@@ -454,7 +463,25 @@ public class Dialogs implements DialogInterface.OnClickListener {
             if( perc_t != null ) {
                 perc_t.setText( "" + ( progressSec > 0 ? progressSec : progress ) + "%" );
             }
-        } catch( ClassCastException e ) {
+            if( progress == 0 || speed == 0 ) {
+                progressCounter = 0;
+                progressAcSpeed = 0;
+            }            
+            
+            
+            TextView speed_t = (TextView)dialogObj.findViewById( R.id.speed );
+            if( speed > 0 ) {
+                progressCounter++;
+                progressAcSpeed += speed;
+                long avgsp = progressAcSpeed / progressCounter;  
+                
+                String str = Utils.getHumanSize( speed ) + "/" + owner.getString( R.string.second ) + 
+                      " (" + Utils.getHumanSize( avgsp ) + "/" + owner.getString( R.string.second ) + ")";
+                speed_t.setText( str );
+            } 
+            else 
+                speed_t.setText( "" );
+        } catch( Exception e ) {
             Log.e( TAG, null, e );
         }
     }

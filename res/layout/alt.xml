@@ -10,7 +10,7 @@
         android:id="@+id/titles"
         android:layout_width="fill_parent" android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="#555">
+        android:background="@color/ttl_def">
         <TextView android:id="@+id/left_dir"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -64,14 +64,13 @@
 	        android:layout_weight="1"
 	        android:drawSelectorOnTop="false"
 	        android:fastScrollEnabled="true"
-	        android:cacheColorHint="#00000000"
 	        android:paddingLeft="1dp"
 	        android:paddingRight="1dp"/>
 	    <View
             android:id="@+id/divider" 
             android:layout_width="1dip" 
             android:layout_height="fill_parent"
-            android:background="#555"
+            android:background="@color/ttl_def"
 	    />
 	    <ListView
 			android:id="@+id/right_list" 
@@ -80,7 +79,6 @@
 	        android:layout_weight="1"
 	        android:drawSelectorOnTop="false"
 	        android:fastScrollEnabled="true"
-            android:cacheColorHint="#00000000"
 	        android:paddingLeft="1dp"
 	        android:paddingRight="1dp"/>
     </com.ghostsq.commander.PanelsView>

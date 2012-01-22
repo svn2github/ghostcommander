@@ -830,7 +830,7 @@ public class FSAdapter extends CommanderAdapterBase {
     class CopyEngine extends CalcSizesEngine {
         private String  mDest;
         private int     counter = 0;
-        private long    bytes = 0;
+        private long    totalBytes = 0;
         private double  conv;
         private File[]  fList = null;
         private boolean move, destIsFullName;
@@ -906,8 +906,8 @@ public class FSAdapter extends CommanderAdapterBase {
                             long len = file.length();
                             if( file.renameTo( outFile ) ) {
                                 counter++;
-                                bytes += len;
-                                int  so_far = (int)(bytes * conv);
+                                totalBytes += len;
+                                int  so_far = (int)(totalBytes * conv);
                                 sendProgress( outFile.getName() + " " + c.getString( R.string.moved ), so_far, 0 );
                                 continue;
                             }
@@ -918,16 +918,28 @@ public class FSAdapter extends CommanderAdapterBase {
                         long size  = in.size();
                         final long max_chunk = 524288;
                         long chunk = size > max_chunk ? max_chunk : size;
-                        int  so_far = (int)(bytes * conv);
+                        long t_chunk = 0;
+                        long start_time = 0;
+                        int  speed = 0;
+                        int  so_far = (int)(totalBytes * conv);
                         String rep_s = c.getString( R.string.copying, fn ); 
-                        for( long start = 0; start < size; start += chunk ) {
-// debug only, to remove!
-//Log.v( TAG, rep_s + " " + (int)(bytes * conv) );
-                        	sendProgress( rep_s, so_far, (int)(bytes * conv) );
-                        	bytes += in.transferTo( start, chunk, out );
+                        for( long start = 0; start < size; ) {
+                            if( t_chunk == 0 )
+                                start_time = System.currentTimeMillis();
+                            sendProgress( rep_s, so_far, (int)(totalBytes * conv), speed );
+                        	long transferred = in.transferTo( start, chunk, out );
+                        	start += transferred;
+                            t_chunk += transferred;
+                        	totalBytes += transferred;
                             if( isStopReq() ) {
                                 error( c.getString( R.string.canceled ) );
                                 return counter;
+                            }
+                            
+                            long time_delta = System.currentTimeMillis() - start_time;
+                            if( time_delta > 0 ) {
+                                speed = (int)(1000 * t_chunk / time_delta);
+                                t_chunk = 0;
                             }
                             //Thread.sleep( 1 );
                         }
@@ -936,7 +948,7 @@ public class FSAdapter extends CommanderAdapterBase {
                         in = null;
                         out = null;
                         if( i >= list.length-1 )
-                        	sendProgress( c.getString( R.string.copied_f, fn ), (int)(bytes * conv) );
+                        	sendProgress( c.getString( R.string.copied_f, fn ), (int)(totalBytes * conv) );
                         
 // debug only, to remove!
 //Log.v( TAG, c.getString( R.string.copied_f, fn ) );
