@@ -50,22 +50,25 @@ public class FindAdapter extends FSAdapter {
                 String match   = uri.getQueryParameter( "q" );
                  
                 if( path != null && path.length() > 0 && match != null && match.length() > 0  ) {
-                    commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
+                    notify( Commander.OPERATION_STARTED );
                     SearchEngine se = new SearchEngine( readerHandler, match, path, pass_back_on_done );
                     reader = se;
-                    String  dirs_s = uri.getQueryParameter( "d" );
-                    String files_s = uri.getQueryParameter( "f" );
-                    boolean dirs  = dirs_s  != null && "true".equals( dirs_s );
-                    boolean files = files_s != null && "true".equals( dirs_s );
+                    String  dirs_s  = uri.getQueryParameter( "d" );
+                    String  files_s = uri.getQueryParameter( "f" );
+                    boolean dirs  =  dirs_s != null && "1".equals(  dirs_s );
+                    boolean files = files_s != null && "1".equals( files_s );
                     if( dirs != files )
                         se.setTypes( files );
+
+                    String olo_s = uri.getQueryParameter( "o" );
+                    if( olo_s != null && "1".equals( olo_s ) )
+                        se.olo = true;
+                    
                     se.content = uri.getQueryParameter( "c" );
-                    try {
-                        se.larger_than  = Long.parseLong( uri.getQueryParameter( "l" ) );
-                    } catch( Exception e ) {}
-                    try {
-                        se.smaller_than = Long.parseLong( uri.getQueryParameter( "s" ) );
-                    } catch( Exception e ) {}
+                    se.larger_than = Utils.parseHumanSize( uri.getQueryParameter( "l" ) );
+                    long st = Utils.parseHumanSize( uri.getQueryParameter( "s" ) );
+                    if( st > 0 )
+                        se.smaller_than = st;
                     java.text.DateFormat df = DateFormat.getDateFormat( ctx );
                     try {
                         se.after_date  = df.parse( uri.getQueryParameter( "a" ) );
@@ -125,8 +128,7 @@ public class FindAdapter extends FSAdapter {
 
     @Override
     public boolean receiveItems( String[] fileURIs, int move_mode ) {
-        commander.notifyMe( new Commander.Notify( ctx.getString( R.string.not_supported ), 
-                                Commander.OPERATION_FAILED ) );
+        notify( ctx.getString( R.string.not_supported ),Commander.OPERATION_FAILED );
         return false;
     }
 
@@ -141,6 +143,7 @@ public class FindAdapter extends FSAdapter {
         private int     depth = 0;
         private String  pass_back_on_done;
         public  String  match, content;
+        public  boolean olo = false;
         public  long    larger_than, smaller_than; 
         public  Date    after_date, before_date;
         private boolean dirs = true, files = true; 
@@ -200,10 +203,12 @@ public class FindAdapter extends FSAdapter {
                     if( stop || isInterrupted() ) 
                         throw new Exception( ctx.getString( R.string.interrupted ) );
                     File f = subfiles[i];
-                    sendProgress( f.getAbsolutePath(), progress = (int)(i * conv) );
-                    Log.v( TAG, "Looking at file " + f.getAbsolutePath() );
+                    int np = (int)(i * conv);
+                    if( np == 0 || np - 1 > progress )
+                        sendProgress( f.getAbsolutePath(), progress = np );
+                    //Log.v( TAG, "Looking at file " + f.getAbsolutePath() );
                     addIfMatched( f );
-                    if( f.isDirectory() ) {
+                    if( !olo && f.isDirectory() ) {
                         if( depth++ > 30 )
                             throw new Exception( ctx.getString( R.string.too_deep_hierarchy ) );
                         searchInFolder( f );

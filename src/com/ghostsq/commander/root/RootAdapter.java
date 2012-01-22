@@ -235,7 +235,7 @@ public class RootAdapter extends CommanderAdapterBase {
                 }
             }
             
-            commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
+            notify( Commander.OPERATION_STARTED );
             reader = new ListEngine( commander.getContext(), readerHandler, tmp_uri, pass_back_on_done );
             reader.start();
             return true;
@@ -244,7 +244,7 @@ public class RootAdapter extends CommanderAdapterBase {
             commander.showError( "Exception: " + e );
             e.printStackTrace();
         }
-        commander.notifyMe( new Commander.Notify( "Fail", Commander.OPERATION_FAILED ) );
+        notify( "Fail", Commander.OPERATION_FAILED );
         return false;
     }
 	@Override
@@ -290,13 +290,13 @@ public class RootAdapter extends CommanderAdapterBase {
                     rec_h = setRecipient( to ); 
             	}
                 if( to_path != null ) {
-                    commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
+                    notify( Commander.OPERATION_STARTED );
                     worker = new CopyFromEngine( commander.getContext(), workerHandler, subItems, to_path, move, rec_h );
                     worker.start();
                     return true;
                 }
             }
-        	commander.notifyMe( new Commander.Notify( "Failed to proceed.", Commander.OPERATION_FAILED ) );
+        	notify( "Failed to proceed.", Commander.OPERATION_FAILED );
         }
         catch( Exception e ) {
             commander.showError( "Exception: " + e );
@@ -398,15 +398,14 @@ public class RootAdapter extends CommanderAdapterBase {
 	    
 	@Override
 	public boolean createFile( String fileURI ) {
-		commander.notifyMe( new Commander.Notify( "Operation is not supported.", 
-		                        Commander.OPERATION_FAILED ) );
+		notify( "Operation is not supported.", Commander.OPERATION_FAILED );
 		return false;
 	}
     @Override
     public void createFolder( String new_name ) {
         if( uri == null ) return;
         if( isWorkerStillAlive() )
-            commander.notifyMe( new Commander.Notify( "Busy", Commander.OPERATION_FAILED ) );
+            notify( "Busy", Commander.OPERATION_FAILED );
         else {
             worker = new MkDirEngine( commander.getContext(), workerHandler, new_name );
             worker.start();
@@ -436,12 +435,12 @@ public class RootAdapter extends CommanderAdapterBase {
     public boolean deleteItems( SparseBooleanArray cis ) {
         try {
             if( isWorkerStillAlive() ) {
-                commander.notifyMe( new Commander.Notify( "Busy", Commander.OPERATION_FAILED ) );
+                notify( "Busy", Commander.OPERATION_FAILED );
                 return false;
             }
         	LsItem[] subItems = bitsToItems( cis );
         	if( subItems != null ) {
-        	    commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
+        	    notify( Commander.OPERATION_STARTED );
                 worker = new DelEngine( commander.getContext(), workerHandler, subItems );
                 worker.start();
 	            return true;
@@ -552,16 +551,16 @@ public class RootAdapter extends CommanderAdapterBase {
     public boolean receiveItems( String[] full_names, int move_mode ) {
     	try {
             if( full_names == null || full_names.length == 0 ) {
-            	commander.notifyMe( new Commander.Notify( "Nothing to copy", Commander.OPERATION_FAILED ) );
+            	notify( "Nothing to copy", Commander.OPERATION_FAILED );
             	return false;
             }
-            commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
+            notify( Commander.OPERATION_STARTED );
             worker = new CopyToEngine( commander.getContext(), workerHandler, full_names, 
                                      ( move_mode & MODE_MOVE ) != 0, uri.getPath(), false );
             worker.start();
             return true;
 		} catch( Exception e ) {
-			commander.notifyMe( new Commander.Notify( "Exception: " + e, Commander.OPERATION_FAILED ) );
+			notify( "Exception: " + e, Commander.OPERATION_FAILED );
 		}
 		return false;
     }
@@ -656,7 +655,7 @@ public class RootAdapter extends CommanderAdapterBase {
             String[] a = new String[1];
             a[0] = uri.getPath() + SLS + from.getName();
             String to = uri.getPath() + SLS + newName;
-            commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
+            notify( Commander.OPERATION_STARTED );
             if( copy ) {
                 // TODO
                 return false;
@@ -666,7 +665,7 @@ public class RootAdapter extends CommanderAdapterBase {
             worker.start();
             return true;
         } catch( Exception e ) {
-            commander.notifyMe( new Commander.Notify( "Exception: " + e, Commander.OPERATION_FAILED ) );
+            notify( "Exception: " + e, Commander.OPERATION_FAILED );
         }
         return false;
     }
@@ -786,7 +785,7 @@ public class RootAdapter extends CommanderAdapterBase {
     
     public void execute( String command, boolean bb ) {
         if( isWorkerStillAlive() )
-            commander.notifyMe( new Commander.Notify( "Busy", Commander.OPERATION_FAILED ) );
+            notify( "Busy", Commander.OPERATION_FAILED );
         else {
             worker = new ExecEngine( commander.getContext(), workerHandler, uri.getPath(), command, bb, 500 );
             worker.start();
@@ -803,14 +802,15 @@ public class RootAdapter extends CommanderAdapterBase {
                 @Override
                 public void handleMessage( Message msg ) {
                     try {
-                        Bundle b = msg.getData();
-                        String str = b.getString( CommanderAdapterBase.NOTIFY_STR );
-                        if( str == null || str.length() == 0 )
-                            commander.notifyMe( new Commander.Notify( ctx.getString( R.string.nothing ), Commander.OPERATION_COMPLETED ) );
+                        String str = (String)msg.obj;
+                        if( !Utils.str( str ) ) {
+                            msg.obj = ctx.getString( R.string.nothing ); 
+                            commander.notifyMe( msg );
+                        }
                         else {
                             Intent in = new Intent( ctx, TextViewer.class );
                             in.setData( Uri.parse( TextViewer.STRURI ) );
-                            in.putExtra( TextViewer.STRKEY, b );
+                            in.putExtra( TextViewer.STRKEY, str );
                             commander.issue( in, 0 );
                         }
                     } catch( Exception e ) {

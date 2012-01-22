@@ -99,7 +99,7 @@ public class MountAdapter extends CommanderAdapterBase {
                     }
                 }
             }
-            commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
+            notify( Commander.OPERATION_STARTED );
             reader = new MountsListEngine( commander.getContext(), readerHandler, pass_back_on_done );
             reader.start();
             return true;
@@ -108,22 +108,22 @@ public class MountAdapter extends CommanderAdapterBase {
             commander.showError( "Exception: " + e );
             e.printStackTrace();
         }
-        commander.notifyMe( new Commander.Notify( s( R.string.fail ), Commander.OPERATION_FAILED ) );
+        notify( s( R.string.fail ), Commander.OPERATION_FAILED );
         return false;
     }
 	@Override
 	public void reqItemsSize( SparseBooleanArray cis ) {
-		commander.notifyMe( new Commander.Notify( s( R.string.not_supported ), Commander.OPERATION_FAILED ) );
+		notify( s( R.string.not_supported ), Commander.OPERATION_FAILED );
 	}
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
-        commander.notifyMe( new Commander.Notify( s( R.string.not_supported ), Commander.OPERATION_FAILED ) );
+        notify( s( R.string.not_supported ), Commander.OPERATION_FAILED );
         return false;
     }
 	    
 	@Override
 	public boolean createFile( String fileURI ) {
-		commander.notifyMe( new Commander.Notify( s( R.string.not_supported ), Commander.OPERATION_FAILED ) );
+		notify( s( R.string.not_supported ), Commander.OPERATION_FAILED );
 		return false;
 	}
 
@@ -154,7 +154,7 @@ public class MountAdapter extends CommanderAdapterBase {
 	@Override
     public void createFolder( String dev_mp_pair ) {
         if( isWorkerStillAlive() )
-            commander.notifyMe( new Commander.Notify( s( R.string.busy ), Commander.OPERATION_FAILED ) );
+            notify( s( R.string.busy ), Commander.OPERATION_FAILED );
         else {
             worker = new CreateEngine( commander.getContext(), workerHandler, dev_mp_pair );
             worker.start();
@@ -163,7 +163,7 @@ public class MountAdapter extends CommanderAdapterBase {
 
     @Override
     public boolean deleteItems( SparseBooleanArray cis ) {
-        commander.notifyMe( new Commander.Notify( s( R.string.not_supported ), Commander.OPERATION_FAILED ) );
+        notify( s( R.string.not_supported ), Commander.OPERATION_FAILED );
         return false;
     }
     
@@ -187,7 +187,7 @@ public class MountAdapter extends CommanderAdapterBase {
                 return;
             MountItem item = items[position-1];
             if( isWorkerStillAlive() )
-                commander.notifyMe( new Commander.Notify( s( R.string.busy ), Commander.OPERATION_FAILED ) );
+                notify( s( R.string.busy ), Commander.OPERATION_FAILED );
             else {
                 worker = new RemountEngine( commander.getContext(), workerHandler, item );
                 worker.start();
@@ -199,13 +199,13 @@ public class MountAdapter extends CommanderAdapterBase {
 
     @Override
     public boolean receiveItems( String[] full_names, int move_mode ) {
-        commander.notifyMe( new Commander.Notify( s( R.string.not_supported ), Commander.OPERATION_FAILED ) );
+        notify( s( R.string.not_supported ), Commander.OPERATION_FAILED );
         return false;
     }
     
     @Override
     public boolean renameItem( int position, String newName, boolean c ) {
-        commander.notifyMe( new Commander.Notify( s( R.string.not_supported ), Commander.OPERATION_FAILED ) );
+        notify( s( R.string.not_supported ), Commander.OPERATION_FAILED );
         return false;
     }
 

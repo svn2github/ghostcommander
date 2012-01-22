@@ -53,25 +53,23 @@ public class Engine extends Thread {
     protected final void sendProgress( String s, int p1, int p2 ) {
         //Log.v( TAG, "sendProgress: " + s );
         if( thread_handler == null ) return;
-        Message msg = thread_handler.obtainMessage();
-        Bundle b = new Bundle();
-        b.putInt( CommanderAdapterBase.NOTIFY_PRG1, p1 );
-        if( p2 >= 0 )
-            b.putInt( CommanderAdapterBase.NOTIFY_PRG2, p2 );
-        if( s != null )
-            b.putString( CommanderAdapterBase.NOTIFY_STR, s );
-        msg.setData( b );
+        Message msg = null;
+        if( p1 < 0 )
+            msg = thread_handler.obtainMessage( p1, -1, -1, s );
+        else
+            msg = thread_handler.obtainMessage( Commander.OPERATION_IN_PROGRESS, p1, p2, s );
         thread_handler.sendMessage( msg );
     }
     protected final void sendProgress( String s, int p, String cookie ) {
-        if( thread_handler == null ) return;
         //Log.v( TAG, "sendProgress: " + s + ", cookie: " + cookie );
-        Message msg = thread_handler.obtainMessage();
+        if( thread_handler == null ) return;
+        Message msg = null;
+        if( p < 0 )
+            msg = thread_handler.obtainMessage( p, -1, -1, s );
+        else
+            msg = thread_handler.obtainMessage( Commander.OPERATION_IN_PROGRESS, p, -1, s );
         Bundle b = new Bundle();
-        b.putInt( CommanderAdapterBase.NOTIFY_PRG1, p );
-        b.putString( CommanderAdapterBase.NOTIFY_COOKIE, cookie );
-        if( s != null )
-            b.putString( CommanderAdapterBase.NOTIFY_STR, s );
+        b.putString( Commander.NOTIFY_COOKIE, cookie );
         msg.setData( b );
         thread_handler.sendMessage( msg );
     }

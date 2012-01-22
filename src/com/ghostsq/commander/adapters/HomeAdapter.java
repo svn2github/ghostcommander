@@ -62,7 +62,7 @@ public class HomeAdapter extends CommanderAdapterBase {
     
     @Override
     public boolean readSource( Uri tmp_uri, String pbod ) {
-        commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pbod ) );
+        notify( pbod );
         return true;
     }
     @Override

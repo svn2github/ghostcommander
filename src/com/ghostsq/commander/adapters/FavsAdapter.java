@@ -65,7 +65,7 @@ public class FavsAdapter extends CommanderAdapterBase {
 
     @Override
     public boolean readSource( Uri tmp_uri, String pbod ) {
-        commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pbod ) );
+        notify( pbod );
         return true;
     }
 
@@ -107,7 +107,7 @@ public class FavsAdapter extends CommanderAdapterBase {
                     favs.remove( k - 1 );
                     numItems--;
                     notifyDataSetChanged();
-                    commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, null ) );
+                    notify( Commander.OPERATION_COMPLETED );
                     return true;
                 }
             }
@@ -162,7 +162,7 @@ public class FavsAdapter extends CommanderAdapterBase {
 
     public void invalidate() {
         notifyDataSetChanged();
-        commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, null ) );
+        notify( Commander.OPERATION_COMPLETED );
     }    
 
     private final void createDesktopShortcut( Favorite f ) {

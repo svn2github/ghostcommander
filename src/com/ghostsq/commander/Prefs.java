@@ -179,6 +179,7 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
                 break;
             case R.id.rest_prefs:
                 restPrefs( f, sp_dir );
+                ck.restore();
                 finish();
                 break;
             }

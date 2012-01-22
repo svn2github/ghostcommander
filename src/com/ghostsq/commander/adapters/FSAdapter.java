@@ -118,7 +118,7 @@ public class FSAdapter extends CommanderAdapterBase {
                 else
                     dir_name = dirName;
                 if( dir_name == null ) {
-                    commander.notifyMe( new Commander.Notify( s( R.string.inv_path ) + ": " + ( d == null ? "null" : d.toString() ), Commander.OPERATION_FAILED ) );
+                    notify( s( R.string.inv_path ) + ": " + ( d == null ? "null" : d.toString() ), Commander.OPERATION_FAILED );
                     Log.e( TAG, "Unable to obtain folder of the folder name" );
                     return false;
                 }
@@ -130,7 +130,7 @@ public class FSAdapter extends CommanderAdapterBase {
                     err_msg = ctx.getString( R.string.no_such_folder, dir_name );
                 String parent_path;
                 if( dir == null || ( parent_path = dir.getParent() ) == null || ( d = Uri.parse( parent_path ) ) == null ) {
-                    commander.notifyMe( new Commander.Notify( s( R.string.inv_path ), Commander.OPERATION_FAILED ) );
+                    notify( s( R.string.inv_path ), Commander.OPERATION_FAILED );
                     Log.e( TAG, "Wrong folder '" + dir_name + "'" );
                     return false;
                 }
@@ -140,13 +140,13 @@ public class FSAdapter extends CommanderAdapterBase {
             parentLink = dir.getParent() == null ? SLS : PLS;
             notifyDataSetChanged();
             startThumbnailCreation();
-            commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pass_back_on_done ) );
+            notify( pass_back_on_done );
             return true;
         } catch( Exception e ) {
             Log.e( TAG, "readSource() excception", e );
         } catch( OutOfMemoryError err ) {
             Log.e( TAG, "Out Of Memory", err );
-            commander.notifyMe( new Commander.Notify( s( R.string.oom_err ), Commander.OPERATION_FAILED ) );
+            notify( s( R.string.oom_err ), Commander.OPERATION_FAILED );
 		}
 		return false;
     }
@@ -320,7 +320,7 @@ public class FSAdapter extends CommanderAdapterBase {
                     if( succeeded ) break;
                 }
             } catch( Exception e ) {
-                Log.e( TAG, "ThumbnailsThread.run()", e );
+                //Log.e( TAG, "ThumbnailsThread.run()", e );
             }
         }
         
@@ -478,7 +478,7 @@ public class FSAdapter extends CommanderAdapterBase {
         	FileItem[] list = bitsToFilesEx( cis );
     		if( worker != null && worker.reqStop() )
    		        return;
-    		commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
+    		notify( Commander.OPERATION_STARTED );
     		worker = new CalcSizesEngine( workerHandler, list );
     		worker.setName( TAG + ".CalcSizesEngine" );
        		worker.start();
@@ -602,7 +602,7 @@ public class FSAdapter extends CommanderAdapterBase {
         try {
             if( copy ) {
                 // newName could be just name
-                commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
+                notify( Commander.OPERATION_STARTED );
                 File[] list = { items[position - 1].f };
                 String dest_name;
                 if( newName.indexOf( SLC ) < 0 ) {
@@ -652,9 +652,9 @@ public class FSAdapter extends CommanderAdapterBase {
             }
             else
                 ok = f.renameTo( new_file );
-            commander.notifyMe( new Commander.Notify( ok ? null : s( R.string.error ), 
+            notify( ok ? null : s( R.string.error ), 
                     ok ? Commander.OPERATION_COMPLETED_REFRESH_REQUIRED : 
-                         Commander.OPERATION_FAILED ) );
+                         Commander.OPERATION_FAILED );
             return ok;
         }
         catch( SecurityException e ) {
@@ -693,8 +693,7 @@ public class FSAdapter extends CommanderAdapterBase {
 		try {
 			File f = new File( fileURI );
 			boolean ok = f.createNewFile();
-			commander.notifyMe( new Commander.Notify( null, ok ? Commander.OPERATION_COMPLETED_REFRESH_REQUIRED :
-			                                                     Commander.OPERATION_FAILED ) );
+			notify( null, ok ? Commander.OPERATION_COMPLETED_REFRESH_REQUIRED : Commander.OPERATION_FAILED );
 			return ok;     
 		} catch( Exception e ) {
 		    commander.showError( ctx.getString( R.string.cant_create, fileURI, e.getMessage() ) );
@@ -706,13 +705,13 @@ public class FSAdapter extends CommanderAdapterBase {
         
         try {
             if( (new File( dirName, new_name )).mkdir() ) {
-                commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED_REFRESH_REQUIRED ) );
+                notify( null, Commander.OPERATION_COMPLETED_REFRESH_REQUIRED );
                 return;
             }
         } catch( Exception e ) {
             Log.e( TAG, "createFolder", e );
         }
-        commander.notifyMe( new Commander.Notify( ctx.getString( R.string.cant_md, new_name ), Commander.OPERATION_FAILED ) );
+        notify( ctx.getString( R.string.cant_md, new_name ), Commander.OPERATION_FAILED );
     }
 
     @Override
@@ -721,17 +720,17 @@ public class FSAdapter extends CommanderAdapterBase {
         	FileItem[] list = bitsToFilesEx( cis );
         	if( list != null ) {
         		if( worker != null && worker.reqStop() ) {
-        		    commander.notifyMe( new Commander.Notify( s( R.string.wait ), 
-        		            Commander.OPERATION_FAILED ) );
+        		    notify( s( R.string.wait ), 
+        		            Commander.OPERATION_FAILED );
        		        return false;
         		}
-        		commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
+        		notify( Commander.OPERATION_STARTED );
         		worker = new DeleteEngine( workerHandler, list );
         		worker.setName( TAG + ".DeleteEngine" );
         		worker.start();
         	}
 		} catch( Exception e ) {
-		    commander.notifyMe( new Commander.Notify( e.getMessage(), Commander.OPERATION_FAILED ) );
+		    notify( e.getMessage(), Commander.OPERATION_FAILED );
 		}
         return false;
     }
@@ -783,7 +782,7 @@ public class FSAdapter extends CommanderAdapterBase {
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
         boolean ok = to.receiveItems( bitsToNames( cis ), move ? MODE_MOVE : MODE_COPY );
-        if( !ok ) commander.notifyMe( new Commander.Notify( Commander.OPERATION_FAILED ) );
+        if( !ok ) notify( Commander.OPERATION_FAILED );
         return ok;
     }
 
@@ -806,11 +805,10 @@ public class FSAdapter extends CommanderAdapterBase {
             File[] list = Utils.getListOfFiles( uris );
             if( list != null ) {
                 if( worker != null && worker.reqStop() ) {
-                    commander.notifyMe( new Commander.Notify( s( R.string.wait ), 
-                            Commander.OPERATION_FAILED ) );
+                    notify( s( R.string.wait ),Commander.OPERATION_FAILED );
                     return false;
                 }
-                commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
+                notify( Commander.OPERATION_STARTED );
             	worker = new CopyEngine( workerHandler, list, dirName, ( move_mode & MODE_MOVE ) != 0, false );
             	worker.setName( TAG + ".CopyEngine" );
             	worker.start();

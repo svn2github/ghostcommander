@@ -183,15 +183,10 @@ public class TextViewer extends Activity {
                 final String   scheme = uri.getScheme();
                 if( STRKEY.equals( scheme ) ) {
                     Intent i = getIntent();
-                    Bundle b = i.getBundleExtra( STRKEY );
-                    if( b != null ) {
-                        String str = b.getString( STRKEY );
-                        if( str == null )
-                            str = b.getString( CommanderAdapterBase.NOTIFY_STR );
-                        if( str != null ) {
-                            text_view.setText( str );
-                            return true;
-                        }
+                    String str = i.getStringExtra( STRKEY );
+                    if( str != null ) {
+                        text_view.setText( str );
+                        return true;
                     }
                     return false;
                 }

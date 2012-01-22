@@ -133,6 +133,8 @@
     <string name="filemask">File mask:</string>
     <string name="for_files">Files</string>
     <string name="for_dirs">Folders</string>
+    <string name="in_subf">Subdirs</string>
+        
     <string name="content">Content:</string>
     <string name="bigger_than">Bigger\nthan:</string>
     <string name="smaller_than">Smaller\nthan:</string>        
@@ -432,13 +434,6 @@ copied >5 will produce:
     \"Ghost Commander - Samba plugin\"\n
     (com.ghostsq.commander.samba) is installed.</string>
     <string name="smb_app_uri">market://search?q=pname:com.ghostsq.commander.samba</string>
-    <string name="dbox_missed">
-    Cannot load the Dropbox adapter.\n
-    Please make sure the package\n
-    \"Ghost Commander - Dropbox plugin\"\n
-    (com.ghostsq.commander.dropbox) is installed.</string>
-    <string name="dbox_app_uri">market://search?q=pname:com.ghostsq.commander.dropbox</string>
-    
 
     <string name="donate">Please donate</string>
     <string name="online_help">Online Help</string>

@@ -41,9 +41,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public abstract class CommanderAdapterBase extends BaseAdapter implements CommanderAdapter {
-    public final static String NOTIFY_STR = "str", NOTIFY_PRG1 = "prg1", NOTIFY_PRG2 = "prg2", NOTIFY_COOKIE = "cookie";
-    public final static String NOTIFY_RECEIVER_HASH = "hash";
-    protected final static String NOTIFY_ITEMS_TO_RECEIVE = "itms";
+    public final static String NOTIFY_RECEIVER_HASH = "hash", NOTIFY_ITEMS_TO_RECEIVE = "itms";
     protected final static String DEFAULT_DIR = Environment.getExternalStorageDirectory().getAbsolutePath();
     protected final String TAG = getClass().getName();
     public Context ctx;
@@ -63,7 +61,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     private boolean a3r = false;
     protected boolean dirty = true;
     protected int thumbnail_size_perc = 100, font_size = 18;
-    //private int fg_color, sl_color;
     protected int mode = 0;
     protected boolean ascending = true;
     protected String parentLink = SLS;
@@ -74,7 +71,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     private static ColorsKeeper ck;
     private static int[]        typeColors   = new int[0];
     private static Pattern[][]  filePatterns = new Pattern[0][];
-    
+
     public static void setTypeMaskColors( ColorsKeeper ck_ ) {
         try {
             ck = ck_;
@@ -110,17 +107,11 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         @Override
         public void handleMessage( Message msg ) {
             try {
-                Bundle b = msg.getData();
-                int code = b.getInt( CommanderAdapterBase.NOTIFY_PRG1 );
-                String str = b.getString( CommanderAdapterBase.NOTIFY_STR );
-                String cookie = b.getString( CommanderAdapterBase.NOTIFY_COOKIE );
-                if( code <= Commander.OPERATION_FAILED ) {
+                if( msg.what <= Commander.OPERATION_FAILED ) {
                     onReadComplete();
                     reader = null;
                 }
-                Commander.Notify n_obj = new Commander.Notify( str, code, cookie );
-                if( commander != null )
-                    commander.notifyMe( n_obj );
+                commander.notifyMe( msg );
             } catch( Exception e ) {
                 e.printStackTrace();
             }
@@ -144,15 +135,11 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                     }
                     return;
                 }
-                int perc1 = b.getInt( CommanderAdapterBase.NOTIFY_PRG1 );
-                int perc2 = b.getInt( CommanderAdapterBase.NOTIFY_PRG2, -1 );
-                String str = b.getString( CommanderAdapterBase.NOTIFY_STR );
-                Commander.Notify n_obj = new Commander.Notify( str, perc1, perc2 );
-                if( commander == null || commander.notifyMe( n_obj ) )
-                    worker = null;
             } catch( Exception e ) {
                 e.printStackTrace();
             }
+            if( commander == null || commander.notifyMe( msg ) )
+                worker = null;
         }
     };
 
@@ -282,8 +269,36 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         return worker.reqStop();
     }
 
+    protected void notify( String s, String cookie ) {
+        Message msg = readerHandler.obtainMessage( s != null ? Commander.OPERATION_FAILED :
+                                                               Commander.OPERATION_COMPLETED, s );
+        if( msg != null ) {
+            Bundle b = new Bundle();
+            b.putString( Commander.NOTIFY_COOKIE, cookie );
+            msg.setData( b );
+            msg.sendToTarget();
+        }
+    }
+    protected void notify( String cookie ) {
+        notify( null, cookie );
+    }
+    
+    protected void notify( String s, int what, int arg1 ) {
+        Message msg = workerHandler.obtainMessage( what, arg1, -1, s );
+        if( msg != null )
+            msg.sendToTarget();
+    }
+    
+    protected void notify( String s, int what ) {
+        notify( s, what, -1 );
+    }
+    
+    protected void notify( int what ) {
+        notify( null, what, -1 );
+    }
+    
     protected boolean notErr() {
-        commander.notifyMe( new Commander.Notify( s( R.string.not_supported ), Commander.OPERATION_FAILED ) );
+        notify( s( R.string.not_supported ), Commander.OPERATION_FAILED );
         return false;
     }
 
@@ -481,22 +496,26 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             }
             int fg_color = ck != null ? ( item.sel ? ck.sfgColor : ck.fgrColor ) : ctx.getResources().getColor( R.color.fgr_def );
             int fg_color_m = fg_color;
-            try {
-                for( int i = 0; i < typeColors.length; i++ ) {
-                    for( int j = 0; j < filePatterns[i].length; j++ ) {
-                         Matcher m = filePatterns[i][j].matcher( name );
-                         if( m != null && m.matches() ) {
-                             fg_color_m = typeColors[i];
-                             break;
-                         }
+            if( item.colorCache != 0 )
+                fg_color_m = item.colorCache; 
+            else {
+                try {
+                    for( int i = 0; i < typeColors.length; i++ ) {
+                        for( int j = 0; j < filePatterns[i].length; j++ ) {
+                             Matcher m = filePatterns[i][j].matcher( name );
+                             if( m != null && m.matches() ) {
+                                 fg_color_m = typeColors[i];
+                                 item.colorCache = fg_color_m;
+                                 break;
+                             }
+                        }
+                        if( fg_color_m != fg_color )
+                            break;
                     }
-                    if( fg_color_m != fg_color )
-                        break;
+                } catch( Exception e ) {
+                    Log.e( TAG, null, e );
                 }
-            } catch( Exception e ) {
-                Log.e( TAG, null, e );
             }
-            
             if( nameView != null ) {
                 nameView.setTextSize( font_size );
                 if( wm ) {

@@ -1,6 +1,5 @@
 package com.ghostsq.commander;
 
-import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -509,17 +508,20 @@ public class Dialogs implements DialogInterface.OnClickListener {
                         case FileCommander.FIND_ACT: 
                             if( file_name.length() > 0 ) {
                                 StringBuilder sb = new StringBuilder( 128 );
-                                sb.append( "q=" ).append( file_name );
+                                sb.append( "q=" ).append( Utils.escapeUriMarkup( file_name ) );
                                 try {
                                     boolean dirs  = ((CheckBox)dialogObj.findViewById( R.id.for_dirs  )).isChecked();
                                     boolean files = ((CheckBox)dialogObj.findViewById( R.id.for_files )).isChecked();
                                     if( dirs != files ) {
-                                        sb.append( dirs ? "&d=true" : "&f=true" );
+                                        sb.append( dirs ? "&d=1" : "&f=1" );
                                     } else 
                                         if( !dirs ) break;
+                                    boolean one_level_only = !((CheckBox)dialogObj.findViewById( R.id.in_subf )).isChecked();
+                                    if( one_level_only )
+                                        sb.append( "&o=1" );
                                     String cs = ((EditText)dialogObj.findViewById( R.id.edit_content )).getText().toString();
                                     if( cs.length() > 0 )
-                                        sb.append( "&c=" ).append( cs );
+                                        sb.append( "&c=" ).append( Utils.escapeUriMarkup( cs ) );
 
                                     String bts = ((EditText)dialogObj.findViewById( R.id.edit_bigger  )).getText().toString();
                                     if( bts.length() > 0 )

@@ -163,7 +163,7 @@ public class AppsAdapter extends CommanderAdapterBase {
             String a = uri.getAuthority(); 
             if( a == null || a.length() == 0 ) {    // enumerate the applications
                 manUtl = null;
-                commander.notifyMe( new Commander.Notify( Commander.OPERATION_STARTED ) );
+                notify( Commander.OPERATION_STARTED );
                 reader = new ListEngine( readerHandler, pbod );
                 reader.start();
                 
@@ -210,7 +210,7 @@ public class AppsAdapter extends CommanderAdapterBase {
                 compItems = new Item[ial.size()];
                 ial.toArray( compItems );
                 numItems = compItems.length + 1;
-                commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pbod ) );
+                notify( pbod );
                 return true;
             }
             else { // the URI path contains something
@@ -246,19 +246,21 @@ public class AppsAdapter extends CommanderAdapterBase {
                             numItems = srvInfos.length + 1;
                         }
                     }
-                    commander.notifyMe( new Commander.Notify( null, Commander.OPERATION_COMPLETED, pbod ) );
+                    notify( pbod );
                     return true;
                 }
             }
         }
         catch( Exception e ) {
-            commander.showError( "Exception: " + e );
-            e.printStackTrace();
+            Log.e( TAG, uri != null ? uri.toString() : null, e );
+            notify( uri != null ? s( R.string.failed ) + s( R.string.pkg_name ) + ":\n" + uri.getAuthority() : 
+                                  s( R.string.fail ), pbod );
+            return false;
         }
         finally {
             notifyDataSetChanged();
         }
-        commander.notifyMe( new Commander.Notify( "Fail", Commander.OPERATION_FAILED ) );
+        notify( s( R.string.fail ), pbod );
         return false;
     }
     
@@ -389,8 +391,17 @@ public class AppsAdapter extends CommanderAdapterBase {
     
     @Override
     public void reqItemsSize( SparseBooleanArray cis ) {
-        if( pkgInfos == null ) return;
-        ArrayList<PackageInfo> pl = bitsToItems( cis, pkgInfos );
+        ArrayList<PackageInfo> pl = null;
+        if( pkgInfos == null ) {
+            pl = new ArrayList<PackageInfo>( 1 );
+            try {
+                pl.add( pm.getPackageInfo( uri.getAuthority(), 0 ) );
+            } catch( Exception e ) {
+                Log.e( TAG, uri.getAuthority(), e );
+            }
+        }
+        else
+           pl = bitsToItems( cis, pkgInfos );
         if( pl == null || pl.size() == 0 ) {
             notErr();
             return;
@@ -401,6 +412,8 @@ public class AppsAdapter extends CommanderAdapterBase {
             try {
                 PackageInfo pi = pm.getPackageInfo( pl.get( i ).packageName, PackageManager.GET_GIDS | 
                                                                              PackageManager.GET_PERMISSIONS );
+                if( pi == null )
+                    continue;
                 String v = null;
                 int    vc = 0;
                 String size = null;
@@ -491,7 +504,7 @@ public class AppsAdapter extends CommanderAdapterBase {
                 e.printStackTrace();
             }
         }
-        commander.notifyMe( new Commander.Notify( sb.toString(), Commander.OPERATION_COMPLETED, Commander.OPERATION_REPORT_IMPORTANT ) );
+        notify( sb.toString(), Commander.OPERATION_COMPLETED, Commander.OPERATION_REPORT_IMPORTANT );
     }
 
     @Override
@@ -499,7 +512,7 @@ public class AppsAdapter extends CommanderAdapterBase {
         if( pkgInfos != null ) { 
             ArrayList<PackageInfo> pl = bitsToItems( cis, pkgInfos );
             if( pl == null || pl.size() == 0 ) {
-                commander.notifyMe( new Commander.Notify( s( R.string.copy_err ), Commander.OPERATION_FAILED ) );
+                notify( s( R.string.copy_err ), Commander.OPERATION_FAILED );
                 return false;
             }
             String[] paths = new String[pl.size()];
@@ -510,7 +523,7 @@ public class AppsAdapter extends CommanderAdapterBase {
             }
             
             boolean ok = to.receiveItems( paths, MODE_COPY );
-            if( !ok ) commander.notifyMe( new Commander.Notify( Commander.OPERATION_FAILED ) );
+            if( !ok ) notify( Commander.OPERATION_FAILED );
             return ok;
         }
         if( compItems != null ) {
@@ -533,7 +546,7 @@ public class AppsAdapter extends CommanderAdapterBase {
                                     String[] paths = new String[1];
                                     paths[0] = ctx.getFileStreamPath( tmp_fn ).getAbsolutePath();
                                     boolean ok = to.receiveItems( paths, MODE_COPY );
-                                    if( !ok ) commander.notifyMe( new Commander.Notify( Commander.OPERATION_FAILED ) );
+                                    if( !ok ) notify( Commander.OPERATION_FAILED );
                                     return ok;
                                 }
                             }
@@ -980,7 +993,6 @@ public class AppsAdapter extends CommanderAdapterBase {
             return ascending ? ext_cmp : -ext_cmp;
         }
     }
-
     private class ActivityInfoComparator implements Comparator<ActivityInfo> {
         private int     type;
         private boolean ascending;
@@ -1011,7 +1023,6 @@ public class AppsAdapter extends CommanderAdapterBase {
             return ascending ? ext_cmp : -ext_cmp;
         }
     }
-    
     private final void createDesktopShortcut( ComponentName cn, String name, Bitmap ico ) {
         Intent shortcutIntent = new Intent();
         shortcutIntent.setComponent( cn );

@@ -6,6 +6,7 @@ package com.ghostsq.commander;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Message;
 
 /**
  * @author zc2
@@ -29,7 +30,8 @@ public interface Commander {
      *   OPERATION_FAILED_LOGIN_REQUIRED       show user/pass dialog and pass the identity to the adapter with 
      *                                         the string as passed in the first parameter
      */
-	public final static int  OPERATION_STARTED = -1, 
+	public final static int  OPERATION_IN_PROGRESS = 0,
+	                         OPERATION_STARTED = -1, 
 	                         OPERATION_FAILED = -2, 
 	                         OPERATION_COMPLETED = -3, 
 	                         OPERATION_COMPLETED_REFRESH_REQUIRED = -4,
@@ -39,6 +41,8 @@ public interface Commander {
 	public final static int  OPERATION_REPORT_IMPORTANT = 870;
 
     public final static int  OPEN = 903, OPEN_WITH = 902, SEND_TO = 236, COPY_NAME = 390, FAV_FLD = 414;
+    
+    public final static String NOTIFY_COOKIE = "cookie";
 	
     /**
      * @return current UI context
@@ -96,7 +100,11 @@ public interface Commander {
      * @param Notify object - see below
      * @return true if finishing 
      */
-	public boolean notifyMe( Notify obj );
+    public boolean notifyMe( Message m );
+    
+    
+/*
+    public boolean notifyMe( Notify obj );
 
 	/**
      * Adapter's working procedures (both in this thread and the candler of worker threads) should pass this
@@ -104,7 +112,6 @@ public interface Commander {
      * @param prg1 of MAX, or OPERATION_xxx (see above). To set MAX, call with SET_MAX as the first param 
      * @param prg2 of MAX, pass -1 to make it not changed
      * @param cookie 
-     */
 	class Notify {
 	    public String string, cookie;
 	    public int status = 0, substat = 0;
@@ -126,4 +133,5 @@ public interface Commander {
             cookie = cookie_;
         }
 	}
+     */
 }

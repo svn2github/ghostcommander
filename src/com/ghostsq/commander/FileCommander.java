@@ -23,6 +23,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
@@ -701,84 +702,96 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     }
 
     @Override
-    public boolean notifyMe( Notify progress ) {
-        if( progress.status == Commander.OPERATION_STARTED ) {
-            setProgressBarIndeterminateVisibility( true );
-            if( progress.string != null && progress.string.length() > 0 )
-                showMessage( progress.string );
-            return false;
-        }
-        Dialogs dh = getDialogsInstance( Dialogs.PROGRESS_DIALOG );
-        
-        if( progress.status >= 0 ) {
-            if( on ) {
+    public boolean notifyMe( Message progress ) {
+        String string = null;
+        try {
+            if( progress.obj != null )
+                string = (String)progress.obj;
+            String cookie = null;
+            {
+                Bundle b = progress.getData();
+                cookie = b.getString( NOTIFY_COOKIE );
+            }
+            
+            if( progress.what == Commander.OPERATION_STARTED ) {
+                setProgressBarIndeterminateVisibility( true );
+                if( string != null && string.length() > 0 )
+                    showMessage( string );
+                return false;
+            }
+            Dialogs dh = getDialogsInstance( Dialogs.PROGRESS_DIALOG );
+            
+            if( progress.what == OPERATION_IN_PROGRESS && progress.arg1 >= 0 ) {
+                if( on ) {
+                    if( dh != null ) {
+                        Dialog d = dh.getDialog();
+                        if( d != null && d.isShowing() ) {
+                            dh.setProgress( string, progress.arg1, progress.arg2 );
+                            return false;
+                        }
+                    }
+                    showDialog( Dialogs.PROGRESS_DIALOG );
+                }
+                else {
+                    if( string != null && string.length() > 0 )
+                        setSystemNotification( string, progress.arg1 );
+                }
+                return false;
+            }
+            else {
                 if( dh != null ) {
                     Dialog d = dh.getDialog();
                     if( d != null && d.isShowing() ) {
-                        dh.setProgress( progress.string, progress.status, progress.substat );
-                        return false;
+                        //Log.v( TAG, "Trying to cancel the progress dialog..." );
+                        d.cancel();
                     }
                 }
-                showDialog( Dialogs.PROGRESS_DIALOG );
             }
-            else {
-                if( progress.string != null && progress.string.length() > 0 )
-                    setSystemNotification( progress.string, progress.status );
-            }
-            return false;
-        }
-        else {
-            if( dh != null ) {
-                Dialog d = dh.getDialog();
-                if( d != null && d.isShowing() ) {
-                    //Log.v( TAG, "Trying to cancel the progress dialog..." );
-                    d.cancel();
+            if( notMan != null ) notMan.cancel( 1 ); 
+            setProgressBarIndeterminateVisibility( false );
+            panels.operationFinished();
+            switch( progress.what ) {
+            case OPERATION_SUSPENDED_FILE_EXIST: {
+                    dh = obtainDialogsInstance( Dialogs.FILE_EXIST_DIALOG );
+                    dh.setMessageToBeShown( string, null );
+                    dh.showDialog();
                 }
+                return false;
+            case OPERATION_FAILED:
+                if( Utils.str( cookie ) ) {
+                    int which_panel = cookie.charAt( 0 ) == '1' ? 1 : 0;
+                    panels.setPanelTitle( getString( R.string.fail ), which_panel );
+                }
+                if( Utils.str( string ) )
+                    showError( string );
+                panels.redrawLists();
+                return true;
+            case OPERATION_FAILED_LOGIN_REQUIRED: 
+                if( string != null ) {
+                    dh = obtainDialogsInstance( Dialogs.LOGIN_DIALOG );
+                    dh.setMessageToBeShown( null, string );
+                    showDialog( Dialogs.LOGIN_DIALOG );
+                }
+                return true;
+            case OPERATION_COMPLETED_REFRESH_REQUIRED:
+                panels.refreshLists();
+                break;
+            case OPERATION_COMPLETED:
+                if( Utils.str( cookie ) ) {
+                    //Log.v( TAG, "notify with cookie: " + progress.cookie );
+                    int which_panel = cookie.charAt( 0 ) == '1' ? 1 : 0;
+                    String item_name = cookie.substring( 1 );
+                    panels.recoverAfterRefresh( item_name, which_panel );
+                }
+                else
+                    panels.recoverAfterRefresh( null, -1 );
+                break;
             }
+            if( ( show_confirm || progress.arg1 == OPERATION_REPORT_IMPORTANT ) && Utils.str( string ) )
+                showInfo( string );
+        } catch( Exception e ) {
+            Log.e( TAG, string, e );
         }
-        if( notMan != null ) notMan.cancel( 1 ); 
-        setProgressBarIndeterminateVisibility( false );
-        panels.operationFinished();
-        switch( progress.status ) {
-        case OPERATION_SUSPENDED_FILE_EXIST: {
-                dh = obtainDialogsInstance( Dialogs.FILE_EXIST_DIALOG );
-                dh.setMessageToBeShown( progress.string, null );
-                dh.showDialog();
-            }
-            return false;
-        case OPERATION_FAILED:
-            if( progress.cookie != null && progress.cookie.length() > 0 ) {
-                int which_panel = progress.cookie.charAt( 0 ) == '1' ? 1 : 0;
-                panels.setPanelTitle( getString( R.string.fail ), which_panel );
-            }
-            if( progress.string != null && progress.string.length() > 0 )
-                showError( progress.string );
-            panels.redrawLists();
-            return true;
-        case OPERATION_FAILED_LOGIN_REQUIRED: 
-            if( progress.string != null ) {
-                dh = obtainDialogsInstance( Dialogs.LOGIN_DIALOG );
-                dh.setMessageToBeShown( null, progress.string );
-                showDialog( Dialogs.LOGIN_DIALOG );
-            }
-            return true;
-        case OPERATION_COMPLETED_REFRESH_REQUIRED:
-            panels.refreshLists();
-            break;
-        case OPERATION_COMPLETED:
-            if( progress.cookie != null && progress.cookie.length() > 0 ) {
-                //Log.v( TAG, "notify with cookie: " + progress.cookie );
-                int which_panel = progress.cookie.charAt( 0 ) == '1' ? 1 : 0;
-                String item_name = progress.cookie.substring( 1 );
-                panels.recoverAfterRefresh( item_name, which_panel );
-            }
-            else
-                panels.recoverAfterRefresh( null, -1 );
-            break;
-        }
-        if( ( show_confirm || progress.substat == OPERATION_REPORT_IMPORTANT )  
-                           && progress.string != null && progress.string.length() > 0 )
-            showInfo( progress.string );
         return true;
     }
 

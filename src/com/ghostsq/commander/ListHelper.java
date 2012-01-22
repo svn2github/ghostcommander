@@ -80,7 +80,7 @@ public class ListHelper {
                 applySettings( sharedPref );
                 ca_old = ca_new;
             }
-            p.applyColors();
+            //p.applyColors();
             p.setPanelTitle( p.c.getString( R.string.wait ), which );
             p.setToolbarButtons( ca_old );
             ca_old.readSource( uri, "" + which + ( posTo == null ? "" : posTo ) );
@@ -105,7 +105,7 @@ public class ListHelper {
     public final void applyColors( ColorsKeeper ck ) {
         if( flv == null ) return;
         flv.setBackgroundColor( ck.bgrColor );
-        //flv.setCacheColorHint( ck.bgrColor );
+        flv.setCacheColorHint( ck.bgrColor );
         if( ck.curColor != 0 ) {
             Drawable d = Utils.getShadingEx( ck.curColor, 0.9f );
             if( d != null )

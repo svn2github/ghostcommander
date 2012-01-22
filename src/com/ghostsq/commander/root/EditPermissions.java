@@ -137,10 +137,8 @@ public class EditPermissions extends Activity implements View.OnClickListener {
         @Override
         public void handleMessage( Message msg ) {
             try {
-                Bundle b = msg.getData();
-                int code = b.getInt( CommanderAdapterBase.NOTIFY_PRG1 );
-                if( code < 0 ) {
-                    setResult( RESULT_OK, (new Intent()).setAction( Intent.ACTION_VIEW ) );
+                if( msg.what < 0 ) {
+                    setResult( RESULT_OK, new Intent( Intent.ACTION_VIEW ) );
                     finish();
                 }
             } catch( Exception e ) {

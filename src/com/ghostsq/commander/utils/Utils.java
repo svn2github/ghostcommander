@@ -15,104 +15,79 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.net.ParseException;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 public final class Utils {
-	private final static String[][] mimes = {	// should be sorted!
-        { ".3gpp","audio/3gpp" },
-        { ".aif", "audio/x-aiff" },
-		{ ".apk", "application/vnd.android.package-archive" },
-		{ ".avi", "video/x-msvideo" },
-		{ ".bmp", "image/bmp" },
-        { ".csv", "text/csv" },
-        { ".doc", "application/msword" },
-        { ".epub","application/epub" },
-        { ".fb2", "application/fb2" },
-		{ ".gif", "image/gif" },
-		{ ".gz",  "application/gzip" },
-		{ ".htm", "text/html" },
-		{ ".html","text/html" },
-		{ ".jar", "application/java-archive" },
-		{ ".java","application/octet-stream" },
-		{ ".jpeg","image/jpeg" },
-		{ ".jpg", "image/jpeg" },
-        { ".m3u", "audio/x-mpegurl" },
-        { ".mid", "audio/midi" },
-		{ ".midi","audio/midi" },
-		{ ".mp3", "audio/mp3" },
-		{ ".mpeg","video/mpeg" },
-		{ ".ogg", "audio/x-ogg" },
-        { ".pdf", "application/pdf" },
-        { ".php", "text/php" },
-		{ ".png", "image/png" },
-        { ".ra",  "audio/x-pn-realaudio" },
-        { ".ram", "audio/x-pn-realaudio" },
-        { ".rar", "application/x-rar-compressed" },
-        { ".rtf", "application/rtf" },
-        { ".svg", "image/svg+xml" },
-        { ".tgz", "application/gnutar" },
-        { ".tif", "image/tiff" },
-        { ".tiff","image/tiff" },
-        { ".txt", "text/plain" },
-		{ ".vcf", "text/x-vcard" },
-		{ ".wav", "audio/wav" },
-        { ".xml", "text/xml" },
-		{ ".zip", "application/zip" }
-	};
+    private final static String[][] mimes = { // should be sorted!
+    { ".3gpp", "audio/3gpp" }, { ".aif", "audio/x-aiff" }, { ".apk", "application/vnd.android.package-archive" },
+            { ".avi", "video/x-msvideo" }, { ".bmp", "image/bmp" }, { ".csv", "text/csv" }, { ".doc", "application/msword" },
+            { ".epub", "application/epub" }, { ".fb2", "application/fb2" }, { ".gif", "image/gif" }, { ".gz", "application/gzip" },
+            { ".htm", "text/html" }, { ".html", "text/html" }, { ".jar", "application/java-archive" },
+            { ".java", "application/octet-stream" }, { ".jpeg", "image/jpeg" }, { ".jpg", "image/jpeg" },
+            { ".m3u", "audio/x-mpegurl" }, { ".mid", "audio/midi" }, { ".midi", "audio/midi" }, { ".mp3", "audio/mp3" },
+            { ".mpeg", "video/mpeg" }, { ".ogg", "audio/x-ogg" }, { ".pdf", "application/pdf" }, { ".php", "text/php" },
+            { ".png", "image/png" }, { ".ra", "audio/x-pn-realaudio" }, { ".ram", "audio/x-pn-realaudio" },
+            { ".rar", "application/x-rar-compressed" }, { ".rtf", "application/rtf" }, { ".svg", "image/svg+xml" },
+            { ".tgz", "application/gnutar" }, { ".tif", "image/tiff" }, { ".tiff", "image/tiff" }, { ".txt", "text/plain" },
+            { ".vcf", "text/x-vcard" }, { ".wav", "audio/wav" }, { ".xml", "text/xml" }, { ".zip", "application/zip" } };
 
-	public final static String getMimeByExt( String ext ) {
-		if( ext == null || ext.length() == 0 || ext.compareTo( "." ) == 0 ) 
-		    return "*/*";
-		ext = ext.toLowerCase();
-		int from = 0, to = mimes.length;
-		for( int l = 0; l < mimes.length; l++ ) {
-			int idx = ( to - from ) / 2 + from;
-			String tmp = mimes[idx][0];
-			if( tmp.compareTo( ext ) == 0 ) 
-			    return mimes[idx][1];
-			int cp;
-			for( cp = 1; ; cp++ ) {
-				if( cp >= ext.length() ) {
-					to = idx;
-					break;
-				}
-				if( cp >= tmp.length() ) {
-					from = idx;
-					break;
-				}
-				char c0 = ext.charAt( cp );
-				char ct = tmp.charAt( cp );
-				if( c0 < ct ) {
-					to = idx;
-					break;
-				}
-				if( c0 > ct ) {
-					from = idx;
-					break;
-				}
-			}
-		}
+    public final static String getMimeByExt( String ext ) {
+        if( ext == null || ext.length() == 0 || ext.compareTo( "." ) == 0 )
+            return "*/*";
+        ext = ext.toLowerCase();
+        int from = 0, to = mimes.length;
+        for( int l = 0; l < mimes.length; l++ ) {
+            int idx = ( to - from ) / 2 + from;
+            String tmp = mimes[idx][0];
+            if( tmp.compareTo( ext ) == 0 )
+                return mimes[idx][1];
+            int cp;
+            for( cp = 1;; cp++ ) {
+                if( cp >= ext.length() ) {
+                    to = idx;
+                    break;
+                }
+                if( cp >= tmp.length() ) {
+                    from = idx;
+                    break;
+                }
+                char c0 = ext.charAt( cp );
+                char ct = tmp.charAt( cp );
+                if( c0 < ct ) {
+                    to = idx;
+                    break;
+                }
+                if( c0 > ct ) {
+                    from = idx;
+                    break;
+                }
+            }
+        }
         MimeTypeMap mime_map = MimeTypeMap.getSingleton();
         if( mime_map != null ) {
             String mime = mime_map.getMimeTypeFromExtension( ext.substring( 1 ) );
             if( mime != null && mime.length() > 0 )
                 return mime;
         }
-		return "*/*";
-	}
-	public final static String getFileExt( String file_name ) {
-	    if( file_name == null ) return "";
-		int dot = file_name.lastIndexOf(".");
-		return dot >= 0 ? file_name.substring( dot ) : "";
-	}
-	
-	public final static String[] prepareWildcard( String wc ) {
-	    return ( "\02" + wc.toLowerCase() + "\03" ).split( "\\*" );
-	}
-	public final static boolean match( String text, String[] cards ) {
+        return "*/*";
+    }
+
+    public final static String getFileExt( String file_name ) {
+        if( file_name == null )
+            return "";
+        int dot = file_name.lastIndexOf( "." );
+        return dot >= 0 ? file_name.substring( dot ) : "";
+    }
+
+    public final static String[] prepareWildcard( String wc ) {
+        return ( "\02" + wc.toLowerCase() + "\03" ).split( "\\*" );
+    }
+
+    public final static boolean match( String text, String[] cards ) {
         int pos = 0;
         String lc_text = "\02" + text.toLowerCase() + "\03";
         for( String card : cards ) {
@@ -123,6 +98,7 @@ public final class Utils {
         }
         return true;
     }
+
     public final static int deleteDirContent( File d ) {
         int cnt = 0;
         File[] fl = d.listFiles();
@@ -136,18 +112,20 @@ public final class Utils {
         }
         return cnt;
     }
-	public final static File[] getListOfFiles( String[] uris ) {
-	    File[] list = new File[uris.length];
-	    for( int i = 0; i < uris.length; i++ ) {
-	    	if( uris[i] == null )
-	    		return null;
-	        list[i] = new File( uris[i] );
-	    }
-	    return list;
-	}
-	// TODO: localize
+
+    public final static File[] getListOfFiles( String[] uris ) {
+        File[] list = new File[uris.length];
+        for( int i = 0; i < uris.length; i++ ) {
+            if( uris[i] == null )
+                return null;
+            list[i] = new File( uris[i] );
+        }
+        return list;
+    }
+
+    // TODO: localize
     public final static String getOpReport( Context ctx, int total, int verb_id ) {
-        String items = null; 
+        String items = null;
         if( total > 1 ) {
             if( total < 5 )
                 items = ctx.getString( R.string.items24 );
@@ -157,34 +135,39 @@ public final class Utils {
                 items = ctx.getString( R.string.item );
         }
         String verb = ctx.getString( verb_id );
-        String report = ( total > 0 ? "" + total + " " + 
-                        ( total > 1 ? items : ctx.getString( R.string.item ) ) 
-                                    : ctx.getString( R.string.nothing ) ) + " " +
-                        ( total > 1 ? ctx.getString( R.string.were  ) : ctx.getString( R.string.was ) ) 
-                        + " " + verb + 
-                        ( total > 1 ? ctx.getString( R.string.verb_plural_sfx ) : "" ) + ".";
+        String report = ( total > 0 ? "" + total + " " + ( total > 1 ? items : ctx.getString( R.string.item ) ) : ctx
+                .getString( R.string.nothing ) )
+                + " "
+                + ( total > 1 ? ctx.getString( R.string.were ) : ctx.getString( R.string.was ) )
+                + " "
+                + verb
+                + ( total > 1 ? ctx.getString( R.string.verb_plural_sfx ) : "" ) + ".";
         return report;
     }
+
     public final static String getHumanSize( long sz ) {
         if( sz > 1073741824 )
-            return "" + Math.round(sz*10 / 1073741824.)/10. + "G";
+            return "" + Math.round( sz * 10 / 1073741824. ) / 10. + "G";
         if( sz > 1048576 )
-            return "" + Math.round(sz*10 / 1048576.)/10. + "M";
+            return "" + Math.round( sz * 10 / 1048576. ) / 10. + "M";
         if( sz > 1024 )
-            return "" + Math.round(sz*10 / 1024.)/10. + "K";
+            return "" + Math.round( sz * 10 / 1024. ) / 10. + "K";
         return "" + sz + " ";
     }
+
     public final static long parseHumanSize( String s ) {
+        if( s == null )
+            return 0;
         final char[] sxs = { 'K', 'M', 'G', 'T' };
         long m = 1024;
-        int  s_pos;
+        int s_pos;
         s = s.toUpperCase();
         try {
-            for( int i=0; i < 4; i++ ) {
+            for( int i = 0; i < 4; i++ ) {
                 s_pos = s.indexOf( sxs[i] );
                 if( s_pos > 0 ) {
                     float v = Float.parseFloat( s.substring( 0, s_pos ) );
-                    return (long)(v * m);
+                    return (long)( v * m );
                 }
                 m *= 1024;
             }
@@ -193,56 +176,64 @@ public final class Utils {
         } catch( NumberFormatException e ) {
             e.printStackTrace();
         }
-        return 0; 
+        return 0;
     }
 
     public final static String mbAddSl( String path ) {
-        if( path == null || path.length() == 0 ) return "";
-        return path.charAt( path.length()-1 ) == '/' ? path : path + "/"; 
+        if( !str( path ) )
+            return "";
+        return path.charAt( path.length() - 1 ) == '/' ? path : path + "/";
     }
-    
+
     public final static String encodeToAuthority( String serv ) {
-        String auth = null;                
+        String auth = null;
         int cp = serv.lastIndexOf( ':' );
         if( cp > 0 ) {
-            String ps = serv.substring( cp+1 );
+            String ps = serv.substring( cp + 1 );
             try {
                 int port = Integer.parseInt( ps );
                 if( port > 0 )
-                    auth = Uri.encode( serv.substring( 0, cp ) ) + ":" + port; 
-            } catch( NumberFormatException e ) {}
+                    auth = Uri.encode( serv.substring( 0, cp ) ) + ":" + port;
+            } catch( NumberFormatException e ) {
+            }
         }
         if( auth == null )
             auth = Uri.encode( serv );
         return auth;
     }
+
+    public final static boolean str( String s ) {
+        return s != null && s.length() > 0;
+    }
     
     public final static String join( String[] a, String sep ) {
-        if( a == null ) return "";
+        if( a == null )
+            return "";
         StringBuffer buf = new StringBuffer( 256 );
         boolean first = true;
         for( int i = 0; i < a.length; i++ ) {
-          if( first )
-            first = false;
-          else if( sep != null )
-            buf.append( sep );
-          buf.append( a[i] );
+            if( first )
+                first = false;
+            else if( sep != null )
+                buf.append( sep );
+            buf.append( a[i] );
         }
         return buf.toString();
     }
+
     public final static void changeLanguage( Context c ) {
         changeLanguage( c, c.getResources() );
     }
+
     public final static void changeLanguage( Context c, Resources r ) {
         try {
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
             String lang = sharedPref.getString( "language", "" );
-            
+
             Locale locale;
             if( lang == null || lang.length() == 0 ) {
                 locale = Locale.getDefault();
-            }
-            else {
+            } else {
                 String country = lang.length() > 3 ? lang.substring( 3 ) : null;
                 if( country != null )
                     locale = new Locale( lang.substring( 0, 2 ), country );
@@ -257,7 +248,7 @@ public final class Utils {
             e.printStackTrace();
         }
     }
- 
+
     public final static CharSequence readStreamToBuffer( InputStream is, String encoding ) {
         if( is != null ) {
             try {
@@ -265,37 +256,40 @@ public final class Utils {
                 if( bytes < 1024 || bytes > 1048576 )
                     bytes = 10240;
                 char[] chars = new char[bytes];
-                InputStreamReader isr = null; 
-                if( encoding != null && encoding.length() != 0 ) {
+                InputStreamReader isr = null;
+                if( str( encoding ) ) {
                     try {
                         isr = new InputStreamReader( is, encoding );
-                    }
-                    catch( UnsupportedEncodingException e ) {
+                    } catch( UnsupportedEncodingException e ) {
                         Log.w( "GC", encoding, e );
                         isr = new InputStreamReader( is );
                     }
-                }
-                else 
+                } else
                     isr = new InputStreamReader( is );
-                StringBuffer sb = new StringBuffer( bytes );  
+                StringBuffer sb = new StringBuffer( bytes );
                 int n = -1;
                 boolean available_supported = is.available() > 0;
                 while( true ) {
                     n = isr.read( chars, 0, bytes );
-                    //Log.v( "readStreamToBuffer", "Have read " + n + " chars" );
-                    if( n < 0 ) break;
+                    // Log.v( "readStreamToBuffer", "Have read " + n + " chars"
+                    // );
+                    if( n < 0 )
+                        break;
                     for( int i = 0; i < n; i++ ) {
-                        if( chars[i] == 0x0D ) chars[i] = ' ';
+                        if( chars[i] == 0x0D )
+                            chars[i] = ' ';
                     }
                     sb.append( chars, 0, n );
                     if( available_supported ) {
                         for( int i = 0; i < 10; i++ ) {
-                            if( is.available() > 0 ) break;
-                            //Log.v( "readStreamToBuffer", "Waiting the rest " + i );
+                            if( is.available() > 0 )
+                                break;
+                            // Log.v( "readStreamToBuffer", "Waiting the rest "
+                            // + i );
                             Thread.sleep( 20 );
                         }
                         if( is.available() == 0 ) {
-                            //Log.v( "readStreamToBuffer", "No more data!" );
+                            // Log.v( "readStreamToBuffer", "No more data!" );
                             break;
                         }
                     }
@@ -307,7 +301,8 @@ public final class Utils {
         }
         return null;
     }
-    public final static boolean copyBytes( InputStream  is, OutputStream os ) {
+
+    public final static boolean copyBytes( InputStream is, OutputStream os ) {
         try {
             byte[] buf = new byte[4096];
             int n;
@@ -317,39 +312,46 @@ public final class Utils {
         } catch( Exception e ) {
             e.printStackTrace();
         }
-        return false;        
+        return false;
     }
-    
-    public final static int ENC_DESC_MODE_NUMB  = 0;
+
+    public final static int ENC_DESC_MODE_NUMB = 0;
     public final static int ENC_DESC_MODE_BRIEF = 1;
-    public final static int ENC_DESC_MODE_FULL  = 2;
+    public final static int ENC_DESC_MODE_FULL = 2;
+
     public final static String getEncodingDescr( Context ctx, String enc_name, int mode ) {
-        if( enc_name == null ) enc_name = "";
+        if( enc_name == null )
+            enc_name = "";
         Resources res = ctx.getResources();
-        if( res == null ) return null;
-        String[] enc_dsc_arr = res.getStringArray(R.array.encoding);
-        String[] enc_nms_arr = res.getStringArray(R.array.encoding_vals);
+        if( res == null )
+            return null;
+        String[] enc_dsc_arr = res.getStringArray( R.array.encoding );
+        String[] enc_nms_arr = res.getStringArray( R.array.encoding_vals );
         try {
             for( int i = 0; i < enc_nms_arr.length; i++ ) {
                 if( enc_name.equals( enc_nms_arr[i] ) ) {
                     if( mode == ENC_DESC_MODE_NUMB )
                         return "" + i;
                     String enc_desc = enc_dsc_arr[i];
-                    if( mode == ENC_DESC_MODE_FULL ) 
+                    if( mode == ENC_DESC_MODE_FULL )
                         return enc_desc;
                     else {
                         int nlp = enc_desc.indexOf( '\n' );
-                        if( nlp < 0 ) return enc_desc;
+                        if( nlp < 0 )
+                            return enc_desc;
                         return enc_desc.substring( 0, nlp );
                     }
-                     
+
                 }
             }
-        } catch( Exception e ) {}
+        } catch( Exception e ) {
+        }
         return null;
     }
+
     public final static String escapeUriMarkup( String s ) {
-        if( s == null || s.length() == 0 ) return s;
+        if( s == null || s.length() == 0 )
+            return s;
         return s.replaceAll( "#", "%23" ).replaceAll( ":", "%3A" );
     }
 
@@ -362,7 +364,7 @@ public final class Utils {
     }
 
     private final static String HEX = "0123456789abcdef";
-    
+
     public static String toHexString( byte[] buf ) {
         if( buf == null )
             return "";
@@ -378,47 +380,44 @@ public final class Utils {
         Color.colorToHSV( color, hsv );
         return hsv[2];
     }
-    
+
     public final static int setBrightness( int color, float drop ) {
         float[] hsv = new float[3];
         Color.colorToHSV( color, hsv );
         hsv[2] *= drop;
-        return Color.HSVToColor( hsv );        
+        return Color.HSVToColor( hsv );
     }
-    
+
     public final static GradientDrawable getShading( int color ) {
         return getShadingEx( color, 0.6f );
     }
+
     public final static GradientDrawable getShadingEx( int color, float drop ) {
         try {
             int[] cc = new int[2];
             cc[0] = color;
             cc[1] = setBrightness( color, drop );
             return new GradientDrawable( GradientDrawable.Orientation.TOP_BOTTOM, cc );
-        }
-        catch( Throwable e ) {
+        } catch( Throwable e ) {
             e.printStackTrace();
         }
         return null;
     }
-   
+
     public enum RR {
-               busy(R.string.busy),
-           copy_err(R.string.copy_err),
-             copied(R.string.copied),
-              moved(R.string.moved),
-        interrupted(R.string.interrupted),
-          uploading(R.string.uploading),
-           fail_del(R.string.fail_del),
-           cant_del(R.string.cant_del),
-         retrieving(R.string.retrieving),
-           deleting(R.string.deleting),
-      not_supported(R.string.not_supported),
-         file_exist(R.string.file_exist),
-            cant_md(R.string.cant_md);
-        
+        busy(R.string.busy), copy_err(R.string.copy_err), copied(R.string.copied), moved(R.string.moved), interrupted(
+                R.string.interrupted), uploading(R.string.uploading), fail_del(R.string.fail_del), cant_del(R.string.cant_del), retrieving(
+                R.string.retrieving), deleting(R.string.deleting), not_supported(R.string.not_supported), file_exist(
+                R.string.file_exist), cant_md(R.string.cant_md);
+
         private int r;
-        private RR(int r_) { r = r_; }
-        public int r() { return r; }
+
+        private RR(int r_) {
+            r = r_;
+        }
+
+        public int r() {
+            return r;
+        }
     };
 }

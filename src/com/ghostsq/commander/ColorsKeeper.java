@@ -66,9 +66,9 @@ public final class ColorsKeeper {
             case 1: return "/*;*/";     // directories
             case 2: return "*.gif;*.jpg;*.png;*.bmp";
             case 3: return "*.avi;*.mov;*.mp4;*.mpeg";
-            case 4: return "*.mp3;*.wav;*.ra;*.mid*";
+            case 4: return "*.mp3;*.wav;*.mid*";
             case 5: return "*.htm*;*.xml;*.pdf;*.csv;*.doc*;*.xls*";
-            case 6: return "*.apk;*.zip;*.jar;*.rar;*.bz2;*.gz;*.tgz";
+            case 6: return "*.apk;*.zip;*.jar;*.rar";
             }
             return null;
         }
@@ -89,7 +89,6 @@ public final class ColorsKeeper {
     
     public ColorsKeeper( Context ctx_ ) {
         ctx = ctx_;
-        colorPref = ctx.getSharedPreferences( Prefs.COLORS_PREFS, Activity.MODE_PRIVATE );
         Resources  r = ctx.getResources();
         ttlColor = r.getColor( R.color.ttl_def ); 
         bgrColor = r.getColor( R.color.bgr_def );
@@ -122,6 +121,7 @@ public final class ColorsKeeper {
     }
     
     public final void store() {
+        colorPref = ctx.getSharedPreferences( Prefs.COLORS_PREFS, Activity.MODE_PRIVATE );
         SharedPreferences.Editor editor = colorPref.edit();
         editor.putInt( BGR_COLORS, bgrColor );
         editor.putInt( FGR_COLORS, fgrColor );
@@ -134,6 +134,7 @@ public final class ColorsKeeper {
     }
 
     public final void restore() {
+        colorPref = ctx.getSharedPreferences( Prefs.COLORS_PREFS, Activity.MODE_PRIVATE );
         bgrColor = colorPref.getInt( BGR_COLORS, bgrColor );
         fgrColor = colorPref.getInt( FGR_COLORS, fgrColor );
         curColor = colorPref.getInt( CUR_COLORS, curColor );
@@ -143,7 +144,8 @@ public final class ColorsKeeper {
         btnColor = colorPref.getInt( BTN_COLORS, btnColor );
     }
     
-    public final void storeTypeColors() {    // dirty only!
+    public final void storeTypeColors() {
+        colorPref = ctx.getSharedPreferences( Prefs.COLORS_PREFS, Activity.MODE_PRIVATE );
         SharedPreferences.Editor editor = colorPref.edit();
         for( int i = 1; i <= ftColors.size(); i++ ) {
             FileTypeColor ftc = ftColors.get( i - 1 );
@@ -153,6 +155,7 @@ public final class ColorsKeeper {
     }
     public final int restoreTypeColors() {
         try {
+            colorPref = ctx.getSharedPreferences( Prefs.COLORS_PREFS, Activity.MODE_PRIVATE );
             if( ftColors == null  )
                 ftColors = new ArrayList<FileTypeColor>( 5 );
             else
