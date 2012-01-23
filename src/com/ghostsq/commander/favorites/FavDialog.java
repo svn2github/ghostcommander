@@ -69,7 +69,7 @@ public class FavDialog implements OnClickListener {
                 }
                 String username = f.getUserName();
                 
-                if( smb ) {
+                if( smb && username != null ) {
                     int sep = username.indexOf( '\\' );
                     if( sep < 0 )
                         sep = username.indexOf( ';' );

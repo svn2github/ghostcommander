@@ -5,6 +5,7 @@ import java.io.File;
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
+import com.ghostsq.commander.utils.Utils;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -131,7 +132,9 @@ public class Engine extends Thread {
         threadStartedAt = 0;
         return yes;
     }
-
+    protected String sizeOfsize( long n, String sz_s ) {
+        return "\n" + Utils.getHumanSize( n ) + "/" + sz_s;
+    }
     protected final int askOnFileExist( String msg, Commander commander ) throws InterruptedException {
         if( ( file_exist_behaviour & Commander.APPLY_ALL ) != 0 )
             return file_exist_behaviour & ~Commander.APPLY_ALL;

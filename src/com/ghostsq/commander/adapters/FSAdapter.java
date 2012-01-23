@@ -917,18 +917,21 @@ public class FSAdapter extends CommanderAdapterBase {
                         out = new FileOutputStream( outFile ).getChannel();
                         long size  = in.size();
                         final long max_chunk = 524288;
+                        long pos = 0;
                         long chunk = size > max_chunk ? max_chunk : size;
                         long t_chunk = 0;
                         long start_time = 0;
                         int  speed = 0;
                         int  so_far = (int)(totalBytes * conv);
+                        
+                        String sz_s = Utils.getHumanSize( size );
                         String rep_s = c.getString( R.string.copying, fn ); 
-                        for( long start = 0; start < size; ) {
+                        for( pos = 0; pos < size; ) {
                             if( t_chunk == 0 )
                                 start_time = System.currentTimeMillis();
-                            sendProgress( rep_s, so_far, (int)(totalBytes * conv), speed );
-                        	long transferred = in.transferTo( start, chunk, out );
-                        	start += transferred;
+                            sendProgress( rep_s + sizeOfsize( pos, sz_s ), so_far, (int)(totalBytes * conv), speed );
+                        	long transferred = in.transferTo( pos, chunk, out );
+                        	pos += transferred;
                             t_chunk += transferred;
                         	totalBytes += transferred;
                             if( isStopReq() ) {
@@ -948,7 +951,7 @@ public class FSAdapter extends CommanderAdapterBase {
                         in = null;
                         out = null;
                         if( i >= list.length-1 )
-                        	sendProgress( c.getString( R.string.copied_f, fn ), (int)(totalBytes * conv) );
+                        	sendProgress( c.getString( R.string.copied_f, fn ) + sizeOfsize( pos, sz_s ), (int)(totalBytes * conv) );
                         
 // debug only, to remove!
 //Log.v( TAG, c.getString( R.string.copied_f, fn ) );
