@@ -463,12 +463,10 @@ public class Dialogs implements DialogInterface.OnClickListener {
             if( perc_t != null ) {
                 perc_t.setText( "" + ( progressSec > 0 ? progressSec : progress ) + "%" );
             }
-            if( progress == 0 || speed == 0 ) {
+            if( speed == 0 || ( progress <= 0 && progressSec <= 0 ) ) {
                 progressCounter = 0;
                 progressAcSpeed = 0;
             }            
-            
-            
             TextView speed_t = (TextView)dialogObj.findViewById( R.id.speed );
             if( speed > 0 ) {
                 progressCounter++;

@@ -23,7 +23,8 @@ public interface Commander {
 	                 SKIP_ALL    = 8|4;
 	
     /**
-     *   notifyMe() constants:
+     *   notifyMe() "what" constants:
+     *   OPERATION_STARTED                     is sent when an operation starts
      *   OPERATION_FAILED                      always show message (default if not provided)  
      *   OPERATION_COMPLETED                   show message if provided)
      *   OPERATION_COMPLETED_REFRESH_REQUIRED  also make the adapter reread

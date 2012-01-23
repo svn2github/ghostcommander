@@ -560,7 +560,7 @@ public class FSAdapter extends CommanderAdapterBase {
                 result.append( c.getString( R.string.sz_total, Formatter.formatFileSize( ctx, stat.getBlockCount() * block_size ), 
                                                                Formatter.formatFileSize( ctx, stat.getAvailableBlocks() * block_size ) ) );
                 
-				sendProgress( result.toString(), Commander.OPERATION_COMPLETED, Commander.OPERATION_REPORT_IMPORTANT );
+				sendReport( result.toString() );
 			} catch( Exception e ) {
 				sendProgress( e.getMessage(), Commander.OPERATION_FAILED );
 			}

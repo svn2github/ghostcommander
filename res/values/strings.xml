@@ -54,7 +54,7 @@
     <string name="smb_descr">This requires the Ghost Commander SMB plugin to be installed and allows you to connect to a shared folder on a Windows PC.</string>
     <string name="root_descr">If your phone is rooted, use this mode to interact with the system content. If you don\'t know what that means, please don\'t use this feature.</string>
     <string name="mount_descr">Browse the list of mounted devices and remount to \"rw\" mode, then back to \"ro\" mode. Use with caution.</string>
-    <string name="apps_descr">List of the installed applications - not fully implemented yet.</string>
+    <string name="apps_descr">Manage the installed packages.</string>
     <string name="exit_descr">Exit this application. </string>
 
     <string name="shortcut">Create a new shortcut</string>

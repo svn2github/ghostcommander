@@ -321,7 +321,7 @@
 <string name="ftp_descr">Подключение к файл-серверу по протоколу FTP (протокол передачи файлов).</string>
 <string name="smb_descr">Доступ к Windows компьютеру локальной сети. ( Приложение \"Ghost Commander - Samba Plugin\" должно быть установлено )</string>
 <string name="root_descr">Выполнение системных команд и работа с файлами на системном разделею Будьте осторожны!.</string>
-<string name="mount_descr">Список монтированых устройств. Возможность перемонтирования в \"rw\" и обратно в \"ro\"</string>
+<string name="mount_descr">Список монтированых устройств с возможностью перемонтирования в \"rw\" и обратно в \"ro\"</string>
 <string name="apps_descr">Список установленых приложений.</string>
 <string name="exit_descr">Выход из этой программы.</string>
 

@@ -54,13 +54,14 @@ public class Engine extends Thread {
         sendProgress( s, p1, p2, -1 );
     }
     protected final void sendProgress( String s, int p1, int p2, int speed ) {
-        //Log.v( TAG, "sendProgress: " + s );
+        //Log.v( TAG, "sendProgress: " + speed );
         if( thread_handler == null ) return;
         Message msg = null;
         if( p1 < 0 )
             msg = thread_handler.obtainMessage( p1, -1, -1, s );
         else
             msg = thread_handler.obtainMessage( Commander.OPERATION_IN_PROGRESS, p1, p2, s );
+        
         if( speed > 0 ) {
             Bundle b = new Bundle();
             b.putInt( Commander.NOTIFY_SPEED, speed );
@@ -81,6 +82,7 @@ public class Engine extends Thread {
         msg.setData( b );
         thread_handler.sendMessage( msg );
     }
+    
     protected final void sendReceiveReq( int rcpt_hash, String[] items ) {
         if( thread_handler == null ) return;
         Message msg = thread_handler.obtainMessage();
@@ -110,6 +112,11 @@ public class Engine extends Thread {
         else {
             sendProgress( report, Commander.OPERATION_COMPLETED_REFRESH_REQUIRED );
         }
+    }
+    protected final void sendReport( String s ) {
+        if( thread_handler == null ) return;
+        Message msg = thread_handler.obtainMessage( Commander.OPERATION_COMPLETED, Commander.OPERATION_REPORT_IMPORTANT, -1, s );
+        thread_handler.sendMessage( msg );
     }
     protected final void doneReading( String msg, String cookie ) {
         if( errMsg != null )
