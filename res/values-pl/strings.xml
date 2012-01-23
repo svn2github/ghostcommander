@@ -109,7 +109,7 @@
 <string name="dialog_skip_all">Pomiń wszystko</string>
 <string name="dialog_select">Zaznacz</string>
 <string name="dialog_unselect">Odznacz</string>
-<string name="filemask">Maska pliku:</string>
+<string name="filemask">Maska/typ:</string>
 <string name="for_files">Pliki</string>
 <string name="for_dirs">Katalogi</string>
 <string name="in_subf">Podkatalogi</string>
