@@ -358,11 +358,11 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     }
     public final File getCurrentFile() {
         try {
-            ListAdapter a = (ListAdapter)getListAdapter( true );
-            if( a instanceof FSAdapter ) {
+            CommanderAdapter ca = getListAdapter( true );
+            if( ( ca.getType() & ( CA.LOCAL | CA.APPS ) ) != 0 ) {
                 int pos = getSelection( true );
                 if( pos < 0 ) return null;
-                CommanderAdapter.Item item = (CommanderAdapter.Item)a.getItem( pos ); 
+                CommanderAdapter.Item item = (CommanderAdapter.Item)((ListAdapter)ca).getItem( pos ); 
                 if( item != null && item.origin != null )
                     return (File)item.origin; 
             }
@@ -662,19 +662,20 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             e.printStackTrace();
         }
     }
-
     public final void tryToSend() {
         File f = getCurrentFile();
         if( f != null ) {
             String ext = Utils.getFileExt( f.getName() );
             String mime = Utils.getMimeByExt( ext );
-            if( mime != null && !mime.startsWith( "image/" ) && !mime.startsWith( "audio/" ) )
+            if( mime != null && !mime.startsWith( "image/" )
+                             && !mime.startsWith( "audio/" )
+                             && !mime.startsWith( "video/" ) )
                 mime = null;
-            Intent sendIntent = new Intent( Intent.ACTION_SEND );
-            Log.i( TAG, "Type file to send: " + mime );
-            sendIntent.setType( mime == null ? "*/*" : mime );
-            sendIntent.putExtra( Intent.EXTRA_STREAM, Uri.fromFile( f ) );
-            c.startActivity( Intent.createChooser( sendIntent, "Send:" ) );            
+            Intent i = new Intent( Intent.ACTION_SEND );
+            i.setType( mime == null ? "*/*" : mime );
+            i.putExtra( Intent.EXTRA_SUBJECT, f.getName() );
+            i.putExtra( Intent.EXTRA_STREAM, Uri.parse( FileProvider.URI_PREFIX + f.getAbsolutePath() ) );
+            c.startActivity( Intent.createChooser( i, c.getString( R.string.send_title ) ) );            
         }        
     }    
     public final void tryToOpen() {
@@ -682,7 +683,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         if( f != null ) {
             Intent intent = new Intent( Intent.ACTION_VIEW );
             intent.setDataAndType( Uri.fromFile( f ), "*/*" );
-            c.startActivity( Intent.createChooser( intent, "Open with..." ) );            
+            c.startActivity( Intent.createChooser( intent, c.getString( R.string.open_title ) ) );            
         }        
     }    
     public final void copyName() {

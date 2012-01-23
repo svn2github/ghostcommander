@@ -601,6 +601,7 @@ public class AppsAdapter extends CommanderAdapterBase {
                         menu.add( 0, LAUNCH_CMD, 0, ctx.getString( R.string.launch ) + " \"" + name + "\"" );
                     }
                     menu.add( 0, MANAGE_CMD, 0, MANAGE );
+                    menu.add( 0, Commander.SEND_TO, 0, R.string.send_to );
                 }
                 else if( resInfos != null ) {
                     ResolveInfo ri = resInfos[acmi.position-1];
@@ -847,6 +848,7 @@ public class AppsAdapter extends CommanderAdapterBase {
                 if( ai != null )
                     item.attr = ai.packageName;
                 item.setIcon( ai.loadIcon( pm ) );
+                item.origin = new File( ai.sourceDir );
             }
         }
         else if( actInfos != null ) {
