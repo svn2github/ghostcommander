@@ -26,11 +26,9 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PermissionInfo;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -50,8 +48,8 @@ public class AppsAdapter extends CommanderAdapterBase {
     // to avoid that all the member accessible from the subclasses are public
     public final PackageManager     pm = ctx.getPackageManager();
     public  PackageInfo[]           pkgInfos = null;
-    private final String MANAGE = "Manage", ACTIVITIES = "Activities", PROVIDERS = "Providers", SERVICES = "Services",  
-                         MANIFEST = "Manifest", SHORTCUTS = "Shortcuts";
+    private final String MANIFEST = "Manifest", ACTIVITIES = "Activities", PROVIDERS = "Providers", SERVICES = "Services";  
+    private       String MANAGE = "Manage", SHORTCUTS = "Shortcuts";
     private Item[]                  compItems = null;
     private ActivityInfo[]          actInfos = null;
     private ProviderInfo[]          prvInfos = null;
@@ -65,6 +63,10 @@ public class AppsAdapter extends CommanderAdapterBase {
     public AppsAdapter( Context ctx_ ) {
         super( ctx_, DETAILED_MODE | NARROW_MODE | SHOW_ATTR );
         parentLink = PLS;
+        MANAGE    = s( R.string.manage );
+        SHORTCUTS = s( R.string.shortcuts );
+        
+        
     }
     @Override
     public int getType() {

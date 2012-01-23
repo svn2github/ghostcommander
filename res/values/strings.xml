@@ -417,6 +417,8 @@ copied >5 will produce:
 
     <string name="no_root">Not root?</string>
 
+    <string name="manage">Manage</string>
+    <string name="shortcuts">Shortcuts</string>
     <string name="pkg_name">Package name</string>
     <string name="version">Version</string>
     <string name="version_code">Version code</string>
