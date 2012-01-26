@@ -278,6 +278,8 @@ public class FindAdapter extends FSAdapter {
                     sleep( 1 );
                 }
             }
+            catch( InterruptedException e ) {
+            }
             catch( Exception e ) {
                 Log.e( TAG, "File: " + f.getName() + ", str=" + s, e );
             }

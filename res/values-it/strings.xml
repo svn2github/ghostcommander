@@ -205,7 +205,7 @@
     <string name="file_exist">Il file \"%s\" esiste già</string>
     <string name="sec_err">Problema di sicurezza\n%s</string>
     <string name="not_accs">File non accessibile\n%s</string>
-    <string name="acc_err">Errore di accesso al file «%s»\n %2$s</string>
+    <string name="acc_err">Errore di accesso al file «%1$s»\n %2$s</string>
     <string name="rtexcept">Errore nel file «%1$s»\n %2$s</string>
     <string name="cant_move">Impossibile spostare il file «%s»</string>
     <string name="cant_create">Impossibile creare il file «%1$s»\n%2$s</string>
@@ -358,7 +358,7 @@ copied >5 will produce:
     <string name="volume_mode">Escludi i pulsanti del volume</string>
     <string name="summary_volume_mode">I pulsanti per la modifica del volume selezionano o cambiano stato</string>
     <string name="exit_on_back">Comportamento del tasto indietro</string>
-    <string name="summary_exit_on_back">Esce dall'applicazione premendo il pulsante di sistema "Indietro"</string>
+    <string name="summary_exit_on_back">Esce dall\'applicazione premendo il pulsante di sistema \"Indietro\"</string>
 
     <string name="colors">Impostazione dei colori</string>
     <string name="summary_colors">Personalizzazione del colore dello sfondo e altro</string>

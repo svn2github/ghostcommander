@@ -296,7 +296,7 @@ public final class Utils {
                 }
                 return sb;
             } catch( Throwable e ) {
-                e.printStackTrace();
+                Log.e( "Utils.readStreamToBuffer()", "Error on reading a stream", e );
             }
         }
         return null;

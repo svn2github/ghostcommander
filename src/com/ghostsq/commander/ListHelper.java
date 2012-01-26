@@ -146,13 +146,8 @@ public class ListHelper {
             if( show_icons ) {
                 icon_mode = CommanderAdapter.ICON_MODE;
                 if( p.fnt_sz < 18 && !p.fingerFriendly ) {
-                    int sq = h * w;
-                    //Log.v( TAG, "sq=" + sq );
-                    if( sq <= 400 * 480 ) // old or small or sxs on medium 
-                        icon_mode |= CommanderAdapter.ICON_TINY;
-                    else 
-                    if( sq <= 480 * 854 ) {   // medium
-                        if( same_line )
+                    if( h * w <= 480 * 854 ) {   // medium
+                        if( p.sxs || same_line )
                             icon_mode |= CommanderAdapter.ICON_TINY;
                     }
                 }

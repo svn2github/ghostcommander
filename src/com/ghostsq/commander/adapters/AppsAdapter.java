@@ -753,9 +753,7 @@ public class AppsAdapter extends CommanderAdapterBase {
                     if( m != null ) {
                         Intent in = new Intent( ctx, TextViewer.class );
                         in.setData( Uri.parse( TextViewer.STRURI ) );
-                        Bundle b = new Bundle();
-                        b.putString( TextViewer.STRKEY, m );
-                        in.putExtra( TextViewer.STRKEY, b );
+                        in.putExtra( TextViewer.STRKEY, m );
                         commander.issue( in, 0 );
                     }
                 }
