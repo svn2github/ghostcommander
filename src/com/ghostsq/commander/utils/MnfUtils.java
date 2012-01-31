@@ -18,6 +18,8 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.PatternMatcher;
 import android.util.Log;
 
@@ -56,6 +58,22 @@ public final class MnfUtils {
                     mans = decompressXML( baos.toByteArray() );
                     return mans;
                 }
+            }
+        } catch( Throwable e ) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    public final static Drawable extractIcon( String path ) {
+        try {
+            if( path == null ) return null;
+            ZipFile  zip = new ZipFile( path );
+            ZipEntry entry = zip.getEntry( "res/drawable/icon.png" );   // TODO: find icon from the manifest
+            if( entry != null ) {
+                InputStream is = zip.getInputStream( entry );
+                if( is != null )
+                    return new BitmapDrawable( is );
             }
         } catch( Throwable e ) {
             e.printStackTrace();

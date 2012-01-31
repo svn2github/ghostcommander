@@ -432,7 +432,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                                 if( !wm ) {
                                     int remain = parent_width - sizeWidth - dateWidth - icoWidth - LEFT_P - RIGHT_P;
                                     a3r = attrWidth > remain;
-                                    Log.v( TAG, "aw=" + attrWidth + ",sl=" + remain + ",a3r=" + a3r );
+                                    //Log.v( TAG, "aw=" + attrWidth + ",sl=" + remain + ",a3r=" + a3r );
                                     attrWidth = remain;
                                     if( a3r ) {
                                         attrWidth += sizeWidth + dateWidth;

@@ -24,6 +24,10 @@ public class ExecEngine extends Engine {
     private   int wait_timeout = 500;
     private   StringBuilder result;
     private   boolean done = false;
+
+    private   OutputStreamWriter os = null;
+    private   BufferedReader is = null;
+    private   BufferedReader es = null;
     
     protected ExecEngine( Context context_, Handler h ) {
         super( h );
@@ -72,14 +76,16 @@ public class ExecEngine extends Engine {
     }
     
     protected boolean execute() {
-        OutputStreamWriter os = null;
-        BufferedReader is = null;
-        BufferedReader es = null;
+        os = null;
+        is = null;
+        es = null;
         try {
             Init( null );
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( context );
             bb = sharedPref.getString( "busybox_path", "busybox" ) + " ";
+            
             Process p = Runtime.getRuntime().exec( sh );
+            
             os = new OutputStreamWriter( p.getOutputStream() );
             is = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
             es = new BufferedReader( new InputStreamReader( p.getErrorStream() ) );
@@ -88,9 +94,7 @@ public class ExecEngine extends Engine {
             boolean ok = cmdDialog( os, is, es );
             os.write( "exit\n" );
             os.flush();
-            //Log.v( TAG, "Begin waiting - " + getName() );
             p.waitFor();
-            //Log.v( TAG, "End waiting - " + getName() );
             int ev = p.exitValue();
             if( ev != 0 ) {
                 Log.e( TAG, "Exit code " + ev );
@@ -122,7 +126,13 @@ public class ExecEngine extends Engine {
         Log.v( TAG, "executing: " + to_exec );
         os.write( to_exec ); // execute the command
         os.flush();
-        Thread.sleep( wait_timeout );
+
+        final int swait = 10;
+        final int tries = wait_timeout / swait; 
+        for( int i = 0; i < tries; i++ ) {
+            if( is.ready() ) break;
+            Thread.sleep( swait );
+        }
      }    
 
     // to override by a derived class which wants something more complex
@@ -148,6 +158,7 @@ public class ExecEngine extends Engine {
               throws IOException, Exception { 
         if( br != null && result != null )
             while( br.ready() ) {
+                Thread.sleep( 10 );
                 if( isStopReq() ) 
                     throw new Exception();
                 String ln = br.readLine();

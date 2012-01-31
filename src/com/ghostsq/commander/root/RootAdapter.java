@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
@@ -109,8 +110,9 @@ public class RootAdapter extends CommanderAdapterBase {
             }
             parentLink = path == null || path.length() == 0 || path.equals( SLS ) ? SLS : "..";
             array = new ArrayList<LsItem>();
-            String to_execute = "ls " + ( ( mode & MODE_HIDDEN ) != HIDE_MODE ? "-a ":"" ) + "-l " + ExecEngine.prepFileName( path );
-            if( !execute( to_execute, false ) ) // 'busybox -l' always outs UID/GID as numbers, not names!  
+            String to_execute = "ls " + ( ( mode & MODE_HIDDEN ) != HIDE_MODE ? "-a ":"" ) + "-l -s " + ExecEngine.prepFileName( path );
+            
+            if( !execute( to_execute, false, su ? 5000 : 500 ) ) // 'busybox -l' always outs UID/GID as numbers, not names!  
                 return false;   
 
             if( !isStopReq() ) {
@@ -122,6 +124,7 @@ public class RootAdapter extends CommanderAdapterBase {
                         items_tmp[0].new LsItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0, ascending );
                     Arrays.sort( items_tmp, comp );
                 }
+                                
                 return true;
             }
             return false;
@@ -132,6 +135,7 @@ public class RootAdapter extends CommanderAdapterBase {
                 if( isStopReq() ) break; 
                 String ln = br.readLine();
                 if( ln == null ) break;
+                if( ln.startsWith( "total" ) ) continue;
                 LsItem item = new LsItem( ln );
                 if( item.isValid() ) {
                     if( !"..".equals( item.getName() ) && !".".equals( item.getName() ) )
@@ -255,17 +259,17 @@ public class RootAdapter extends CommanderAdapterBase {
             sb.append( "stat " );
             for( int i = 0; i < s_items.length; i++ )
                 sb.append( " " ).append( ExecEngine.prepFileName( path + s_items[i].getName() ) );
-            sb.append( " ; echo ; df" );
+            sb.append( " ; df" );
             ExecEngine ee = new ExecEngine( ctx, new Handler() {
                     @Override
                     public void handleMessage( Message msg ) {
                         try {
                             Intent in = new Intent( ctx, TextViewer.class );
                             in.setData( Uri.parse( TextViewer.STRURI ) );
-                            in.putExtra( TextViewer.STRKEY, msg.getData() );
+                            in.putExtra( TextViewer.STRKEY, (String)msg.obj );
                             commander.issue( in, 0 );
                         } catch( Exception e ) {
-                            e.printStackTrace();
+                            Log.e( TAG, null, e );
                         }
                     }
                 }, null, sb.toString(), true,  500 ); 
@@ -694,21 +698,23 @@ public class RootAdapter extends CommanderAdapterBase {
                     item.size = curItem.isDirectory() ? -1 : curItem.length();
                     item.date = curItem.getDate();
                     item.attr = curItem.getAttr();
+
+                    if( ".apk".equals( Utils.getFileExt( item.name ) ) ) {
+                        try {
+                            PackageManager pm = ctx.getPackageManager();
+                            String path = Utils.mbAddSl( uri.getPath() );
+                            PackageInfo info = pm.getPackageArchiveInfo( path + item.name, 0 );
+                            item.setIcon( info != null ? pm.getApplicationIcon( info.packageName ) :
+                                                           pm.getDefaultActivityIcon() );
+                        }
+                        catch( Exception e ) {
+                        }
+                    }                    
+                    
                 }
             }
         }
         return item;
-    }
-
-    @Override
-    public View getView( int position, View convertView, ViewGroup parent ) {
-        Item item = (Item)getItem( position );
-        if( items != null && position > 0 && position <= items.length ) {
-            ListView flv = (ListView)parent;
-            SparseBooleanArray cis = flv.getCheckedItemPositions();
-            item.sel = cis != null ? cis.get( position ) : false;
-        }
-        return getView( convertView, parent, item );
     }
 
     @Override

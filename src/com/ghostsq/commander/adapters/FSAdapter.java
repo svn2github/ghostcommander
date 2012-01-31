@@ -21,6 +21,7 @@ import java.util.Map;
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.adapters.Engine;
 import com.ghostsq.commander.R;
+import com.ghostsq.commander.utils.MnfUtils;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.ContentResolver;
@@ -331,8 +332,24 @@ public class FSAdapter extends CommanderAdapterBase {
                     try {
                         PackageManager pm = ctx.getPackageManager();
                         PackageInfo info = pm.getPackageArchiveInfo( fn, 0 );
-                        f.setIcon( info != null ? pm.getApplicationIcon( info.packageName ) :
-                                                       pm.getDefaultActivityIcon() );
+                        if( info != null ) {
+                            Drawable icon = null;
+                            try {
+                                icon = pm.getApplicationIcon( info.packageName );
+                            } catch( Exception e ) {
+                            }
+                            if( icon != null ) {
+                                Log.v( TAG, "icon for " + fn );
+                               f.setIcon( icon );
+                               return true;
+                            }
+                        }
+                        Drawable icon = MnfUtils.extractIcon( fn );
+                        if( icon != null ) {
+                           f.setIcon( icon );
+                           return true;
+                        }
+                        f.setIcon( pm.getDefaultActivityIcon() );
                         return true;
                     }
                     catch( Exception e ) {
