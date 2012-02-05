@@ -344,7 +344,8 @@ public class FSAdapter extends CommanderAdapterBase {
                                return true;
                             }
                         }
-                        Drawable icon = MnfUtils.extractIcon( fn );
+                        MnfUtils mnfu = new MnfUtils( fn );
+                        Drawable icon = mnfu.extractIcon();
                         if( icon != null ) {
                            f.setIcon( icon );
                            return true;

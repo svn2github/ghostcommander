@@ -864,7 +864,8 @@ public class FTPAdapter extends CommanderAdapterBase {
         }
         public String getPassword() {
             String u = super.getUserName();
-            return u == null || u.length() == 0 ? "user@host.com" : super.getPassword();
+            String p = u == null || u.length() == 0 ? "user@host.com" : super.getPassword();
+            return p != null ? p : "";
         }
         public final boolean isNotSet() {
             String u = super.getUserName();

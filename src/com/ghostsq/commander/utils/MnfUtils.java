@@ -27,6 +27,7 @@ public final class MnfUtils {
     private static final String TAG = "MnfUtils";
     private ApplicationInfo ai;
     private Resources       rr;
+    private String          apk_path;
     private String          mans;
     
     public MnfUtils( PackageManager pm, String app_name ) {
@@ -39,12 +40,17 @@ public final class MnfUtils {
         }
     }
     
+    public MnfUtils( String apk_path_ ) {
+        apk_path = apk_path_;
+    }
+    
     public final String extractManifest() {
         try {
             if( mans != null ) return mans;
-            String zip_path = ai.publicSourceDir;
-            if( zip_path == null ) return null;
-            ZipFile  zip = new ZipFile( zip_path );
+            if( ai != null )
+                apk_path = ai.publicSourceDir;
+            if( apk_path == null ) return null;
+            ZipFile  zip = new ZipFile( apk_path );
             ZipEntry entry = zip.getEntry( "AndroidManifest.xml" );
             if( entry != null ) {
                 InputStream is = zip.getInputStream( entry );
@@ -65,10 +71,10 @@ public final class MnfUtils {
         return null;
     }
     
-    public final static Drawable extractIcon( String path ) {
+    public final Drawable extractIcon() {
         try {
-            if( path == null ) return null;
-            ZipFile  zip = new ZipFile( path );
+            if( apk_path == null ) return null;
+            ZipFile  zip = new ZipFile( apk_path );
             ZipEntry entry = zip.getEntry( "res/drawable/icon.png" );   // TODO: find icon from the manifest
             if( entry != null ) {
                 InputStream is = zip.getInputStream( entry );
