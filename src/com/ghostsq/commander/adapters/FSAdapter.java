@@ -273,8 +273,6 @@ public class FSAdapter extends CommanderAdapterBase {
                         String ext = Utils.getFileExt( fn );
                         if( ext == null ) continue;
                         
-                        if( ext.equals( ".apk" ) ) f.thumb_is_icon = true;
-                        
                         if( !f.isThumbNail() ) {
                             int ext_hash = ext.hashCode(), ht_sz = ext_h.length;
                             boolean not_img = true;
@@ -330,6 +328,7 @@ public class FSAdapter extends CommanderAdapterBase {
             try {
                 if( h == apk_h ) {
                     try {
+                        f.thumb_is_icon = true;
                         PackageManager pm = ctx.getPackageManager();
                         PackageInfo info = pm.getPackageArchiveInfo( fn, 0 );
                         if( info != null ) {
@@ -339,7 +338,7 @@ public class FSAdapter extends CommanderAdapterBase {
                             } catch( Exception e ) {
                             }
                             if( icon != null ) {
-                                Log.v( TAG, "icon for " + fn );
+                               //Log.v( TAG, "icon for " + fn );
                                f.setIcon( icon );
                                return true;
                             }
@@ -479,7 +478,13 @@ public class FSAdapter extends CommanderAdapterBase {
 
     @Override
     public Uri getItemUri( int position ) {
-        return Uri.parse( Utils.escapeUriMarkup( getItemName( position, true ) ) );
+        try {
+            String item_name = getItemName( position, true );
+            return Uri.parse( Utils.escapeUriMarkup( item_name ) );
+        } catch( Exception e ) {
+            e.printStackTrace();
+        }
+        return null;
     }
     @Override
     public String getItemName( int position, boolean full ) {

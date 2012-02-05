@@ -78,6 +78,8 @@ public class RootAdapter extends CommanderAdapterBase {
         private String pass_back_on_done;
         private Uri src;
         private ArrayList<LsItem>  array;
+        private final static String EOL = "_EOL_";
+        
         ListEngine( Context ctx, Handler h, Uri src_, String pass_back_on_done_ ) {
         	super( ctx, h );
             src = src_;
@@ -110,7 +112,8 @@ public class RootAdapter extends CommanderAdapterBase {
             }
             parentLink = path == null || path.length() == 0 || path.equals( SLS ) ? SLS : "..";
             array = new ArrayList<LsItem>();
-            String to_execute = "ls " + ( ( mode & MODE_HIDDEN ) != HIDE_MODE ? "-a ":"" ) + "-l -s " + ExecEngine.prepFileName( path );
+            // the option -s is not supported on some releases (1.6)
+            String to_execute = "ls " + ( ( mode & MODE_HIDDEN ) != HIDE_MODE ? "-a ":"" ) + "-l " + ExecEngine.prepFileName( path ) + " ; echo " + EOL;
             
             if( !execute( to_execute, false, su ? 5000 : 500 ) ) // 'busybox -l' always outs UID/GID as numbers, not names!  
                 return false;   
@@ -134,8 +137,7 @@ public class RootAdapter extends CommanderAdapterBase {
             while( br.ready() ) {
                 if( isStopReq() ) break; 
                 String ln = br.readLine();
-                if( ln == null ) break;
-                if( ln.startsWith( "total" ) ) continue;
+                if( ln == null || ln.startsWith( EOL ) ) break;
                 LsItem item = new LsItem( ln );
                 if( item.isValid() ) {
                     if( !"..".equals( item.getName() ) && !".".equals( item.getName() ) )
@@ -252,28 +254,33 @@ public class RootAdapter extends CommanderAdapterBase {
     }
 	@Override
 	public void reqItemsSize( SparseBooleanArray cis ) {
-        LsItem[] s_items = bitsToItems( cis );
-        if( s_items != null && s_items.length > 0 ) {
-            String path = Utils.mbAddSl( uri.getPath() );
-            StringBuilder sb = new StringBuilder( 128 );
-            sb.append( "stat " );
-            for( int i = 0; i < s_items.length; i++ )
-                sb.append( " " ).append( ExecEngine.prepFileName( path + s_items[i].getName() ) );
-            sb.append( " ; df" );
-            ExecEngine ee = new ExecEngine( ctx, new Handler() {
-                    @Override
-                    public void handleMessage( Message msg ) {
-                        try {
-                            Intent in = new Intent( ctx, TextViewer.class );
-                            in.setData( Uri.parse( TextViewer.STRURI ) );
-                            in.putExtra( TextViewer.STRKEY, (String)msg.obj );
-                            commander.issue( in, 0 );
-                        } catch( Exception e ) {
-                            Log.e( TAG, null, e );
+	    if( uri == null ) return;
+        try {
+            LsItem[] s_items = bitsToItems( cis );
+            if( s_items != null && s_items.length > 0 ) {
+                String path = Utils.mbAddSl( uri.getPath() );
+                StringBuilder sb = new StringBuilder( 128 );
+                sb.append( "stat " );
+                for( int i = 0; i < s_items.length; i++ )
+                    sb.append( " " ).append( ExecEngine.prepFileName( path + s_items[i].getName() ) );
+                sb.append( " ; df" );
+                ExecEngine ee = new ExecEngine( ctx, new Handler() {
+                        @Override
+                        public void handleMessage( Message msg ) {
+                            try {
+                                Intent in = new Intent( ctx, TextViewer.class );
+                                in.setData( Uri.parse( TextViewer.STRURI ) );
+                                in.putExtra( TextViewer.STRKEY, (String)msg.obj );
+                                commander.issue( in, 0 );
+                            } catch( Exception e ) {
+                                Log.e( TAG, null, e );
+                            }
                         }
-                    }
-                }, null, sb.toString(), true,  500 ); 
-            ee.start();
+                    }, null, sb.toString(), true,  500 ); 
+                ee.start();
+            }
+        } catch( Exception e ) {
+            e.printStackTrace();
         }
 	}
     @Override
@@ -380,7 +387,7 @@ public class RootAdapter extends CommanderAdapterBase {
                     if( procError( es ) ) return false;
                     
                     File    dst_file = new File( dest_folder, f.getName() );
-                    String  dst_path = dst_file.getAbsolutePath(); 
+                    String  dst_path = ExecEngine.prepFileName( dst_file.getAbsolutePath() ); 
                     Permissions perm = uid != null ? new Permissions( uid, uid, "-rw-rw----" ) :
                                                      new Permissions( f.getAttr() );
                     String chown_cmd = "chown " + perm.generateChownString().append(" ").append( dst_path ).toString();
