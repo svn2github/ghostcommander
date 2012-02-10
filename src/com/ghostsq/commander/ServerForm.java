@@ -31,11 +31,18 @@ public class ServerForm extends Activity implements View.OnClickListener {
             super.onCreate( savedInstanceState );
             
             schema = getIntent().getStringExtra( "schema" );
-            if( schema.equals( "ftp" ) ) type = Type.FTP; else
-            if( schema.equals( "smb" ) ) type = Type.SMB; else
+            String p_name = "...";
+            if( schema.equals( "ftp" ) ) {
+                type = Type.FTP;
+                p_name = "FTP";
+            } else
+            if( schema.equals( "smb" ) ) {
+                type = Type.SMB;
+                p_name = "Windows PC"
+            } else
                 type = Type.UNKNOWN;
             
-            setTitle( getString( R.string.connect ) + " " + ( type == Type.SMB ? "Windows PC" : schema ) );
+            setTitle( getString( R.string.connect ) + " " + p_name );
             requestWindowFeature( Window.FEATURE_LEFT_ICON );
             setContentView( R.layout.server );
             getWindow().setLayout(LayoutParams.FILL_PARENT /* width */, LayoutParams.WRAP_CONTENT /* height */);            
