@@ -222,6 +222,9 @@
 
 <string name="root_root">Root режим при покидании /sdcard</string>
 <string name="summary_root_root">Автоматически переключаться в \"root:\" режим в случае обращения к каталогу не на /sdcard.</string>
+<string name="send_content">Посылать файлы через content:</string>
+<string name="summary_send_content">Только если приложение-посылальщик умет работать с content:</string>
+
 <string name="thumbnails">Миниатюры</string>
 <string name="summary_thumbnails">Предпросмотр графических файлов</string>
 <string name="thumbnails_size">Размер миниатюр</string>
@@ -286,7 +289,7 @@
 
 <string name="editor_activity">Activity для редактирования</string>
 <string name="summary_editor_activity">Полное имя Activity класса. Имя пакета == префикс полного имени класса.</string>
-<string name="value_editor_activity">com.ghostsq.commander.Editor</string>
+
 <string name="busybox_location">Путь к \"busybox\"</string>
 <string name="summary_busybox_location">В случае если он находится не в пути поиска.</string>
 <string name="execute_command">Исполнить команду</string>
@@ -337,7 +340,6 @@
 <string name="donation">Выразите свою благодарность и окажите поддержку 
        путем перевода разработчику любой денежной суммы через систему PayPal.\n
     </string>
-<string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
 <string name="about_text">
         Ghost Commander v%1$s\n
         Файловый менеджер.\n\n

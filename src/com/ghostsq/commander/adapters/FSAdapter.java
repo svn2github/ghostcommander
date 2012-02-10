@@ -272,7 +272,7 @@ public class FSAdapter extends CommanderAdapterBase {
 
                         String ext = Utils.getFileExt( fn );
                         if( ext == null ) continue;
-                        
+                        if( ext.equals( ".apk" ) ) f.thumb_is_icon = true;
                         if( !f.isThumbNail() ) {
                             int ext_hash = ext.hashCode(), ht_sz = ext_h.length;
                             boolean not_img = true;
@@ -885,11 +885,12 @@ public class FSAdapter extends CommanderAdapterBase {
         }
         private final int copyFiles( File[] list, String dest, boolean dest_is_full_name ) throws InterruptedException {
             Context c = ctx;
+            File file = null;
             for( int i = 0; i < list.length; i++ ) {
                 FileChannel  in = null;
                 FileChannel out = null;
                 File outFile = null;
-                File file = list[i];
+                file = list[i];
                 if( file == null ) {
                     error( c.getString( R.string.unkn_err ) );
                     break;
@@ -922,7 +923,12 @@ public class FSAdapter extends CommanderAdapterBase {
                         if( outFile.exists() ) {
                             int res = askOnFileExist( c.getString( R.string.file_exist, outFile.getAbsolutePath() ), commander );
                             if( res == Commander.SKIP )  continue;
-                            if( res == Commander.REPLACE ) outFile.delete();
+                            if( res == Commander.REPLACE ) {
+                                if( outFile.equals( file ) )
+                                    continue;
+                                else
+                                    outFile.delete();
+                            }
                             if( res == Commander.ABORT ) break;
                         }
                         if( move ) {    // first try to move by renaming
@@ -1006,7 +1012,7 @@ public class FSAdapter extends CommanderAdapterBase {
                             in.close();
                         if( out != null )
                             out.close();
-                        if( !move && errMsg != null && outFile != null ) {
+                        if( !move && errMsg != null && outFile != null && !outFile.equals( file ) ) {
                             Log.i( TAG, "Deleting failed output file" );
                             outFile.delete();
                         }

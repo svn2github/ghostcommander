@@ -129,8 +129,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     }
     public final void setLayoutMode( boolean sxs_ ) {
         sxs = sxs_;
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
-        applySettings( sharedPref, false );
+        SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( c );
+        applySettings( shared_pref, false );
 
         if( panelsView != null ) panelsView.setMode( sxs_, current );
     }
@@ -674,7 +674,12 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             Intent i = new Intent( Intent.ACTION_SEND );
             i.setType( mime == null ? "*/*" : mime );
             i.putExtra( Intent.EXTRA_SUBJECT, f.getName() );
-            i.putExtra( Intent.EXTRA_STREAM, Uri.parse( FileProvider.URI_PREFIX + f.getAbsolutePath() ) );
+            SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( c );
+            String esc_fn = Utils.escapeUriMarkup( f.getAbsolutePath() );
+            boolean use_content = shared_pref.getBoolean( "send_content", true );
+            Uri uri = Uri.parse( use_content ? FileProvider.URI_PREFIX + esc_fn :
+                                                             "file://" + esc_fn );  
+            i.putExtra( Intent.EXTRA_STREAM, uri );
             c.startActivity( Intent.createChooser( i, c.getString( R.string.send_title ) ) );            
         }        
     }    
@@ -814,7 +819,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                     showSizes();
                     return;
                 }
-                uri = Uri.parse( "file://" + f.getAbsolutePath() ); 
+                uri = Uri.parse( "file://" + Utils.escapeUriMarkup( f.getAbsolutePath() ) ); 
             }
             else
                 uri = Uri.parse( name );
@@ -932,7 +937,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 }
                 if( dest.charAt( 0 ) == SLC ) { // local FS only 
                     File dest_file = new File( dest );
-                    if( !dest_file.isDirectory() ) {
+                    if( dest_file.isFile() && !dest_file.isDirectory() ) {
                         cur_adapter.renameItem( pos, dest, COPY );
                         return;
                     }

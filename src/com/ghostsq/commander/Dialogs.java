@@ -258,7 +258,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
             }
             case R.id.SF4:
             case R.id.new_file: {
-                dialog.setTitle( R.string.edit_title );
+                dialog.setTitle( R.string.newf_title );
                 if( prompt != null )
                     prompt.setText( R.string.newf_prompt );
                 if( edit != null ) {

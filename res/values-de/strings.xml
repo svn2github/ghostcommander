@@ -179,22 +179,12 @@
     <string name="no_such_folder">\"%s\" ist ein ungültiger Ordner!</string>
     <string name="fav_added">Der Ordner \"%s\" wurde zu den Favoriten hinzugefügt.</string>
     
-    
-    
     <string name="deleted">gelöscht</string>
-    
-    
     
     <string name="smb_missed">Das Samba-Plugin
     (com.ghostsq.commander.samba)
     wurde nicht gefunden. Stellen Sie
     sicher, dass es installiert ist.</string>
-    <string name="smb_app_uri">market://search?q=pname:com.ghostsq.commander.samba</string>
-    <string name="dbox_missed">Das Dropbox-Plugin
-    (com.ghostsq.commander.dropbox)
-    wurde nicht gefunden. Stellen Sie
-    sicher, dass es installiert ist.</string>
-    <string name="dbox_app_uri">market://search?q=pname:com.ghostsq.commander.dropbox</string>
     <string name="no_root">Der Rootzugriff (su) wurde verweigert. </string>
     <string name="donate">  Spenden</string>
     <string name="online_help">  Online-Hilfe</string>
@@ -202,8 +192,6 @@
     einer kleinen Spende die weitere Entwicklung unterstützen.
     Berühren Sie \"Ok\", um über Paypal zu spenden.
     Berühren Sie \"Abbrechen\", um Ghost Commander einfach weiter zu nutzen. </string>
-    <string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
-    <string name="help_uri">http://sites.google.com/site/ghostcommander1/info</string>
     <string name="about_text">Ghost Commander v%s\n
     Ein Dateimanager\n\n
     Fehler oder Verbesserungsvorschläge, senden Sie bitte an\n

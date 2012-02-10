@@ -186,9 +186,6 @@
 Kattintson az  \"Ok\"-ra A PayPal-os támogatáshoz.\n
 Vagy kattintson a \"Mégsem\"-re a &#xAB;Ghost Commander&#xBB; folytatásáhozdíjmentesen.\n
     </string>
-    <string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
-    <string name="help_uri">http://sites.google.com/site/ghostcommander1/info</string>
-    
     
     <string name="about_text">
         Ghost Commander v%1$s\n

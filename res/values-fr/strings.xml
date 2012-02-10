@@ -257,7 +257,6 @@
     Veuillez vérifier que le paquetage\n
     \"Ghost Commander - Samba plugin\"\n
     (com.ghostsq.commander.samba) est installé.</string>
-<string name="smb_app_uri">market://search?q=pname:com.ghostsq.commander.samba</string>
 <string name="donate">  Don</string>
 <string name="online_help">  Aide en ligne</string>
 <string name="donation">Aimez-vous cette application ? Réellement ? Et si vous faites un petit don

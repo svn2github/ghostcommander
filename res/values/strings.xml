@@ -154,7 +154,7 @@
     <string name="rename_title">Rename</string>
     <string name="copy_title">Copy</string>
     <string name="move_title">Move</string>
-    <string name="send_title">Share via</string>
+    <string name="send_title">Send to&#x2026;</string>
     <string name="open_title">Open with</string>
     <!-- Will be used the copy/move _title if the following empty  -->
     <string name="to_copy"></string>
@@ -281,7 +281,7 @@ copied >5 will produce:
     <string name="password">Password:</string>
     <string name="user">User</string>
     <string name="group">Group</string>
-    <string name="connect">Connect</string>
+    <string name="connect">Connect to</string>
     <string name="cancel">Cancel</string>
     <string name="ftp_connected">Connected to \"%1$s\",\n Logged in as \"%2$s\"</string>
     <string name="ftp_upload_failed">Upload \"%1$s\" failed.\n FTP log:\n\n%2$s</string>
@@ -306,7 +306,9 @@ copied >5 will produce:
     <string name="advanced">Advanced</string>
     <string name="advanced_settings">Advanced settings</string>
     <string name="summary_advanced_settings">Extra settings for advanced users</string>
-
+    <string name="send_content">Use content provider to send files</string>
+    <string name="summary_send_content">Uncheck if your sending application does not implement content resolver</string>
+    
     <string name="panels_mode">Side-by-side panels</string>
     <string name="summary_panels_mode">Show both panels side-by-side in a split screen view</string>
     <string name="two_lines">Two lines in a row</string>
@@ -437,7 +439,6 @@ copied >5 will produce:
     Please make sure the package\n
     \"Ghost Commander - Samba plugin\"\n
     (com.ghostsq.commander.samba) is installed.</string>
-    <string name="smb_app_uri">market://search?q=pname:com.ghostsq.commander.samba</string>
 
     <string name="donate">Please donate</string>
     <string name="online_help">Online Help</string>
@@ -446,8 +447,6 @@ copied >5 will produce:
 Tap \"OK\" to be redirected to the PayPal site.\n
 \"Cancel\" to continue enjoy the &#xAB;Ghost Commander&#xBB; file manager for free.\n
     </string>
-    <string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
-    <string name="help_uri">http://sites.google.com/site/ghostcommander1/info</string>
     
     <string name="about_text">
         Ghost Commander v%1$s\n

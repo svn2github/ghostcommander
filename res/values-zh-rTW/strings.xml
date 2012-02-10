@@ -129,8 +129,7 @@
 
     <string name="editor_activity">編輯動作名稱</string>
     <string name="summary_editor_activity">編輯操作將啟用完整的類別名。包名 = 類別名前置字元。</string>
-    <string name="value_editor_activity">com.ghostsq.commander.Editor</string>
-    
+
     <string name="nothing_to_open">沒有要開啟的</string>
     <string name="save">儲存</string>
     <string name="wrap">自動換行</string>
@@ -149,11 +148,7 @@
 點擊\"確認\"通過PayPal來做一個任意金額的捐贈。\n
 或者點擊\"取消\"繼續免費使用«Ghost Commander» 檔案管理器。\n
     </string>
-    <string name="donate_uri">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=zc2com@yahoo.com&amp;lc=US&amp;item_name=donate</string>
-    <string name="help_uri">http://sites.google.com/site/ghostcommander1/info</string>
-    
-    <string name="bug_warning">!!! Android v1.5 有 BUG! 如果可能，請將您的設備升級到 Android v2.0 !!!</string>
-    
+
     <string name="about_text">
         Ghost Commander v%1$s\n
         一款檔案管理器。\n\n
