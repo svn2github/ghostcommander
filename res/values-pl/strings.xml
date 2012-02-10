@@ -269,6 +269,8 @@
 <string name="summary_show_root">W widoku początkowym będą wyświetlane tryby roota i montowania plików/katalogów</string>
 <string name="root_root">Root przy wyjściu z /sdcard</string>
 <string name="summary_root_root">Automatycznie przełącz na tryb root-a przy wejściu do katalogów systemowych (wyjście poza /sdcard).</string>
+<string name="send_content">Użyj dostawcy treści do udostępniania plików</string>
+<string name="summary_send_content">Odznacz, jeśli Twoja aplikacja do udostępniania plików nie obsługuje dostawcy treści</string>
 <string name="thumbnails">Miniaturki</string>
 <string name="summary_thumbnails">Wyświetlaj miniaturki zawartości plików zamiast zwykłych ikon rodzaju plików.</string>
 <string name="thumbnails_size">Rozmiar miniaturek</string>
