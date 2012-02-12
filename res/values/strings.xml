@@ -41,25 +41,25 @@
     <string name="favs">Favorites</string>
     <string name="local">Local storage</string>
     <string name="ftp">FTP site</string>
-    <string name="smb">Samba (Windows) share</string>
+    <string name="smb">Windows share</string>
     <string name="root">The root mode</string>
     <string name="mount">Mount points</string>
     <string name="mount_b">Mounts</string>
     <string name="apps">Applications</string>
     <string name="exit">Exit</string>
     
-    <string name="favs_descr">Manage your list of favorite folders and sites. Edit, rename, or place shortcuts to your device\'s main screen, etc.</string>
+    <string name="favs_descr">Manage your list of favorite folders and sites. Edit, rename, or place shortcuts to your device\'s home screen, etc.</string>
     <string name="local_descr">Browse, organize and modify the contents of the inserted SD card and internal flash memory.</string>
-    <string name="ftp_descr">Connect to an FTP server and transfer your files both to and from it.</string>
+    <string name="ftp_descr">Connect to an FTP server and transfer files both to and from it.</string>
     <string name="smb_descr">This requires the Ghost Commander SMB plugin to be installed and allows you to connect to a shared folder on a Windows PC.</string>
-    <string name="root_descr">If your phone is rooted, use this mode to interact with the system content. If you don\'t know what that means, please don\'t use this feature.</string>
-    <string name="mount_descr">Browse the list of mounted devices and remount to \"rw\" mode, then back to \"ro\" mode. Use with caution.</string>
+    <string name="root_descr">If your phone is rooted, enter here to interact with protected system content. If you don\'t know what that means, please don\'t use this feature.</string>
+    <string name="mount_descr">Browse the list of mounted devices and remount them to \"rw\" mode, then back to \"ro\" mode. Proceed with caution.</string>
     <string name="apps_descr">Manage the installed packages.</string>
-    <string name="exit_descr">Exit this application. </string>
+    <string name="exit_descr">Exit this application.</string>
 
     <string name="shortcut">Create a new shortcut</string>
-    <string name="enter_ftp">Open FTP site</string>
-    <string name="enter_smb">Open Samba (Windows) share</string>
+    <string name="enter_ftp">Connect to FTP</string>
+    <string name="enter_smb">Connect to Windows share</string>
     <string name="search_file">Search</string>
 
     <string name="sort_by_name">By Name</string>
@@ -79,10 +79,10 @@
         
     <string name="toggle_panels_mode">Change panels mode</string>
     <string name="prefs">Settings</string>
-    <string name="save_prefs">Backup settings</string>
+    <string name="save_prefs">Back up settings</string>
     <string name="rest_prefs">Restore settings</string>
-    <string name="prefs_saved">The preferences have been saved.</string>
-    <string name="prefs_restr">The preferences have been restored.</string>
+    <string name="prefs_saved">Your preferences have been saved.</string>
+    <string name="prefs_restr">Your preferences have been restored.</string>
         
     <string name="about">About</string>
     <string name="keys">Shortcut keys</string>
@@ -97,7 +97,7 @@
     <string name="copy_name">Copy name to clipboard</string>
     <string name="fav_fld">Add \"%s\" to favorites</string>
     
-    <string name="create_zip">ZIP...</string>
+    <string name="create_zip">Create a new ZIP file</string>
     <string name="create_zip_title">Create ZIP</string>
 
     <string name="wait"> wait... </string>
@@ -155,7 +155,7 @@
     <string name="copy_title">Copy</string>
     <string name="move_title">Move</string>
     <string name="send_title">Send to&#x2026;</string>
-    <string name="open_title">Open with</string>
+    <string name="open_title">Open with&#x2026;</string>
     <!-- Will be used the copy/move _title if the following empty  -->
     <string name="to_copy"></string>
     <string name="to_move"></string>
@@ -163,11 +163,11 @@
     <string name="copy_err">Nothing to copy</string>
     <string name="rename_err">Nothing to rename</string>
     <string name="edit_err">Not editable</string>
-    <string name="no_items">There are no valid files to complete the operation</string>
+    <string name="no_items">There are no valid files to complete the operation.</string>
     <string name="inv_dest">Invalid destination</string>
     <string name="inv_path">Invalid path</string>
     <string name="find_on_fs_only">The search feature works only with the local file system.</string>
-    <string name="op_not_alwd">Operation is not allowed - select something first</string><!-- copy_title/move_title -->
+    <string name="op_not_alwd">Operation is not allowed - select something first.</string><!-- copy_title/move_title -->
     <string name="copy_to_local_only">It\'s possible to only copy to the local file system.</string>    
     <string name="oper_item_to">%1$s %2$s to:"</string><!-- copy_title/move_title, file name/summary -->
     <string name="login_title">Login</string>
@@ -177,7 +177,7 @@
     <string name="search_done">Search complete</string>
     <string name="done">Done</string>
     <string name="interrupted">Interrupted</string>
-    <string name="too_deep_hierarchy">The file hierarchy is too deep</string>
+    <string name="too_deep_hierarchy">The file hierarchy is too deep.</string>
     <string name="nothing_found">No files found</string>
     <string name="preparing">Preparing...</string>
 
@@ -210,7 +210,7 @@
     <string name="cant_move">Unable to move file \"%s\"</string>
     <string name="cant_create">Unable to create file \"%1$s\"\n%2$s</string>
     <string name="cant_del">Unable to delete \"%1$s\"</string>
-    <string name="dest_wrtble">Please make sure the folder \"%s\" is writable</string>    
+    <string name="dest_wrtble">Please make sure the folder \"%s\" is writable.</string>
     
     <string name="copied">copied</string>
     <string name="moved">moved</string>
@@ -293,10 +293,10 @@ copied >5 will produce:
     <string name="input_settings">Input</string>
 
     <string name="show_confirm">Show confirmation dialog</string>
-    <string name="summary_show_confirm">Show a confirmation dialog after each completed operation</string>
+    <string name="summary_show_confirm">Display a confirmation dialog after completed operations</string>
 
     <string name="prefs_label">Settings</string>
-    <string name="filetypes_label">Colors by types</string>        
+    <string name="filetypes_label">Colors by type</string>      
     <string name="editor_label">Text Editor</string>
     <string name="pictvw_label">Picture Viewer</string>
     <string name="textvw_label">Text Viewer</string>
@@ -306,8 +306,8 @@ copied >5 will produce:
     <string name="advanced">Advanced</string>
     <string name="advanced_settings">Advanced settings</string>
     <string name="summary_advanced_settings">Extra settings for advanced users</string>
-    <string name="send_content">Use content provider to send files</string>
-    <string name="summary_send_content">Uncheck if your sending application does not implement content resolver</string>
+    <string name="send_content">Send using content provider</string>
+    <string name="summary_send_content">Uncheck if your file sending application does not implement a content resolver</string>
     
     <string name="panels_mode">Side-by-side panels</string>
     <string name="summary_panels_mode">Show both panels side-by-side in a split screen view</string>
@@ -315,10 +315,10 @@ copied >5 will produce:
     <string name="summary_two_lines">Always show file attributes below file names</string>
     <string name="show_icons">Enable icons</string>
     <string name="summary_show_icons">Show file and folder icons instead of just plain text</string>
-    <string name="show_toolbar">Show toolbar</string>
+    <string name="show_toolbar">Enable toolbar</string>
     <string name="summary_show_toolbar">Show or hide the buttons at the base of the app</string>
     <string name="show_hotkeys">Show hotkeys</string>
-    <string name="summary_show_hotkeys">Always show hotkeys on the toolbar</string>
+    <string name="summary_show_hotkeys">Always display hotkeys on the toolbar</string>
     <string name="toolbar_preference">Customize the toolbar</string>
     <string name="summary_toolbar_preference">Select which buttons to display on the toolbar</string>
 
@@ -331,8 +331,8 @@ copied >5 will produce:
 
     <string name="show_root">Show root and mount items</string>
     <string name="summary_show_root">Home view will display root and mount items</string>
-    <string name="root_root">root mode behavior</string>
-    <string name="summary_root_root">Automatically switch to root mode when going to a device\'s root folder</string>
+    <string name="root_root">Automatic root mode</string>
+    <string name="summary_root_root">Switch to root mode when going to a device\'s root folder</string>
 
     <string name="thumbnails">Enable thumbnails</string>
     <string name="summary_thumbnails">Show thumbnails for images instead of plain icons</string>
@@ -359,18 +359,18 @@ copied >5 will produce:
     <string name="summary_arrow_mode">Left/right arrows perform toggle/select</string>
     <string name="volume_mode">Override volume buttons</string>
     <string name="summary_volume_mode">The volume change buttons perform toggle/select</string>
-    <string name="exit_on_back">Back key behavior</string>
-    <string name="summary_exit_on_back">Exit the application by pressing the back button</string>
+    <string name="exit_on_back">Back key exits</string>
+    <string name="summary_exit_on_back">Close the application by pressing the back button</string>
 
     <string name="colors">Set up the colors</string>
-    <string name="summary_colors">Customize the background color and more</string>
+    <string name="summary_colors">Customize various background and foreground colors</string>
     <string name="bgr_color_picker">Background</string>
     <string name="summary_bgr_color_picker">Choose a desired color for the main background</string>
     <string name="fgr_color_picker">Foreground</string>
     <string name="summary_fgr_color_picker">Choose a file name and attributes color</string>
     <string name="cur_color_picker">Focused</string>
     <string name="summary_cur_color_picker">Choose a color for items in focus</string>
-    <string name="sel_color_picker">Selected</string>
+    <string name="sel_color_picker">Selected background</string>
     <string name="summary_sel_color_picker">Choose a background color for selected files and the current panel\'s title</string>
     <string name="sfg_color_picker">Selected foreground</string>
     <string name="summary_sfg_color_picker">Choose a text color for selected files and the current panel\'s title</string>
@@ -394,7 +394,7 @@ copied >5 will produce:
     <string name="nothing_to_open">Nothing to open.</string>
     <string name="remind_to_save">Don\'t forget to save your changes.</string>
     <string name="saved">\"%1$s\" saved.</string>
-    <string name="not_saved">Save the changes?</string>
+    <string name="not_saved">Save changes?</string>
     <string name="save">Save</string>
     <string name="save_as">Save as...</string>
     <string name="revert">Revert</string>
@@ -403,7 +403,7 @@ copied >5 will produce:
     <string name="go_top">Top</string>       
     <string name="go_end">End</string>       
     <string name="encoding">Encoding</string>       
-    <string name="encoding_set">The Encoding is set to \"%1$s\", please reload. If you save, the original encoding will be changed to the chosen one.</string>       
+    <string name="encoding_set">The Encoding is set to \"%1$s\", please reload. If you save, the original encoding will be changed to the newly chosen one.</string>       
 
     <string name="no_such_file">No such file \"%1$s\".</string>
     <string name="too_big_file">The file \"%1$s\" is too big.</string>
@@ -413,7 +413,7 @@ copied >5 will produce:
     <string name="cant_open">Cannot open the file.</string>    
     <string name="cant_save">Cannot save the file.</string>
     <string name="nav_warn">You\'re opening a system folder. Tampering with it may lead to a failure. Proceed at this time?</string>
-    <string name="nav_warn_cmt">(You can permanently disable this warning in the application settings )\nClick "Cancel" to safely go to the /sdcard folder. Click "Exit" to close the application.</string>
+    <string name="nav_warn_cmt">Tap "Cancel" to safely go to the /sdcard folder, or tap "Exit" to close the application.</string>
     <string name="no_such_folder">\"%1$s\" is not a valid folder!</string>
     <string name="fav_added">\"%1$s\" was added to your favorites.</string>
 
@@ -436,8 +436,8 @@ copied >5 will produce:
         
     <string name="smb_missed">
     Cannot load the Samba adapter.\n
-    Please make sure the package\n
-    \"Ghost Commander - Samba plugin\"\n
+    Please make sure the required\n
+    \Ghost Commander SMB plugin\n
     (com.ghostsq.commander.samba) is installed.</string>
 
     <string name="donate">Please donate</string>
@@ -450,7 +450,7 @@ Tap \"OK\" to be redirected to the PayPal site.\n
     
     <string name="about_text">
         Ghost Commander v%1$s\n
-        A File manager by Ghost Squared.\n\n
+        A file manager by Ghost Squared.\n\n
         Please email bugs/suggestions to\n
         ghost.sq2@gmail.com\n
         Thank you.\n\n\n 

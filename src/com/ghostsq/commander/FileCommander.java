@@ -2,10 +2,8 @@ package com.ghostsq.commander;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 
 import com.ghostsq.commander.adapters.CommanderAdapter;
@@ -24,6 +22,7 @@ import android.app.PendingIntent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
@@ -58,7 +57,9 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     private String  lang = ""; // just need to issue a warning on change
     private int     file_exist_resolution = Commander.UNKNOWN;
     private NotificationManager notMan = null;
-    private long    notLastTime = 0; 
+    private final static int NOTIF_PROGRESS = 1, NOTIF_DONE = 2;
+    private final static String PARCEL = "parcel", MSG = "msg";
+    private long    notLastTime = 0;
 
     public final void showMemory( String s ) {
         final ActivityManager sys = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
@@ -119,19 +120,19 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onStart() {
-        //Log.v( TAG, "Starting\n" );
+        Log.v( TAG, "Starting\n" );
         super.onStart();
         on = true;
         if( dont_restore )
             dont_restore = false;
         else {
             Utils.changeLanguage( this );
-
+            Intent intent = getIntent();
+            
             SharedPreferences prefs = getPreferences( MODE_PRIVATE );
             Panels.State s = panels.new State();
             s.restore( prefs );
             
-            Intent intent = getIntent();
             String action = intent.getAction();
             Log.i( TAG, "Action: " + action );
             int use_panel = -1;
@@ -180,7 +181,6 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                         showError( getString( R.string.not_accs, "" ) );    // TODO more verbose
                     }
                 }
-                
                 use_panel = Panels.LEFT;
                 panels.Navigate( use_panel, uri, file_name );    
                 viewActProcessed = true;
@@ -702,19 +702,41 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     }
 
     @Override
+    protected void onNewIntent( Intent intent ) {
+        on = true;
+        super.onNewIntent( intent );
+        try {
+            Message msg = intent.getParcelableExtra( PARCEL );
+            if( msg != null ) {
+                notifyMe( msg );
+                return;
+            }
+            Log.v( TAG, "No parcel found in the intent." );
+        } catch( Exception e ) {
+            Log.e( TAG, "Can't extract a parcel from intent", e );
+        }
+    }
+    
+    @Override
     public boolean notifyMe( Message progress ) {
+        final boolean TERMINATE = true, CONTINUE = false;
         String string = null;
         try {
-            if( progress.obj != null )
-                string = (String)progress.obj;
-            String cookie = null;
+            if( progress.obj != null ) {
+                if( progress.obj instanceof String )
+                    string = (String)progress.obj;
+                else if( progress.obj instanceof Bundle ) {
+                    Bundle b = (Bundle)progress.obj;
+                    string = b.getString( MSG );
+                }
+            }
             Bundle b = progress.getData();
-            cookie = b.getString( NOTIFY_COOKIE );
+            String cookie = b != null ? b.getString( NOTIFY_COOKIE ) : null;
             if( progress.what == Commander.OPERATION_STARTED ) {
                 setProgressBarIndeterminateVisibility( true );
                 if( string != null && string.length() > 0 )
                     showMessage( string );
-                return false;
+                return CONTINUE;
             }
             Dialogs dh = null;
             if( progress.what == OPERATION_IN_PROGRESS && progress.arg1 >= 0 ) {
@@ -722,19 +744,23 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                     dh = obtainDialogsInstance( Dialogs.PROGRESS_DIALOG );
                     if( dh != null ) {
                         dh.showDialog();
-                        dh.setProgress( string, progress.arg1, progress.arg2, b.getInt( NOTIFY_SPEED ) );
+                        dh.setProgress( string, progress.arg1, progress.arg2, b != null ? b.getInt( NOTIFY_SPEED ) : 0 );
                     }
                 }
                 else {
                     if( string != null && string.length() > 0 )
-                        setSystemNotification( string, progress.arg1 );
+                        setSystemOngoingNotification( string, progress.arg1 );
                 }
-                return false;
+                return CONTINUE;
             }
             dh = getDialogsInstance( Dialogs.PROGRESS_DIALOG );
             if( dh != null )
                 dh.cancelDialog();
-            if( notMan != null ) notMan.cancel( 1 ); 
+            if( notMan != null ) notMan.cancel( NOTIF_PROGRESS ); 
+            if( !on ) {
+                setSystemNotification( progress );
+                return progress.what != OPERATION_SUSPENDED_FILE_EXIST;
+            }
             setProgressBarIndeterminateVisibility( false );
             panels.operationFinished();
             switch( progress.what ) {
@@ -743,7 +769,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                     dh.setMessageToBeShown( string, null );
                     dh.showDialog();
                 }
-                return false;
+                return CONTINUE;
             case OPERATION_FAILED:
                 if( Utils.str( cookie ) ) {
                     int which_panel = cookie.charAt( 0 ) == '1' ? 1 : 0;
@@ -752,20 +778,19 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 if( Utils.str( string ) )
                     showError( string );
                 panels.redrawLists();
-                return true;
+                return TERMINATE;
             case OPERATION_FAILED_LOGIN_REQUIRED: 
                 if( string != null ) {
                     dh = obtainDialogsInstance( Dialogs.LOGIN_DIALOG );
                     dh.setMessageToBeShown( null, string );
                     showDialog( Dialogs.LOGIN_DIALOG );
                 }
-                return true;
+                return TERMINATE;
             case OPERATION_COMPLETED_REFRESH_REQUIRED:
                 panels.refreshLists();
                 break;
             case OPERATION_COMPLETED:
                 if( Utils.str( cookie ) ) {
-                    //Log.v( TAG, "notify with cookie: " + progress.cookie );
                     int which_panel = cookie.charAt( 0 ) == '1' ? 1 : 0;
                     String item_name = cookie.substring( 1 );
                     panels.recoverAfterRefresh( item_name, which_panel );
@@ -779,29 +804,52 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         } catch( Exception e ) {
             Log.e( TAG, string, e );
         }
-        return true;
+        return TERMINATE;
     }
 
-    private void setSystemNotification( String msg, int p ) {
-        if( notMan == null ) return;
+    private PendingIntent getPendingIntent( Parcelable parcel ) {
+        Intent intent = new Intent( this, FileCommander.class );
+        intent.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP );
+        intent.setAction( Intent.ACTION_MAIN );
+        if( parcel != null ) 
+            intent.putExtra( PARCEL, parcel );
+        return PendingIntent.getActivity( this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT );
+    }
+    
+    private void setSystemOngoingNotification( String str, int p ) {
+        if( notMan == null || str == null ) return;
         long cur_time = System.currentTimeMillis();
         if( notLastTime + 1000 > cur_time ) return;
         notLastTime = cur_time;
         Notification notification = new Notification( R.drawable.icon, getString( R.string.inprogress ), cur_time );
-        Intent intent = new Intent( this, FileCommander.class ).setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP | 
-                                                                          Intent.FLAG_ACTIVITY_SINGLE_TOP );
-        notification.contentIntent = PendingIntent.getActivity( this, 0, intent, 
-                                     PendingIntent.FLAG_CANCEL_CURRENT );
+        notification.contentIntent = getPendingIntent( null );
         notification.flags |= Notification.FLAG_ONGOING_EVENT;
-
         RemoteViews not_view = new RemoteViews( getPackageName(), R.layout.progress );
         not_view.setTextColor( R.id.text, 0xFF000000 );
-        not_view.setTextViewText( R.id.text, msg );
+        not_view.setTextViewText( R.id.text, str.replace( "\n", " " ) );
         not_view.setProgressBar( R.id.progress_bar, 100, p, false );
         not_view.setTextColor( R.id.percent, 0xFF000000 );
         not_view.setTextViewText( R.id.percent, "" );
         notification.contentView = not_view;
-        notMan.notify( 1, notification );
+        notMan.notify( NOTIF_PROGRESS, notification );
+    }
+    
+    private void setSystemNotification( Message msg ) {
+        if( notMan == null || msg == null ) return;
+        String str;
+        try {
+            str = (String)msg.obj;
+        } catch( Exception e ) {
+            str = "Unknown Event";
+        }
+        Notification notification = new Notification( R.drawable.icon, str, System.currentTimeMillis() );
+        
+        Bundle b = new Bundle( 1 );
+        b.putString( MSG, str );
+        msg.obj = b; // pack not parcelable string message to parcelable bundle  
+        notification.setLatestEventInfo( this, getString( R.string.app_name ), str, getPendingIntent( msg ) );
+        notification.flags |= Notification.FLAG_ONLY_ALERT_ONCE | Notification.FLAG_AUTO_CANCEL;
+        notMan.notify( NOTIF_DONE, notification );
     }
     
     public void setResolution( int r ) {
@@ -809,10 +857,6 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             file_exist_resolution = r;
             notify();
         }
-        /*
-        if( file_exist_resolution != Commander.ABORT )
-            showDialog( Dialogs.PROGRESS_DIALOG );
-        */
     }    
     @Override
     public int getResolution() {

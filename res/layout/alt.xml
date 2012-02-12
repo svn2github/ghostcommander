@@ -6,7 +6,7 @@
          android:layout_width="fill_parent" 
          android:layout_height="fill_parent">
          
-    <RelativeLayout  
+    <!-- RelativeLayout  
         android:id="@+id/titles"
         android:layout_width="fill_parent" android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -15,6 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
+            android:layout_weight="1"
             android:singleLine="true"
             android:ellipsize="start"
             android:paddingLeft="8dp"
@@ -23,11 +24,37 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:layout_weight="1"
             android:singleLine="true"
             android:ellipsize="start"
             android:paddingLeft="8dp"
         	android:paddingRight="8dp"/>
-    </RelativeLayout>
+    </RelativeLayout-->
+    
+    <LinearLayout android:id="@+id/titles"
+        android:layout_width="fill_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/ttl_def">
+        <TextView android:id="@+id/left_dir"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:ellipsize="start"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"/>
+        <TextView android:id="@+id/right_dir"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:ellipsize="start"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"/>
+    </LinearLayout>
+    
     <LinearLayout android:id="@+id/uri_edit_panel"
          android:visibility="gone"
          android:orientation="horizontal"

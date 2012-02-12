@@ -126,7 +126,7 @@ public class FTP {
             		    Log.e( TAG, "The server did not respond. " + inputStream.toString() );
             		    return null;
             		}
-            	while( inputStream.available() == 0 );
+            	while( inputStream != null && inputStream.available() == 0 );
                 for( i = 0; i < buf_sz; i++ ) {
                     int b = inputStream.read();
                     if( b < 0 )

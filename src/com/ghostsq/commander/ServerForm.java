@@ -38,7 +38,7 @@ public class ServerForm extends Activity implements View.OnClickListener {
             } else
             if( schema.equals( "smb" ) ) {
                 type = Type.SMB;
-                p_name = "Windows PC"
+                p_name = "Windows PC";
             } else
                 type = Type.UNKNOWN;
             

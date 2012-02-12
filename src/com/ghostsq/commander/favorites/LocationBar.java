@@ -51,8 +51,9 @@ public class LocationBar extends BaseAdapter implements Filterable, OnKeyListene
 	            textView.addTextChangedListener( this );
             }
             Button go = (Button)goPanel.findViewById( R.id.go_button );
-            if( go != null )
+            if( go != null ) {
             	go.setOnClickListener( this );
+            }
             View star = goPanel.findViewById( R.id.star );
             if( star != null )
             	star.setOnClickListener( this );
@@ -62,6 +63,15 @@ public class LocationBar extends BaseAdapter implements Filterable, OnKeyListene
 		}
 	}
 
+	public void setFingerFriendly( boolean finger_friendly, int font_size ) {
+        Button go = (Button)goPanel.findViewById( R.id.go_button );
+        if( go != null ) {
+            int pv = go.getPaddingTop();
+            int ph = finger_friendly ? 16 : 8;
+            go.setPadding( ph, pv, ph, pv );
+        }
+	}
+	
 	@Override
 	 public Filter getFilter() {
 	  Filter nameFilter = new Filter() {

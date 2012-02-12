@@ -108,7 +108,7 @@ public class FSAdapter extends CommanderAdapterBase {
     @Override
     public boolean readSource( Uri d, String pass_back_on_done ) {
     	try {
-    	    if( worker != null ) worker.reqStop();
+    	    //if( worker != null ) worker.reqStop();
             File[] files_ = null; 
             String dir_name = null;
             File dir = null;
@@ -887,6 +887,7 @@ public class FSAdapter extends CommanderAdapterBase {
             Context c = ctx;
             File file = null;
             for( int i = 0; i < list.length; i++ ) {
+                boolean existed = false;
                 FileChannel  in = null;
                 FileChannel out = null;
                 File outFile = null;
@@ -920,7 +921,7 @@ public class FSAdapter extends CommanderAdapterBase {
                         depth--;
                     }
                     else {
-                        if( outFile.exists() ) {
+                        if( existed = outFile.exists() ) {
                             int res = askOnFileExist( c.getString( R.string.file_exist, outFile.getAbsolutePath() ), commander );
                             if( res == Commander.SKIP )  continue;
                             if( res == Commander.REPLACE ) {
@@ -964,6 +965,7 @@ public class FSAdapter extends CommanderAdapterBase {
                             t_chunk += transferred;
                         	totalBytes += transferred;
                             if( isStopReq() ) {
+                                Log.d( TAG, "Interrupted!" );
                                 error( c.getString( R.string.canceled ) );
                                 return counter;
                             }
@@ -1012,7 +1014,7 @@ public class FSAdapter extends CommanderAdapterBase {
                             in.close();
                         if( out != null )
                             out.close();
-                        if( !move && errMsg != null && outFile != null && !outFile.equals( file ) ) {
+                        if( !move && errMsg != null && outFile != null && !existed ) {
                             Log.i( TAG, "Deleting failed output file" );
                             outFile.delete();
                         }

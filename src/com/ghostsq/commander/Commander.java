@@ -95,44 +95,16 @@ public interface Commander {
      * @return one of ABORT, REPLACE, REPLACE_ALL, SKIP, SKIP_ALL
      */
     public int getResolution();
-	
-	/**
+
+    /**
      * Procedure completion notification. 
-     * @param Notify object - see below
-     * @return true if finishing 
+     * @param Message object with the following fields:
+     *          .obj  - the message string
+     *          .what - the event type (see above the OPERATION_... constants)
+     *          .arg1 - main progress value (0-100)
+     *          .arg2 - secondary progress value (0-100)
+     *          .getData() - a bundle with a string NOTIFY_COOKIE 
+     * @return true if it's fine to destroy the working thread 
      */
     public boolean notifyMe( Message m );
-    
-    
-/*
-    public boolean notifyMe( Notify obj );
-
-	/**
-     * Adapter's working procedures (both in this thread and the candler of worker threads) should pass this
-     * @param string current status description
-     * @param prg1 of MAX, or OPERATION_xxx (see above). To set MAX, call with SET_MAX as the first param 
-     * @param prg2 of MAX, pass -1 to make it not changed
-     * @param cookie 
-	class Notify {
-	    public String string, cookie;
-	    public int status = 0, substat = 0;
-        public Notify( int status_ ) {
-            status = status_;
-        }
-        public Notify( String string_, int status_ ) {
-            string = string_;
-            status = status_;
-        }
-        public Notify( String string_, int status_, int substat_ ) {
-            string = string_;
-            status = status_;
-            substat = substat_;
-        }
-        public Notify( String string_, int status_, String cookie_ ) {
-            string = string_;
-            status = status_;
-            cookie = cookie_;
-        }
-	}
-     */
 }

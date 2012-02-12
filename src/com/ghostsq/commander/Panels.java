@@ -99,9 +99,11 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         initList( LEFT );
         initList( RIGHT );
 
+        favorites = new Favorites( c );
+        locationBar = new LocationBar( c, this, favorites );
+        
         setLayoutMode( sxs_ );
-       
-        highlightCurrentTitle();
+//        highlightCurrentTitle();
         
         TextView left_title = (TextView)c.findViewById( titlesIds[LEFT] );
         if( left_title != null ) {
@@ -113,8 +115,6 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             right_title.setOnClickListener( this );
             right_title.setOnLongClickListener( this );
         }
-        favorites = new Favorites( c );
-        locationBar = new LocationBar( c, this, favorites );
         try{ 
 	        quickSearchBuf = new StringBuffer();
 	        quickSearchTip = Toast.makeText( c, "", Toast.LENGTH_SHORT );
@@ -486,6 +486,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 if( list[p] != null )
                     list[p].setFingerFriendly( finger_friendly );
             }
+            locationBar.setFingerFriendly( finger_friendly, font_size );
         }
         catch( Exception e ) {
             Log.e( TAG, null, e );
