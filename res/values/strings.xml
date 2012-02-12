@@ -48,18 +48,18 @@
     <string name="apps">Applications</string>
     <string name="exit">Exit</string>
     
-    <string name="favs_descr">Manage your list of favorite folders and sites. Edit, rename, or place shortcuts to your device\'s home screen, etc.</string>
+    <string name="favs_descr">View and manage your list of favorite folders and sites. Edit, rename and place shortcuts to your device\'s home screen, etc.</string>
     <string name="local_descr">Browse, organize and modify the contents of the inserted SD card and internal flash memory.</string>
-    <string name="ftp_descr">Connect to an FTP server and transfer files both to and from it.</string>
-    <string name="smb_descr">This requires the Ghost Commander SMB plugin to be installed and allows you to connect to a shared folder on a Windows PC.</string>
-    <string name="root_descr">If your phone is rooted, enter here to interact with protected system content. If you don\'t know what that means, please don\'t use this feature.</string>
-    <string name="mount_descr">Browse the list of mounted devices and remount them to \"rw\" mode, then back to \"ro\" mode. Proceed with caution.</string>
-    <string name="apps_descr">Manage the installed packages.</string>
-    <string name="exit_descr">Exit this application.</string>
+    <string name="ftp_descr">Connect to an FTP server, browse and transfer files both to and from it.</string>
+    <string name="smb_descr">This requires the Ghost Commander SMB plugin to be installed and connects your device to shared folders on a Windows machine.</string>
+    <string name="root_descr">If your device is rooted, use this mode to make changes in the system. If you don\'t know what that means, please don't do that.</string>
+    <string name="mount_descr">Display a list of all mount points. Remount them to \"rw\" mode, then back to \"ro\" mode after any changes are complete. Proceed with caution.</string>
+    <string name="apps_descr">View and manage installed packages.</string>
+    <string name="exit_descr">Close the application.</string>
 
     <string name="shortcut">Create a new shortcut</string>
     <string name="enter_ftp">Connect to FTP</string>
-    <string name="enter_smb">Connect to Windows share</string>
+    <string name="enter_smb">Connect to Windows</string>
     <string name="search_file">Search</string>
 
     <string name="sort_by_name">By Name</string>
@@ -304,7 +304,7 @@ copied >5 will produce:
         
     
     <string name="advanced">Advanced</string>
-    <string name="advanced_settings">Advanced settings</string>
+    <string name="advanced_settings">Miscellaneous</string>
     <string name="summary_advanced_settings">Extra settings for advanced users</string>
     <string name="send_content">Send using content provider</string>
     <string name="summary_send_content">Uncheck if your file sending application does not implement a content resolver</string>
@@ -491,8 +491,8 @@ Or, if you need to provide user details:\n
 To access as root (su), enter the location as follows:\n
     \"root:///data\"\n
 Make sure BusyBox is installed and its location is specified in settings.\n
-To list the mounted devices, type in \"mount://\".
-Click on a mount record to make it \"rw\" or revert it back to \"ro\".
+To list all mount points, type \"mount://\" in the location field.
+Tap on a mount point to make it \"rw\" or to revert it back to \"ro\".
     "
     </string>
     
