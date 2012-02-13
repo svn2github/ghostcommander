@@ -52,7 +52,7 @@
     <string name="local_descr">Browse, organize and modify the contents of the inserted SD card and internal flash memory.</string>
     <string name="ftp_descr">Connect to an FTP server, browse and transfer files both to and from it.</string>
     <string name="smb_descr">This requires the Ghost Commander SMB plugin to be installed and connects your device to shared folders on a Windows machine.</string>
-    <string name="root_descr">If your device is rooted, use this mode to make changes in the system. If you don\'t know what that means, please don't do that.</string>
+    <string name="root_descr">Rooted devices only - use caution: Browse and interact with critical system files. Only proceed if you know what you\'re doing.</string>
     <string name="mount_descr">Display a list of all mount points. Remount them to \"rw\" mode, then back to \"ro\" mode after any changes are complete. Proceed with caution.</string>
     <string name="apps_descr">View and manage installed packages.</string>
     <string name="exit_descr">Close the application.</string>
