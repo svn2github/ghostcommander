@@ -290,7 +290,7 @@ public final class MnfUtils {
                 while( ( et = xpp.next() ) != XmlPullParser.END_DOCUMENT ) {
                     if( et == XmlPullParser.START_TAG && "activity".equals( xpp.getName() ) ) {
                         String can = xpp.getAttributeValue( null, "name" );
-                        if( act_name.indexOf( can ) > 0 ) { // not very correct...
+                        if( act_name.indexOf( can ) >= 0 ) { // ??? why not exact match?
                             int d = xpp.getDepth();
                             while( ( et = xpp.next() ) != XmlPullParser.END_DOCUMENT &&
                             ( d < xpp.getDepth() || et != XmlPullParser.END_TAG ) ) {

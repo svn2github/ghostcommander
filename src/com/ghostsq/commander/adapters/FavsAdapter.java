@@ -1,6 +1,9 @@
 package com.ghostsq.commander.adapters;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.R;
@@ -13,6 +16,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Parcelable;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ContextMenu;
 import android.view.View;
@@ -249,4 +253,64 @@ public class FavsAdapter extends CommanderAdapterBase {
         return getView( convertView, parent, item );
     }
 
+    @Override
+    protected void reSort() {
+        if( favs == null ) return;
+        FavoriteComparator comp = new FavoriteComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0, ascending );
+        Collections.sort( favs, comp );
+    }
+    
+    public class FavoriteComparator implements Comparator<Favorite> {
+        int     type;
+        boolean case_ignore, ascending;
+
+        public FavoriteComparator( int type_, boolean case_ignore_, boolean ascending_ ) {
+            type = type_;
+            case_ignore = case_ignore_;
+            ascending = ascending_;
+        }
+        public int compare( Favorite f1, Favorite f2 ) {
+            if( f1 == null || f2 == null ) {
+                Log.w( TAG, "a Fav is null!" );
+                return 0;
+            }
+            int ext_cmp = 0;
+            switch( type ) { 
+            case SORT_EXT: {
+                    String c1 = f1.getComment();
+                    if( c1 == null ) c1 = "";
+                    String c2 = f2.getComment();
+                    if( c2 == null ) c2 = "";
+                    ext_cmp = c1.compareTo( c2 );
+                }
+                break;
+            case SORT_SIZE: {
+                    ext_cmp = getWeight( f1.getUri() ) - getWeight( f2.getUri() ) > 0 ? 1 : -1;
+                }
+                break;
+            case SORT_DATE:
+                break;
+            }
+            if( ext_cmp == 0 ) {
+                Uri u1 = f1.getUri();
+                Uri u2 = f2.getUri();
+                if( u1 != null )
+                    ext_cmp = u1.compareTo( u2 );
+            }
+            return ascending ? ext_cmp : -ext_cmp;
+        }
+        private int getWeight( Uri u ) {
+            int w = 0;
+            if( u != null ) {
+                w++;
+                String s = u.getScheme();
+                if( s != null ) {
+                    w++;
+                    if( "ftp".equals( s ) ) w++; else
+                    if( "smb".equals( s ) ) w+=2;
+                }
+            }
+            return w;
+        }
+    }
 }

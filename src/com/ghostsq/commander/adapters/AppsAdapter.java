@@ -224,7 +224,8 @@ public class AppsAdapter extends CommanderAdapterBase {
                         ins[0] = new Intent( Intent.ACTION_CREATE_SHORTCUT );
                         ins[1] = new Intent( Intent.ACTION_MAIN );
                         resInfos = getResolvers( ins, a );
-                        numItems = resInfos.length + 1;
+                        if( resInfos != null )
+                            numItems = resInfos.length + 1;
                     } else 
                     if( ps.size() >= 2 && ACTIVITIES.equals( ps.get( 0 ) ) ) {
                         if( manUtl == null )

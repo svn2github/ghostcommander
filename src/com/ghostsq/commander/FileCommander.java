@@ -687,6 +687,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 }
                 String mime = Utils.getMimeByExt( ext );
                 i.setDataAndType( uri.buildUpon().scheme( "file" ).authority( "" ).build(), mime );
+                i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET  );
+                // | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
                 startActivity( i );
             }
         } catch( ActivityNotFoundException e ) {

@@ -175,7 +175,7 @@ public class ToolButton {
         case  R.id.tgl:          return  true;
         case  R.id.sz:           return  true;
         case  R.id.by_name:      return  true;
-        case  R.id.by_ext:       return  false;
+        case  R.id.by_ext:       return  true;
         case  R.id.by_size:      return  true;
         case  R.id.by_date:      return  true;
         case  R.id.home:         return  true;

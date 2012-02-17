@@ -164,9 +164,9 @@ final public class CA {
         case  R.id.eq:           return  CA.ALL;
         case  R.id.tgl:          return  CA.ALL;
         case  R.id.sz:           return  CA.LOCAL | CA.ROOT | CA.APPS;
-        case  R.id.by_name:      return  CA.REAL | CA.APPS;
-        case  R.id.by_ext:       return  CA.REAL | CA.APPS;
-        case  R.id.by_size:      return  CA.REAL | CA.APPS;
+        case  R.id.by_name:      return  CA.REAL | CA.APPS | CA.FAVS;
+        case  R.id.by_ext:       return  CA.REAL | CA.APPS | CA.FAVS;
+        case  R.id.by_size:      return  CA.REAL | CA.APPS | CA.FAVS;
         case  R.id.by_date:      return  CA.REAL | CA.APPS;
         case  R.id.sel_all:      return  CA.REAL | CA.APPS;
         case  R.id.uns_all:      return  CA.REAL | CA.APPS;
