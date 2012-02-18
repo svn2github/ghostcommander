@@ -660,9 +660,11 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     public void Open( Uri uri ) {
         try {
             if( uri == null ) return;
+            String path = uri.getPath();
+            String ext = Utils.getFileExt( path );
             String scheme = uri.getScheme();
             if( scheme == null || scheme.length() == 0 ) { 
-                String path = uri.getPath();
+                
                 Intent i = new Intent( Intent.ACTION_VIEW );
                 Intent op_intent = getIntent();
                 if( op_intent != null ) {
@@ -680,7 +682,6 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                         return;
                     }
                 }
-                String ext = Utils.getFileExt( path );
                 if( ext != null && ext.compareToIgnoreCase( ".zip" ) == 0 ) {
                     Navigate( uri.buildUpon().scheme( "zip" ).build(), null );
                     return;
@@ -690,7 +691,16 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET  );
                 // | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
                 startActivity( i );
+            } else {
+                startService( new Intent( this, StreamServer.class ) );
+                Intent i = new Intent( Intent.ACTION_VIEW );
+                String mime = Utils.getMimeByExt( ext );
+                i.setDataAndType( Uri.parse( "http://127.0.0.1:5322/" + Uri.encode( uri.toString() ) ), mime );
+                i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET  );
+                startActivity( i );
+                return;
             }
+
         } catch( ActivityNotFoundException e ) {
             showMessage("Application for open '" + uri.toString() + "' is not available, ");
         } catch( Exception e ) {

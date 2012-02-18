@@ -260,9 +260,6 @@ public class FTP {
     	try {
     	    Socket data_socket = null;
             serverSocket = new ServerSocket( 0 );
-            /* 
-            	Emulator just ceased to do the PORT translation.
-            */ 
             if( !allowActive || !announcePort( serverSocket ) ) {
                 flushReply();   // emulator has a bug, it adds \n\r in the end of translated PORT
                 serverSocket = null;

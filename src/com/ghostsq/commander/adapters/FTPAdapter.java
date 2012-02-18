@@ -634,6 +634,8 @@ public class FTPAdapter extends CommanderAdapterBase {
             return;
         LsItem item = items[position - 1];
         
+        
+        
         if( item.isDirectory() ) {
         	String cur = uri.getPath();
             if( cur == null || cur.length() == 0 ) 
@@ -641,7 +643,12 @@ public class FTPAdapter extends CommanderAdapterBase {
             else
             	if( cur.charAt( cur.length()-1 ) != SLC )
             		cur += SLS;
-            commander.Navigate( uri.buildUpon().appendEncodedPath( item.getName() ).build(), null );
+            Uri item_uri = uri.buildUpon().appendEncodedPath( item.getName() ).build();
+            commander.Navigate( item_uri, null );
+        }
+        else {
+            Uri auth_item_uri = getUri().buildUpon().appendEncodedPath( item.getName() ).build();
+            commander.Open( auth_item_uri );
         }
     }
 

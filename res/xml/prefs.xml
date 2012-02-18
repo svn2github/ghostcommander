@@ -117,7 +117,7 @@
                 android:defaultValue="12"/>
 	    <PreferenceScreen
 	                android:key="colors"
-	                android:title="@string/colors">
+	                android:title="@string/colors"
                     android:summary="@string/summary_colors">
             <PreferenceScreen
                     android:key="bgr_color_picker"
