@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.FSAdapter;
 import com.ghostsq.commander.adapters.FindAdapter;
+import com.ghostsq.commander.favorites.Favorite;
 import com.ghostsq.commander.root.MountAdapter;
 import com.ghostsq.commander.root.RootAdapter;
 import com.ghostsq.commander.utils.Utils;
@@ -662,9 +663,9 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             if( uri == null ) return;
             String path = uri.getPath();
             String ext = Utils.getFileExt( path );
+            String mime = Utils.getMimeByExt( ext );
             String scheme = uri.getScheme();
             if( scheme == null || scheme.length() == 0 ) { 
-                
                 Intent i = new Intent( Intent.ACTION_VIEW );
                 Intent op_intent = getIntent();
                 if( op_intent != null ) {
@@ -686,16 +687,20 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                     Navigate( uri.buildUpon().scheme( "zip" ).build(), null );
                     return;
                 }
-                String mime = Utils.getMimeByExt( ext );
                 i.setDataAndType( uri.buildUpon().scheme( "file" ).authority( "" ).build(), mime );
                 i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET  );
                 // | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
                 startActivity( i );
-            } else {
+            } 
+            else 
+            if( mime != null && ( mime.startsWith( "audio" ) || mime.startsWith( "video" ) ) ) {
                 startService( new Intent( this, StreamServer.class ) );
                 Intent i = new Intent( Intent.ACTION_VIEW );
-                String mime = Utils.getMimeByExt( ext );
-                i.setDataAndType( Uri.parse( "http://127.0.0.1:5322/" + Uri.encode( uri.toString() ) ), mime );
+                
+                Favorite fv = new Favorite( uri );
+                String http_url = "http://127.0.0.1:5322/" + Uri.encode( fv.toString() );
+                Log.d( TAG, "Stream " + mime + " from: " + http_url );
+                i.setDataAndType( Uri.parse( http_url ), mime );
                 i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET  );
                 startActivity( i );
                 return;

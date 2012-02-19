@@ -42,7 +42,7 @@
     <string name="local">Local storage</string>
     <string name="ftp">FTP site</string>
     <string name="smb">Windows share</string>
-    <string name="root">root mode</string>
+    <string name="root">Root mode</string>
     <string name="mount">Mount points</string>
     <string name="mount_b">Mounts</string>
     <string name="apps">Applications</string>
@@ -52,14 +52,14 @@
     <string name="local_descr">Browse, organize and modify the contents of the inserted SD card and internal flash memory.</string>
     <string name="ftp_descr">Connect to an FTP server, browse and transfer files both to and from it.</string>
     <string name="smb_descr">This requires the Ghost Commander SMB plugin to be installed and connects your device to shared folders on a Windows machine.</string>
-    <string name="root_descr">Rooted devices only - use caution: Browse and interact with critical system files. Only proceed if you know what you\'re doing.</string>
+    <string name="root_descr">Use caution - for rooted devices only: Browse and interact with critical system files. Only proceed if you know what you\'re doing.</string>
     <string name="mount_descr">Display a list of all mount points. Remount them to \"rw\" mode, then back to \"ro\" mode after any changes are complete. Proceed with caution.</string>
     <string name="apps_descr">View and manage installed packages.</string>
     <string name="exit_descr">Close the application.</string>
 
     <string name="shortcut">Create a new shortcut</string>
     <string name="enter_ftp">Connect to FTP</string>
-    <string name="enter_smb">Connect to Windows</string>
+    <string name="enter_smb">Connect to Windows PC</string>
     <string name="search_file">Search</string>
 
     <string name="sort_by_name">By Name</string>
@@ -292,8 +292,8 @@ copied >5 will produce:
     <string name="layout_settings">Appearance</string>
     <string name="input_settings">Input</string>
 
-    <string name="show_confirm">Show confirmation dialog</string>
-    <string name="summary_show_confirm">Display a confirmation dialog after completed operations</string>
+    <string name="show_confirm">Enable confirmations</string>
+    <string name="summary_show_confirm">Show a discreet message after completing certain operations</string>
 
     <string name="prefs_label">Settings</string>
     <string name="filetypes_label">Colors by type</string>      
@@ -318,9 +318,9 @@ copied >5 will produce:
     <string name="show_toolbar">Enable toolbar</string>
     <string name="summary_show_toolbar">Show or hide the buttons at the base of the app</string>
     <string name="show_hotkeys">Show hotkeys</string>
-    <string name="summary_show_hotkeys">Always display hotkeys on the toolbar</string>
+    <string name="summary_show_hotkeys">Always display hotkey shortcuts on certain buttons</string>
     <string name="toolbar_preference">Customize the toolbar</string>
-    <string name="summary_toolbar_preference">Select which buttons to display on the toolbar</string>
+    <string name="summary_toolbar_preference">Select which buttons to display, edit and arrange them</string>
 
     <string name="tblist_label" >Select, edit and arrange</string>
 
@@ -329,15 +329,15 @@ copied >5 will produce:
     <string name="prevent_root">Warn on leaving /sdcard</string>
     <string name="summary_prevent_root">Issue a warning when going to a device\'s root folder</string>
 
-    <string name="show_root">Show root and mount items</string>
-    <string name="summary_show_root">Home view will display root and mount items</string>
+    <string name="show_root">Show root and mount entries</string>
+    <string name="summary_show_root">Home view will display root and mount entries</string>
     <string name="root_root">Automatic root mode</string>
     <string name="summary_root_root">Switch to root mode when going to a device\'s root folder</string>
 
     <string name="thumbnails">Enable thumbnails</string>
     <string name="summary_thumbnails">Show thumbnails for images instead of plain icons</string>
     <string name="thumbnails_size">Thumbnail size</string>
-    <string name="summary_thumbnails_size">Set the value in relation to icon size</string>
+    <string name="summary_thumbnails_size">Set the percentage value in relation to icon size</string>
 
     <string name="font_size">Font size</string>
     <string name="summary_font_size">Set the font size</string>
@@ -348,13 +348,13 @@ copied >5 will produce:
     <string name="summary_detailed_view_SbS">Show size and date for files in side-by-side mode</string>
     <string name="detailed_view_Ovr">Detailed overlapped mode</string>
     <string name="summary_detailed_view_Ovr">Show size and date for files in overlapped mode</string>
-    <string name="sorting">Sorting</string>
+    <string name="sorting">Sorting method</string>
     <string name="summary_sorting">Choose how to sort files and folders</string>
     <string name="sort_case">Ignore case in sorting</string>
-    <string name="summary_sort_case">If not checked, the sorting will be case sensitive</string>
+    <string name="summary_sort_case">If not checked, file and folder sorting will be case sensitive</string>
     
     <string name="show_hidden">Show hidden files</string>
-    <string name="summary_show_hidden">If not checked, files beginning with a dot won\'t be shown</string>
+    <string name="summary_show_hidden">If not checked, files and folders with a preceding dot in their names won\'t be shown</string>
     <string name="arrow_mode">Override arrow buttons</string>
     <string name="summary_arrow_mode">Left/right arrows perform toggle/select</string>
     <string name="volume_mode">Override volume buttons</string>
@@ -362,8 +362,8 @@ copied >5 will produce:
     <string name="exit_on_back">Back key exits</string>
     <string name="summary_exit_on_back">Close the application by pressing the back button</string>
 
-    <string name="colors">Set up the colors</string>
-    <string name="summary_colors">Customize various background and foreground colors</string>
+    <string name="colors">Customize the colors</string>
+    <string name="summary_colors">Modify various background and foreground colors</string>
     <string name="bgr_color_picker">Background</string>
     <string name="summary_bgr_color_picker">Choose a desired color for the main background</string>
     <string name="fgr_color_picker">Foreground</string>

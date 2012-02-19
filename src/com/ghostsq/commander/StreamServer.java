@@ -11,6 +11,8 @@ import java.net.Socket;
 
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
+import com.ghostsq.commander.adapters.CommanderAdapter.Item;
+import com.ghostsq.commander.favorites.Favorite;
 import com.ghostsq.commander.utils.Utils;
 
 import android.app.NotificationManager;
@@ -24,24 +26,26 @@ import android.util.Log;
 
 public class StreamServer extends Service {
     private final static String TAG = "StreamServer";
+    private final static String CRLF = "\r\n";
     private Context ctx;
-    private Thread  thread;
-    private NotificationManager notMan;
+    private Thread  thread = null;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        ctx = getApplicationContext();
-        notMan = (NotificationManager)getSystemService( Context.NOTIFICATION_SERVICE );
+        ctx = this;  //getApplicationContext();
     }
 
     @Override
     public void onStart( Intent intent, int start_id ) {
         super.onStart( intent, start_id );
-        
-        thread = new Thread( null, runnable, TAG );
-        thread.start();
-        getBaseContext();
+        Log.d( TAG, "onStart" );
+        if( thread == null ) {
+            Log.d( TAG, "Starting server thread" );
+            thread = new Thread( null, runnable, TAG );
+            thread.start();
+            getBaseContext();
+        }
     }
 
     Runnable runnable = new Runnable() {
@@ -49,8 +53,10 @@ public class StreamServer extends Service {
             InputStream  is = null;
             OutputStream os = null;
             try {
+                Log.d( TAG, "Thread started" );
                 ServerSocket ss = new ServerSocket( 5322 );
                 Socket data_socket = ss.accept();
+                Log.d( TAG, "Connection accepted" );
                 ss.close();
                 if( data_socket != null && data_socket.isConnected() ) {
                     is = data_socket.getInputStream();
@@ -60,8 +66,9 @@ public class StreamServer extends Service {
                     if( Utils.str( cmd ) ) {
                         String[] parts = cmd.split( " " );
                         if( parts.length > 1 ) {
-                            String uri_s = Uri.decode( parts[1].substring( 1 ) );
-                            Log.d( TAG, "Got URI: " + uri_s );
+                            String url = Uri.decode( parts[1].substring( 1 ) );
+                            Log.d( TAG, "Got URL: " + url );
+                            Favorite fv = new Favorite( url );
                             while( br.ready() ) {
                                 String hl = br.readLine(); 
                                 Log.v( TAG, hl );
@@ -70,32 +77,50 @@ public class StreamServer extends Service {
                             if( os != null ) {
                                 String http = "HTTP/1.1 ";  
                                 OutputStreamWriter osw = new OutputStreamWriter( os );
-                                
-                                Uri uri = Uri.parse( uri_s );
+                                Uri uri = fv.getUri();
                                 if( uri != null ) { 
+                                    Log.d( TAG, "Got URI: " + uri.toString() );
                                     int ca_type = CA.GetAdapterTypeId( uri.getScheme() );
                                     CommanderAdapter ca = CA.CreateAdapterInstance( ca_type, ctx );
                                     if( ca != null ) {
-                                        InputStream cs = ca.getContent( Uri.parse( uri_s ) );
+                                        
+                                        Log.d( TAG, "Adapter is created" );
+                                        Uri auth_uri = fv.getUriWithAuth();
+                                        Item item = ca.getItem( auth_uri );
+                                        InputStream cs = ca.getContent( auth_uri );
                                         if( cs != null ) {
                                             Log.d( TAG, "200" );
-                                            osw.write( http + "200 OK\n\r" );
-                                            osw.write( "Content-Type: audio/mp3\n\r\n\r" );
+                                            osw.write( http + "200 OK" + CRLF );
+                                            String fn = uri.getLastPathSegment();
+                                            if( fn != null ) {
+                                                String ext = Utils.getFileExt( fn );
+                                                String mime = Utils.getMimeByExt( ext );
+                                                Log.d( TAG, "Content-Type: " + mime );
+                                                osw.write( "Content-Type: " + mime + CRLF );
+                                            }
+                                            else
+                                                osw.write( "Content-Type: application/octet-stream" + CRLF );
+                                            if( item != null ) {
+                                                Log.d( TAG, "Content-Length: " + item.size );
+                                                osw.write( "Content-Length: " + item.size + CRLF );
+                                                osw.write( "Content-Range: bytes 0-" + item.size + "/" + item.size + CRLF );
+                                            }
+                                            osw.write( CRLF );
                                             osw.flush();
                                             Utils.copyBytes( cs, os );
                                             ca.closeStream( cs );
                                         }
                                         else {
-                                            osw.write( http + "404 Not found\n\r" );
+                                            osw.write( http + "404 Not found" + CRLF );
                                             Log.w( TAG, "404" );
                                         }
                                     }
                                     else {
-                                        osw.write( http + "500 Server error\n\r" );
+                                        osw.write( http + "500 Server error" + CRLF );
                                         Log.e( TAG, "500" );
                                     }
                                 } else {
-                                    osw.write( http + "400 Invalid\n\r" );
+                                    osw.write( http + "400 Invalid" + CRLF );
                                     Log.w( TAG, "400" );
                                 }
                             }

@@ -22,23 +22,23 @@ public interface CommanderAdapter {
      *   "Object ListAdapter.getItem( int position )" returns an instance of the following class:  
      */
     public class Item {
-        public String    name = "";
-        public Date      date = null;
-        public long      size = -1;
-        public boolean   dir = false, sel = false;
-        public String    attr = "";
-        public Object    origin = null;
-        public int       icon_id = -1;
-        private Drawable thumbnail;
-        private long     thumbnailUsed;
-        public int       colorCache = 0;
-        public Item() {}
-        public Item( String name_ )    { name = name_; }
-        public final boolean  isThumbNail()  { return thumbnail != null; }
-        public final Drawable getThumbNail()             { thumbnailUsed = System.currentTimeMillis(); return thumbnail; }
-        public final void     setThumbNail( Drawable t ) { thumbnailUsed = System.currentTimeMillis(); thumbnail = t; }
-        public final void     setIcon( Drawable t ) { setThumbNail( t ); thumb_is_icon = true; }
-        public final boolean  remThumbnailIfOld( int ttl ) { 
+        public  String    name = "";
+        public  Date      date = null;
+        public  long      size = -1;
+        public  boolean   dir = false, sel = false;
+        public  String    attr = "";
+        public  Object    origin = null;
+        public  int       icon_id = -1;
+        private Drawable  thumbnail;
+        private long      thumbnailUsed;
+        public  int       colorCache = 0;
+        public  Item() {}
+        public  Item( String name_ )    { name = name_; }
+        public  final boolean  isThumbNail()  { return thumbnail != null; }
+        public  final Drawable getThumbNail()             { thumbnailUsed = System.currentTimeMillis(); return thumbnail; }
+        public  final void     setThumbNail( Drawable t ) { thumbnailUsed = System.currentTimeMillis(); thumbnail = t; }
+        public  final void     setIcon( Drawable t ) { setThumbNail( t ); thumb_is_icon = true; }
+        public  final boolean  remThumbnailIfOld( int ttl ) { 
             if( thumbnail != null && !need_thumb && System.currentTimeMillis() - thumbnailUsed > ttl ) {
                 thumbnail = null;
                 return true;
@@ -163,6 +163,12 @@ public interface CommanderAdapter {
 	 * @return          true if succeeded
 	 */
 	public boolean receiveItems( String[] fileURIs, int move_mode );
+
+    /**
+     * @param fileURI - the location of the file  
+     * @return        - the Item with all the information in it
+     */
+    public Item getItem( Uri fileURI );
 
     /**
      * @param fileURI - the location of the file  

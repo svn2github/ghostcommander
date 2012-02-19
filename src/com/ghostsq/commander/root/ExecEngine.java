@@ -81,8 +81,12 @@ public class ExecEngine extends Engine {
         es = null;
         try {
             Init( null );
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( context );
-            bb = sharedPref.getString( "busybox_path", "busybox" ) + " ";
+            if( context != null ) {
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( context );
+                bb = sharedPref.getString( "busybox_path", "busybox" ) + " ";
+            }
+            else
+                bb = "busybox ";
             
             Process p = Runtime.getRuntime().exec( sh );
             

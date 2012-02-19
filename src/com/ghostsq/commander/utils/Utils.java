@@ -45,6 +45,7 @@ public final class Utils {
             { ".m3u", "audio/x-mpegurl" }, 
             { ".mid", "audio/midi" }, 
             { ".midi","audio/midi" }, 
+            { ".mkv", "video/x-matroska" },
             { ".mp2", "video/mpeg" },
             { ".mp3", "audio/mp3" },
             { ".mp4", "video/mp4" },
@@ -341,7 +342,7 @@ public final class Utils {
 
     public final static boolean copyBytes( InputStream is, OutputStream os ) {
         try {
-            byte[] buf = new byte[4096];
+            byte[] buf = new byte[65536];
             int n;
             while( ( n = is.read( buf ) ) != -1 )
                 os.write( buf, 0, n );

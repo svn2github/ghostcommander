@@ -123,12 +123,14 @@ final public class CA {
             }
             ApplicationInfo ai = ctx.getPackageManager().getApplicationInfo( "com.ghostsq.commander." + type, 0 );
             
-            //Log.i( TAG, type + " package is " + ai.sourceDir );
+            Log.i( TAG, type + " package is " + ai.sourceDir );
             
             ClassLoader pcl = ctx.getClass().getClassLoader();
             DexClassLoader cl = new DexClassLoader( ai.sourceDir, dex_f.getAbsolutePath(), null, pcl );
             //
             Class<?> adapterClass = cl.loadClass( "com.ghostsq.commander." + type + "." + class_name );
+            Log.i( TAG, "Class has been loaded " + adapterClass.toString() );
+            
             try {
                 File[] list = dex_f.listFiles();
                 for( int i = 0; i < list.length; i++ )
@@ -143,7 +145,7 @@ final public class CA {
             }
         }
         catch( Throwable e ) {
-            Log.e( TAG, type, e );
+            Log.e( TAG, "This class can't be created: " + type, e );
         }
         return null;
     }    
