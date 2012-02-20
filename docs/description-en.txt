@@ -1,28 +1,32 @@
-Dual panel file manager (much like Norton Commander, Midnight Commander or Total Commander).
+Dual panel file manager (like Norton Commander, Midnight Commander, FAR or Total Commander).
 
-Unlike regular file managers, it copies and moves files between its two panels. Many people consider that way as more convenient that explorer-like copy and then paste steps.
+It lets you manage your files, copy and move them from one panel to another. That's more convenient than that explorer - like "copy" and then "paste" steps.
 
-Aside the file system on the sdcard, this file manager can also: upload or download files from remote locations such as FTP servers, Windows (aka Samba) network shares (plug-in required), create or extract ZIP archives.
+But its abilities are not limited by the device's SD-card, this file manager can also transfer (upload or download) files to and from FTP servers and Windows network shares (Samba plug-in is required to be installed), create or extract ZIP archives. For the advanced users, this file manager has also the "root:" (or "su" - super user) mode that is essential to work with system files on a rooted phone, to change file permissions attributes and owners (chmod and chown) and even execute your own shell commands. 
 
-For the advanced users, this file manager has also the "root:" (su - super user) mode that is essential to work with system files on a rooted phone, change file permissions attributes (chmod) and even execute your own shell commands. Plus, the "mount:" mode allows you to browse and remount the file system's partitions.
+Please note the following: to select more than one files tap on the right side of the panel, but to activate a file by its extension (or enter into a sub-folder) tap on the left side. That's right, one side will make the file be activated, and the other side will make the file be selected.
 
-Please note! Tap on the right side of the panel to select multiple files. Tap on the left side to activate a file or enter a folder.  Yes, one side will activate, and the other side will select.
 
-Furthermore the application comes with a lot of customizable options which allow you to adjust its behavior to your personal habits.
+The application comes with a lot of customizable options which allow you to adjust its behavior to your personal habits.
 
-Full list of the Ghost Commander file manager features:
-* multiselect (manual or by a wildcard)
+The Ghost Commander file manager features include but not limited to:
+* multiselect (manual or by wildcards)
 * pictures thumbnails
-* favorites
+* favorite folders and locations
 * calculation of the total size of the selected folders and files
 * sorting - by file names, by extension, by size, by date
-* search for files by file name (with wildcards)
-* text editor (built-in or external)
-* open a file with the appropriate application (install an .apk, show a picture or play a movie)
-* send files via email or bluetooth
-* many personalization settings, like: custom colors, custom interface language, custom toolbar set
-* standard file manager features: create directory, create text file, delete files and folders, copy files and folders, FTP download, FTP
-  upload, ZIP creation and extraction, super user mode.
+* file search for files 
+* text editor (built-in or third-party pluggable)
+* text and picture viewers
+* open a file with the appropriate application (i.e. install an .apk, show a picture or play a movie)
+* send files (via email or bluetooth)
+* many personalization settings: colors, font size, interface language, custom toolbar set
+* manage files on SD card
+* can do all the basic stuff like: create directory, text file, delete files and folders, copy files and/or folders
+* FTP client. FTP download and upload
+* supports archives like ZIP - creation and extraction
+* super user mode - remount the /system or any other partition, make changes in the system files, etc.
 
 Please visit the web site for more details.
-Do you have any questions? Email me.
+Email to the developer if you have any questions.
+
