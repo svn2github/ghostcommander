@@ -183,6 +183,7 @@ final public class CA {
         case  R.id.hidden:       return  CA.REAL;
         case  R.id.refresh:      return  CA.REAL | CA.FAVS;
         case  R.id.softkbd:      return  CA.ALL;
+        case  R.id.search:       return  CA.LOCAL;
         }
         return 0;
     }

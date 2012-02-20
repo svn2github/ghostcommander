@@ -533,7 +533,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                         case FileCommander.FIND_ACT: 
                             if( file_name.length() > 0 ) {
                                 StringBuilder sb = new StringBuilder( 128 );
-                                sb.append( "q=" ).append( Utils.escapeUriMarkup( file_name ) );
+                                sb.append( "q=" ).append( Utils.escapeRest( file_name ) );
                                 try {
                                     boolean dirs  = ((CheckBox)dialogObj.findViewById( R.id.for_dirs  )).isChecked();
                                     boolean files = ((CheckBox)dialogObj.findViewById( R.id.for_files )).isChecked();
@@ -546,7 +546,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                                         sb.append( "&o=1" );
                                     String cs = ((EditText)dialogObj.findViewById( R.id.edit_content )).getText().toString();
                                     if( cs.length() > 0 )
-                                        sb.append( "&c=" ).append( Utils.escapeUriMarkup( cs ) );
+                                        sb.append( "&c=" ).append( Utils.escapeRest( cs ) );
 
                                     String bts = ((EditText)dialogObj.findViewById( R.id.edit_bigger  )).getText().toString();
                                     if( bts.length() > 0 )

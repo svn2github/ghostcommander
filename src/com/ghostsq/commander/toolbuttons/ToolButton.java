@@ -52,6 +52,7 @@ public class ToolButton {
         if( cn.equals( "hidden"  ) ) return        R.id.hidden;
         if( cn.equals( "refresh" ) ) return        R.id.refresh;
         if( cn.equals( "softkbd" ) ) return        R.id.softkbd;
+        if( cn.equals( "search"  ) ) return        R.id.search;
         return 0;
     }
 
@@ -88,6 +89,7 @@ public class ToolButton {
         case  R.id.hidden:       return  "hidden";
         case  R.id.refresh:      return  "refresh";
         case  R.id.softkbd:      return  "softkbd";
+        case  R.id.search:       return  "search";
         }
         return null;
     }
@@ -117,6 +119,7 @@ public class ToolButton {
         case  R.id.enter:        return  0;
         case  R.id.add_fav:      return  '*';
         case  R.id.remount:      return  0;
+        case  R.id.search:       return  '/';        
         }
         return 0;
     }
@@ -154,6 +157,7 @@ public class ToolButton {
         case  R.id.hidden:       return  R.string.hidden;
         case  R.id.refresh:      return  R.string.refresh;
         case  R.id.softkbd:      return  R.string.softkbd;
+        case  R.id.search:       return  R.string.search_file;        
         }
         return 0;
     }

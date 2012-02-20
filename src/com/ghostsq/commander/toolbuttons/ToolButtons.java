@@ -17,7 +17,7 @@ public class ToolButtons extends ArrayList<ToolButton>
         String bcns = shared_pref.getString( pref_key, null );
         if( bcns != null && bcns.length() > 0 ) {
             // add new introduced buttons also here like below:
-            //if( bcns.indexOf( "enter" ) >= 0 ) bcns += ",enter";
+            if( bcns.indexOf( "search" ) < 0 ) bcns += ",search";
             String[] bcna = bcns.split( "," );
             for( String bcn : bcna ) {
                 int bi = ToolButton.getId( bcn );
@@ -59,7 +59,8 @@ public class ToolButtons extends ArrayList<ToolButton>
                  R.id.sdcard,  
                  R.id.root,   
                  R.id.mount,   
-                 R.id.softkbd
+                 R.id.softkbd,   
+                 R.id.search
             };
             for( int bi : bia ) {
                 ToolButton tb = new ToolButton( bi );

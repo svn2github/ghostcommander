@@ -676,7 +676,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             i.setType( mime == null ? "*/*" : mime );
             i.putExtra( Intent.EXTRA_SUBJECT, f.getName() );
             SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( c );
-            String esc_fn = Utils.escapeUriMarkup( f.getAbsolutePath() );
+            String esc_fn = Utils.escapePath( f.getAbsolutePath() );
             boolean use_content = shared_pref.getBoolean( "send_content", true );
             Uri uri = Uri.parse( use_content ? FileProvider.URI_PREFIX + esc_fn :
                                                              "file://" + esc_fn );  
@@ -820,7 +820,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                     showSizes();
                     return;
                 }
-                uri = Uri.parse( "file://" + Utils.escapeUriMarkup( f.getAbsolutePath() ) ); 
+                uri = Uri.parse( "file://" + Utils.escapePath( f.getAbsolutePath() ) ); 
             }
             else
                 uri = Uri.parse( name );

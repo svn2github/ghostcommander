@@ -344,18 +344,20 @@ public final class Utils {
         try {
             byte[] buf = new byte[65536];
             int n;
-            while( ( n = is.read( buf ) ) != -1 )
+            while( ( n = is.read( buf ) ) != -1 ) {
                 os.write( buf, 0, n );
+                Thread.sleep( 1 );
+            }
             return true;
         } catch( Exception e ) {
-            e.printStackTrace();
+            Log.e( "Utils.copyBytes", "Exception: " + e );
         }
         return false;
     }
 
-    public final static int ENC_DESC_MODE_NUMB = 0;
+    public final static int ENC_DESC_MODE_NUMB  = 0;
     public final static int ENC_DESC_MODE_BRIEF = 1;
-    public final static int ENC_DESC_MODE_FULL = 2;
+    public final static int ENC_DESC_MODE_FULL  = 2;
 
     public final static String getEncodingDescr( Context ctx, String enc_name, int mode ) {
         if( enc_name == null )
@@ -387,10 +389,24 @@ public final class Utils {
         return null;
     }
 
-    public final static String escapeUriMarkup( String s ) {
-        if( s == null || s.length() == 0 )
+    public final static String escapeRest( String s ) {
+        if( !str( s ) )
             return s;
-        return s.replaceAll( "#", "%23" ).replaceAll( ":", "%3A" );
+        return s.replaceAll( "%", "%25" )
+                .replaceAll( "#", "%23" )
+                .replaceAll( ":", "%3A" );
+    }
+
+    public final static String escapePath( String s ) {
+        if( !str( s ) )
+            return s;
+        return escapeRest( s ).replaceAll( "@", "%40" );
+    }
+
+    public final static String escapeName( String s ) {
+        if( !str( s ) )
+            return s;
+        return escapePath( s ).replaceAll( "/", "%2F" );
     }
 
     public static byte[] hexStringToBytes( String hexString ) {

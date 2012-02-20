@@ -88,7 +88,7 @@ public class FSAdapter extends CommanderAdapterBase {
 
     @Override
     public String toString() {
-        return Utils.escapeUriMarkup( dirName );
+        return Utils.escapePath( dirName );
     }
 
     /*
@@ -97,7 +97,7 @@ public class FSAdapter extends CommanderAdapterBase {
 
     @Override
     public Uri getUri() {
-        return Uri.parse( Utils.escapeUriMarkup( dirName ) );
+        return Uri.parse( Utils.escapePath( dirName ) );
     }
 
     @Override
@@ -461,14 +461,14 @@ public class FSAdapter extends CommanderAdapterBase {
                 if( dirName == null ) return;
                 File cur_dir_file = new File( dirName );
                 String parent_dir = cur_dir_file.getParent();
-                commander.Navigate( Uri.parse( Utils.escapeUriMarkup( parent_dir != null ? parent_dir : DEFAULT_DIR ) ),
+                commander.Navigate( Uri.parse( Utils.escapePath( parent_dir != null ? parent_dir : DEFAULT_DIR ) ),
                                     cur_dir_file.getName() );
             }
         }
         else {
             File file = items[position - 1].f;
             if( file == null ) return;
-            Uri open_uri = Uri.parse( Utils.escapeUriMarkup( file.getAbsolutePath() ) );
+            Uri open_uri = Uri.parse( Utils.escapePath( file.getAbsolutePath() ) );
             if( file.isDirectory() )
                 commander.Navigate( open_uri, null );
             else
@@ -480,7 +480,7 @@ public class FSAdapter extends CommanderAdapterBase {
     public Uri getItemUri( int position ) {
         try {
             String item_name = getItemName( position, true );
-            return Uri.parse( Utils.escapeUriMarkup( item_name ) );
+            return Uri.parse( Utils.escapePath( item_name ) );
         } catch( Exception e ) {
             e.printStackTrace();
         }

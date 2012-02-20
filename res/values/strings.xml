@@ -48,7 +48,7 @@
     <string name="apps">Applications</string>
     <string name="exit">Exit</string>
     
-    <string name="favs_descr">View and manage your list of favorite folders and sites. Edit, rename and place shortcuts to your device\'s home screen, etc.</string>
+    <string name="favs_descr">View and manage your list of favorite folders and sites. Edit, rename and place shortcuts on your device\'s home screen, etc.</string>
     <string name="local_descr">Browse, organize and modify the contents of the inserted SD card and internal flash memory.</string>
     <string name="ftp_descr">Connect to an FTP server, browse and transfer files both to and from it.</string>
     <string name="smb_descr">This requires the Ghost Commander SMB plugin to be installed and connects your device to shared folders on a Windows machine.</string>

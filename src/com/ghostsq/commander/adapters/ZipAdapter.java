@@ -541,6 +541,7 @@ public class ZipAdapter extends CommanderAdapterBase {
         ZipEntry item = items[position - 1];
         
         if( item.isDirectory() ) {
+            /*
             String cur = null;    
             try {
                 cur = uri.getFragment();
@@ -551,7 +552,10 @@ public class ZipAdapter extends CommanderAdapterBase {
         	else
         	    if( cur.length() == 0 || cur.charAt( cur.length()-1 ) != SLC )
         	        cur += SLS;
+        	*/
             commander.Navigate( uri.buildUpon().fragment( fixName( item ) ).build(), null );
+        } else {
+            commander.Open( uri.buildUpon().fragment( fixName( item ) ).build() );
         }
     }
 

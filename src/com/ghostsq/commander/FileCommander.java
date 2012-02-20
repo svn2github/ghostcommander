@@ -661,10 +661,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     public void Open( Uri uri ) {
         try {
             if( uri == null ) return;
-            String path = uri.getPath();
-            String ext = Utils.getFileExt( path );
-            String mime = Utils.getMimeByExt( ext );
             String scheme = uri.getScheme();
+            String path = uri.getPath();
+            String ext = Utils.getFileExt( "zip".equals( scheme ) ? uri.getFragment() : path );
+            String mime = Utils.getMimeByExt( ext );
             if( scheme == null || scheme.length() == 0 ) { 
                 Intent i = new Intent( Intent.ACTION_VIEW );
                 Intent op_intent = getIntent();
@@ -699,7 +699,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 
                 Favorite fv = new Favorite( uri );
                 String http_url = "http://127.0.0.1:5322/" + Uri.encode( fv.toString() );
-                Log.d( TAG, "Stream " + mime + " from: " + http_url );
+                //Log.d( TAG, "Stream " + mime + " from: " + http_url );
                 i.setDataAndType( Uri.parse( http_url ), mime );
                 i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET  );
                 startActivity( i );
