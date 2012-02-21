@@ -54,6 +54,7 @@ public class StreamServer extends Service {
             try {
                 Log.d( TAG, "Thread started" );
                 setName( TAG );
+                setPriority( Thread.MIN_PRIORITY );
                 ss = new ServerSocket( 5322 );
                 while( true ) {
                     Log.d( TAG, "Listening for a connection..." );

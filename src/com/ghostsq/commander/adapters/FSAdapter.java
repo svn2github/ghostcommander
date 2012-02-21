@@ -215,17 +215,18 @@ public class FSAdapter extends CommanderAdapterBase {
         public void run() {
             try {
                 if( mList == null ) return;
+                setPriority( Thread.MIN_PRIORITY );
                 thumb_sz = getImgWidth();
                 options = new BitmapFactory.Options();
                 res = ctx.getResources();
                 int fails_count = 0;
-                boolean visible_only = mList.length > 500;  // too many icons
+                boolean visible_only = mList.length > 100;  // too many icons
                 for( int a = 0; a < 2; a++ ) {
                     boolean succeeded = true;
                     boolean need_update = false, proc_visible = false, proc_invisible = false;
                     int processed = 0;
                     for( int i = 0; i < mList.length ; i++ ) {
-                        visible_only = visible_only || fails_count > 2;
+                        visible_only = visible_only || fails_count > 1;
                         //if( visible_only ) Log.v( TAG, "thumb on requests only" );
                         int n = -1;
                         while( true ) {
