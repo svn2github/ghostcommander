@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Ghost Commander</string>
     
@@ -168,12 +168,11 @@
     <string name="inv_path">Invalid path</string>
     <string name="find_on_fs_only">The search feature works only with the local file system.</string>
     <string name="op_not_alwd">Operation is not allowed - select something first.</string><!-- copy_title/move_title -->
-    <string name="copy_to_local_only">It\'s possible to only copy to the local file system.</string>    
     <string name="oper_item_to">%1$s %2$s to:"</string><!-- copy_title/move_title, file name/summary -->
     <string name="login_title">Login</string>
     <string name="delete_title">Delete</string>
     <string name="delete_err">Nothing to delete</string>
-    <string name="delete_q">"Delete %1$s ?"</string><!-- file name/summary -->
+    <string name="delete_q">Delete %1$s ?</string><!-- file name/summary -->
     <string name="search_done">Search complete</string>
     <string name="done">Done</string>
     <string name="interrupted">Interrupted</string>
@@ -284,7 +283,7 @@ copied >5 will produce:
     <string name="connect">Connect to</string>
     <string name="cancel">Cancel</string>
     <string name="ftp_connected">Connected to \"%1$s\",\n Logged in as \"%2$s\"</string>
-    <string name="ftp_upload_failed">Upload \"%1$s\" failed.\n FTP log:\n\n%2$s</string>
+    <string name="ftp_upload_failed">Uploading \"%1$s\" failed.\n FTP log:\n\n%2$s</string>
     <string name="ftp_mkdir_failed">Failed to create folder \"%1$s\".\n FTP log:\n\n\"%2$s\</string>            
     <string name="ftp_nologin">Not logged in!</string>            
 
@@ -329,7 +328,7 @@ copied >5 will produce:
     <string name="prevent_root">Warn on leaving /sdcard</string>
     <string name="summary_prevent_root">Issue a warning when going to a device\'s root folder</string>
 
-    <string name="show_root">Show root and mount entries</string>
+    <string name="show_root">Show root and mounts</string>
     <string name="summary_show_root">Home view will display root and mount entries</string>
     <string name="root_root">Automatic root mode</string>
     <string name="summary_root_root">Switch to root mode when going to a device\'s root folder</string>
@@ -412,7 +411,7 @@ copied >5 will produce:
     <string name="cant_view_empt">File \"%1$s\" is empty.</string>    
     <string name="cant_open">Cannot open the file.</string>    
     <string name="cant_save">Cannot save the file.</string>
-    <string name="nav_warn">You\'re opening a system folder. Tampering with it may lead to a failure. Proceed at this time?</string>
+    <string name="nav_warn">You\'re opening a system folder - tampering with it may lead to a failure. Proceed at this time?</string>
     <string name="nav_warn_cmt">Tap "Cancel" to safely go to the /sdcard folder, or tap "Exit" to close the application.</string>
     <string name="no_such_folder">\"%1$s\" is not a valid folder!</string>
     <string name="fav_added">\"%1$s\" was added to your favorites.</string>
@@ -451,7 +450,7 @@ Tap \"OK\" to be redirected to the PayPal site.\n
     <string name="about_text">
         Ghost Commander v%1$s\n
         A file manager by Ghost Squared.\n\n
-        Please email bugs/suggestions to\n
+        Please email bugs/suggestions to:\n
         ghost.sq2@gmail.com\n
         Thank you.\n\n\n 
         DISCLAIMER:\n
