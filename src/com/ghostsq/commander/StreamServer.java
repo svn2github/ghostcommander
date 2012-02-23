@@ -111,7 +111,7 @@ public class StreamServer extends Service {
                             while( br.ready() ) {
                                 String hl = br.readLine();
                                 if( hl != null ) {
-                                    Log.v( TAG, hl );
+                                    //Log.v( TAG, hl );
                                     if( hl.startsWith( "Range: bytes=" ) ) {
                                         int end = hl.indexOf( '-', 13 );
                                         String range_s = hl.substring( 13, end );
@@ -173,7 +173,27 @@ public class StreamServer extends Service {
                                             osw.write( CRLF );
                                             osw.flush();
                                             
-                                            Utils.copyBytes( cs, os );
+                                            ReaderThread rt = new ReaderThread( cs );
+                                            rt.start();
+                                            while( true ) {
+                                                try {
+                                                    byte[] out_buf = rt.getOutputBuffer();
+                                                    int n = rt.GetDataSize();
+                                                    if( n < 0 )
+                                                        break;
+                                                    //Log.v( TAG, "Before write" );
+                                                    os.write( out_buf, 0, n );
+                                                    //Log.v( TAG, "After write" );
+                                                }
+                                                catch( Exception e ) {
+                                                    Log.d( TAG, "write exception", e );
+                                                    rt.interrupt();
+                                                    break;
+                                                }
+                                                finally {
+                                                    rt.doneOutput();
+                                                }
+                                            }                                            
                                             ca.closeStream( cs );
                                         }
                                         else {
@@ -207,7 +227,62 @@ public class StreamServer extends Service {
                 }
             }
         }
-    };    
+    };
+    
+    class ReaderThread extends Thread {
+        private final static String TAG = "GCSS.ReaderThread";
+        private InputStream is;
+        private int      roller = 0;
+        private byte[][] bufs = { new byte[16384], new byte[16384] };
+        private byte[]   out_buf = null;
+        private int      data_size = 0;
+        
+        public ReaderThread( InputStream is_ ) {
+            is = is_;
+            setName( TAG );
+        }
+        
+        public void run() {
+            try {
+                while( true ) {
+                    byte[] inp_buf = bufs[roller++ % 2];
+                    //Log.v( TAG, "Before read" );
+                    data_size = is.read( inp_buf );
+                    //Log.v( TAG, "After read " + data_size );
+                    synchronized( this ) {
+                        while( out_buf != null ) {
+                            wait( 5000 );
+                            //Log.v( TAG, "Waiting when the output buffer is released" );
+                        }
+                        out_buf = inp_buf;
+                        //Log.v( TAG, "The output buffer is ready!" );
+                        notify();
+                    }
+                    if( data_size < 0 )
+                        break;
+                }
+            } catch( Exception e ) {
+                Log.e( TAG, "Exception: " + e );
+            }
+            //Log.v( TAG, "The thread is done!" );
+        }
+        public synchronized byte[] getOutputBuffer() throws InterruptedException {
+            while( out_buf == null ) {
+                wait( 5000 );
+                //Log.v( TAG, "Waiting when the output buffer is ready" );
+            }
+            return out_buf;
+        }
+        public int GetDataSize() {
+            return data_size;
+        }
+        public synchronized void doneOutput() {
+            out_buf = null;
+            //Log.v( TAG, "!!! The output buffer is released!" );
+            notify();
+        }
+    };
+    
     
     @Override
     public IBinder onBind( Intent intent ) {
