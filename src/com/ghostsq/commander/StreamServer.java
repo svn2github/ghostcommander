@@ -111,7 +111,7 @@ public class StreamServer extends Service {
                             while( br.ready() ) {
                                 String hl = br.readLine();
                                 if( hl != null ) {
-                                    //Log.v( TAG, hl );
+                                    Log.v( TAG, hl );
                                     if( hl.startsWith( "Range: bytes=" ) ) {
                                         int end = hl.indexOf( '-', 13 );
                                         String range_s = hl.substring( 13, end );
@@ -128,7 +128,8 @@ public class StreamServer extends Service {
                                 Uri uri = fv.getUri();
                                 if( uri != null ) { 
                                     Log.d( TAG, "Got URI: " + uri.toString() );
-                                    int ca_type = CA.GetAdapterTypeId( uri.getScheme() );
+                                    String scheme = uri.getScheme();
+                                    int ca_type = CA.GetAdapterTypeId( scheme );
                                     CommanderAdapter ca = CA.CreateAdapterInstance( ca_type, ctx );
                                     if( ca != null ) {
                                         Log.d( TAG, "Adapter is created" );
@@ -148,7 +149,7 @@ public class StreamServer extends Service {
                                                 Log.d( TAG, "200" );
                                                 osw.write( http + "200 OK" + CRLF );
                                             }
-                                            String fn = uri.getLastPathSegment();
+                                            String fn = "zip".equals( scheme ) ? uri.getFragment() : uri.getLastPathSegment();
                                             if( fn != null ) {
                                                 String ext = Utils.getFileExt( fn );
                                                 String mime = Utils.getMimeByExt( ext );
@@ -181,9 +182,9 @@ public class StreamServer extends Service {
                                                     int n = rt.GetDataSize();
                                                     if( n < 0 )
                                                         break;
-                                                    //Log.v( TAG, "Before write" );
+                                                    Log.v( TAG, "Before write" );
                                                     os.write( out_buf, 0, n );
-                                                    //Log.v( TAG, "After write" );
+                                                    Log.v( TAG, "After write" );
                                                 }
                                                 catch( Exception e ) {
                                                     Log.d( TAG, "write exception", e );
@@ -233,7 +234,7 @@ public class StreamServer extends Service {
         private final static String TAG = "GCSS.ReaderThread";
         private InputStream is;
         private int      roller = 0;
-        private byte[][] bufs = { new byte[16384], new byte[16384] };
+        private byte[][] bufs = { new byte[116384], new byte[116384] };
         private byte[]   out_buf = null;
         private int      data_size = 0;
         
@@ -244,18 +245,19 @@ public class StreamServer extends Service {
         
         public void run() {
             try {
+                int count = 0;
                 while( true ) {
                     byte[] inp_buf = bufs[roller++ % 2];
-                    //Log.v( TAG, "Before read" );
+                    Log.v( TAG, "Before read" );
                     data_size = is.read( inp_buf );
-                    //Log.v( TAG, "After read " + data_size );
+                    Log.v( TAG, "After read " + data_size + " total " + ( count += data_size ) );
                     synchronized( this ) {
                         while( out_buf != null ) {
+                            Log.v( TAG, "Waiting when the output buffer is released..." );
                             wait( 5000 );
-                            //Log.v( TAG, "Waiting when the output buffer is released" );
                         }
                         out_buf = inp_buf;
-                        //Log.v( TAG, "The output buffer is ready!" );
+                        Log.v( TAG, "The output buffer is ready!" );
                         notify();
                     }
                     if( data_size < 0 )
@@ -264,13 +266,14 @@ public class StreamServer extends Service {
             } catch( Exception e ) {
                 Log.e( TAG, "Exception: " + e );
             }
-            //Log.v( TAG, "The thread is done!" );
+            Log.v( TAG, "The thread is done!" );
         }
         public synchronized byte[] getOutputBuffer() throws InterruptedException {
             while( out_buf == null ) {
+                Log.v( TAG, "Waiting when the output buffer is ready" );
                 wait( 5000 );
-                //Log.v( TAG, "Waiting when the output buffer is ready" );
             }
+            Log.v( TAG, "The output buffer is ready" );
             return out_buf;
         }
         public int GetDataSize() {
@@ -278,7 +281,7 @@ public class StreamServer extends Service {
         }
         public synchronized void doneOutput() {
             out_buf = null;
-            //Log.v( TAG, "!!! The output buffer is released!" );
+            Log.v( TAG, "!!! The output buffer is released!" );
             notify();
         }
     };

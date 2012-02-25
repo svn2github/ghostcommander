@@ -196,6 +196,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             }
             if( use_panel >= 0 && viewActProcessed )
                 panels.setPanelCurrent( use_panel );
+            if( Intent.ACTION_SEARCH_LONG_PRESS.equals( action ) ) {
+                showSearchDialog();
+                return;
+            }
         }
     }
 
