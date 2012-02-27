@@ -145,10 +145,16 @@ public class FTPAdapter extends CommanderAdapterBase {
     
     public final int connectAndLogin( Uri u ) 
                       throws UnknownHostException, IOException, InterruptedException {
+        return connectAndLogin( u, true );
+    }
+    public final int connectAndLogin( Uri u, boolean cwd ) 
+                      throws UnknownHostException, IOException, InterruptedException {
         if( ftp.isLoggedIn() ) {
-            String path = u.getPath();
-            if( path != null )
-                ftp.setCurrentDir( path );
+            if( cwd ) {
+                String path = u.getPath();
+                if( path != null )
+                    ftp.setCurrentDir( path );
+            }
             return WAS_IN;
         }
         int port = u.getPort();
@@ -158,9 +164,11 @@ public class FTPAdapter extends CommanderAdapterBase {
             if( theUserPass == null || theUserPass.isNotSet() )
                 theUserPass = new FTPCredentials( u.getUserInfo() );
             if( ftp.login( theUserPass.getUserName(), theUserPass.getPassword() ) ) {
-                String path = u.getPath();
-                if( path != null )
-                    ftp.setCurrentDir( path );
+                if( cwd ) {
+                    String path = u.getPath();
+                    if( path != null )
+                        ftp.setCurrentDir( path );
+                }
                 return LOGGED_IN;
             }
             else {
@@ -895,7 +903,7 @@ public class FTPAdapter extends CommanderAdapterBase {
     @Override
     public Item getItem( Uri u ) {
         try {
-            if( connectAndLogin( u ) > 0 ) {
+            if( connectAndLogin( u, false ) > 0 ) {
                 List<String> segs = u.getPathSegments();
                 if( segs.size() == 0 ) {
                     Item item = new Item( "/" );
@@ -929,14 +937,14 @@ public class FTPAdapter extends CommanderAdapterBase {
     }
     
     @Override
-    public InputStream getContent( Uri u ) {
+    public InputStream getContent( Uri u, long skip ) {
         try {
             if( uri != null && !uri.getHost().equals( u.getHost() ) )
                 return null;
             synchronized( ftp ) {
-                if( connectAndLogin( u ) > 0 ) {
+                if( connectAndLogin( u, false ) > 0 ) {
                     noHeartBeats = true;
-                    return ftp.prepRetr( u.getPath() );
+                    return ftp.prepRetr( u.getPath(), skip );
                 }
             }
         } catch( Exception e ) {
@@ -950,7 +958,7 @@ public class FTPAdapter extends CommanderAdapterBase {
             if( uri != null && !uri.getHost().equals( u.getHost() ) )
                 return null;
             synchronized( ftp ) {
-                if( connectAndLogin( u ) > 0 ) {
+                if( connectAndLogin( u, false ) > 0 ) {
                     noHeartBeats = true;
                     return ftp.prepStore( u.getPath() );
                 }

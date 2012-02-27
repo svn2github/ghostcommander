@@ -51,7 +51,7 @@ public class FTP {
     }
 
     public final void debugPrint( String message ) {
-        //Log.v( TAG, message );
+        Log.v( TAG, message );
         if( PRINT_DEBUG_INFO ) {
             debugBuf.append( message );
             debugBuf.append( "\n" );
@@ -256,8 +256,9 @@ public class FTP {
         return -1;
     }
 
-    private final Socket executeDataCommand( String command ) {
+    private final Socket executeDataCommand( String commands ) {
     	try {
+    	    if( commands == null || commands.length() == 0 ) return null;
     	    Socket data_socket = null;
             serverSocket = new ServerSocket( 0 );
             if( !allowActive || !announcePort( serverSocket ) ) {
@@ -279,31 +280,27 @@ public class FTP {
                 }
             }
 
-            /*
-              // If we have a restart point, send that information if( restartPoint
-              != 0 ) { sendCommand( "REST " + restartPoint ); restartPoint = 0; //
-              TODO: Interpret server response here getServerReply(); }
-             */
+            String[] cmds = commands.split( "\n" );
+            for( int i = 0; i < cmds.length; i++ ) {
+                sendCommand( cmds[i] );
+                if( isNegative( getReplyCode( getReplyLine() ) ) ) {
+                    Log.e( TAG, "Executing " + cmds[i] + " failed" );
+                    return null;
+                }
+            }            
 
-            sendCommand( command );
-            
-            if( isNegative( getReplyCode( getReplyLine() ) ) ) {
-                Log.e( TAG, "Executing " + command + " failed" );
-                return null;
-            }
-            
             if( data_socket == null && serverSocket != null ) {// active mode
                 Log.i( TAG, "Awaiting the data connection to PORT" );
             	data_socket = serverSocket.accept(); // will block
             }
 
             if( data_socket == null || !data_socket.isConnected() ) {
-                debugPrint( "Can't establish data connection for " + command );
+                debugPrint( "Can't establish data connection for " + commands );
                 return null;
             }
             return data_socket;
 		} catch( Exception e ) {
-		    Log.e( TAG, "Exception on executing data command '" + command + "'", e );
+		    Log.e( TAG, "Exception on executing data command '" + commands + "'", e );
 		}
 		return null;
     }
@@ -407,13 +404,14 @@ public class FTP {
         }
         return false;
     }
-    public final InputStream prepRetr( String fn ) throws InterruptedException {
+    public final InputStream prepRetr( String fn, long skip ) throws InterruptedException {
     	dataSocket = null;
         try {
         	if( !isLoggedIn() )
         		return null;
         	executeCommand( "TYPE I" );
-        	dataSocket = executeDataCommand( "RETR " + fn );
+        	String retr_cmd = ( skip > 0 ? "REST " + skip + "\n" : "" ) + "RETR " + fn;
+        	dataSocket = executeDataCommand( retr_cmd );
             if( dataSocket != null )
                 return dataSocket.getInputStream();
         }
@@ -424,7 +422,7 @@ public class FTP {
         return null;
     }
     public final boolean retrieve( String fn, OutputStream out, FTP.ProgressSink report_to ) throws InterruptedException {
-        InputStream in = prepRetr( fn );
+        InputStream in = prepRetr( fn, 0 );
         if( in == null )
             return false;
         try {

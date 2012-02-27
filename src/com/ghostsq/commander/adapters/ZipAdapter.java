@@ -973,7 +973,7 @@ public class ZipAdapter extends CommanderAdapterBase {
     }
     
     @Override
-    public InputStream getContent( Uri u ) {
+    public InputStream getContent( Uri u, long offset ) {
         try {
             String zip_path = u.getPath();
             if( zip_path == null ) return null;
@@ -985,8 +985,12 @@ public class ZipAdapter extends CommanderAdapterBase {
             String entry_name = u.getFragment();
             if( entry_name != null ) {
                 cachedEntry = zip.getEntry( entry_name );
-                if( cachedEntry != null ) 
-                    return zip.getInputStream( cachedEntry );
+                if( cachedEntry != null ) {
+                    InputStream is = zip.getInputStream( cachedEntry );
+                    if( offset > 0 )
+                        is.skip( offset );
+                    return is;
+                }
             }
         } catch( Throwable e ) {
             e.printStackTrace();

@@ -38,7 +38,7 @@
 <string name="sort_by_date">По дате</string>
 <string name="sort_by_name_b">По имени</string>
 <string name="sort_by_ext_b">По расш.</string>
-<string name="sort_by_size_b">По размеру</string>
+<string name="sort_by_size_b">По разм.</string>
 <string name="sort_by_date_b">По дате</string>
 <string name="select_all">+ Пометить файлы</string>
 <string name="unselect_all">- Снять пометку</string>

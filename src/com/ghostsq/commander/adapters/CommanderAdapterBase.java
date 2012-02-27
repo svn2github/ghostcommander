@@ -718,8 +718,13 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     }
     
     @Override
-    public InputStream getContent( Uri u ) {
+    public InputStream getContent( Uri u, long skip ) {
         return null;
+    }
+
+    @Override
+    public InputStream getContent( Uri u ) {
+        return getContent( u, 0 );
     }
 
     @Override

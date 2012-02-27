@@ -140,10 +140,10 @@ public class ToolButton {
         case  R.id.eq:           return  R.string.eq;
         case  R.id.tgl:          return  R.string.tgl;
         case  R.id.sz:           return  R.string.sz;
-        case  R.id.by_name:      return  R.string.sort_by_name;
-        case  R.id.by_ext:       return  R.string.sort_by_ext;
-        case  R.id.by_size:      return  R.string.sort_by_size;
-        case  R.id.by_date:      return  R.string.sort_by_date;
+        case  R.id.by_name:      return  R.string.sort_by_name_b;
+        case  R.id.by_ext:       return  R.string.sort_by_ext_b;
+        case  R.id.by_size:      return  R.string.sort_by_size_b;
+        case  R.id.by_date:      return  R.string.sort_by_date_b;
         case  R.id.sel_all:      return  R.string.select_b;
         case  R.id.uns_all:      return  R.string.unselect_b;
         case  R.id.enter:        return  R.string.enter_b;

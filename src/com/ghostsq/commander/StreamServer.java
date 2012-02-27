@@ -29,6 +29,7 @@ public class StreamServer extends Service {
     private Thread  thread = null;
     
     public  CommanderAdapter ca = null;
+    public  String last_host = null; 
 
     @Override
     public void onCreate() {
@@ -60,7 +61,7 @@ public class StreamServer extends Service {
                 ss = new ServerSocket( 5322 );
                 int count = 0;
                 while( true ) {
-                    Log.d( TAG, "Listening for a connection..." );
+                    Log.d( TAG, "Listening for a new connection..." );
                     Socket data_socket = ss.accept();
                     Log.d( TAG, "Connection accepted" );
                     if( data_socket != null && data_socket.isConnected() ) {
@@ -95,7 +96,7 @@ public class StreamServer extends Service {
         }
         
         private void Log( String s ) {
-            //Log.d( TAG, "" + num_id + ": " + s );
+            Log.d( TAG, "" + num_id + ": " + s );
         }
         
         
@@ -142,19 +143,15 @@ public class StreamServer extends Service {
                                     String scheme = uri.getScheme();
                                     int ca_type = CA.GetAdapterTypeId( scheme );
                                     
-                                    if( StreamServer.this.ca == null || StreamServer.this.ca.getType() != ca_type ) 
-                                        ca = CA.CreateAdapterInstance( ca_type, ctx );  // kind of vandalism, but whatever...
+                                    if( StreamServer.this.ca == null || StreamServer.this.ca.getType() != ca_type ||
+                                            !uri.getHost().equals( last_host ) ) 
+                                        ca = CA.CreateAdapterInstance( ca_type, ctx );  // a kind of vandalism, but whatever...
                                     if( ca != null ) {
                                         Log( "Adapter is created" );
                                         Uri auth_uri = fv.getUriWithAuth();
                                         Item item = ca.getItem( auth_uri );
-                                        InputStream cs = ca.getContent( auth_uri );
+                                        InputStream cs = ca.getContent( auth_uri, offset );
                                         if( cs != null ) {
-                                            if( offset > 0 && item != null ) {
-                                                Log( "Going to skip " + offset );
-                                                offset = cs.skip( offset );
-                                                Log( "skipped " + offset );
-                                            }
                                             if( offset > 0 && item != null ) {
                                                 Log( "206" );
                                                 osw.write( http + "206 Partial Content" + CRLF );
@@ -192,8 +189,11 @@ public class StreamServer extends Service {
                                             ReaderThread rt = new ReaderThread( cs, num_id );
                                             rt.start();
                                             int count = 0;
-                                            while( true ) {
+                                            while( rt.isAlive() ) {
                                                 try {
+                                                    if( br.ready() )
+                                                        Log( "HTTP additional command arrived!!! " + br.readLine() );
+                                                    
                                                     byte[] out_buf = rt.getOutputBuffer();
                                                     if( out_buf == null ) break;
                                                     int n = rt.GetDataSize();
@@ -201,7 +201,7 @@ public class StreamServer extends Service {
                                                         break;
                                                     Log( "Before write" );
                                                     os.write( out_buf, 0, n );
-                                                    Log( "After write, total " + ( count += n ) );
+                                                    Log( "After write " + n + ", total " + ( count += n ) );
                                                 }
                                                 catch( Exception e ) {
                                                     Log( "write exception: " + e.getMessage() );
@@ -209,7 +209,6 @@ public class StreamServer extends Service {
                                                 }
                                                 finally {
                                                     rt.doneOutput();
-                                                    Log( "final notified" );
                                                 }
                                             }                                            
                                             ca.closeStream( cs );
@@ -265,7 +264,7 @@ public class StreamServer extends Service {
         }
         
         private void Log( String s ) {
-            //Log.d( TAG, "" + num_id + ": " + s );
+            Log.d( TAG, "" + num_id + ": " + s );
         }
         public void run() {
             try {
@@ -275,14 +274,14 @@ public class StreamServer extends Service {
                 while( true ) {
                     byte[] inp_buf = bufs[roller++ % 2];
                     Log( "Before read" );
-                    data_size = is.read( inp_buf, 0, chunk );
-                    if( data_size < 0 )
+                    int has_read = is.read( inp_buf, 0, chunk );
+                    if( has_read < 0 )
                         break;
-                    if( chunk < MAX )
+                    if( has_read == chunk && chunk < MAX )
                         chunk <<= 1;
                     if( chunk > MAX )
                         chunk = MAX;                    
-                    Log( "After read " + data_size + " total " + ( count += data_size ) );
+                    Log( "After read " + has_read + " total " + ( count += has_read ) );
                     synchronized( this ) {
                         int wcount = 0; 
                         while( out_buf != null ) {
@@ -291,6 +290,7 @@ public class StreamServer extends Service {
                             wcount += 10;
                         }
                         out_buf = inp_buf;
+                        data_size = has_read; 
                         Log( "The output buffer is released after " + wcount + "ms and set ready. Notification is sent." );
                         notify();
                     }
