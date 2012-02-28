@@ -20,14 +20,18 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
+import android.net.wifi.WifiManager.WifiLock;
 import android.os.IBinder;
 import android.util.Log;
+
 public class StreamServer extends Service {
     private final static String TAG = "StreamServer";
     private final static String CRLF = "\r\n";
     private Context ctx;
-    private Thread  thread = null;
+    private ListenThread  thread = null;
     
+    public  WifiLock wifiLock = null;
     public  CommanderAdapter ca = null;
     public  String last_host = null; 
 
@@ -35,8 +39,11 @@ public class StreamServer extends Service {
     public void onCreate() {
         super.onCreate();
         ctx = this;  //getApplicationContext();
+        WifiManager manager = (WifiManager) getSystemService( Context.WIFI_SERVICE );
+        wifiLock = manager.createWifiLock( TAG );
+        wifiLock.setReferenceCounted( true );
     }
-
+    
     @Override
     public void onStart( Intent intent, int start_id ) {
         super.onStart( intent, start_id );
@@ -49,18 +56,38 @@ public class StreamServer extends Service {
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d( TAG, "onDestroy" );
+        if( thread != null && thread.isAlive() ) {
+            thread.close();
+            thread.interrupt();
+            try {
+                thread.join( 10000 );
+            }
+            catch( InterruptedException e ) {
+                e.printStackTrace();
+            }
+            if( thread.isAlive() )
+                Log.e( TAG, "Listen tread has ignored the interruption" );
+        }
+    }
+
     private class ListenThread extends Thread {
         private final static String TAG = "GCSS.ListenThread";
         private Thread stream_thread;
+        private ServerSocket ss = null;
         public void run() {
-            ServerSocket ss = null;
             try {
                 Log.d( TAG, "Thread started" );
                 setName( TAG );
                 setPriority( Thread.MIN_PRIORITY );
-                ss = new ServerSocket( 5322 );
+                synchronized( this ) {
+                    ss = new ServerSocket( 5322 );
+                }
                 int count = 0;
-                while( true ) {
+                while( !isInterrupted() ) {
                     Log.d( TAG, "Listening for a new connection..." );
                     Socket data_socket = ss.accept();
                     Log.d( TAG, "Connection accepted" );
@@ -74,14 +101,25 @@ public class StreamServer extends Service {
                 Log.e( TAG, "Exception", e );
             }
             finally {
-                try {
-                    if( ss != null ) ss.close();
-                }
-                catch( IOException e ) {
-                    Log.e( TAG, "Exception on Closing", e );
-                }
+                this.close();
             }
             StreamServer.this.stopSelf();
+        }
+        
+        public synchronized void close() {
+            try {
+                if( ss != null ) {
+                    ss.close();
+                    ss = null;
+                }
+                if( stream_thread != null && stream_thread.isAlive() ) {
+                    stream_thread.interrupt();
+                    stream_thread = null;
+                }
+            }
+            catch( IOException e ) {
+                e.printStackTrace();
+            }
         }
     };    
 
@@ -98,7 +136,6 @@ public class StreamServer extends Service {
         private void Log( String s ) {
             Log.d( TAG, "" + num_id + ": " + s );
         }
-        
         
         public void run() {
             InputStream  is = null;
@@ -142,12 +179,14 @@ public class StreamServer extends Service {
                                     Log( "Got URI: " + uri.toString() );
                                     String scheme = uri.getScheme();
                                     int ca_type = CA.GetAdapterTypeId( scheme );
-                                    
+                                    String host = uri.getHost();
                                     if( StreamServer.this.ca == null || StreamServer.this.ca.getType() != ca_type ||
-                                            !uri.getHost().equals( last_host ) ) 
+                                            ( host != null && !host.equals( last_host ) ) ) 
                                         ca = CA.CreateAdapterInstance( ca_type, ctx );  // a kind of vandalism, but whatever...
                                     if( ca != null ) {
                                         Log( "Adapter is created" );
+                                        last_host = host;
+                                        
                                         Uri auth_uri = fv.getUriWithAuth();
                                         Item item = ca.getItem( auth_uri );
                                         InputStream cs = ca.getContent( auth_uri, offset );
@@ -270,6 +309,7 @@ public class StreamServer extends Service {
             try {
                 //setPriority( Thread.MAX_PRIORITY );
                 setPriority( Thread.NORM_PRIORITY );
+                StreamServer.this.wifiLock.acquire();
                 int count = 0;
                 while( true ) {
                     byte[] inp_buf = bufs[roller++ % 2];
@@ -295,9 +335,10 @@ public class StreamServer extends Service {
                         notify();
                     }
                 }
-            } catch( Exception e ) {
+            } catch( Throwable e ) {
                 Log.e( TAG, "Exception: " + e );
             }
+            StreamServer.this.wifiLock.release();
             Log( "The thread is done!" );
         }
         public synchronized byte[] getOutputBuffer() throws InterruptedException {
