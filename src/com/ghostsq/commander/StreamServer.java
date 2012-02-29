@@ -41,7 +41,7 @@ public class StreamServer extends Service {
         ctx = this;  //getApplicationContext();
         WifiManager manager = (WifiManager) getSystemService( Context.WIFI_SERVICE );
         wifiLock = manager.createWifiLock( TAG );
-        wifiLock.setReferenceCounted( true );
+        wifiLock.setReferenceCounted( false );
     }
     
     @Override
@@ -83,6 +83,8 @@ public class StreamServer extends Service {
                 Log.d( TAG, "Thread started" );
                 setName( TAG );
                 setPriority( Thread.MIN_PRIORITY );
+                StreamServer.this.wifiLock.acquire();
+                Log.d( TAG, "WiFi lock" );
                 synchronized( this ) {
                     ss = new ServerSocket( 5322 );
                 }
@@ -101,6 +103,8 @@ public class StreamServer extends Service {
                 Log.e( TAG, "Exception", e );
             }
             finally {
+                StreamServer.this.wifiLock.release();
+                Log.d( TAG, "WiFi lock release" );
                 this.close();
             }
             StreamServer.this.stopSelf();
@@ -238,9 +242,9 @@ public class StreamServer extends Service {
                                                     int n = rt.GetDataSize();
                                                     if( n < 0 )
                                                         break;
-                                                    Log( "W..." );
+                                                    Log( "      W..." );
                                                     os.write( out_buf, 0, n );
-                                                    Log( "...W " + n + "/" + ( count += n ) );
+                                                    Log( "      ...W " + n + "/" + ( count += n ) );
                                                 }
                                                 catch( Exception e ) {
                                                     Log( "write exception: " + e.getMessage() );
@@ -252,6 +256,7 @@ public class StreamServer extends Service {
                                             }                                            
                                             ca.closeStream( cs );
                                             rt.interrupt();
+                                            Log( "----------- done -------------" );
                                         }
                                         else {
                                             osw.write( http + "404 Not found" + CRLF );
@@ -309,7 +314,6 @@ public class StreamServer extends Service {
             try {
                 //setPriority( Thread.MAX_PRIORITY );
                 setPriority( Thread.NORM_PRIORITY );
-                StreamServer.this.wifiLock.acquire();
                 int count = 0;
                 while( true ) {
                     byte[] inp_buf = bufs[roller++ % 2];
@@ -323,38 +327,35 @@ public class StreamServer extends Service {
                         chunk = MAX;                    
                     Log( "...R " + has_read + "/" + ( count += has_read ) );
                     synchronized( this ) {
-                        Log( "O?.." );
+                        Log( "?.." );
                         int wcount = 0; 
                         while( out_buf != null ) {
                             //Log( "Waiting when the output buffer is released..." );
                             wait( 10 );
                             wcount += 10;
                         }
-                        Log( "...O! (" + wcount + "ms)" );
+                        Log( "...! (" + wcount + "ms)" );
                         out_buf = inp_buf;
                         data_size = has_read; 
-                        Log( "O <- I, N" );
+                        Log( "O=I ->" );
                         notify();
                     }
                 }
             } catch( Throwable e ) {
                 Log.e( TAG, "Exception: " + e );
             }
-            finally {
-                StreamServer.this.wifiLock.release();
-            }
             Log( "The thread is done!" );
         }
         public synchronized byte[] getOutputBuffer() throws InterruptedException {
             int wcount = 0;
-            Log( "I?.." );
+            Log( "       ?.." );
             while( out_buf == null && this.isAlive() ) {
                 //Log( "Waiting when the output buffer is ready" );
                 wait( 10 );
                 wcount += 10;
             }
             if( out_buf != null ) 
-                Log( "...I (" + wcount + "ms)" );
+                Log( "      ..! (" + wcount + "ms)" );
             else
                 Log( "X" );
             return out_buf;
@@ -366,7 +367,7 @@ public class StreamServer extends Service {
         }
         public synchronized void doneOutput() {
             out_buf = null;
-            Log( "O done, N" );
+            Log( "    <- O done" );
             notify();
         }
     };
