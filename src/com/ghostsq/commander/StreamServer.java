@@ -238,9 +238,9 @@ public class StreamServer extends Service {
                                                     int n = rt.GetDataSize();
                                                     if( n < 0 )
                                                         break;
-                                                    Log( "Before write" );
+                                                    Log( "W..." );
                                                     os.write( out_buf, 0, n );
-                                                    Log( "After write " + n + ", total " + ( count += n ) );
+                                                    Log( "...W " + n + "/" + ( count += n ) );
                                                 }
                                                 catch( Exception e ) {
                                                     Log( "write exception: " + e.getMessage() );
@@ -287,7 +287,7 @@ public class StreamServer extends Service {
     };
     
     class ReaderThread extends Thread {
-        private final static String TAG = "GCSS.ReaderThread";
+        private final static String TAG = "GCSS.RT";
         private InputStream is;
         private int      roller = 0, chunk = 4096;
         private final static int MAX = 131072;
@@ -313,7 +313,7 @@ public class StreamServer extends Service {
                 int count = 0;
                 while( true ) {
                     byte[] inp_buf = bufs[roller++ % 2];
-                    Log( "Before read" );
+                    Log( "R..." );
                     int has_read = is.read( inp_buf, 0, chunk );
                     if( has_read < 0 )
                         break;
@@ -321,37 +321,42 @@ public class StreamServer extends Service {
                         chunk <<= 1;
                     if( chunk > MAX )
                         chunk = MAX;                    
-                    Log( "After read " + has_read + " total " + ( count += has_read ) );
+                    Log( "...R " + has_read + "/" + ( count += has_read ) );
                     synchronized( this ) {
+                        Log( "O?.." );
                         int wcount = 0; 
                         while( out_buf != null ) {
                             //Log( "Waiting when the output buffer is released..." );
                             wait( 10 );
                             wcount += 10;
                         }
+                        Log( "...O! (" + wcount + "ms)" );
                         out_buf = inp_buf;
                         data_size = has_read; 
-                        Log( "The output buffer is released after " + wcount + "ms and set ready. Notification is sent." );
+                        Log( "O <- I, N" );
                         notify();
                     }
                 }
             } catch( Throwable e ) {
                 Log.e( TAG, "Exception: " + e );
             }
-            StreamServer.this.wifiLock.release();
+            finally {
+                StreamServer.this.wifiLock.release();
+            }
             Log( "The thread is done!" );
         }
         public synchronized byte[] getOutputBuffer() throws InterruptedException {
             int wcount = 0;
+            Log( "I?.." );
             while( out_buf == null && this.isAlive() ) {
                 //Log( "Waiting when the output buffer is ready" );
                 wait( 10 );
                 wcount += 10;
             }
             if( out_buf != null ) 
-                Log( "The output buffer is really ready after " + wcount + "ms" );
+                Log( "...I (" + wcount + "ms)" );
             else
-                Log( "The reader thread is died!" );
+                Log( "X" );
             return out_buf;
         }
         public int GetDataSize() {
@@ -361,7 +366,7 @@ public class StreamServer extends Service {
         }
         public synchronized void doneOutput() {
             out_buf = null;
-            Log( "The output buffer is released. Notification is sent." );
+            Log( "O done, N" );
             notify();
         }
     };
