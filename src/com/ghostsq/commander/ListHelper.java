@@ -354,7 +354,7 @@ public class ListHelper {
                     String item_name = adapter.getItemName( cis.keyAt( i ), false );
                     if( item_name == null || item_name.length() == 0 )
                         item_name = adapter.getItemName( cis.keyAt( i ), true );
-                    return "'" + item_name + "'";
+                    return "\"" + item_name + "\"";
                 }
         }
         int cur_sel = getSelection( false );
@@ -363,7 +363,7 @@ public class ListHelper {
         String item_name = adapter.getItemName( cur_sel, false ); 
         if( item_name == null || item_name.length() == 0 )
             item_name = adapter.getItemName( cur_sel, true );
-        return "'" + item_name + "'";
+        return "\"" + item_name + "\"";
     }
 
     public final void recoverAfterRefresh( String item_name, boolean this_current ) {
