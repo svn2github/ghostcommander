@@ -49,11 +49,18 @@ public class LsItem {
                 name = m.group( 4 );
                 size = Long.parseLong( m.group( 2 ) );
                 String date_s = m.group( 3 ); 
-                boolean cur_year = date_s.indexOf( ':' ) > 0;
-                SimpleDateFormat df = cur_year ? format_date_time : format_date_year;
+                boolean in_year = date_s.indexOf( ':' ) > 0;
+                SimpleDateFormat df = in_year ? format_date_time : format_date_year;
                 date = df.parse( date_s );
-                if( cur_year )
-                    date.setYear( Calendar.getInstance().get( Calendar.YEAR ) - 1900 );
+                if( in_year ) {
+                    Calendar cal = Calendar.getInstance();
+                    int cur_year = cal.get( Calendar.YEAR ) - 1900;
+                    int cur_month = cal.get( Calendar.MONTH );
+                    int f_month = date.getMonth();
+                    if( f_month > cur_month )
+                        cur_year--;
+                    date.setYear( cur_year );
+                }
                 attr = m.group( 1 );
                 //Log.v( TAG, "Item " + name + ", " + attr );
             } catch( ParseException e ) {
