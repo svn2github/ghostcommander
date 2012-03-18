@@ -14,6 +14,7 @@ import com.ghostsq.commander.favorites.Favorites;
 import com.ghostsq.commander.favorites.LocationBar;
 import com.ghostsq.commander.toolbuttons.ToolButton;
 import com.ghostsq.commander.toolbuttons.ToolButtons;
+import com.ghostsq.commander.utils.OverScrollDisabler;
 import com.ghostsq.commander.utils.Utils;
 
 import android.app.AlertDialog;
@@ -43,9 +44,11 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -63,28 +66,28 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                                         View.OnFocusChangeListener,
                                         View.OnKeyListener
 {
-    private final static String TAG = "Panels";
-    public static final String DEFAULT_LOC = Environment.getExternalStorageDirectory().getAbsolutePath();
-    public  final static int LEFT = 0, RIGHT = 1;
-    private int     current = LEFT, navigated = -1;
-    private final int titlesIds[] = { R.id.left_dir,  R.id.right_dir };
-    private ListHelper list[] = { null, null };
-    public  FileCommander c;
-    public  View mainView, toolbar = null;
-    public  ViewFlipper mFlipper_   = null;
-    public  PanelsView  panelsView = null;
-    private boolean arrowsLegacy = false, warnOnRoot = true, rootOnRoot = false, toolbarShown = false;
-    public  boolean volumeLegacy = true;
-    private boolean disableOpenSelectOnly = false, disableAllActions = false;
-    public  int fnt_sz = 12;
-    private float downX = 0, downY = 0;
-    private StringBuffer     quickSearchBuf = null;
-    private Toast            quickSearchTip = null;
-    private Favorites        favorites;
-    private LocationBar      locationBar;
-    private CommanderAdapter destAdapter = null;
-    public  boolean sxs, fingerFriendly = false;
-    public  ColorsKeeper     ck;
+    private final static String     TAG = "Panels";
+    public static final String      DEFAULT_LOC = Environment.getExternalStorageDirectory().getAbsolutePath();
+    public  final static int        LEFT = 0, RIGHT = 1;
+    private int                     current = LEFT, navigated = -1;
+    private final int               titlesIds[] = { R.id.left_dir,  R.id.right_dir };
+    private ListHelper              list[] = { null, null };
+    public  FileCommander           c;
+    public  View                    mainView, toolbar = null;
+    private HorizontalScrollView    hsv;
+    public  PanelsView              panelsView = null;
+    public  boolean                 sxs, fingerFriendly = false;
+    private boolean                 arrowsLegacy = false, warnOnRoot = true, rootOnRoot = false, toolbarShown = false;
+    public  boolean                 volumeLegacy = true;
+    private boolean                 disableOpenSelectOnly = false, disableAllActions = false;
+    private float                   downX = 0, downY = 0, x_start = -1;
+    public  int                     scroll_back = 50, fnt_sz = 12;
+    private StringBuffer            quickSearchBuf = null;
+    private Toast                   quickSearchTip = null;
+    private Favorites               favorites;
+    private LocationBar             locationBar;
+    private CommanderAdapter        destAdapter = null;
+    public  ColorsKeeper            ck;
     
     public Panels( FileCommander c_, boolean sxs_ ) {
         c = c_;
@@ -93,13 +96,20 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         c.setContentView( R.layout.alt );
         mainView = c.findViewById( R.id.main );
         
-        //mFlipper = ((ViewFlipper)c.findViewById( R.id.flipper ));
-        panelsView = ((PanelsView)c.findViewById( R.id.panels ));
+        hsv = (HorizontalScrollView)c.findViewById( R.id.hrz_scroll );
+        hsv.setHorizontalScrollBarEnabled( false );
+        hsv.setSmoothScrollingEnabled( true );
+        hsv.setOnTouchListener( this );
+        final int GINGERBREAD = 9;
+        if( android.os.Build.VERSION.SDK_INT >= GINGERBREAD )
+            OverScrollDisabler.disableOverScroll( hsv );
         
+        panelsView = ((PanelsView)c.findViewById( R.id.panels ));
+        panelsView.init( c.getWindowManager() );
         initList( LEFT );
         initList( RIGHT );
 
-        favorites = new Favorites( c );
+        favorites   = new Favorites( c );
         locationBar = new LocationBar( c, this, favorites );
         
         setLayoutMode( sxs_ );
@@ -131,8 +141,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         sxs = sxs_;
         SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( c );
         applySettings( shared_pref, false );
-
-        if( panelsView != null ) panelsView.setMode( sxs_, current );
+        scroll_back = (int)( c.getWindowManager().getDefaultDisplay().getWidth() * 2. / 10 );        
+        if( panelsView != null ) panelsView.setMode( sxs_ );
     }
     public int getCurrent() {
         return current;
@@ -508,23 +518,18 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public final void setPanelCurrent( int which ) {
         //Log.v( TAG, "setPanelCurrent: " + which );
         if( panelsView != null ) {
-            panelsView.setMode( sxs, which );
-            
-/*
-            if( mFlipper != null ) {
-            	if( which == RIGHT ) {
-                    mFlipper.setInAnimation(  AnimationUtils.loadAnimation( c, R.anim.left_in ) );
-                    mFlipper.setOutAnimation( AnimationUtils.loadAnimation( c, R.anim.left_out ) );
-    	        }
-    	        else {
-                    mFlipper.setInAnimation(  AnimationUtils.loadAnimation( c, R.anim.right_in ) );
-                    mFlipper.setOutAnimation( AnimationUtils.loadAnimation( c, R.anim.right_out ) );
-                }
-            	mFlipper.setDisplayedChild( which );
-            }
-*/
+            panelsView.setMode( sxs );
         }
         current = which;
+        final int dir = current == LEFT ? HorizontalScrollView.FOCUS_LEFT : HorizontalScrollView.FOCUS_RIGHT;
+        hsv.post( new Runnable() {
+            public void run() {
+                boolean fsr = hsv.fullScroll( dir );
+                //Log.v( "Touch", "Full scroll:" + fsr + ", d = " + dir );
+            }
+        } );
+
+        
         list[current].focus();
         highlightCurrentTitle();
         setToolbarButtons( getListAdapter( true ) );
@@ -1087,6 +1092,23 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     @Override
     public boolean onTouch( View v, MotionEvent event ) {
     	resetQuickSearch();
+        if( v == hsv ) {
+            if( x_start < 0. && event.getAction() == MotionEvent.ACTION_MOVE )
+                x_start = event.getX();
+            else
+            if( x_start >= 0. && event.getAction() == MotionEvent.ACTION_UP ) {
+                float d = event.getX() - x_start;
+                x_start = -1;
+                final int to_which;
+                if( Math.abs( d ) > scroll_back )
+                    to_which = d > 0 ? LEFT : RIGHT;
+                else
+                    to_which = current ==  LEFT ? LEFT : RIGHT;
+                setPanelCurrent( to_which );
+                return true;
+            }
+        }
+        else
 	    if( v instanceof ListView ) {
             if( v == list[opposite()].flv)
                 togglePanels( false );
@@ -1107,23 +1129,9 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                     
                     if( absDeltaY > 10 || absDeltaX > 10 )
                         disableOpenSelectOnly = false;
-                    /*
-                    if( id == R.layout.alt ) break;                      // side-by-side panels - no sweeps
-                    if( absDeltaY > absDeltaX || absDeltaX < v.getWidth() / 2 ) break; // vertical or small movement not enough for toggle
-                    if( deltaX > 0 && current == LEFT )  break;
-                    if( deltaX < 0 && current == RIGHT ) break;
-                    togglePanels( false );
-                    disableAllActions = true;
-                    */
                     list[current].focus();
        	            break;
     	        }
-	        /*
-	        case MotionEvent.ACTION_MOVE: {
-	                disableOpenSelectOnly = true;
-    	            break;
-	            }
-	        */
 	        }
 	    }
         return false;
@@ -1267,7 +1275,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     /*
      * ListView.OnScrollListener implementation 
      */
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+    public void onScroll( AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount ) {
     }
     @Override
     public void onScrollStateChanged( AbsListView view, int scrollState ) {

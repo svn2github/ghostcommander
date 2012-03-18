@@ -54,36 +54,42 @@
             android:layout_width="wrap_content" 
             android:layout_height="wrap_content"/>         
     </LinearLayout>
-    <com.ghostsq.commander.PanelsView android:id="@+id/panels"
-        android:layout_width="fill_parent"
-        android:layout_height="0dip"
+    <HorizontalScrollView 
+        android:id="@+id/hrz_scroll" 
+        android:layout_width="wrap_content" 
+        android:layout_height="fill_parent" 
         android:layout_weight="1"
-        android:orientation="horizontal">
-	    <ListView
-			android:id="@+id/left_list" 
-	        android:layout_width="wrap_content" 
-	        android:layout_height="fill_parent"
-	        android:layout_weight="1"
-	        android:fastScrollEnabled="true"
-	        android:paddingLeft="1dp"
-	        android:paddingRight="1dp"
-            android:drawSelectorOnTop="false"
-          />
-	    <View
-            android:id="@+id/divider" 
-            android:layout_width="1dip" 
-            android:layout_height="fill_parent"
-            android:background="@color/ttl_def"
-	    />
-	    <ListView
-			android:id="@+id/right_list" 
-	        android:layout_width="wrap_content" 
-	        android:layout_height="fill_parent"
-	        android:layout_weight="1"
-	        android:drawSelectorOnTop="false"
-	        android:fastScrollEnabled="true"
-	        android:paddingLeft="1dp"
-	        android:paddingRight="1dp"/>
-    </com.ghostsq.commander.PanelsView>
+        android:fillViewport="true">
+        <com.ghostsq.commander.PanelsView 
+            android:id="@+id/panels"
+            android:orientation="horizontal" 
+            android:layout_width="fill_parent" 
+            android:layout_height="fill_parent" 
+            android:layout_weight="1">
+                  <ListView
+                      android:id="@+id/left_list" 
+                      android:layout_width="0dp" 
+                      android:layout_height="fill_parent"
+                      android:fastScrollEnabled="true"
+                      android:paddingLeft="1dp"
+                      android:paddingRight="1dp"
+                      android:drawSelectorOnTop="false"
+                      />
+                  <View
+                        android:id="@+id/divider" 
+                        android:layout_width="1dip" 
+                        android:layout_height="fill_parent"
+                        android:background="@color/ttl_def"
+                  />
+                    <ListView
+                        android:id="@+id/right_list" 
+                        android:layout_width="0dp" 
+                        android:layout_height="fill_parent"
+                        android:drawSelectorOnTop="false"
+                        android:fastScrollEnabled="true"
+                        android:paddingLeft="1dp"
+                        android:paddingRight="1dp"/>
+        </com.ghostsq.commander.PanelsView>
+    </HorizontalScrollView>
  </LinearLayout>
  
