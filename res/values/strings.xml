@@ -85,22 +85,22 @@
     <string name="prefs_restr">Your preferences have been restored.</string>
         
     <string name="about">About</string>
-    <string name="keys">Shortcut keys</string>
+    <string name="keys">Shortcuts &amp; Tips</string>
     <string name="new_file">Create a new file</string>
     <string name="new_folder">Create a new folder</string>
     <string name="new_zip">Create a new ZIP file</string>
 
     <string name="go_button">Go</string>
     <string name="show_size">Info</string>
-    <string name="send_to">Send to...</string>
-    <string name="open_with">Open with...</string>
+    <string name="send_to">Send to&#8230;</string>
+    <string name="open_with">Open with&#8230;</string>
     <string name="copy_name">Copy name to clipboard</string>
     <string name="fav_fld">Add \"%s\" to favorites</string>
     
     <string name="create_zip">Create a new ZIP file</string>
     <string name="create_zip_title">Create ZIP</string>
 
-    <string name="wait"> wait... </string>
+    <string name="wait"> wait&#8230; </string>
     <string name="fail"> FAILED </string>
     <string name="failed">Error:\n</string>
     <string name="default_uri_cmnt">Default location</string>
@@ -178,21 +178,21 @@
     <string name="interrupted">Interrupted</string>
     <string name="too_deep_hierarchy">The file hierarchy is too deep.</string>
     <string name="nothing_found">No files found</string>
-    <string name="preparing">Preparing...</string>
+    <string name="preparing">Preparing&#8230;</string>
 
-    <string name="copying">Copying\n\"%s\"...</string>
+    <string name="copying">Copying\n\"%s\"&#8230;</string>
     <string name="copied_f">Copied\n\"%s\"&#xA0;&#xA0;&#xA0;</string>
-    <string name="deleting">Deleting\n\"%s\"...</string>
-    <string name="deleting_a">Deleting...</string>
-    <string name="fail_del">File "%1$s\" was not completed, deleting...</string>
-    <string name="unpacking">Unpacking \n\"%s\"...</string>
+    <string name="deleting">Deleting\n\"%s\"&#8230;</string>
+    <string name="deleting_a">Deleting&#8230;</string>
+    <string name="fail_del">File "%1$s\" was not completed, deleting&#8230;</string>
+    <string name="unpacking">Unpacking \n\"%s\"&#8230;</string>
     <string name="unpacked_p">Unpacked \n\"%s\"   </string>
-    <string name="packing">Packing \n\"%s\"...</string>
+    <string name="packing">Packing \n\"%s\"&#8230;</string>
     
-    <string name="retrieving">Retrieving \n\"%s\"...</string>
-    <string name="uploading">Uploading \n\"%s\"...</string>
+    <string name="retrieving">Retrieving \n\"%s\"&#8230;</string>
+    <string name="uploading">Uploading \n\"%s\"&#8230;</string>
     <string name="uploaded_p">Uploaded \n\"%s\"   </string>
-    <string name="loading">Loading...</string>
+    <string name="loading">Loading&#8230;</string>
 
     <string name="second">s</string>
         
@@ -395,7 +395,7 @@ copied >5 will produce:
     <string name="saved">\"%1$s\" saved.</string>
     <string name="not_saved">Save changes?</string>
     <string name="save">Save</string>
-    <string name="save_as">Save as...</string>
+    <string name="save_as">Save as&#8230;</string>
     <string name="revert">Revert</string>
     <string name="wrap">Wrap long lines</string>
 
@@ -460,13 +460,16 @@ consequential damages, or any issues that are, or could be caused by the use of 
 You agree to use this software at your own risk.\n
 If you don\'t agree to the above, stop using this software immediately and uninstall it.\n
     </string>
-    <string name="keys_text">
-    "\tHow to use:\n
-To select more than one file, tap on the right half of the row.\n    
-To manually enter the location path (and see your favorites), long press on the panel\'s title.\n
-That's right, one side will activate the file and the other side will select it.\n\n
+    <string name="keys_text">"
+\t\tBASICS:
 
-Shortcut keys:\n
+Copy or move files and folders by firstly choosing the target destination in one panel, then swipe (or toggle) back to the other panel to select items you wish to transfer.\n
+To select files and folders, tap on the right side of the screen and open them by tapping on the left. That\'s right, one side will activate items and the other side will select them.\n
+If you have many items to select, navigate to \"Menu > List > Select all\".\n
+To manually enter a location path (or to see a drop-down of your favorites) long press on the panel\'s title.\n
+
+\t\tHOTKEYS:
+
 VolumeUp - Select files and folders
 VolumeDn - Toggle between the panels
 +, -  - Select or unselect items in the current folder  
@@ -484,17 +487,28 @@ VolumeDn - Toggle between the panels
 9 - Open preferences/settings
 0 - Close the application
 [A-z] - Quick search    
-    
-To open an anonymous FTP folder, enter the path like:\n
-    ftp://host.com/folder\n
-Or, if you need to provide user details:\n
-    ftp://user:password@host.com/folder\n\n
-To access as root (su), enter the location as follows:\n
-    \"root:///data\"\n
-Make sure BusyBox is installed and its location is specified in settings.\n
-To list all mount points, type \"mount://\" in the location field.
-Tap on a mount point to make it \"rw\" or to revert it back to \"ro\".
-    "
+\n\n    
+\t\tADVANCED:
+
+Manually enter resource URIs into the location field as follows:
+
+ftp://host.com/folder
+\t- FTP site (Anonymous)
+
+ftp://user:pass@ftp_host/folder
+\t- FTP site (User account)
+
+smb://domain;user:pass@server/share
+\t- Windows share (SMB plugin required)
+
+root:/path/to/folder
+\t- Root mode (BusyBox required)
+
+mount:
+\t- Mount points
+
+Note: Using the root mode (superuser) and mount point features of Ghost Commander may cause problems if not used correctly and safely.  
+"
     </string>
     
 </resources>

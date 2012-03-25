@@ -29,11 +29,10 @@ public class StreamServer extends Service {
     private final static String TAG = "StreamServer";
     private final static String CRLF = "\r\n";
     private Context ctx;
-    private ListenThread  thread = null;
-    
+    public  ListenThread  thread = null;
     public  WifiLock wifiLock = null;
     public  CommanderAdapter ca = null;
-    public  String last_host = null; 
+    public  String last_host = null;
 
     @Override
     public void onCreate() {
@@ -77,12 +76,37 @@ public class StreamServer extends Service {
     private class ListenThread extends Thread {
         private final static String TAG = "GCSS.ListenThread";
         private Thread stream_thread;
-        private ServerSocket ss = null;
+        public  ServerSocket ss = null;
+        public  long lastUsed = System.currentTimeMillis();      
+
         public void run() {
             try {
-                Log.d( TAG, "Thread started" );
+                Log.d( TAG, "started" );
                 setName( TAG );
                 setPriority( Thread.MIN_PRIORITY );
+                new Thread( new Runnable() {
+                    @Override
+                    public void run() {
+                        while( true ) {
+                            try {
+                                synchronized( ListenThread.this ) {
+                                    final int max_idle = 100000;
+                                    ListenThread.this.wait( max_idle );
+                                    Log.d( TAG, "Checking the idle time... last used: " + (System.currentTimeMillis()-lastUsed) + "ms ago " );
+                                    if( System.currentTimeMillis() - max_idle > lastUsed ) {
+                                        Log.d( TAG, "Time to closer the listen thread" );
+                                        ListenThread.this.close();
+                                        break;
+                                    }
+                                }
+                            } catch( InterruptedException e ) {
+                                e.printStackTrace();
+                            }
+                        }
+                        Log.d( TAG, "Closer thread stopped" );
+                    }
+                }, "Closer" ).start();
+                
                 StreamServer.this.wifiLock.acquire();
                 Log.d( TAG, "WiFi lock" );
                 synchronized( this ) {
@@ -97,10 +121,11 @@ public class StreamServer extends Service {
                         stream_thread = new StreamingThread( data_socket, count++ );
                         stream_thread.start();
                     }
+                    touch();
                 }
             }
             catch( Exception e ) {
-                Log.e( TAG, "Exception", e );
+                Log.w( TAG, "Exception", e );
             }
             finally {
                 StreamServer.this.wifiLock.release();
@@ -109,6 +134,10 @@ public class StreamServer extends Service {
             }
             StreamServer.this.stopSelf();
         }
+
+        public synchronized void touch() {
+            lastUsed = System.currentTimeMillis();
+        }        
         
         public synchronized void close() {
             try {
@@ -236,7 +265,7 @@ public class StreamServer extends Service {
                                                 try {
                                                     if( br.ready() )
                                                         Log( "HTTP additional command arrived!!! " + br.readLine() );
-                                                    
+                                                    thread.touch();
                                                     byte[] out_buf = rt.getOutputBuffer();
                                                     if( out_buf == null ) break;
                                                     int n = rt.GetDataSize();

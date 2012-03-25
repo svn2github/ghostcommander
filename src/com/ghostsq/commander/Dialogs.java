@@ -423,7 +423,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                                 }
                             }
                         }
-                        int fs = ( reduce_size ? 14 : 18 ) + ( fnt_sz - 12 );
+                        int fs = ( reduce_size ? 15 : 18 ) + ( fnt_sz - 12 );
                         tv.setTextSize( fs > 12 ? fs : 12 );
                         tv.setText( toShowInAlertDialog );
                     } else 

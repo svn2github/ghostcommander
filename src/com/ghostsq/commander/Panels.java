@@ -32,6 +32,7 @@ import android.graphics.drawable.StateListDrawable;
 import android.net.Uri;
 import android.net.UrlQuerySanitizer;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.text.ClipboardManager;
@@ -263,8 +264,9 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     // View.OnFocusChangeListener implementation
     @Override
     public void onFocusChange( View v, boolean f ) {
+        Log.v( TAG, "focus: " + f + " for: " + current );
         if( sxs && f && list[current].flv != v ) {
-            togglePanels( false );
+            setPanelCurrent( opposite(), true );
         }
     }
     
@@ -426,15 +428,15 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 ff = "y".equals( ffs );
             
         	setFingerFriendly( ff, fnt_sz );
-        	warnOnRoot =  sharedPref.getBoolean( "prevent_root", true );
-            rootOnRoot = sharedPref.getBoolean( "root_root", false );
+        	warnOnRoot   = sharedPref.getBoolean( "prevent_root", true );
+            rootOnRoot   = sharedPref.getBoolean( "root_root", false );
             arrowsLegacy = sharedPref.getBoolean( "arrow_legc", false );
             volumeLegacy = sharedPref.getBoolean( "volume_legc", true );            
             toolbarShown = sharedPref.getBoolean( "show_toolbar", true );
             if( !init ) {
                 list[LEFT].applySettings( sharedPref );
                 list[RIGHT].applySettings( sharedPref );
-                setPanelCurrent( current );
+               // setPanelCurrent( current );
             }
         }
         catch( Exception e ) {
@@ -509,28 +511,34 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         setLayoutMode( !sxs );
     }
     public final void togglePanels( boolean refresh ) {
-        //Log.v( TAG, "toggle" );
+        Log.v( TAG, "toggle" );
         setPanelCurrent( opposite() );
         if( !sxs && ( refresh || list[current].needRefresh() ) ) 
             refreshList( current );
     }
     
     public final void setPanelCurrent( int which ) {
-        //Log.v( TAG, "setPanelCurrent: " + which );
-        if( panelsView != null ) {
+        setPanelCurrent( which, false );
+        
+    }
+    private final void setPanelCurrent( int which, boolean dont_focus ) {
+        Log.v( TAG, "setPanelCurrent: " + which + " dnf:" + dont_focus );
+        if( !dont_focus && panelsView != null ) {
             panelsView.setMode( sxs );
         }
         current = which;
-        final int dir = current == LEFT ? HorizontalScrollView.FOCUS_LEFT : HorizontalScrollView.FOCUS_RIGHT;
-        hsv.post( new Runnable() {
-            public void run() {
-                boolean fsr = hsv.fullScroll( dir );
-                //Log.v( "Touch", "Full scroll:" + fsr + ", d = " + dir );
-            }
-        } );
-
-        
-        list[current].focus();
+        if( !sxs ) {
+            final int dir = current == LEFT ? HorizontalScrollView.FOCUS_LEFT : HorizontalScrollView.FOCUS_RIGHT;
+            hsv.post( new Runnable() {
+                public void run() {
+                    Log.v( TAG, "fullScroll: " + dir );
+                    hsv.fullScroll( dir );
+                }
+            } );
+        }
+        else
+            if( !dont_focus )
+                list[current].focus();
         highlightCurrentTitle();
         setToolbarButtons( getListAdapter( true ) );
     }

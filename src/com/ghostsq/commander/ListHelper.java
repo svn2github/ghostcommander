@@ -90,6 +90,9 @@ public class ListHelper {
     }
 
     public final void focus() {
+        Log.v( TAG, "Set focus for " + which );
+        
+        
         /*
          * boolean focusable = flv.isFocusable(); boolean focusable_tm =
          * flv.isFocusableInTouchMode(); boolean focused = flv.isFocused();

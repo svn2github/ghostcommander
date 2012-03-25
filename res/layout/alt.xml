@@ -59,7 +59,7 @@
         android:layout_width="wrap_content" 
         android:layout_height="fill_parent" 
         android:layout_weight="1"
-        android:fillViewport="true">
+        android:fillViewport="false">
         <com.ghostsq.commander.PanelsView 
             android:id="@+id/panels"
             android:orientation="horizontal" 

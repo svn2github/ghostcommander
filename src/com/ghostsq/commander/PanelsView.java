@@ -8,6 +8,7 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 
 public class PanelsView extends LinearLayout {
+    private final static String TAG = "PanelsView"; 
     private boolean sxs = false;
     private int current = 0;
     private WindowManager wm;
@@ -31,6 +32,7 @@ public class PanelsView extends LinearLayout {
     
     public void setMode( boolean sxs_ ) {
         sxs = sxs_;
+        Log.v( TAG, "setMode: " + sxs ); 
         requestLayout();
     }
 
@@ -39,12 +41,14 @@ public class PanelsView extends LinearLayout {
 
     @Override
     protected void onMeasure( int widthMeasureSpec, int heightMeasureSpec ) {
+        Log.v( TAG, "w:" + MeasureSpec.toString( widthMeasureSpec ) + " h:" + MeasureSpec.toString( heightMeasureSpec ) );
+        
         panel_width = wm.getDefaultDisplay().getWidth();
         if( sxs ) {
             panel_width /= 2;
-            panel_width -= 1;
+            panel_width -= 10;
         } else
-            panel_width -= 5;
+            panel_width--;
         int w_spec = MeasureSpec.makeMeasureSpec( panel_width, MeasureSpec.EXACTLY );
         lv.measure( w_spec, heightMeasureSpec );
         dv.measure( MeasureSpec.makeMeasureSpec( 1, MeasureSpec.EXACTLY ), heightMeasureSpec );
