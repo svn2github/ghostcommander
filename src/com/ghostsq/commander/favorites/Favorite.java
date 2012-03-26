@@ -1,17 +1,9 @@
 package com.ghostsq.commander.favorites;
 
-import java.security.SecureRandom;
-import java.security.KeyStore.PasswordProtection;
 import java.util.regex.Pattern;
-import java.net.URLEncoder;
-
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-
 import org.apache.http.auth.UsernamePasswordCredentials;
 
+import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.Utils;
 
 import android.net.Uri;
@@ -22,14 +14,12 @@ public class Favorite {
     // store/restore
     private static String  sep = ",";
     private static Pattern sep_re = Pattern.compile( sep );
-    private static String  seed = "5hO@%#O7&!H3#R";
     private static String  pwScreen = "***";
     
     // fields
-    private Uri     uri;
-    private String  comment;
-    private String  username;
-    private PasswordProtection password;
+    private Uri         uri;
+    private String      comment;
+    private Credentials credentials;
 
     public Favorite( Uri u ) {
         init( u );
@@ -55,7 +45,7 @@ public class Favorite {
                 UsernamePasswordCredentials crd = new UsernamePasswordCredentials( user_info );
                 String pw = crd.getPassword();
                 setCredentials( crd.getUserName(), pwScreen.equals( pw ) ? null : pw );
-                uri = updateUserInfo( uri, null );
+                uri = Utils.updateUserInfo( uri, null );
             }
         }
         catch( Exception e ) {
@@ -69,15 +59,13 @@ public class Favorite {
             String[] flds = sep_re.split( raw );
             if( flds == null ) return false;
             comment = null;
-            username = null;
-            password = null;
+            credentials = null;
             for( int i = 0; i < flds.length; i++ ) {
                 String s = flds[i];
                 if( s == null || s.length() == 0 ) continue;
-                if( s.startsWith( "URI="  ) ) uri = Uri.parse( unescape( s.substring( 4 ) ) ); else 
-                if( s.startsWith( "CMT="  ) ) comment = unescape( s.substring( 4 ) ); else
-                if( s.startsWith( "USER=" ) ) username = unescape( s.substring( 5 ) ); else
-                if( s.startsWith( "PASS=" ) ) decryptPassword( unescape( s.substring( 5 ) ) );
+                if( s.startsWith( "URI=" ) ) uri = Uri.parse( unescape( s.substring( 4 ) ) ); else 
+                if( s.startsWith( "CMT=" ) ) comment = unescape( s.substring( 4 ) ); else
+                if( s.startsWith( "CRD=" ) ) credentials = Credentials.createFromEncriptedString( unescape( s.substring( 4 ) ) );
                 //Log.v( TAG, "Restored to: cmt=" + comment + ", uri=" + uri + ", user=" + username + ", pass=" + ( password != null ? new String( password.getPassword() ) : "" ) );
             }
         }
@@ -97,15 +85,10 @@ public class Favorite {
                 buf.append( "CMT=" );
                 buf.append( escape( comment ) );
             }
-            if( username != null ) {
+            if( credentials != null ) {
                 buf.append( sep );
-                buf.append( "USER=" );
-                buf.append( escape( username ) );
-            }
-            if( password != null ) {
-                buf.append( sep );
-                buf.append( "PASS=" );
-                buf.append( escape( encryptPassword() ) );
+                buf.append( "CRD=" );
+                buf.append( escape( credentials.exportToEncriptedString() ) );
             }
             return buf.toString();
         }
@@ -127,20 +110,24 @@ public class Favorite {
         return uri;
     }
     public Uri getUriWithAuth() {
-        return getUriWithAuth( uri, username, password != null ? new String( password.getPassword() ) : null );
+        if( credentials == null ) return uri; 
+        return Utils.getUriWithAuth( uri, credentials.getUserName(), credentials.getPassword() );
     }
     public String getUriString( boolean screen_pw ) {
         try {
             if( uri == null ) return null;
-            if( username == null ) return uri.toString();
+            if( credentials == null ) return uri.toString();
             if( screen_pw )
-                return getUriWithAuth( uri, username, pwScreen ).toString();
+                return Utils.getUriWithAuth( uri, credentials.getUserName(), pwScreen ).toString();
             else
                 return getUriWithAuth().toString();
         } catch( Exception e ) {
             e.printStackTrace();
         }
         return null;
+    }
+    public Credentials getCredentials() {
+        return credentials;
     }
 
     public boolean equals( String test ) {
@@ -156,40 +143,19 @@ public class Favorite {
     }
     
     public String getUserName() {
-        return username;
+        return credentials == null ? null : credentials.getUserName();
     }
-    public String getPassword() { 
-        return password != null ? new String( password.getPassword() ) : "";
+    public String getPassword() {
+        return credentials == null ? "" : credentials.getPassword();
     }
     public void setCredentials( String un, String pw ) {
         if( un == null || un.length() == 0 ) {
-            username = null;
-            password = null;
+            credentials = null;
             return;
         }
-        username = un;
-        password = pw != null ? new PasswordProtection( pw.toCharArray() ) : null;
+        credentials = new Credentials( un, pw );
     }
     
-    private String encryptPassword() {
-        if( password != null )
-            try {
-                return encrypt( seed, new String( password.getPassword() ) );
-            } catch( Exception e ) {
-                e.printStackTrace();
-            }
-        return "";
-    }
-    private void decryptPassword( String stored ) {
-        password = null;
-        if( stored != null && stored.length() > 0 )
-        try {
-            String pw = decrypt( seed, stored );
-            password = new PasswordProtection( pw.toCharArray() );
-        } catch( Exception e ) {
-            e.printStackTrace();
-        }
-    }
     private String unescape( String s ) {
         return s.replace( "%2C", sep );
     }
@@ -208,7 +174,7 @@ public class Favorite {
         int pw_pos = ui.indexOf( ':' );
         if( pw_pos < 0 ) return u.toString();
         ui = ui.substring( 0, pw_pos+1 ) + pwScreen;
-        return Uri.decode( updateUserInfo( u, ui ).toString() );
+        return Uri.decode( Utils.updateUserInfo( u, ui ).toString() );
     }
     public final static boolean isPwdScreened( Uri u ) {
         String user_info = u.getUserInfo();
@@ -220,11 +186,14 @@ public class Favorite {
     }
     
     public final Uri borrowPassword( Uri stranger_uri ) {
+        if( credentials == null ) return null;
         String stranger_user_info = stranger_uri.getUserInfo();
+        String username = credentials.getUserName(); 
+        String password = credentials.getPassword(); 
         if( password != null && stranger_user_info != null && stranger_user_info.length() > 0 ) {
-            UsernamePasswordCredentials stranger_crd = new UsernamePasswordCredentials( stranger_user_info );
+            Credentials stranger_crd = new Credentials( stranger_user_info );
             if( username != null && username.equalsIgnoreCase( stranger_crd.getUserName() ) )
-                return getUriWithAuth( stranger_uri, stranger_crd.getUserName(), new String( password.getPassword() ) );
+                return Utils.getUriWithAuth( stranger_uri, stranger_crd.getUserName(), password );
         }
         return null;
     }
@@ -241,93 +210,16 @@ public class Favorite {
                     UsernamePasswordCredentials fcrd = new UsernamePasswordCredentials( fui );
                     String un = crds.getUserName();
                     if( un != null && un.equals( fcrd.getUserName() ) )
-                        return getUriWithAuth( us, un, fcrd.getPassword() );
+                        return Utils.getUriWithAuth( us, un, fcrd.getPassword() );
                 }
                 
             }
         }
         return null;
     }    
-    
-    public static Uri getUriWithAuth( Uri u, String un, String pw ) {
-        if( un == null ) return u;
-        String ui = Utils.escapeName( un );
-        if( pw != null )
-            ui += ":" + Utils.escapeName( pw );
-        return updateUserInfo( u, ui );
-    }
-    
-    public final static Uri updateUserInfo( Uri u, String encoded_ui ) {
-        if( u == null ) return null;
-        String ea = u.getEncodedAuthority();
-        if( ea == null ) return u;
-        int at_pos = ea.lastIndexOf( '@' );
-        if( encoded_ui == null ) {
-            if( at_pos < 0 ) return u;
-            ea = ea.substring( at_pos + 1 );
-        } else
-            ea = encoded_ui + ( at_pos < 0 ? "@" + ea : ea.substring( at_pos ) );
-        return u.buildUpon().encodedAuthority( ea ).build();
-    }
-
-    public final static Uri addTrailngSlash( Uri u ) {
-        String alt_path, path = u.getEncodedPath();
-        if( path == null )
-            alt_path = "/";
-        else {
-            alt_path = Utils.mbAddSl( path );
-            if( alt_path == null || path.equals( alt_path ) ) return u;
-        }
-        return u.buildUpon().encodedPath( alt_path ).build(); 
-    }
+        
 
     // ---------------------------
     
-    public static String encrypt( String seed, String cleartext ) throws Exception {
-        byte[] rawKey = getRawKey( seed.getBytes() );
-        byte[] result = encrypt( rawKey, cleartext.getBytes() );
-        return Utils.toHexString( result );
-    }
-
-    public static String decrypt( String seed, String encrypted ) throws Exception {
-        byte[] rawKey = getRawKey( seed.getBytes() );
-        byte[] enc = Utils.hexStringToBytes( encrypted );
-        byte[] result = decrypt( rawKey, enc );
-        return new String( result );
-    }
-
-    private static byte[] getRawKey( byte[] seed ) throws Exception {
-        KeyGenerator kgen = KeyGenerator.getInstance( "AES" );
-        SecureRandom sr = SecureRandom.getInstance( "SHA1PRNG" );
-        sr.setSeed( seed );
-        kgen.init( 128, sr ); // 192 and 256 bits may not be available
-        SecretKey skey = kgen.generateKey();
-        byte[] raw = skey.getEncoded();
-        return raw;
-    }
-
-    private static byte[] encrypt( byte[] raw, byte[] clear ) throws Exception {
-        SecretKeySpec skeySpec = new SecretKeySpec( raw, "AES" );
-        Cipher cipher = Cipher.getInstance( "AES" );
-        cipher.init( Cipher.ENCRYPT_MODE, skeySpec );
-        byte[] encrypted = cipher.doFinal( clear );
-        return encrypted;
-    }
-
-    private static byte[] decrypt( byte[] raw, byte[] encrypted ) throws Exception {
-        SecretKeySpec skeySpec = new SecretKeySpec( raw, "AES" );
-        Cipher cipher = Cipher.getInstance( "AES" );
-        cipher.init( Cipher.DECRYPT_MODE, skeySpec );
-        byte[] decrypted = cipher.doFinal( encrypted );
-        return decrypted;
-    }
-
-    public static String toHex( String txt ) {
-        return Utils.toHexString( txt.getBytes() );
-    }
-
-    public static String fromHex( String hex ) {
-        return new String( Utils.hexStringToBytes( hex ) );
-    }
 }
 

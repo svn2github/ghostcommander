@@ -218,7 +218,7 @@ public class LocationBar extends BaseAdapter implements Filterable, OnKeyListene
                             u = up;
                         else {
                             Uri uc = p.getFolderUri( true );
-                            u = Favorite.updateUserInfo( u, uc.getEncodedUserInfo() );                                
+                            u = Utils.updateUserInfo( u, uc.getEncodedUserInfo() );                                
                         }
                     }
                     favorites.add( new Favorite( u ) );

@@ -33,7 +33,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -414,7 +413,8 @@ public class AppsAdapter extends CommanderAdapterBase {
         for( int i = 0; i < pl.size(); i++ ) {
             try {
                 PackageInfo pi = pm.getPackageInfo( pl.get( i ).packageName, PackageManager.GET_GIDS | 
-                                                                             PackageManager.GET_PERMISSIONS );
+                                                                             PackageManager.GET_PERMISSIONS |
+                                                                             PackageManager.GET_SIGNATURES );
                 if( pi == null )
                     continue;
                 String v = null;
@@ -502,6 +502,15 @@ public class AppsAdapter extends CommanderAdapterBase {
                 if( flags != null )
                   sb.append( "\n\n" ).append( s( R.string.flags ) ).append( cs ).append( flags );
                 sb.append( "\n" );
+                if( pi.signatures != null ) {
+                    sb.append( "\nSignatures:\n" );
+                    for( int si = 0; si < pi.signatures.length; si++ ) {
+                        if( si > 0 )
+                            sb.append( ", " );
+                        sb.append( pi.signatures[si].toCharsString() );
+                    }
+                }
+                
             }
             catch( Exception e ) {
                 e.printStackTrace();

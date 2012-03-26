@@ -12,6 +12,7 @@ import com.ghostsq.commander.adapters.FindAdapter;
 import com.ghostsq.commander.favorites.Favorite;
 import com.ghostsq.commander.root.MountAdapter;
 import com.ghostsq.commander.root.RootAdapter;
+import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.Utils;
 
 import android.app.Activity;
@@ -140,6 +141,14 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             Uri uri = intent.getData();
             if( uri != null && !viewActProcessed && Intent.ACTION_VIEW.equals( action ) ) {
                 Log.v( TAG, "Intent URI: " + uri );
+                try { 
+                    Credentials crd = (Credentials)intent.getParcelableExtra( Credentials.KEY );
+                    if( crd != null )
+                        uri = Utils.getUriWithAuth( uri, crd.getUserName(), crd.getPassword() );
+                } catch( Throwable e ) {
+                    Log.e( TAG, "on extracting credentials from an intent", e );
+                }
+                
                 String file_name = null;
                 String type = intent.getType();
                 if( "application/x-zip-compressed".equals( type ) ||
@@ -388,13 +397,24 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         case REQUEST_CODE_SRV_FORM: {
                 if( resultCode == RESULT_OK ) {
                     dont_restore = true;
-                    Navigate( data.getData(), null );
+                    Uri uri = data.getData();
+                    if( uri != null ) {
+                        Credentials crd = null; 
+                        try {
+                            crd = (Credentials)data.getParcelableExtra( Credentials.KEY );
+                        } catch( Exception e ) {
+                            Log.e( TAG, "on taking credentials from parcel", e );
+                        }
+                        if( crd != null )
+                            uri = Utils.getUriWithAuth( uri, crd.getUserName(), crd.getPassword() );
+                        Navigate( uri, null );
+                    }
                 }
             }
             break;
         case R.id.create_shortcut: 
             if( data != null ) {
-                data.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+                data.setAction( "com.android.launcher.action.INSTALL_SHORTCUT" );
                 sendBroadcast( data );
             }
             break;

@@ -461,19 +461,19 @@ You agree to use this software at your own risk.\n
 If you don\'t agree to the above, stop using this software immediately and uninstall it.\n
     </string>
     <string name="keys_text">"
-\t\tBASICS:
+\t\tBASICS
 
 Copy or move files and folders by firstly choosing the target destination in one panel, then swipe (or toggle) back to the other panel to select items you wish to transfer.\n
 To select files and folders, tap on the right side of the screen and open them by tapping on the left. That\'s right, one side will activate items and the other side will select them.\n
 If you have many items to select, navigate to \"Menu > List > Select all\".\n
 To manually enter a location path (or to see a drop-down of your favorites) long press on the panel\'s title.\n
 
-\t\tHOTKEYS:
+\t\tHOTKEYS
 
 VolumeUp - Select files and folders
 VolumeDn - Toggle between the panels
 +, -  - Select or unselect items in the current folder  
-(, )  - Manually enter the destination for left/right panel and favorites
+(, )  - Manually enter a location path and view your favorites
 * - Add the current folder to your favorites
 \" - Show detailed information for the selected item(s)
 = - Display the same location in the other panel (synchronize)
@@ -488,26 +488,28 @@ VolumeDn - Toggle between the panels
 0 - Close the application
 [A-z] - Quick search    
 \n\n    
-\t\tADVANCED:
+
+\t\tADVANCED
 
 Manually enter resource URIs into the location field as follows:
 
 ftp://host.com/folder
-\t- FTP site (Anonymous)
+    - Anonymous FTP
 
 ftp://user:pass@ftp_host/folder
-\t- FTP site (User account)
+    - Authenticated FTP
 
 smb://domain;user:pass@server/share
-\t- Windows share (SMB plugin required)
+    - Windows share
 
 root:/path/to/folder
-\t- Root mode (BusyBox required)
+    - Root mode
 
 mount:
-\t- Mount points
+    - Mount points
 
-Note: Using the root mode (superuser) and mount point features of Ghost Commander may cause problems if not used correctly and safely.  
+Note: Using the root mode (superuser) and mount point features of Ghost Commander requires caution, a rooted device and BusyBox installed with its path defined in settings. 
+Accessing a Windows share can only be done if the Ghost Commander SMB plugin is installed.
 "
     </string>
     

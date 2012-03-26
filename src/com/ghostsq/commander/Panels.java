@@ -729,7 +729,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             if( uri_ != null ) {
                 String ui_ = uri_.getUserInfo();
                 if( ui_ != null && ui_.length() > 0 )
-                    uri = Favorite.updateUserInfo( uri, ui_ );
+                    uri = Utils.updateUserInfo( uri, ui_ );
             }
         }
         /*

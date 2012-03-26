@@ -11,6 +11,7 @@ import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.favorites.Favorite;
 import com.ghostsq.commander.favorites.FavDialog;
+import com.ghostsq.commander.utils.Credentials;
 
 import android.content.Context;
 import android.content.Intent;
@@ -171,14 +172,17 @@ public class FavsAdapter extends CommanderAdapterBase {
 
     private final void createDesktopShortcut( Favorite f ) {
         if( f == null ) return;
-        Uri uri = f.getUriWithAuth();
+        Uri uri = f.getUri();
         Intent shortcutIntent = new Intent();
         shortcutIntent.setClassName( ctx, commander.getClass().getName() );
         shortcutIntent.setAction( Intent.ACTION_VIEW );
         shortcutIntent.setData( uri );
+        Credentials crd = f.getCredentials();
+        if( crd != null )
+            shortcutIntent.putExtra( Credentials.KEY, crd );
 
         Intent intent = new Intent();
-        intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+        intent.putExtra( Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent );
         String name = f.getComment();
         if( name == null || name.length() == 0 )
             name = f.getUriString( true );

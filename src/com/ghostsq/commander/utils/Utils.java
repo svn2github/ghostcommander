@@ -15,7 +15,6 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import android.net.ParseException;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -240,6 +239,38 @@ public final class Utils {
         return auth;
     }
 
+    public static Uri getUriWithAuth( Uri u, String un, String pw ) {
+        if( un == null ) return u;
+        String ui = Utils.escapeName( un );
+        if( pw != null )
+            ui += ":" + Utils.escapeName( pw );
+        return updateUserInfo( u, ui );
+    }
+    
+    public final static Uri updateUserInfo( Uri u, String encoded_ui ) {
+        if( u == null ) return null;
+        String ea = u.getEncodedAuthority();
+        if( ea == null ) return u;
+        int at_pos = ea.lastIndexOf( '@' );
+        if( encoded_ui == null ) {
+            if( at_pos < 0 ) return u;
+            ea = ea.substring( at_pos + 1 );
+        } else
+            ea = encoded_ui + ( at_pos < 0 ? "@" + ea : ea.substring( at_pos ) );
+        return u.buildUpon().encodedAuthority( ea ).build();
+    }
+
+    public final static Uri addTrailngSlash( Uri u ) {
+        String alt_path, path = u.getEncodedPath();
+        if( path == null )
+            alt_path = "/";
+        else {
+            alt_path = Utils.mbAddSl( path );
+            if( alt_path == null || path.equals( alt_path ) ) return u;
+        }
+        return u.buildUpon().encodedPath( alt_path ).build(); 
+    }
+    
     public final static boolean str( String s ) {
         return s != null && s.length() > 0;
     }

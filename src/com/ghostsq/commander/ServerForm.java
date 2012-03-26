@@ -1,5 +1,6 @@
 package com.ghostsq.commander;
 
+import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.Utils;
 
 import android.app.Activity;
@@ -139,28 +140,29 @@ public class ServerForm extends Activity implements View.OnClickListener {
         try{ 
             if( v.getId() == R.id.connect ) {
                 EditText pass_edit = (EditText)findViewById( R.id.password_edit );
-                String user = name_edit.getText().toString();
-                String pass = pass_edit.getText().toString();
-                String auth = "";
-                
+                String user = name_edit.getText().toString().trim();
+                String pass = pass_edit.getText().toString().trim();
+                Credentials crd = null;
                 if( user.length() > 0 ) {
                     if( type == Type.SMB ) {
                         EditText domain_edit = (EditText)findViewById( R.id.domain_edit );
-                        String domain = domain_edit.getText().toString();
+                        String domain = domain_edit.getText().toString().trim();
                         if( domain.length() > 0 )
-                            auth += domain.trim() + ";";
+                            user = domain + ";" + user;
                     }
-                    auth += Uri.encode( user.trim() );
-                    if( pass.length() > 0 )
-                        auth += ":" + Uri.encode( pass.trim() );
-                    auth += "@";
+                    crd = new Credentials( user, pass ); 
                 }
-                auth += Utils.encodeToAuthority( server_edit.getText().toString().trim() );
-                Uri.Builder uri_b = new Uri.Builder().scheme( schema ).encodedAuthority( auth );
-                uri_b.path( path_edit.getText().toString().trim() );
+                Uri.Builder uri_b = new Uri.Builder()
+                    .scheme( schema )
+                    .authority( server_edit.getText().toString().trim() )
+                    .path( path_edit.getText().toString().trim() );
                 if( type == Type.FTP && active_ftp_cb.isChecked() )
                     uri_b.appendQueryParameter( "a", "true" );
-                setResult( RESULT_OK, (new Intent()).setData( uri_b.build() ) );
+                
+                Intent in = new Intent( "com.ghostsq.commander.NAVIGATE", uri_b.build() );
+                if( crd != null )
+                    in.putExtra( Credentials.KEY, crd );
+                setResult( RESULT_OK, in );
             }
             else
                 setResult( RESULT_CANCELED );
