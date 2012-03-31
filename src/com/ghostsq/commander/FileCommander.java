@@ -192,7 +192,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                     }
                 }
                 use_panel = Panels.LEFT;
-                panels.Navigate( use_panel, uri, file_name );    
+                panels.Navigate( use_panel, uri, null, file_name );    
                 viewActProcessed = true;
             }
             panels.setState( s, use_panel );
@@ -683,7 +683,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
      */
     @Override
     public void Navigate( Uri uri, String posTo ) {
-        panels.Navigate( panels.getCurrent(), uri, posTo );
+        panels.Navigate( panels.getCurrent(), uri, null, posTo );
     }
 
     @Override

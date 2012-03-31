@@ -159,7 +159,7 @@ public class LocationBar extends BaseAdapter implements Filterable, OnKeyListene
                 u = favorites.searchForPassword( u );
 			if( toChange != p.getCurrent() )
 				p.togglePanels( false );
-			p.Navigate( toChange, u, null );
+			p.Navigate( toChange, u, null, null );
 		}
 		toChange = -1;
 		p.focus();

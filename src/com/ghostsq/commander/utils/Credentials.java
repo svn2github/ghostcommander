@@ -16,6 +16,7 @@ import android.util.Log;
 public class Credentials extends UsernamePasswordCredentials implements Parcelable {
     private static String  TAG  = "GC.Credentials";
     private static String  seed = "5hO@%#O7&!H3#R";
+    public  static String  pwScreen = "***";
     public  static String  KEY  = "CRD";
 
     public Credentials( String usernamePassword ) {
@@ -23,6 +24,9 @@ public class Credentials extends UsernamePasswordCredentials implements Parcelab
     }
     public Credentials( String userName, String password ) {
         super( userName, password );
+    }
+    public Credentials( Credentials c ) {
+        super( c.getUserName(), c.getPassword() );
     }
 
      public static final Parcelable.Creator<Credentials> CREATOR = new Parcelable.Creator<Credentials>() {

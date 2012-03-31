@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.util.Date;
 
 import com.ghostsq.commander.Commander;
+import com.ghostsq.commander.utils.Credentials;
 
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -102,6 +103,12 @@ public interface CommanderAdapter {
      * @param name, pass 
      */
     public void setIdentities( String name, String pass );
+
+    /**
+     * 
+     * @param user credentials
+     */
+    public void setCredentials( Credentials crd );
     
     /**
      * @param uri - a folder's URI to initialize. If null passed, just refresh

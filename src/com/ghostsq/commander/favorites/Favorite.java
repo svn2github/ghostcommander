@@ -14,7 +14,6 @@ public class Favorite {
     // store/restore
     private static String  sep = ",";
     private static Pattern sep_re = Pattern.compile( sep );
-    private static String  pwScreen = "***";
     
     // fields
     private Uri         uri;
@@ -42,9 +41,10 @@ public class Favorite {
             uri = u;
             String user_info = uri.getUserInfo();
             if( user_info != null && user_info.length() > 0 ) {
-                UsernamePasswordCredentials crd = new UsernamePasswordCredentials( user_info );
-                String pw = crd.getPassword();
-                setCredentials( crd.getUserName(), pwScreen.equals( pw ) ? null : pw );
+                credentials = new Credentials( user_info );
+                String pw = credentials.getPassword();
+                if( Credentials.pwScreen.equals( pw ) ) 
+                    credentials = new Credentials( credentials.getUserName(), credentials.getPassword() );
                 uri = Utils.updateUserInfo( uri, null );
             }
         }
@@ -118,7 +118,7 @@ public class Favorite {
             if( uri == null ) return null;
             if( credentials == null ) return uri.toString();
             if( screen_pw )
-                return Utils.getUriWithAuth( uri, credentials.getUserName(), pwScreen ).toString();
+                return Utils.getUriWithAuth( uri, credentials.getUserName(), Credentials.pwScreen ).toString();
             else
                 return getUriWithAuth().toString();
         } catch( Exception e ) {
@@ -173,14 +173,14 @@ public class Favorite {
         if( ui == null || ui.length() == 0 ) return u.toString();
         int pw_pos = ui.indexOf( ':' );
         if( pw_pos < 0 ) return u.toString();
-        ui = ui.substring( 0, pw_pos+1 ) + pwScreen;
+        ui = ui.substring( 0, pw_pos+1 ) + Credentials.pwScreen;
         return Uri.decode( Utils.updateUserInfo( u, ui ).toString() );
     }
     public final static boolean isPwdScreened( Uri u ) {
         String user_info = u.getUserInfo();
         if( user_info != null && user_info.length() > 0 ) {
             UsernamePasswordCredentials crd = new UsernamePasswordCredentials( user_info );
-            if( pwScreen.equals( crd.getPassword() ) ) return true;
+            if( Credentials.pwScreen.equals( crd.getPassword() ) ) return true;
         }
         return false;
     }

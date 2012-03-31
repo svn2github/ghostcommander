@@ -4,6 +4,7 @@ import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.FavsAdapter;
 import com.ghostsq.commander.adapters.HomeAdapter;
+import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.SharedPreferences;
@@ -51,25 +52,24 @@ public class ListHelper {
         return (CommanderAdapter)flv.getAdapter();
     }
 
-    public final void Navigate( Uri uri, String posTo ) {
+    public final void Navigate( Uri uri, Credentials crd, String posTo ) {
         try {
             // Log.v( TAG, "Navigate to " + Favorite.screenPwd( uri ) );
             flv.clearChoices();
             flv.invalidateViews();
-            CommanderAdapter ca_old = (CommanderAdapter)flv.getAdapter();
-            CommanderAdapter ca_new = null;
+            CommanderAdapter ca_new = null, ca = (CommanderAdapter)flv.getAdapter();
             String scheme = uri.getScheme();
             int type_id = CA.GetAdapterTypeId( scheme );
-            if( ca_old == null || type_id != ca_old.getType() ) {
+            if( ca == null || type_id != ca.getType() ) {
                 ca_new = CA.CreateAdapter( type_id, p.c );
                 if( ca_new == null ) {
                     Log.e( TAG, "Can't create adapter of type '" + scheme + "'" );
-                    if( ca_old != null )
+                    if( ca != null )
                         return;
                     ca_new = CA.CreateAdapter( CA.GetAdapterTypeId( null ), p.c );
                 }
-                if( ca_old != null )
-                    ca_old.prepareToDestroy();
+                if( ca != null )
+                    ca.prepareToDestroy();
                 if( ca_new instanceof FavsAdapter ) {
                     FavsAdapter fav_a = (FavsAdapter)ca_new;
                     fav_a.setFavorites( p.getFavorites() );
@@ -78,12 +78,14 @@ public class ListHelper {
                 flv.setOnKeyListener( p );
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( p.c );
                 applySettings( sharedPref );
-                ca_old = ca_new;
+                ca = ca_new;
             }
             //p.applyColors();
             p.setPanelTitle( p.c.getString( R.string.wait ), which );
-            p.setToolbarButtons( ca_old );
-            ca_old.readSource( uri, "" + which + ( posTo == null ? "" : posTo ) );
+            p.setToolbarButtons( ca );
+            if( crd != null )
+                ca.setCredentials( crd );
+            ca.readSource( uri, "" + which + ( posTo == null ? "" : posTo ) );
         } catch( Exception e ) {
             Log.e( TAG, "NavigateInternal()", e );
         }

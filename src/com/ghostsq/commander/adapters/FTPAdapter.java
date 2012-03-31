@@ -22,6 +22,7 @@ import com.ghostsq.commander.R;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.favorites.Favorite;
+import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.LsItem.LsItemPropComparator;
 import com.ghostsq.commander.utils.FTP;
 import com.ghostsq.commander.utils.LsItem;
@@ -86,6 +87,11 @@ public class FTPAdapter extends CommanderAdapterBase {
     public void setIdentities( String name, String pass ) {
         theUserPass = new FTPCredentials( name, pass );
     }
+    @Override
+    public void setCredentials( Credentials crd ) {
+        theUserPass = crd != null ? new FTPCredentials( crd ) : null;
+    }
+    
     @Override
     public boolean readSource( Uri tmp_uri, String pass_back_on_done ) {
         try {
@@ -867,13 +873,16 @@ public class FTPAdapter extends CommanderAdapterBase {
     	return true;
     }
 
-    public class FTPCredentials extends org.apache.http.auth.UsernamePasswordCredentials {
+    public class FTPCredentials extends Credentials {
         public boolean dirty = true;
         public FTPCredentials( String userName, String password ) {
             super( userName, password );
         }
         public FTPCredentials( String newUserInfo ) {
             super( newUserInfo == null ? ":" : newUserInfo );
+        }
+        public FTPCredentials( Credentials c ) {
+            super( c );
         }
         public String getUserName() {
             String u = super.getUserName();

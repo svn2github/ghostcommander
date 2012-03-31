@@ -16,6 +16,7 @@ import com.ghostsq.commander.ColorsKeeper;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.root.RootAdapter;
+import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
@@ -705,6 +706,9 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
 
     @Override
     public void setIdentities( String name, String pass ) {
+    }
+    @Override
+    public void setCredentials( Credentials crd ) {
     }
 
     @Override

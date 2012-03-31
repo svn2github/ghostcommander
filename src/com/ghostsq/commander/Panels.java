@@ -14,6 +14,7 @@ import com.ghostsq.commander.favorites.Favorites;
 import com.ghostsq.commander.favorites.LocationBar;
 import com.ghostsq.commander.toolbuttons.ToolButton;
 import com.ghostsq.commander.toolbuttons.ToolButtons;
+import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.OverScrollDisabler;
 import com.ghostsq.commander.utils.Utils;
 
@@ -505,7 +506,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         }
     }
     public final void makeOtherAsCurrent() {
-        NavigateInternal( opposite(), getListAdapter( true ).getUri(), null );
+        NavigateInternal( opposite(), getListAdapter( true ).getUri(), null, null );
     }
     public final void togglePanelsMode() {
         setLayoutMode( !sxs );
@@ -576,10 +577,10 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 warnOnRoot = false;
                 if( rootOnRoot )
                     uri = uri.buildUpon().scheme( "root" ).build();
-                NavigateInternal( which, uri, posTo );
+                NavigateInternal( which, uri, null, posTo );
             }
             else if( whichButton == DialogInterface.BUTTON_NEUTRAL ) {
-                NavigateInternal( which, sdcard, null );                
+                NavigateInternal( which, sdcard, null, null );                
             }
             else
                 c.finish();
@@ -589,7 +590,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     protected final boolean isSafeLocation( String path ) {
         return path.startsWith( DEFAULT_LOC ) || path.startsWith( "/sdcard" ) || path.startsWith( "/mnt/" );
     }
-    public final void Navigate( int which, Uri uri, String posTo ) {
+    public final void Navigate( int which, Uri uri, Credentials crd, String posTo ) {
     	if( uri == null ) return;
     	String scheme = uri.getScheme(), path = uri.getPath();
     	
@@ -612,12 +613,12 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     	    else if( rootOnRoot )
     	        uri = uri.buildUpon().scheme( "root" ).build();
     	}
-    	NavigateInternal( which, uri, posTo );
+    	NavigateInternal( which, uri, crd, posTo );
     }
     
-    private final void NavigateInternal( int which, Uri uri, String posTo ) {
+    private final void NavigateInternal( int which, Uri uri, Credentials crd, String posTo ) {
         ListHelper list_h = list[which];
-        list_h.Navigate( uri, posTo );
+        list_h.Navigate( uri, crd, posTo );
         if( which == current )
             navigated = which; 
     }
@@ -643,13 +644,13 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         CommanderAdapter ca = getListAdapter( true );
         if( ca != null && ca.toString().compareTo( to ) == 0 ) {
             ca.setIdentities( name, pass );
-            NavigateInternal( current, Uri.parse(to), null );
+            NavigateInternal( current, Uri.parse(to), null, null );
             return;
         }
         ca = getListAdapter( false );
         if( ca != null && ca.toString().compareTo( to ) == 0 ) {
             ca.setIdentities( name, pass );
-            NavigateInternal( opposite(), Uri.parse(to), null );
+            NavigateInternal( opposite(), Uri.parse(to), null, null );
             return;
         }
     }
@@ -1418,11 +1419,11 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     	    current = s.current;
     	if( dont_restore != LEFT ) {
         	Uri lu = s.left == null ? Uri.parse( "home:" ) : (new Favorite( s.left )).getUriWithAuth(); 
-        	NavigateInternal( LEFT, lu, s.leftItem );
+        	NavigateInternal( LEFT, lu, null, s.leftItem );
     	}
     	if( dont_restore != RIGHT ) {
         	Uri ru = s.right == null ? Uri.parse( DEFAULT_LOC ) : (new Favorite( s.right )).getUriWithAuth();
-            NavigateInternal( RIGHT, ru, s.rightItem );
+            NavigateInternal( RIGHT, ru, null, s.rightItem );
     	}
         applyColors();
         setPanelCurrent( s.current );
