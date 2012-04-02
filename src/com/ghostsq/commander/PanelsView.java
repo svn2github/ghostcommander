@@ -32,7 +32,7 @@ public class PanelsView extends LinearLayout {
     
     public void setMode( boolean sxs_ ) {
         sxs = sxs_;
-        Log.v( TAG, "setMode: " + sxs ); 
+        //Log.v( TAG, "setMode: " + sxs ); 
         requestLayout();
     }
 

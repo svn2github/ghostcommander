@@ -7,6 +7,7 @@ import java.util.GregorianCalendar;
 import org.apache.http.auth.UsernamePasswordCredentials;
 
 import com.ghostsq.commander.favorites.Favorite;
+import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.Utils;
 
 import android.app.AlertDialog;
@@ -46,6 +47,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
     private boolean valid = true;
     private int  progressCounter = 0;
     private long progressAcSpeed = 0;
+    private Credentials   crd = null;
 
     Dialogs( FileCommander owner_, int id ) {
         owner = owner_;
@@ -355,23 +357,19 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 break;
             }
             case LOGIN_DIALOG: {
-                String host_name = "";
-                if( cookie != null ) {
-                    Uri uri = Uri.parse( cookie );
-                    if( uri != null ) {
-                        host_name = " - " + uri.getHost();
-                        String user_info = uri.getUserInfo();
-                        UsernamePasswordCredentials crd = new UsernamePasswordCredentials( user_info == null ? "" : user_info );
-                        EditText n_v = (EditText)dialog.findViewById( R.id.username_edit );
-                        EditText p_v = (EditText)dialog.findViewById( R.id.password_edit );
-                        if( n_v != null )
-                            n_v.setText( crd.getUserName() != null ? crd.getUserName() : "" );
-                        if( p_v != null )
-                            p_v.setText( crd.getPassword() != null ? crd.getPassword() : "" );
-                    }
+                if( crd != null ) {
+                    EditText n_v = (EditText)dialog.findViewById( R.id.username_edit );
+                    EditText p_v = (EditText)dialog.findViewById( R.id.password_edit );
+                    if( n_v != null )
+                        n_v.setText( crd.getUserName() != null ? crd.getUserName() : "" );
+                    if( p_v != null )
+                        p_v.setText( crd.getPassword() != null ? crd.getPassword() : "" );
+                    crd = null;
                 }
                 AlertDialog ad = (AlertDialog)dialog;
-                ad.setTitle( owner.getString( R.string.login_title ) + host_name );
+                String title = Utils.str( toShowInAlertDialog ) ? toShowInAlertDialog : owner.getString( R.string.login_title ); 
+                ad.setTitle( title );
+                toShowInAlertDialog = null;
                 break;
             }
             case R.id.F8: 
@@ -491,6 +489,9 @@ public class Dialogs implements DialogInterface.OnClickListener {
     public void setCookie( String cookie_ ) {
         cookie = cookie_;
     }
+    public void setCredentials( Credentials crd_ ) {
+        crd = crd_;
+    }
     @Override
     public void onClick( DialogInterface idialog, int whichButton ) {
         if( dialogObj == null )
@@ -593,7 +594,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                         EditText name_edit = (EditText)dialogObj.findViewById( R.id.username_edit );
                         EditText pass_edit = (EditText)dialogObj.findViewById( R.id.password_edit );
                         if( name_edit != null && pass_edit != null )
-                            owner.panels.login( cookie, name_edit.getText().toString(), pass_edit.getText().toString() );
+                            owner.panels.login( new Credentials( name_edit.getText().toString(), pass_edit.getText().toString() ) );
                     }
                     break;
                 case R.id.donate:

@@ -828,7 +828,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             case OPERATION_FAILED_LOGIN_REQUIRED: 
                 if( string != null ) {
                     dh = obtainDialogsInstance( Dialogs.LOGIN_DIALOG );
-                    dh.setMessageToBeShown( null, string );
+                    dh.setMessageToBeShown( string, cookie );
                     showDialog( Dialogs.LOGIN_DIALOG );
                 }
                 return TERMINATE;

@@ -640,18 +640,11 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         }
     }
     
-    public void login( String to, String name, String pass ) {
+    public void login( Credentials crd ) {
         CommanderAdapter ca = getListAdapter( true );
-        if( ca != null && ca.toString().compareTo( to ) == 0 ) {
-            ca.setIdentities( name, pass );
-            NavigateInternal( current, Uri.parse(to), null, null );
-            return;
-        }
-        ca = getListAdapter( false );
-        if( ca != null && ca.toString().compareTo( to ) == 0 ) {
-            ca.setIdentities( name, pass );
-            NavigateInternal( opposite(), Uri.parse(to), null, null );
-            return;
+        if( ca != null ) {
+            ca.setCredentials( crd );
+            list[current].refreshList();
         }
     }
 

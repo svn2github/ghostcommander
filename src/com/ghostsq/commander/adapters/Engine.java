@@ -5,6 +5,7 @@ import java.io.File;
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
+import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.Utils;
 
 import android.os.Bundle;
@@ -80,6 +81,15 @@ public class Engine extends Thread {
             msg = thread_handler.obtainMessage( Commander.OPERATION_IN_PROGRESS, p, -1, s );
         Bundle b = new Bundle();
         b.putString( Commander.NOTIFY_COOKIE, cookie );
+        msg.setData( b );
+        thread_handler.sendMessage( msg );
+    }
+
+    protected final void sendLoginReq( String s, Credentials crd ) {
+        if( thread_handler == null ) return;
+        Message msg = thread_handler.obtainMessage( Commander.OPERATION_FAILED_LOGIN_REQUIRED, -1, -1, s );
+        Bundle b = new Bundle();
+        b.putParcelable( Commander.NOTIFY_CRD, crd );
         msg.setData( b );
         thread_handler.sendMessage( msg );
     }
