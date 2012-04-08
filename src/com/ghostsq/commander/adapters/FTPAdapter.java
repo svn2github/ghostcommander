@@ -91,7 +91,11 @@ public class FTPAdapter extends CommanderAdapterBase {
     public void setCredentials( Credentials crd ) {
         theUserPass = crd != null ? new FTPCredentials( crd ) : null;
     }
-    
+    @Override
+    public Credentials getCredentials() {
+        return theUserPass;
+    }
+        
     @Override
     public boolean readSource( Uri tmp_uri, String pass_back_on_done ) {
         try {
@@ -319,10 +323,7 @@ public class FTPAdapter extends CommanderAdapterBase {
      */
     @Override
     public Uri getUri() {
-        if( theUserPass != null && !theUserPass.isNotSet() )
-            return Utils.getUriWithAuth( uri, theUserPass.getUserName(), theUserPass.getPassword() );
-        else
-            return uri;
+        return uri;
     }
     @Override
     public void setUri( Uri uri_ ) {

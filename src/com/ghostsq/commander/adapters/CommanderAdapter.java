@@ -100,15 +100,20 @@ public interface CommanderAdapter {
     public int getType();
 
     /**
+     * This method is deprecated and to be removed. Use the setCredentials() instead 
      * @param name, pass 
      */
     public void setIdentities( String name, String pass );
 
     /**
-     * 
      * @param user credentials
      */
     public void setCredentials( Credentials crd );
+
+    /**
+     * @return user credentials
+     */
+    public Credentials getCredentials();
     
     /**
      * @param uri - a folder's URI to initialize. If null passed, just refresh

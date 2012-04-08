@@ -2,6 +2,7 @@ package com.ghostsq.commander;
 
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
+import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.Utils;
 
 import android.app.Activity;
@@ -193,8 +194,16 @@ public class TextViewer extends Activity {
                 } else {
                     int type_id = CA.GetAdapterTypeId( scheme );
                     ca = CA.CreateAdapterInstance( type_id, this );
-                    if( ca != null )
+                    if( ca != null ) {
+                        Credentials crd = null; 
+                        try {
+                            crd = (Credentials)getIntent().getParcelableExtra( Credentials.KEY );
+                        } catch( Exception e ) {
+                            Log.e( TAG, "on taking credentials from parcel", e );
+                        }
+                        ca.setCredentials( crd );
                         is = ca.getContent( uri );
+                    }
                 }
                 if( is != null ) {
                     CharSequence cs = Utils.readStreamToBuffer( is, encoding );

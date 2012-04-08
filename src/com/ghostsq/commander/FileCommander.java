@@ -141,10 +141,9 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             Uri uri = intent.getData();
             if( uri != null && !viewActProcessed && Intent.ACTION_VIEW.equals( action ) ) {
                 Log.v( TAG, "Intent URI: " + uri );
+                Credentials crd = null;
                 try { 
-                    Credentials crd = (Credentials)intent.getParcelableExtra( Credentials.KEY );
-                    if( crd != null )
-                        uri = Utils.getUriWithAuth( uri, crd.getUserName(), crd.getPassword() );
+                    crd = (Credentials)intent.getParcelableExtra( Credentials.KEY );
                 } catch( Throwable e ) {
                     Log.e( TAG, "on extracting credentials from an intent", e );
                 }
@@ -192,7 +191,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                     }
                 }
                 use_panel = Panels.LEFT;
-                panels.Navigate( use_panel, uri, null, file_name );    
+                panels.Navigate( use_panel, uri, crd, file_name );    
                 viewActProcessed = true;
             }
             panels.setState( s, use_panel );
@@ -405,9 +404,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                         } catch( Exception e ) {
                             Log.e( TAG, "on taking credentials from parcel", e );
                         }
-                        if( crd != null )
-                            uri = Utils.getUriWithAuth( uri, crd.getUserName(), crd.getPassword() );
-                        Navigate( uri, null );
+                        panels.Navigate( panels.getCurrent(), uri, crd, null );
                     }
                 }
             }

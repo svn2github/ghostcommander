@@ -710,6 +710,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     @Override
     public void setCredentials( Credentials crd ) {
     }
+    @Override
+    public Credentials getCredentials() {
+        return null;
+    }
 
     @Override
     public void doIt( int command_id, SparseBooleanArray cis ) {

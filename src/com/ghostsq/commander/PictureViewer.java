@@ -22,6 +22,7 @@ import java.io.InputStream;
 import com.example.touch.TouchImageView;
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
+import com.ghostsq.commander.utils.Credentials;
 
 public class PictureViewer extends Activity {
     private final static String TAG = "PictureViewerActivity";
@@ -136,7 +137,15 @@ public class PictureViewer extends Activity {
                         f = new File( u.getPath() );
                     } else {
                         CommanderAdapter ca = CA.CreateAdapterInstance( CA.GetAdapterTypeId( scheme ), ctx );            
-                        if( ca == null ) return; 
+                        if( ca == null ) return;
+                        Credentials crd = null; 
+                        try {
+                            crd = (Credentials)getIntent().getParcelableExtra( Credentials.KEY );
+                        } catch( Exception e ) {
+                            Log.e( TAG, "on taking credentials from parcel", e );
+                        }
+                        ca.setCredentials( crd );
+                        
                         // output - temporary file
                         File pictvw_f = ctx.getDir( "pictvw", Context.MODE_PRIVATE );
                         if( pictvw_f == null ) return;

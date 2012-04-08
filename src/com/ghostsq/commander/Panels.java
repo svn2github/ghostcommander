@@ -817,30 +817,21 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         String name = null;
         try {
             CommanderAdapter ca = getListAdapter( true );
-            name = ca.getItemName( pos, true );
-            if( name == null ) return;
-            Uri uri;
-            if( ca instanceof FSAdapter ) {
-                File f = new File( name );
-                if( !f.exists() ) return;
-                if( !f.isFile() ) {
-                    showSizes();
-                    return;
-                }
-                uri = Uri.parse( "file://" + Utils.escapePath( f.getAbsolutePath() ) ); 
-            }
-            else
-                uri = Uri.parse( name );
+            Uri uri = ca.getItemUri( pos );
+            if( uri == null ) return;
             CommanderAdapter.Item item = (CommanderAdapter.Item)((ListAdapter)ca).getItem( pos );
             if( item.dir ) {
-                c.showError( c.getString( R.string.cant_open_dir, name ) );
+                showSizes();
                 return;
             }
-            String mime = Utils.getMimeByExt( Utils.getFileExt( name ) );
-            if( mime == null ) return;                
+            String mime = Utils.getMimeByExt( Utils.getFileExt( item.name ) );
+            if( mime == null ) mime = "application/octet-stream";                
             Intent i = new Intent( c, mime.startsWith( "image/" ) ? 
                     PictureViewer.class : TextViewer.class );
             i.setDataAndType( uri, mime );
+            Credentials crd = ca.getCredentials();
+            if( crd != null )
+                i.putExtra( Credentials.KEY, crd );
             c.startActivity( i );
         }
         catch( Exception e ) {
