@@ -13,7 +13,7 @@ import java.util.Date;
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapter.Item;
-import com.ghostsq.commander.favorites.Favorite;
+import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.Utils;
 
 import android.app.Service;
@@ -33,6 +33,8 @@ public class StreamServer extends Service {
     public  WifiLock wifiLock = null;
     public  CommanderAdapter ca = null;
     public  String last_host = null;
+    // pass the credentials through static is better then through a foreign application
+    public  static Credentials credentials = null;  
 
     @Override
     public void onCreate() {
@@ -186,9 +188,9 @@ public class StreamServer extends Service {
                     if( Utils.str( cmd ) ) {
                         String[] parts = cmd.split( " " );
                         if( parts.length > 1 ) {
-                            String url = Uri.decode( parts[1].substring( 1 ) );
+                            Uri uri = Uri.parse( Uri.decode( parts[1].substring( 1 ) ) );
                             //Log.d( TAG, "Got URL: " + url );
-                            Favorite fv = new Favorite( url );
+                            
                             long offset = 0;
                             while( br.ready() ) {
                                 String hl = br.readLine();
@@ -207,7 +209,6 @@ public class StreamServer extends Service {
                             if( os != null ) {
                                 String http = "HTTP/1.1 ";  
                                 OutputStreamWriter osw = new OutputStreamWriter( os );
-                                Uri uri = fv.getUri();
                                 if( uri != null ) { 
                                     Log( "Got URI: " + uri.toString() );
                                     String scheme = uri.getScheme();
@@ -219,10 +220,10 @@ public class StreamServer extends Service {
                                     if( ca != null ) {
                                         Log( "Adapter is created" );
                                         last_host = host;
-                                        
-                                        Uri auth_uri = fv.getUriWithAuth();
-                                        Item item = ca.getItem( auth_uri );
-                                        InputStream cs = ca.getContent( auth_uri, offset );
+                                        if( credentials != null )
+                                            ca.setCredentials( credentials );
+                                        Item item = ca.getItem( uri );
+                                        InputStream cs = ca.getContent( uri, offset );
                                         if( cs != null ) {
                                             if( offset > 0 && item != null ) {
                                                 Log( "206" );

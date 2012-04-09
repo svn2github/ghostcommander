@@ -265,8 +265,9 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     // View.OnFocusChangeListener implementation
     @Override
     public void onFocusChange( View v, boolean f ) {
-        Log.v( TAG, "focus: " + f + " for: " + current );
-        if( sxs && f && list[current].flv != v ) {
+        boolean opp = list[opposite()].flv == v; 
+        if( f && opp ) {
+            Log.v( TAG, "focus has changed to " + ( opposite()==LEFT?"LEFT":"RIGHT" ) );
             setPanelCurrent( opposite(), true );
         }
     }
@@ -530,12 +531,16 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         current = which;
         if( !sxs ) {
             final int dir = current == LEFT ? HorizontalScrollView.FOCUS_LEFT : HorizontalScrollView.FOCUS_RIGHT;
+            Log.v( TAG, "fullScroll: " + dir );
+            hsv.fullScroll( dir );
+/*
             hsv.post( new Runnable() {
                 public void run() {
                     Log.v( TAG, "fullScroll: " + dir );
                     hsv.fullScroll( dir );
                 }
             } );
+*/
         }
         else
             if( !dont_focus )
@@ -1308,49 +1313,63 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     
     class State {
         private final static String LU = "LEFT_URI",  RU = "RIGHT_URI";
-    	private final static String LF = "LEFT_FAV",  RF = "RIGHT_FAV";
+    	private final static String LC = "LEFT_CRD",  RC = "RIGHT_CRD";
     	private final static String LI = "LEFT_ITEM", RI = "RIGHT_ITEM";
-    	private final static String CP = "CURRENT_PANEL";
+    	private final static String CP = "LAST_PANEL";
         private final static String FU = "FAV_URIS";
         private final static String FV = "FAVS";
-        public int      current;
-        public String   left, right;
-        public String   leftItem, rightItem;
-        public String   favs, fav_uris;
-        
+        private int         current;
+        private Credentials leftCrd, rightCrd;
+        private Uri         leftUri, rightUri;
+        private String      leftItem, rightItem;
+        private String      favs, fav_uris;
+                
         public void store( Bundle b ) {
-            b.putString( LF, left );
-            b.putString( RF, right );
+            b.putInt( CP, current );
+            b.putParcelable( LC, leftCrd );
+            b.putParcelable( RC, rightCrd );
+            b.putParcelable( LU, leftUri );
+            b.putParcelable( RU, rightUri );
             b.putString( LI, leftItem );
             b.putString( RI, rightItem );
-            b.putInt( CP, current );
             b.putString( FV, favs );
-            b.putString( LU, "" );
-            b.putString( RU, "" );
         }
         public void restore( Bundle b ) {
-            left      = b.getString( LF );
-            right     = b.getString( RF );
+            current   = b.getInt( CP );
+            leftCrd   = b.getParcelable( LC ); 
+            rightCrd  = b.getParcelable( RC ); 
+            leftUri   = b.getParcelable( LU );
+            rightUri  = b.getParcelable( RU );
             leftItem  = b.getString( LI );
             rightItem = b.getString( RI );
-            current   = b.getInt( CP );
             favs      = b.getString( FV );
             if( favs == null || favs.length() == 0 )
                 fav_uris = b.getString( FU );
         }
         public void store( SharedPreferences.Editor e ) {
-            e.putString( LF, left );
-            e.putString( RF, right );
-            e.putString( LI,  leftItem );
-            e.putString( RI, rightItem );
             e.putInt( CP, current );
+            e.putString( LU, leftUri  != null ?  leftUri.toString() : "" );
+            e.putString( RU, rightUri != null ? rightUri.toString() : "" );
+            e.putString( LC, leftCrd  != null ?  leftCrd.exportToEncriptedString() : "" );
+            e.putString( RC, rightCrd != null ? rightCrd.exportToEncriptedString() : "" );
+            e.putString( LI, leftItem );
+            e.putString( RI, rightItem );
             e.putString( FV, favs );
-            e.putString( LU, "" );
-            e.putString( RU, "" );
         }
         public void restore( SharedPreferences p ) {
-            left      = p.getString( LF, null );
-            right     = p.getString( RF, null );
+            String left_uri_s = p.getString( LU, null );
+            if( Utils.str( left_uri_s ) )
+                leftUri = Uri.parse( left_uri_s );
+            String right_uri_s = p.getString( RU, null );
+            if( Utils.str( right_uri_s ) )
+                rightUri = Uri.parse( right_uri_s );
+            
+            String left_crd_s = p.getString( LC, null );
+            if( Utils.str( left_crd_s ) )
+                leftCrd = Credentials.createFromEncriptedString( left_crd_s );
+            String right_crd_s = p.getString( RC, null );
+            if( Utils.str( right_crd_s ) )
+                rightCrd = Credentials.createFromEncriptedString( right_crd_s );
             leftItem  = p.getString( LI, null );
             rightItem = p.getString( RI, null );
             current   = p.getInt( CP, LEFT );
@@ -1365,25 +1384,17 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         s.current = current;
         try {
             CommanderAdapter  left_adapter = (CommanderAdapter)list[LEFT].getListAdapter();
-            Uri lu = left_adapter.getUri();
-            if( lu == null )
-                Log.e( TAG, "Left URI is null!" );
-            else {
-                Favorite lcf = new Favorite( lu );
-                s.left = lcf.toString();
-                int pos = list[LEFT].getCurPos();
-                s.leftItem = pos >= 0 ? left_adapter.getItemName( pos, false ) : "";
-            }
+            s.leftUri = left_adapter.getUri();
+            s.leftCrd = left_adapter.getCredentials();
+            int pos = list[LEFT].getCurPos();
+            s.leftItem = pos >= 0 ? left_adapter.getItemName( pos, false ) : "";
+
             CommanderAdapter right_adapter = (CommanderAdapter)list[RIGHT].getListAdapter();
-            Uri ru = right_adapter.getUri();
-            if( ru == null )
-                Log.e( TAG, "Right URI is null!" );
-            else {
-                Favorite rcf = new Favorite( ru );
-                s.right = rcf.toString();
-                int pos = list[RIGHT].getCurPos();
-                s.rightItem = pos >= 0 ? right_adapter.getItemName( pos, false ) : "";
-            }
+            s.rightUri = right_adapter.getUri();
+            s.rightCrd = right_adapter.getCredentials();
+            pos = list[RIGHT].getCurPos();
+            s.rightItem = pos >= 0 ? right_adapter.getItemName( pos, false ) : "";
+            
             s.favs = favorites.getAsString();
         } catch( Exception e ) {
             Log.e( TAG, "getState()", e );
@@ -1402,12 +1413,12 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         if( dont_restore != LEFT && dont_restore != RIGHT )
     	    current = s.current;
     	if( dont_restore != LEFT ) {
-        	Uri lu = s.left == null ? Uri.parse( "home:" ) : (new Favorite( s.left )).getUriWithAuth(); 
-        	NavigateInternal( LEFT, lu, null, s.leftItem );
+        	Uri lu = s.leftUri != null ? s.leftUri : Uri.parse( "home:" ); 
+        	NavigateInternal( LEFT, lu, s.leftCrd, s.leftItem );
     	}
     	if( dont_restore != RIGHT ) {
-        	Uri ru = s.right == null ? Uri.parse( DEFAULT_LOC ) : (new Favorite( s.right )).getUriWithAuth();
-            NavigateInternal( RIGHT, ru, null, s.rightItem );
+            Uri ru = s.rightUri != null ? s.rightUri : Uri.parse( "home:" ); 
+            NavigateInternal( RIGHT, ru, s.rightCrd, s.rightItem );
     	}
         applyColors();
         setPanelCurrent( s.current );

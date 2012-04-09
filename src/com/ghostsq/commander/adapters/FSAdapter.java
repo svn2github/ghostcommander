@@ -473,7 +473,7 @@ public class FSAdapter extends CommanderAdapterBase {
             if( file.isDirectory() )
                 commander.Navigate( open_uri, null );
             else
-                commander.Open( open_uri );
+                commander.Open( open_uri, null );
         }
     }
 

@@ -555,7 +555,7 @@ public class ZipAdapter extends CommanderAdapterBase {
         	*/
             commander.Navigate( uri.buildUpon().fragment( fixName( item ) ).build(), null );
         } else {
-            commander.Open( uri.buildUpon().fragment( fixName( item ) ).build() );
+            commander.Open( uri.buildUpon().fragment( fixName( item ) ).build(), null );
         }
     }
 

@@ -680,11 +680,11 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
      */
     @Override
     public void Navigate( Uri uri, String posTo ) {
-        panels.Navigate( panels.getCurrent(), uri, null, posTo );
+         panels.Navigate( panels.getCurrent(), uri, null, posTo );
     }
 
     @Override
-    public void Open( Uri uri ) {
+    public void Open( Uri uri, Credentials crd ) {
         try {
             if( uri == null ) return;
             String scheme = uri.getScheme();
@@ -723,8 +723,9 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 startService( new Intent( this, StreamServer.class ) );
                 Intent i = new Intent( Intent.ACTION_VIEW );
                 
-                Favorite fv = new Favorite( uri );
-                String http_url = "http://127.0.0.1:5322/" + Uri.encode( fv.toString() );
+                String http_url = "http://127.0.0.1:5322/" + Uri.encode( uri.toString() );
+                if( crd != null )
+                    StreamServer.credentials = crd; 
                 //Log.d( TAG, "Stream " + mime + " from: " + http_url );
                 i.setDataAndType( Uri.parse( http_url ), mime );
                 i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET  );

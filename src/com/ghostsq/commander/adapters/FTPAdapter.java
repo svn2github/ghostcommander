@@ -664,7 +664,7 @@ public class FTPAdapter extends CommanderAdapterBase {
         }
         else {
             Uri auth_item_uri = getUri().buildUpon().appendEncodedPath( item.getName() ).build();
-            commander.Open( auth_item_uri );
+            commander.Open( auth_item_uri, theUserPass );
         }
     }
 

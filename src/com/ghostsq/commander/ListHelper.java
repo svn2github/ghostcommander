@@ -92,7 +92,7 @@ public class ListHelper {
     }
 
     public final void focus() {
-        Log.v( TAG, "Set focus for " + which );
+        Log.v( TAG, "want focus for " + (which==Panels.LEFT?"LEFT":"RIGHT" ) );
         
         
         /*

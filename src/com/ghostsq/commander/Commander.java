@@ -3,6 +3,8 @@
  */
 package com.ghostsq.commander;
 
+import com.ghostsq.commander.utils.Credentials;
+
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -87,8 +89,9 @@ public interface Commander {
 	/**
 	 * Execute (launch) the specified item.  
 	 * @param uri to open by sending an Intent
+	 * @param crd user credentials
 	 */
-	public void Open( Uri uri );
+	public void Open( Uri uri, Credentials crd );
 
     /**
      * The waiting thread call after it sent the OPERATION_SUSPENDED_FILE_EXIST notification
