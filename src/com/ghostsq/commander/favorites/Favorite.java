@@ -23,6 +23,14 @@ public class Favorite {
     public Favorite( Uri u ) {
         init( u );
     }
+    public Favorite( Uri u, Credentials c ) {
+        if( c == null )
+            init( u );
+        else {
+            uri = u;
+            credentials = c;
+        }
+    }
     public Favorite( String uri_str, String comment_ ) {
         try {
             init( Uri.parse( uri_str ) );
@@ -60,13 +68,19 @@ public class Favorite {
             if( flds == null ) return false;
             comment = null;
             credentials = null;
+            String username = null, pass_enc = null;
             for( int i = 0; i < flds.length; i++ ) {
                 String s = flds[i];
                 if( s == null || s.length() == 0 ) continue;
                 if( s.startsWith( "URI=" ) ) uri = Uri.parse( unescape( s.substring( 4 ) ) ); else 
                 if( s.startsWith( "CMT=" ) ) comment = unescape( s.substring( 4 ) ); else
-                if( s.startsWith( "CRD=" ) ) credentials = Credentials.createFromEncriptedString( unescape( s.substring( 4 ) ) );
+                if( s.startsWith( "CRD=" ) ) credentials = Credentials.createFromEncriptedString( unescape( s.substring( 4 ) ) ); else
+                if( s.startsWith( "USER=" ) ) username = unescape( s.substring( 5 ) ); else
+                if( s.startsWith( "PASS=" ) ) pass_enc = unescape( s.substring( 5 ) );                
                 //Log.v( TAG, "Restored to: cmt=" + comment + ", uri=" + uri + ", user=" + username + ", pass=" + ( password != null ? new String( password.getPassword() ) : "" ) );
+            }
+            if( username != null && pass_enc != null ) {
+                credentials = new Credentials( username, Credentials.decrypt( pass_enc ) );
             }
         }
         catch( Exception e ) {
@@ -74,6 +88,7 @@ public class Favorite {
         }
         return true;
     }
+    
     public String toString() {
         try {
             if( uri == null ) return "";
@@ -185,15 +200,16 @@ public class Favorite {
         return false;
     }
     
-    public final Uri borrowPassword( Uri stranger_uri ) {
+    public final Credentials borrowPassword( Uri stranger_uri ) {
         if( credentials == null ) return null;
         String stranger_user_info = stranger_uri.getUserInfo();
         String username = credentials.getUserName(); 
         String password = credentials.getPassword(); 
-        if( password != null && stranger_user_info != null && stranger_user_info.length() > 0 ) {
+        if( username != null && password != null && stranger_user_info != null && stranger_user_info.length() > 0 ) {
             Credentials stranger_crd = new Credentials( stranger_user_info );
-            if( username != null && username.equalsIgnoreCase( stranger_crd.getUserName() ) )
-                return Utils.getUriWithAuth( stranger_uri, stranger_crd.getUserName(), password );
+            String stranger_username = stranger_crd.getUserName();
+            if( username.equalsIgnoreCase( stranger_username ) )
+                return new Credentials( stranger_username, password );
         }
         return null;
     }
@@ -206,13 +222,12 @@ public class Favorite {
                 String uis = us.getUserInfo();
                 String fui = fu.getUserInfo();
                 if( fui != null && fui.length() > 0 ) {
-                    UsernamePasswordCredentials crds = new UsernamePasswordCredentials( uis );
-                    UsernamePasswordCredentials fcrd = new UsernamePasswordCredentials( fui );
+                    Credentials crds = new Credentials( uis );
+                    Credentials fcrd = new Credentials( fui );
                     String un = crds.getUserName();
                     if( un != null && un.equals( fcrd.getUserName() ) )
                         return Utils.getUriWithAuth( us, un, fcrd.getPassword() );
                 }
-                
             }
         }
         return null;

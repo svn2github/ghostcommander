@@ -105,7 +105,7 @@ public class HomeAdapter extends CommanderAdapterBase {
         case SMB:   commander.dispatchCommand( FileCommander.SMB_ACT ); return;
         case EXIT:  commander.dispatchCommand( R.id.exit ); return;
         }
-        commander.Navigate( Uri.parse(  uri_s ), null );
+        commander.Navigate( Uri.parse( uri_s ), null, null );
     }
 
     @Override

@@ -546,22 +546,22 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 panels.showSizes();
                 break;
             case R.id.home:
-                Navigate( Uri.parse( "home:" ), null );
+                Navigate( Uri.parse( "home:" ), null, null );
                 break;
             case R.id.favs:
-                Navigate( Uri.parse( "favs:" ), null );
+                Navigate( Uri.parse( "favs:" ), null, null );
                 break;
             case  R.id.sdcard:
-                Navigate( Uri.parse( Panels.DEFAULT_LOC ), null );
+                Navigate( Uri.parse( Panels.DEFAULT_LOC ), null, null );
                 break;
             case  R.id.root: {
-                    Uri cu = panels.getFolderUri( true );
+                    Uri cu = panels.getFolderUriWithAuth( true );
                     Navigate( Uri.parse( RootAdapter.DEFAULT_LOC + 
-                      ( cu == null || cu.getScheme() != null && cu.getScheme().length() > 0 ? "" : cu.getPath() ) ), null );
+                      ( cu == null || cu.getScheme() != null && cu.getScheme().length() > 0 ? "" : cu.getPath() ) ), null, null );
                 }
                 break;
             case  R.id.mount:
-                Navigate( Uri.parse( MountAdapter.DEFAULT_LOC ), null );
+                Navigate( Uri.parse( MountAdapter.DEFAULT_LOC ), null, null );
                 break;
                 
             case FTP_ACT: {
@@ -622,7 +622,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 panels.copyName();
                 break;
             case FAV_FLD:
-                panels.favFolder();
+                panels.faveSelectedFolder();
                 break;
             case R.id.softkbd:
                 InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -679,8 +679,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
      * Commander interface implementation
      */
     @Override
-    public void Navigate( Uri uri, String posTo ) {
-         panels.Navigate( panels.getCurrent(), uri, null, posTo );
+    public void Navigate( Uri uri, Credentials crd, String posTo ) {
+         panels.Navigate( panels.getCurrent(), uri, crd, posTo );
     }
 
     @Override
@@ -710,7 +710,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                     }
                 }
                 if( ext != null && ext.compareToIgnoreCase( ".zip" ) == 0 ) {
-                    Navigate( uri.buildUpon().scheme( "zip" ).build(), null );
+                    Navigate( uri.buildUpon().scheme( "zip" ).build(), null, null );
                     return;
                 }
                 i.setDataAndType( uri.buildUpon().scheme( "file" ).authority( "" ).build(), mime );
@@ -826,6 +826,11 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             case OPERATION_FAILED_LOGIN_REQUIRED: 
                 if( string != null ) {
                     dh = obtainDialogsInstance( Dialogs.LOGIN_DIALOG );
+                    if( b != null ) {
+                        Parcelable crd_p = b.getParcelable( NOTIFY_CRD );
+                        if( crd_p != null && crd_p instanceof Credentials )
+                            dh.setCredentials( (Credentials)crd_p );
+                    }
                     dh.setMessageToBeShown( string, cookie );
                     showDialog( Dialogs.LOGIN_DIALOG );
                 }

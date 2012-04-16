@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import com.ghostsq.commander.FileCommander;
 import com.ghostsq.commander.Panels;
 import com.ghostsq.commander.R;
+import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.Utils;
 
 import android.net.Uri;
@@ -155,11 +156,18 @@ public class LocationBar extends BaseAdapter implements Filterable, OnKeyListene
 		String new_dir = edit.getText().toString().trim();
 		if( toChange >= 0 && new_dir.length() > 0 ) {
             Uri u = Uri.parse( new_dir );
-            if( Favorite.isPwdScreened( u ) )
-                u = favorites.searchForPassword( u );
+            Credentials crd = null;
+            if( Favorite.isPwdScreened( u ) ) {
+                crd = favorites.searchForPassword( u );
+            } else {
+                String user_info = u.getUserInfo();
+                if( Utils.str( user_info ) )
+                    crd = new Credentials( user_info );
+            }
+            u = Utils.updateUserInfo( u, null );
 			if( toChange != p.getCurrent() )
 				p.togglePanels( false );
-			p.Navigate( toChange, u, null, null );
+			p.Navigate( toChange, u, crd, null );
 		}
 		toChange = -1;
 		p.focus();
@@ -213,15 +221,13 @@ public class LocationBar extends BaseAdapter implements Filterable, OnKeyListene
 	            favorites.removeFromFavorites( u );
 				if( star_cb.isChecked() ) {
                     if( Favorite.isPwdScreened( u ) ) {
-                        Uri up = favorites.searchForPassword( u );
-                        if( !u.equals( up )) 
-                            u = up;
-                        else {
-                            Uri uc = p.getFolderUri( true );
-                            u = Utils.updateUserInfo( u, uc.getEncodedUserInfo() );                                
-                        }
+                        Credentials crd = favorites.searchForPassword( u );
+                        if( crd == null )
+                            u = Favorite.borrowPassword( u, p.getFolderUriWithAuth( true ) );
+                        favorites.add( new Favorite( u, crd ) );
                     }
-                    favorites.add( new Favorite( u ) );
+                    else
+                        favorites.add( new Favorite( u ) );
 				}
 				notifyDataSetChanged();
 				star_cb.setChecked( favorites.findIgnoreAuth( u ) >= 0 );

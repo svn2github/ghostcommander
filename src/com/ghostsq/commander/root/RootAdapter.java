@@ -535,7 +535,7 @@ public class RootAdapter extends CommanderAdapterBase {
 	                path = path.substring( 0, path.lastIndexOf( SLC ) );
 	                if( path.length() == 0 )
 	                	path = SLS;
-	                commander.Navigate( uri.buildUpon().path( path ).build(), uri.getLastPathSegment() );
+	                commander.Navigate( uri.buildUpon().path( path ).build(), null, uri.getLastPathSegment() );
                 }
             }
             return;
@@ -551,7 +551,7 @@ public class RootAdapter extends CommanderAdapterBase {
             else
             	if( cur.charAt( cur.length()-1 ) != SLC )
             		cur += SLS;
-            commander.Navigate( uri.buildUpon().appendEncodedPath( item.getName() ).build(), null );
+            commander.Navigate( uri.buildUpon().appendEncodedPath( item.getName() ).build(), null, null );
         }
         else
             new CmdDialog( ctx, item, this );

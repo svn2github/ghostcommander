@@ -60,6 +60,7 @@ public interface CommanderAdapter {
     public void setUri( Uri uri );
     /**
      * @return current adapter's source URI
+     *      the URI returned always without the credentials. Use the getCredentials() to obtain them 
      */
     public Uri getUri();
 	

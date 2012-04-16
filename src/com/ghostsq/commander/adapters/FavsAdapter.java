@@ -122,12 +122,14 @@ public class FavsAdapter extends CommanderAdapterBase {
     @Override
     public void openItem( int position ) {
         if( position == 0 ) {
-            commander.Navigate( Uri.parse( "home:" ), null );
+            commander.Navigate( Uri.parse( "home:" ), null, null );
             return;
         }
         if( favs == null || position < 0 || position > numItems )
             return;
-        commander.Navigate( favs.get( position - 1 ).getUriWithAuth(), null );
+        Favorite f = favs.get( position - 1 );
+        if( f != null )
+            commander.Navigate( f.getUri(), f.getCredentials(), null );
     }
 
     @Override

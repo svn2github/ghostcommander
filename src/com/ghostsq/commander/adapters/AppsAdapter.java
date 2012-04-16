@@ -675,26 +675,26 @@ public class AppsAdapter extends CommanderAdapterBase {
         try {
             if( pkgInfos != null  ) {
                 if( position == 0 ) {
-                    commander.Navigate( Uri.parse( HomeAdapter.DEFAULT_LOC ), null );
+                    commander.Navigate( Uri.parse( HomeAdapter.DEFAULT_LOC ), null, null );
                 }
                 else if( position <= pkgInfos.length ) {
                     PackageInfo pi = pkgInfos[position - 1];
-                    commander.Navigate( uri.buildUpon().authority( pi.packageName ).build(), null );
+                    commander.Navigate( uri.buildUpon().authority( pi.packageName ).build(), null, null );
                 }
             } else if( actInfos != null ) {
                 if( position == 0 ) {
-                    commander.Navigate( uri.buildUpon().path( null ).build(), ACTIVITIES );
+                    commander.Navigate( uri.buildUpon().path( null ).build(), null, ACTIVITIES );
                 }
                 else if( position <= actInfos.length ) {
                     ActivityInfo act = actInfos[position-1];
                     if( act.exported )
-                        commander.Navigate( uri.buildUpon().appendPath( act.name ).build(), null );
+                        commander.Navigate( uri.buildUpon().appendPath( act.name ).build(), null, null );
                     else
                         commander.showInfo( s( R.string.not_exported ) );
                 }
             } else if( prvInfos != null || srvInfos != null ) {
                 if( position == 0 ) {
-                    commander.Navigate( uri.buildUpon().path( null ).build(), PROVIDERS );
+                    commander.Navigate( uri.buildUpon().path( null ).build(), null, PROVIDERS );
                 }
                 else if( position <= prvInfos.length ) {
                     // ???
@@ -703,10 +703,10 @@ public class AppsAdapter extends CommanderAdapterBase {
                 if( position == 0 ) {
                     List<String> paths = uri.getPathSegments();
                     if( paths == null )
-                        commander.Navigate( uri.buildUpon().path( null ).build(), null );
+                        commander.Navigate( uri.buildUpon().path( null ).build(), null, null );
                     String p = paths.size() > 1 ? paths.get( paths.size()-2 ) : null; 
                     String n = paths.get( paths.size()-1 );
-                    commander.Navigate( uri.buildUpon().path( p ).build(), n );
+                    commander.Navigate( uri.buildUpon().path( p ).build(), null, n );
                 }
                 else if( position <= resInfos.length ) {
                     ResolveInfo  ri = resInfos[position - 1];
@@ -737,17 +737,17 @@ public class AppsAdapter extends CommanderAdapterBase {
                 if( position == 0 ) {
                     List<String> paths = uri.getPathSegments();
                     if( paths == null )
-                        commander.Navigate( uri.buildUpon().path( null ).build(), null );
+                        commander.Navigate( uri.buildUpon().path( null ).build(), null, null );
                     String p = paths.size() > 1 ? paths.get( paths.size()-2 ) : null; 
                     String n = paths.get( paths.size()-1 );
-                    commander.Navigate( uri.buildUpon().path( p ).build(), n );
+                    commander.Navigate( uri.buildUpon().path( p ).build(), null, n );
                 }
                 else {
                     // ???
                 }
             } else {
                 if( position == 0 ) {
-                    commander.Navigate( Uri.parse( DEFAULT_LOC ), uri.getAuthority() );
+                    commander.Navigate( Uri.parse( DEFAULT_LOC ), null, uri.getAuthority() );
                     return;
                 }
                 String name = getItemName( position, false );
@@ -768,7 +768,7 @@ public class AppsAdapter extends CommanderAdapterBase {
                     }
                 }
                 else 
-                    commander.Navigate( uri.buildUpon().path( name ).build(), null );
+                    commander.Navigate( uri.buildUpon().path( name ).build(), null, null );
             }
         } catch( Exception e ) {
             Log.e( TAG, uri.toString() + " " + position, e );

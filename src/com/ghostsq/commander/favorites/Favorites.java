@@ -6,6 +6,7 @@ import java.util.NoSuchElementException;
 import com.ghostsq.commander.Panels;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.adapters.HomeAdapter;
+import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
@@ -23,11 +24,11 @@ public class Favorites extends ArrayList<Favorite>
         c = c_;
     }
     
-    public final void addToFavorites( Uri u ) {
+    public final void addToFavorites( Uri u, Credentials crd ) {
         removeFromFavorites( u );
-        if( Favorite.isPwdScreened( u ) )
-            u = searchForPassword( u );
-        add( new Favorite( u ) );
+        if( crd == null && Favorite.isPwdScreened( u ) )
+            crd = searchForPassword( u );
+        add( new Favorite( u, crd ) );
     }
     public final void removeFromFavorites( Uri u ) {
         int pos = findIgnoreAuth( u );
@@ -55,7 +56,7 @@ public class Favorites extends ArrayList<Favorite>
         return -1;
     }
    
-    public final Uri searchForPassword( Uri u ) {
+    public final Credentials searchForPassword( Uri u ) {
         try {
             String ui = u.getUserInfo(); 
             if( ui != null && ui.length() > 0 ) {
@@ -85,8 +86,7 @@ public class Favorites extends ArrayList<Favorite>
                 }
                 if( best >= 0 ) {
                     Favorite f = get( best );
-                    Uri u_p = f.borrowPassword( u );
-                    if( u_p != null ) return u_p;
+                    return f.borrowPassword( u );
                 }
             }
         }
@@ -94,7 +94,7 @@ public class Favorites extends ArrayList<Favorite>
             e.printStackTrace();
         }
         Log.w( TAG, "Faild to find a suitable Favorite with password!!!" );
-        return u;
+        return null;
     }
        
     public final String getAsString() {

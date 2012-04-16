@@ -79,7 +79,11 @@ public class Credentials extends UsernamePasswordCredentials implements Parcelab
         }
         return null;
     }
-        
+    
+    public static String decrypt( String encrypted ) throws Exception {
+        return decrypt( seed, encrypted );
+    }
+    
     public static String encrypt( String seed, String cleartext ) throws Exception {
         byte[] rawKey = getRawKey( seed.getBytes() );
         byte[] result = encrypt( rawKey, cleartext.getBytes() );

@@ -457,12 +457,12 @@ public class FSAdapter extends CommanderAdapterBase {
     public void openItem( int position ) {
         if( position == 0 ) {
             if( parentLink == SLS ) 
-                commander.Navigate( Uri.parse( HomeAdapter.DEFAULT_LOC ), null );
+                commander.Navigate( Uri.parse( HomeAdapter.DEFAULT_LOC ), null, null );
             else {
                 if( dirName == null ) return;
                 File cur_dir_file = new File( dirName );
                 String parent_dir = cur_dir_file.getParent();
-                commander.Navigate( Uri.parse( Utils.escapePath( parent_dir != null ? parent_dir : DEFAULT_DIR ) ),
+                commander.Navigate( Uri.parse( Utils.escapePath( parent_dir != null ? parent_dir : DEFAULT_DIR ) ), null,
                                     cur_dir_file.getName() );
             }
         }
@@ -471,7 +471,7 @@ public class FSAdapter extends CommanderAdapterBase {
             if( file == null ) return;
             Uri open_uri = Uri.parse( Utils.escapePath( file.getAbsolutePath() ) );
             if( file.isDirectory() )
-                commander.Navigate( open_uri, null );
+                commander.Navigate( open_uri, null, null );
             else
                 commander.Open( open_uri, null );
         }

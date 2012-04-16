@@ -239,6 +239,10 @@ public final class Utils {
         return auth;
     }
 
+    public static Uri getUriWithAuth( Uri u, Credentials crd ) {
+        return crd != null ? getUriWithAuth( u, crd.getUserName(), crd.getPassword() ) : u;
+    }
+
     public static Uri getUriWithAuth( Uri u, String un, String pw ) {
         if( un == null ) return u;
         String ui = Utils.escapeName( un );

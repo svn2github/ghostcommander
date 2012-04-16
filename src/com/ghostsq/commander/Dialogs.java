@@ -292,7 +292,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 }
                 if( edit != null ) {
                     edit.setWidth( owner.getWidth() - 70 );
-                    String cts = Favorite.screenPwd( owner.panels.getFolderUri( false ) );
+                    String cts = Favorite.screenPwd( owner.panels.getFolderUriWithAuth( false ) );
                     edit.setText( cts != null ? cts : "" );
                     if( owner.panels.getNumItemsSelectedOrChecked() == 1 )
                         edit.selectAll();
@@ -574,7 +574,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                                     .scheme( "find" )
                                     .path( cookie )
                                     .encodedQuery( sb.toString() );
-                                owner.Navigate( uri_b.build(), null );
+                                owner.Navigate( uri_b.build(), null, null );
                             }
                             break;
                         case UNSELECT_DIALOG:

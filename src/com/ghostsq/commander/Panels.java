@@ -532,15 +532,16 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         if( !sxs ) {
             final int dir = current == LEFT ? HorizontalScrollView.FOCUS_LEFT : HorizontalScrollView.FOCUS_RIGHT;
             Log.v( TAG, "fullScroll: " + dir );
-            hsv.fullScroll( dir );
-/*
-            hsv.post( new Runnable() {
-                public void run() {
-                    Log.v( TAG, "fullScroll: " + dir );
-                    hsv.fullScroll( dir );
-                }
-            } );
-*/
+            if( dont_focus )
+                hsv.fullScroll( dir );
+            else {
+                hsv.post( new Runnable() {
+                    public void run() {
+                        Log.v( TAG, "fullScroll: " + dir );
+                        hsv.fullScroll( dir );
+                    }
+                } );
+            }
         }
         else
             if( !dont_focus )
@@ -640,6 +641,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             else
                 list[current].recoverAfterRefresh();
             refreshPanelTitles();
+            setPanelCurrent( current );
         } catch( Exception e ) {
             Log.e( TAG, "refreshList()", e );
         }
@@ -715,30 +717,14 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         }
     }
     public final void addCurrentToFavorites() {
-        Uri uri = getFolderUri( true );
-        /*
-         *   Temporary!!!
-         *   The adapter should return the credentials from the getUri()
-         *   Since we don't update the SMB app now, here is a workaround    
-         */
-        String ui = uri.getUserInfo();
-        if( ui == null || ui.length() == 0 ) {
-            CommanderAdapter ca = getListAdapter( true );
-            Uri uri_ = Uri.parse( ca.toString() );
-            if( uri_ != null ) {
-                String ui_ = uri_.getUserInfo();
-                if( ui_ != null && ui_.length() > 0 )
-                    uri = Utils.updateUserInfo( uri, ui_ );
-            }
-        }
-        /*
-         * !!! end the temporary code block
-         */
-        
-        favorites.addToFavorites( uri );
-        c.showMessage( c.getString( R.string.fav_added, Favorite.screenPwd( uri ) ) );
+        CommanderAdapter ca = getListAdapter( true );
+        if( ca == null ) return;
+        Uri u = ca.getUri();
+        favorites.addToFavorites( u, ca.getCredentials() );
+        c.showMessage( c.getString( R.string.fav_added, Favorite.screenPwd( u ) ) );
     }
-    public final void favFolder() {
+    
+    public final void faveSelectedFolder() {
         CommanderAdapter ca = getListAdapter( true );
         if( ca == null ) return;
         Uri u = ca.getUri();
@@ -747,7 +733,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             if( pos < 0 ) return;
             Uri to_add = u.buildUpon().appendEncodedPath( ca.getItemName( pos, false ) ).build();
             if( to_add != null ) {
-                favorites.addToFavorites( to_add );
+                favorites.addToFavorites( to_add, ca.getCredentials() );
                 c.showMessage( c.getString( R.string.fav_added, Favorite.screenPwd( to_add ) ) );
             }
         }
@@ -864,9 +850,15 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     	return checked;
     }
      */
-    public final Uri getFolderUri( boolean active ) {
+    public final Uri getFolderUriWithAuth( boolean active ) {
         CommanderAdapter ca = getListAdapter( active );
-        return ca == null ? null : ca.getUri();
+        Uri u = ca.getUri();
+        if( u != null ) {
+            Credentials crd = ca.getCredentials();
+            if( crd != null )
+                return Utils.getUriWithAuth( u, crd );
+        }
+        return u; 
     }
     public final String getSelectedItemName() {
         return getSelectedItemName( false );
@@ -910,7 +902,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 		quickSearchBuf.delete( 0, quickSearchBuf.length() );
 	}
 	public final void openGoPanel() {
-		locationBar.openGoPanel( current, getFolderUri( true ) );
+		locationBar.openGoPanel( current, getFolderUriWithAuth( true ) );
 	}
     public final void operationFinished() {
         if( null != destAdapter )
@@ -924,7 +916,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             CommanderAdapter cur_adapter = getListAdapter( true );
             Uri dest_uri = Uri.parse( dest );
             if( Favorite.isPwdScreened( dest_uri ) ) {
-                dest_uri = Favorite.borrowPassword( dest_uri, getFolderUri( false ) );
+                dest_uri = Favorite.borrowPassword( dest_uri, getFolderUriWithAuth( false ) );
                 if( dest_uri == null ) {
                     c.showError( c.getString( R.string.inv_dest ) );
                     return;
@@ -1156,7 +1148,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 	        case '(':
 	        case ')': {
 		        	int which = ch == '(' ? LEFT : RIGHT;
-		            locationBar.openGoPanel( which, getFolderUri( isCurrent( which ) ) );
+		            locationBar.openGoPanel( which, getFolderUriWithAuth( isCurrent( which ) ) );
 		        }
 	        	return true;
             case '*':
@@ -1266,7 +1258,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     @Override
     public boolean onLongClick( View v ) {
     	int which = v.getId() == titlesIds[LEFT] ? LEFT : RIGHT;
-        locationBar.openGoPanel( which, getFolderUri( isCurrent( which ) ) );
+        locationBar.openGoPanel( which, getFolderUriWithAuth( isCurrent( which ) ) );
     	return true;
     }
 
@@ -1421,6 +1413,6 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             NavigateInternal( RIGHT, ru, s.rightCrd, s.rightItem );
     	}
         applyColors();
-        setPanelCurrent( s.current );
+        //setPanelCurrent( s.current );
     }
 }

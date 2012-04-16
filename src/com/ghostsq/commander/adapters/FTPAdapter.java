@@ -316,6 +316,7 @@ public class FTPAdapter extends CommanderAdapterBase {
     @Override
     public String toString() {
         Uri u = getUri();
+        // TODO: inject the screened credentials here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         return u != null ? u.toString() : "";
     }
     /*
@@ -323,7 +324,7 @@ public class FTPAdapter extends CommanderAdapterBase {
      */
     @Override
     public Uri getUri() {
-        return uri;
+        return Utils.updateUserInfo( uri, null );
     }
     @Override
     public void setUri( Uri uri_ ) {
@@ -641,7 +642,8 @@ public class FTPAdapter extends CommanderAdapterBase {
 	                path = path.substring( 0, path.lastIndexOf( SLC ) );
 	                if( path.length() == 0 )
 	                	path = SLS;
-	                commander.Navigate( uri.buildUpon().path( path ).build(), uri.getLastPathSegment() );
+	                // passing null instead of credentials keeps the current authentication session
+	                commander.Navigate( uri.buildUpon().path( path ).build(), null, uri.getLastPathSegment() );
                 }
             }
             return;
@@ -649,8 +651,6 @@ public class FTPAdapter extends CommanderAdapterBase {
         if( items == null || position < 0 || position > items.length )
             return;
         LsItem item = items[position - 1];
-        
-        
         
         if( item.isDirectory() ) {
         	String cur = uri.getPath();
@@ -660,7 +660,7 @@ public class FTPAdapter extends CommanderAdapterBase {
             	if( cur.charAt( cur.length()-1 ) != SLC )
             		cur += SLS;
             Uri item_uri = uri.buildUpon().appendEncodedPath( item.getName() ).build();
-            commander.Navigate( item_uri, null );
+            commander.Navigate( item_uri, null, null );
         }
         else {
             Uri auth_item_uri = getUri().buildUpon().appendEncodedPath( item.getName() ).build();

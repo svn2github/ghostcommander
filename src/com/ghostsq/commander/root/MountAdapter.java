@@ -180,7 +180,7 @@ public class MountAdapter extends CommanderAdapterBase {
     public void openItem( int position ) {
         try {
             if( position == 0 ) {
-                commander.Navigate( Uri.parse( RootAdapter.DEFAULT_LOC ), null );
+                commander.Navigate( Uri.parse( RootAdapter.DEFAULT_LOC ), null, null );
                 return;
             }
             if( items == null || position < 0 || position > items.length )
