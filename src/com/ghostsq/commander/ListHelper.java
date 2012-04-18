@@ -373,7 +373,7 @@ public class ListHelper {
 
     public final void recoverAfterRefresh( String item_name, boolean this_current ) {
         try {
-            //Log.v( TAG, "restoring panel " + which + " item: " + item_name );
+            Log.v( TAG, "restoring panel " + which + " item: " + item_name );
             if( item_name != null && item_name.length() > 0 )
                 setSelection( item_name );
             else
@@ -385,12 +385,12 @@ public class ListHelper {
         }
     }
 
-    public final void recoverAfterRefresh() { // to be called for the current
+    public final void recoverAfterRefresh( boolean this_current ) { // to be called for the current
                                               // panel
         try {
             reStoreChoosedItems();
             flv.invalidateViews();
-            if( !flv.isInTouchMode() && currentPosition > 0 ) {
+            if( this_current && !flv.isInTouchMode() && currentPosition > 0 ) {
                 //Log.v( TAG, "restoring pos: " + currentPosition );
                 setSelection( currentPosition, flv.getHeight() / 2 );
             }

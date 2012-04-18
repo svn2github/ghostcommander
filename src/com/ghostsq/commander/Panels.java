@@ -71,7 +71,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     private final static String     TAG = "Panels";
     public static final String      DEFAULT_LOC = Environment.getExternalStorageDirectory().getAbsolutePath();
     public  final static int        LEFT = 0, RIGHT = 1;
-    private int                     current = LEFT, navigated = -1;
+    private int                     current = LEFT, _navigated = -1;
     private final int               titlesIds[] = { R.id.left_dir,  R.id.right_dir };
     private ListHelper              list[] = { null, null };
     public  FileCommander           c;
@@ -265,10 +265,17 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     // View.OnFocusChangeListener implementation
     @Override
     public void onFocusChange( View v, boolean f ) {
-        boolean opp = list[opposite()].flv == v; 
-        if( f && opp ) {
-            Log.v( TAG, "focus has changed to " + ( opposite()==LEFT?"LEFT":"RIGHT" ) );
-            setPanelCurrent( opposite(), true );
+        if( sxs ) {
+            ListView flv = list[opposite()].flv;
+            boolean opp = flv == v; 
+            if( f && opp ) {
+                if( flv.isInTouchMode() ) {    // user touched the opposite
+                    Log.v( TAG, "focus has changed to " + ( opposite()==LEFT?"LEFT":"RIGHT" ) );
+                    setPanelCurrent( opposite(), true );
+                } 
+                else    // return the escaped focus back
+                    list[current].focus();
+            }
         }
     }
     
@@ -625,23 +632,20 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     private final void NavigateInternal( int which, Uri uri, Credentials crd, String posTo ) {
         ListHelper list_h = list[which];
         list_h.Navigate( uri, crd, posTo );
+        /*
         if( which == current )
-            navigated = which; 
+            navigated = which;
+        */
     }
 
     public final void recoverAfterRefresh( String item_name, int which ) {
         try {
-            if( which >= 0 ) {
+            if( which >= 0  )
                 list[which].recoverAfterRefresh( item_name, which == current );
-                if( navigated >= 0 && which == navigated ) {
-                    navigated = -1;
-                    list[which].focus();
-                }
-            }
             else
-                list[current].recoverAfterRefresh();
+                list[current].recoverAfterRefresh( which == current );
             refreshPanelTitles();
-            setPanelCurrent( current );
+            setPanelCurrent( current, true );
         } catch( Exception e ) {
             Log.e( TAG, "refreshList()", e );
         }
@@ -1413,6 +1417,5 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             NavigateInternal( RIGHT, ru, s.rightCrd, s.rightItem );
     	}
         applyColors();
-        //setPanelCurrent( s.current );
     }
 }

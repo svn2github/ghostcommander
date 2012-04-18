@@ -1002,10 +1002,6 @@ public class FSAdapter extends CommanderAdapterBase {
                         in = null;
                         out = null;
                         
-                        final int GINGERBREAD = 9;
-                        if( android.os.Build.VERSION.SDK_INT >= GINGERBREAD )
-                            ForwardCompat.setFullPermissions( outFile );
-                        
                         if( i >= list.length-1 )
                         	sendProgress( c.getString( R.string.copied_f, fn ) + sizeOfsize( pos, sz_s ), (int)(totalBytes * conv) );
                         
@@ -1016,6 +1012,9 @@ public class FSAdapter extends CommanderAdapterBase {
                     if( move )
                         file.delete();
                     outFile.setLastModified( last_modified );
+                    final int GINGERBREAD = 9;
+                    if( android.os.Build.VERSION.SDK_INT >= GINGERBREAD )
+                        ForwardCompat.setFullPermissions( outFile );
                 }
                 catch( SecurityException e ) {
                     error( c.getString( R.string.sec_err, e.getMessage() ) );

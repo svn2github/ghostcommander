@@ -23,6 +23,7 @@ import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.favorites.Favorite;
 import com.ghostsq.commander.utils.Credentials;
+import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.LsItem.LsItemPropComparator;
 import com.ghostsq.commander.utils.FTP;
 import com.ghostsq.commander.utils.LsItem;
@@ -495,6 +496,11 @@ public class FTPAdapter extends CommanderAdapterBase {
 	        			Date ftp_file_date = f.getDate();
 	        			if( ftp_file_date != null )
 	        			    dest.setLastModified( ftp_file_date.getTime() );
+	        			
+                        final int GINGERBREAD = 9;
+                        if( android.os.Build.VERSION.SDK_INT >= GINGERBREAD )
+                            ForwardCompat.setFullPermissions( dest );
+	        			
 	        			counter++;
 	        		}
 	        	}

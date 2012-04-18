@@ -29,6 +29,7 @@ import com.ghostsq.commander.Panels;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
+import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.Utils;
 
 public class ZipAdapter extends CommanderAdapterBase {
@@ -362,6 +363,11 @@ public class ZipAdapter extends CommanderAdapterBase {
                             }
         	            }
         			}
+        			
+                    final int GINGERBREAD = 9;
+                    if( android.os.Build.VERSION.SDK_INT >= GINGERBREAD )
+                        ForwardCompat.setFullPermissions( dest_file );
+        			        			
                     if( stop || isInterrupted() ) {
                         error( ctx.getString( R.string.canceled ) );
                         break;
