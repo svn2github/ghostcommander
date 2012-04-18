@@ -21,6 +21,7 @@ import java.util.Map;
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.adapters.Engine;
 import com.ghostsq.commander.R;
+import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.MnfUtils;
 import com.ghostsq.commander.utils.Utils;
 
@@ -1000,6 +1001,11 @@ public class FSAdapter extends CommanderAdapterBase {
                         out.close();
                         in = null;
                         out = null;
+                        
+                        final int GINGERBREAD = 9;
+                        if( android.os.Build.VERSION.SDK_INT >= GINGERBREAD )
+                            ForwardCompat.setFullPermissions( outFile );
+                        
                         if( i >= list.length-1 )
                         	sendProgress( c.getString( R.string.copied_f, fn ) + sizeOfsize( pos, sz_s ), (int)(totalBytes * conv) );
                         

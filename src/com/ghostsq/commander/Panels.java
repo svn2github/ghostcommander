@@ -15,7 +15,7 @@ import com.ghostsq.commander.favorites.LocationBar;
 import com.ghostsq.commander.toolbuttons.ToolButton;
 import com.ghostsq.commander.toolbuttons.ToolButtons;
 import com.ghostsq.commander.utils.Credentials;
-import com.ghostsq.commander.utils.OverScrollDisabler;
+import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.Utils;
 
 import android.app.AlertDialog;
@@ -104,7 +104,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         hsv.setOnTouchListener( this );
         final int GINGERBREAD = 9;
         if( android.os.Build.VERSION.SDK_INT >= GINGERBREAD )
-            OverScrollDisabler.disableOverScroll( hsv );
+            ForwardCompat.disableOverScroll( hsv );
         
         panelsView = ((PanelsView)c.findViewById( R.id.panels ));
         panelsView.init( c.getWindowManager() );
