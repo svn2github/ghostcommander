@@ -494,11 +494,31 @@ public final class Utils {
     }
 
     public enum RR {
-        busy(R.string.busy), copy_err(R.string.copy_err), copied(R.string.copied), moved(R.string.moved), interrupted(
-                R.string.interrupted), uploading(R.string.uploading), fail_del(R.string.fail_del), cant_del(R.string.cant_del), retrieving(
-                R.string.retrieving), deleting(R.string.deleting), not_supported(R.string.not_supported), file_exist(
-                R.string.file_exist), cant_md(R.string.cant_md);
+        busy(R.string.busy), 
+        copy_err(R.string.copy_err), 
+        copied(R.string.copied), 
+        moved(R.string.moved), 
+        interrupted(R.string.interrupted), 
+        uploading(R.string.uploading), 
+        fail_del(R.string.fail_del), 
+        cant_del(R.string.cant_del), 
+        retrieving(R.string.retrieving), 
+        deleting(R.string.deleting), 
+        not_supported(R.string.not_supported), 
+        file_exist(R.string.file_exist), 
+        cant_md(R.string.cant_md),
 
+        sz_folder( R.string.sz_folder),
+        sz_dirnum( R.string.sz_dirnum),
+        sz_dirsfx_p( R.string.sz_dirsfx_p),
+        sz_dirsfx_s( R.string.sz_dirsfx_s),
+        sz_file( R.string.sz_file),
+        sz_files( R.string.sz_files),
+        sz_Nbytes( R.string.sz_Nbytes),
+        sz_bytes( R.string.sz_bytes),
+        sz_lastmod( R.string.sz_lastmod),
+        too_deep_hierarchy(R.string.too_deep_hierarchy);
+        
         private int r;
 
         private RR(int r_) {

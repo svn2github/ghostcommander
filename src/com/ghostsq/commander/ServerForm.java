@@ -42,6 +42,8 @@ public class ServerForm extends Activity implements View.OnClickListener {
                 p_name = "Windows PC";
             } else
                 type = Type.UNKNOWN;
+
+            // "Leave fields blank to see a list of nodes"
             
             setTitle( getString( R.string.connect ) + " " + p_name );
             requestWindowFeature( Window.FEATURE_LEFT_ICON );

@@ -316,9 +316,14 @@ public class FTPAdapter extends CommanderAdapterBase {
     
     @Override
     public String toString() {
-        Uri u = getUri();
-        // TODO: inject the screened credentials here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        return u != null ? u.toString() : "";
+        if( uri == null )
+            return "";
+        String ui = uri.getUserInfo();
+        if( ui != null && theUserPass == null )
+            return Favorite.screenPwd( uri );
+        if( theUserPass == null )
+            return uri.toString();
+        return Favorite.screenPwd( Utils.getUriWithAuth( uri, theUserPass ) );    
     }
     /*
      * CommanderAdapter implementation

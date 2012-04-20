@@ -12,6 +12,7 @@ import com.ghostsq.commander.adapters.ZipAdapter;
 import com.ghostsq.commander.favorites.Favorite;
 import com.ghostsq.commander.favorites.Favorites;
 import com.ghostsq.commander.favorites.LocationBar;
+import com.ghostsq.commander.root.RootAdapter;
 import com.ghostsq.commander.toolbuttons.ToolButton;
 import com.ghostsq.commander.toolbuttons.ToolButtons;
 import com.ghostsq.commander.utils.Credentials;
@@ -711,13 +712,22 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         }        
     }    
     public final void copyName() {
-        CommanderAdapter ca = getListAdapter( true );
-        if( ca == null ) return;
-        ClipboardManager clipboard = (ClipboardManager)c.getSystemService( Context.CLIPBOARD_SERVICE );
-        int pos = getSelection( true );
-        if( pos >= 0 ) {
-            String in = ca.getItemName( pos, true );
-            clipboard.setText( in );
+        try {
+            CommanderAdapter ca = getListAdapter( true );
+            if( ca == null ) return;
+            ClipboardManager clipboard = (ClipboardManager)c.getSystemService( Context.CLIPBOARD_SERVICE );
+            int pos = getSelection( true );
+            if( pos >= 0 ) {
+                String in = ca.getItemName( pos, true );
+                if( in != null ) {
+                    if( in.startsWith( RootAdapter.DEFAULT_LOC ) )
+                        in = Uri.parse( in ).getPath();
+                    clipboard.setText( in );
+                }
+            }
+        }
+        catch( Exception e ) {
+            e.printStackTrace();
         }
     }
     public final void addCurrentToFavorites() {
