@@ -55,6 +55,11 @@ public class Engine extends Thread {
     protected final void sendProgress( String s, int p1, int p2 ) {
         sendProgress( s, p1, p2, -1 );
     }
+    protected final void sendProgress() {   // launch the spinner 
+        if( thread_handler == null ) return;
+        Message msg = thread_handler.obtainMessage( Commander.OPERATION_IN_PROGRESS, -1, -1, null );
+        thread_handler.sendMessage( msg );
+    }
     protected final void sendProgress( String s, int p1, int p2, int speed ) {
         //Log.v( TAG, "sendProgress: " + speed );
         if( thread_handler == null ) return;

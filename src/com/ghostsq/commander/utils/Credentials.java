@@ -87,7 +87,7 @@ public class Credentials extends UsernamePasswordCredentials implements Parcelab
     public static String encrypt( String seed, String cleartext ) throws Exception {
         byte[] rawKey = getRawKey( seed.getBytes() );
         byte[] result = encrypt( rawKey, cleartext.getBytes() );
-        return Utils.toHexString( result );
+        return Utils.toHexString( result, null );
     }
 
     public static String decrypt( String seed, String encrypted ) throws Exception {
@@ -124,7 +124,7 @@ public class Credentials extends UsernamePasswordCredentials implements Parcelab
     }
 
     public static String toHex( String txt ) {
-        return Utils.toHexString( txt.getBytes() );
+        return Utils.toHexString( txt.getBytes(), null );
     }
 
     public static String fromHex( String hex ) {

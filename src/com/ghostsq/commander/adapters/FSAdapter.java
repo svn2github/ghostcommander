@@ -574,9 +574,8 @@ public class FSAdapter extends CommanderAdapterBase {
                             byte[] digest = digester.digest();
                             in.close();
                             result.append( "\n\nMD5:\n" );
-                            result.append( Utils.toHexString( digest ) );
+                            result.append( Utils.toHexString( digest, null ) );
                         }
-                        
                     }
                     result.append( "\n\n" );
         	    }

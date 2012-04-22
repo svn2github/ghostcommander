@@ -242,18 +242,21 @@ public class StreamServer extends Service {
                                             else
                                                 osw.write( "Content-Type: application/octet-stream" + CRLF );
                                             if( item != null ) {
-                                                String content_range = null;
+                                                String content_range = null, content_len = "Content-Length: " + item.size;
                                                 if( offset == 0 ) {
-                                                    content_range = "Content-Range: bytes 0-" + (item.size-1) + "/" + item.size; 
-                                                    osw.write( "Content-Length: " + item.size + CRLF );
+                                                    content_range = "Content-Range: bytes 0-" + (item.size-1) + "/" + item.size;
+                                                    osw.write( content_len + CRLF );
                                                     osw.write( content_range + CRLF );
                                                 } else {
                                                     content_range = "Content-Range: bytes " + offset + "-" + (item.size-1) + "/" + item.size;
-                                                    osw.write( "Content-Length: " + item.size + CRLF );
+                                                    osw.write( content_len + CRLF );
                                                     osw.write( content_range + CRLF );
                                                 }
                                                 Log( content_range );
+                                                Log( content_len );
                                             }
+                                            else
+                                                Log.w( TAG, "The item is null" );
                                             Date date = new Date();
                                             osw.write( date + CRLF );
                                             osw.write( CRLF );

@@ -21,6 +21,7 @@ import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
@@ -53,6 +54,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     public  final static int FIND_ACT = 1017, DBOX_APP = 3592, SMB_ACT = 2751, FTP_ACT = 4501;
     
     private ArrayList<Dialogs> dialogs;
+    private ProgressDialog     waitPopup;
     public  Panels  panels;
     private boolean on = false, exit = false, dont_restore = false, viewActProcessed = false, 
                     sxs_auto = true, show_confirm = true, back_exits = false;
@@ -783,17 +785,22 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 return CONTINUE;
             }
             Dialogs dh = null;
-            if( progress.what == OPERATION_IN_PROGRESS && progress.arg1 >= 0 ) {
-                if( on ) {
-                    dh = obtainDialogsInstance( Dialogs.PROGRESS_DIALOG );
-                    if( dh != null ) {
-                        dh.showDialog();
-                        dh.setProgress( string, progress.arg1, progress.arg2, b != null ? b.getInt( NOTIFY_SPEED ) : 0 );
+            if( progress.what == OPERATION_IN_PROGRESS ) {
+                if( progress.arg1 >= 0 ) { 
+                    if( on ) {
+                        dh = obtainDialogsInstance( Dialogs.PROGRESS_DIALOG );
+                        if( dh != null ) {
+                            dh.showDialog();
+                            dh.setProgress( string, progress.arg1, progress.arg2, b != null ? b.getInt( NOTIFY_SPEED ) : 0 );
+                        }
                     }
-                }
-                else {
-                    if( string != null && string.length() > 0 )
-                        setSystemOngoingNotification( string, progress.arg1 );
+                    else {
+                        if( string != null && string.length() > 0 )
+                            setSystemOngoingNotification( string, progress.arg1 );
+                    }
+                } else {
+                    if( waitPopup == null )
+                        waitPopup = ProgressDialog.show( this, "", getString( R.string.wait ), true, true );
                 }
                 return CONTINUE;
             }
@@ -804,6 +811,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             if( !on ) {
                 setSystemNotification( progress );
                 return progress.what != OPERATION_SUSPENDED_FILE_EXIST;
+            }
+            if( waitPopup != null ) {
+                waitPopup.cancel();
+                waitPopup = null;
             }
             setProgressBarIndeterminateVisibility( false );
             panels.operationFinished();
