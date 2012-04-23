@@ -82,8 +82,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public  boolean                 sxs, fingerFriendly = false;
     private boolean                 arrowsLegacy = false, warnOnRoot = true, rootOnRoot = false, toolbarShown = false;
     public  boolean                 volumeLegacy = true;
-    private boolean                 disableOpenSelectOnly = false, disableAllActions = false;
-    private float                   downX = 0, downY = 0, x_start = -1;
+    private boolean                 selAtRight = true, disableOpenSelectOnly = false, disableAllActions = false;
+    private float                   selWidth = 0.5f, downX = 0, downY = 0, x_start = -1;
     public  int                     scroll_back = 50, fnt_sz = 12;
     private StringBuffer            quickSearchBuf = null;
     private Toast                   quickSearchTip = null;
@@ -175,7 +175,6 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         }
         return null;
     }
-    
     
     public final void setToolbarButtons( CommanderAdapter ca ) {
         try {
@@ -443,6 +442,10 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
             arrowsLegacy = sharedPref.getBoolean( "arrow_legc", false );
             volumeLegacy = sharedPref.getBoolean( "volume_legc", true );            
             toolbarShown = sharedPref.getBoolean( "show_toolbar", true );
+            
+            selAtRight = sharedPref.getBoolean( Prefs.SEL_ZONE + "_right", true );
+            selWidth   = sharedPref.getInt( Prefs.SEL_ZONE + "_width", 50 ) / 100f;
+
             if( !init ) {
                 list[LEFT].applySettings( sharedPref );
                 list[RIGHT].applySettings( sharedPref );
@@ -1122,7 +1125,9 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 	        case MotionEvent.ACTION_DOWN: {
                     downX = event.getX();
                     downY = event.getY();
-                    disableOpenSelectOnly = event.getX() > v.getWidth() / 2;
+                    disableOpenSelectOnly = event.getX() > v.getWidth() * selWidth;
+                    if( !selAtRight )
+                        disableOpenSelectOnly = !disableOpenSelectOnly;
     	            break;
     	        }
 	        case MotionEvent.ACTION_UP: {

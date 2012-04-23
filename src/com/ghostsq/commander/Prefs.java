@@ -22,6 +22,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,11 +30,13 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 public class Prefs extends PreferenceActivity implements Preference.OnPreferenceClickListener,
-                                                       RGBPickerDialog.ColorChangeListener  
+                                                         RGBPickerDialog.ResultSink,
+                                                         SelZoneDialog.ResultSink
 {
     private static final String TAG = "GhostCommander.Prefs"; 
     public  static final String COLORS_PREFS = "colors"; 
     public  static final String TOOLBUTTONS = "toolbar_preference";
+    public  static final String SEL_ZONE = "selection_zone";
 //    private SharedPreferences color_pref = null;
     private ColorsKeeper      ck;
     private String pref_key = null;
@@ -71,10 +74,13 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
             if( color_picker_pref != null )
                 color_picker_pref.setOnPreferenceClickListener( this );
 
-            Preference tool_buttons_pref;
-            tool_buttons_pref = (Preference)findPreference( TOOLBUTTONS );
+            Preference tool_buttons_pref = (Preference)findPreference( TOOLBUTTONS );
             if( tool_buttons_pref != null )
                 tool_buttons_pref.setOnPreferenceClickListener( this );
+
+            Preference sel_zone_pref = (Preference)findPreference( SEL_ZONE );
+            if( sel_zone_pref != null )
+                sel_zone_pref.setOnPreferenceClickListener( this );
         }
         catch( Exception e ) {
             Log.e( TAG, null, e );
@@ -105,6 +111,13 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
                 startActivity( intent );
             }
             else
+            if( SEL_ZONE.equals( pref_key ) ) {
+                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences( this );
+                new SelZoneDialog( this, this, sp.getBoolean( SEL_ZONE + "_right", true ), 
+                                               sp.getInt( SEL_ZONE + "_width", 50 ),
+                                               ck.selColor ).show();
+            }
+            else
             if( ColorsKeeper.FGR_COLORS.equals( pref_key ) ) {
                 Intent intent = new Intent( Intent.ACTION_MAIN );
                 intent.setClass( this, FileTypes.class );
@@ -121,12 +134,21 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
     }
 
     @Override
+    public void selZoneChanged( boolean atRight, int width ) {
+        SharedPreferences.Editor sp_edit = PreferenceManager.getDefaultSharedPreferences( this ).edit();
+        sp_edit.putBoolean( SEL_ZONE + "_right", atRight );
+        sp_edit.putInt( SEL_ZONE + "_width", width );
+        sp_edit.commit();
+    }
+    
+    @Override
     public void colorChanged( int color ) {
         if( pref_key != null ) {
             ck.setColor( pref_key, color );
             pref_key = null;
         }
     }
+    
     public int getDefaultColor( String key, boolean alt ) {
         return getDefaultColor( this, key, alt );
     }

@@ -14,12 +14,13 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 
 public class RGBPickerDialog extends AlertDialog implements DialogInterface.OnClickListener,
         OnCheckedChangeListener, SeekBar.OnSeekBarChangeListener {
-    private final static String TAG = "RGB";
-    public interface ColorChangeListener {
+
+    public interface ResultSink {
         void colorChanged(int color);
     }
 
-    private ColorChangeListener colorChangeListener;
+    private final static String TAG = "RGB";
+    private ResultSink colorChangeSink;
     private int curColor, defColor;
     private CheckBox dccb;
     private View    sliders;
@@ -28,9 +29,9 @@ public class RGBPickerDialog extends AlertDialog implements DialogInterface.OnCl
     private SeekBar b_seek;
     private View preview;
 
-    RGBPickerDialog( Context context, ColorChangeListener listener, int color, int def_color ) {
+    RGBPickerDialog( Context context, ResultSink sink, int color, int def_color ) {
         super(context);
-        colorChangeListener = listener;
+        colorChangeSink = sink;
         curColor = color;
         defColor = def_color;
         Context c = getContext();
@@ -124,8 +125,8 @@ public class RGBPickerDialog extends AlertDialog implements DialogInterface.OnCl
     
     @Override // DialogInterface.OnClickListener
     public void onClick( DialogInterface dialog, int which ) {
-        if( which == BUTTON_POSITIVE && colorChangeListener != null )
-            colorChangeListener.colorChanged( curColor );
+        if( which == BUTTON_POSITIVE && colorChangeSink != null )
+            colorChangeSink.colorChanged( curColor );
         dismiss();
     }
 }

@@ -120,7 +120,8 @@
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_close">Close</string>
     <string name="dialog_exit">Exit</string>
-
+    <string name="dialog_browse">Browse</string>
+    
     <string name="dialog_abort">Abort</string>
     <string name="dialog_retry">Retry</string>
     <string name="dialog_ignore">Ignore</string>
@@ -291,6 +292,11 @@ copied >5 will produce:
     <string name="layout_settings">Appearance</string>
     <string name="input_settings">Input</string>
 
+    <string name="selection_zone_setup">Selection zone</string>
+    <string name="summary_selection_zone_setup">Customize how you select the items</string>
+    <string name="sel_onright">Selection on the right</string>
+    
+       
     <string name="show_confirm">Enable confirmations</string>
     <string name="summary_show_confirm">Show a discreet message after completing certain operations</string>
 
@@ -314,6 +320,8 @@ copied >5 will produce:
     <string name="summary_two_lines">Always show file attributes below file names</string>
     <string name="show_icons">Enable icons</string>
     <string name="summary_show_icons">Show file and folder icons instead of just plain text</string>
+    <string name="toolbar_settings">Toolbar settings</string>
+    <string name="summary_toolbar_settings">Customize the line of the tool buttons</string>
     <string name="show_toolbar">Enable toolbar</string>
     <string name="summary_show_toolbar">Show or hide the buttons at the base of the app</string>
     <string name="show_hotkeys">Show hotkeys</string>
@@ -354,6 +362,9 @@ copied >5 will produce:
     
     <string name="show_hidden">Show hidden files</string>
     <string name="summary_show_hidden">If not checked, files and folders with a preceding dot in their names won\'t be shown</string>
+    
+    <string name="compatibility_settings">Compatibility</string>
+    <string name="summary_compatibility_settings">Enable or disable the hardware buttons overriding</string>
     <string name="arrow_mode">Override arrow buttons</string>
     <string name="summary_arrow_mode">Left/right arrows perform toggle/select</string>
     <string name="volume_mode">Override volume buttons</string>

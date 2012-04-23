@@ -22,13 +22,34 @@
 <string name="tgl">Сменить</string>
 <string name="sz">Размер</string>
 <string name="refresh">Обнови</string>
-<string name="softkbd">Клавиатура</string>
 <string name="enter">Ввести адрес или URI</string>
+<string name="home">Домой</string>
+<string name="softkbd">Клавиатура</string>
 <string name="enter_b">Адрес</string>
 <string name="add_fav">* Закладка на тек.адрес</string>
 <string name="add_fav_b">* Запомнить</string>
 <string name="remount_b">Remount /system</string>
 <string name="remount">Remount</string>
+<string name="hidden">Скрыт.</string>
+<string name="rescan">Пересканировать медиа-файлы</string>
+<string name="favs">Закладки</string>
+<string name="local">Локальные файлы</string>
+<string name="ftp">FTP сервер</string>
+<string name="smb">Сеть Windows</string>
+<string name="root">root режим</string>
+<string name="mount">Монтировано</string>
+<string name="mount_b">Разделы</string>
+<string name="apps">Приложения</string>
+<string name="exit">Выход</string>
+<string name="favs_descr">Просмотр и редактирование списка закладок на часто используемые папки и ресурсы.</string>
+<string name="local_descr">Доступ к файлам расположеным на SD карточке или внутренней памяти устройства.</string>
+<string name="ftp_descr">Подключение к файл-серверу по протоколу FTP (протокол передачи файлов).</string>
+<string name="smb_descr">Доступ к Windows компьютеру локальной сети. ( Приложение \"Ghost Commander - Samba Plugin\" должно быть установлено )</string>
+<string name="root_descr">Выполнение системных команд и работа с файлами на системном разделею Будьте осторожны!.</string>
+<string name="mount_descr">Список монтированых устройств с возможностью перемонтирования в \"rw\" и обратно в \"ro\"</string>
+<string name="apps_descr">Список установленых приложений.</string>
+<string name="exit_descr">Выход из этой программы.</string>
+<string name="shortcut">Поместить на десктоп</string>
 <string name="enter_ftp">FTP сервер</string>
 <string name="enter_smb">Сеть Windows</string>
 <string name="search_file">/ Поиск файла</string>
@@ -46,6 +67,10 @@
 <string name="unselect_b">- Снять</string>
 <string name="toggle_panels_mode"># Изменить режим панелей</string>
 <string name="prefs">9 Настройки</string>
+<string name="save_prefs">Сохранить настройки</string>
+<string name="rest_prefs">Восстановить настройки</string>
+<string name="prefs_saved">Настройки сохранены.</string>
+<string name="prefs_restr">Настройки восстановлены.</string>
 <string name="about">О программе</string>
 <string name="keys">Значения клавиш</string>
 <string name="new_file">Создать текстовый файл</string>
@@ -57,17 +82,25 @@
 <string name="open_with">Открыть с...</string>
 <string name="copy_name">Копировать имя в буфер</string>
 <string name="fav_fld">Закладка на папку \"%s\"</string>
-<string name="shortcut">Поместить на десктоп</string>
-<string name="launch">Запустить</string>
+<string name="create_zip">Создать ZIP файл</string>
+<string name="create_zip_title">Создать ZIP</string>
 <string name="wait"> жди... </string>
 <string name="fail"> (ошибка) </string>
 <string name="failed">Ошибка:\n</string>
+<string name="default_color">Общесистемный</string>
+<string name="base_color">Основной цвет</string>
+<string name="typemasks">Маски файлов</string>
+<string name="color_sample">Предпросмотр</string>
+<string name="add_new_type">Добавить ещё</string>
+<string name="fav_comment">Комментарий:</string>
+<string name="fav_dialog">Изменение закладки</string>
 <string name="dialog_yes">Да</string>
 <string name="dialog_no">Нет</string>
 <string name="dialog_ok">Ok</string>
 <string name="dialog_cancel">Отмена</string>
 <string name="dialog_close">Закрыть</string>
 <string name="dialog_exit">Выйти</string>
+<string name="dialog_browse">Обзор</string>
 <string name="dialog_abort">Прервать</string>
 <string name="dialog_retry">Повторить</string>
 <string name="dialog_ignore">Игнорировать</string>
@@ -77,18 +110,18 @@
 <string name="dialog_unselect">Снять пометку</string>
 <string name="filemask">Маска</string>
 <string name="for_files">Файлы</string>
-<string name="for_dirs">Папки</string>    
-<string name="content">Содержит текст</string>    
+<string name="for_dirs">Папки</string>
+<string name="in_subf">Подпапки</string>
+<string name="content">Содержит текст</string>
 <string name="bigger_than">Больше чем:</string>
 <string name="smaller_than">Меньше чем:</string>
 <string name="mod_after">Позже</string>
 <string name="mod_before">Раньше</string>
-    
-    
+<string name="launch">Запустить</string>
 <string name="operation">Операция</string>
 <string name="view_title">Просмотр</string>
 <string name="edit_title">Редактор</string>
-<string name="edit_err">Не редактируемо.</string>
+<string name="newf_title">Создать файл</string>
 <string name="newf_prompt">Имя нового файла</string>
 <string name="mkdir_title">Создание папки</string>
 <string name="mkdir_prompt">Имя новой папки</string>
@@ -97,16 +130,19 @@
 <string name="rename_title">Переименование</string>
 <string name="copy_title">Копирование</string>
 <string name="move_title">Перенос</string>
+<string name="send_title">Послать через…</string>
+<string name="open_title">Открыть с…</string>
 <string name="to_copy">Копировать</string>
 <string name="to_move">Перенести</string>
 <string name="to_rename">Переименовать</string>
 <string name="copy_err">Нечего копировать</string>
 <string name="rename_err">Нечего переименовывать</string>
+<string name="edit_err">Не редактируемо.</string>
 <string name="no_items">Не с чем совершить данную операцию.</string>
 <string name="inv_dest">Недопустимое место для копирования</string>
+<string name="inv_path">Неправильный путь</string>
 <string name="find_on_fs_only">Функция поиска пока работает только на локальной файловой системе.</string>
 <string name="op_not_alwd">Операция \'%s\' не допустима. Выберите сперва что-либо.</string>
-<string name="copy_to_local_only">Поддерживается копирование только в локальную файловую систему!</string>
 <string name="oper_item_to">%1$s %2$s в:"</string>
 <string name="login_title">Идентификация</string>
 <string name="delete_title">Удаление</string>
@@ -126,14 +162,16 @@
 <string name="unpacking">Распаковывается \n\"%s\"...</string>
 <string name="unpacked_p">Распакован \n\"%s\"   </string>
 <string name="packing">Упаковывается \n\"%s\"...</string>
-<string name="loading">Загрузка...</string>
-<string name="second">с</string>
 <string name="retrieving">Скачивается \n\"%s\"...</string>
 <string name="uploading">Закачивается \n\"%s\"...</string>
 <string name="uploaded_p">Закачан \n\"%s\"   </string>
+<string name="loading">Загрузка...</string>
+<string name="second">с</string>
 <string name="canceled">Прервано</string>
+<string name="oom_err">Израсходована вся оперативная память!</string>
 <string name="unkn_err">Неизвестная ошибка</string>
 <string name="cant_md">Не могу создать папку \"%s\"</string>
+<string name="cant_cd">Не могу перейти в папку \"%s\"</string>
 <string name="file_exist">Файл \"%s\" уже существует.</string>
 <string name="sec_err">Доступ запрещен\n%s</string>
 <string name="not_accs">Доступ к файлу запрещен.\n%s</string>
@@ -160,13 +198,13 @@
 <string name="was"/>
 <string name="nothing">Ни один файл не</string>
 <string name="sz_folder">Папка \"%1$s\"\n%2$d файлов</string>
-<string name="sz_dirnum">&#xA0;в %1$d папк%2$s</string>
+<string name="sz_dirnum"> в %1$d папк%2$s</string>
 <string name="sz_dirsfx_s">е.</string>
 <string name="sz_dirsfx_p">ах.</string>
 <string name="sz_file">Файл \"%s\":</string>
 <string name="sz_files">Найдено файлов: %d </string>
 <string name="sz_Nbytes">\nОбъем: %1$s</string>
-<string name="sz_bytes">&#xA0;(%dБ)</string>
+<string name="sz_bytes"> (%dБ)</string>
 <string name="sz_lastmod">\n\nДата изменения:\n </string>
 <string name="sz_total">Раздел: %1$s,\nСвободно: %2$s.</string>
 <string name="busy">Занят!</string>
@@ -178,9 +216,9 @@
 <string name="error">Ошибка</string>
 <string name="info">Информация</string>
 <string name="confirm">Подтверждение</string>
+<string name="alert">Внимание</string>
 <string name="progress">Выполнение</string>
 <string name="inprogress">Операция продолжает выполняться</string>
-<string name="alert">Внимание</string>
 <string name="server">Сервер:</string>
 <string name="path">Путь:</string>
 <string name="domain">Домен:</string>
@@ -192,46 +230,53 @@
 <string name="ftp_upload_failed">Закачка \"%1$s\" неудалась.\n FTP log:\n\n%2$s</string>
 <string name="ftp_mkdir_failed">Не вышло создать папку \"%1$s\".\n FTP log:\n\n\"%2$s\</string>
 <string name="ftp_nologin">Пользователь не аутентифицирован.</string>
-
 <string name="data_settings">Списки файлов</string>
 <string name="layout_settings">Внешний вид</string>
 <string name="input_settings">Ввод</string>
+<string name="selection_zone_setup">Ширина зоны для пометки</string>
+<string name="summary_selection_zone_setup">Изменить ширину и положение активной части строки с файлом или папкой приводящей к пометке</string>
+<string name="sel_onright">Пометка справа</string>
+<string name="show_confirm">Подтверждения</string>
+<string name="summary_show_confirm">Выдавать подтверждения о совершении файловых операций</string>
+<string name="prefs_label">Настройки</string>
+<string name="filetypes_label">Цвета по типам</string>
+<string name="editor_label">Текстовый редактор</string>
+<string name="pictvw_label">Предпросмотр изображений</string>
+<string name="textvw_label">Просмотр текста</string>
+<string name="advanced">Дополнительнo</string>
 <string name="advanced_settings">Дополнительные настройки</string>
 <string name="summary_advanced_settings">Для опытных пользователей</string>
-
+<string name="send_content">Посылать файлы через content:</string>
+<string name="summary_send_content">Только если приложение-посылальщик умет работать с content:</string>
 <string name="panels_mode">Две панели рядом</string>
 <string name="summary_panels_mode">Показывать обе панели разом на одном экране</string>
 <string name="two_lines">Вывод в две строки</string>
 <string name="summary_two_lines">Атрибуты файлов всегда показывать на новой строке</string>
 <string name="show_icons">Иконки файлов</string>
 <string name="summary_show_icons">Показывать иконки для файлов</string>
+<string name="toolbar_settings">Инструментальная панель</string>
+<string name="summary_toolbar_settings">Настройка панели с инструментальными кнопками</string>
 <string name="show_toolbar">Панель кнопок</string>
 <string name="summary_show_toolbar">Включить панель с инструментальными кнопками</string>
 <string name="show_hotkeys">Быстрые клавиши</string>
 <string name="summary_show_hotkeys">Всегда показывать быстрые клавиши на кнопках </string>
-
 <string name="toolbar_preference">Выбор инструментальных кнопок</string>
 <string name="summary_toolbar_preference">Kакие кнопки показывать в инструментальной панели и в каком порядке</string>
+<string name="tblist_label">Выбор и перегруппировка</string>
 <string name="finger_friendly">Управление пальцем</string>
 <string name="summary_finger_friendly">Увеличить элементы интерфейса для управления пальцем</string>
 <string name="prevent_root">Предупреждать на системных каталогах</string>
 <string name="summary_prevent_root">Выдавать предупреждающее сообщение на попытку перейти в системный каталог</string>
-
 <string name="show_root">Показывать рутовые режимы</string>
 <string name="summary_show_root">Включить root: и mount: режимы в список экрана "Домой"</string>
-
 <string name="root_root">Root режим при покидании /sdcard</string>
 <string name="summary_root_root">Автоматически переключаться в \"root:\" режим в случае обращения к каталогу не на /sdcard.</string>
-<string name="send_content">Посылать файлы через content:</string>
-<string name="summary_send_content">Только если приложение-посылальщик умет работать с content:</string>
-
 <string name="thumbnails">Миниатюры</string>
 <string name="summary_thumbnails">Предпросмотр графических файлов</string>
 <string name="thumbnails_size">Размер миниатюр</string>
 <string name="summary_thumbnails_size">В процентах к размеру иконок</string>
 <string name="font_size">Размер шрифта</string>
 <string name="summary_font_size">Установить желаемый размер шрифта</string>
-
 <string name="left_panel_settings">Опции Левой панели</string>
 <string name="right_panel_settings">Опции Правой панели</string>
 <string name="detailed_view_SbS">Панели рядом, Детализация </string>
@@ -244,11 +289,15 @@
 <string name="summary_sort_case">Сортировать имена файлов без учета регистра</string>
 <string name="show_hidden">Показывать скрытые файлы</string>
 <string name="summary_show_hidden">Файлы начинающиеся на точку показывать наравне с остальными</string>
+<string name="compatibility_settings">Совместимость</string>
+<string name="summary_compatibility_settings">Настройка переопределения функций аппаратных кнопок устройства</string>
+<string name="arrow_mode">Стрелки Влево/Вправо</string>
+<string name="summary_arrow_mode">работают как Переключение и Пометка</string>
+<string name="volume_mode">Кнопки громкости</string>
+<string name="summary_volume_mode">работают как Переключение и Пометка</string>
+<string name="exit_on_back">Выход по "Back"</string>
+<string name="summary_exit_on_back">Выход из приложения по нажатию системной кнопки "Back"</string>
 <string name="colors">Настройка цветов</string>
-<string name="default_color">Общесистемный</string>
-<string name="base_color">Основной цвет</string>
-<string name="color">Цвет</string>
-<string name="add_new_type">Добавить ещё</string>    
 <string name="summary_colors">Установить ваши любимые цвета для текста, фона, и т.д.</string>
 <string name="bgr_color_picker">Цвет фона</string>
 <string name="summary_bgr_color_picker">Выбор цвета для фона панелей</string>
@@ -265,43 +314,32 @@
 <string name="btn_color_picker">Цвет кнопок</string>
 <string name="summary_btn_color_picker">Выбор цвета для кнопок</string>
 <string name="pick_color">Выбрать цвет</string>
+<string name="color">Цвет</string>
 <string name="language">Язык интерфейса</string>
 <string name="summary_language">Изменить язык программы на отличный от системного</string>
 <string name="restart_to_apply_lang">Перезапустите приложение для полной смены языка интерфейса</string>
-
-<string name="arrow_mode">Стрелки Влево/Вправо</string>
-<string name="summary_arrow_mode">работают как Переключение и Пометка</string>
-<string name="volume_mode">Кнопки громкости</string>
-<string name="summary_volume_mode">работают как Переключение и Пометка</string>
-
-<string name="exit_on_back">Выход по "Back"</string>
-<string name="summary_exit_on_back">Выход из приложения по нажатию системной кнопки "Back"</string>
-
-<string name="show_confirm">Подтверждения</string>
-<string name="summary_show_confirm">Выдавать подтверждения о совершении файловых операций</string>
-<string name="prefs_label">Настройки</string>
-<string name="filetypes_label">Цвета по типам</string>
-<string name="save_prefs">Сохранить настройки</string>
-<string name="rest_prefs">Восстановить настройки</string>
-
-<string name="editor_label">Текстовый редактор</string>
-<string name="advanced">Дополнительнo</string>
-
 <string name="editor_activity">Activity для редактирования</string>
 <string name="summary_editor_activity">Полное имя Activity класса. Имя пакета == префикс полного имени класса.</string>
-
 <string name="busybox_location">Путь к \"busybox\"</string>
 <string name="summary_busybox_location">В случае если он находится не в пути поиска.</string>
 <string name="execute_command">Исполнить команду</string>
 <string name="nothing_to_open">Не ясно что редактировать</string>
 <string name="remind_to_save">Не забудьте сохранить изменения!</string>
+<string name="saved">\"%1$s\" сохранен.</string>
+<string name="not_saved">Сохранить изменения?</string>
 <string name="save">Сохранить</string>
 <string name="save_as">Сохранить как...</string>
 <string name="revert">Восстановить</string>
 <string name="wrap">Длинные строки</string>
+<string name="go_top">Начало</string>
+<string name="go_end">Конец</string>
+<string name="encoding">Кодировка</string>
+<string name="encoding_set">Активная кодировка установлена в \"%1$s\". Пожалуста, загрузите файл заново. Иначе, при сохранении файла, его кодировка изменится на выбранную.</string>
 <string name="no_such_file">Нет такого файла \"%1$s\"</string>
 <string name="too_big_file">Файл \"%1$s\" длишком большой.</string>
 <string name="binary_file">Файл \"%1$s\" не текстовый. Редактирование приведёт к его порче.</string>
+<string name="cant_open_dir">\"%1$s\" является папкой.</string>
+<string name="cant_view_empt">Файл \"%1$s\" пустой.</string>
 <string name="cant_open">Не могу прочитать файл.</string>
 <string name="cant_save">Не могу сохранить файл.</string>
 <string name="nav_warn">Каталог в который вы хотите перейти - системный. Необдуманные действия в нём могут привести к поломке устройства. Продолжить?</string>
@@ -309,33 +347,26 @@
 <string name="no_such_folder">\"%1$s\" не существует!</string>
 <string name="fav_added">Папка \"%1$s\" добавлена в закладки</string>
 <string name="no_root">Нет root прав.</string>
-    
-<string name="home">Домой</string>
-<string name="favs">Закладки</string>
-<string name="local">Локальные файлы</string>
-<string name="ftp">FTP сервер</string>
-<string name="smb">Сеть Windows</string>
-<string name="root">root режим</string>
-<string name="mount">Монтировано</string>
-<string name="apps">Приложения</string>
-<string name="exit">Выход</string>
-<string name="favs_descr">Просмотр и редактирование списка закладок на часто используемые папки и ресурсы.</string>
-<string name="local_descr">Доступ к файлам расположеным на SD карточке или внутренней памяти устройства.</string>
-<string name="ftp_descr">Подключение к файл-серверу по протоколу FTP (протокол передачи файлов).</string>
-<string name="smb_descr">Доступ к Windows компьютеру локальной сети. ( Приложение \"Ghost Commander - Samba Plugin\" должно быть установлено )</string>
-<string name="root_descr">Выполнение системных команд и работа с файлами на системном разделею Будьте осторожны!.</string>
-<string name="mount_descr">Список монтированых устройств с возможностью перемонтирования в \"rw\" и обратно в \"ro\"</string>
-<string name="apps_descr">Список установленых приложений.</string>
-<string name="exit_descr">Выход из этой программы.</string>
-
+<string name="manage">Управление</string>
+<string name="shortcuts">Точки запуска</string>
+<string name="pkg_name">Имя пакета</string>
+<string name="version">Версия</string>
+<string name="version_code">Код версии</string>
+<string name="target_sdk">Версия целевой SDK</string>
+<string name="inst_date">Дата</string>
+<string name="pkg_size">Размер</string>
+<string name="process">Имя процесса</string>
+<string name="app_class">Класс</string>
+<string name="affinity">Родство</string>
+<string name="permissions">Разрешения</string>
+<string name="flags">Флаги</string>
+<string name="not_exported">Только для внутренних целей</string>
 <string name="smb_missed">
     Не удаётся загрузить Samba адаптер.\n
     Пожалуста, убедитесь, что пакет\n
     \"Ghost Commander - Samba plugin\"\n
     (com.ghostsq.commander.samba.apk) инсталлирован.</string>
 <string name="donate">  Поддержка</string>
-<string name="rescan">Пересканировать медиа-файлы</string>
-   
 <string name="online_help">  Описание в онлайне (EN)</string>
 <string name="donation">Выразите свою благодарность и окажите поддержку 
        путем перевода разработчику любой денежной суммы через систему PayPal.\n

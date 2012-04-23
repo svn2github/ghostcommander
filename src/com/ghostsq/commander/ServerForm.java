@@ -58,16 +58,19 @@ public class ServerForm extends Activity implements View.OnClickListener {
             name_edit = (EditText)findViewById( R.id.username_edit );
             active_ftp_cb = (CheckBox)findViewById( R.id.active );            
 
+            Button connect_button = (Button)findViewById( R.id.connect );
+            connect_button.setOnClickListener( this );
+            Button browse_button = (Button)findViewById( R.id.browse );
+            browse_button.setOnClickListener( this );
+            Button cancel_button = (Button)findViewById( R.id.cancel );
+            cancel_button.setOnClickListener( this );
+
             if( type == Type.FTP ) {
                 View domain_block = findViewById( R.id.domain_block );
                 domain_block.setVisibility( View.GONE );
+                browse_button.setVisibility( View.GONE );
                 active_ftp_cb.setVisibility( View.VISIBLE );
             }
-            
-            Button connectButton = (Button)findViewById( R.id.connect );
-            connectButton.setOnClickListener( this );
-            Button cancelButton = (Button)findViewById( R.id.cancel );
-            cancelButton.setOnClickListener( this );
         }
         catch( Exception e ) {
             Log.e( TAG, "onCreate() Exception: ", e );
@@ -139,8 +142,12 @@ public class ServerForm extends Activity implements View.OnClickListener {
 
     @Override
     public void onClick( View v ) {
-        try{ 
-            if( v.getId() == R.id.connect ) {
+        try{
+            if( v.getId() == R.id.browse ) {
+                if( type == Type.SMB )
+                    setResult( RESULT_OK, new Intent( Commander.NAVIGATE_ACTION, Uri.parse( "smb://" ) ) );
+            }
+            else if( v.getId() == R.id.connect ) {
                 EditText pass_edit = (EditText)findViewById( R.id.password_edit );
                 String user = name_edit.getText().toString().trim();
                 String pass = pass_edit.getText().toString().trim();
@@ -161,7 +168,7 @@ public class ServerForm extends Activity implements View.OnClickListener {
                 if( type == Type.FTP && active_ftp_cb.isChecked() )
                     uri_b.appendQueryParameter( "a", "true" );
                 
-                Intent in = new Intent( "com.ghostsq.commander.NAVIGATE", uri_b.build() );
+                Intent in = new Intent( Commander.NAVIGATE_ACTION, uri_b.build() );
                 if( crd != null )
                     in.putExtra( Credentials.KEY, crd );
                 setResult( RESULT_OK, in );

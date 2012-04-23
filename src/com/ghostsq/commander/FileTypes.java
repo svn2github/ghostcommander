@@ -12,7 +12,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class FileTypes extends Activity implements OnClickListener,
-                                   RGBPickerDialog.ColorChangeListener   
+                                                   RGBPickerDialog.ResultSink   
 {
     private static final String TAG = "FileTypes";
     private LayoutInflater    infl;

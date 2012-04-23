@@ -166,36 +166,51 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/input_settings">
-        <CheckBoxPreference
-                android:key="show_toolbar"
-                android:title="@string/show_toolbar"
-                android:summary="@string/summary_show_toolbar"
-                android:defaultValue="true"/>
-        <CheckBoxPreference
-                android:key="show_hotkeys"
-                android:title="@string/show_hotkeys"
-                android:summary="@string/summary_show_hotkeys"
-                android:defaultValue="true"/>
         <PreferenceScreen
-                android:key="toolbar_preference"
-                android:title="@string/toolbar_preference"
-                android:summary="@string/summary_toolbar_preference">
+                android:key="selection_zone"
+                android:title="@string/selection_zone_setup"
+                android:summary="@string/summary_selection_zone_setup">
         </PreferenceScreen>
-        <CheckBoxPreference
-                    android:key="arrow_legc"
-                    android:title="@string/arrow_mode"
-                    android:summary="@string/summary_arrow_mode"
-                    android:defaultValue="false"/>
-        <CheckBoxPreference
-                    android:key="volume_legc"
-                    android:title="@string/volume_mode"
-                    android:summary="@string/summary_volume_mode"
-                    android:defaultValue="true"/>
-        <CheckBoxPreference
-                    android:key="exit_on_back"
-                    android:title="@string/exit_on_back"
-                    android:summary="@string/summary_exit_on_back"
-                    android:defaultValue="false"/>
+        <PreferenceScreen
+                android:key="toolbar_settings"
+                android:title="@string/toolbar_settings"
+                android:summary="@string/summary_toolbar_settings">
+                <CheckBoxPreference
+                        android:key="show_toolbar"
+                        android:title="@string/show_toolbar"
+                        android:summary="@string/summary_show_toolbar"
+                        android:defaultValue="true"/>
+                <CheckBoxPreference
+                        android:key="show_hotkeys"
+                        android:title="@string/show_hotkeys"
+                        android:summary="@string/summary_show_hotkeys"
+                        android:defaultValue="true"/>
+                <PreferenceScreen
+                        android:key="toolbar_preference"
+                        android:title="@string/toolbar_preference"
+                        android:summary="@string/summary_toolbar_preference">
+                </PreferenceScreen>
+        </PreferenceScreen>
+        <PreferenceScreen
+                android:key="compatibility_settings"
+                android:title="@string/compatibility_settings"
+                android:summary="@string/summary_compatibility_settings">
+                <CheckBoxPreference
+                            android:key="arrow_legc"
+                            android:title="@string/arrow_mode"
+                            android:summary="@string/summary_arrow_mode"
+                            android:defaultValue="false"/>
+                <CheckBoxPreference
+                            android:key="volume_legc"
+                            android:title="@string/volume_mode"
+                            android:summary="@string/summary_volume_mode"
+                            android:defaultValue="true"/>
+                <CheckBoxPreference
+                            android:key="exit_on_back"
+                            android:title="@string/exit_on_back"
+                            android:summary="@string/summary_exit_on_back"
+                            android:defaultValue="false"/>
+        </PreferenceScreen>
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/advanced">
