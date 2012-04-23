@@ -94,6 +94,8 @@ public class FTPAdapter extends CommanderAdapterBase {
     }
     @Override
     public Credentials getCredentials() {
+        if( theUserPass == null || theUserPass.isNotSet() )
+            return null;
         return theUserPass;
     }
         
@@ -321,7 +323,7 @@ public class FTPAdapter extends CommanderAdapterBase {
         String ui = uri.getUserInfo();
         if( ui != null && theUserPass == null )
             return Favorite.screenPwd( uri );
-        if( theUserPass == null )
+        if( theUserPass == null || theUserPass.isNotSet() )
             return uri.toString();
         return Favorite.screenPwd( Utils.getUriWithAuth( uri, theUserPass ) );    
     }
