@@ -295,7 +295,7 @@
 <string name="show_hidden">Mostra file nascosti</string>
 <string name="summary_show_hidden">Se non selezionata, i file che iniziano con un punto non verranno visualizzati</string>
 <string name="compatibility_settings">Compatibilità</string>
-<string name="summary_compatibility_settings">Abilita o disabilita l'annullamento dei pulsanti hardware</string>
+<string name="summary_compatibility_settings">Abilita o disabilita l\'annullamento dei pulsanti hardware</string>
 <string name="arrow_mode">Escludi i pulsanti freccia</string>
 <string name="summary_arrow_mode">Freccia sinistra e destra selezionano e cambiano</string>
 <string name="volume_mode">Escludi i pulsanti del volume</string>

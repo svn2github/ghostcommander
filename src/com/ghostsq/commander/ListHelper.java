@@ -28,7 +28,7 @@ public class ListHelper {
     private boolean   needRefresh;
     
     ListHelper( int which_, Panels p_ ) {
-        needRefresh = true;
+        needRefresh = false;
         which = which_;
         TAG = "ListHelper" + which;
         p = p_;

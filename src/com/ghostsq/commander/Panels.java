@@ -265,18 +265,27 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     // View.OnFocusChangeListener implementation
     @Override
     public void onFocusChange( View v, boolean f ) {
+        /*
+        ListView flv = list[opposite()].flv;
         if( sxs ) {
-            ListView flv = list[opposite()].flv;
             boolean opp = flv == v; 
             if( f && opp ) {
                 if( flv.isInTouchMode() ) {    // user touched the opposite
                     Log.v( TAG, "focus has changed to " + ( opposite()==LEFT?"LEFT":"RIGHT" ) );
                     setPanelCurrent( opposite(), true );
-                } 
-                else    // return the escaped focus back
-                    list[current].focus();
+                }
+                //else    // return the escaped focus back
+                //    list[current].focus();
             }
         }
+        */
+        ListView flv = list[opposite()].flv;
+        boolean opp = flv == v; 
+        if( f && opp ) {
+            Log.v( TAG, "focus has changed to " + ( opposite()==LEFT?"LEFT":"RIGHT" ) );
+            setPanelCurrent( opposite(), true );
+        }
+    
     }
     
     public ArrayList<Favorite> getFavorites() {
@@ -526,13 +535,10 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public final void togglePanels( boolean refresh ) {
         Log.v( TAG, "toggle" );
         setPanelCurrent( opposite() );
-        if( !sxs && ( refresh || list[current].needRefresh() ) ) 
-            refreshList( current );
     }
     
     public final void setPanelCurrent( int which ) {
         setPanelCurrent( which, false );
-        
     }
     private final void setPanelCurrent( int which, boolean dont_focus ) {
         Log.v( TAG, "setPanelCurrent: " + which + " dnf:" + dont_focus );
@@ -559,6 +565,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 list[current].focus();
         highlightCurrentTitle();
         setToolbarButtons( getListAdapter( true ) );
+        if( list[current].needRefresh() ) 
+            refreshList( current );
     }
     public final void showSizes() {
         storeChoosedItems();

@@ -31,6 +31,8 @@ import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
+import android.net.wifi.WifiManager.WifiLock;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -378,12 +380,17 @@ public class FTPAdapter extends CommanderAdapterBase {
 
     class CopyEngine extends Engine implements FTP.ProgressSink 
     {
-        private long startTime;
-        private long curFileLen = 0, curFileDone = 0;
-        String progressMessage = null;
+        private   long      startTime;
+        private   long      curFileLen = 0, curFileDone = 0;
+        protected WifiLock  wifiLock;
+        protected String    progressMessage = null;
+        
     	CopyEngine( Handler h ) {
     		super( h );
     		startTime = System.currentTimeMillis();
+            WifiManager manager = (WifiManager)FTPAdapter.this.ctx.getSystemService( Context.WIFI_SERVICE );
+            wifiLock = manager.createWifiLock( TAG );
+            wifiLock.setReferenceCounted( false );
     	}
     	protected void setCurFileLength( long len ) {
     	    curFileDone = 0;
@@ -415,6 +422,7 @@ public class FTPAdapter extends CommanderAdapterBase {
 	    private File     dest_folder;
 	    private boolean  move;
 	    private int      recipient_hash;
+
 	    CopyFromEngine( Handler h, LsItem[] list, File dest, boolean move_, int rec_h ) {
 	    	super( h );
 	        mList = list;
@@ -425,7 +433,10 @@ public class FTPAdapter extends CommanderAdapterBase {
 	    @Override
 	    public void run() {
 	    	try {
+	    	    wifiLock.acquire();
                 int total = copyFiles( mList, "" );
+                wifiLock.release();
+                
                 if( recipient_hash != 0 ) {
                       sendReceiveReq( recipient_hash, dest_folder );
                       return;
@@ -725,7 +736,9 @@ public class FTPAdapter extends CommanderAdapterBase {
         @Override
         public void run() {
             try {
+                wifiLock.acquire();
                 int total = copyFiles( mList );
+                wifiLock.release();
                 if( del_src_dir ) {
                     File src_dir = mList[0].getParentFile();
                     if( src_dir != null )
