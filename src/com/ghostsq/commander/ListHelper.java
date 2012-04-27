@@ -25,10 +25,11 @@ public class ListHelper {
     private int        currentPosition = -1;
     private String[]   listOfItemsChecked = null;
     private Panels     p;
-    private boolean   needRefresh;
+    private boolean    needRefresh, was_current;
     
     ListHelper( int which_, Panels p_ ) {
         needRefresh = false;
+        was_current = false;
         which = which_;
         TAG = "ListHelper" + which;
         p = p_;
@@ -52,9 +53,10 @@ public class ListHelper {
         return (CommanderAdapter)flv.getAdapter();
     }
 
-    public final void Navigate( Uri uri, Credentials crd, String posTo ) {
+    public final void Navigate( Uri uri, Credentials crd, String posTo, boolean was_current_ ) {
         try {
             // Log.v( TAG, "Navigate to " + Favorite.screenPwd( uri ) );
+            was_current = was_current_;
             flv.clearChoices();
             flv.invalidateViews();
             CommanderAdapter ca_new = null, ca = (CommanderAdapter)flv.getAdapter();
@@ -92,7 +94,7 @@ public class ListHelper {
     }
 
     public final void focus() {
-        Log.v( TAG, "want focus for " + (which==Panels.LEFT?"LEFT":"RIGHT" ) );
+        Log.v( TAG, "we set focus for this" );
         
         
         /*
@@ -205,8 +207,9 @@ public class ListHelper {
     public final boolean needRefresh() {
         return needRefresh;
     }
-    public final void refreshList() {
+    public final void refreshList( boolean was_current_ ) {
         try {
+            was_current = was_current_;
             CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
             if( ca == null )
                 return;
@@ -303,8 +306,6 @@ public class ListHelper {
                 if( item_name != null && item_name.compareTo( name ) == 0 ) {
                     Log.v( TAG, "trying to set panel " + which + " selection to '" + name + "', pos: " + i + ", ph: " + flv.getHeight() );
                     setSelection( i, flv.getHeight() / 2 );
-                    if( !flv.requestFocusFromTouch() )
-                        Log.w( TAG, "ListView does not take focus :(" );
                     break;
                 }
             }
@@ -371,22 +372,24 @@ public class ListHelper {
         return "\"" + item_name + "\"";
     }
 
-    public final void recoverAfterRefresh( String item_name, boolean this_current ) {
+    public final void recoverAfterRefresh( String item_name ) {
         try {
             Log.v( TAG, "restoring panel " + which + " item: " + item_name );
             if( item_name != null && item_name.length() > 0 )
                 setSelection( item_name );
             else
                 setSelection( 0, 0 );
-            if( this_current )
+            if( was_current ) {
+                Log.v( TAG, "this was the current panel, let's focus it" );
                 focus();
+                was_current = false;
+            }
         } catch( Exception e ) {
             Log.e( TAG, "recoverAfterRefresh()", e );
         }
     }
 
-    public final void recoverAfterRefresh( boolean this_current ) { // to be called for the current
-                                              // panel
+    public final void recoverAfterRefresh( boolean this_current ) { // to be called for the current panel
         try {
             reStoreChoosedItems();
             flv.invalidateViews();

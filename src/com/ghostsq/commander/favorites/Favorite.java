@@ -27,7 +27,7 @@ public class Favorite {
         if( c == null )
             init( u );
         else {
-            uri = u;
+            uri = Utils.updateUserInfo( u, null );
             credentials = c;
         }
     }

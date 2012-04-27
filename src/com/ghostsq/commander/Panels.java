@@ -72,7 +72,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     private final static String     TAG = "Panels";
     public static final String      DEFAULT_LOC = Environment.getExternalStorageDirectory().getAbsolutePath();
     public  final static int        LEFT = 0, RIGHT = 1;
-    private int                     current = LEFT, _navigated = -1;
+    private int                     current = LEFT;
     private final int               titlesIds[] = { R.id.left_dir,  R.id.right_dir };
     private ListHelper              list[] = { null, null };
     public  FileCommander           c;
@@ -147,7 +147,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         scroll_back = (int)( c.getWindowManager().getDefaultDisplay().getWidth() * 2. / 10 );        
         if( panelsView != null ) panelsView.setMode( sxs_ );
     }
-    public int getCurrent() {
+    public final int getCurrent() {
         return current;
     }
     
@@ -486,17 +486,18 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         int new_mode = ( cur_mode & CommanderAdapter.MODE_HIDDEN ) == CommanderAdapter.SHOW_MODE ?
                                          CommanderAdapter.HIDE_MODE : CommanderAdapter.SHOW_MODE;
         ca.setMode( CommanderAdapter.MODE_HIDDEN, new_mode );
-        refreshList( current );
+        refreshList( current, true );
     }
     public final void refreshLists() {
-        refreshList( current );
+        int was_current = current, was_opp = 1 - was_current;
+        refreshList( current, true );
         if( sxs )
-            refreshList( opposite() );
+            refreshList( was_opp, false );
         else
-            list[opposite()].setNeedRefresh();
+            list[was_opp].setNeedRefresh();
     }
-    public final void refreshList( int which ) {
-        list[which].refreshList();
+    public final void refreshList( int which, boolean was_current ) {
+        list[which].refreshList( was_current );
     }
     public final void redrawLists() {
         list[current].askRedrawList();
@@ -566,7 +567,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         highlightCurrentTitle();
         setToolbarButtons( getListAdapter( true ) );
         if( list[current].needRefresh() ) 
-            refreshList( current );
+            refreshList( current, false );
     }
     public final void showSizes() {
         storeChoosedItems();
@@ -643,21 +644,17 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     
     private final void NavigateInternal( int which, Uri uri, Credentials crd, String posTo ) {
         ListHelper list_h = list[which];
-        list_h.Navigate( uri, crd, posTo );
-        /*
-        if( which == current )
-            navigated = which;
-        */
+        list_h.Navigate( uri, crd, posTo, which == current );
     }
 
     public final void recoverAfterRefresh( String item_name, int which ) {
         try {
             if( which >= 0  )
-                list[which].recoverAfterRefresh( item_name, which == current );
+                list[which].recoverAfterRefresh( item_name );
             else
                 list[current].recoverAfterRefresh( which == current );
             refreshPanelTitles();
-            setPanelCurrent( current, true );
+            //setPanelCurrent( current, true ); the current panel is set by set focus
         } catch( Exception e ) {
             Log.e( TAG, "refreshList()", e );
         }
@@ -667,7 +664,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         CommanderAdapter ca = getListAdapter( true );
         if( ca != null ) {
             ca.setCredentials( crd );
-            list[current].refreshList();
+            list[current].refreshList( true );
         }
     }
 
@@ -1276,7 +1273,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 	        int which = view_id == titlesIds[LEFT] ? LEFT : RIGHT;
 	        if( which == current ) {
 	            focus();
-	            refreshList( current );
+	            refreshList( current, true );
 	        }
 	        else
 	            togglePanels( true );
@@ -1432,12 +1429,14 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         if( dont_restore != LEFT && dont_restore != RIGHT )
     	    current = s.current;
     	if( dont_restore != LEFT ) {
-        	Uri lu = s.leftUri != null ? s.leftUri : Uri.parse( "home:" ); 
-        	NavigateInternal( LEFT, lu, s.leftCrd, s.leftItem );
+        	Uri lu = s.leftUri != null ? s.leftUri : Uri.parse( "home:" );
+            ListHelper list_h = list[LEFT];
+            list_h.Navigate( lu, s.leftCrd, s.leftItem, s.current == LEFT );
     	}
     	if( dont_restore != RIGHT ) {
             Uri ru = s.rightUri != null ? s.rightUri : Uri.parse( "home:" ); 
-            NavigateInternal( RIGHT, ru, s.rightCrd, s.rightItem );
+            ListHelper list_h = list[RIGHT];
+            list_h.Navigate( ru, s.rightCrd, s.rightItem, s.current == RIGHT );
     	}
         applyColors();
     }
