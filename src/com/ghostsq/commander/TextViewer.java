@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -27,13 +28,14 @@ import android.widget.Toast;
 import java.io.InputStream;
 
 public class TextViewer extends Activity {
-    private final static String TAG = "TextViewerActivity";
+    public  final static String TAG = "TextViewerActivity";
     private final static String SP_ENC = "encoding";
     public  final static String STRURI = "string:";
     public  final static String STRKEY = "string";
     private final static int VIEW_BOT = 595, VIEW_TOP = 590, VIEW_ENC = 363;
     private ScrollView scrollView;
-    private Uri uri;
+    public  TextView    text_view;
+    public  Uri uri;
     public  String encoding;
     
     @Override
@@ -44,7 +46,7 @@ public class TextViewer extends Activity {
             setContentView( R.layout.textvw );
             SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
             int fs = Integer.parseInt( shared_pref != null ? shared_pref.getString( "font_size", "12" ) : "12" );
-            TextView text_view = (TextView)findViewById( R.id.text_view );
+            text_view = (TextView)findViewById( R.id.text_view );
             text_view.setTextSize( fs );
             text_view.setTypeface( Typeface.create( "monospace", Typeface.NORMAL ) );
 
@@ -172,11 +174,64 @@ public class TextViewer extends Activity {
         }
         return false;
     }    
-    
-    private final boolean loadData() {
+
+     private class DataLoadTask extends AsyncTask<Void, String, CharSequence> {
+        @Override
+        protected CharSequence doInBackground( Void... v ) {
+            Uri uri = TextViewer.this.uri;
+            try {
+                final String   scheme = uri.getScheme();
+                CommanderAdapter ca = null;
+                InputStream is = null;
+                if( ContentResolver.SCHEME_CONTENT.equals( scheme ) ) {
+                    is = getContentResolver().openInputStream( uri ); 
+                } else {
+                    int type_id = CA.GetAdapterTypeId( scheme );
+                    ca = CA.CreateAdapterInstance( type_id, TextViewer.this );
+                    if( ca != null ) {
+                        Credentials crd = null; 
+                        try {
+                            crd = (Credentials)TextViewer.this.getIntent().getParcelableExtra( Credentials.KEY );
+                        } catch( Exception e ) {
+                            Log.e( TAG, "on taking credentials from parcel", e );
+                        }
+                        ca.setCredentials( crd );
+                        is = ca.getContent( uri );
+                    }
+                }
+                if( is != null ) {
+                    CharSequence cs = Utils.readStreamToBuffer( is, encoding );
+                    if( ca != null ) { 
+                        ca.closeStream( is );
+                        ca.prepareToDestroy();
+                    }
+                    else
+                        is.close();
+                    return cs;
+                }
+            } catch( OutOfMemoryError e ) {
+                Log.e( TAG, uri.toString(), e );
+                publishProgress( getString( R.string.too_big_file, uri.getPath() ) );
+            } catch( Throwable e ) {
+                Log.e( TAG, uri.toString(), e );
+                publishProgress( getString( R.string.failed ) + e.getLocalizedMessage() );
+                
+            }
+            return null;
+        }
+        @Override
+        protected void onProgressUpdate( String... err ) {
+            Toast.makeText( TextViewer.this, err[0], Toast.LENGTH_LONG ).show();
+        }
+        @Override
+        protected void onPostExecute( CharSequence cs ) {
+            TextViewer.this.text_view.setText( cs );
+        }
+     }
+     
+     private final boolean loadData() {
         if( uri != null ) { 
             try {
-                final TextView text_view = (TextView)findViewById( R.id.text_view );                
                 final String   scheme = uri.getScheme();
                 if( STRKEY.equals( scheme ) ) {
                     Intent i = getIntent();
@@ -187,33 +242,8 @@ public class TextViewer extends Activity {
                     }
                     return false;
                 }
-                CommanderAdapter ca = null;
-                InputStream is = null;
-                if( ContentResolver.SCHEME_CONTENT.equals( scheme ) ) {
-                    is = getContentResolver().openInputStream( uri ); 
-                } else {
-                    int type_id = CA.GetAdapterTypeId( scheme );
-                    ca = CA.CreateAdapterInstance( type_id, this );
-                    if( ca != null ) {
-                        Credentials crd = null; 
-                        try {
-                            crd = (Credentials)getIntent().getParcelableExtra( Credentials.KEY );
-                        } catch( Exception e ) {
-                            Log.e( TAG, "on taking credentials from parcel", e );
-                        }
-                        ca.setCredentials( crd );
-                        is = ca.getContent( uri );
-                    }
-                }
-                if( is != null ) {
-                    CharSequence cs = Utils.readStreamToBuffer( is, encoding );
-                    if( ca != null ) 
-                        ca.closeStream( is );
-                    else
-                        is.close();
-                    text_view.setText( cs );
-                    return true;
-                }
+                new DataLoadTask().execute();
+                return true;
             } catch( OutOfMemoryError e ) {
                 Log.e( TAG, uri.toString(), e );
                 Toast.makeText(this, getString( R.string.too_big_file, uri.getPath() ), Toast.LENGTH_LONG).show();

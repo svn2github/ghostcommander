@@ -147,7 +147,7 @@ public class FTP {
         }
         catch( Exception e ) {
             Log.e( TAG, "", e );
-            disconnect();
+            disconnect( true );
             return null;
 		}
     }
@@ -157,17 +157,17 @@ public class FTP {
         inputStream = new BufferedInputStream( cmndSocket.getInputStream(), 256 );
 
         if( !waitForPositiveResponse() ) {
-            disconnect();
+            disconnect( true );
             return false;
         }
 
         return true;
     }
-    public final void disconnect() {
+    public final void disconnect( boolean brutal ) {
         //if( outputStream != null )  // ??? why? 
         {
             try {
-                if( loggedIn )
+                if( !brutal && loggedIn )
                     logout( true );
                 if( outputStream != null ) outputStream.close();
                 if(  inputStream != null )  inputStream.close();

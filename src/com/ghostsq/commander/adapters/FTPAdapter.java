@@ -187,8 +187,7 @@ public class FTPAdapter extends CommanderAdapterBase {
                 return LOGGED_IN;
             }
             else {
-                ftp.logout( true );
-                ftp.disconnect();
+                ftp.disconnect( false );
                 Log.w( TAG, "Invalid credentials." );
                 return NO_LOGIN;
             }
@@ -221,7 +220,7 @@ public class FTPAdapter extends CommanderAdapterBase {
                     threadStartedAt = System.currentTimeMillis();
 	                ftp.clearLog();
 	                if( needReconnect  && ftp.isLoggedIn() ) {
-	                    ftp.disconnect();
+	                    ftp.disconnect( false );
 	                }
 	                
 	                int cl_res = connectAndLogin( uri );
@@ -285,7 +284,7 @@ public class FTPAdapter extends CommanderAdapterBase {
             finally {
             	super.run();
             }
-            ftp.disconnect();
+            ftp.disconnect( true );
             sendProgress( ftp.getLog(), Commander.OPERATION_FAILED, pass_back_on_done );
         }
     }
@@ -837,10 +836,19 @@ public class FTPAdapter extends CommanderAdapterBase {
 
 	@Override
 	public void prepareToDestroy() {
-		heartBeat.cancel();
-		heartBeat.purge();
+	    if( heartBeat != null ) {
+    		heartBeat.cancel();
+    		heartBeat.purge();
+	    }
         super.prepareToDestroy();
-		ftp.disconnect();
+        
+		new Thread( new Runnable() {
+                @Override
+                public void run() {
+                    ftp.disconnect( false );
+                }
+            }, "FTP disconnect" ).start();
+        
 		items = null;
 	}
 

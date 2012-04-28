@@ -341,7 +341,7 @@ public class StreamServer extends Service {
         }
         
         private void Log( String s ) {
-            Log.d( TAG, "" + num_id + ": " + s );
+            //Log.d( TAG, "" + num_id + ": " + s );
         }
         public void run() {
             try {

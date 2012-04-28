@@ -265,20 +265,6 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     // View.OnFocusChangeListener implementation
     @Override
     public void onFocusChange( View v, boolean f ) {
-        /*
-        ListView flv = list[opposite()].flv;
-        if( sxs ) {
-            boolean opp = flv == v; 
-            if( f && opp ) {
-                if( flv.isInTouchMode() ) {    // user touched the opposite
-                    Log.v( TAG, "focus has changed to " + ( opposite()==LEFT?"LEFT":"RIGHT" ) );
-                    setPanelCurrent( opposite(), true );
-                }
-                //else    // return the escaped focus back
-                //    list[current].focus();
-            }
-        }
-        */
         ListView flv = list[opposite()].flv;
         boolean opp = flv == v; 
         if( f && opp ) {
