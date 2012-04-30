@@ -797,10 +797,14 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 if( last_dot_pos < 0 ) {
                     c.showMessage( "Invalid class name: " + full_class_name );
                     full_class_name = GC_EDITOR;
+                    last_dot_pos = full_class_name.lastIndexOf('.');
                 }
                 i.setClassName( full_class_name.substring( 0, last_dot_pos ), full_class_name );
             }
             i.setDataAndType( u, "text/plain" );
+            Credentials crd = ca.getCredentials();
+            if( crd != null )
+                i.putExtra( Credentials.KEY, crd );
             c.startActivity( i );
         }
         catch( ActivityNotFoundException e ) {
