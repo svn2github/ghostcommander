@@ -84,7 +84,7 @@ public class ListHelper {
             }
             //p.applyColors();
             p.setPanelTitle( p.c.getString( R.string.wait ), which );
-            p.setToolbarButtons( ca );
+          //p.setToolbarButtons( ca );
             if( crd != null )
                 ca.setCredentials( crd );
             ca.readSource( uri, "" + which + ( posTo == null ? "" : posTo ) );
@@ -94,7 +94,7 @@ public class ListHelper {
     }
 
     public final void focus() {
-        Log.v( TAG, "we set focus for this" );
+        //Log.v( TAG, "we set focus for this" );
         
         
         /*
@@ -105,7 +105,7 @@ public class ListHelper {
          * ", " + item_focus );
          */
         if( flv == null ) return;
-        flv.requestFocus();
+        //flv.requestFocus();
         flv.requestFocusFromTouch();
     }
 
@@ -304,7 +304,7 @@ public class ListHelper {
             for( i = 0; i < num; i++ ) {
                 String item_name = ca.getItemName( i, false );
                 if( item_name != null && item_name.compareTo( name ) == 0 ) {
-                    Log.v( TAG, "trying to set panel " + which + " selection to '" + name + "', pos: " + i + ", ph: " + flv.getHeight() );
+                    //Log.v( TAG, "trying to set panel " + which + " selection to '" + name + "', pos: " + i + ", ph: " + flv.getHeight() );
                     setSelection( i, flv.getHeight() / 2 );
                     break;
                 }
@@ -374,14 +374,15 @@ public class ListHelper {
 
     public final void recoverAfterRefresh( String item_name ) {
         try {
-            Log.v( TAG, "restoring panel " + which + " item: " + item_name );
+            //Log.v( TAG, "restoring panel " + which + " item: " + item_name );
             if( item_name != null && item_name.length() > 0 )
                 setSelection( item_name );
             else
                 setSelection( 0, 0 );
             if( was_current ) {
-                Log.v( TAG, "this was the current panel, let's focus it" );
-                focus();
+                //Log.v( TAG, "this was the current panel, let's focus it" );
+                //focus();
+                p.setPanelCurrent( which, false );
                 was_current = false;
             }
         } catch( Exception e ) {

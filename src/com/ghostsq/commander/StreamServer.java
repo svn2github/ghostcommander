@@ -48,9 +48,9 @@ public class StreamServer extends Service {
     @Override
     public void onStart( Intent intent, int start_id ) {
         super.onStart( intent, start_id );
-        Log.d( TAG, "onStart" );
+        //Log.d( TAG, "onStart" );
         if( thread == null ) {
-            Log.d( TAG, "Starting the server thread" );
+            //Log.d( TAG, "Starting the server thread" );
             thread = new ListenThread();
             thread.start();
             getBaseContext();
@@ -60,7 +60,7 @@ public class StreamServer extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d( TAG, "onDestroy" );
+        //Log.d( TAG, "onDestroy" );
         if( thread != null && thread.isAlive() ) {
             thread.close();
             thread.interrupt();
@@ -83,7 +83,7 @@ public class StreamServer extends Service {
 
         public void run() {
             try {
-                Log.d( TAG, "started" );
+                //Log.d( TAG, "started" );
                 setName( TAG );
                 setPriority( Thread.MIN_PRIORITY );
                 new Thread( new Runnable() {
@@ -94,9 +94,9 @@ public class StreamServer extends Service {
                                 synchronized( ListenThread.this ) {
                                     final int max_idle = 100000;
                                     ListenThread.this.wait( max_idle );
-                                    Log.d( TAG, "Checking the idle time... last used: " + (System.currentTimeMillis()-lastUsed) + "ms ago " );
+                                    //Log.d( TAG, "Checking the idle time... last used: " + (System.currentTimeMillis()-lastUsed) + "ms ago " );
                                     if( System.currentTimeMillis() - max_idle > lastUsed ) {
-                                        Log.d( TAG, "Time to closer the listen thread" );
+                                        //Log.d( TAG, "Time to closer the listen thread" );
                                         ListenThread.this.close();
                                         break;
                                     }
@@ -105,20 +105,20 @@ public class StreamServer extends Service {
                                 e.printStackTrace();
                             }
                         }
-                        Log.d( TAG, "Closer thread stopped" );
+                        //Log.d( TAG, "Closer thread stopped" );
                     }
                 }, "Closer" ).start();
                 
                 StreamServer.this.wifiLock.acquire();
-                Log.d( TAG, "WiFi lock" );
+                //Log.d( TAG, "WiFi lock" );
                 synchronized( this ) {
                     ss = new ServerSocket( 5322 );
                 }
                 int count = 0;
                 while( !isInterrupted() ) {
-                    Log.d( TAG, "Listening for a new connection..." );
+                    //Log.d( TAG, "Listening for a new connection..." );
                     Socket data_socket = ss.accept();
-                    Log.d( TAG, "Connection accepted" );
+                    //Log.d( TAG, "Connection accepted" );
                     if( data_socket != null && data_socket.isConnected() ) {
                         stream_thread = new StreamingThread( data_socket, count++ );
                         stream_thread.start();
@@ -131,7 +131,7 @@ public class StreamServer extends Service {
             }
             finally {
                 StreamServer.this.wifiLock.release();
-                Log.d( TAG, "WiFi lock release" );
+                //Log.d( TAG, "WiFi lock release" );
                 this.close();
             }
             StreamServer.this.stopSelf();
@@ -169,14 +169,14 @@ public class StreamServer extends Service {
         }
         
         private void Log( String s ) {
-            Log.d( TAG, "" + num_id + ": " + s );
+            //Log.d( TAG, "" + num_id + ": " + s );
         }
         
         public void run() {
             InputStream  is = null;
             OutputStream os = null;
             try {
-                Log.d( TAG, "Thread started" );
+                //Log.d( TAG, "Thread started" );
                 setName( TAG );
                 //setPriority( Thread.MAX_PRIORITY );
                 setPriority( Thread.NORM_PRIORITY );

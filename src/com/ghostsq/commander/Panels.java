@@ -268,7 +268,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         ListView flv = list[opposite()].flv;
         boolean opp = flv == v; 
         if( f && opp ) {
-            Log.v( TAG, "focus has changed to " + ( opposite()==LEFT?"LEFT":"RIGHT" ) );
+            //Log.v( TAG, "focus has changed to " + ( opposite()==LEFT?"LEFT":"RIGHT" ) );
             setPanelCurrent( opposite(), true );
         }
     
@@ -520,28 +520,28 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         setLayoutMode( !sxs );
     }
     public final void togglePanels( boolean refresh ) {
-        Log.v( TAG, "toggle" );
+        //Log.v( TAG, "toggle" );
         setPanelCurrent( opposite() );
     }
     
     public final void setPanelCurrent( int which ) {
         setPanelCurrent( which, false );
     }
-    private final void setPanelCurrent( int which, boolean dont_focus ) {
-        Log.v( TAG, "setPanelCurrent: " + which + " dnf:" + dont_focus );
+    public final void setPanelCurrent( int which, boolean dont_focus ) {
+        //Log.v( TAG, "setPanelCurrent: " + which + " dnf:" + dont_focus );
         if( !dont_focus && panelsView != null ) {
             panelsView.setMode( sxs );
         }
         current = which;
         if( !sxs ) {
             final int dir = current == LEFT ? HorizontalScrollView.FOCUS_LEFT : HorizontalScrollView.FOCUS_RIGHT;
-            Log.v( TAG, "fullScroll: " + dir );
+            //Log.v( TAG, "fullScroll: " + dir );
             if( dont_focus )
                 hsv.fullScroll( dir );
             else {
                 hsv.post( new Runnable() {
                     public void run() {
-                        Log.v( TAG, "fullScroll: " + dir );
+                        //Log.v( TAG, "fullScroll: " + dir );
                         hsv.fullScroll( dir );
                     }
                 } );

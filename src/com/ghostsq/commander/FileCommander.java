@@ -124,7 +124,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onStart() {
-        Log.v( TAG, "Starting\n" );
+        //Log.v( TAG, "Starting\n" );
         super.onStart();
         on = true;
         if( dont_restore )
@@ -142,7 +142,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             int use_panel = -1;
             Uri uri = intent.getData();
             if( uri != null && !viewActProcessed && Intent.ACTION_VIEW.equals( action ) ) {
-                Log.v( TAG, "Intent URI: " + uri );
+                //Log.v( TAG, "Intent URI: " + uri );
                 Credentials crd = null;
                 try { 
                     crd = (Credentials)intent.getParcelableExtra( Credentials.KEY );
@@ -757,7 +757,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 notifyMe( msg );
                 return;
             }
-            Log.v( TAG, "No parcel found in the intent." );
+            //Log.v( TAG, "No parcel found in the intent." );
         } catch( Exception e ) {
             Log.e( TAG, "Can't extract a parcel from intent", e );
         }

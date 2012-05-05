@@ -225,7 +225,12 @@ public class TextViewer extends Activity {
         }
         @Override
         protected void onPostExecute( CharSequence cs ) {
-            TextViewer.this.text_view.setText( cs );
+            try {
+                TextViewer.this.text_view.setText( cs );
+            } catch( Throwable e ) {
+                onProgressUpdate( getString( R.string.failed ) + e.getLocalizedMessage() );
+                e.printStackTrace();
+            }
         }
      }
      
