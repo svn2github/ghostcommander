@@ -119,7 +119,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="8dp"
-                android:text="" />
+                android:text="@string/empty_string" />
             </TableRow>
 
             <TableRow 
@@ -152,7 +152,7 @@
                   android:layout_height="wrap_content"
                   android:layout_gravity="top"
                   android:textSize="8dp"
-                  android:text="" />
+                  android:text="@string/empty_string" />
               </TableRow>
           </TableLayout>        
         </RelativeLayout>

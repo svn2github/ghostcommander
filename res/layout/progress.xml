@@ -13,7 +13,6 @@
         android:layout_marginRight="20dip"
         android:gravity="left"
         android:textSize="12dp"
-        android:text=""
         />
             
     <ProgressBar android:id="@+id/progress_bar"
@@ -32,7 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:gravity="left"
-        android:text="0%"
+        android:text="@string/zero_percent"
         />
     <TextView 
         android:id="@+id/speed"
@@ -41,6 +40,5 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:gravity="right"
-        android:text=""
         />
 </RelativeLayout>                

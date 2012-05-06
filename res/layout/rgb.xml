@@ -24,7 +24,7 @@ android:orientation="vertical">
 	        android:layout_height="wrap_content"
 	        android:orientation="horizontal">
 	        <TextView 
-	            android:text="R" 
+	            android:text="@string/r_title" 
 	            android:id="@+id/r_title"
 	            android:textStyle="bold"
 	            android:textColor="#FF0000" 
@@ -46,7 +46,7 @@ android:orientation="vertical">
 	        android:layout_height="wrap_content"
 	        android:orientation="horizontal">
 	        <TextView 
-	            android:text="G" 
+	            android:text="@string/g_title" 
 	            android:id="@+id/g_title"
 	            android:textStyle="bold"
 	            android:textColor="#00FF00"
@@ -68,7 +68,7 @@ android:orientation="vertical">
 	        android:layout_height="wrap_content"
 	        android:orientation="horizontal">
 	        <TextView 
-	            android:text="B" 
+	            android:text="@string/b_title" 
 	            android:id="@+id/b_title"
 	            android:textStyle="bold"
 	            android:textColor="#0000FF" 

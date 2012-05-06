@@ -27,30 +27,30 @@
                       android:id="@+id/User"
                       android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
-                      android:text="User"
+                      android:text="@string/user"
                       android:gravity="right"
                       android:paddingLeft="10dip" 
                       android:paddingRight="10dip"/>
                   <CheckBox 
-                      android:text="r" 
+                      android:text="@string/r_bit" 
                       android:id="@+id/UR"
                       android:layout_width="wrap_content" 
                       android:layout_height="wrap_content" 
                       android:paddingRight="10dip"/>
                   <CheckBox 
-                      android:text="w" 
+                      android:text="@string/w_bit" 
                       android:id="@+id/UW" 
                       android:layout_width="wrap_content" 
                       android:layout_height="wrap_content" 
                       android:paddingRight="10dip"/>
                   <CheckBox 
-                      android:text="x" 
+                      android:text="@string/x_bit" 
                       android:id="@+id/UX" 
                       android:layout_width="wrap_content" 
                       android:layout_height="wrap_content" 
                       android:paddingRight="10dip"/>
                   <CheckBox 
-                      android:text="s" 
+                      android:text="@string/s_bit" 
                       android:id="@+id/US" 
                       android:layout_width="wrap_content" 
                       android:layout_height="wrap_content" 
@@ -66,30 +66,30 @@
                       android:id="@+id/Group"
                       android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
-                      android:text="Group"
+                      android:text="@string/group"
                       android:gravity="right"
                       android:paddingLeft="10dip" 
                       android:paddingRight="10dip"/>
                   <CheckBox 
-                      android:text="r" 
+                      android:text="@string/r_bit" 
                       android:id="@+id/GR" 
                       android:layout_width="wrap_content" 
                       android:layout_height="wrap_content" 
                       android:paddingRight="10dip"/>
                   <CheckBox 
-                      android:text="w" 
+                      android:text="@string/w_bit" 
                       android:id="@+id/GW" 
                       android:layout_width="wrap_content" 
                       android:layout_height="wrap_content" 
                       android:paddingRight="10dip"/>
                   <CheckBox 
-                      android:text="x" 
+                      android:text="@string/x_bit" 
                       android:id="@+id/GX" 
                       android:layout_width="wrap_content" 
                       android:layout_height="wrap_content" 
                       android:paddingRight="10dip"/>
                   <CheckBox 
-                      android:text="s" 
+                      android:text="@string/s_bit" 
                       android:id="@+id/GS" 
                       android:layout_width="wrap_content" 
                       android:layout_height="wrap_content" 
@@ -103,30 +103,30 @@
                       android:id="@+id/Other"
                       android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
-                      android:text="Other" 
+                      android:text="@string/other" 
                       android:gravity="right"
                       android:paddingLeft="10dip"
                       android:paddingRight="10dip"/>
                   <CheckBox 
-                      android:text="r" 
+                      android:text="@string/r_bit" 
                       android:id="@+id/OR" 
                       android:layout_width="wrap_content" 
                       android:layout_height="wrap_content" 
                       android:paddingRight="10dip"/>
                   <CheckBox 
-                      android:text="w" 
+                      android:text="@string/w_bit" 
                       android:id="@+id/OW" 
                       android:layout_width="wrap_content" 
                       android:layout_height="wrap_content" 
                       android:paddingRight="10dip"/>
                   <CheckBox 
-                      android:text="x" 
+                      android:text="@string/x_bit" 
                       android:id="@+id/OX" 
                       android:layout_width="wrap_content" 
                       android:layout_height="wrap_content" 
                       android:paddingRight="10dip"/>
                   <CheckBox 
-                      android:text="t" 
+                      android:text="@string/t_bit" 
                       android:id="@+id/OT" 
                       android:layout_width="wrap_content" 
                       android:layout_height="wrap_content" 

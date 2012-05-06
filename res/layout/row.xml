@@ -19,8 +19,7 @@
             android:layout_weight="2"
             android:layout_gravity="left" 
             android:paddingLeft="2dip" 
-            android:paddingRight="4dip" 
-            android:text="very long file name.conf"/>
+            android:paddingRight="4dip"/>
         <TextView android:id="@+id/fld_date"
         android:layout_weight="1"
             android:layout_width="wrap_content"
@@ -31,8 +30,7 @@
             android:paddingRight="4dip" 
             android:typeface="monospace"
             android:singleLine="true"
-            android:ellipsize="none"
-            android:text="04.22.2012 10:44"/>
+            android:ellipsize="none"/>
         <TextView android:id="@+id/fld_size"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -43,8 +41,7 @@
             android:paddingRight="5dip"
             android:typeface="monospace"
             android:singleLine="true"
-            android:ellipsize="none"
-            android:text="999999999999999999999999.9M"/>
+            android:ellipsize="none"/>
         <TextView android:id="@+id/fld_attr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -55,7 +52,6 @@
             android:paddingRight="4dip"
             android:typeface="monospace"
             android:singleLine="true"
-            android:ellipsize="none"
-            android:text="-rwxr-xr-x 1 system system " />
+            android:ellipsize="none"/>
 </RelativeLayout>
 

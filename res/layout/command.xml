@@ -6,7 +6,7 @@
     android:padding="10dip" 
     android:id="@+id/command">
     <TextView 
-        android:text="Command:" 
+        android:text="@string/command" 
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content"/>
     <EditText 
@@ -16,7 +16,7 @@
         android:scrollHorizontally="true"
         />
     <CheckBox 
-        android:text="busybox" 
+        android:text="@string/use_busybox" 
         android:id="@+id/use_busybox" 
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content"/>

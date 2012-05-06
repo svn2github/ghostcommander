@@ -19,7 +19,6 @@
           android:layout_weight="2"/>
         <TextView 
             android:id="@+id/tb_label"
-            android:text="Name"
             android:layout_toRightOf="@id/tb_visible"
             android:layout_centerVertical="true"
             android:textAppearance="?android:attr/textAppearanceSmall"
@@ -31,7 +30,6 @@
             android:ellipsize="marquee"/>
         <EditText 
             android:id="@+id/tb_caption" 
-            android:text="EditText"
             android:layout_toRightOf="@id/tb_label"
             android:singleLine="true"
             android:layout_width="0dp"

@@ -15,8 +15,7 @@
 	        android:layout_toRightOf="@id/fld_icon"
             android:paddingTop="1dip"
             android:paddingLeft="4dip"
-            android:textSize="10sp"
-            android:text="very long file name.conf"/>
+            android:textSize="10sp"/>
         <TextView 
             android:id="@+id/fld_date"
             android:layout_alignParentRight="true"

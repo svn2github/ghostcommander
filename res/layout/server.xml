@@ -193,7 +193,7 @@
             android:layout_marginTop="10dip">
             <CheckBox 
                 android:id="@+id/active" 
-                android:text="Active" 
+                android:text="@string/active" 
                 android:layout_width="wrap_content" 
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
