@@ -413,8 +413,7 @@ public class AppsAdapter extends CommanderAdapterBase {
         for( int i = 0; i < pl.size(); i++ ) {
             try {
                 PackageInfo pi = pm.getPackageInfo( pl.get( i ).packageName, PackageManager.GET_GIDS | 
-                                                                             PackageManager.GET_PERMISSIONS |
-                                                                             PackageManager.GET_SIGNATURES );
+                                                                             PackageManager.GET_PERMISSIONS ); // PackageManager.GET_SIGNATURES
                 if( pi == null )
                     continue;
                 String v = null;

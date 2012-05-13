@@ -163,7 +163,7 @@ public class ServerForm extends Activity implements View.OnClickListener {
                 }
                 Uri.Builder uri_b = new Uri.Builder()
                     .scheme( schema )
-                    .authority( server_edit.getText().toString().trim() )
+                    .encodedAuthority( Utils.encodeToAuthority( server_edit.getText().toString().trim() ) )
                     .path( path_edit.getText().toString().trim() );
                 if( type == Type.FTP && active_ftp_cb.isChecked() )
                     uri_b.appendQueryParameter( "a", "true" );
