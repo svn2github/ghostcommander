@@ -174,6 +174,7 @@ public class PictureViewer extends Activity {
                             }
                         }
                         ca.closeStream( is );
+                        ca.prepareToDestroy();
                         fos.close();
                     }
                     if( f != null ) {

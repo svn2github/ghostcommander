@@ -275,6 +275,13 @@ public class Editor extends Activity implements TextWatcher {
         protected Boolean doInBackground( Uri... save_uri_ ) {
             Uri save_uri = save_uri_.length > 0 ? save_uri_[0] : null;
             if( save_uri == null || Editor.this.ca == null ) return false;
+            Credentials crd = null; 
+            try {
+                crd = (Credentials)Editor.this.getIntent().getParcelableExtra( Credentials.KEY );
+            } catch( Exception e ) {
+                Log.e( TAG, "on taking credentials from parcel", e );
+            }
+            Editor.this.ca.setCredentials( crd );
             OutputStream os = Editor.this.ca.saveContent( save_uri );
             if( os == null ) return false;
             try {

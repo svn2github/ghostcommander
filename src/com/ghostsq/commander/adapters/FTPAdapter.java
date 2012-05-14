@@ -569,6 +569,7 @@ public class FTPAdapter extends CommanderAdapterBase {
                 try {
                     ftp.makeDir( name );
                     sendResult( "" );
+                    return;
                 } catch( Exception e ) {
                 }
                 error( ctx.getString( R.string.ftp_mkdir_failed, name, ftp.getLog() ) );            

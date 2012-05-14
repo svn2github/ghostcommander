@@ -34,7 +34,6 @@ import android.graphics.drawable.StateListDrawable;
 import android.net.Uri;
 import android.net.UrlQuerySanitizer;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.text.ClipboardManager;
@@ -47,7 +46,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -668,7 +666,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     }
     
     public final void Destroy() {
-        Log.i( TAG, "Destroing" );
+        Log.i( TAG, "Destroing adapters" );
         try {
             getListAdapter( false ).prepareToDestroy();
             getListAdapter( true  ).prepareToDestroy();
@@ -1419,14 +1417,18 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         if( dont_restore != LEFT && dont_restore != RIGHT )
     	    current = s.current;
     	if( dont_restore != LEFT ) {
-        	Uri lu = s.leftUri != null ? s.leftUri : Uri.parse( "home:" );
             ListHelper list_h = list[LEFT];
-            list_h.Navigate( lu, s.leftCrd, s.leftItem, s.current == LEFT );
+            if( list_h.getListAdapter() == null ) {
+                Uri lu = s.leftUri != null ? s.leftUri : Uri.parse( "home:" );
+                list_h.Navigate( lu, s.leftCrd, s.leftItem, s.current == LEFT );
+            }
     	}
     	if( dont_restore != RIGHT ) {
-            Uri ru = s.rightUri != null ? s.rightUri : Uri.parse( "home:" ); 
             ListHelper list_h = list[RIGHT];
-            list_h.Navigate( ru, s.rightCrd, s.rightItem, s.current == RIGHT );
+            if( list_h.getListAdapter() == null ) {
+                Uri ru = s.rightUri != null ? s.rightUri : Uri.parse( "home:" ); 
+                list_h.Navigate( ru, s.rightCrd, s.rightItem, s.current == RIGHT );
+            }
     	}
         applyColors();
     }

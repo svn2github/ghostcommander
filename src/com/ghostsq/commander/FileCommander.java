@@ -215,7 +215,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onPause() {
-        //Log.v( TAG, "Pausing\n");
+        Log.v( TAG, "Pausing\n");
         super.onPause();
         on = false;
         SharedPreferences.Editor editor = getPreferences( MODE_PRIVATE ).edit();
@@ -226,26 +226,26 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     @Override
     protected void onResume() {
-        //Log.v( TAG, "Resuming\n");
+        Log.v( TAG, "Resuming\n");
         super.onResume();
         on = true;
     }
     
     @Override
     protected void onStop() {
-        //Log.v( TAG, "Stopping\n");
+        Log.v( TAG, "Stopping\n");
         super.onStop();
         on = false;
     }
 
     @Override
     protected void onDestroy() {
-        //Log.v( TAG, "Destroying\n");
+        Log.v( TAG, "Destroying\n");
         on = false;
         super.onDestroy();
+        if( notMan != null ) notMan.cancelAll();
+        panels.Destroy();
         if( isFinishing() && exit ) {
-            if( notMan != null ) notMan.cancelAll();
-            panels.Destroy();
             Log.i( TAG, "Good bye cruel world...");
             System.exit( 0 );
         }
