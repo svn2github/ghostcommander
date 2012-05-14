@@ -178,8 +178,7 @@ public class StreamServer extends Service {
             try {
                 //Log.d( TAG, "Thread started" );
                 setName( TAG );
-                //setPriority( Thread.MAX_PRIORITY );
-                setPriority( Thread.NORM_PRIORITY );
+                setPriority( Thread.MAX_PRIORITY );
                 if( data_socket != null && data_socket.isConnected() ) {
                     is = data_socket.getInputStream();
                     InputStreamReader isr = new InputStreamReader( is );
@@ -195,7 +194,7 @@ public class StreamServer extends Service {
                             while( br.ready() ) {
                                 String hl = br.readLine();
                                 if( hl != null ) {
-                                    Log( hl );
+                                    //Log( hl );
                                     if( hl.startsWith( "Range: bytes=" ) ) {
                                         int end = hl.indexOf( '-', 13 );
                                         String range_s = hl.substring( 13, end );
@@ -275,9 +274,9 @@ public class StreamServer extends Service {
                                                     int n = rt.GetDataSize();
                                                     if( n < 0 )
                                                         break;
-                                                    Log( "      W..." );
+                                                    //Log( "      W..." );
                                                     os.write( out_buf, 0, n );
-                                                    Log( "      ...W " + n + "/" + ( count += n ) );
+                                                    //Log( "      ...W " + n + "/" + ( count += n ) );
                                                 }
                                                 catch( Exception e ) {
                                                     Log( "write exception: " + e.getMessage() );
@@ -345,12 +344,11 @@ public class StreamServer extends Service {
         }
         public void run() {
             try {
-                //setPriority( Thread.MAX_PRIORITY );
-                setPriority( Thread.NORM_PRIORITY );
+                setPriority( Thread.MAX_PRIORITY );
                 int count = 0;
                 while( true ) {
                     byte[] inp_buf = bufs[roller++ % 2];
-                    Log( "R..." );
+                    //Log( "R..." );
                     int has_read = is.read( inp_buf, 0, chunk );
                     if( has_read < 0 )
                         break;
@@ -358,19 +356,19 @@ public class StreamServer extends Service {
                         chunk <<= 1;
                     if( chunk > MAX )
                         chunk = MAX;                    
-                    Log( "...R " + has_read + "/" + ( count += has_read ) );
+                    //Log( "...R " + has_read + "/" + ( count += has_read ) );
                     synchronized( this ) {
-                        Log( "?.." );
+                        //Log( "?.." );
                         int wcount = 0; 
                         while( out_buf != null ) {
                             //Log( "Waiting when the output buffer is released..." );
                             wait( 10 );
                             wcount += 10;
                         }
-                        Log( "...! (" + wcount + "ms)" );
+                        //Log( "...! (" + wcount + "ms)" );
                         out_buf = inp_buf;
                         data_size = has_read; 
-                        Log( "O=I ->" );
+                        //Log( "O=I ->" );
                         notify();
                     }
                 }
@@ -381,16 +379,18 @@ public class StreamServer extends Service {
         }
         public synchronized byte[] getOutputBuffer() throws InterruptedException {
             int wcount = 0;
-            Log( "       ?.." );
+            //Log( "       ?.." );
             while( out_buf == null && this.isAlive() ) {
                 //Log( "Waiting when the output buffer is ready" );
                 wait( 10 );
                 wcount += 10;
             }
+            /*
             if( out_buf != null ) 
                 Log( "      ..! (" + wcount + "ms)" );
             else
                 Log( "X" );
+            */
             return out_buf;
         }
         public int GetDataSize() {
@@ -400,7 +400,7 @@ public class StreamServer extends Service {
         }
         public synchronized void doneOutput() {
             out_buf = null;
-            Log( "    <- O done" );
+            //Log( "    <- O done" );
             notify();
         }
     };
