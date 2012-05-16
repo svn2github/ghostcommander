@@ -78,7 +78,7 @@ public class LocationBar extends BaseAdapter implements Filterable, OnKeyListene
 	  Filter nameFilter = new Filter() {
 		   @Override
 		   public String convertResultToString( Object resultValue ) {
-		      return resultValue.toString();
+		      return resultValue != null ? resultValue.toString() : "?";
 		   }
 	
 		   @Override
@@ -222,8 +222,14 @@ public class LocationBar extends BaseAdapter implements Filterable, OnKeyListene
 				if( star_cb.isChecked() ) {
                     if( Favorite.isPwdScreened( u ) ) {
                         Credentials crd = favorites.searchForPassword( u );
-                        if( crd == null )
-                            u = Favorite.borrowPassword( u, p.getFolderUriWithAuth( true ) );
+                        if( crd == null ) {
+                            Uri au = Favorite.borrowPassword( u, p.getFolderUriWithAuth( true ) );
+                            if( au == null )
+                                Log.e( TAG, "Can't find the replacement for screened password!" );
+                            else
+                                u = au;
+                            
+                        }
                         favorites.add( new Favorite( u, crd ) );
                     }
                     else

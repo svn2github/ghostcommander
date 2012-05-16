@@ -131,6 +131,8 @@ public class FTPAdapter extends CommanderAdapterBase {
                         return false;      
                 }
             }
+            if( items == null )
+                numItems = 1;
             notify( Commander.OPERATION_STARTED );
             Log.v( TAG, "Creating and starting the reader..." );
             reader = new ListEngine( readerHandler, need_reconnect, pass_back_on_done );
@@ -225,7 +227,7 @@ public class FTPAdapter extends CommanderAdapterBase {
 	                int cl_res = connectAndLogin( uri );
                     if( cl_res < 0 ) {
                         if( cl_res == NO_LOGIN ) 
-                            sendProgress( uri.toString(), Commander.OPERATION_FAILED_LOGIN_REQUIRED );
+                            sendLoginReq( uri.toString(), theUserPass, pass_back_on_done );
                         return;
                     }
 	                if( cl_res == LOGGED_IN )

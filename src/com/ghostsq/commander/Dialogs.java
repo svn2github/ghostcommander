@@ -48,6 +48,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
     private int  progressCounter = 0;
     private long progressAcSpeed = 0;
     private Credentials   crd = null;
+    private int which_panel = -1;
 
     Dialogs( FileCommander owner_, int id ) {
         owner = owner_;
@@ -489,8 +490,9 @@ public class Dialogs implements DialogInterface.OnClickListener {
     public void setCookie( String cookie_ ) {
         cookie = cookie_;
     }
-    public void setCredentials( Credentials crd_ ) {
+    public void setCredentials( Credentials crd_, int which_panel_ ) {
         crd = crd_;
+        which_panel = which_panel_;
     }
     @Override
     public void onClick( DialogInterface idialog, int whichButton ) {
@@ -594,7 +596,8 @@ public class Dialogs implements DialogInterface.OnClickListener {
                         EditText name_edit = (EditText)dialogObj.findViewById( R.id.username_edit );
                         EditText pass_edit = (EditText)dialogObj.findViewById( R.id.password_edit );
                         if( name_edit != null && pass_edit != null )
-                            owner.panels.login( new Credentials( name_edit.getText().toString(), pass_edit.getText().toString() ) );
+                            owner.panels.login( new Credentials( name_edit.getText().toString(), pass_edit.getText().toString() ), which_panel );
+                        which_panel = -1;
                     }
                     break;
                 case R.id.donate:

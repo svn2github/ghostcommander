@@ -840,7 +840,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                     if( b != null ) {
                         Parcelable crd_p = b.getParcelable( NOTIFY_CRD );
                         if( crd_p != null && crd_p instanceof Credentials )
-                            dh.setCredentials( (Credentials)crd_p );
+                            dh.setCredentials( (Credentials)crd_p, Utils.str( cookie ) ? cookie.charAt( 0 ) == '1' ? 1 : 0 : -1 );
                     }
                     dh.setMessageToBeShown( string, cookie );
                     showDialog( Dialogs.LOGIN_DIALOG );

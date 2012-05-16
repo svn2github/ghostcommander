@@ -44,7 +44,17 @@ public class Favorites extends ArrayList<Favorite>
                 u = Utils.addTrailngSlash( Utils.updateUserInfo( u, null ) );
                 //Log.v( TAG, "looking for URI:" + u );
                 for( int i = 0; i < size(); i++ ) {
-                    Uri fu = Utils.addTrailngSlash( get( i ).getUri() );
+                    Favorite f = get( i );
+                    if( f == null ) {
+                        Log.e( TAG, "A fave is null!" );
+                        continue;
+                    }
+                    Uri fu = f.getUri(); 
+                    if( fu == null ) {
+                        Log.e( TAG, "A fave URI is null!" );
+                        continue;
+                    }
+                    fu = Utils.addTrailngSlash( fu );
                     //Log.v( TAG, "probing URI:" + fu );
                     if( fu.equals( u ) )
                         return i;

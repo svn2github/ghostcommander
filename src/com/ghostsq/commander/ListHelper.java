@@ -215,7 +215,7 @@ public class ListHelper {
                 return;
             storeChoosedItems();
             flv.clearChoices();
-            ca.readSource( null, null );
+            ca.readSource( null, "" + which );
             flv.invalidateViews();
             needRefresh = false;
         } catch( Exception e ) {

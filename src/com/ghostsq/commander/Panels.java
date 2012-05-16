@@ -644,11 +644,12 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         }
     }
     
-    public void login( Credentials crd ) {
-        CommanderAdapter ca = getListAdapter( true );
+    public void login( Credentials crd, int which_panel ) {
+        if( which_panel < 0 ) which_panel = current; 
+        CommanderAdapter ca = list[which_panel].getListAdapter();
         if( ca != null ) {
             ca.setCredentials( crd );
-            list[current].refreshList( true );
+            list[which_panel].refreshList( true );
         }
     }
 
