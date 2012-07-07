@@ -55,7 +55,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ViewFlipper;
 import android.widget.AbsListView.OnScrollListener;
 
 public class Panels   implements AdapterView.OnItemSelectedListener, 
@@ -75,10 +74,10 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     private ListHelper              list[] = { null, null };
     public  FileCommander           c;
     public  View                    mainView, toolbar = null;
-    private HorizontalScrollView    hsv;
+    private LockableScrollView      hsv;
     public  PanelsView              panelsView = null;
     public  boolean                 sxs, fingerFriendly = false;
-    private boolean                 arrowsLegacy = false, warnOnRoot = true, rootOnRoot = false, toolbarShown = false;
+    private boolean                 panels_sliding = true, arrowsLegacy = false, warnOnRoot = true, rootOnRoot = false, toolbarShown = false;
     public  boolean                 volumeLegacy = true;
     private boolean                 selAtRight = true, disableOpenSelectOnly = false, disableAllActions = false;
     private float                   selWidth = 0.5f, downX = 0, downY = 0, x_start = -1;
@@ -97,7 +96,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         c.setContentView( R.layout.alt );
         mainView = c.findViewById( R.id.main );
         
-        hsv = (HorizontalScrollView)c.findViewById( R.id.hrz_scroll );
+        hsv = (LockableScrollView)c.findViewById( R.id.hrz_scroll );
         hsv.setHorizontalScrollBarEnabled( false );
         hsv.setSmoothScrollingEnabled( true );
         hsv.setOnTouchListener( this );
@@ -430,15 +429,15 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 ff = "y".equals( ffs );
             
         	setFingerFriendly( ff, fnt_sz );
-        	warnOnRoot   = sharedPref.getBoolean( "prevent_root", true );
-            rootOnRoot   = sharedPref.getBoolean( "root_root", false );
-            arrowsLegacy = sharedPref.getBoolean( "arrow_legc", false );
-            volumeLegacy = sharedPref.getBoolean( "volume_legc", true );            
-            toolbarShown = sharedPref.getBoolean( "show_toolbar", true );
-            
-            selAtRight = sharedPref.getBoolean( Prefs.SEL_ZONE + "_right", true );
-            selWidth   = sharedPref.getInt( Prefs.SEL_ZONE + "_width", 50 ) / 100f;
-
+        	warnOnRoot     = sharedPref.getBoolean( "prevent_root", true );
+            rootOnRoot     = sharedPref.getBoolean( "root_root", false );
+            panels_sliding = sharedPref.getBoolean( "panels_sliding", true );
+            hsv.setScrollable( panels_sliding );
+            arrowsLegacy   = sharedPref.getBoolean( "arrow_legc", false );
+            volumeLegacy   = sharedPref.getBoolean( "volume_legc", true );            
+            toolbarShown   = sharedPref.getBoolean( "show_toolbar", true );
+            selAtRight     = sharedPref.getBoolean( Prefs.SEL_ZONE + "_right", true );
+            selWidth       = sharedPref.getInt( Prefs.SEL_ZONE + "_width", 50 ) / 100f;
             if( !init ) {
                 list[LEFT].applySettings( sharedPref );
                 list[RIGHT].applySettings( sharedPref );
@@ -1093,7 +1092,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     @Override
     public boolean onTouch( View v, MotionEvent event ) {
     	resetQuickSearch();
-        if( v == hsv ) {
+        if( panels_sliding && v == hsv ) {
             if( x_start < 0. && event.getAction() == MotionEvent.ACTION_MOVE )
                 x_start = event.getX();
             else

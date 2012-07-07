@@ -291,6 +291,8 @@
 <string name="summary_show_hidden">Файлы начинающиеся на точку показывать наравне с остальными</string>
 <string name="compatibility_settings">Совместимость</string>
 <string name="summary_compatibility_settings">Настройка переопределения функций аппаратных кнопок устройства</string>
+<string name="panels_sliding">Смена панелей сдвигом</string>
+<string name="summary_panels_sliding">Разрешить сдивигающий жест для переключения активной панели</string>
 <string name="arrow_mode">Стрелки Влево/Вправо</string>
 <string name="summary_arrow_mode">работают как Переключение и Пометка</string>
 <string name="volume_mode">Кнопки громкости</string>

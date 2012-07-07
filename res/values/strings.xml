@@ -300,6 +300,8 @@
 <string name="summary_show_hidden">If not checked, files and folders with a preceding dot in their names won\'t be shown</string>
 <string name="compatibility_settings">Compatibility</string> 
 <string name="summary_compatibility_settings">Enable or disable the overriding of hardware button functions</string> 
+<string name="panels_sliding">Enable sliding gesture</string>
+<string name="summary_panels_sliding">Switch panels by a gorizontal scroll gesture</string>
 <string name="arrow_mode">Override arrow buttons</string>
 <string name="summary_arrow_mode">Left/right arrows perform toggle/select</string>
 <string name="volume_mode">Override volume buttons</string>

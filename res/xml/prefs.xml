@@ -196,6 +196,11 @@
                 android:title="@string/compatibility_settings"
                 android:summary="@string/summary_compatibility_settings">
                 <CheckBoxPreference
+                            android:key="panels_sliding"
+                            android:title="@string/panels_sliding"
+                            android:summary="@string/summary_panels_sliding"
+                            android:defaultValue="true"/>
+                <CheckBoxPreference
                             android:key="arrow_legc"
                             android:title="@string/arrow_mode"
                             android:summary="@string/summary_arrow_mode"

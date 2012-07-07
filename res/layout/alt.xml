@@ -54,7 +54,7 @@
             android:layout_width="wrap_content" 
             android:layout_height="wrap_content"/>         
     </LinearLayout>
-    <HorizontalScrollView 
+    <com.ghostsq.commander.LockableScrollView 
         android:id="@+id/hrz_scroll" 
         android:layout_width="wrap_content" 
         android:layout_height="fill_parent" 
@@ -90,6 +90,6 @@
                         android:paddingLeft="1dp"
                         android:paddingRight="1dp"/>
         </com.ghostsq.commander.PanelsView>
-    </HorizontalScrollView>
+    </com.ghostsq.commander.LockableScrollView>
  </LinearLayout>
  
