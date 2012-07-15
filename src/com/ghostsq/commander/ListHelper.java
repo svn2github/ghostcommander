@@ -207,7 +207,7 @@ public class ListHelper {
     public final boolean needRefresh() {
         return needRefresh;
     }
-    public final void refreshList( boolean was_current_ ) {
+    public final void refreshList( boolean was_current_, String posto ) {
         try {
             was_current = was_current_;
             CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
@@ -215,7 +215,10 @@ public class ListHelper {
                 return;
             storeChoosedItems();
             flv.clearChoices();
-            ca.readSource( null, "" + which );
+            String cookie = "" + which;
+            if( posto != null )
+                cookie += posto; 
+            ca.readSource( null, cookie );
             flv.invalidateViews();
             needRefresh = false;
         } catch( Exception e ) {
@@ -375,10 +378,13 @@ public class ListHelper {
     public final void recoverAfterRefresh( String item_name ) {
         try {
             //Log.v( TAG, "restoring panel " + which + " item: " + item_name );
+            reStoreChoosedItems();
             if( item_name != null && item_name.length() > 0 )
                 setSelection( item_name );
+/*
             else
                 setSelection( 0, 0 );
+*/
             if( was_current ) {
                 //Log.v( TAG, "this was the current panel, let's focus it" );
                 //focus();
@@ -446,6 +452,8 @@ public class ListHelper {
                     }
                     flv.setItemChecked( i, set );
                 }
+                if( currentPosition >= 0 )
+                    setSelection( currentPosition, 0 );
             }
         } catch( Exception e ) {
             Log.e( TAG, "reStoreChoosedItems()", e );

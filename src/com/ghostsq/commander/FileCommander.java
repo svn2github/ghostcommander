@@ -419,7 +419,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             break;
         case OPERATION_COMPLETED_REFRESH_REQUIRED:
             Log.i( TAG, "An activity ends. Refresh required." );
-            panels.refreshLists();
+            panels.refreshLists( null );
             break;
         }
     }
@@ -600,7 +600,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 panels.changeSorting( CommanderAdapter.SORT_DATE );
                 break;
             case R.id.refresh:
-                panels.refreshLists();
+                panels.refreshLists( null );
                 break;
             case R.id.sel_all:
                 showDialog( Dialogs.SELECT_DIALOG );
@@ -847,7 +847,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 }
                 return TERMINATE;
             case OPERATION_COMPLETED_REFRESH_REQUIRED:
-                panels.refreshLists();
+                String posto = b != null ? b.getString( NOTIFY_POSTO ) : null;
+                panels.refreshLists( posto );
                 break;
             case OPERATION_COMPLETED:
                 if( Utils.str( cookie ) ) {

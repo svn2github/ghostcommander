@@ -676,9 +676,10 @@ public class FSAdapter extends CommanderAdapterBase {
             }
             else
                 ok = f.renameTo( new_file );
-            notify( ok ? null : s( R.string.error ), 
-                    ok ? Commander.OPERATION_COMPLETED_REFRESH_REQUIRED : 
-                         Commander.OPERATION_FAILED );
+            if( ok )
+                notifyRefr( newName );
+            else
+                notify( s( R.string.error ), Commander.OPERATION_FAILED );
             return ok;
         }
         catch( SecurityException e ) {
@@ -747,7 +748,7 @@ public class FSAdapter extends CommanderAdapterBase {
         
         try {
             if( (new File( dirName, new_name )).mkdir() ) {
-                notify( null, Commander.OPERATION_COMPLETED_REFRESH_REQUIRED );
+                notifyRefr( new_name );
                 return;
             }
         } catch( Exception e ) {

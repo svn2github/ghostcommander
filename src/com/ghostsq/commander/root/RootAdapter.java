@@ -423,9 +423,10 @@ public class RootAdapter extends CommanderAdapterBase {
     }
     
     class MkDirEngine extends ExecEngine {
-        String full_name;
-        MkDirEngine( Context ctx, Handler h, String new_name ) {
+        String new_name, full_name;
+        MkDirEngine( Context ctx, Handler h, String new_name_ ) {
             super( ctx, h );
+            new_name = new_name_;
             full_name = uri.getPath() + SLS + new_name;
         }
         
@@ -437,7 +438,10 @@ public class RootAdapter extends CommanderAdapterBase {
             } catch( Exception e ) {
                 error( "Exception: " + e );
             }
-            sendResult( errMsg != null ? "Directory '" + full_name + "' was not created." : null );
+            if( noErrors() )
+                sendRefrReq( new_name );
+            else
+                sendResult( ctx.getString( R.string.cant_md, full_name ) );
         }
     }
 
@@ -599,8 +603,14 @@ public class RootAdapter extends CommanderAdapterBase {
         public void run() {
             if( !execute() )
                 counter = 0;
-            if( quiet )
-                sendResult( null );
+            if( quiet ) {
+                if( noErrors() ) {
+                    File df = new File( dest );
+                    sendRefrReq( df.getName() );
+                }
+                else
+                    sendResult( null );
+            }
             else
                 sendResult( counter > 0 ? Utils.getOpReport( commander.getContext(), counter, move ? R.string.moved : R.string.copied ) : "" );
         }

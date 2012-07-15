@@ -127,12 +127,25 @@ public class Engine extends Thread {
     	else
     		errMsg += "\n" + err;
     }
+    protected final boolean noErrors() {
+        return errMsg == null;
+    }
     protected final void sendResult( String report ) {
         if( errMsg != null )
             sendProgress( report + "\n - " + errMsg, Commander.OPERATION_FAILED );
         else {
             sendProgress( report, Commander.OPERATION_COMPLETED_REFRESH_REQUIRED );
         }
+    }
+    protected final void sendRefrReq( String posto ) {
+        if( thread_handler == null ) return;
+        Message msg = thread_handler.obtainMessage( Commander.OPERATION_COMPLETED_REFRESH_REQUIRED );
+        if( posto != null ) {
+            Bundle b = new Bundle();
+            b.putString( Commander.NOTIFY_POSTO, posto );
+            msg.setData( b );
+        }
+        thread_handler.sendMessage( msg );
     }
     protected final void sendReport( String s ) {
         if( thread_handler == null ) return;

@@ -469,18 +469,18 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         int new_mode = ( cur_mode & CommanderAdapter.MODE_HIDDEN ) == CommanderAdapter.SHOW_MODE ?
                                          CommanderAdapter.HIDE_MODE : CommanderAdapter.SHOW_MODE;
         ca.setMode( CommanderAdapter.MODE_HIDDEN, new_mode );
-        refreshList( current, true );
+        refreshList( current, true, null );
     }
-    public final void refreshLists() {
+    public final void refreshLists( String posto ) {
         int was_current = current, was_opp = 1 - was_current;
-        refreshList( current, true );
+        refreshList( current, true, posto );
         if( sxs )
-            refreshList( was_opp, false );
+            refreshList( was_opp, false, null );
         else
             list[was_opp].setNeedRefresh();
     }
-    public final void refreshList( int which, boolean was_current ) {
-        list[which].refreshList( was_current );
+    public final void refreshList( int which, boolean was_current, String posto ) {
+        list[which].refreshList( was_current, posto );
     }
     public final void redrawLists() {
         list[current].askRedrawList();
@@ -550,7 +550,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         highlightCurrentTitle();
         setToolbarButtons( getListAdapter( true ) );
         if( list[current].needRefresh() ) 
-            refreshList( current, false );
+            refreshList( current, false, null );
     }
     public final void showSizes() {
         storeChoosedItems();
@@ -648,7 +648,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         CommanderAdapter ca = list[which_panel].getListAdapter();
         if( ca != null ) {
             ca.setCredentials( crd );
-            list[which_panel].refreshList( true );
+            list[which_panel].refreshList( true, null );
         }
     }
 
@@ -993,7 +993,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 			fileName = dirName + ( dirName.charAt( dirName.length()-1 ) == '/' ? "" : "/" ) + fileName;
 		}
 		if( ca.createFile( fileName ) ) {
-			refreshLists();
+			refreshLists( fileName );
 			setSelection( current, local_name );
 			openForEdit( fileName );
 		}
@@ -1261,7 +1261,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 	        int which = view_id == titlesIds[LEFT] ? LEFT : RIGHT;
 	        if( which == current ) {
 	            focus();
-	            refreshList( current, true );
+	            refreshList( current, true, null );
 	        }
 	        else
 	            togglePanels( true );
