@@ -32,15 +32,17 @@ final public class CA {
     public static final int SMB   = 0x00020000;
     public static final int DBOX  = 0x00040000;
     public static final int GDOCS = 0x00080000;
-    public static final int NET   = FTP | SMB | GDOCS;
-    public static final int ALL   = 0xFFFFFFFF;
+    public static final int SFTP  = 0x00100000;
+    public static final int NET   = FTP | SMB | GDOCS | SFTP;
     public static final int REAL  = LOCAL | ARCH | ROOT | NET;
     public static final int CHKBL  = REAL | APPS;
+    public static final int ALL   = 0xFFFFFFFF;
 
     // URI schemes hash codes
     protected static final int  home_schema_h =  "home".hashCode();  
     protected static final int   zip_schema_h =   "zip".hashCode();  
     protected static final int   ftp_schema_h =   "ftp".hashCode();  
+    protected static final int  sftp_schema_h =  "sftp".hashCode();  
     protected static final int  find_schema_h =  "find".hashCode();  
     protected static final int  root_schema_h =  "root".hashCode();  
     protected static final int   mnt_schema_h = "mount".hashCode();  
@@ -61,6 +63,7 @@ final public class CA {
         if( home_schema_h == scheme_h )  return HOME;
         if(  zip_schema_h == scheme_h )  return ZIP;
         if(  ftp_schema_h == scheme_h )  return FTP;
+        if( sftp_schema_h == scheme_h )  return SFTP;
         if( find_schema_h == scheme_h )  return FIND;
         if( root_schema_h == scheme_h )  return ROOT;
         if(  mnt_schema_h == scheme_h )  return MNT;
@@ -101,6 +104,7 @@ final public class CA {
         if( type_id == FAVS ) ca = new FavsAdapter( c );  else
         if( type_id == SMB  ) ca = CreateExternalAdapter( c, "samba",  "SMBAdapter" );
         if( type_id == DBOX ) ca = CreateExternalAdapter( c, "dropbox","DBoxAdapter" );
+        if( type_id == SFTP ) ca = CreateExternalAdapter( c, "sftp",   "SFTPAdapter" );
         return ca;
     }
     

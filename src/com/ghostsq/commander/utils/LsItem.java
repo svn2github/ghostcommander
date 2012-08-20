@@ -172,4 +172,7 @@ public class LsItem {
             return ascending ? ext_cmp : -ext_cmp;
         }
     }
+    public static LsItem[] createArray( int n ) {
+        return new LsItem[n];
+    }
 }
