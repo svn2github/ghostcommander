@@ -522,6 +522,7 @@ public final class Utils {
         sz_total( R.string.sz_total),
         too_deep_hierarchy(R.string.too_deep_hierarchy),
         
+        failed(R.string.failed),
         ftp_connected(R.string.ftp_connected)
         ;
         private int r;
