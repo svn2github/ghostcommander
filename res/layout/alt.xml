@@ -74,7 +74,9 @@
                       android:paddingLeft="1dp"
                       android:paddingRight="1dp"
                       android:drawSelectorOnTop="false"
-                      />
+				      android:clickable="true"
+				      android:longClickable="true"
+				                      />
                   <View
                         android:id="@+id/divider" 
                         android:layout_width="1dip" 
@@ -88,7 +90,10 @@
                         android:drawSelectorOnTop="false"
                         android:fastScrollEnabled="true"
                         android:paddingLeft="1dp"
-                        android:paddingRight="1dp"/>
+                        android:paddingRight="1dp"
+				        android:clickable="true"
+				        android:longClickable="true"
+                        />
         </com.ghostsq.commander.PanelsView>
     </com.ghostsq.commander.LockableScrollView>
  </LinearLayout>

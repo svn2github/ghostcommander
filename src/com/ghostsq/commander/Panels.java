@@ -48,6 +48,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
@@ -79,7 +80,7 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public  boolean                 sxs, fingerFriendly = false;
     private boolean                 panels_sliding = true, arrowsLegacy = false, warnOnRoot = true, rootOnRoot = false, toolbarShown = false;
     public  boolean                 volumeLegacy = true;
-    private boolean                 selAtRight = true, disableOpenSelectOnly = false, disableAllActions = false;
+    private boolean                 selAtRight = true, disableOpenSelectOnly = false;
     private float                   selWidth = 0.5f, downX = 0, downY = 0, x_start = -1;
     public  int                     scroll_back = 50, fnt_sz = 12;
     private StringBuffer            quickSearchBuf = null;
@@ -1063,15 +1064,11 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
         if( position == 0 )
             flv.setItemChecked( 0, false ); // parent item never selected
         list[current].setCurPos( position );
-        if( disableAllActions ) {
-            disableAllActions = false;
+        if( disableOpenSelectOnly && ( ((CommanderAdapter)flv.getAdapter()).getType() & CA.CHKBL ) != 0 ) {
             disableOpenSelectOnly = false;
-            SparseBooleanArray cis = flv.getCheckedItemPositions();
-            flv.setItemChecked( position, !cis.get( position ) );
-            return;
+            BaseAdapter ba = (BaseAdapter)flv.getAdapter();
+            ba.notifyDataSetChanged();
         }
-        if( disableOpenSelectOnly && ( ((CommanderAdapter)flv.getAdapter()).getType() & CA.CHKBL ) != 0 )
-            disableOpenSelectOnly = false;
         else { 
             openItem( position );
             flv.setItemChecked( position, false );
