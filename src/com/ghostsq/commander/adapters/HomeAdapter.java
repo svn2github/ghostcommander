@@ -32,7 +32,7 @@ public class HomeAdapter extends CommanderAdapterBase {
         
         public final int pos, name_id, descr_id, icon_id;
         private Mode( int pos_, int name_id_, int descr_id_, int icon_id_ ) {
-            pos      = pos_; 
+            pos      = ordinal(); 
             name_id  = name_id_; 
             descr_id = descr_id_; 
             icon_id  = icon_id_;

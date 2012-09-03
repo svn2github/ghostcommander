@@ -487,7 +487,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                             if( item.icon_id != -1 )
                                 ico_id = item.icon_id;
                             else {
-                                if( item.name.equals( SLS ) || item.name.equals( PLS ) )
+                                if( SLS.equals( item.name ) || PLS.equals( item.name ) )
                                     ico_id = R.drawable.up;
                                 else if( item.dir )
                                     ico_id = R.drawable.folder;
