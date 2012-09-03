@@ -18,34 +18,42 @@ import android.widget.EditText;
 
 public class ServerForm extends Activity implements View.OnClickListener {
     private static final String TAG = "ServerForm";
-    private String schema;
-    private enum Type { FTP, SMB, UNKNOWN };
+    private enum Type { 
+        FTP(   "ftp", "FTP" ), 
+        SFTP( "sftp", "SSH FTP" ), 
+        SMB(   "smb", "Windows PC" ), 
+        UNKNOWN( "?", "" );
+        
+        public String schema, title;
+        
+        private Type( String schema_, String title_ ) {
+            schema = schema_;
+            title  = title_;
+        }
+        public static Type getInstance( String s ) {
+            if( s.equals(  FTP.schema ) ) return  FTP; 
+            if( s.equals( SFTP.schema ) ) return SFTP; 
+            if( s.equals(  SMB.schema ) ) return  SMB; 
+            return UNKNOWN;
+        }
+    };
     private Type type;
+    
     private EditText server_edit;
     private EditText path_edit;
     private EditText domain_edit;
     private EditText name_edit;
     private CheckBox active_ftp_cb;
+    private View     domain_block;
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         try {
             super.onCreate( savedInstanceState );
-            
-            schema = getIntent().getStringExtra( "schema" );
-            String p_name = "...";
-            if( schema.equals( "ftp" ) ) {
-                type = Type.FTP;
-                p_name = "FTP";
-            } else
-            if( schema.equals( "smb" ) ) {
-                type = Type.SMB;
-                p_name = "Windows PC";
-            } else
-                type = Type.UNKNOWN;
+            type = Type.getInstance( getIntent().getStringExtra( "schema" ) );            
 
             // "Leave fields blank to see a list of nodes"
             
-            setTitle( getString( R.string.connect ) + " " + p_name );
+            setTitle( getString( R.string.connect ) + " " + type.title );
             requestWindowFeature( Window.FEATURE_LEFT_ICON );
             setContentView( R.layout.server );
             getWindow().setLayout(LayoutParams.FILL_PARENT /* width */, LayoutParams.WRAP_CONTENT /* height */);            
@@ -55,6 +63,7 @@ public class ServerForm extends Activity implements View.OnClickListener {
             server_edit = (EditText)findViewById( R.id.server_edit );
             path_edit = (EditText)findViewById( R.id.path_edit );
             domain_edit = (EditText)findViewById( R.id.domain_edit );
+            domain_block = findViewById( R.id.domain_block );
             name_edit = (EditText)findViewById( R.id.username_edit );
             active_ftp_cb = (CheckBox)findViewById( R.id.active );            
 
@@ -65,12 +74,9 @@ public class ServerForm extends Activity implements View.OnClickListener {
             Button cancel_button = (Button)findViewById( R.id.cancel );
             cancel_button.setOnClickListener( this );
 
-            if( type == Type.FTP ) {
-                View domain_block = findViewById( R.id.domain_block );
-                domain_block.setVisibility( View.GONE );
-                browse_button.setVisibility( View.GONE );
-                active_ftp_cb.setVisibility( View.VISIBLE );
-            }
+            active_ftp_cb.setVisibility( type == Type.FTP ? View.VISIBLE : View.GONE );
+            browse_button.setVisibility( type == Type.SMB ? View.VISIBLE : View.GONE );
+             domain_block.setVisibility( type == Type.SMB ? View.VISIBLE : View.GONE );
         }
         catch( Exception e ) {
             Log.e( TAG, "onCreate() Exception: ", e );
@@ -162,7 +168,7 @@ public class ServerForm extends Activity implements View.OnClickListener {
                     crd = new Credentials( user, pass ); 
                 }
                 Uri.Builder uri_b = new Uri.Builder()
-                    .scheme( schema )
+                    .scheme( type.schema )
                     .encodedAuthority( Utils.encodeToAuthority( server_edit.getText().toString().trim() ) )
                     .path( path_edit.getText().toString().trim() );
                 if( type == Type.FTP && active_ftp_cb.isChecked() )

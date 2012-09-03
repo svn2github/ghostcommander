@@ -51,7 +51,7 @@ import android.widget.Toast;
 public class FileCommander extends Activity implements Commander, View.OnClickListener {
     private final static String TAG = "GhostCommanderActivity";
     public  final static int REQUEST_CODE_PREFERENCES = 1, REQUEST_CODE_SRV_FORM = 2;
-    public  final static int FIND_ACT = 1017, DBOX_APP = 3592, SMB_ACT = 2751, FTP_ACT = 4501;
+    public  final static int FIND_ACT = 1017, DBOX_APP = 3592, SMB_ACT = 2751, FTP_ACT = 4501, SFTP_ACT = 2450;
     
     private ArrayList<Dialogs> dialogs;
     private ProgressDialog     waitPopup;
@@ -569,6 +569,12 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             case FTP_ACT: {
                     Intent i = new Intent( this, ServerForm.class );
                     i.putExtra( "schema", "ftp" );
+                    startActivityForResult( i, REQUEST_CODE_SRV_FORM );
+                }
+                break;
+            case SFTP_ACT: {
+                    Intent i = new Intent( this, ServerForm.class );
+                    i.putExtra( "schema", "sftp" );
                     startActivityForResult( i, REQUEST_CODE_SRV_FORM );
                 }
                 break;

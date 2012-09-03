@@ -1,6 +1,5 @@
 package com.ghostsq.commander.adapters;
 
-import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.FileCommander;
 import com.ghostsq.commander.Panels;
 import com.ghostsq.commander.R;
@@ -19,11 +18,31 @@ import android.view.ViewGroup;
 public class HomeAdapter extends CommanderAdapterBase {
     private final static String TAG = "HomeAdapter";
     public static final String DEFAULT_LOC = "home:";
-    private final static int    FAVS = 0, LOCAL = 1, FTP = 2, SMB = 3, ROOT = 4, MOUNT = 5, APPS = 6, EXIT = 7, LAST = EXIT;
     private boolean root = false;
+    private static enum Mode {
+        FAVS(  0, R.string.favs,  R.string.favs_descr,   R.drawable.favs     ),  
+        LOCAL( 1, R.string.local, R.string.local_descr,  R.drawable.sd       ),   
+        FTP(   2, R.string.ftp,   R.string.ftp_descr,    R.drawable.ftp      ),  
+        SFTP(  3, R.string.sftp,  R.string.sftp_descr,   R.drawable.ftp      ), 
+        SMB(   4, R.string.smb,   R.string.smb_descr,    R.drawable.smb      ), 
+        ROOT(  5, R.string.root,  R.string.root_descr,   R.drawable.root     ), 
+        MOUNT( 6, R.string.mount, R.string.mount_descr,  R.drawable.mount    ),
+        APPS(  7, R.string.apps,  R.string.apps_descr,   R.drawable.android  ),
+        EXIT(  8, R.string.exit,  R.string.exit_descr,   R.drawable.exit     );
+        
+        public final int pos, name_id, descr_id, icon_id;
+        private Mode( int pos_, int name_id_, int descr_id_, int icon_id_ ) {
+            pos      = pos_; 
+            name_id  = name_id_; 
+            descr_id = descr_id_; 
+            icon_id  = icon_id_;
+        }
+    }
+    private Mode[] modes;
     
     public HomeAdapter( Context ctx_ ) {
         super( ctx_, DETAILED_MODE | NARROW_MODE | SHOW_ATTR | ATTR_ONLY );
+        modes = Mode.values();
         numItems = getNumItems();
     }
 
@@ -91,20 +110,18 @@ public class HomeAdapter extends CommanderAdapterBase {
     
     @Override
     public void openItem( int position ) {
-        position = translatePosition( position );
-        if( position < 0 || position > LAST )
-            return;
+        int p = translatePosition( position );
+        if( p < 0 || p >= modes.length ) return;
         String uri_s = null;
-        switch( position ) {
-        case FAVS:  uri_s = "favs:";                    break; 
-        case LOCAL: uri_s = Panels.DEFAULT_LOC;         break; 
-        case ROOT:  uri_s = RootAdapter.DEFAULT_LOC;    break;
-        case MOUNT: uri_s = MountAdapter.DEFAULT_LOC;   break;
-        case APPS:  uri_s = "apps:";                    break;
-        case FTP:   commander.dispatchCommand( FileCommander.FTP_ACT ); return;
-        case SMB:   commander.dispatchCommand( FileCommander.SMB_ACT ); return;
-        case EXIT:  commander.dispatchCommand( R.id.exit ); return;
-        }
+        if( p == Mode.FAVS.pos ) uri_s = "favs:";                    else 
+        if( p == Mode.LOCAL.pos) uri_s = Panels.DEFAULT_LOC;         else 
+        if( p == Mode.ROOT.pos ) uri_s = RootAdapter.DEFAULT_LOC;    else
+        if( p == Mode.MOUNT.pos) uri_s = MountAdapter.DEFAULT_LOC;   else
+        if( p == Mode.APPS.pos ) uri_s = "apps:";                    else
+        if( p == Mode.FTP.pos  ) { commander.dispatchCommand( FileCommander.FTP_ACT ); return; }
+        if( p == Mode.SFTP.pos ) { commander.dispatchCommand( FileCommander.SFTP_ACT );return; }
+        if( p == Mode.SMB.pos  ) { commander.dispatchCommand( FileCommander.SMB_ACT ); return; }
+        if( p == Mode.EXIT.pos ) { commander.dispatchCommand( R.id.exit );             return; } 
         commander.Navigate( Uri.parse( uri_s ), null, null );
     }
 
@@ -119,65 +136,35 @@ public class HomeAdapter extends CommanderAdapterBase {
     }
 
     private int getNumItems() {
-        int num = LAST + 1;
+        int num = modes.length;
         if( !root ) num -= 2;
         return num;
     }
     
     private int translatePosition( int p ) {
-        if( !root && p >= ROOT )
+        if( !root && p >= Mode.ROOT.pos )
             p += 2;
         return p;
     }
    
     @Override
     public String getItemName( int p, boolean full ) {
-        switch( p ) {
-        case FAVS:  return s( R.string.favs ); 
-        case LOCAL: return s( R.string.local ); 
-        case FTP:   return s( R.string.ftp );
-        case SMB:   return s( R.string.smb );
-        case ROOT:  return s( R.string.root );
-        case MOUNT: return s( R.string.mount );
-        case APPS:  return s( R.string.apps );
-        case EXIT:  return s( R.string.exit );
-        }
-        return null;
+        return p >= 0 && p < modes.length ? s( modes[p].name_id ) : null;
     }
     
     /*
      * BaseAdapter implementation
      */
-
     @Override
     public Object getItem( int position ) {
         Utils.changeLanguage( ctx );
         position = translatePosition( position );
         Item item = new Item();
         item.name = "???";
-        if( position >= 0 && position <= LAST ) {
+        if( position >= 0 && position < modes.length ) {
             item.name = getItemName( position, false );
-             
-            switch( position ) {
-            case FAVS:  item.icon_id = R.drawable.favs;     break;  
-            case LOCAL: item.icon_id = R.drawable.sd;       break;  
-            case FTP:   item.icon_id = R.drawable.ftp;      break;
-            case SMB:   item.icon_id = R.drawable.smb;      break;
-            case ROOT:  item.icon_id = R.drawable.root;     break;
-            case MOUNT: item.icon_id = R.drawable.mount;    break;
-            case EXIT:  item.icon_id = R.drawable.exit;     break;
-            case APPS:  item.icon_id = R.drawable.android;  break;
-            }
-            switch( position ) {
-            case FAVS:  item.attr = s( R.string.favs_descr  ); break;  
-            case LOCAL: item.attr = s( R.string.local_descr ); break;  
-            case FTP:   item.attr = s( R.string.ftp_descr   ); break;
-            case SMB:   item.attr = s( R.string.smb_descr   ); break;
-            case ROOT:  item.attr = s( R.string.root_descr  ); break;
-            case MOUNT: item.attr = s( R.string.mount_descr ); break;
-            case EXIT:  item.attr = s( R.string.exit_descr  ); break;
-            case APPS:  item.attr = s( R.string.apps_descr  ); break;
-            }
+            item.icon_id = modes[position].icon_id;
+            item.attr = s( modes[position].descr_id );
         }
         return item;
     }

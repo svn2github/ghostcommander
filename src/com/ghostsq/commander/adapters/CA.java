@@ -87,6 +87,8 @@ final public class CA {
         else {
             if( type_id == SMB  )
                 c.showDialog( Dialogs.SMB_PLG_DIALOG );
+            if( type_id == SFTP  )
+                c.showDialog( Dialogs.SFTP_PLG_DIALOG );
         }
         return ca;
     }    
@@ -169,7 +171,7 @@ final public class CA {
         case  R.id.F10:          return  CA.ALL;
         case  R.id.eq:           return  CA.ALL;
         case  R.id.tgl:          return  CA.ALL;
-        case  R.id.sz:           return  CA.LOCAL | CA.ROOT | CA.APPS | CA.SMB;
+        case  R.id.sz:           return  CA.LOCAL | CA.ROOT | CA.APPS | CA.SMB | CA.SFTP;
         case  R.id.by_name:      return  CA.REAL | CA.APPS | CA.FAVS;
         case  R.id.by_ext:       return  CA.REAL | CA.APPS | CA.FAVS;
         case  R.id.by_size:      return  CA.REAL | CA.APPS | CA.FAVS;

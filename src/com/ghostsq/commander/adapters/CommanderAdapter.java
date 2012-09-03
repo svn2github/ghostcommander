@@ -103,6 +103,7 @@ public interface CommanderAdapter {
     /**
      * This method is deprecated and to be removed. Use the setCredentials() instead 
      * @param name, pass 
+     * @deprecated 
      */
     public void setIdentities( String name, String pass );
 
