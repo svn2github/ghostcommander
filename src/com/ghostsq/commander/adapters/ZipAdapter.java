@@ -117,7 +117,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                     if( fld_path.regionMatches( true, 0, entry_name, 0, fld_path_len ) ) {
                         int sl_pos = entry_name.indexOf( SLC, fld_path_len );
                         if( sl_pos > 0 ) {
-                            String sub_dir = entry_name.substring( fld_path_len, sl_pos );
+                            String sub_dir = entry_name.substring( fld_path_len, sl_pos+1 );
                             int    sub_dir_len = sub_dir.length();
                             boolean not_yet = true;
                             for( int i = 0; i < array.size(); i++ ) {

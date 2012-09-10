@@ -20,18 +20,18 @@ public class HomeAdapter extends CommanderAdapterBase {
     public static final String DEFAULT_LOC = "home:";
     private boolean root = false;
     private static enum Mode {
-        FAVS(  0, R.string.favs,  R.string.favs_descr,   R.drawable.favs     ),  
-        LOCAL( 1, R.string.local, R.string.local_descr,  R.drawable.sd       ),   
-        FTP(   2, R.string.ftp,   R.string.ftp_descr,    R.drawable.ftp      ),  
-        SFTP(  3, R.string.sftp,  R.string.sftp_descr,   R.drawable.ftp      ), 
-        SMB(   4, R.string.smb,   R.string.smb_descr,    R.drawable.smb      ), 
-        ROOT(  5, R.string.root,  R.string.root_descr,   R.drawable.root     ), 
-        MOUNT( 6, R.string.mount, R.string.mount_descr,  R.drawable.mount    ),
-        APPS(  7, R.string.apps,  R.string.apps_descr,   R.drawable.android  ),
-        EXIT(  8, R.string.exit,  R.string.exit_descr,   R.drawable.exit     );
+        FAVS(  R.string.favs,  R.string.favs_descr,   R.drawable.favs    ),  
+        LOCAL( R.string.local, R.string.local_descr,  R.drawable.sd      ),   
+        FTP(   R.string.ftp,   R.string.ftp_descr,    R.drawable.ftp     ),  
+        SFTP(  R.string.sftp,  R.string.sftp_descr,   R.drawable.ftp     ), 
+        SMB(   R.string.smb,   R.string.smb_descr,    R.drawable.smb     ), 
+        ROOT(  R.string.root,  R.string.root_descr,   R.drawable.root    ), 
+        MOUNT( R.string.mount, R.string.mount_descr,  R.drawable.mount   ),
+        APPS(  R.string.apps,  R.string.apps_descr,   R.drawable.android ),
+        EXIT(  R.string.exit,  R.string.exit_descr,   R.drawable.exit    );
         
         public final int pos, name_id, descr_id, icon_id;
-        private Mode( int pos_, int name_id_, int descr_id_, int icon_id_ ) {
+        private Mode( int name_id_, int descr_id_, int icon_id_ ) {
             pos      = ordinal(); 
             name_id  = name_id_; 
             descr_id = descr_id_; 
