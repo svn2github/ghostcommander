@@ -15,6 +15,14 @@ import com.ghostsq.commander.root.RootAdapter;
 
 import dalvik.system.DexClassLoader;
 
+/**
+ * <code>CA</code> class
+ * @author Ghost Squared (ghost.sq2@gmail.com)
+ * 
+ * This class is a "database" of all implemented adapters.
+ * It keeps all the properties, hashes etc, to let the right adapter be instatiated
+ * 
+ */
 final public class CA {
     public static final String TAG = "CA";
     public static final int FS    = 0x00000001;
@@ -111,7 +119,7 @@ final public class CA {
     }
     
     /**
-     * Tries to load an adapter class from foreign package
+     * CreateExternalAdapter Tries to load an adapter class from foreign package
      * @param String type       - adapter type, also the suffix of the plugin application 
      * @param String class_name - the adapter class name to be loaded
      * @param int    dialog_id  - resource ID to show dialog if the class can't be loaded

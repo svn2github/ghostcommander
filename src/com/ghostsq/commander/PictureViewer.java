@@ -136,46 +136,56 @@ public class PictureViewer extends Activity {
                     if( local ) {   // pre-cache in a file
                         f = new File( u.getPath() );
                     } else {
-                        CommanderAdapter ca = CA.CreateAdapterInstance( CA.GetAdapterTypeId( scheme ), ctx );            
-                        if( ca == null ) return;
-                        Credentials crd = null; 
+                        CommanderAdapter  ca = null;
+                        FileOutputStream fos = null;
+                        InputStream is = null;
                         try {
-                            crd = (Credentials)getIntent().getParcelableExtra( Credentials.KEY );
-                        } catch( Exception e ) {
-                            Log.e( TAG, "on taking credentials from parcel", e );
-                        }
-                        ca.setCredentials( crd );
-                        
-                        // output - temporary file
-                        File pictvw_f = ctx.getDir( "pictvw", Context.MODE_PRIVATE );
-                        if( pictvw_f == null ) return;
-                        f = new File( pictvw_f, "file.tmp" );
-                        FileOutputStream fos = new FileOutputStream( f );
-                        // input - the content from adapter
-                        InputStream is = ca.getContent( u );
-                        if( is == null ) return;
-                        int n;
-                        boolean available_supported = is.available() > 0;
-                        while( ( n = is.read( buf ) ) != -1 ) {
-                            //Log.v( "readStreamToBuffer", "Read " + n + " bytes" );
-                            //sendProgress( tot += n );
-                            Thread.sleep( 1 );
-                            fos.write( buf, 0, n );
-                            if( available_supported ) {
-                                for( int i = 0; i < 10; i++ ) {
-                                    if( is.available() > 0 ) break;
-                                    //Log.v( "readStreamToBuffer", "Waiting the rest " + i );
-                                    Thread.sleep( 20 );
-                                }
-                                if( is.available() == 0 ) {
-                                    //Log.v( "readStreamToBuffer", "No more data!" );
-                                    break;
+                            ca = CA.CreateAdapterInstance( CA.GetAdapterTypeId( scheme ), ctx );            
+                            if( ca == null ) return;
+                            Credentials crd = null; 
+                            try {
+                                crd = (Credentials)getIntent().getParcelableExtra( Credentials.KEY );
+                            } catch( Exception e ) {
+                                Log.e( TAG, "on taking credentials from parcel", e );
+                            }
+                            ca.setCredentials( crd );
+                            
+                            // output - temporary file
+                            File pictvw_f = ctx.getDir( "pictvw", Context.MODE_PRIVATE );
+                            if( pictvw_f == null ) return;
+                            f = new File( pictvw_f, "file.tmp" );
+                            fos = new FileOutputStream( f );
+                            // input - the content from adapter
+                            is = ca.getContent( u );
+                            if( is == null ) return;
+                            int n;
+                            boolean available_supported = is.available() > 0;
+                            while( ( n = is.read( buf ) ) != -1 ) {
+                                //Log.v( "readStreamToBuffer", "Read " + n + " bytes" );
+                                //sendProgress( tot += n );
+                                Thread.sleep( 1 );
+                                fos.write( buf, 0, n );
+                                if( available_supported ) {
+                                    for( int i = 0; i < 10; i++ ) {
+                                        if( is.available() > 0 ) break;
+                                        //Log.v( "readStreamToBuffer", "Waiting the rest " + i );
+                                        Thread.sleep( 20 );
+                                    }
+                                    if( is.available() == 0 ) {
+                                        //Log.v( "readStreamToBuffer", "No more data!" );
+                                        break;
+                                    }
                                 }
                             }
+                        } catch( Throwable e ) {
+                            throw e;
+                        } finally {
+                            if( ca != null ) {
+                                if( is != null ) ca.closeStream( is );
+                                ca.prepareToDestroy();
+                            }
+                            if( fos != null ) fos.close();
                         }
-                        ca.closeStream( is );
-                        ca.prepareToDestroy();
-                        fos.close();
                     }
                     if( f != null ) {
                         BitmapFactory.Options options = new BitmapFactory.Options();

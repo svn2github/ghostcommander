@@ -15,11 +15,17 @@ import android.view.ContextMenu;
 import android.widget.AdapterView;
 
 /**
- *		CommanderAdapter interface, version at 2011.12.02
+ * <code>CommanderAdapter</code> interface
+ * @author Ghost Squared (ghost.sq2@gmail.com)
+ * 
+ * All the adapters should extend {@link CommanderAdapterBase}
+ * which implements this interface.
+ *
  */
 public interface CommanderAdapter {
 
     /**
+     *   
      *   "Object ListAdapter.getItem( int position )" returns an instance of the following class:  
      */
     public class Item {
@@ -58,14 +64,15 @@ public interface CommanderAdapter {
      * @param uri - the URI of the resource to connect to or work with  
      */
     public void setUri( Uri uri );
+    
     /**
      * @return current adapter's source URI
-     *      the URI returned always without the credentials. Use the getCredentials() to obtain them 
+     *      the URI returned always without the credentials. Use the getCredentials() to obtain  
      */
     public Uri getUri();
 	
 	/**
-	 *  Output mode
+	 *  Output modes
 	 */
 	public final static int MODE_WIDTH = 0x0001, NARROW_MODE = 0x0000,     WIDE_MODE = 0x0001, 
 	                      MODE_DETAILS = 0x0002, SIMPLE_MODE = 0x0000, DETAILED_MODE = 0x0002,
@@ -82,21 +89,22 @@ public interface CommanderAdapter {
 //                       SET_MODE_COLORS = 0xF0000000, SET_TXT_COLOR = 0x10000000, SET_SEL_COLOR = 0x20000000,
                           SET_TBN_SIZE = 0x01000000, SET_FONT_SIZE = 0x02000000;
     /**
-     * @param mask - see bits above 
-     * @param mode - see bits above 
+     * @param mask - see the bits above 
+     * @param mode - see the bits above 
      * @return the current mode 
      */
     public int setMode( int mask, int mode );
     /**
+     *   <code>populateContextMenu</code> is called when the user taps and holds on an item
      *   @param menu - to call the method .add()
      *   @param acmi - to know which item is processed
      *   @param num  - current mode
      */
     public void populateContextMenu( ContextMenu menu, AdapterView.AdapterContextMenuInfo acmi, int num );
 
-
     /**
-     * @return the adapter type bit (see the CA class)   
+     * <code>getType</code> return the adapter implementation type
+     * @return the adapter type bit {@link CA} 
      */
     public int getType();
 
@@ -140,7 +148,7 @@ public interface CommanderAdapter {
 
     /**
      * @param position
-     * @return full URI to access the item (with credentials if necessary)
+     * @return full URI to access the item without the credentials!
      */
     public Uri getItemUri( int position );    
 
