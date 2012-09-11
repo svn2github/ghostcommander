@@ -748,6 +748,10 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
 
     public final void openForEdit( String file_name ) {
         CommanderAdapter ca = getListAdapter( true );
+        if( ca == null || !CA.suitable( R.id.F4, ca.getType() ) ) {
+            c.showMessage( c.getString( R.string.edit_err ) );
+            return;
+        }
         if( ca instanceof FavsAdapter ) {
             FavsAdapter fa = (FavsAdapter)ca;
             int pos = getSelection( true );
@@ -773,33 +777,23 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
                 u = Uri.parse( file_name );
             if( u == null ) return;
             final String GC_EDITOR = Editor.class.getName();
-            String full_class_name = null;
-            String scheme = u.getScheme();
-            boolean local = CA.isLocal( scheme );
-            if( local )
-                u = u.buildUpon().scheme( "file" ).authority( "" ).build();
-            else {
-                if( "root".equals( scheme ) || "smb".equals( scheme ) || "ftp".equals( scheme ) ) 
-                    full_class_name = GC_EDITOR;
-                else {
-                    c.showMessage( c.getString( R.string.edit_err ) );
-                    return;
-                }
-            }
-            Intent i = new Intent( Intent.ACTION_EDIT );
-            if( full_class_name == null ) {
+            String full_class_name = GC_EDITOR;
+            if( ca instanceof FSAdapter ) {
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
                 full_class_name = sharedPref.getString( "editor_activity", GC_EDITOR );
+                if( !GC_EDITOR.equals( full_class_name ) )
+                    u = u.buildUpon().scheme( "file" ).authority( "" ).build();
+            }    
+            Intent i = new Intent( Intent.ACTION_EDIT );
+            if( !Utils.str( full_class_name ) )
+                full_class_name = GC_EDITOR;
+            int last_dot_pos = full_class_name.lastIndexOf('.');
+            if( last_dot_pos < 0 ) {
+                c.showMessage( "Invalid class name: " + full_class_name );
+                full_class_name = GC_EDITOR;
+                last_dot_pos = full_class_name.lastIndexOf('.');
             }
-            if( full_class_name.length() > 0 ) {
-                int last_dot_pos = full_class_name.lastIndexOf('.');
-                if( last_dot_pos < 0 ) {
-                    c.showMessage( "Invalid class name: " + full_class_name );
-                    full_class_name = GC_EDITOR;
-                    last_dot_pos = full_class_name.lastIndexOf('.');
-                }
-                i.setClassName( full_class_name.substring( 0, last_dot_pos ), full_class_name );
-            }
+            i.setClassName( full_class_name.substring( 0, last_dot_pos ), full_class_name );
             i.setDataAndType( u, "text/plain" );
             Credentials crd = ca.getCredentials();
             if( crd != null )
