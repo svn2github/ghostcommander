@@ -21,6 +21,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -58,6 +59,9 @@ public class Editor extends Activity implements TextWatcher {
             setContentView(R.layout.editor);
             te = (EditText)findViewById( R.id.editor );
             te.addTextChangedListener( this );
+            
+            // experimental!
+            te.setFilters( new InputFilter[] { new InputFilter.LengthFilter(0x7FFFFFFF) } ); 
             
             SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
             int fs = Integer.parseInt( shared_pref != null ? shared_pref.getString( "font_size", "12" ) : "12" );
