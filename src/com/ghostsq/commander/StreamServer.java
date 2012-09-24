@@ -176,7 +176,7 @@ public class StreamServer extends Service {
             InputStream  is = null;
             OutputStream os = null;
             try {
-                //Log.d( TAG, "Thread started" );
+                Log( "Thread started" );
                 setName( TAG );
                 if( data_socket == null || !data_socket.isConnected() ) {
                     Log.e( TAG, "Invalid data socked" );
@@ -192,7 +192,7 @@ public class StreamServer extends Service {
                 yield();
                 
                 is = data_socket.getInputStream();
-                if( os == null ) {
+                if( is == null ) {
                     Log.e( TAG, "Can't get the input stream" );
                     SendStatus( osw, 500 );
                     return;
@@ -225,7 +225,7 @@ public class StreamServer extends Service {
                     SendStatus( osw, 404 );
                     return;
                 } 
-                Log( "Got URL: " + uri );
+                Log( "Requested URI: " + uri );
                 
                 long offset = 0;
                 while( br.ready() ) {
@@ -242,7 +242,6 @@ public class StreamServer extends Service {
                     }
                 }
                                 
-                Log( "Got URI: " + uri.toString() );
                 String scheme = uri.getScheme();
                 if( scheme == null ) {
                     Log.w( TAG, "no scheme in the URI passed in the request: " + uri );
@@ -266,6 +265,11 @@ public class StreamServer extends Service {
                 if( credentials != null )
                     ca.setCredentials( credentials );
                 Item item = ca.getItem( uri );
+                if( item == null ) {
+                    Log.e( TAG, "Can't get the item for " + uri );
+                    SendStatus( osw, 404 );
+                    return;
+                } 
                 InputStream cs = ca.getContent( uri, offset );
                 if( cs == null ) {
                     Log.e( TAG, "Can't get the content for " + uri );
@@ -287,30 +291,28 @@ public class StreamServer extends Service {
                 }
                 else
                     osw.write( "Content-Type: application/octet-stream" + CRLF );
-                if( item != null ) {
-                    String content_range = null, content_len = "Content-Length: " + item.size;
-                    if( offset == 0 ) {
-                        content_range = "Content-Range: bytes 0-" + (item.size-1) + "/" + item.size;
-                        osw.write( content_len + CRLF );
-                        osw.write( content_range + CRLF );
-                    } else {
-                        content_range = "Content-Range: bytes " + offset + "-" + (item.size-1) + "/" + item.size;
-                        osw.write( content_len + CRLF );
-                        osw.write( content_range + CRLF );
-                    }
-                    Log( content_range );
-                    Log( content_len );
+                String content_range = null, content_len = "Content-Length: " + item.size;
+                if( offset == 0 ) {
+                    content_range = "Content-Range: bytes 0-" + (item.size-1) + "/" + item.size;
+                    osw.write( content_len + CRLF );
+                    osw.write( content_range + CRLF );
+                } else {
+                    content_range = "Content-Range: bytes " + offset + "-" + (item.size-1) + "/" + item.size;
+                    osw.write( content_len + CRLF );
+                    osw.write( content_range + CRLF );
                 }
-                else
-                    Log.w( TAG, "The item is null" );
+                Log( content_range );
+                Log( content_len );
+
                 Date date = new Date();
-                osw.write( date + CRLF );
+                osw.write( "Date: " + date + CRLF );
+                Log( "Date: " + date + CRLF );
                 osw.write( CRLF );
                 osw.flush();
                 
                 ReaderThread rt = new ReaderThread( cs, num_id );
                 rt.start();
-                //int count = 0;
+                int count = 0;
                 while( rt.isAlive() ) {
                     try {
                         if( br.ready() )
@@ -321,9 +323,9 @@ public class StreamServer extends Service {
                         int n = rt.GetDataSize();
                         if( n < 0 )
                             break;
-                        //Log( "      W..." );
+                        Log( "      W..." );
                         os.write( out_buf, 0, n );
-                        //Log( "      ...W " + n + "/" + ( count += n ) );
+                        Log( "      ...W " + n + "/" + ( count += n ) );
                     }
                     catch( Exception e ) {
                         Log( "write exception: " + e.getMessage() );
@@ -341,6 +343,7 @@ public class StreamServer extends Service {
                 Log.e( TAG, "Exception", e );
             }
             finally {
+                Log( "Thread exits" );
                 try {
                     if( is != null ) is.close();
                     if( os != null ) os.close();
@@ -383,7 +386,7 @@ public class StreamServer extends Service {
         }
         
         private void Log( String s ) {
-            //Log.d( TAG, "" + num_id + ": " + s );
+            Log.d( TAG, "" + num_id + ": " + s );
         }
         public void run() {
             try {
@@ -391,7 +394,7 @@ public class StreamServer extends Service {
                 int count = 0;
                 while( true ) {
                     byte[] inp_buf = bufs[roller++ % 2];
-                    //Log( "R..." );
+                    Log( "R..." );
                     int has_read = is.read( inp_buf, 0, chunk );
                     if( has_read < 0 )
                         break;
@@ -399,19 +402,19 @@ public class StreamServer extends Service {
                         chunk <<= 1;
                     if( chunk > MAX )
                         chunk = MAX;                    
-                    //Log( "...R " + has_read + "/" + ( count += has_read ) );
+                    Log( "...R " + has_read + "/" + ( count += has_read ) );
                     synchronized( this ) {
-                        //Log( "?.." );
+                        Log( "?.." );
                         int wcount = 0; 
                         while( out_buf != null ) {
                             //Log( "Waiting when the output buffer is released..." );
                             wait( 10 );
                             wcount += 10;
                         }
-                        //Log( "...! (" + wcount + "ms)" );
+                        Log( "...! (" + wcount + "ms)" );
                         out_buf = inp_buf;
                         data_size = has_read; 
-                        //Log( "O=I ->" );
+                        Log( "O=I ->" );
                         notify();
                     }
                 }
@@ -422,18 +425,18 @@ public class StreamServer extends Service {
         }
         public synchronized byte[] getOutputBuffer() throws InterruptedException {
             int wcount = 0;
-            //Log( "       ?.." );
+            Log( "       ?.." );
             while( out_buf == null && this.isAlive() ) {
                 //Log( "Waiting when the output buffer is ready" );
                 wait( 10 );
                 wcount += 10;
             }
-            /*
+            
             if( out_buf != null ) 
                 Log( "      ..! (" + wcount + "ms)" );
             else
                 Log( "X" );
-            */
+            
             return out_buf;
         }
         public int GetDataSize() {
@@ -443,7 +446,7 @@ public class StreamServer extends Service {
         }
         public synchronized void doneOutput() {
             out_buf = null;
-            //Log( "    <- O done" );
+            Log( "    <- O done" );
             notify();
         }
     };

@@ -678,14 +678,8 @@ public class Panels   implements AdapterView.OnItemSelectedListener,
     public final void tryToSend() {
         File f = getCurrentFile();
         if( f != null ) {
-            String ext = Utils.getFileExt( f.getName() );
-            String mime = Utils.getMimeByExt( ext );
-            if( mime != null && !mime.startsWith( "image/" )
-                             && !mime.startsWith( "audio/" )
-                             && !mime.startsWith( "video/" ) )
-                mime = null;
             Intent i = new Intent( Intent.ACTION_SEND );
-            i.setType( mime == null ? "*/*" : mime );
+            i.setType( "*/*" );
             i.putExtra( Intent.EXTRA_SUBJECT, f.getName() );
             SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( c );
             String esc_fn = Utils.escapePath( f.getAbsolutePath() );
