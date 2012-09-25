@@ -231,7 +231,7 @@ public class StreamServer extends Service {
                 while( br.ready() ) {
                     String hl = br.readLine();
                     if( hl != null ) {
-                        //Log( hl );
+                        Log( hl );
                         if( hl.startsWith( "Range: bytes=" ) ) {
                             int end = hl.indexOf( '-', 13 );
                             String range_s = hl.substring( 13, end );
@@ -248,7 +248,6 @@ public class StreamServer extends Service {
                     SendStatus( osw, 404 );
                     return;
                 }
-                setPriority( Thread.MAX_PRIORITY );
                 int ca_type = CA.GetAdapterTypeId( scheme );
                 String host = uri.getHost();
                 if( StreamServer.this.ca == null || StreamServer.this.ca.getType() != ca_type ||
@@ -292,17 +291,14 @@ public class StreamServer extends Service {
                 else
                     osw.write( "Content-Type: application/octet-stream" + CRLF );
                 String content_range = null, content_len = "Content-Length: " + item.size;
-                if( offset == 0 ) {
+                if( offset == 0 )
                     content_range = "Content-Range: bytes 0-" + (item.size-1) + "/" + item.size;
-                    osw.write( content_len + CRLF );
-                    osw.write( content_range + CRLF );
-                } else {
+                else
                     content_range = "Content-Range: bytes " + offset + "-" + (item.size-1) + "/" + item.size;
-                    osw.write( content_len + CRLF );
-                    osw.write( content_range + CRLF );
-                }
-                Log( content_range );
+                osw.write( content_len + CRLF );
+                osw.write( content_range + CRLF );
                 Log( content_len );
+                Log( content_range );
 
                 Date date = new Date();
                 osw.write( "Date: " + date + CRLF );
@@ -312,6 +308,7 @@ public class StreamServer extends Service {
                 
                 ReaderThread rt = new ReaderThread( cs, num_id );
                 rt.start();
+                setPriority( Thread.MAX_PRIORITY );
                 int count = 0;
                 while( rt.isAlive() ) {
                     try {
@@ -347,6 +344,7 @@ public class StreamServer extends Service {
                 try {
                     if( is != null ) is.close();
                     if( os != null ) os.close();
+                    if( ca != null ) ca.prepareToDestroy();
                 }
                 catch( IOException e ) {
                     Log.e( TAG, "Exception on Closing", e );
@@ -373,7 +371,7 @@ public class StreamServer extends Service {
         private final static String TAG = "GCSS.RT";
         private InputStream is;
         private int      roller = 0, chunk = 4096;
-        private final static int MAX = 131072;
+        private final static int MAX = 32768;
         private byte[][] bufs = { new byte[MAX], new byte[MAX] };
         private byte[]   out_buf = null;
         private int      data_size = 0;
@@ -395,7 +393,10 @@ public class StreamServer extends Service {
                 while( true ) {
                     byte[] inp_buf = bufs[roller++ % 2];
                     Log( "R..." );
-                    int has_read = is.read( inp_buf, 0, chunk );
+                    int has_read = 0;
+                    synchronized( TAG ) { // test
+                        has_read = is.read( inp_buf, 0, chunk );
+                    }
                     if( has_read < 0 )
                         break;
                     if( has_read == chunk && chunk < MAX )
@@ -419,7 +420,7 @@ public class StreamServer extends Service {
                     }
                 }
             } catch( Throwable e ) {
-                Log.e( TAG, "Exception: " + e );
+                Log.e( TAG, "" + num_id + ": ", e );
             }
             Log( "The thread is done!" );
         }
