@@ -23,7 +23,7 @@ public class HomeAdapter extends CommanderAdapterBase {
         FAVS(  R.string.favs,  R.string.favs_descr,   R.drawable.favs    ),  
         LOCAL( R.string.local, R.string.local_descr,  R.drawable.sd      ),   
         FTP(   R.string.ftp,   R.string.ftp_descr,    R.drawable.ftp     ),  
-        SFTP(  R.string.sftp,  R.string.sftp_descr,   R.drawable.ftp     ), 
+        SFTP(  R.string.sftp,  R.string.sftp_descr,   R.drawable.sftp    ), 
         SMB(   R.string.smb,   R.string.smb_descr,    R.drawable.smb     ), 
         ROOT(  R.string.root,  R.string.root_descr,   R.drawable.root    ), 
         MOUNT( R.string.mount, R.string.mount_descr,  R.drawable.mount   ),
