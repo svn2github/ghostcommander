@@ -395,29 +395,54 @@ A szoftver szerzője nem felelős semmilyen kárért, információvesztésért, 
 Ha nem ért egyet a fentiekkel, kérjük fejezze be a használatot, és törölje a programot.\n
     </string>
 <string name="keys_text">
-    "
-Egy fájl kiválasztásához kattintson a sor jobb oldalára.\n
-Hogy manuálisan írja be az útvonalat, vagy a kedvenceket, nyomja meg hosszan a panel címsorát.\n\n
-    Gyorsgombok:\nHangerőFel - Aktuális elem kijelölése\n
-HangerőLe - Panelek cseréje\n
-+,-   - Az aktuális mappában kijelöl mindent/vagy törli a kijelölést\n  
-(, )  - Üsse be az útvonalat a bal vagy jobb panelen\n
-* - Jelenlegi mappa hozzáadása a kedvencekhez\n
-\" - Kiválasztott fájlok összméretének kijelzése\n
-= - A másik panelen ugyanazt mutatja mint a jelenlegin\n
-1 - Súgó\n
-2 - Jelenlegi fájl átnevezése\n
-4 - Jelenlegi fájl szerkesztése\n
-5 - Kijelölt fájlok másolása\n
-6 - Kijelölt fájlok mozgatása\n
-7 - Új mappa hozzáadása\n
-8 - Fájlok vagy mappák törlése\n
-9 - Beállítások megnyitása\n
-0 - Program bezárása\n
-[A-z] - Gyorskeresés\n    
-    \nAnoním FTP mappa megnyitásához a következő módon írja be az útvonalat:\n
-    ftp://host.com/folder\n
-Vagy ha azonosíítani kell magát akkor így:\n
-    ftp://user:password@host.com/folder\n\n"
-    </string>
+\t\tALAPOK
+
+Másoláshoz és mozgatáshoz előbb válassza ki a célkönyvtárat, majd váltson vissza a másik panelre az elemek kijelöléséhez.\n
+Fájlok és mappák kijelöléséhez a panel jobb oldalán érintse őket, megnyitáshoz a baljukon. Így van, az egyik oldal aktiválja az elemeket, a másik kijelöli őket.\n
+Ha minden elemet ki szeretne jelölni, akkor használja a Menü &gt; Lista &gt; Mindet kijelöli menüpontot.\n
+Hely kézi megadásához vagy a kedvencek listájának megjelenítéséhez érintse hosszan a panel címsorát.
+
+\t\tGYORSBILLENTYŰK
+
+HangerőFel - Aktuális elem kijelölése
+HangerőLe - Váltás másik panelre
++, -  - Az aktuális mappában kijelöl mindent/vagy törli a kijelölést
+(, )  - Hely megadása kézileg és kedvencek megtekintése
+* - Aktív mappa hozzáadása a kedvencekhez
+\" - Részletes információ a kijelölt elem(ek)ről
+= - Azonos hely mutatása a másik oldalon
+1 - Súgó
+2 - Aktív elem átnevezése
+4 - Aktív elem szerkesztése
+5 - Kijelölt elem(ek) másolása
+6 - Kijelölt elem(ek) mozgatása
+7 - Új mappa
+8 - Kijelölt elem(ek) törlése
+9 - Beállítások megnyitása
+0 - Alkalmazás bezárása
+[A-z] - Gyorskeresés
+
+\t\tHALADÓ
+
+URIk megadása kézileg különböző forrásokhoz:
+
+ftp://host.com/folder
+    - névtelen FTP
+
+ftp://user:pass@ftp_host/folder
+    - felhasználós FTP
+
+smb://domain;user:pass@server/share
+    - Windows megosztás
+
+root:/path/to/folder
+    - Root mód
+
+mount:
+    - Csatolási pontok
+
+Megjegyzés:
+A root módhoz és a csatolási pontokhoz óvatosság, rootolt eszköz és megfelelően beállított BusyBox szükséges.
+A Windows megosztások eléréséhez szükség van a Ghost Commander SMB beépülőre.
+</string>
 </resources>
