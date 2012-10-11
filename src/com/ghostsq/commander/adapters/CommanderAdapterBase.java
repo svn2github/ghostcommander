@@ -180,6 +180,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         localeDateFormat = DateFormat.getDateFormat( ctx );
         localeTimeFormat = DateFormat.getTimeFormat( ctx );
         density = ctx.getResources().getDisplayMetrics().density;
+        Log.i( TAG, "Density: " + density );
     }
 
     private final void calcWidths() {
