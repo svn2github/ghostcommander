@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -42,7 +43,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public abstract class CommanderAdapterBase extends BaseAdapter implements CommanderAdapter {
-    public final static String NOTIFY_RECEIVER_HASH = "hash", NOTIFY_ITEMS_TO_RECEIVE = "itms";
     protected final static String DEFAULT_DIR = Environment.getExternalStorageDirectory().getAbsolutePath();
     protected final String TAG = getClass().getName();
     public Context ctx;
@@ -65,7 +65,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected int mode = 0;
     protected boolean ascending = true;
     protected String parentLink = SLS;
-    private CommanderAdapter recipient = null;
     protected int numItems = 0;
     public int shownFrom = 0, shownNum = 3;
     
@@ -119,34 +118,17 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         }
     };
 
-    protected class WorkerHandler extends Handler {
+    protected class SimpleHandler extends Handler {
         @Override
         public void handleMessage( Message msg ) {
-            try {
-                Bundle b = msg.getData();
-                int rec_hash = b.getInt( CommanderAdapterBase.NOTIFY_RECEIVER_HASH );
-                if( rec_hash != 0 ) {
-                    if( recipient != null ) {
-                        if( recipient.hashCode() == rec_hash ) {
-                            String[] items = b.getStringArray( CommanderAdapterBase.NOTIFY_ITEMS_TO_RECEIVE );
-                            if( items != null )
-                                recipient.receiveItems( items, MODE_MOVE_DEL_SRC_DIR );
-                        }
-                        recipient = null;
-                    }
-                    return;
-                }
-            } catch( Exception e ) {
-                e.printStackTrace();
-            }
-            if( commander == null || commander.notifyMe( msg ) )
-                worker = null;
+            commander.notifyMe( msg );
         }
     };
-
-    protected Engine reader = null, worker = null;
-    protected WorkerHandler workerHandler = null;
+    
+    
+    protected Engine reader = null;
     protected ReaderHandler readerHandler = null;
+    protected SimpleHandler simpleHandler = null;
 
     // the Init( c ) method to be called after the constructor
     protected CommanderAdapterBase() {
@@ -165,22 +147,22 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     public void Init( Commander c ) {
         if( c != null ) {
             commander = c;
-            workerHandler = new WorkerHandler();
             readerHandler = new ReaderHandler();
+            simpleHandler = new SimpleHandler();
             if( ctx == null )
                 ctx = c.getContext();
+            mInflater = (LayoutInflater)ctx.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+            Utils.changeLanguage( ctx );
+            localeDateFormat = DateFormat.getDateFormat( ctx );
+            localeTimeFormat = DateFormat.getTimeFormat( ctx );
+            density = ctx.getResources().getDisplayMetrics().density;
+            Log.i( TAG, "Density: " + density );
         }
         parentWidth = 0;
         nameWidth = 0;
         sizeWidth = 0;
         dateWidth = 0;
         attrWidth = 0;
-        mInflater = (LayoutInflater)ctx.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-        Utils.changeLanguage( ctx );
-        localeDateFormat = DateFormat.getDateFormat( ctx );
-        localeTimeFormat = DateFormat.getTimeFormat( ctx );
-        density = ctx.getResources().getDisplayMetrics().density;
-        Log.i( TAG, "Density: " + density );
     }
 
     private final void calcWidths() {
@@ -251,8 +233,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     @Override
     public void terminateOperation() {
         Log.i( TAG, "terminateOperation()" );
-        if( worker != null )
-            worker.reqStop();
         if( reader != null )
             reader.reqStop();
     }
@@ -261,14 +241,16 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     public void prepareToDestroy() {
         Log.i( TAG, "prepareToDestroy()" );
         terminateOperation();
-        worker = null;
         reader = null;
     }
 
-    public final boolean isWorkerStillAlive() {
+    public final boolean _isWorkerStillAlive() {
+        /*
         if( worker == null )
             return false;
         return worker.reqStop();
+        */
+        return false;
     }
 
     protected void notify( String s, String cookie ) {
@@ -286,7 +268,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     }
     
     protected void notify( String s, int what, int arg1 ) {
-        Message msg = workerHandler.obtainMessage( what, arg1, -1, s );
+        Message msg = Message.obtain( simpleHandler, what, arg1, -1, s );
         if( msg != null )
             msg.sendToTarget();
     }
@@ -315,16 +297,9 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
 
     protected final String createTempDir() {
         Date d = new Date();
-        File temp_dir = new File( DEFAULT_DIR + "/temp/gc_" + d.getHours() + d.getMinutes() + d.getSeconds() );
+        File temp_dir = new File( DEFAULT_DIR + "/temp/gc_" + d.getHours() + d.getMinutes() + d.getSeconds() + "/" );
         temp_dir.mkdirs();
         return temp_dir.getAbsolutePath();
-    }
-
-    protected final int setRecipient( CommanderAdapter to ) {
-        if( recipient != null )
-            Log.e( TAG, "Recipient is not null!!!" );
-        recipient = to;
-        return recipient.hashCode();
     }
 
     @Override
@@ -531,7 +506,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 nameView.setTextSize( font_size );
                 if( wm ) {
                     nameWidth = parent_width - img_width - dateWidth - sizeWidth - attrWidth - LEFT_P - RIGHT_P;
-                    if( nameWidth < 200 ) {
+                    if( nameWidth < 280 ) {
                         nameWidth += attrWidth; // sacrifice the attr. field 
                         attrWidth = 0;
                     }
@@ -616,19 +591,26 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         return row_view;
     }
 
-    protected final static int getIconId( String file ) {
+    public final static int getIconId( String file ) {
         if( file.indexOf( " -> " ) > 0 )
             return R.drawable.link;
         String ext = Utils.getFileExt( file );
-        if( ".apk".equalsIgnoreCase( ext ) || ".dex".equalsIgnoreCase( ext ) )
+        if( ".apk".equalsIgnoreCase( ext ) || ".dex".equalsIgnoreCase( ext ) ||".odex".equalsIgnoreCase( ext ) )
             return R.drawable.and;
-        if( ".zip".equalsIgnoreCase( ext ) || ".jar".equalsIgnoreCase( ext ) )
+        if( ".zip".equalsIgnoreCase( ext ) || ".jar".equalsIgnoreCase( ext ) || ".tar".equalsIgnoreCase( ext ) ||
+             ".7z".equalsIgnoreCase( ext ) || ".arj".equalsIgnoreCase( ext ) || ".tgz".equalsIgnoreCase( ext ) ||
+             ".gz".equalsIgnoreCase( ext ) || ".rar".equalsIgnoreCase( ext ) ||".gtar".equalsIgnoreCase( ext ) ||
+             ".bz".equalsIgnoreCase( ext ) || ".lzh".equalsIgnoreCase( ext ) || ".cab".equalsIgnoreCase( ext ) ||
+            ".bz2".equalsIgnoreCase( ext ) || ".img".equalsIgnoreCase( ext ) )
             return R.drawable.zip;
+        if( ".vcf".equalsIgnoreCase( ext ) || ".fb2".equalsIgnoreCase( ext ) || ".epub".equalsIgnoreCase( ext )||
+            ".doc".equalsIgnoreCase( ext ) || ".xls".equalsIgnoreCase( ext ) ||
+           ".docx".equalsIgnoreCase( ext ) ||".xlsx".equalsIgnoreCase( ext ) )
+            return R.drawable.book;
         if( ".pdf".equalsIgnoreCase( ext ) )
             return R.drawable.pdf;
-        if( ".vcf".equalsIgnoreCase( ext ) )
-            return R.drawable.book;
-        if( ".xml".equalsIgnoreCase( ext ) || ".html".equalsIgnoreCase( ext ) || ".htm".equalsIgnoreCase( ext ) )
+        if( ".html".equalsIgnoreCase( ext ) || ".htm".equalsIgnoreCase( ext ) ||
+             ".xml".equalsIgnoreCase( ext ) || ".xsl".equalsIgnoreCase( ext ) )
             return R.drawable.xml;
         String mime = Utils.getMimeByExt( ext );
         String type = mime.substring( 0, mime.indexOf( '/' ) );
@@ -690,10 +672,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                         menu.add( 0, R.id.F3, 0, R.string.view_title );
                     if( CA.suitable( R.id.F4, t ) )
                         menu.add( 0, R.id.F4, 0, R.string.edit_title );
-                    if( ( t & CA.LOCAL ) != 0 )
-                        menu.add( 0, Commander.SEND_TO, 0, R.string.send_to );
                 }
             }
+            if( ( t & CA.LOCAL ) != 0 )
+                menu.add( 0, Commander.SEND_TO, 0, R.string.send_to );
             if( CA.suitable( R.id.F5, t ) )
                 menu.add( 0, R.id.F5, 0, R.string.copy_title );
             if( CA.suitable( R.id.F6, t ) )
@@ -705,10 +687,14 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                     menu.add( 0, Commander.OPEN_WITH, 0, R.string.open_with );
                 menu.add( 0, R.id.new_zip, 0, R.string.new_zip );
             }
-            if( num <= 1 )
+            if( num <= 1 ) {
                 menu.add( 0, Commander.COPY_NAME, 0, R.string.copy_name );
+                if( ( t & CA.LOCAL ) != 0 )
+                    menu.add( 0, Commander.SHRCT_CMD, 0, R.string.shortcut );
+            }
             if( item.dir && acmi.position != 0 )
                 menu.add( 0, Commander.FAV_FLD, 0, ctx.getString( R.string.fav_fld, item.name ) );
+
         } catch( Exception e ) {
             Log.e( TAG, "populateContextMenu() " + e.getMessage(), e );
         }
@@ -760,6 +746,11 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         }
     }
 
+    @Override
+    public Engines.IReciever getReceiver() {
+        return null;
+    }
+    
     protected void reSort() {
         // to override all the derives
     }

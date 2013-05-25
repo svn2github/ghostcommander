@@ -28,7 +28,7 @@
   <item type="id" name="root" />
   <item type="id" name="mount" />
   <item type="id" name="hidden" />
-
+  <item type="id" name="menu" />
   <item type="id" name="create_shortcut" />
 </resources>
 

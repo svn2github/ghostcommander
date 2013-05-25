@@ -15,6 +15,7 @@ import com.ghostsq.commander.R;
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
+import com.ghostsq.commander.adapters.Engines.IReciever;
 import com.ghostsq.commander.root.MountsListEngine;
 import com.ghostsq.commander.root.MountsListEngine.MountItem;
 
@@ -130,7 +131,8 @@ public class MountAdapter extends CommanderAdapterBase {
     class CreateEngine extends ExecEngine {
         String pair;
         CreateEngine( Context ctx, Handler h, String pair_ ) {
-            super( ctx, h );
+            super( ctx );
+            setHandler( h );
             pair = pair_;
         }
         @Override
@@ -153,12 +155,8 @@ public class MountAdapter extends CommanderAdapterBase {
 	
 	@Override
     public void createFolder( String dev_mp_pair ) {
-        if( isWorkerStillAlive() )
-            notify( s( R.string.busy ), Commander.OPERATION_FAILED );
-        else {
-            worker = new CreateEngine( commander.getContext(), workerHandler, dev_mp_pair );
-            worker.start();
-        }
+        CreateEngine ce = new CreateEngine( commander.getContext(), simpleHandler, dev_mp_pair );
+        ce.start();
 	}
 
     @Override
@@ -186,12 +184,8 @@ public class MountAdapter extends CommanderAdapterBase {
             if( items == null || position < 0 || position > items.length )
                 return;
             MountItem item = items[position-1];
-            if( isWorkerStillAlive() )
-                notify( s( R.string.busy ), Commander.OPERATION_FAILED );
-            else {
-                worker = new RemountEngine( commander.getContext(), workerHandler, item );
-                worker.start();
-            }
+             RemountEngine re = new RemountEngine( commander.getContext(), simpleHandler, item );
+             re.start();
         } catch( Exception e ) {
             e.printStackTrace();
         }
@@ -220,6 +214,7 @@ public class MountAdapter extends CommanderAdapterBase {
             item = new Item();
             item.name = parentLink;
             item.dir = true;
+            item.icon_id = R.drawable.icon;
         }
         else {
             item.name = "???";
@@ -228,10 +223,14 @@ public class MountAdapter extends CommanderAdapterBase {
                 if( curItem != null ) {
                     String mp = curItem.getMountPoint();
                     if( mp != null ) {
-                        if( "/system".equals( mp ) )
-                            item.icon_id = R.drawable.application;
+                        if( mp.contains( "/system" ) || mp.contains( "/data" ) )
+                            item.icon_id = R.drawable.root;
                         else if( mp.contains( "/sdcard" ) )
                             item.icon_id = R.drawable.sd;
+                        else if( mp.contains( "/asec" ) )
+                            item.icon_id = R.drawable.android;
+                        else
+                            item.icon_id = R.drawable.mount;
                     }
                     item.dir = false;
                     item.name = curItem.getName();

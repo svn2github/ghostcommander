@@ -120,7 +120,8 @@ public class EditPermissions extends Activity implements View.OnClickListener {
                     cmd += "busybox chmod " + a.toString();
                 }
                 if( cmd != null ) {
-                    ExecEngine ee = new ExecEngine( this, new DoneHandler(), null, cmd, false, 500 );
+                    ExecEngine ee = new ExecEngine( this, null, cmd, false, 500 );
+                    ee.setHandler( new DoneHandler() );
                     ee.start();
                 }
             }
@@ -138,7 +139,7 @@ public class EditPermissions extends Activity implements View.OnClickListener {
         public void handleMessage( Message msg ) {
             try {
                 if( msg.what < 0 ) {
-                    setResult( RESULT_OK, new Intent( Intent.ACTION_VIEW ) );
+                    setResult( RESULT_OK );//, new Intent( Intent.ACTION_VIEW ) );
                     finish();
                 }
             } catch( Exception e ) {

@@ -86,6 +86,7 @@ public class Editor extends Activity implements TextWatcher {
         }
         catch( Exception e ) {
             Log.e( TAG, "", e );
+            finish();
         }
     }
     

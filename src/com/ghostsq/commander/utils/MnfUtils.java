@@ -320,11 +320,11 @@ public final class MnfUtils {
         try {
             int outerDepth = xpp.getDepth();
             int type;
+            final String NAME = "name";
             while( (type = xpp.next()) != XmlPullParser.END_DOCUMENT
                     && (type != XmlPullParser.END_TAG || xpp.getDepth() > outerDepth) ) {
                 if( type == XmlPullParser.END_TAG || type == XmlPullParser.TEXT )
                     continue;
-                final String NAME = "name";
                 String tag = xpp.getName();
                 if( tag.equals( "action" ) ) {
                     String name = xpp.getAttributeValue( null, NAME );

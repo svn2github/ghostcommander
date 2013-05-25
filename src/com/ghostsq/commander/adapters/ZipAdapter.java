@@ -83,8 +83,10 @@ public class ZipAdapter extends CommanderAdapterBase {
     }
     class EnumEngine extends Engine {
 
+        protected EnumEngine() {
+        }
         protected EnumEngine( Handler h ) {
-            super( h );
+            super.setHandler( h );
         }
         protected final ZipEntry[] GetFolderList( String fld_path ) {
             if( zip == null ) return null;
@@ -103,7 +105,6 @@ public class ZipAdapter extends CommanderAdapterBase {
             ArrayList<ZipEntry> array = new ArrayList<ZipEntry>();
             while( entries.hasMoreElements() ) {
                 if( isStopReq() ) return null;
-                
                 ZipEntry e = entries.nextElement();
                 if( e != null ) {
                     String entry_name = fixName( e );
@@ -178,12 +179,13 @@ public class ZipAdapter extends CommanderAdapterBase {
                 }
             }
             catch( Exception e ) {
-                Log.e( TAG, "ListEngine", e );
+                Log.e( TAG, "ListEngine: " + pass_back_on_done, e );
+                sendProgress( e.getLocalizedMessage(), Commander.OPERATION_FAILED, pass_back_on_done );
             }
             finally {
             	super.run();
             }
-            sendProgress( "Can't open this ZIP file", Commander.OPERATION_FAILED, pass_back_on_done );
+            sendProgress( "ZIP error", Commander.OPERATION_FAILED, pass_back_on_done );
         }
     }
     @Override
@@ -241,8 +243,8 @@ public class ZipAdapter extends CommanderAdapterBase {
             if( subItems == null ) 
                 throw new RuntimeException( "Nothing to extract" );
             if( !checkReadyness() ) return false;
+            Engines.IReciever recipient = null;
             File dest = null;
-            int rec_h = 0;
             if( to instanceof FSAdapter  ) {
                 dest = new File( to.toString() );
                 if( !dest.exists() ) dest.mkdirs();
@@ -250,11 +252,10 @@ public class ZipAdapter extends CommanderAdapterBase {
                     throw new RuntimeException( ctx.getString( R.string.dest_exist ) );
             } else {
                 dest = new File( createTempDir() );
-                rec_h = setRecipient( to ); 
+                recipient = to.getReceiver(); 
             }
             notify( Commander.OPERATION_STARTED );
-            worker = new CopyFromEngine( workerHandler, subItems, dest, rec_h );
-            worker.start();
+            commander.startEngine( new CopyFromEngine( subItems, dest, recipient ) );
             return true;
         }
         catch( Exception e ) {
@@ -269,12 +270,11 @@ public class ZipAdapter extends CommanderAdapterBase {
 	    private ZipEntry[] mList = null;
 	    private String     base_pfx;
 	    private int        base_len; 
-        private int        recipient_hash;
-	    CopyFromEngine( Handler h, ZipEntry[] list, File dest, int rec_h ) {
-	    	super( h );
+
+	    CopyFromEngine( ZipEntry[] list, File dest, Engines.IReciever recipient_ ) {
+	        recipient = recipient_;    // member of a superclass
 	    	mList = list;
 	        dest_folder = dest;
-	        recipient_hash = rec_h;
             try {
                 base_pfx = uri.getFragment();
                 if( base_pfx == null )
@@ -288,8 +288,8 @@ public class ZipAdapter extends CommanderAdapterBase {
 	    @Override
 	    public void run() {
 	    	int total = copyFiles( mList, "" );
-            if( recipient_hash != 0 ) {
-                sendReceiveReq( recipient_hash, dest_folder );
+            if( recipient != null ) {
+                sendReceiveReq( dest_folder );
                 return;
             }
 			sendResult( Utils.getOpReport( ctx, total, R.string.unpacked ) );
@@ -347,7 +347,9 @@ public class ZipAdapter extends CommanderAdapterBase {
         	            int  n = 0;
         	            int  so_far = (int)(byte_count * conv);
         	            
-        	            String unp_msg = ctx.getString( R.string.unpacking, rel_name ); 
+        	            int fnl = rel_name.length();
+        	            String unp_msg = ctx.getString( R.string.unpacking, 
+        	                    fnl > CUT_LEN ? "\u2026" + rel_name.substring( fnl - CUT_LEN ) : rel_name ); 
         	            while( true ) {
         	                n = in.read( buf );
         	                if( n < 0 ) break;
@@ -363,7 +365,6 @@ public class ZipAdapter extends CommanderAdapterBase {
                             }
         	            }
         			}
-        			
                     final int GINGERBREAD = 9;
                     if( android.os.Build.VERSION.SDK_INT >= GINGERBREAD )
                         ForwardCompat.setFullPermissions( dest_file );
@@ -402,8 +403,7 @@ public class ZipAdapter extends CommanderAdapterBase {
         	ZipEntry[] to_delete = bitsToItems( cis );
         	if( to_delete != null && zip != null && uri != null ) {
         	    notify( Commander.OPERATION_STARTED );
-                worker = new DelEngine( workerHandler, new File( uri.getPath() ), to_delete );
-                worker.start();
+                commander.startEngine( new DelEngine( new File( uri.getPath() ), to_delete ) );
 	            return true;
         	}
         }
@@ -417,8 +417,7 @@ public class ZipAdapter extends CommanderAdapterBase {
     class DelEngine extends Engine {
         private ZipEntry[] mList = null;
         private File       zipFile;
-        DelEngine( Handler h, File zipFile_, ZipEntry[] list ) {
-            super( h );
+        DelEngine( File zipFile_, ZipEntry[] list ) {
             zipFile = zipFile_;
             mList = list;
         }
@@ -530,7 +529,7 @@ public class ZipAdapter extends CommanderAdapterBase {
             	if( cur == null || cur.length() == 0 ||
             	                 ( cur.length() == 1 && cur.charAt( 0 ) == SLC ) ) {
             	    File zip_file = new File( uri.getPath() );
-            	    String parent_dir = zip_file.getParent();
+            	    String parent_dir = Utils.escapePath( zip_file.getParent() );
             	    commander.Navigate( Uri.parse( parent_dir != null ? parent_dir : Panels.DEFAULT_LOC ), null, 
             	            zip_file.getName() );
             	}
@@ -583,8 +582,7 @@ public class ZipAdapter extends CommanderAdapterBase {
             zip = null;
             items = null;
             
-            worker = new CopyToEngine( workerHandler, list, new File( uri.getPath() ), uri.getFragment(), move_mode );
-            worker.start();
+            commander.startEngine( new CopyToEngine( list, new File( uri.getPath() ), uri.getFragment(), move_mode ) );
             return true;
 		} catch( Exception e ) {
 			notify( "Exception: " + e.getMessage(), Commander.OPERATION_FAILED );
@@ -596,8 +594,7 @@ public class ZipAdapter extends CommanderAdapterBase {
         try {
             if( !checkReadyness() ) return false;
             notify( Commander.OPERATION_STARTED );
-            worker = new CopyToEngine( workerHandler, list, new File( zip_fn ) );
-            worker.start();
+            commander.startEngine( new CopyToEngine( list, new File( zip_fn ) ) );
             return true;
         } catch( Exception e ) {
             notify( "Exception: " + e.getMessage(), Commander.OPERATION_FAILED );
@@ -619,8 +616,7 @@ public class ZipAdapter extends CommanderAdapterBase {
         /**
          *  Add files to existing zip 
          */
-        CopyToEngine( Handler h, File[] list, File zip_file, String dest_sub, int move_mode_ ) {
-            super( h );
+        CopyToEngine( File[] list, File zip_file, String dest_sub, int move_mode_ ) {
             topList = list;
             zipFile = zip_file;
             if( dest_sub != null )
@@ -634,8 +630,7 @@ public class ZipAdapter extends CommanderAdapterBase {
         /**
          *  Create a new shiny ZIP 
          */
-        CopyToEngine( Handler h, File[] list, File zip_file ) {  
-            super( h );
+        CopyToEngine( File[] list, File zip_file ) {  
             topList = list;
             zipFile = zip_file;
             destPath = "";
@@ -758,7 +753,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                        return 0;
                    }
                  }           
-                 double conv = 100./(double)totalSize;
+                 double conv = PERC/(double)totalSize;
                  long   byte_count = 0;
                  // Compress the files
                  int i;
@@ -774,7 +769,9 @@ public class ZipAdapter extends CommanderAdapterBase {
                        else {
                            out.putNextEntry( new ZipEntry( rfn ) );
                            // Transfer bytes from the file to the ZIP file
-                           String pack_s = ctx.getString( R.string.packing, fn );
+                           int fnl = fn.length();
+                           String pack_s = ctx.getString( R.string.packing, 
+                                   fnl > CUT_LEN ? "\u2026" + fn.substring( fnl - CUT_LEN ) : fn );
                            InputStream in = new FileInputStream( f );
                            int len;
                            int  so_far = (int)(byte_count * conv);
@@ -899,10 +896,13 @@ public class ZipAdapter extends CommanderAdapterBase {
     }
     private final boolean checkReadyness()   
     {
-        if( worker != null ) {
+        // FIXME check that the zip file is processed by some other engine!!!!!!!!!!!!
+        /*
+        if( ??? ) {
         	notify( ctx.getString( R.string.busy ), Commander.OPERATION_FAILED );
         	return false;
         }
+        */
     	return true;
     }
     public class ZipItemPropComparator implements Comparator<ZipEntry> {

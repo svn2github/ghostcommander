@@ -3,6 +3,7 @@
  */
 package com.ghostsq.commander;
 
+import com.ghostsq.commander.adapters.Engine;
 import com.ghostsq.commander.utils.Credentials;
 
 import android.content.Context;
@@ -11,7 +12,7 @@ import android.net.Uri;
 import android.os.Message;
 
 /**
- * @author zc2
+ * @author Ghost Squared
  *
  */
 public interface Commander {
@@ -39,15 +40,18 @@ public interface Commander {
 	                         OPERATION_COMPLETED = -3, 
 	                         OPERATION_COMPLETED_REFRESH_REQUIRED = -4,
                              OPERATION_FAILED_LOGIN_REQUIRED = -5,
-                             OPERATION_SUSPENDED_FILE_EXIST = -6;
+                             OPERATION_SUSPENDED_FILE_EXIST = -6,
+                             OPERATION_FAILED_REFRESH_REQUIRED = -7;
 	
 	public final static int  OPERATION_REPORT_IMPORTANT = 870;
 
-    public final static int  OPEN = 903, OPEN_WITH = 902, SEND_TO = 236, COPY_NAME = 390, FAV_FLD = 414;
+    public final static int  OPEN = 903, OPEN_WITH = 902, SEND_TO = 236, COPY_NAME = 390, FAV_FLD = 414, SHRCT_CMD = 269;
     
-    public final static String NOTIFY_COOKIE = "cookie", NOTIFY_SPEED = "speed", NOTIFY_CRD = "crd", NOTIFY_POSTO = "posto";
+    public final static String NOTIFY_COOKIE = "cookie", NOTIFY_SPEED = "speed", NOTIFY_TASK = "task", NOTIFY_CRD = "crd", NOTIFY_POSTO = "posto";
 
     public final static String NAVIGATE_ACTION = "com.ghostsq.commander.NAVIGATE";
+
+    public final static int  ACTIVITY_RESULT_REFRESH = 434; 
     
     /**
      * @return current UI context
@@ -113,4 +117,6 @@ public interface Commander {
      * @return true if it's fine to destroy the working thread 
      */
     public boolean notifyMe( Message m );
+    
+    public boolean startEngine( Engine e );
 }

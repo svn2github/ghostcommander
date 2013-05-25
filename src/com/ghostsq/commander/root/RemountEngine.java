@@ -9,7 +9,8 @@ import com.ghostsq.commander.root.MountsListEngine.MountItem;
 public class RemountEngine extends ExecEngine {
     MountItem mount;
     RemountEngine( Context ctx, Handler h, MountItem m ) {
-        super( ctx, h );
+        super( ctx );
+        setHandler( h );
         mount = m;
     }
     @Override

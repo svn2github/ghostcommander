@@ -46,16 +46,17 @@
 <string name="favs_descr">View and manage your list of favorite folders and sites. Edit, rename and place shortcuts on your device\'s home screen, etc.</string>
 <string name="local_descr">Browse, organize and modify the contents of the inserted SD card and internal flash memory.</string>
 <string name="ftp_descr">Connect to an FTP server, browse and transfer files both to and from it.</string>
-<string name="sftp_descr">Connect to a Secured (SSH) FTP server. SFTP plugin is requered.</string>
-<string name="smb_descr">Connect to shared folders on a Windows machine. SMB plugin is requered.</string>
+<string name="sftp_descr">Connect to a Secured (SSH) FTP server. SFTP plugin is requiered.</string>
+<string name="smb_descr">Connect to shared folders on a Windows machine. SMB plugin is requiered.</string>
 <string name="root_descr">Use caution - for rooted devices only: Browse and interact with critical system files. Only proceed if you know what you\'re doing.</string>
 <string name="mount_descr">Display a list of all mount points. Remount them to \"rw\" mode, then back to \"ro\" mode after any changes are complete. Proceed with caution.</string>
 <string name="apps_descr">View and manage installed packages.</string>
 <string name="exit_descr">Close the application.</string>
-<string name="shortcut">Create a new shortcut</string>
+<string name="shortcut">Create a desktop shortcut</string>
 <string name="enter_ftp">Connect to FTP</string>
 <string name="enter_smb">Connect to Windows PC</string>
 <string name="search_file">Search</string>
+<string name="menu">Menu</string>
 <string name="sort_by_name">By Name</string>
 <string name="sort_by_ext">By Extension</string>
 <string name="sort_by_size">By Size</string>
@@ -146,6 +147,7 @@
 <string name="inv_dest">Invalid destination</string>
 <string name="inv_path">Invalid path</string>
 <string name="find_on_fs_only">The search feature works only with the local file system.</string>
+<string name="on_fs_only">This feature works only on a local file system.</string>
 <string name="op_not_alwd">Operation is not allowed - select something first.</string>
 <string name="oper_item_to">%1$s %2$s to:"</string>
 <string name="login_title">Login</string>
@@ -166,8 +168,8 @@
 <string name="unpacking">Unpacking \n\"%s\"…</string>
 <string name="unpacked_p">Unpacked \n\"%s\"   </string>
 <string name="packing">Packing \n\"%s\"…</string>
-<string name="retrieving">Retrieving \n\"%s\"…</string>
-<string name="uploading">Uploading \n\"%s\"…</string>
+<string name="retrieving">Retrieving…\n\"%s\"</string>
+<string name="uploading">Uploading…\n\"%s\"</string>
 <string name="uploaded_p">Uploaded \n\"%s\"   </string>
 <string name="loading">Loading…</string>
 <string name="second">s</string>
@@ -258,7 +260,7 @@
 <string name="advanced_settings">Miscellaneous</string>
 <string name="summary_advanced_settings">Extra settings for advanced users</string>
 <string name="send_content">Send using content provider</string>
-<string name="summary_send_content">Uncheck if your file sending application does not implement a content resolver</string>
+<string name="summary_send_content">Try to uncheck if your file sending application does not implement a content resolver</string>
 <string name="panels_mode">Side-by-side panels</string>
 <string name="summary_panels_mode">Show both panels side-by-side in a split screen view</string>
 <string name="two_lines">Two lines in a row</string>
@@ -432,6 +434,11 @@ ftp://host.com/folder
 
 ftp://user:pass@ftp_host/folder
     - Authenticated FTP
+
+sftp://user:pass@sftp_host/folder
+    - SSH FTP
+    If you have a keyfile to authenticate, please put it to the file /sdcard/.GhostCommander/keys/&lt;host name&gt;
+    In this case the password is the passphrase to your key file.
 
 smb://domain;user:pass@server/share
     - Windows share

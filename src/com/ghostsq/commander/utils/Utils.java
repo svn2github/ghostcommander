@@ -16,61 +16,84 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.net.UrlQuerySanitizer;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 public final class Utils {
     private final static String[][] mimes = { // should be sorted!
-            { ".3gpp","audio/3gpp" }, 
-            { ".aif", "audio/x-aiff" }, 
-            { ".apk", "application/vnd.android.package-archive" },
-            { ".avi", "video/x-msvideo" }, 
-            { ".bmp", "image/bmp" }, 
-            { ".csv", "text/csv" }, 
-            { ".doc", "application/msword" },
-            { ".epub","application/epub" }, 
-            { ".fb2", "application/fb2" },
-            { ".flac","audio/flac" },            
-            { ".flv", "video/x-flv" },            
-            { ".gif", "image/gif" }, 
-            { ".gz",  "application/gzip" },
-            { ".htm", "text/html" }, 
-            { ".html","text/html" }, 
-            { ".jar", "application/java-archive" },
-            { ".java","application/octet-stream" }, 
-            { ".jpeg","image/jpeg" }, 
-            { ".jpg", "image/jpeg" },
-            { ".m3u", "audio/x-mpegurl" }, 
-            { ".mid", "audio/midi" }, 
-            { ".midi","audio/midi" }, 
-            { ".mkv", "video/x-matroska" },
-            { ".mp2", "video/mpeg" },
-            { ".mp3", "audio/mp3" },
-            { ".mp4", "video/mp4" },
-            { ".mpeg","video/mpeg" }, 
-            { ".mpg", "video/mpeg" }, 
-            { ".oga", "audio/ogg" }, 
-            { ".ogg", "audio/ogg" },    // RFC 5334 
-            { ".ogv", "video/ogg" },    // RFC 5334 
-            { ".pdf", "application/pdf" }, 
-            { ".php", "text/php" },
-            { ".png", "image/png" }, 
-            { ".ra",  "audio/x-pn-realaudio" }, 
-            { ".ram", "audio/x-pn-realaudio" },
-            { ".rar", "application/x-rar-compressed" }, 
-            { ".rtf", "application/rtf" }, 
-            { ".svg", "image/svg+xml" },
-            { ".tgz", "application/gnutar" }, 
-            { ".tif", "image/tiff" }, 
-            { ".tiff","image/tiff" }, 
-            { ".txt", "text/plain" },
-            { ".vcf", "text/x-vcard" }, 
-            { ".wav", "audio/wav" }, 
-            { ".wma", "audio/x-ms-wma" }, 
-            { ".wmv", "video/x-ms-wmv" }, 
-            { ".xml", "text/xml" }, 
-            { ".zip", "application/zip" } };
+            { ".3gpp", "audio/3gpp" }, 
+            { ".7z",   "application/x-7z-compressed" }, 
+            { ".aif",  "audio/x-aiff" }, 
+            { ".apk",  "application/vnd.android.package-archive" },
+            { ".arj",  "application/x-arj" }, 
+            { ".au",   "audio/basic" }, 
+            { ".avi",  "video/x-msvideo" }, 
+            { ".bmp",  "image/bmp" },
+            { ".bz",   "application/x-bzip2" },
+            { ".bz2",  "application/x-bzip2" },
+            { ".cab",  "application/x-compressed" },
+            { ".conf", "application/x-conf" },
+            { ".csv",  "text/csv" }, 
+            { ".db",   "application/x-sqlite3" },
+            { ".doc",  "application/msword" },
+            { ".epub", "application/epub" }, 
+            { ".fb2",  "application/fb2" },
+            { ".flac", "audio/flac" },            
+            { ".flv",  "video/x-flv" },            
+            { ".gif",  "image/gif" }, 
+            { ".gtar", "application/x-gtar" },
+            { ".gz",   "application/x-gzip" },
+            { ".htm",  "text/html" }, 
+            { ".html", "text/html" }, 
+            { ".img",  "application/x-compressed" },
+            { ".jar",  "application/java-archive" },
+            { ".java", "text/java" }, 
+            { ".jpeg", "image/jpeg" }, 
+            { ".jpg",  "image/jpeg" },
+            { ".js",   "text/javascript" },
+            { ".lzh",  "application/x-lzh" },
+            { ".m3u",  "audio/x-mpegurl" }, 
+            { ".md5",  "application/x-md5" },
+            { ".mid",  "audio/midi" }, 
+            { ".midi", "audio/midi" }, 
+            { ".mkv",  "video/x-matroska" },
+            { ".mov",  "video/quicktime" },
+            { ".mp2",  "video/mpeg" },
+            { ".mp3",  "audio/mp3" },
+            { ".mp4",  "video/mp4" },
+            { ".mpeg", "video/mpeg" }, 
+            { ".mpg",  "video/mpeg" }, 
+            { ".oga",  "audio/ogg" }, 
+            { ".ogg",  "audio/ogg" },    // RFC 5334 
+            { ".ogv",  "video/ogg" },    // RFC 5334 
+            { ".pdf",  "application/pdf" }, 
+            { ".php",  "text/php" },
+            { ".png",  "image/png" }, 
+            { ".prop", "application/x-prop" }, 
+            { ".ra",   "audio/x-pn-realaudio" }, 
+            { ".ram",  "audio/x-pn-realaudio" },
+            { ".rar",  "application/x-rar-compressed" }, 
+            { ".rtf",  "application/rtf" }, 
+            { ".sh",   "application/x-sh" },
+            { ".so",   "application/octet-stream" },
+            { ".sqlite","application/x-sqlite3" },
+            { ".svg",  "image/svg+xml" },
+            { ".swf",  "application/x-shockwave-flash" }, 
+            { ".tar",  "application/x-tar" }, 
+            { ".tcl",  "application/x-tcl" }, 
+            { ".tgz",  "application/x-gzip" }, 
+            { ".tif",  "image/tiff" }, 
+            { ".tiff", "image/tiff" }, 
+            { ".txt",  "text/plain" },
+            { ".vcf",  "text/x-vcard" }, 
+            { ".wav",  "audio/wav" }, 
+            { ".wma",  "audio/x-ms-wma" }, 
+            { ".wmv",  "video/x-ms-wmv" }, 
+            { ".xml",  "text/xml" }, 
+            { ".zip",  "application/zip" } };
 
     public final static String getMimeByExt( String ext ) {
         if( ext == null || ext.length() == 0 || ext.compareTo( "." ) == 0 )
@@ -160,7 +183,6 @@ public final class Utils {
         return list;
     }
 
-    // TODO: localize
     public final static String getOpReport( Context ctx, int total, int verb_id ) {
         String items = null;
         if( total > 1 ) {
@@ -182,13 +204,23 @@ public final class Utils {
         return report;
     }
 
+    static final char[] spaces = { '\u00A0', '\u00A0', '\u00A0', '\u00A0', '\u00A0', '\u00A0', '\u00A0', '\u00A0' }; 
+    
     public final static String getHumanSize( long sz ) {
-        if( sz > 1073741824 )
-            return "" + Math.round( sz * 10 / 1073741824. ) / 10. + "G";
-        if( sz > 1048576 )
-            return "" + Math.round( sz * 10 / 1048576. ) / 10. + "M";
-        if( sz > 1024 )
-            return "" + Math.round( sz * 10 / 1024. ) / 10. + "K";
+        try {
+            String s;
+            if( sz > 1073741824 )
+                s = Math.round( sz * 10 / 1073741824. ) / 10. + "G";
+            else if( sz > 1048576 )
+                s = Math.round( sz * 10 / 1048576. ) / 10. + "M";
+            else if( sz > 1024 )
+                s = Math.round( sz * 10 / 1024. ) / 10. + "K";
+            else
+                s = "" + sz + " ";
+            return new String( spaces, 0, 8 - s.length() ) + s;
+        } catch( Exception e ) {
+            e.printStackTrace();
+        }
         return "" + sz + " ";
     }
 
@@ -214,12 +246,6 @@ public final class Utils {
             e.printStackTrace();
         }
         return 0;
-    }
-
-    public final static String mbAddSl( String path ) {
-        if( !str( path ) )
-            return "";
-        return path.charAt( path.length() - 1 ) == '/' ? path : path + "/";
     }
 
     public final static String encodeToAuthority( String serv ) {
@@ -264,6 +290,12 @@ public final class Utils {
         return u.buildUpon().encodedAuthority( ea ).build();
     }
 
+    public final static String mbAddSl( String path ) {
+        if( !str( path ) )
+            return "/"; // XXX returning a slash here seems more logical, but are there any pitfalls?
+        return path.charAt( path.length() - 1 ) == '/' ? path : path + "/";
+    }
+
     public final static Uri addTrailngSlash( Uri u ) {
         String alt_path, path = u.getEncodedPath();
         if( path == null )
@@ -277,6 +309,11 @@ public final class Utils {
     
     public final static boolean str( String s ) {
         return s != null && s.length() > 0;
+    }
+    
+    public final static boolean equals( String s1, String s2 ) {
+        if( s1 == null ) return s2 == null ? true : false;
+        return s1.equals( s2 );
     }
     
     public final static String join( String[] a, String sep ) {
@@ -444,6 +481,11 @@ public final class Utils {
         return escapePath( s ).replaceAll( "/", "%2F" );
     }
 
+    public final static String unEscape( String s ) {
+        UrlQuerySanitizer urlqs = new UrlQuerySanitizer();
+        return urlqs.unescape( s.replaceAll( "\\+", "_pLuS_" ) ).replaceAll( "_pLuS_", "+" );
+    }
+    
     public static byte[] hexStringToBytes( String hexString ) {
         int len = hexString.length() / 2;
         byte[] result = new byte[len];
@@ -472,22 +514,25 @@ public final class Utils {
         return hsv[2];
     }
 
-    public final static int setBrightness( int color, float drop ) {
+    public final static int setBrightness( int color, float br ) {
+        float[] hsv = new float[3];
+        Color.colorToHSV( color, hsv );
+        hsv[2] = br;
+        return Color.HSVToColor( hsv );
+    }
+
+    public final static int shiftBrightness( int color, float drop ) {
         float[] hsv = new float[3];
         Color.colorToHSV( color, hsv );
         hsv[2] *= drop;
         return Color.HSVToColor( hsv );
     }
 
-    public final static GradientDrawable getShading( int color ) {
-        return getShadingEx( color, 0.6f );
-    }
-
     public final static GradientDrawable getShadingEx( int color, float drop ) {
         try {
             int[] cc = new int[2];
             cc[0] = color;
-            cc[1] = setBrightness( color, drop );
+            cc[1] = shiftBrightness( color, drop );
             return new GradientDrawable( GradientDrawable.Orientation.TOP_BOTTOM, cc );
         } catch( Throwable e ) {
             e.printStackTrace();
@@ -495,6 +540,19 @@ public final class Utils {
         return null;
     }
 
+    public final static String getCause( Throwable e ) {
+        Throwable c = e.getCause();
+        if( c != null ) {
+            String s = c.getLocalizedMessage();
+            String cs = getCause( c );
+            if( cs != null )
+                return s + "\n" + cs;
+            else
+                return s;
+        }
+        return null;        
+    }
+    
     public enum RR {
         busy(R.string.busy), 
         copy_err(R.string.copy_err), 

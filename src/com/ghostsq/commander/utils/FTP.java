@@ -2,24 +2,28 @@ package com.ghostsq.commander.utils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+import android.net.Uri;
 import android.util.Log;
 
 public class FTP {
-    private final static String TAG = "FTPclient";
+    private final static String TAG = "FTP";
     
 	public interface ProgressSink {
-		public boolean completed( long size ) throws InterruptedException;
+		public boolean completed( long size, boolean done ) throws InterruptedException;
 	};
 	
     private final static int BLOCK_SIZE = 100000;
@@ -33,6 +37,7 @@ public class FTP {
     private InputStream inDataStream = null;
     private boolean loggedIn = false;
     private boolean allowActive = false;
+    private Charset charset = null;
     
     private final boolean sendCommand( String cmd ) {
         try {
@@ -40,12 +45,23 @@ public class FTP {
         		return false;
         	String out = cmd.startsWith( "PASS" ) ? "PASS ***" : cmd;
         	debugPrint( ">>> " + out );
-            byte[] bytes = ( cmd + "\r\n" ).getBytes();
+        	
+        	String cmd_rn = cmd + "\r\n";        	
+            byte[] bytes = null;
+            if( charset != null )
+                try {
+                    bytes = cmd_rn.getBytes( charset.name() );
+                } catch( Exception e ) {
+                    Log.w( TAG, "Not supported: " + charset );
+                }
+            if( bytes == null )
+                bytes = cmd_rn.getBytes();
             outputStream.write( bytes );
             return true;
         }
         catch( IOException e ) {
             debugPrint( "connection broken" );
+            Log.e( TAG, "", e );
         }
         return false;
     }
@@ -141,7 +157,8 @@ public class FTP {
             } while( !(Character.isDigit( buf[0] ) &&
                        Character.isDigit( buf[1] ) &&
                        Character.isDigit( buf[2] ) && buf[3] == ' ' ) ); // read until a coded response be found
-            String reply = new String( buf, 0, i );
+            String reply = charset != null ? new String( buf, 0, i, charset.name() ) : new String( buf, 0, i );
+            
             debugPrint( "<<< " + reply );
             return reply;
         }
@@ -151,7 +168,7 @@ public class FTP {
             return null;
 		}
     }
-    public final boolean connect( String host, int port ) throws UnknownHostException, IOException, InterruptedException {
+    public final synchronized boolean connect( String host, int port ) throws UnknownHostException, IOException, InterruptedException {
         cmndSocket = new Socket( host, port );
         outputStream = cmndSocket.getOutputStream();
         inputStream = new BufferedInputStream( cmndSocket.getInputStream(), 256 );
@@ -177,7 +194,7 @@ public class FTP {
                 if( inDataStream != null ) inDataStream.close();
             }
             catch( Exception e ) {
-            	e.printStackTrace();
+            	Log.e( TAG, "", e );
             }
             outputStream = null;
              inputStream = null;
@@ -187,10 +204,59 @@ public class FTP {
             inDataStream = null;
         }
     }
+
+    public final static int WAS_IN      =  1;
+    public final static int LOGGED_IN   =  2;
+    public final static int NO_CONNECT  = -1;
+    public final static int NO_LOGIN    = -2;
+    public final static int NO_WHERE    = -3;
+    
+    public synchronized final int connectAndLogin( Uri u, String user, String pass, boolean cwd ) 
+                      throws UnknownHostException, IOException, InterruptedException {
+        if( isLoggedIn() ) {
+            if( cwd ) {
+                String path = u.getPath();
+                if( path != null )
+                    setCurrentDir( path );
+            }
+            return WAS_IN;
+        }
+        int port = u.getPort();
+        if( port == -1 ) port = 21;
+        String host = u.getHost();
+        if( connect( host, port ) ) {
+            if( login( user, pass ) ) {
+                if( cwd ) {
+                    String path = u.getPath();
+                    if( !Utils.str( path ) ) path = File.separator;
+                    if( !setCurrentDir( path ) && !"..".equals( path ) ) {
+                        if( !makeDir( path ) || !setCurrentDir( path ) )
+                            return NO_WHERE;
+                    }
+                }
+                return LOGGED_IN;
+            }
+            else {
+                disconnect( false );
+                Log.w( TAG, "Invalid credentials." );
+                return NO_LOGIN;
+            }
+        }
+        return NO_CONNECT;
+    }
+    
+    
     public void setActiveMode( boolean a ) {
         allowActive = a;
     }
-    private final boolean executeCommand( String command ) throws InterruptedException {
+    public void setCharset( String charset_ ) {
+        try {
+            charset = charset_ == null ? null : Charset.forName( charset_ );
+        } catch( Exception e ) {
+            Log.e( TAG, "invalid charset: " + charset_, e );
+        }
+    }
+    private final synchronized boolean executeCommand( String command ) throws InterruptedException {
         sendCommand( command );
         return waitForPositiveResponse();
     }
@@ -212,7 +278,10 @@ public class FTP {
         }
         String port_command = "PORT " + addrshorts[0] + "," + addrshorts[1] + "," + addrshorts[2] + "," + addrshorts[3] + "," +
                 ((localport & 0xff00) >> 8) + "," + (localport & 0x00ff);
-        return executeCommand( port_command );
+        if( executeCommand( port_command ) )
+            return true;
+        Log.e( TAG, "Active mode failed" );
+        return false;
     }
     private final int parsePassiveResponse( String s, byte[] addr ) {
         try {
@@ -256,7 +325,7 @@ public class FTP {
         return -1;
     }
 
-    private final Socket executeDataCommand( String commands ) {
+    private final synchronized Socket executeDataCommand( String commands ) {
     	try {
     	    if( commands == null || commands.length() == 0 ) return null;
     	    Socket data_socket = null;
@@ -324,10 +393,10 @@ public class FTP {
      *    public methods
      */
     
-    public final void clearLog() {
+    public final synchronized void clearLog() {
         debugBuf.setLength( 0 );
     }
-    public final String getLog() {
+    public final synchronized String getLog() {
         return debugBuf.toString();
     }
 
@@ -337,7 +406,7 @@ public class FTP {
         return loggedIn;
     }
     
-    public final boolean login( String username, String password ) throws IOException, InterruptedException {
+    public final synchronized boolean login( String username, String password ) throws IOException, InterruptedException {
         if( !executeCommand( "USER " + username ) )
             return false;
         loggedIn = executeCommand( "PASS " + password );
@@ -352,12 +421,12 @@ public class FTP {
     public final void heartBeat() throws InterruptedException {
     	executeCommand( "NOOP" );
     }
-    public final boolean rename( String from, String to ) throws InterruptedException {
+    public final synchronized boolean rename( String from, String to ) throws InterruptedException {
     	if( !executeCommand( "RNFR " + from ) )
     		return false;
     	return executeCommand( "RNTO " + to );
     }
-    public final OutputStream prepStore( String fn ) {
+    public final synchronized OutputStream prepStore( String fn ) {
     	
     	dataSocket = null;
         try {
@@ -369,7 +438,8 @@ public class FTP {
                 return dataSocket.getOutputStream();
         }
         catch( Exception e ) {
-            debugPrint( "Exception: " + e );
+            debugPrint( e.getLocalizedMessage() );
+            Log.e( TAG, "", e );
         }
         return null;
     }
@@ -378,33 +448,38 @@ public class FTP {
         try {
             OutputStream out = prepStore( fn );
             if( out == null ) {
-                debugPrint( "data socket does not give up the output stream to upload a file" );
+                Log.e( TAG, "data socket does not give up the output stream to upload a file" );
                 return false;
             }
             byte buf[] = new byte[BLOCK_SIZE];
-            int  n = 0;
+            int  n = 0, last_n = 0;
         	while( true ) {
         		n = in.read( buf );
         		if( n < 0 ) break;
         		out.write( buf, 0, n );
+        		last_n = n;
         		if( report_to != null )
-        			if( !report_to.completed( n ) ) {
+        			if( !report_to.completed( n, false ) ) {
+        			    out.close();
+        			    Log.w( TAG, "Deleting incompleted file" + fn );
         				delete( fn );
         				return false;
         			}
         	}
+        	if( report_to != null ) report_to.completed( last_n, true );
         	out.close();
         	return true;
         }
         catch( Exception e ) {
-        	debugPrint( "Exception: " + e );
+        	debugPrint( e.getLocalizedMessage() );
+        	Log.e( TAG, "", e );
         }
         finally {
         	cleanUpDataCommand( dataSocket != null );
         }
         return false;
     }
-    public final InputStream prepRetr( String fn, long skip ) throws InterruptedException {
+    public final synchronized InputStream prepRetr( String fn, long skip ) throws InterruptedException {
     	dataSocket = null;
         try {
         	if( !isLoggedIn() )
@@ -417,6 +492,7 @@ public class FTP {
         }
         catch( IOException e ) {
             debugPrint( e.getLocalizedMessage() );
+            Log.e( TAG, "", e );
         }
         cleanUpDataCommand( dataSocket != null );
         return null;
@@ -427,23 +503,26 @@ public class FTP {
             return false;
         try {
             byte buf[] = new byte[BLOCK_SIZE];
-            int  n = 0;
+            int  n = 0, last_n = 0;
         	while( true ) {
         		n = in.read( buf );
         		//Log.v( TAG, "FTP has read " + n + "bytes" );
         		if( n < 0 ) break;
         		out.write( buf, 0, n );
+        		last_n = n;
         		if( report_to != null ) {
-        			if( !report_to.completed( n ) ) {
+        			if( !report_to.completed( n, false ) ) {
         			    executeCommand( "ABOR" );
         				return false;
         			}
         		}
         	}
+        	if( report_to != null ) report_to.completed( last_n, true );
         	return true;
         }
         catch( IOException e ) {
-        	debugPrint( "Exception: " + e );
+        	debugPrint( e.getLocalizedMessage() );
+        	Log.e( TAG, "", e );
         }
         finally {
         	try {
@@ -456,10 +535,11 @@ public class FTP {
         }
         return false;
     }
-    public final void setCurrentDir( String dir ) throws InterruptedException {
-    	executeCommand( dir.compareTo( ".." ) == 0 ? "CDUP" : "CWD " + dir );
+    public final boolean setCurrentDir( String dir ) throws InterruptedException {
+        if( !Utils.str(  dir ) ) dir = "/";
+    	return executeCommand( dir.compareTo( ".." ) == 0 ? "CDUP" : "CWD " + dir );
     }
-    public final String getCurrentDir() {
+    public final synchronized String getCurrentDir() {
     	sendCommand( "PWD" );
     	// MS IIS responds as: 257 "/" is current directory.
     	// all the others respond as: 257 "/" 
@@ -481,7 +561,7 @@ public class FTP {
     	return executeCommand( "DELE " + name );
     }
     
-    public final LsItem[] getDirList( String path ) throws InterruptedException {
+    public final LsItem[] getDirList( String path, boolean force_hidden ) throws InterruptedException {
     	if( !isLoggedIn() )
     		return null;        	
     	String cur_dir = null;
@@ -494,7 +574,7 @@ public class FTP {
     	}
     	ArrayList<LsItem> array = null;
         try {
-            dataSocket = executeDataCommand( "LIST" );
+            dataSocket = executeDataCommand( "LIST" + ( force_hidden ? " -a" : "" ) );
             if( dataSocket == null )
             	return null;
             inDataStream = dataSocket.getInputStream();
@@ -502,7 +582,13 @@ public class FTP {
                 debugPrint( "data socket does not give up the input stream" );
                 return null;
             }
-            BufferedReader dataReader = new BufferedReader( new InputStreamReader( inDataStream ), 4096 );
+            
+            InputStreamReader isr = null; 
+            if( charset != null )
+                isr = new InputStreamReader( inDataStream, charset );
+            if( isr == null )
+                isr = new InputStreamReader( inDataStream );
+            BufferedReader dataReader = new BufferedReader( isr, 4096 );
         	array = new ArrayList<LsItem>(); 
         	
             final String dot = ".";
@@ -520,7 +606,7 @@ public class FTP {
         		setCurrentDir( cur_dir );
         }
         catch( Exception e ) {
-        	debugPrint( "Exception: " + e );
+        	debugPrint( e.getLocalizedMessage() );
         }
         finally {
         	cleanUpDataCommand( dataSocket != null );

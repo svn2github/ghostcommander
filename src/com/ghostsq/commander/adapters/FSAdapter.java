@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ref.SoftReference;
 import java.nio.channels.ClosedByInterruptException;
-import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.util.Date;
 import java.util.Arrays;
@@ -20,6 +19,7 @@ import java.util.Map;
 
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.adapters.Engine;
+import com.ghostsq.commander.adapters.Engines.IReciever;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.MnfUtils;
@@ -28,6 +28,7 @@ import com.ghostsq.commander.utils.Utils;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -37,11 +38,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
+import android.os.PowerManager;
 import android.os.StatFs;
 import android.provider.BaseColumns;
-import android.provider.MediaStore.Images.ImageColumns;
 import android.provider.MediaStore.Images.Media;
 import android.provider.MediaStore.Images.Thumbnails;
 import android.text.format.DateFormat;
@@ -49,7 +51,7 @@ import android.text.format.Formatter;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 
-public class FSAdapter extends CommanderAdapterBase {
+public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever {
     private   final static String TAG = "FSAdapter";
     class FileItem extends Item {
         public File f = null;
@@ -89,7 +91,7 @@ public class FSAdapter extends CommanderAdapterBase {
 
     @Override
     public String toString() {
-        return Utils.escapePath( dirName );
+        return Utils.mbAddSl( dirName );
     }
 
     /*
@@ -98,12 +100,17 @@ public class FSAdapter extends CommanderAdapterBase {
 
     @Override
     public Uri getUri() {
-        return Uri.parse( Utils.escapePath( dirName ) );
+        try {
+            return Uri.parse( Utils.escapePath( toString() ) );
+        } catch( Exception e ) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
     public void setUri( Uri uri ) {
-        dirName = uri.toString();
+        dirName = Utils.mbAddSl( uri.toString() );
     }
     
     @Override
@@ -333,20 +340,39 @@ public class FSAdapter extends CommanderAdapterBase {
                         f.thumb_is_icon = true;
                         PackageManager pm = ctx.getPackageManager();
                         PackageInfo info = pm.getPackageArchiveInfo( fn, 0 );
+                        Drawable icon = null;
                         if( info != null ) {
-                            Drawable icon = null;
                             try {
                                 icon = pm.getApplicationIcon( info.packageName );
                             } catch( Exception e ) {
                             }
                             if( icon != null ) {
-                               //Log.v( TAG, "icon for " + fn );
                                f.setIcon( icon );
                                return true;
                             }
                         }
+                        try {
+                            String filePath = f.f.getPath();
+                            PackageInfo packageInfo = ctx.getPackageManager().getPackageArchiveInfo( filePath, PackageManager.GET_ACTIVITIES );
+                            if( packageInfo != null ) {
+                                ApplicationInfo appInfo = packageInfo.applicationInfo;
+                                if( Build.VERSION.SDK_INT >= 8 ) {
+                                    appInfo.sourceDir = filePath;
+                                    appInfo.publicSourceDir = filePath;
+                                }
+                                icon = appInfo.loadIcon( ctx.getPackageManager() );
+                                //bmpIcon = ((BitmapDrawable) icon).getBitmap();
+                            }
+                        }
+                        catch( Exception e ) {
+                            Log.e( TAG, "File: " + fn, e );
+                        }
+                        if( icon != null ) {
+                           f.setIcon( icon );
+                           return true;
+                        }
                         MnfUtils mnfu = new MnfUtils( fn );
-                        Drawable icon = mnfu.extractIcon();
+                        icon = mnfu.extractIcon();
                         if( icon != null ) {
                            f.setIcon( icon );
                            return true;
@@ -501,12 +527,8 @@ public class FSAdapter extends CommanderAdapterBase {
 	public void reqItemsSize( SparseBooleanArray cis ) {
         try {
         	FileItem[] list = bitsToFilesEx( cis );
-    		if( worker != null && worker.reqStop() )
-   		        return;
     		notify( Commander.OPERATION_STARTED );
-    		worker = new CalcSizesEngine( workerHandler, list );
-    		worker.setName( TAG + ".CalcSizesEngine" );
-       		worker.start();
+    		commander.startEngine( new CalcSizesEngine( list ) );
 		}
         catch(Exception e) {
 		}
@@ -515,9 +537,9 @@ public class FSAdapter extends CommanderAdapterBase {
 		private FileItem[] mList;
         protected int  num = 0, dirs = 0, depth = 0;
 
-        CalcSizesEngine( Handler h, FileItem[] list ) {
-        	super( h );
+        CalcSizesEngine( FileItem[] list ) {
             mList = list;
+            setName( ".CalcSizesEngine" );
         }
         @Override
         public void run() {
@@ -619,6 +641,32 @@ public class FSAdapter extends CommanderAdapterBase {
     		return count;
     	}
     }
+	
+	private class AskEngine extends Engine {
+        private String msg;
+        private File   from, to;
+        
+	    AskEngine( Handler h_, String msg_, File from_, File to_ ) {
+	        super.setHandler( h_ );
+	        msg = msg_;
+	        from = from_;
+	        to = to_;
+	    }
+	    @Override
+        public void run() {
+            try {
+                int resolution = askOnFileExist( msg, commander );
+                if( ( resolution & Commander.REPLACE ) != 0 ) {
+                    if( to.delete() && from.renameTo( to ) )
+                        sendResult( "ok" );
+                }
+            } catch( InterruptedException e ) {
+                e.printStackTrace();
+            }
+        }
+    }
+	
+	
 	@Override
     public boolean renameItem( int position, String newName, boolean copy ) {
         if( position <= 0 || position > items.length )
@@ -636,10 +684,8 @@ public class FSAdapter extends CommanderAdapterBase {
                     dest_name += newName;
                 }
                 else
-                    dest_name = newName; 
-                worker = new CopyEngine( workerHandler, list, dest_name, false, true );
-                worker.setName( TAG + ".CopyEngine" );
-                worker.start();
+                    dest_name = newName;
+                commander.startEngine( new CopyEngine( list, dest_name, MODE_COPY, true ) );
                 return true;
             }
             boolean ok = false;
@@ -647,30 +693,14 @@ public class FSAdapter extends CommanderAdapterBase {
             File new_file = new File( dirName, newName );
             if( new_file.exists() ) {
                 if( f.equals( new_file ) ) return false;
-                String old_ap = f.getAbsolutePath();
-                String new_ap = f.getAbsolutePath();
+                String old_ap =        f.getAbsolutePath();
+                String new_ap = new_file.getAbsolutePath();
                 if( old_ap.equalsIgnoreCase( new_ap ) ) {
                     File tmp_file = new File( dirName, newName + "_TMP_" );
                     ok = f.renameTo( tmp_file );
                     ok = tmp_file.renameTo( new_file );
                 } else {
-                    final String msg$ = ctx.getString( R.string.file_exist, newName );
-                    final File from$ = f, to$ = new_file;  
-                    worker = new Engine( workerHandler, new Runnable() {
-                        public void run() {
-                            try {
-                                int resolution = worker.askOnFileExist( msg$, commander );
-                                if( ( resolution & Commander.REPLACE ) != 0 ) {
-                                    if( to$.delete() && from$.renameTo( to$ ) )
-                                        worker.sendResult( "ok" );
-                                }
-                                    
-                            } catch( InterruptedException e ) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                    worker.start();
+                    AskEngine ae = new AskEngine( simpleHandler, ctx.getString( R.string.file_exist, newName ), f, new_file );
                     return true;
                 }
             }
@@ -706,18 +736,22 @@ public class FSAdapter extends CommanderAdapterBase {
     }
 	
     @Override
-    public InputStream getContent( Uri u ) {
-            try {
-                String path = u.getPath();
-                File f = new File( path );
-                if( f.exists() && f.isFile() ) {
-                    return new FileInputStream( f );
-                }
-            } catch( Throwable e ) {
-                e.printStackTrace();
+    public InputStream getContent( Uri u, long skip ) {
+        try {
+            String path = u.getPath();
+            File f = new File( path );
+            if( f.exists() && f.isFile() ) {
+                FileInputStream fis = new FileInputStream( f );
+                if( skip > 0 )
+                    fis.skip( skip );
+                return fis;
             }
+        } catch( Throwable e ) {
+            e.printStackTrace();
+        }
         return null;
     }
+    
     @Override
     public OutputStream saveContent( Uri u ) {
         if( u != null ) {
@@ -762,15 +796,8 @@ public class FSAdapter extends CommanderAdapterBase {
     	try {
         	FileItem[] list = bitsToFilesEx( cis );
         	if( list != null ) {
-        		if( worker != null && worker.reqStop() ) {
-        		    notify( s( R.string.wait ), 
-        		            Commander.OPERATION_FAILED );
-       		        return false;
-        		}
         		notify( Commander.OPERATION_STARTED );
-        		worker = new DeleteEngine( workerHandler, list );
-        		worker.setName( TAG + ".DeleteEngine" );
-        		worker.start();
+        		commander.startEngine( new DeleteEngine( list ) );
         	}
 		} catch( Exception e ) {
 		    notify( e.getMessage(), Commander.OPERATION_FAILED );
@@ -781,8 +808,8 @@ public class FSAdapter extends CommanderAdapterBase {
 	class DeleteEngine extends Engine {
 		private File[] mList;
 
-        DeleteEngine( Handler h, FileItem[] list ) {
-        	super( h );
+        DeleteEngine( FileItem[] list ) {
+            setName( ".DeleteEngine" );
             mList = new File[list.length];
             for( int i = 0; i < list.length; i++ )
                 mList[i] = list[i].f;
@@ -795,7 +822,7 @@ public class FSAdapter extends CommanderAdapterBase {
                 sendResult( Utils.getOpReport( ctx, cnt, R.string.deleted ) );
             }
             catch( Exception e ) {
-                sendProgress( e.getMessage(), Commander.OPERATION_FAILED );
+                sendProgress( e.getMessage(), Commander.OPERATION_FAILED_REFRESH_REQUIRED );
             }
         }
         private final int deleteFiles( File[] l ) throws Exception {
@@ -835,8 +862,6 @@ public class FSAdapter extends CommanderAdapterBase {
             if( uris == null || uris.length == 0 )
             	return false;
             File dest_file = new File( dirName );
-            if( dest_file == null )
-            	return false;
             if( dest_file.exists() ) {
                 if( !dest_file.isDirectory() )
                     return false;
@@ -847,14 +872,8 @@ public class FSAdapter extends CommanderAdapterBase {
             }
             File[] list = Utils.getListOfFiles( uris );
             if( list != null ) {
-                if( worker != null && worker.reqStop() ) {
-                    notify( s( R.string.wait ),Commander.OPERATION_FAILED );
-                    return false;
-                }
                 notify( Commander.OPERATION_STARTED );
-            	worker = new CopyEngine( workerHandler, list, dirName, ( move_mode & MODE_MOVE ) != 0, false );
-            	worker.setName( TAG + ".CopyEngine" );
-            	worker.start();
+                commander.startEngine( new CopyEngine( list, dirName, move_mode, false ) );
 	            return true;
             }
 		} catch( Exception e ) {
@@ -876,14 +895,23 @@ public class FSAdapter extends CommanderAdapterBase {
         private long    totalBytes = 0;
         private double  conv;
         private File[]  fList = null;
-        private boolean move, destIsFullName;
+        private boolean move, del_src_dir, destIsFullName;
+        private byte[]  buf;
+        private static final int BUFSZ = 524288;
+        private PowerManager.WakeLock wakeLock;
 
-        CopyEngine( Handler h, File[] list, String dest, boolean move_, boolean dest_is_full_name ) {
-        	super( h, null );
+        CopyEngine( File[] list, String dest, int move_mode, boolean dest_is_full_name ) {
+        	super( null );
+       	    setName( ".CopyEngine" );
         	fList = list;
             mDest = dest;
-            move = move_;
+            move = ( move_mode & MODE_MOVE ) != 0;
+            del_src_dir = ( move_mode & MODE_DEL_SRC_DIR ) != 0;
             destIsFullName = dest_is_full_name;
+            buf = new byte[BUFSZ];
+                        
+            PowerManager pm = (PowerManager)ctx.getSystemService( Context.POWER_SERVICE );
+            wakeLock = pm.newWakeLock( PowerManager.PARTIAL_WAKE_LOCK, TAG );
         }
         @Override
         public void run() {
@@ -891,15 +919,30 @@ public class FSAdapter extends CommanderAdapterBase {
         	try {
                 int l = fList.length;
                 FileItem[] x_list = new FileItem[l];
-                for( int j = 0; j < l; j++ )
+                
+                File src_dir_f = null;
+                boolean in_same_src = true;
+                for( int j = 0; j < l; j++ ) {
                     x_list[j] = new FileItem( fList[j] );
+                    if( in_same_src ) {
+                        File parent_f = fList[j].getParentFile();
+                        if( src_dir_f == null )
+                            src_dir_f = parent_f;
+                        else
+                            in_same_src = src_dir_f.equals( parent_f );
+                    }
+                }
+                wakeLock.acquire();
 				long sum = getSizes( x_list );
 				conv = 100 / (double)sum;
 				int num = copyFiles( fList, mDest, destIsFullName );
+				if( del_src_dir && in_same_src && src_dir_f != null )
+				    src_dir_f.delete();
+				wakeLock.release();
 	            String report = Utils.getOpReport( ctx, num, move ? R.string.moved : R.string.copied );
 	            sendResult( report );
 			} catch( Exception e ) {
-				sendProgress( e.getMessage(), Commander.OPERATION_FAILED );
+				sendProgress( e.getMessage(), Commander.OPERATION_FAILED_REFRESH_REQUIRED );
 				return;
 			}
         }
@@ -908,8 +951,8 @@ public class FSAdapter extends CommanderAdapterBase {
             File file = null;
             for( int i = 0; i < list.length; i++ ) {
                 boolean existed = false;
-                FileChannel  in = null;
-                FileChannel out = null;
+                InputStream  is = null;
+                OutputStream os = null;
                 File outFile = null;
                 file = list[i];
                 if( file == null ) {
@@ -963,47 +1006,58 @@ public class FSAdapter extends CommanderAdapterBase {
                             }
                         }
                         
-                        in  = new FileInputStream( file ).getChannel();
-                        out = new FileOutputStream( outFile ).getChannel();
-                        long size  = in.size();
-                        final long max_chunk = 524288;
-                        long pos = 0;
-                        long chunk = size > max_chunk ? max_chunk : size;
-                        long t_chunk = 0;
+                        is = new FileInputStream( file );
+                        os = new FileOutputStream( outFile );
+                        long copied = 0, size  = file.length();
+                        
                         long start_time = 0;
                         int  speed = 0;
                         int  so_far = (int)(totalBytes * conv);
                         
                         String sz_s = Utils.getHumanSize( size );
-                        String rep_s = c.getString( R.string.copying, fn ); 
-                        for( pos = 0; pos < size; ) {
-                            if( t_chunk == 0 )
+                        int fnl = fn.length();
+                        String rep_s = c.getString( R.string.copying, 
+                               fnl > CUT_LEN ? "\u2026" + fn.substring( fnl - CUT_LEN ) : fn );
+                        int  n  = 0; 
+                        long nn = 0;
+                        
+                        while( true ) {
+                            if( nn == 0 ) {
                                 start_time = System.currentTimeMillis();
-                            sendProgress( rep_s + sizeOfsize( pos, sz_s ), so_far, (int)(totalBytes * conv), speed );
-                        	long transferred = in.transferTo( pos, chunk, out );
-                        	pos += transferred;
-                            t_chunk += transferred;
-                        	totalBytes += transferred;
+                                sendProgress( rep_s + sizeOfsize( copied, sz_s ), so_far, (int)(totalBytes * conv), speed );
+                            }
+                            n = is.read( buf );
+                            if( n < 0 ) {
+                                long time_delta = System.currentTimeMillis() - start_time;
+                                if( time_delta > 0 ) {
+                                    speed = (int)(MILLI * nn / time_delta );
+                                    sendProgress( rep_s + sizeOfsize( copied, sz_s ), so_far, (int)(totalBytes * conv), speed );
+                                }
+                                break;
+                            }
+                            os.write( buf, 0, n );
+                            nn += n;
+                            copied += n;
+                            totalBytes += n;
                             if( isStopReq() ) {
                                 Log.d( TAG, "Interrupted!" );
                                 error( c.getString( R.string.canceled ) );
                                 return counter;
                             }
-                            
                             long time_delta = System.currentTimeMillis() - start_time;
-                            if( time_delta > 0 ) {
-                                speed = (int)(1000 * t_chunk / time_delta);
-                                t_chunk = 0;
+                            if( time_delta > DELAY ) {
+                                speed = (int)(MILLI * nn / time_delta);
+                                //Log.v( TAG, "bytes: " + nn + " time: " + time_delta + " speed: " + speed );
+                                nn = 0;
                             }
-                            //Thread.sleep( 1 );
                         }
-                        in.close();
-                        out.close();
-                        in = null;
-                        out = null;
+                        is.close();
+                        os.close();
+                        is = null;
+                        os = null;
                         
                         if( i >= list.length-1 )
-                        	sendProgress( c.getString( R.string.copied_f, fn ) + sizeOfsize( pos, sz_s ), (int)(totalBytes * conv) );
+                        	sendProgress( c.getString( R.string.copied_f, fn ) + sizeOfsize( copied, sz_s ), (int)(totalBytes * conv) );
                         
 // debug only, to remove!
 //Log.v( TAG, c.getString( R.string.copied_f, fn ) );
@@ -1017,27 +1071,32 @@ public class FSAdapter extends CommanderAdapterBase {
                         ForwardCompat.setFullPermissions( outFile );
                 }
                 catch( SecurityException e ) {
+                    Log.e( TAG, "", e );
                     error( c.getString( R.string.sec_err, e.getMessage() ) );
                 }
                 catch( FileNotFoundException e ) {
+                    Log.e( TAG, "", e );
                     error( c.getString( R.string.not_accs, e.getMessage() ) );
                 }
                 catch( ClosedByInterruptException e ) {
+                    Log.e( TAG, "", e );
                     error( c.getString( R.string.canceled ) );
                 }
                 catch( IOException e ) {
+                    Log.e( TAG, "", e );
                     String msg = e.getMessage();
                     error( c.getString( R.string.acc_err, uri, msg != null ? msg : "" ) );
                 }
                 catch( RuntimeException e ) {
+                    Log.e( TAG, "", e );
                     error( c.getString( R.string.rtexcept, uri, e.getMessage() ) );
                 }
                 finally {
                     try {
-                        if( in != null )
-                            in.close();
-                        if( out != null )
-                            out.close();
+                        if( is != null )
+                            is.close();
+                        if( os != null )
+                            os.close();
                         if( !move && errMsg != null && outFile != null && !existed ) {
                             Log.i( TAG, "Deleting failed output file" );
                             outFile.delete();
@@ -1096,7 +1155,7 @@ public class FSAdapter extends CommanderAdapterBase {
 
     @Override
     protected int getPredictedAttributesLength() {
-        return 12;   // "1024 x 1024"
+        return 10;   // "1024x1024"
     }
     
     /*
@@ -1127,9 +1186,11 @@ public class FSAdapter extends CommanderAdapterBase {
                         //item.origin = f.f;
                         item.dir  = f.f.isDirectory();
                         if( item.dir ) {
+                            /*
                             if( ( mode & ICON_MODE ) == ICON_MODE )  
                                 item.name = f.f.getName() + SLS;
                             else
+                            */
                                 item.name = SLS + f.f.getName();
                         } else
                             item.name = f.f.getName();
@@ -1193,5 +1254,10 @@ public class FSAdapter extends CommanderAdapterBase {
         if( items_ == null ) return;
         FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0, ascending );
         Arrays.sort( items_, comp );
+    }
+
+    @Override
+    public IReciever getReceiver() {
+        return this;
     }
 }

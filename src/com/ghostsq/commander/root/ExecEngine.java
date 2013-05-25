@@ -29,15 +29,13 @@ public class ExecEngine extends Engine {
     private   BufferedReader is = null;
     private   BufferedReader es = null;
     
-    protected ExecEngine( Context context_, Handler h ) {
-        super( h );
+    protected ExecEngine( Context context_ ) {
         context = context_;
         where = null;
         command = null;
         result = null;
     }
-    public ExecEngine( Context context_, Handler h, String where_, String command_, boolean use_bb, int timeout ) {
-        super( h );
+    public ExecEngine( Context context_, String where_, String command_, boolean use_bb, int timeout ) {
         context = context_;
         where = where_;
         command = command_;
@@ -80,7 +78,7 @@ public class ExecEngine extends Engine {
         is = null;
         es = null;
         try {
-            Init( null );
+            setEngineName( null );
             if( context != null ) {
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( context );
                 bb = sharedPref.getString( "busybox_path", "busybox" ) + " ";

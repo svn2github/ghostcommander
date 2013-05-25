@@ -7,9 +7,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import com.ghostsq.commander.adapters.CommanderAdapter;
+import com.ghostsq.commander.adapters.Engine;
 import com.ghostsq.commander.adapters.FSAdapter;
 import com.ghostsq.commander.adapters.FindAdapter;
-import com.ghostsq.commander.favorites.Favorite;
 import com.ghostsq.commander.root.MountAdapter;
 import com.ghostsq.commander.root.RootAdapter;
 import com.ghostsq.commander.utils.Credentials;
@@ -23,14 +23,18 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.Message;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.view.ContextMenu;
@@ -48,7 +52,7 @@ import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
-public class FileCommander extends Activity implements Commander, View.OnClickListener {
+public class FileCommander extends Activity implements Commander, ServiceConnection, View.OnClickListener {
     private final static String TAG = "GhostCommanderActivity";
     public  final static int REQUEST_CODE_PREFERENCES = 1, REQUEST_CODE_SRV_FORM = 2;
     public  final static int FIND_ACT = 1017, DBOX_APP = 3592, SMB_ACT = 2751, FTP_ACT = 4501, SFTP_ACT = 2450;
@@ -56,15 +60,29 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     private ArrayList<Dialogs> dialogs;
     private ProgressDialog     waitPopup;
     public  Panels  panels;
-    private boolean on = false, exit = false, dont_restore = false, viewActProcessed = false, 
-                    sxs_auto = true, show_confirm = true, back_exits = false;
+    private boolean on = false, exit = false, dont_restore = false,  
+                    sxs_auto = true, show_confirm = true, back_exits = false, ab = false;
     private String  lang = ""; // just need to issue a warning on change
     private int     file_exist_resolution = Commander.UNKNOWN;
+    private IBackgroundWork     background_work;
     private NotificationManager notMan = null;
-    private final static int NOTIF_PROGRESS = 1, NOTIF_DONE = 2;
-    private final static String PARCEL = "parcel", MSG = "msg";
-    private long    notLastTime = 0;
+    private ArrayList<NotificationId> bg_ids = new ArrayList<NotificationId>();
+    private final static int _NOTIF_PROGRESS = 1, _NOTIF_DONE = 2;
+    private final static String PARCEL = "parcel", MSG = "msg", TASK_ID = "task_id";
 
+    private class NotificationId {
+        public long  id;
+        public long  started, last;        
+        public NotificationId( long id_ ) {
+            id = id_;
+            started = System.currentTimeMillis();
+            last = started; 
+        }
+        public final boolean is( long fid ) {
+            return id == fid;
+        }
+    }    
+    
     public final void showMemory( String s ) {
         final ActivityManager sys = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
         ActivityManager.MemoryInfo mem = new ActivityManager.MemoryInfo();
@@ -78,6 +96,9 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
 
     public int getWidth() {
         return panels.getWidth();
+    }
+    public boolean isActionBar() {
+        return ab;
     }
 
     protected final Dialogs getDialogsInstance( int id ) {
@@ -105,7 +126,21 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         
-        requestWindowFeature( Window.FEATURE_NO_TITLE );
+        if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
+            if( ( getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK )
+                                                                >= Configuration.SCREENLAYOUT_SIZE_LARGE )            
+            
+            /*
+            Display display = getWindowManager().getDefaultDisplay();
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            display.getMetrics(displayMetrics);
+    
+            if( displayMetrics.heightPixels / displayMetrics.densityDpi > 1000 )
+            */
+                ab = getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+        }
+        if( !ab ) requestWindowFeature( Window.FEATURE_NO_TITLE );
+        
         // TODO: show progress when there is no title
 //        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         dialogs = new ArrayList<Dialogs>( Dialogs.numDialogTypes );
@@ -120,6 +155,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         setConfirmMode( sharedPref );
         
         notMan = (NotificationManager)getSystemService( Context.NOTIFICATION_SERVICE );
+        bindService( new Intent( this /*?*/, BackgroundWork.class ), this, Context.BIND_AUTO_CREATE );
     }
 
     @Override
@@ -139,73 +175,27 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             
             String action = intent.getAction();
             Log.i( TAG, "Action: " + action );
-            int use_panel = -1;
-            Uri uri = intent.getData();
-            if( uri != null && !viewActProcessed && Intent.ACTION_VIEW.equals( action ) ) {
-                //Log.v( TAG, "Intent URI: " + uri );
-                Credentials crd = null;
-                try { 
-                    crd = (Credentials)intent.getParcelableExtra( Credentials.KEY );
-                } catch( Throwable e ) {
-                    Log.e( TAG, "on extracting credentials from an intent", e );
-                }
-                
-                String file_name = null;
-                String type = intent.getType();
-                if( "application/x-zip-compressed".equals( type ) ||
-                                 "application/zip".equals( type ) )
-                    uri = uri.buildUpon().scheme( "zip" ).build();
-                else if( ContentResolver.SCHEME_CONTENT.equals( uri.getScheme() ) ) {
-                    // unknown content is being passed. Let's just save it
-                    try {
-                        InputStream is = getContentResolver().openInputStream( uri );
-                        if( is != null ) {
-                            File dwf = new File( Panels.DEFAULT_LOC, "download" );
-                            if( !dwf.exists() )
-                                dwf.mkdirs();
-                            
-                            String fn = uri.getLastPathSegment();
-                            File f = null;
-                            for( int i = 0; i < 99; i++ ) {
-                                file_name = i == 0 ? fn : fn + "_" + i;
-                                f = new File( dwf, file_name );
-                                if( f.exists() ) continue;
-                                if( f.createNewFile() )
-                                    break;
-                                f = null;
-                            }
-                            if( f!= null ) {
-                                BufferedOutputStream bos = new BufferedOutputStream( new FileOutputStream( f ), 8192 );
-                                byte[] buf = new byte[4096];
-                                int n;
-                                while( ( n = is.read( buf ) ) != -1 )
-                                    bos.write( buf, 0, n );
-                                bos.close( );
-                                is.close( );
-                                uri = Uri.fromFile( dwf );
-                                showMessage( getString( R.string.copied_f, f.toString() ) );
-                            }
-                            else
-                                showError( getString( R.string.not_accs, fn ) );
-                        }
-                    } catch( Exception e ) {
-                        showError( getString( R.string.not_accs, "" ) );    // TODO more verbose
-                    }
-                }
-                use_panel = Panels.LEFT;
-                panels.Navigate( use_panel, uri, crd, file_name );    
-                viewActProcessed = true;
+
+            
+            if( Intent.ACTION_VIEW.equals( action ) ) {
+                Log.d( TAG, "Not restoring " + s.getCurrent() );
+                panels.setState( s, s.getCurrent() );
+                Log.d( TAG, "VIEW opens in " + panels.getCurrent() );
+                onNewIntent( intent );
+                return;
             }
-            panels.setState( s, use_panel );
+
+            panels.setState( s, -1 );
             final String FT = "first_time";
-            if( !viewActProcessed && prefs.getBoolean( FT, true ) ) {
+            if( prefs.getBoolean( FT, true ) ) {
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putBoolean( FT, false );
                 editor.commit();
                 showInfo( getString( R.string.keys_text) );
             }
-            if( use_panel >= 0 && viewActProcessed )
-                panels.setPanelCurrent( use_panel );
+
+            //panels.setPanelCurrent( use_panel );
+            
             if( Intent.ACTION_SEARCH_LONG_PRESS.equals( action ) ) {
                 showSearchDialog();
                 return;
@@ -246,6 +236,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         if( notMan != null ) notMan.cancelAll();
         panels.Destroy();
         if( isFinishing() && exit ) {
+            unbindService( this );
             Log.i( TAG, "Good bye cruel world...");
             System.exit( 0 );
         }
@@ -342,7 +333,14 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             Utils.changeLanguage( this );
             // Inflate the currently selected menu XML resource.
             MenuInflater inflater = getMenuInflater();
-            inflater.inflate( R.menu.menu, menu );
+            if( ab ) {
+                inflater.inflate( R.menu.actions, menu );
+                inflater.inflate( R.menu.menu, menu );
+                MenuItem list_menu = menu.findItem( R.id.list );
+                if( list_menu != null )
+                    list_menu.setVisible( false );
+            } else
+                inflater.inflate( R.menu.menu, menu );
             return true;
         } catch( Error e ) {
             e.printStackTrace();
@@ -375,6 +373,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     @Override
     protected void onActivityResult( int requestCode, int resultCode, Intent data ) {
         super.onActivityResult( requestCode, resultCode, data );
+        Log.d( TAG, "onActivityResult()" );
         switch( requestCode ) { 
         case REQUEST_CODE_PREFERENCES: {
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
@@ -417,7 +416,7 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 sendBroadcast( data );
             }
             break;
-        case OPERATION_COMPLETED_REFRESH_REQUIRED:
+        case ACTIVITY_RESULT_REFRESH:
             Log.i( TAG, "An activity ends. Refresh required." );
             panels.refreshLists( null );
             break;
@@ -478,7 +477,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     /*
      * @see android.view.View.OnClickListener#onClick(android.view.View)
      */
-    @Override
+    // ?????????????????????????????????????????????????
+//    @Override
     public void onClick( View button ) {
         panels.resetQuickSearch();
         if( button == null )
@@ -522,8 +522,10 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             case R.id.SF4:
             case R.id.F7:
             case R.id.about:
-            case R.id.donate:
                 showDialog( id );
+                break;
+            case R.id.donate:
+                startViewURIActivity( R.string.donate_uri );
                 break;
             case R.id.prefs:
             case R.id.F9:
@@ -534,6 +536,8 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 exit = true;
                 finish();
                 break;
+            case R.id.menu:
+                openOptionsMenu();
             case R.id.oth_sh_this:
             case R.id.eq:
                 panels.makeOtherAsCurrent();
@@ -547,6 +551,15 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             case R.id.sz:
                 panels.showSizes();
                 break;
+            case R.id.action_back:
+                panels.goUp();
+                break;
+            case R.id.action_totop:
+                panels.goTop();
+                break;
+            case R.id.action_tobot:
+                panels.goBot();
+                break;
             case R.id.home:
                 Navigate( Uri.parse( "home:" ), null, null );
                 break;
@@ -558,8 +571,13 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 break;
             case  R.id.root: {
                     Uri cu = panels.getFolderUriWithAuth( true );
-                    Navigate( Uri.parse( RootAdapter.DEFAULT_LOC + 
-                      ( cu == null || cu.getScheme() != null && cu.getScheme().length() > 0 ? "" : cu.getPath() ) ), null, null );
+                    String shm = cu != null ? cu.getScheme() : null;
+                    String to_go;
+                    if( "root".equals( shm ) ) 
+                        to_go = cu.getPath(); 
+                    else
+                        to_go = RootAdapter.DEFAULT_LOC + ( cu == null || Utils.str( shm ) ? "" : cu.getPath() );
+                    Navigate( Uri.parse( to_go ), null, null );
                 }
                 break;
             case  R.id.mount:
@@ -629,6 +647,9 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             case COPY_NAME:
                 panels.copyName();
                 break;
+            case SHRCT_CMD:
+                panels.createDesktopShortcut();
+                break;
             case FAV_FLD:
                 panels.faveSelectedFolder();
                 break;
@@ -697,9 +718,13 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             if( uri == null ) return;
             String scheme = uri.getScheme();
             String path = uri.getPath();
-            String ext = Utils.getFileExt( "zip".equals( scheme ) ? uri.getFragment() : path );
+            String ext  = Utils.getFileExt( "zip".equals( scheme ) ? uri.getFragment() : path );
             String mime = Utils.getMimeByExt( ext );
-            if( scheme == null || scheme.length() == 0 ) { 
+            if( !Utils.str( scheme ) ) { 
+                if( ext != null && ext.compareToIgnoreCase( ".zip" ) == 0 ) {
+                    Navigate( uri.buildUpon().scheme( "zip" ).build(), null, null );
+                    return;
+                }
                 Intent i = new Intent( Intent.ACTION_VIEW );
                 Intent op_intent = getIntent();
                 if( op_intent != null ) {
@@ -716,10 +741,6 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                         finish();
                         return;
                     }
-                }
-                if( ext != null && ext.compareToIgnoreCase( ".zip" ) == 0 ) {
-                    Navigate( uri.buildUpon().scheme( "zip" ).build(), null, null );
-                    return;
                 }
                 i.setDataAndType( uri.buildUpon().scheme( "file" ).authority( "" ).build(), mime );
                 i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET  );
@@ -758,15 +779,110 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         on = true;
         super.onNewIntent( intent );
         try {
-            Message msg = intent.getParcelableExtra( PARCEL );
-            if( msg != null ) {
-                notifyMe( msg );
-                return;
+            Bundle extras = intent.getExtras();
+            if( extras != null ) {
+                long task_id = extras.getLong( TASK_ID );
+                if( task_id > 0 ) {
+                    // switch the current active task with the one which comes from the background
+                    Dialogs dh = obtainDialogsInstance( Dialogs.PROGRESS_DIALOG );
+                    if( dh != null ) {
+                        long d_task_id = dh.getTaskId();
+                        if( d_task_id != 0 )
+                            bg_ids.add( new NotificationId( d_task_id ) );
+                        dh.cancelDialog();
+                    }
+                    for( NotificationId bg_id : bg_ids ) {
+                        if( bg_id.is( task_id ) ) {
+                            bg_ids.remove( bg_id );
+                            notMan.cancel( (int)task_id );
+                            break;
+                        }
+                    }
+                    dh.setTaskId( task_id );
+                    dh.showDialog();
+                    
+                    Parcelable pe = intent.getParcelableExtra( PARCEL );
+                    if( pe != null && pe instanceof Message )
+                        notifyMe( (Message)pe );
+                    return;
+                }
             }
-            //Log.v( TAG, "No parcel found in the intent." );
+            String action = intent.getAction();
+            Uri uri = intent.getData();
+            if( uri != null && Intent.ACTION_VIEW.equals( action ) ) { 
+                    //        || "org.openintents.action.VIEW_DIRECTORY".equals( action ) ) {  // DiskUsage support
+                Log.v( TAG, "Intent URI: " + uri );
+                Credentials crd = null;
+                try { 
+                    crd = (Credentials)intent.getParcelableExtra( Credentials.KEY );
+                } catch( Throwable e ) {
+                    Log.e( TAG, "on extracting credentials from an intent", e );
+                }
+                
+                String file_name = null;
+                String type = intent.getType();
+                if( "application/x-zip-compressed".equals( type ) ||
+                                 "application/zip".equals( type ) )
+                    uri = uri.buildUpon().scheme( "zip" ).build();
+                else if( ContentResolver.SCHEME_CONTENT.equals( uri.getScheme() ) ) {
+                    // unknown content is being passed. Let's just save it
+                    try {
+                        InputStream is = getContentResolver().openInputStream( uri );
+                        if( is != null ) {
+                            File dwf = new File( Panels.DEFAULT_LOC, "download" );
+                            if( !dwf.exists() )
+                                dwf.mkdirs();
+                            
+                            String fn = uri.getLastPathSegment();
+                            File f = null;
+                            for( int i = 0; i < 99; i++ ) {
+                                file_name = i == 0 ? fn : fn + "_" + i;
+                                f = new File( dwf, file_name );
+                                if( f.exists() ) continue;
+                                if( f.createNewFile() )
+                                    break;
+                                f = null;
+                            }
+                            if( f!= null ) {
+                                BufferedOutputStream bos = new BufferedOutputStream( new FileOutputStream( f ), 8192 );
+                                byte[] buf = new byte[4096];
+                                int n;
+                                while( ( n = is.read( buf ) ) != -1 )
+                                    bos.write( buf, 0, n );
+                                bos.close( );
+                                is.close( );
+                                uri = Uri.fromFile( dwf );
+                                showMessage( getString( R.string.copied_f, f.toString() ) );
+                            }
+                            else
+                                showError( getString( R.string.not_accs, fn ) );
+                        }
+                    } catch( Exception e ) {
+                        showError( getString( R.string.not_accs, "" ) );    // TODO more verbose
+                    }
+                }
+                panels.Navigate( panels.getCurrent(), uri, crd, file_name );
+                dont_restore = true;
+            }
         } catch( Exception e ) {
             Log.e( TAG, "Can't extract a parcel from intent", e );
         }
+    }
+    
+    @Override
+    public boolean startEngine( Engine e ) {
+        if( background_work != null ) {
+            background_work.start( e );
+            return true;
+        }
+        Log.e( TAG, "background work service is not available!" );
+        return false;
+    }
+    
+    public boolean stopEngine( long task_id ) {
+        if( background_work == null )
+            return false;
+        return background_work.stopEngine( task_id );
     }
     
     @Override
@@ -786,24 +902,44 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             String cookie = b != null ? b.getString( NOTIFY_COOKIE ) : null;
             if( progress.what == Commander.OPERATION_STARTED ) {
                 setProgressBarIndeterminateVisibility( true );
-                if( string != null && string.length() > 0 )
+                if( Utils.str( string ) )
                     showMessage( string );
                 return CONTINUE;
             }
+            long task_id = b.getLong( Commander.NOTIFY_TASK );
+            Log.d( TAG, "got message " + progress.what + " from task " + task_id + " " + string );
             Dialogs dh = null;
             if( progress.what == OPERATION_IN_PROGRESS ) {
                 if( progress.arg1 >= 0 ) { 
                     if( on ) {
-                        dh = obtainDialogsInstance( Dialogs.PROGRESS_DIALOG );
-                        if( dh != null ) {
-                            dh.showDialog();
-                            dh.setProgress( string, progress.arg1, progress.arg2, b != null ? b.getInt( NOTIFY_SPEED ) : 0 );
+                        boolean id_found = false;
+                        for( NotificationId bg_id : bg_ids ) {
+                            if( bg_id.is( task_id ) ) {
+                                id_found = true;
+                                break;
+                            }
+                        }
+                        if( !id_found ) {
+                            dh = obtainDialogsInstance( Dialogs.PROGRESS_DIALOG );
+                            if( dh != null ) {
+                                if( task_id == dh.getTaskId() ) {
+                                    dh.showDialog();
+                                    dh.setProgress( string, progress.arg1, progress.arg2, b != null ? b.getInt( NOTIFY_SPEED, -1 ) : 0 );
+                                    return CONTINUE;
+                                }
+                                Dialog dlg = dh.getDialog();
+                                if( dlg == null || !dlg.isShowing() ) {
+                                    dh.setTaskId( task_id );
+                                    dh.showDialog();
+                                    dh.setProgress( string, progress.arg1, progress.arg2, b != null ? b.getInt( NOTIFY_SPEED, -1 ) : 0 );
+                                    return CONTINUE;
+                                }
+                            }
+                            bg_ids.add( new NotificationId( task_id ) );
                         }
                     }
-                    else {
-                        if( string != null && string.length() > 0 )
-                            setSystemOngoingNotification( string, progress.arg1 );
-                    }
+                    setSystemOngoingNotification( (int)task_id, string, progress.arg2 > 0 ? progress.arg2 : progress.arg1 );
+                    return CONTINUE;
                 } else {
                     if( waitPopup == null )
                         waitPopup = ProgressDialog.show( this, "", getString( R.string.wait ), true, true );
@@ -811,11 +947,22 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 return CONTINUE;
             }
             dh = getDialogsInstance( Dialogs.PROGRESS_DIALOG );
-            if( dh != null )
+            if( dh != null && task_id == dh.getTaskId() ) {
+                Log.d( TAG, "Cancelling dialog " + task_id );
                 dh.cancelDialog();
-            if( notMan != null ) notMan.cancel( NOTIF_PROGRESS ); 
+            } else {
+                Log.d( TAG, "No opened dialog found " + task_id );
+                for( NotificationId bg_id : bg_ids ) {
+                    if( bg_id.is( task_id ) ) {
+                        bg_ids.remove( bg_id );
+                        break;
+                    }
+                }
+            }
+            
+            if( notMan != null ) notMan.cancel( (int)task_id ); 
             if( !on ) {
-                setSystemNotification( progress );
+                setSystemNotification( (int)task_id, progress );
                 return progress.what != OPERATION_SUSPENDED_FILE_EXIST;
             }
             if( waitPopup != null ) {
@@ -832,13 +979,18 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
                 }
                 return CONTINUE;
             case OPERATION_FAILED:
+            case OPERATION_FAILED_REFRESH_REQUIRED:
                 if( Utils.str( cookie ) ) {
                     int which_panel = cookie.charAt( 0 ) == '1' ? 1 : 0;
                     panels.setPanelTitle( getString( R.string.fail ), which_panel );
                 }
                 if( Utils.str( string ) )
                     showError( string );
-                panels.redrawLists();
+                if( progress.what == OPERATION_FAILED_REFRESH_REQUIRED ) {
+                    String posto = b != null ? b.getString( NOTIFY_POSTO ) : null;
+                    panels.refreshLists( posto );
+                } else
+                    panels.redrawLists();
                 return TERMINATE;
             case OPERATION_FAILED_LOGIN_REQUIRED: 
                 if( string != null ) {
@@ -874,34 +1026,47 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
         return TERMINATE;
     }
 
-    private PendingIntent getPendingIntent( Parcelable parcel ) {
+    public void addBgNotifId( long id ) {
+        for( NotificationId bg_id : bg_ids ) {
+            if( bg_id.is( id ) )
+                return;
+        }
+        bg_ids.add( new NotificationId( id ) );
+    }
+    
+    private PendingIntent getPendingIntent( long task_id, Parcelable parcel ) {
         Intent intent = new Intent( this, FileCommander.class );
         intent.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP );
         intent.setAction( Intent.ACTION_MAIN );
+        intent.putExtra( TASK_ID, task_id );
         if( parcel != null ) 
             intent.putExtra( PARCEL, parcel );
         return PendingIntent.getActivity( this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT );
     }
     
-    private void setSystemOngoingNotification( String str, int p ) {
+    private void setSystemOngoingNotification( int id, String str, int p ) {
         if( notMan == null || str == null ) return;
+        NotificationId n_id = null;
+        for( NotificationId bg_id : bg_ids ) {
+            if( bg_id.is( id ) )
+                n_id = bg_id;
+        }
+        if( n_id == null ) return;
         long cur_time = System.currentTimeMillis();
-        if( notLastTime + 1000 > cur_time ) return;
-        notLastTime = cur_time;
-        Notification notification = new Notification( R.drawable.icon, getString( R.string.inprogress ), cur_time );
-        notification.contentIntent = getPendingIntent( null );
+        if( n_id.last + 1000 > cur_time ) return;
+        n_id.last = cur_time;
+        Notification notification = new Notification( R.drawable.icon, getString( R.string.inprogress ), n_id.started );
+        notification.contentIntent = getPendingIntent( id, null );
         notification.flags |= Notification.FLAG_ONGOING_EVENT;
         RemoteViews not_view = new RemoteViews( getPackageName(), R.layout.progress );
-        not_view.setTextColor( R.id.text, 0xFF000000 );
         not_view.setTextViewText( R.id.text, str.replace( "\n", " " ) );
         not_view.setProgressBar( R.id.progress_bar, 100, p, false );
-        not_view.setTextColor( R.id.percent, 0xFF000000 );
-        not_view.setTextViewText( R.id.percent, "" );
+        not_view.setTextViewText( R.id.percent, "" + p + "%" );
         notification.contentView = not_view;
-        notMan.notify( NOTIF_PROGRESS, notification );
+        notMan.notify( id, notification );
     }
     
-    private void setSystemNotification( Message msg ) {
+    private void setSystemNotification( int id, Message msg ) {
         if( notMan == null || msg == null ) return;
         String str;
         try {
@@ -910,13 +1075,20 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
             str = "Unknown Event";
         }
         Notification notification = new Notification( R.drawable.icon, str, System.currentTimeMillis() );
-        
         Bundle b = new Bundle( 1 );
         b.putString( MSG, str );
         msg.obj = b; // pack not parcelable string message to parcelable bundle  
-        notification.setLatestEventInfo( this, getString( R.string.app_name ), str, getPendingIntent( msg ) );
+        notification.setLatestEventInfo( this, getString( R.string.app_name ), str, getPendingIntent( id, msg ) );
         notification.flags |= Notification.FLAG_ONLY_ALERT_ONCE | Notification.FLAG_AUTO_CANCEL;
-        notMan.notify( NOTIF_DONE, notification );
+        
+        if( msg.what == OPERATION_SUSPENDED_FILE_EXIST ) {
+            notification.flags    |= Notification.FLAG_SHOW_LIGHTS;
+            notification.defaults |= Notification.DEFAULT_VIBRATE;
+            notification.ledARGB = 0xFFFF0000;
+            notification.ledOnMS  = 300;
+            notification.ledOffMS = 1000;            
+        }
+        notMan.notify( id, notification );
     }
     
     public void setResolution( int r ) {
@@ -975,5 +1147,17 @@ public class FileCommander extends Activity implements Commander, View.OnClickLi
     }
     private final void setConfirmMode( SharedPreferences sharedPref ) {
         show_confirm = sharedPref.getBoolean("show_confirm", true );
+    }
+
+    // ServiceConnection implementation
+    
+    @Override
+    public void onServiceConnected( ComponentName name, IBinder service ) {
+        background_work = ((IBackgroundWork.IBackgroundWorkBinder)service).init( this );
+    }
+
+    @Override
+    public void onServiceDisconnected( ComponentName name ) {
+        background_work = null;
     }
 }

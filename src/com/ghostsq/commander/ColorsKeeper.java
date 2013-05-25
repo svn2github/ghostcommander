@@ -87,6 +87,10 @@ public final class ColorsKeeper {
     }
     public  ArrayList<FileTypeColor>  ftColors;
     
+    public boolean isButtonsDefault() {
+        return btnColor == 0x00000000;
+    }
+    
     public ColorsKeeper( Context ctx_ ) {
         ctx = ctx_;
         Resources  r = ctx.getResources();

@@ -47,6 +47,11 @@ public class TextViewer extends Activity {
             SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
             int fs = Integer.parseInt( shared_pref != null ? shared_pref.getString( "font_size", "12" ) : "12" );
             text_view = (TextView)findViewById( R.id.text_view );
+            if( text_view == null ) {
+                Log.e( TAG, "No text view to show the content!" );
+                finish();
+                return;
+            }
             text_view.setTextSize( fs );
             text_view.setTypeface( Typeface.create( "monospace", Typeface.NORMAL ) );
 

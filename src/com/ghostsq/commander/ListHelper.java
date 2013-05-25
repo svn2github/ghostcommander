@@ -17,11 +17,13 @@ import android.view.Display;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class ListHelper {
     private final String TAG;
-    public  final int which, id;
+    public  final int  which, id;
     public  ListView   flv = null;
+    private TextView   status = null;
     private int        currentPosition = -1;
     private String[]   listOfItemsChecked = null;
     private Panels     p;
@@ -47,6 +49,7 @@ public class ListHelper {
             flv.setOnScrollListener( p );
             p.c.registerForContextMenu( flv );
         }
+        status = (TextView)p.c.findViewById( which == Panels.LEFT ? R.id.left_stat : R.id.right_stat );
     }
 
     public final CommanderAdapter getListAdapter() {
@@ -57,6 +60,7 @@ public class ListHelper {
         try {
             // Log.v( TAG, "Navigate to " + Favorite.screenPwd( uri ) );
             was_current = was_current_;
+            currentPosition = -1;
             flv.clearChoices();
             flv.invalidateViews();
             CommanderAdapter ca_new = null, ca = (CommanderAdapter)flv.getAdapter();
@@ -94,8 +98,7 @@ public class ListHelper {
     }
 
     public final void focus() {
-        //Log.v( TAG, "we set focus for this" );
-        
+        Log.v( TAG, "set focus for panel " + which );
         
         /*
          * boolean focusable = flv.isFocusable(); boolean focusable_tm =
@@ -105,7 +108,7 @@ public class ListHelper {
          * ", " + item_focus );
          */
         if( flv == null ) return;
-        //flv.requestFocus();
+        flv.requestFocus();
         flv.requestFocusFromTouch();
     }
 
@@ -118,13 +121,10 @@ public class ListHelper {
             if( d != null )
                 flv.setSelector( d );
         }
-/*        
-        CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
-        if( ca != null ) {
-            ca.setMode( CommanderAdapter.SET_TXT_COLOR, ck.fgrColor );
-            ca.setMode( CommanderAdapter.SET_SEL_COLOR, ck.selColor );
-        }
-*/
+        final float  pb = Utils.getBrightness( ck.bgrColor );
+        final float  sb = pb < 0.2 ? pb + 0.05f : pb - 0.05f;
+        status.setBackgroundColor( Utils.setBrightness( ck.bgrColor, sb ) );
+        status.setTextColor( ck.fgrColor );
     }
 
     public final void applySettings( SharedPreferences sharedPref ) {
@@ -141,6 +141,7 @@ public class ListHelper {
                             : CommanderAdapter.WIDE_MODE );
 
             ca.setMode( CommanderAdapter.SET_FONT_SIZE, p.fnt_sz );
+            status.setTextSize( p.fnt_sz - 1 );
 
             String sfx = p.sxs ? "_SbS" : "_Ovr";
             boolean detail_mode = sharedPref.getBoolean( which == Panels.LEFT ? "left_detailed" + sfx : "right_detailed" + sfx, true );
@@ -363,7 +364,7 @@ public class ListHelper {
                     String item_name = adapter.getItemName( cis.keyAt( i ), false );
                     if( item_name == null || item_name.length() == 0 )
                         item_name = adapter.getItemName( cis.keyAt( i ), true );
-                    return "\"" + item_name + "\"";
+                    return item_name;
                 }
         }
         int cur_sel = getSelection( false );
@@ -372,22 +373,18 @@ public class ListHelper {
         String item_name = adapter.getItemName( cur_sel, false ); 
         if( item_name == null || item_name.length() == 0 )
             item_name = adapter.getItemName( cur_sel, true );
-        return "\"" + item_name + "\"";
+        return item_name;
     }
 
     public final void recoverAfterRefresh( String item_name ) {
         try {
             //Log.v( TAG, "restoring panel " + which + " item: " + item_name );
             reStoreChoosedItems();
-            if( item_name != null && item_name.length() > 0 )
+            if( Utils.str( item_name ) )
                 setSelection( item_name );
-/*
             else
-                setSelection( 0, 0 );
-*/
+                setSelection( currentPosition > 0 ? currentPosition : 0, 0 );
             if( was_current ) {
-                //Log.v( TAG, "this was the current panel, let's focus it" );
-                //focus();
                 p.setPanelCurrent( which, false );
                 was_current = false;
             }
@@ -458,7 +455,14 @@ public class ListHelper {
         } catch( Exception e ) {
             Log.e( TAG, "reStoreChoosedItems()", e );
         }
-        listOfItemsChecked = null;
+        finally {
+            listOfItemsChecked = null;
+            updateStatus();
+        }
     }
-
+    public void updateStatus() {
+        if( status != null ) {
+            status.setText( getActiveItemsSummary() );
+        }
+    }
 }

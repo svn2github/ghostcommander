@@ -43,6 +43,7 @@ import com.ghostsq.commander.TextViewer;
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
+import com.ghostsq.commander.adapters.Engines;
 import com.ghostsq.commander.adapters.FSAdapter;
 import com.ghostsq.commander.utils.LsItem;
 import com.ghostsq.commander.utils.Utils;
@@ -66,8 +67,15 @@ public class RootAdapter extends CommanderAdapterBase {
     private File tmp_f, dst_f;
 
     public RootAdapter( Context ctx_ ) {
-        super( ctx_, SHOW_ATTR );
+        super( ctx_, SHOW_ATTR | NARROW_MODE );
     }
+    @Override
+    public int setMode( int mask, int val ) {
+        if( ( mask & ( MODE_WIDTH ) ) == 0 )
+            return super.setMode( mask, val );
+        return mode;
+    }
+   
     @Override
     public int getType() {
         return CA.ROOT;
@@ -81,7 +89,8 @@ public class RootAdapter extends CommanderAdapterBase {
         private final static String EOL = "_EOL_";
         
         ListEngine( Context ctx, Handler h, Uri src_, String pass_back_on_done_ ) {
-        	super( ctx, h );
+        	super( ctx );
+        	setHandler( h );
             src = src_;
         	pass_back_on_done = pass_back_on_done_;
         }
@@ -173,8 +182,8 @@ public class RootAdapter extends CommanderAdapterBase {
                         String mp = m.getMountPoint();
                         if( SYSTEM_PATH.equals( mp ) ) {
                             if( remount ) {
-                                worker = new RemountEngine( commander.getContext(), workerHandler, m );
-                                worker.start();
+                                RemountEngine re = new RemountEngine( commander.getContext(), simpleHandler, m );
+                                re.start();
                             }
                             else
                                 systemMountMode = m.getMode();
@@ -197,7 +206,7 @@ public class RootAdapter extends CommanderAdapterBase {
                     return uri.buildUpon().fragment( path != null && path.startsWith( SYSTEM_PATH ) ? systemMountMode : null ).build().toString();
                 } catch( Exception e ) {}
             }            
-            return uri.toString();
+            return uri.buildUpon().fragment( " " ).build().toString();
         }
         return "";
     }
@@ -215,8 +224,9 @@ public class RootAdapter extends CommanderAdapterBase {
     
     @Override
     public void setIdentities( String name, String pass ) {
-        // TODO: may be some day we need to provide a password for su ?
+        // TODO: provide a password for su ?
     }
+    
     @Override
     public boolean readSource( Uri tmp_uri, String pass_back_on_done ) {
         try {
@@ -264,7 +274,8 @@ public class RootAdapter extends CommanderAdapterBase {
                 for( int i = 0; i < s_items.length; i++ )
                     sb.append( " " ).append( ExecEngine.prepFileName( path + s_items[i].getName() ) );
                 sb.append( " ; df" );
-                ExecEngine ee = new ExecEngine( ctx, new Handler() {
+                ExecEngine ee = new ExecEngine( ctx, null, sb.toString(), true,  500 );
+                ee.setHandler( new Handler() {
                         @Override
                         public void handleMessage( Message msg ) {
                             try {
@@ -276,7 +287,7 @@ public class RootAdapter extends CommanderAdapterBase {
                                 Log.e( TAG, null, e );
                             }
                         }
-                    }, null, sb.toString(), true,  500 ); 
+                    } );
                 ee.start();
             }
         } catch( Exception e ) {
@@ -288,8 +299,8 @@ public class RootAdapter extends CommanderAdapterBase {
         try {
             LsItem[] subItems = bitsToItems( cis );
             if( subItems != null ) {
+                Engines.IReciever recipient = null;
                 String to_path = null;
-                int rec_h = 0;
             	if( to instanceof FSAdapter || to instanceof RootAdapter ) {
             	    Uri to_uri = to.getUri();
             	    if( to_uri != null )
@@ -297,12 +308,11 @@ public class RootAdapter extends CommanderAdapterBase {
             	    to = null;
             	} else {
                     to_path = createTempDir();
-                    rec_h = setRecipient( to ); 
+                    recipient = to.getReceiver(); 
             	}
                 if( to_path != null ) {
                     notify( Commander.OPERATION_STARTED );
-                    worker = new CopyFromEngine( commander.getContext(), workerHandler, subItems, to_path, move, rec_h );
-                    worker.start();
+                    commander.startEngine( new CopyFromEngine( commander.getContext(), subItems, to_path, move, recipient ) );
                     return true;
                 }
             }
@@ -320,10 +330,10 @@ public class RootAdapter extends CommanderAdapterBase {
 	    private String   dest_folder;
 	    private boolean  move;
 	    private String   src_base_path;
-        private int      recipient_hash; 
         private String   uid;
-	    CopyFromEngine( Context ctx, Handler h, LsItem[] list_, String dest, boolean move_, int recipient_h ) {
-	    	super( ctx, h );
+	    CopyFromEngine( Context ctx, LsItem[] list_, String dest, boolean move_, Engines.IReciever recipient_ ) {
+	    	super( ctx );
+	    	recipient = recipient_;
 	        list = list_;
 	        dest_folder = dest;
 	        move = move_;
@@ -333,8 +343,7 @@ public class RootAdapter extends CommanderAdapterBase {
 	        else
 	        if( src_base_path.charAt( src_base_path.length()-1 ) != SLC )
 	            src_base_path += SLS;
-	        recipient_hash = recipient_h;
-	        if( recipient_hash != 0 )
+	        if( recipient != null )
                 try {
         	        PackageManager pm = ctx.getPackageManager();
         	        if( pm != null ) {
@@ -351,13 +360,13 @@ public class RootAdapter extends CommanderAdapterBase {
 	    public void run() {
 	        try {
 	            boolean ok = execute();
-                if( counter > 0 && recipient_hash != 0 ) {
+                if( counter > 0 && recipient != null ) {
                     File temp_dir = new File( dest_folder );
                     File[] temp_content = temp_dir.listFiles();
                     String[] paths = new String[temp_content.length];
                     for( int i = 0; i < temp_content.length; i++ )
                         paths[i] = temp_content[i].getAbsolutePath();
-                    sendReceiveReq( recipient_hash, paths );
+                    sendReceiveReq( paths );
                     return;
                 }
                 if( !ok )
@@ -385,16 +394,19 @@ public class RootAdapter extends CommanderAdapterBase {
                                          + " " + esc_dest;
                     outCmd( true, to_exec, os );
                     if( procError( es ) ) return false;
-                    
-                    File    dst_file = new File( dest_folder, f.getName() );
-                    String  dst_path = ExecEngine.prepFileName( dst_file.getAbsolutePath() ); 
-                    Permissions perm = uid != null ? new Permissions( uid, uid, "-rw-rw----" ) :
-                                                     new Permissions( f.getAttr() );
-                    String chown_cmd = "chown " + perm.generateChownString().append(" ").append( dst_path ).toString();
-                    outCmd( uid != null, chown_cmd, os );
-                    String chmod_cmd = "chmod " + perm.generateChmodString().append(" ").append( dst_path ).toString();
-                    outCmd( true, chmod_cmd, os );
-                    
+                    try {
+                        File    dst_file = new File( dest_folder, f.getName() );
+                        String  dst_path = ExecEngine.prepFileName( dst_file.getAbsolutePath() ); 
+                        Permissions perm = uid != null ? new Permissions( uid, uid, "-rw-rw----" ) :
+                                                         new Permissions( f.getAttr() );
+                        String chown_cmd = "chown " + perm.generateChownString().append(" ").append( dst_path ).toString();
+                        outCmd( uid != null, chown_cmd, os );
+                        String chmod_cmd = "chmod " + perm.generateChmodString().append(" ").append( dst_path ).toString();
+                        outCmd( true, chmod_cmd, os );
+                        procError( es );
+                    } catch( Exception e ) {
+                        Log.w( TAG, "chmod/chown failed", e );
+                    }
                     sendProgress( "'" + file_name + "'", (int)(i * conv) );
                     counter++;
                 }
@@ -414,18 +426,15 @@ public class RootAdapter extends CommanderAdapterBase {
     @Override
     public void createFolder( String new_name ) {
         if( uri == null ) return;
-        if( isWorkerStillAlive() )
-            notify( "Busy", Commander.OPERATION_FAILED );
-        else {
-            worker = new MkDirEngine( commander.getContext(), workerHandler, new_name );
-            worker.start();
-        }
+        MkDirEngine mde = new MkDirEngine( commander.getContext(), simpleHandler, new_name );
+        mde.start();
     }
     
     class MkDirEngine extends ExecEngine {
         String new_name, full_name;
         MkDirEngine( Context ctx, Handler h, String new_name_ ) {
-            super( ctx, h );
+            super( ctx );
+            setHandler( h );
             new_name = new_name_;
             full_name = uri.getPath() + SLS + new_name;
         }
@@ -448,15 +457,10 @@ public class RootAdapter extends CommanderAdapterBase {
     @Override
     public boolean deleteItems( SparseBooleanArray cis ) {
         try {
-            if( isWorkerStillAlive() ) {
-                notify( "Busy", Commander.OPERATION_FAILED );
-                return false;
-            }
         	LsItem[] subItems = bitsToItems( cis );
         	if( subItems != null ) {
         	    notify( Commander.OPERATION_STARTED );
-                worker = new DelEngine( commander.getContext(), workerHandler, subItems );
-                worker.start();
+                commander.startEngine( new DelEngine( commander.getContext(), subItems ) );
 	            return true;
         	}
         }
@@ -471,8 +475,8 @@ public class RootAdapter extends CommanderAdapterBase {
         private LsItem[] mList;
         private int counter = 0;
         
-        DelEngine( Context ctx, Handler h, LsItem[] list ) {
-        	super( ctx, h );
+        DelEngine( Context ctx, LsItem[] list ) {
+        	super( ctx );
             mList = list;
             src_base_path = uri.getPath();
             if( src_base_path == null || src_base_path.length() == 0 )
@@ -569,9 +573,8 @@ public class RootAdapter extends CommanderAdapterBase {
             	return false;
             }
             notify( Commander.OPERATION_STARTED );
-            worker = new CopyToEngine( commander.getContext(), workerHandler, full_names, 
-                                     ( move_mode & MODE_MOVE ) != 0, uri.getPath(), false );
-            worker.start();
+            commander.startEngine( new CopyToEngine( commander.getContext(), full_names, 
+                                     ( move_mode & MODE_MOVE ) != 0, uri.getPath(), false ) );
             return true;
 		} catch( Exception e ) {
 			notify( "Exception: " + e, Commander.OPERATION_FAILED );
@@ -587,8 +590,8 @@ public class RootAdapter extends CommanderAdapterBase {
         private boolean permByDest = false;
         private int counter = 0;
         
-        CopyToEngine( Context ctx, Handler h, String[] list, boolean move_, String dest_, boolean quiet_ ) {
-        	super( ctx, h );
+        CopyToEngine( Context ctx, String[] list, boolean move_, String dest_, boolean quiet_ ) {
+        	super( ctx );
         	src_full_names = list;
         	dest = dest_;
             move = move_;
@@ -681,8 +684,7 @@ public class RootAdapter extends CommanderAdapterBase {
                 return false;
             }
             
-            worker = new CopyToEngine( commander.getContext(), workerHandler, a, true, to, true );
-            worker.start();
+            commander.startEngine( new CopyToEngine( commander.getContext(), a, true, to, true ) );
             return true;
         } catch( Exception e ) {
             notify( "Exception: " + e, Commander.OPERATION_FAILED );
@@ -762,11 +764,11 @@ public class RootAdapter extends CommanderAdapterBase {
     
     @Override
     public void populateContextMenu( ContextMenu menu, AdapterView.AdapterContextMenuInfo acmi, int num ) {
-        super.populateContextMenu( menu, acmi, num );
         try {
             if( acmi.position > 0 )
                 menu.add( 0, CHMOD_CMD, 0, R.string.perms_label );
             menu.add( 0, CMD_CMD, 0, commander.getContext().getString( R.string.execute_command ) ); 
+            super.populateContextMenu( menu, acmi, num );
         } catch( Exception e ) {
             Log.e( TAG, null, e );
         }
@@ -776,8 +778,6 @@ public class RootAdapter extends CommanderAdapterBase {
     public void doIt( int command_id, SparseBooleanArray cis ) {
         try {
             if( CHMOD_CMD == command_id || CMD_CMD == command_id ) {
-                if( isWorkerStillAlive() )
-                    return;
                 LsItem[] items_todo = bitsToItems( cis );
                 boolean selected_one = items_todo != null && items_todo.length > 0 && items_todo[0] != null;
                 if( CHMOD_CMD == command_id ) {
@@ -785,7 +785,7 @@ public class RootAdapter extends CommanderAdapterBase {
                         Intent i = new Intent( ctx, EditPermissions.class );
                         i.putExtra( "perm", items_todo[0].getAttr() );
                         i.putExtra( "path", Utils.mbAddSl( uri.getPath() ) + items_todo[0].getName() );
-                        commander.issue( i, Commander.OPERATION_COMPLETED_REFRESH_REQUIRED );
+                        commander.issue( i, Commander.ACTIVITY_RESULT_REFRESH );
                     }
                     else
                         commander.showError( commander.getContext().getString( R.string.select_some ) );
@@ -806,12 +806,7 @@ public class RootAdapter extends CommanderAdapterBase {
     }
     
     public void execute( String command, boolean bb ) {
-        if( isWorkerStillAlive() )
-            notify( "Busy", Commander.OPERATION_FAILED );
-        else {
-            worker = new ExecEngine( commander.getContext(), workerHandler, uri.getPath(), command, bb, 500 );
-            worker.start();
-        }
+        commander.startEngine( new ExecEngine( commander.getContext(), uri.getPath(), command, bb, 500 ) );
     }
 
     public final String getBusyBoxPath() {
@@ -820,7 +815,8 @@ public class RootAdapter extends CommanderAdapterBase {
     }
     
     public void executeToViewer( String command, boolean bb ) {
-        ExecEngine ee = new ExecEngine( ctx, new Handler() {
+        ExecEngine ee = new ExecEngine( ctx, uri.getPath(), command, bb, 500 );
+        ee.setHandler( new Handler() {
                 @Override
                 public void handleMessage( Message msg ) {
                     try {
@@ -839,7 +835,7 @@ public class RootAdapter extends CommanderAdapterBase {
                         e.printStackTrace();
                     }
                 }
-            }, uri.getPath(), command, bb, 500 ); 
+            } );
         ee.start();
     }    
     
@@ -1002,7 +998,7 @@ public class RootAdapter extends CommanderAdapterBase {
     @Override
     public Item getItem( Uri u ) {
         try {
-            ExecEngine ee = new ExecEngine( null, null, null, "ls -l -d " + u.getPath(), false, 100 );
+            ExecEngine ee = new ExecEngine( null, null, "ls -l -d " + u.getPath(), false, 100 );
             ee.start();
             StringBuilder sb = null;
             for( int i = 0; i < 10; i++ )
@@ -1061,11 +1057,10 @@ public class RootAdapter extends CommanderAdapterBase {
         if( s instanceof FileOutputStream ) {
             if( tmp_f == null || dst_f == null ) return;
             
-            CopyToEngine cte = new CopyToEngine( ctx, workerHandler, new String[] { tmp_f.getAbsolutePath() },
+            CopyToEngine cte = new CopyToEngine( ctx, new String[] { tmp_f.getAbsolutePath() },
                     true, dst_f.getParent(), true );
             cte.setPermByDest();
-            worker = cte;
-            worker.start();
+            cte.start();
             return;
         }
         if( contentEngine != null ) {

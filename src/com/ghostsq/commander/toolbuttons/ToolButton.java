@@ -15,8 +15,6 @@ public class ToolButton {
     private String    codename;
     private String    caption;
     private boolean   visible;
-    private int       color;
-    private Drawable  icon;
     private boolean   modified;
 
     public final static int getId( String cn ) {
@@ -53,6 +51,7 @@ public class ToolButton {
         if( cn.equals( "refresh" ) ) return        R.id.refresh;
         if( cn.equals( "softkbd" ) ) return        R.id.softkbd;
         if( cn.equals( "search"  ) ) return        R.id.search;
+        if( cn.equals( "menu"    ) ) return        R.id.menu;
         return 0;
     }
 
@@ -90,6 +89,7 @@ public class ToolButton {
         case  R.id.refresh:      return  "refresh";
         case  R.id.softkbd:      return  "softkbd";
         case  R.id.search:       return  "search";
+        case  R.id.menu:         return  "menu";
         }
         return null;
     }
@@ -158,6 +158,7 @@ public class ToolButton {
         case  R.id.refresh:      return  R.string.refresh;
         case  R.id.softkbd:      return  R.string.softkbd;
         case  R.id.search:       return  R.string.search_file;        
+        case  R.id.menu:         return  R.string.menu;        
         }
         return 0;
     }
@@ -184,6 +185,8 @@ public class ToolButton {
         case  R.id.by_date:      return  true;
         case  R.id.home:         return  true;
         case  R.id.remount:      return  true;
+        case  R.id.sel_all:      return  true;
+        case  R.id.uns_all:      return  true;
         }
         return false;
     }

@@ -40,10 +40,12 @@
 <string name="mount">Монтировано</string>
 <string name="mount_b">Разделы</string>
 <string name="apps">Приложения</string>
+<string name="menu">Меню</string>
 <string name="exit">Выход</string>
 <string name="favs_descr">Просмотр и редактирование списка закладок на часто используемые папки и ресурсы.</string>
 <string name="local_descr">Доступ к файлам расположеным на SD карточке или внутренней памяти устройства.</string>
 <string name="ftp_descr">Подключение к файл-серверу по протоколу FTP (протокол передачи файлов).</string>
+<string name="sftp_descr">Зашифрованое подключение к файл-серверу через SSH.</string>
 <string name="smb_descr">Доступ к Windows компьютеру локальной сети. ( Приложение \"Ghost Commander - Samba Plugin\" должно быть установлено )</string>
 <string name="root_descr">Выполнение системных команд и работа с файлами на системном разделею Будьте осторожны!.</string>
 <string name="mount_descr">Список монтированых устройств с возможностью перемонтирования в \"rw\" и обратно в \"ro\"</string>
@@ -63,8 +65,8 @@
 <string name="sort_by_date_b">По дате</string>
 <string name="select_all">+ Пометить файлы</string>
 <string name="unselect_all">- Снять пометку</string>
-<string name="select_b">+ Пометить</string>
-<string name="unselect_b">- Снять</string>
+<string name="select_b">Пометить</string>
+<string name="unselect_b">Снять</string>
 <string name="toggle_panels_mode"># Изменить режим панелей</string>
 <string name="prefs">9 Настройки</string>
 <string name="save_prefs">Сохранить настройки</string>

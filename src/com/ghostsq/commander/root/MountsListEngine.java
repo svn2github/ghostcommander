@@ -75,12 +75,14 @@ class MountsListEngine extends ExecEngine {
     private String  pass_back_on_done;
     private boolean system, remount;
     MountsListEngine( Context ctx, Handler h, String pass_back_on_done_ ) {
-        super( ctx, h );
+        super( ctx );
+        setHandler( h );
         pass_back_on_done = pass_back_on_done_;
         system = false;
     }
     MountsListEngine( Context ctx, Handler h, boolean remount_ ) {    // to return the "/system" mount only
-        super( ctx, h );
+        super( ctx );
+        setHandler( h );
         pass_back_on_done = null;
         system = true;
         remount = remount_;

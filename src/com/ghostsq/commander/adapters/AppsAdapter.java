@@ -1,6 +1,8 @@
 package com.ghostsq.commander.adapters;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.sql.Date;
@@ -42,7 +44,7 @@ import android.widget.AdapterView;
 public class AppsAdapter extends CommanderAdapterBase {
     private final static String TAG = "AppsAdapter";
     public static final String DEFAULT_LOC = "apps:";
-    public static final int LAUNCH_CMD = 9176, MANAGE_CMD = 7161, SHRCT_CMD = 2694;
+    public static final int LAUNCH_CMD = 9176, MANAGE_CMD = 7161, CREATE_APP_SHORTCUT = 3123; 
     // Java compiler creates a thunk function to access to the private owner class member from a subclass
     // to avoid that all the member accessible from the subclasses are public
     public final PackageManager     pm = ctx.getPackageManager();
@@ -83,7 +85,7 @@ public class AppsAdapter extends CommanderAdapterBase {
         private PackageInfo[] items_tmp;
         public  String        pass_back_on_done;
         ListEngine( Handler h, String pass_back_on_done_ ) {
-            super( h );
+            super.setHandler( h );
             pass_back_on_done = pass_back_on_done_;
         }
         public PackageInfo[] getItems() {
@@ -518,6 +520,35 @@ public class AppsAdapter extends CommanderAdapterBase {
         notify( sb.toString(), Commander.OPERATION_COMPLETED, Commander.OPERATION_REPORT_IMPORTANT );
     }
 
+    class CopyFromEngine extends Engine 
+    {
+        private ArrayList<PackageInfo> pl;
+
+        CopyFromEngine( ArrayList<PackageInfo> list_, Engines.IReciever recipient_ ) {
+            super( recipient_ );
+            pl = list_;
+        }
+        @Override
+        public void run() {
+            String tmp_path = Utils.mbAddSl( createTempDir() );
+            for( int i = 0; i < pl.size(); i++ ) {
+                ApplicationInfo ai = pl.get( i ).applicationInfo;
+                if( ai != null ) {
+                    try {
+                        FileInputStream  fis = new FileInputStream( ai.sourceDir );
+                        String tmp_n = tmp_path + ai.packageName + ".apk";
+                        FileOutputStream fos = new FileOutputStream( tmp_n );
+                        Utils.copyBytes( fis, fos );
+                    } catch( Exception e ) {
+                        Log.e( TAG, "tmp apk creation", e );
+                    }
+                }
+            }
+            sendReceiveReq( new File( tmp_path ) );
+            return;
+        }
+    }    
+    
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
         if( pkgInfos != null ) { 
@@ -526,16 +557,9 @@ public class AppsAdapter extends CommanderAdapterBase {
                 notify( s( R.string.copy_err ), Commander.OPERATION_FAILED );
                 return false;
             }
-            String[] paths = new String[pl.size()];
-            for( int i = 0; i < pl.size(); i++ ) {
-                ApplicationInfo ai = pl.get( i ).applicationInfo;
-                if( ai != null )
-                    paths[i] = ai.sourceDir;
-            }
-            
-            boolean ok = to.receiveItems( paths, MODE_COPY );
-            if( !ok ) notify( Commander.OPERATION_FAILED );
-            return ok;
+            notify( Commander.OPERATION_STARTED );
+            commander.startEngine( new CopyFromEngine( pl, to.getReceiver() ) );
+            return true;
         }
         if( compItems != null ) {
             ArrayList<Item> il = bitsToItems( cis, compItems );
@@ -617,7 +641,7 @@ public class AppsAdapter extends CommanderAdapterBase {
                 else if( resInfos != null ) {
                     ResolveInfo ri = resInfos[acmi.position-1];
                     if( ri.filter != null && ri.filter.matchAction( Intent.ACTION_MAIN ) )
-                        menu.add( 0, SHRCT_CMD, 0, ctx.getString( R.string.shortcut ) );
+                        menu.add( 0, CREATE_APP_SHORTCUT, 0, ctx.getString( R.string.shortcut ) );
                 }
             }
         } catch( Exception e ) {
@@ -645,7 +669,7 @@ public class AppsAdapter extends CommanderAdapterBase {
                 }
             }
             else if( resInfos != null ) {
-                if( SHRCT_CMD == command_id ) {
+                if( CREATE_APP_SHORTCUT == command_id ) {
                     ArrayList<ResolveInfo> rl = bitsToItems( cis, resInfos );
                     if( rl == null || rl.size() == 0 ) return;
                     for( int i = 0; i < rl.size(); i++ ) {

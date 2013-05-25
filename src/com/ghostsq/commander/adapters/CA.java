@@ -43,7 +43,7 @@ final public class CA {
     public static final int SFTP  = 0x00100000;
     public static final int NET   = FTP | SMB | GDOCS | SFTP;
     public static final int REAL  = LOCAL | ARCH | ROOT | NET;
-    public static final int CHKBL  = REAL | APPS;
+    public static final int CHKBL  = REAL | APPS | FAVS;
     public static final int ALL   = 0xFFFFFFFF;
 
     // URI schemes hash codes
@@ -192,12 +192,13 @@ final public class CA {
         case  R.id.home:         return  CA.ALL & ~CA.HOME;
         case  R.id.favs:         return  CA.ALL & ~CA.FAVS;
         case  R.id.sdcard:       return  CA.ALL;
-        case  R.id.root:         return  CA.ALL & ~CA.ROOT;
+        case  R.id.root:         return  CA.ALL;
         case  R.id.mount:        return  CA.ROOT | CA.NAV;
         case  R.id.hidden:       return  CA.REAL;
         case  R.id.refresh:      return  CA.REAL | CA.FAVS;
         case  R.id.softkbd:      return  CA.ALL;
         case  R.id.search:       return  CA.LOCAL;
+        case  R.id.menu:         return  CA.ALL;
         }
         return 0;
     }

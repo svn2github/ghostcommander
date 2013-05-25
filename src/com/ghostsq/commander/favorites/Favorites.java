@@ -82,7 +82,6 @@ public class Favorites extends ArrayList<Favorite>
                         if( user.equalsIgnoreCase( f.getUserName() ) ) {
                             Uri fu = f.getUri();
                             if( schm.equals( fu.getScheme() ) ) {
-                                if( best < 0 ) best = i;
                                 if( host.equalsIgnoreCase( fu.getHost() ) ) {
                                     best = i;
                                     String fp = fu.getPath();

@@ -234,16 +234,16 @@
                 android:title="@string/prevent_root"
                 android:summary="@string/summary_prevent_root"
                 android:defaultValue="true"/>
-        <CheckBoxPreference
-                android:key="root_root"
-                android:title="@string/root_root"
-                android:summary="@string/summary_root_root"
-                android:defaultValue="false"/>
        <PreferenceScreen
             android:key="advanced_preferences"
             android:title="@string/advanced_settings"
             android:summary="@string/summary_advanced_settings">
-		    <EditTextPreference 
+          <CheckBoxPreference
+                  android:key="root_root"
+                  android:title="@string/root_root"
+                  android:summary="@string/summary_root_root"
+                  android:defaultValue="false"/>
+            <EditTextPreference 
 		        android:key="editor_activity" 
 		        android:title="@string/editor_activity" 
 		        android:summary="@string/summary_editor_activity" 

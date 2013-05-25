@@ -151,7 +151,7 @@ public class FindAdapter extends FSAdapter {
         private int     progress = 0;
         
         SearchEngine( Handler h, String match_, String path_, String pass_back_on_done_ ) {
-            super( h );
+            super.setHandler( h );
             if( match_.indexOf( '*' ) >= 0 ){
                 cards = Utils.prepareWildcard( match_ );
                 match = null;

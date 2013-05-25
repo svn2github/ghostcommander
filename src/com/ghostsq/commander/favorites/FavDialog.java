@@ -12,14 +12,18 @@ import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 public class FavDialog implements OnClickListener {
     public final static String TAG = "FavDialog";
     private FavsAdapter owner;
     private Favorite f;
-    private Uri uri;
+    private Uri      uri;
     private EditText ce, pe, se, de, ue, we;
+    private Spinner  en;
+    private boolean  sftp, ftp, smb; 
     
     public FavDialog( Context c, Favorite f_, FavsAdapter owner_ ) {
         try {
@@ -52,9 +56,12 @@ public class FavDialog implements OnClickListener {
             String schm = uri.getScheme();
             View sb = fdv.findViewById( R.id.server_block );
             View ib = fdv.findViewById( R.id.credentials_block );
-            boolean ftp = "ftp".equals( schm );
-            boolean smb = "smb".equals( schm ); 
-            if( ftp || smb ) {
+            View eb = fdv.findViewById( R.id.encoding_block );
+            
+            sftp = "sftp".equals( schm );
+             ftp =  "ftp".equals( schm );
+             smb =  "smb".equals( schm ); 
+            if( ftp || smb || sftp ) {
                 se = (EditText)sb.findViewById( R.id.server_edit );
                 String host = uri.getHost();
                 if( host != null ) {
@@ -63,7 +70,7 @@ public class FavDialog implements OnClickListener {
                         host += ":" + port;
                     se.setText( host );    
                 }
-                if( ftp ) {
+                if( ftp || sftp ) {
                     View db = ib.findViewById( R.id.domain_block );
                     db.setVisibility( View.GONE );
                 }
@@ -83,10 +90,32 @@ public class FavDialog implements OnClickListener {
                 ue.setText( username );
                 we = (EditText)ib.findViewById( R.id.password_edit );
                 we.setText( f.getPassword() );
+                eb.setVisibility( ftp ? View.VISIBLE : View.GONE );
+                if( ftp ) {
+                    en = (Spinner)eb.findViewById( R.id.encoding );
+                    ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource( c,
+                            R.array.encoding, android.R.layout.simple_spinner_item );
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    en.setAdapter( adapter );
+                    try {
+                        String enc_s = uri.getQueryParameter( "e" );
+                        if( Utils.str( enc_s ) && !"Default".equals( enc_s ) ) {
+                            for( int i = 0; i < adapter.getCount(); i++ )
+                                if( adapter.getItem( i ).toString().indexOf( enc_s ) == 0 ) {
+                                    en.setSelection( i );
+                                    break;
+                                }
+                        }
+                    } catch( Exception e ) {
+                        Log.e( TAG, "", e );
+                    }
+                }
+
             }
             else {
                 sb.setVisibility( View.GONE );
                 ib.setVisibility( View.GONE );
+                eb.setVisibility( View.GONE );
             }
             
             new AlertDialog.Builder( c )
@@ -106,9 +135,23 @@ public class FavDialog implements OnClickListener {
                 f.setComment( ce.getText().toString() );
                 String path = pe.getText().toString().trim();
                 if( se != null ) {
+                    Uri.Builder uri_b = uri.buildUpon();
+                    if( ftp ) {
+                        uri_b.encodedQuery( "" );
+                        String a_s = uri.getQueryParameter( "a" );
+                        if( Utils.str( a_s ) ) uri_b.appendQueryParameter( "a", a_s ); 
+                        Object esio = en.getSelectedItem();
+                        if( esio instanceof String ) {
+                            String enc_s = (String)esio; 
+                            if( Utils.str( enc_s ) && !"Default".equals( enc_s ) ) {
+                                enc_s = enc_s.substring( 0, enc_s.indexOf( "\n" ) );
+                                uri_b.appendQueryParameter( "e", enc_s );
+                            }
+                        }
+                    }                
                     String serv = se.getText().toString().trim();
-                    f.setUri( uri.buildUpon().encodedAuthority( Utils.encodeToAuthority( serv ) ).
-                                                   encodedPath( Utils.escapePath( path ) ).build() );
+                    f.setUri( uri_b.encodedAuthority( Utils.encodeToAuthority( serv ) ).
+                                         encodedPath( Utils.escapePath( path ) ).build() );
                     Log.i( TAG, "Uri:" + f.getUri() );
                     String domain = de != null ? de.getText().toString().trim() : "";
                     String usernm = ue.getText().toString().trim();
@@ -117,6 +160,7 @@ public class FavDialog implements OnClickListener {
                 else {
                     f.setUri( uri.buildUpon().encodedPath( Utils.escapePath( path ) ).build() );
                 }
+                
                 owner.invalidate();
             } catch( Exception e ) {
                 Log.e( TAG, null, e );

@@ -6,6 +6,7 @@ import java.util.GregorianCalendar;
 
 import org.apache.http.auth.UsernamePasswordCredentials;
 
+import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.favorites.Favorite;
 import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.Utils;
@@ -19,6 +20,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
+import android.net.UrlQuerySanitizer;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.format.DateFormat;
@@ -41,7 +43,8 @@ public class Dialogs implements DialogInterface.OnClickListener {
     
     public final static int numDialogTypes = 5;
     protected String toShowInAlertDialog = null, cookie = null;
-    private int dialogId;
+    private int dialogId; 
+    private long  taskId = 0;
     private Dialog dialogObj;
     private FileCommander owner;
     private boolean valid = true;
@@ -52,11 +55,17 @@ public class Dialogs implements DialogInterface.OnClickListener {
 
     Dialogs( FileCommander owner_, int id ) {
         owner = owner_;
-        dialogId = id;
         dialogObj = null;
+        dialogId = id;
     }
     public final int getId() {
         return dialogId;
+    }
+    public final long getTaskId() {
+        return taskId;
+    }
+    public final void setTaskId( long taskId_ ) {
+        taskId = taskId_;
     }
     public final Dialog getDialog() {
         return dialogObj;
@@ -70,6 +79,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
             dialogObj.cancel();
         progressCounter = 0;
         progressAcSpeed = 0;
+        taskId = 0L;
     }
     protected final Dialog createDialog( int id ) {
         try {
@@ -152,6 +162,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                     return dialogObj = new AlertDialog.Builder( owner )
                         .setView( progressView )
                         .setTitle( R.string.progress )
+                        .setPositiveButton( R.string.dialog_close, this )
                         .setNegativeButton( R.string.dialog_cancel, this )
                         .setCancelable( false )
                         .create();
@@ -295,7 +306,13 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 if( edit != null ) {
                     edit.setWidth( owner.getWidth() - 70 );
                     String cts = Favorite.screenPwd( owner.panels.getFolderUriWithAuth( false ) );
-                    edit.setText( cts != null ? cts : "" );
+                    if( !Utils.str( cts ) ) return;
+                    if( cts.charAt( 0 ) == '/' )
+                        cts = Utils.unEscape( cts ); 
+                    int qm_pos = cts.indexOf( '?' );
+                    if( qm_pos > 0 )
+                        cts = cts.substring( 0, qm_pos );
+                    edit.setText( Utils.mbAddSl( cts ) );
                     if( owner.panels.getNumItemsSelectedOrChecked() == 1 )
                         edit.selectAll();
                 }
@@ -311,12 +328,13 @@ public class Dialogs implements DialogInterface.OnClickListener {
                         summ = owner.getString( R.string.no_items );
                         owner.showMessage( owner.getString( R.string.op_not_alwd, op ) );
                     }
-                    prompt.setText( owner.getString( R.string.oper_item_to, op, summ ) );
+                    prompt.setText( owner.getString( R.string.oper_item_to, op + ", ", summ ) );
                 }
                 if( edit != null ) {
                     edit.setWidth( owner.getWidth() - 70 );
-                    edit.setText( " .zip" );
-                    edit.setSelection( 1 );
+                    String path = owner.panels.getFolderUriWithAuth( ( owner.panels.getAdapterType( false ) & CA.FS ) == 0 ) + ".zip";
+                    edit.setText( path );
+                    edit.setSelection( path.length() - 4 );
                 }
                 break;
             }
@@ -464,24 +482,23 @@ public class Dialogs implements DialogInterface.OnClickListener {
             if( progressSec >= 0 )
                 p_bar.setSecondaryProgress( progressSec );
             if( perc_t != null ) {
+                perc_t.setTextSize( 14 );
                 perc_t.setText( "" + ( progressSec > 0 ? progressSec : progress ) + "%" );
             }
-            if( speed == 0 || ( progress <= 0 && progressSec <= 0 ) ) {
-                progressCounter = 0;
-                progressAcSpeed = 0;
-            }            
             TextView speed_t = (TextView)dialogObj.findViewById( R.id.speed );
             if( speed > 0 ) {
                 progressCounter++;
                 progressAcSpeed += speed;
                 long avgsp = progressAcSpeed / progressCounter;  
-                
                 String str = Utils.getHumanSize( speed ) + "/" + owner.getString( R.string.second ) + 
                       " (" + Utils.getHumanSize( avgsp ) + "/" + owner.getString( R.string.second ) + ")";
                 speed_t.setText( str );
             } 
-            else 
+            else if( speed < 0 || progress == 0 ) { 
                 speed_t.setText( "" );
+                progressCounter = 0;
+                progressAcSpeed = 0;
+            }
         } catch( Exception e ) {
             Log.e( TAG, null, e );
         }
@@ -518,7 +535,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                     EditText edit = (EditText)dialogObj.findViewById( R.id.edit_field );
                     if( edit != null ) {
                         String file_name = edit.getText().toString();
-                        if( file_name == null ) return;
+                        if( !Utils.str( file_name ) ) return;
                         switch( dialogId ) {
                         case R.id.F2:
                             owner.panels.renameItem( file_name );
@@ -529,6 +546,8 @@ public class Dialogs implements DialogInterface.OnClickListener {
                             break;
                         case R.id.F6:
                         case R.id.F5:
+                            if( file_name.charAt( 0 ) == '/' )
+                                file_name = Utils.escapePath( file_name );
                             owner.panels.copyFiles( file_name, dialogId == R.id.F6 );
                             break;
                         case R.id.F7:
@@ -616,16 +635,15 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 case FILE_EXIST_DIALOG:
                     owner.setResolution( Commander.REPLACE_ALL );
                     break;
-/*
-                case FileCommander.DBOX_APP: {
-                        owner.startViewURIActivity( R.string.dbox_app_uri );
-                        break;
-                    }
-*/
+                case PROGRESS_DIALOG:   // hide
+                    owner.addBgNotifId( taskId );
+                    taskId = 0L;
+                    cancelDialog();
+                    break;
                 }
             } else if( whichButton == DialogInterface.BUTTON_NEGATIVE ) {
                 if( dialogId == PROGRESS_DIALOG )
-                    owner.panels.terminateOperation();
+                    owner.stopEngine( taskId );
                 else
                 if( dialogId == FILE_EXIST_DIALOG )
                     owner.setResolution( Commander.ABORT );

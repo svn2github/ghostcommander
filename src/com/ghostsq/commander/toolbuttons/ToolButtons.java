@@ -18,6 +18,7 @@ public class ToolButtons extends ArrayList<ToolButton>
         if( bcns != null && bcns.length() > 0 ) {
             // add new introduced buttons also here like below:
             if( bcns.indexOf( "search" ) < 0 ) bcns += ",search";
+            if( bcns.indexOf( "menu"   ) < 0 ) bcns += ",menu";
             String[] bcna = bcns.split( "," );
             for( String bcn : bcna ) {
                 int bi = ToolButton.getId( bcn );
@@ -59,6 +60,7 @@ public class ToolButtons extends ArrayList<ToolButton>
                  R.id.sdcard,  
                  R.id.root,   
                  R.id.mount,   
+                 R.id.menu,   
                  R.id.softkbd,   
                  R.id.search
             };

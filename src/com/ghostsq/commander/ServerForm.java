@@ -12,9 +12,11 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 public class ServerForm extends Activity implements View.OnClickListener {
     private static final String TAG = "ServerForm";
@@ -44,6 +46,7 @@ public class ServerForm extends Activity implements View.OnClickListener {
     private EditText domain_edit;
     private EditText name_edit;
     private CheckBox active_ftp_cb;
+    private Spinner  encoding_spin;
     private View     domain_block;
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -65,8 +68,16 @@ public class ServerForm extends Activity implements View.OnClickListener {
             domain_edit = (EditText)findViewById( R.id.domain_edit );
             domain_block = findViewById( R.id.domain_block );
             name_edit = (EditText)findViewById( R.id.username_edit );
-            active_ftp_cb = (CheckBox)findViewById( R.id.active );            
-
+            active_ftp_cb = (CheckBox)findViewById( R.id.active );
+            encoding_spin = (Spinner)findViewById( R.id.encoding );
+            View encoding_block = findViewById( R.id.encoding_block );
+            if( type == Type.FTP ) {
+                ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource( this,
+                        R.array.encoding, android.R.layout.simple_spinner_item );
+                // Specify the layout to use when the list of choices appears
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                encoding_spin.setAdapter( adapter );            
+            }
             Button connect_button = (Button)findViewById( R.id.connect );
             connect_button.setOnClickListener( this );
             Button browse_button = (Button)findViewById( R.id.browse );
@@ -74,6 +85,7 @@ public class ServerForm extends Activity implements View.OnClickListener {
             Button cancel_button = (Button)findViewById( R.id.cancel );
             cancel_button.setOnClickListener( this );
 
+           encoding_block.setVisibility( type == Type.FTP ? View.VISIBLE : View.GONE );
             active_ftp_cb.setVisibility( type == Type.FTP ? View.VISIBLE : View.GONE );
             browse_button.setVisibility( type == Type.SMB ? View.VISIBLE : View.GONE );
              domain_block.setVisibility( type == Type.SMB ? View.VISIBLE : View.GONE );
@@ -93,6 +105,7 @@ public class ServerForm extends Activity implements View.OnClickListener {
             domain_edit.setText( prefs.getString( "DOMAIN", "" ) );            
             name_edit.setText( prefs.getString( "USER", "" ) );            
             active_ftp_cb.setChecked( prefs.getBoolean( "ACTIVE", false ) );            
+            encoding_spin.setSelection( prefs.getInt( "ENCODING", 0 ) );            
         }
         catch( Exception e ) {
             Log.e( TAG, "onStart() Exception: ", e );
@@ -109,6 +122,7 @@ public class ServerForm extends Activity implements View.OnClickListener {
             editor.putString( "DOMAIN", domain_edit.getText().toString() );            
             editor.putString( "USER", name_edit.getText().toString() );            
             editor.putBoolean( "ACTIVE", active_ftp_cb.isChecked() );            
+            editor.putInt( "ENCODING", encoding_spin.getSelectedItemPosition() );            
             editor.commit();
         }
         catch( Exception e ) {
@@ -171,9 +185,18 @@ public class ServerForm extends Activity implements View.OnClickListener {
                     .scheme( type.schema )
                     .encodedAuthority( Utils.encodeToAuthority( server_edit.getText().toString().trim() ) )
                     .path( path_edit.getText().toString().trim() );
-                if( type == Type.FTP && active_ftp_cb.isChecked() )
-                    uri_b.appendQueryParameter( "a", "true" );
-                
+                if( type == Type.FTP ) {
+                    if( active_ftp_cb.isChecked() )
+                        uri_b.appendQueryParameter( "a", "true" );
+                    Object esio = encoding_spin.getSelectedItem();
+                    if( esio instanceof String ) {
+                        String enc_s = (String)esio; 
+                        if( Utils.str( enc_s ) && !"Default".equals( enc_s ) ) {
+                            enc_s = enc_s.substring( 0, enc_s.indexOf( "\n" ) );
+                            uri_b.appendQueryParameter( "e", enc_s );
+                        }
+                    }
+                }                
                 Intent in = new Intent( Commander.NAVIGATE_ACTION, uri_b.build() );
                 if( crd != null )
                     in.putExtra( Credentials.KEY, crd );

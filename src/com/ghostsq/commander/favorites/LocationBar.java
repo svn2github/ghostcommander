@@ -10,11 +10,17 @@ import com.ghostsq.commander.R;
 import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.Utils;
 
+import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.Resources.NotFoundException;
 import android.net.Uri;
+import android.os.Build;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
@@ -50,6 +56,8 @@ public class LocationBar extends BaseAdapter implements Filterable, OnKeyListene
 	            textView.setAdapter( this );
 	            textView.setOnKeyListener( this );
 	            textView.addTextChangedListener( this );
+	            if( android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB )
+	                textView.setBackgroundResource( android.R.drawable.editbox_background );
             }
             Button go = (Button)goPanel.findViewById( R.id.go_button );
             if( go != null ) {
@@ -64,11 +72,11 @@ public class LocationBar extends BaseAdapter implements Filterable, OnKeyListene
 		}
 	}
 
-	public void setFingerFriendly( boolean finger_friendly, int font_size ) {
+	public void setFingerFriendly( boolean finger_friendly, int font_size, float density ) {
         Button go = (Button)goPanel.findViewById( R.id.go_button );
         if( go != null ) {
             int pv = 0;//go.getPaddingTop();
-            int ph = finger_friendly ? 20 : 8;
+            int ph = (int)( finger_friendly ? 20 * density : 8 * density );
             go.setPadding( ph, pv, ph, pv );
         }
 	}
@@ -116,14 +124,28 @@ public class LocationBar extends BaseAdapter implements Filterable, OnKeyListene
 
 	@Override
 	public View getView( int position, View convertView, ViewGroup parent ) {
-		TextView tv = convertView != null ? (TextView)convertView : new TextView( c );
-		int vp = p.fingerFriendly ? (int)( 10 * density ) : 4;
-		tv.setPadding( 4, vp, 4, vp );
-		String screened = favorites.get( position ).getUriString( true );
-		tv.setText( screened == null ? "" : screened );
-		tv.setTextColor( 0xFF000000 );
-		return tv;
+		try {
+            TextView tv = convertView != null ? (TextView)convertView : new TextView( c );
+            int vp = p.fingerFriendly ? (int)( 12 * density ) : 4;
+            tv.setPadding( 6, vp, 6, vp );
+            String screened = favorites.get( position ).getUriString( true );
+            tv.setText( screened == null ? "" : screened );
+            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
+                tv.setTextAppearance( c, android.R.attr.textAppearanceInverse );
+            else
+                tv.setTextColor( c.getResources().getColor( android.R.color.primary_text_light_nodisable ) );
+            return tv;
+        } catch( Exception e ) {
+            Log.e( TAG, "", e );
+        }
+		return null;
 	}
+	
+    public static int getThemeResourceId(Context context, int attr) {
+            TypedValue typedvalueattr = new TypedValue();
+            context.getTheme().resolveAttribute(attr, typedvalueattr, true);
+            return typedvalueattr.resourceId;
+    }
 
 	// --- inner functions ---
 	

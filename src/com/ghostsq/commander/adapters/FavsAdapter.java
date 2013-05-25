@@ -9,6 +9,7 @@ import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
+import com.ghostsq.commander.adapters.Engines.IReciever;
 import com.ghostsq.commander.favorites.Favorite;
 import com.ghostsq.commander.favorites.FavDialog;
 import com.ghostsq.commander.utils.Credentials;
@@ -26,7 +27,7 @@ import android.widget.AdapterView;
 
 public class FavsAdapter extends CommanderAdapterBase {
     private final static String TAG = "FavsAdapter";
-    private final static int SCUT_CMD = 26945;
+    private final static int CREATE_FAVE_SHORTCUT = 3423; 
     private ArrayList<Favorite> favs;
     
     public FavsAdapter( Context ctx_ ) {
@@ -70,6 +71,8 @@ public class FavsAdapter extends CommanderAdapterBase {
 
     @Override
     public boolean readSource( Uri tmp_uri, String pbod ) {
+        numItems = favs.size() + 1;
+        notifyDataSetChanged();
         notify( pbod );
         return true;
     }
@@ -77,11 +80,11 @@ public class FavsAdapter extends CommanderAdapterBase {
     @Override
     public void populateContextMenu( ContextMenu menu, AdapterView.AdapterContextMenuInfo acmi, int num ) {
         if( num <= 1 ) {
-            menu.add( 0, Commander.OPEN, 0, s( R.string.go_button ) );
-            menu.add( 0, R.id.F2,        0, s( R.string.rename_title ) );
-            menu.add( 0, R.id.F4,        0, s( R.string.edit_title ) );
-            menu.add( 0, R.id.F8,        0, s( R.string.delete_title ) );
-            menu.add( 0, SCUT_CMD,       0, s( R.string.shortcut ) );
+            menu.add( 0, Commander.OPEN,       0, s( R.string.go_button ) );
+            menu.add( 0, R.id.F2,              0, s( R.string.rename_title ) );
+            menu.add( 0, R.id.F4,              0, s( R.string.edit_title ) );
+            menu.add( 0, R.id.F8,              0, s( R.string.delete_title ) );
+            menu.add( 0, CREATE_FAVE_SHORTCUT, 0, s( R.string.shortcut ) );
         }
     }    
     @Override
@@ -105,18 +108,21 @@ public class FavsAdapter extends CommanderAdapterBase {
 
     @Override
     public boolean deleteItems( SparseBooleanArray cis ) {
+        ArrayList<Favorite> favs_to_remove = new ArrayList<Favorite>( numItems-1 );
         for( int i = 0; i < cis.size(); i++ )
             if( cis.valueAt( i ) ) {
                 int k = cis.keyAt( i );
                 if( k > 0 ) {
-                    favs.remove( k - 1 );
-                    numItems--;
-                    notifyDataSetChanged();
-                    notify( Commander.OPERATION_COMPLETED );
-                    return true;
+                    favs_to_remove.add( favs.get( k - 1 ) );
                 }
             }
-        return false;
+        
+        for( int i = 0; i < favs_to_remove.size(); i++ )
+            favs.remove( favs_to_remove.get(  i ) );
+        numItems = favs.size() + 1;
+        notifyDataSetChanged();
+        notify( Commander.OPERATION_COMPLETED );
+        return true;
     }
     
     @Override
@@ -149,7 +155,7 @@ public class FavsAdapter extends CommanderAdapterBase {
 
     @Override
     public void doIt( int command_id, SparseBooleanArray cis ) {
-        if( SCUT_CMD == command_id ) {
+        if( CREATE_FAVE_SHORTCUT == command_id ) {
             int k = 0, n = favs.size();
             for( int i = 0; i < cis.size(); i++ ) {
                 k = cis.keyAt( i );
@@ -202,10 +208,12 @@ public class FavsAdapter extends CommanderAdapterBase {
                 int t_id = CA.GetAdapterTypeId( sch );
                 if( CA.ZIP  == t_id ) return R.drawable.zip;     else   
                 if( CA.FTP  == t_id ) return R.drawable.server;  else   
+                if( CA.SFTP == t_id ) return R.drawable.server;  else   
+                if( CA.SMB  == t_id ) return R.drawable.smb;     else
                 if( CA.ROOT == t_id ) return R.drawable.root;    else  
                 if( CA.MNT  == t_id ) return R.drawable.mount;   else  
-                if( CA.SMB  == t_id ) return R.drawable.smb;     else
                 if( CA.HOME == t_id ) return R.drawable.icon;    else
+                if( CA.APPS == t_id ) return R.drawable.android; else
                     return R.drawable.folder;
             }
         }
@@ -250,13 +258,6 @@ public class FavsAdapter extends CommanderAdapterBase {
             }
         }
         return item;
-    }
-
-    @Override
-    public View getView( int position, View convertView, ViewGroup parent ) {
-        Item item = (Item)getItem( position );
-        if( item == null ) return null;
-        return getView( convertView, parent, item );
     }
 
     @Override
