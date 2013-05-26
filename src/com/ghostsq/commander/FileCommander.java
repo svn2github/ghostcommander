@@ -67,7 +67,6 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
     private IBackgroundWork     background_work;
     private NotificationManager notMan = null;
     private ArrayList<NotificationId> bg_ids = new ArrayList<NotificationId>();
-    private final static int _NOTIF_PROGRESS = 1, _NOTIF_DONE = 2;
     private final static String PARCEL = "parcel", MSG = "msg", TASK_ID = "task_id";
 
     private class NotificationId {
@@ -907,7 +906,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 return CONTINUE;
             }
             long task_id = b.getLong( Commander.NOTIFY_TASK );
-            Log.d( TAG, "got message " + progress.what + " from task " + task_id + " " + string );
+            //Log.d( TAG, "got message " + progress.what + " from task " + task_id + " " + string );
             Dialogs dh = null;
             if( progress.what == OPERATION_IN_PROGRESS ) {
                 if( progress.arg1 >= 0 ) { 
