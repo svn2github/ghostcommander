@@ -34,8 +34,6 @@ public class FindAdapter extends FSAdapter {
         mode_ &= ~MODE_WIDTH;
         return super.setMode( mask, mode_ );
     }
-
-    
     
     @Override
     public boolean readSource( Uri uri_, String pass_back_on_done ) {
@@ -77,7 +75,7 @@ public class FindAdapter extends FSAdapter {
                         se.before_date = df.parse( uri.getQueryParameter( "b" ) );
                     } catch( Exception e ) {}
                     
-                    reader.start();
+                    commander.startEngine( reader );
                     return true;
                 }
             }
@@ -175,7 +173,12 @@ public class FindAdapter extends FSAdapter {
                 dirs = true;
             } 
         }
-        
+
+        @Override
+        public void setHandler( Handler h ) {
+            // has its own handler
+        }
+            
         @Override
         public void run() {
             try {

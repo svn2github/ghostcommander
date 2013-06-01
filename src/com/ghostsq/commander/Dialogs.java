@@ -7,6 +7,7 @@ import java.util.GregorianCalendar;
 import org.apache.http.auth.UsernamePasswordCredentials;
 
 import com.ghostsq.commander.adapters.CA;
+import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.favorites.Favorite;
 import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.Utils;
@@ -305,7 +306,11 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 }
                 if( edit != null ) {
                     edit.setWidth( owner.getWidth() - 70 );
-                    String cts = Favorite.screenPwd( owner.panels.getFolderUriWithAuth( false ) );
+                    
+                    CommanderAdapter ca = owner.panels.getListAdapter( false );
+                    Uri u = ca.getUri();
+                    String cts = u != null ? u.toString() : "";
+//                    String cts = Favorite.screenPwd( owner.panels.getFolderUriWithAuth( false ) );
                     if( !Utils.str( cts ) ) return;
                     if( cts.charAt( 0 ) == '/' )
                         cts = Utils.unEscape( cts ); 

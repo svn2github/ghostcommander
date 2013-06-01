@@ -965,6 +965,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
      */
     public final Uri getFolderUriWithAuth( boolean active ) {
         CommanderAdapter ca = getListAdapter( active );
+        if( ca == null ) return null;
         Uri u = ca.getUri();
         if( u != null ) {
             Credentials crd = ca.getCredentials();
@@ -1563,7 +1564,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         }
     }
 
-    public State getState() {
+    public final State getState() {
         //Log.v( TAG, "getState()" );
         State s = new State();
         s.current = current;
@@ -1587,7 +1588,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         return s;
     }
 
-    public void setState( State s, int dont_restore ) {
+    public final void setState( State s, int dont_restore ) {
         //Log.v( TAG, "setState()" );
         if( s == null )
             return;
@@ -1599,19 +1600,24 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         current = s.current;
         if( dont_restore != LEFT ) {
             ListHelper list_h = list[LEFT];
-            if( list_h.getListAdapter() == null ) {
+            CommanderAdapter ca = list_h.getListAdapter(); 
+            if( ca == null ) {
                 Uri lu = s.leftUri != null ? s.leftUri : Uri.parse( "home:" );
-                list_h.Navigate( lu, s.leftCrd, s.leftItem, s.current == LEFT );
-            } else
-                list_h.refreshList( s.current == LEFT, s.leftItem );
+                list_h.mbNavigate( lu, s.leftCrd, s.leftItem, s.current == LEFT );
+            } else {
+                if( ca.getType() != CA.FIND )
+                    list_h.refreshList( s.current == LEFT, s.leftItem );
+            }
         }
         if( dont_restore != RIGHT ) {
             ListHelper list_h = list[RIGHT];
-            if( list_h.getListAdapter() == null ) {
+            CommanderAdapter ca = list_h.getListAdapter(); 
+            if( ca == null ) {
                 Uri ru = s.rightUri != null ? s.rightUri : Uri.parse( "home:" );
-                list_h.Navigate( ru, s.rightCrd, s.rightItem, s.current == RIGHT );
+                list_h.mbNavigate( ru, s.rightCrd, s.rightItem, s.current == RIGHT );
             } else
-                list_h.refreshList( s.current == RIGHT, s.rightItem );
+                if( ca.getType() != CA.FIND )
+                    list_h.refreshList( s.current == RIGHT, s.rightItem );
         }
         applyColors();
     }

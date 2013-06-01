@@ -154,6 +154,7 @@
 <string name="delete_title">Delete</string>
 <string name="delete_err">Nothing to delete</string>
 <string name="delete_q">Delete %1$s ?</string>
+<string name="rescan_q">Are you sure you want to do the search again?</string>
 <string name="search_done">Search complete</string>
 <string name="done">Done</string>
 <string name="interrupted">Interrupted</string>

@@ -7,6 +7,9 @@ import com.ghostsq.commander.adapters.HomeAdapter;
 import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.Utils;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -56,6 +59,32 @@ public class ListHelper {
         return (CommanderAdapter)flv.getAdapter();
     }
 
+    public final void mbNavigate( Uri uri, Credentials crd, String posTo, boolean was_current_ ) {
+        if( CA.GetAdapterTypeId( uri.getScheme() ) == CA.FIND ) {
+            // closure
+            final Uri         _uri = uri; 
+            final Credentials _crd = crd;
+            final String      _posTo = posTo;
+            final boolean     _was_current_ = was_current_;
+            Context c = p.c.getContext();
+            new AlertDialog.Builder( c )
+                .setTitle( R.string.refresh )
+                .setMessage( R.string.rescan_q )
+                .setPositiveButton( R.string.dialog_ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog,int id) {
+                            Navigate( _uri, _crd, _posTo, _was_current_ );
+                        }
+                    })
+                .setNegativeButton( R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog,int id) {
+                            Navigate( Uri.parse( "home:" ), null, null, _was_current_ );
+                        }
+                    } )
+                .show();
+        } else
+            Navigate( uri, crd, posTo, was_current_ );
+    }
+    
     public final void Navigate( Uri uri, Credentials crd, String posTo, boolean was_current_ ) {
         try {
             // Log.v( TAG, "Navigate to " + Favorite.screenPwd( uri ) );
