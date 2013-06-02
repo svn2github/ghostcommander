@@ -192,15 +192,16 @@
     einer kleinen Spende die weitere Entwicklung unterstützen.
     Berühren Sie \"Ok\", um über Paypal zu spenden.
     Berühren Sie \"Abbrechen\", um Ghost Commander einfach weiter zu nutzen. </string>
-    <string name="about_text">Ghost Commander v%s\n
-    Ein Dateimanager\n\n
-    Fehler oder Verbesserungsvorschläge, senden Sie bitte an\n
-    ghost.sq2@gmail.com\n\n\n
-    Haftungsausschluss:\n
+    <string name="about_text"><![CDATA[
+       <h1>Ghost Commander v%s</h1>
+    <h2>Ein Dateimanager</h2>
+    Fehler oder Verbesserungsvorschläge, senden Sie bitte an<br/>
+    <a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a>
+    <h3>Haftungsausschluss:</h3>
     Mit Nutzung dieser Software erkennen Sie die folgenden Bedingungen an.
     Der Entwickler dieser Software ist nicht verantwortlich für jegliche Art von Problemen (Datenverlust, Hardwareschäden, Folgeschäden, ...), die durch die Nutzung dieser Software verursacht werden könnten. Sie nutzen diese Software auf eigene Verantwortung.\n
     Wenn Sie mit diesen Bedingungen nicht einverstanden sind, hören Sie umgehend auf diese Software zu nutzen und deinstallieren Sie Sie.\n
-    </string>
+    ]]></string>
     <string name="keys_text">Kurzanleitung:\n\n
     Zum Markieren berühren Sie die rechte Hälfte eines Datei- oder Ordnereintrages im jeweiligen Fenster.\n
     Um den Ordner direkt zu öffnen und um die Favoriten anzuzeigen, berühren und halten Sie den Fenstertitel.\n\n

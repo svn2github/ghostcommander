@@ -385,19 +385,20 @@
 Tap \"OK\" to be redirected to the PayPal site.\n
 \"Cancel\" to continue enjoy the «Ghost Commander» file manager for free.\n
     </string>
-<string name="about_text">
-        Ghost Commander v%1$s\n
-        A file manager by Ghost Squared.\n\n
-        Please email bugs/suggestions to:\n
-        ghost.sq2@gmail.com\n
-        Thank you.\n\n\n 
-        DISCLAIMER:\n
+<string name="about_text"><![CDATA[
+<h1>Ghost Commander v%1$s</h1>
+<h4>A file manager by Ghost Squared.</h4>
+<p>Please email bugs/suggestions to:<br/> <a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a></p>
+<p>Please <span style="background-color: orange; padding: 0pt 5pt;"
+><a href="%2$s">DONATE</a></span> to support further development.</p>
+<p>Thank you.</p> 
+<h3>DISCLAIMER:</h3>
 By using this software, you agree with the following:
 The author of this software is not responsible for any kind of damage, loss of information, 
 consequential damages, or any issues that are, or could be caused by the use of this software.
 You agree to use this software at your own risk.\n
 If you don\'t agree to the above, stop using this software immediately and uninstall it.\n
-    </string>
+]]></string>
 <string name="keys_text">"
 \t\tBASICS
 

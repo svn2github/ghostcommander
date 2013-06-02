@@ -78,8 +78,6 @@
          android:title="@string/rescan"/>
         <item android:id="@+id/prefs"
             android:title="@string/prefs"/>
-        <item android:id="@+id/donate"
-            android:title="@string/donate"/>
         <item android:id="@+id/exit"
             android:title="@string/F10"/>
       </menu>
@@ -95,6 +93,8 @@
             android:title="@string/online_help"/>
         <item android:id="@+id/about"
             android:title="@string/about"/>
-      </menu>
+        <item android:id="@+id/donate"
+            android:title="@string/donate"/>
+        </menu>
     </item>
 </menu>

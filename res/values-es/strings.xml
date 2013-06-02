@@ -330,19 +330,19 @@ Presiona \"Ok\" para hacer una donación fácilmente vía PayPal.\n
 \"Cancelar\" para disfrutar de &#xAB;Ghost Commander&#xBB; file manager gratis.\n
     </string>
 
-    <string name="about_text">
-        Ghost Commander v%1$s\n
-        Un gestor de archivos por Ghost Squared.\n\n
-        Por favor, envía bugs o sugerencias a\n
-        ghost.sq2@gmail.com\n
-        gracias.\n\n\n 
-        DISCLAIMER:\n
+    <string name="about_text"><![CDATA[
+        <h1>Ghost Commander v%1$s</h1>
+        <h2>Un gestor de archivos por Ghost Squared.</h2>
+        Por favor, envía bugs o sugerencias a<br/>
+        <a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a><br/>
+        gracias.
+        <h3>DISCLAIMER:</h3>
 By using this software, you agree with the following:
 The author of this software is not responsible for any kind of damage, loss of information, 
 consequential damages, or any issues that are, or could be caused by the use of this software.
 You agree to use this software at your own risk.\n
 If you don\'t agree to the above, stop using this software immediately and uninstall it.\n
-    </string>
+    ]]></string>
     <string name="keys_text">
     "\tIntrucciones de uso:\n
 Para seleccionar más de un archivo, presiona en la mitad derecha de la fila.\n    

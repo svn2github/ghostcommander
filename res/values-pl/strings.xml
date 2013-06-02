@@ -378,18 +378,18 @@ Wybierz \"OK\" aby wpłacić datek za pośrednictwem PayPal-a.\n
 Wybierz \"Anuluj\", jeśli nadal się wahasz i póki co chcesz używać «Ghost Commander-a» za darmo (nadal będziesz mógł wesprzeć nas finansowo w późniejszym terminie).\n
     </string>
 <string name="about_text">
-Ghost Commander v%1$s\n
-Menedżer plików autorstwa Ghost Squared.\n\n
-Zauważone błędy, sugestie, uwagi proszę zgłaszać na\n
-ghost.sq2@gmail.com\n\n
+<h1>Ghost Commander v%1$s</h1>
+<h2>Menedżer plików autorstwa Ghost Squared.</h2>
+Zauważone błędy, sugestie, uwagi proszę zgłaszać na<br/>
+<a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a><br/>
 
-Polskie tłumaczenie:\n
+<h2>Polskie tłumaczenie:</h2>
 Robert Malara\n
 robert.malara+gc@gmail.com\n\n
         Dziękujęmy.\n\n
         
          
-        ZASTRZEŻENIA:\n
+<h2>ZASTRZEŻENIA:</h2>
 Używając niniejszej aplikacji, zgadzasz się z poniższym zastrzeżeniem:
 Autor nie jest odpowiedzialny za żadnego rodzaju zniszczenia lub uszkodzenia plików/katalogów czy też nieprawidłowe działanie systemu, utratę danych oraz żadnego rodzaju błędy, które mogą być spowodowane przez użycie tej aplikacji. 
 Zgadzasz się na używanie niniejszej aplikacji na własne ryzyko.\n

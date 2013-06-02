@@ -149,21 +149,20 @@
 或者点击\"取消\"继续免费使用«Ghost Commander» 文件管理器。\n
     </string>
 
-    <string name="about_text">
-        Ghost Commander v%1$s\n
-        一款文件管理器。\n\n
-        请发送 BUG/建议到\n
-        ghost.sq2@gmail.com\n
-        非常感谢。\n
+    <string name="about_text"><![CDATA[
+        <h1>Ghost Commander v%1$s</h1>
+        <h4>一款文件管理器</h4>
+        请发送 BUG/建议到<br/>
+        <a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a><br/>
+        非常感谢。<br/>
 	安智网汉化（http://goapk.com）;
-	\n\n 
-        免责声明：\n
+<h3>        免责声明：</h3>
 使用本软件，您同意以下:
 本软件的作者不为任何损坏, 丢失信息, 间接损坏, 
 或者任何由或可能由使用本软件引起的问题承担责任。
 您同意使用此软件并自担风险。\n
 如果您不同意上述条件，请立即停止使用本软件并卸载它。\n
-    </string>
+    ]]></string>
     <string name="keys_text">
     "
 快捷键:\n

@@ -194,20 +194,20 @@ PayPal을 통해서 기부를 하시려면 "예"를 클릭하시고, 계속 무�
 Or tap \"Cancel\"\n
     </string>
     
-    <string name="about_text">
-        Ghost Commander v%1$s\n
-        파일 관리자\n\n
-        버그/제안은 다음 이메일로:\n
-        ghost.sq2@gmail.com\n
-        감사합니다.\n\n\n 
-법적고지:\n
+    <string name="about_text"><![CDATA[
+<h1>Ghost Commander v%1$s</h1>
+<h3>파일 관리자</h3>
+        버그/제안은 다음 이메일로:
+        <a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a><br/>
+        감사합니다.
+<h3>법적고지:</h3>
 이 소프트웨어를 사용하는데 있어서,
 이 소프트웨어의 제작자는 어떠한 종류의 손해, 정보의 분실, 이로 인한 간접손해, 
 이의제기 등에 대해서 어떠한 책임도 지지 않으므로 
 사용자의 책임 하에 이 소프트웨어를 사용하는데 동의합니다.
 만약 위와 같은 사항에 동의를 하지 않으면 즉시 이 소프트웨어 사용을 중지하고 제거하십시요.\n
 
-    </string>
+    ]]></string>
     <string name="keys_text">
 "
 단축키:\n Shortcuts keys:\n

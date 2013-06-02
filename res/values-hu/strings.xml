@@ -383,17 +383,18 @@
 Kattintson az  „Ok”-ra A PayPal-os támogatáshoz.\n
 Vagy kattintson a „Mégsem”-re a «Ghost Commander» folytatásához díjmentesen.\n
     </string>
-<string name="about_text">
-        Ghost Commander v%1$s\n
-        A fájl-kezelő.\n\n
-        Magyarra fordította: Attilaszu és Németh Balázs\n\n
-        Kérjük továbbítsa a hibákat/javaslatokat\n
-        ghost.sq2@gmail.com\n
-        Köszönjük.\n\n\n 
-        Nyilatkozat:\nA szoftver használatával egyetért az alábbiakkal:
+<string name="about_text"><![CDATA[
+<h1>Ghost Commander v%1$s</h1>
+<h2>A fájl-kezelő.</h2>
+Magyarra fordította: Attilaszu és Németh Balázs\n\n
+Kérjük továbbítsa a hibákat/javaslatokat\n
+<a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a><br/>
+Köszönjük.\n\n\n 
+<h2>Nyilatkozat:</h2>
+A szoftver használatával egyetért az alábbiakkal:
 A szoftver szerzője nem felelős semmilyen kárért, információvesztésért, járulékos károkért, vagy bármiért ami a szoftver használatakor keletkezett.Ön a saját felelősségére használja a programot.\n
 Ha nem ért egyet a fentiekkel, kérjük fejezze be a használatot, és törölje a programot.\n
-    </string>
+]]></string>
 <string name="keys_text">
 \t\tALAPOK
 

@@ -24,7 +24,9 @@ import android.net.Uri;
 import android.net.UrlQuerySanitizer;
 import android.preference.PreferenceManager;
 import android.text.Editable;
+import android.text.Html;
 import android.text.format.DateFormat;
+import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -423,20 +425,24 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 ( (AlertDialog)dialog ).setMessage( owner.getString( R.string.dbox_missed ) );
                 break;
                 
-            case R.id.about:
-                PackageInfo pi = null;
-                try {
-                    pi = owner.getPackageManager().getPackageInfo( owner.getPackageName(), 0 );
-                } catch( NameNotFoundException e ) {
-                    Log.e( TAG, "Package name not found", e );
+            case R.id.about: {
+                    PackageInfo pi = null;
+                    try {
+                        pi = owner.getPackageManager().getPackageInfo( owner.getPackageName(), 0 );
+                    } catch( NameNotFoundException e ) {
+                        Log.e( TAG, "Package name not found", e );
+                    }
+                    String txt = owner.getString(R.string.about_text, pi != null ? pi.versionName : "?", owner.getString(R.string.donate_uri) );
+                    TextView tv = (TextView )dialog.findViewById( R.id.text_view );
+                    //if( id == R.id.about ) tv.setAutoLinkMask( Linkify.EMAIL_ADDRESSES );
+                    tv.setMovementMethod( LinkMovementMethod.getInstance() );
+                    tv.setText( Html.fromHtml( txt ) );
+                    break;
                 }
-                setMessageToBeShown( owner.getString(R.string.about_text, pi != null ? pi.versionName : "?" ), null );
             case INFO_DIALOG:
                 if( toShowInAlertDialog != null ) {
                     TextView tv = (TextView )dialog.findViewById( R.id.text_view );
                     if( tv != null ) {
-                        if( id == R.id.about ) tv.setAutoLinkMask( Linkify.EMAIL_ADDRESSES );
-                        
                         SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( owner );
                         int fnt_sz = Integer.parseInt( shared_pref != null ? shared_pref.getString( "font_size", "12" ) : "12" );
                         boolean reduce_size = toShowInAlertDialog.length() > 128;

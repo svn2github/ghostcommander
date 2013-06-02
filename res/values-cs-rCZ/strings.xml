@@ -272,18 +272,18 @@
 Stiskněte \"OK\" a jednoduše přispějte pomocí PayPalu.\n
 Stisknětě \"Zrušit\" a užijte si «Ghost Commander» zadarmo.\n
     </string>
-<string name="about_text">
-        Ghost Commander v%1$s\n
-        Souborový manažer.\n\n
-        Chyby či návrhy prosím zašlete na\n
-        ghost.sq2@gmail.com\n
-        Díky.\n\n\n 
-        PRÁVNÍ DOLOŽKA:\n
+<string name="about_text"><![CDATA[
+<h1>Ghost Commander v%1$s</h1>
+Souborový manažer.<br/>
+Chyby či návrhy prosím zašlete na\n
+<a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a>
+Díky.
+<h3>PRÁVNÍ DOLOŽKA:</h3>
 Použitím tohoto programu souhlasíte s následujícím: 
  Autor programu není odpovědný za jakékoliv poškození, ztrátu informace, ani z toho vyplývající ztráty či jakékoliv jiné problémy, který byly nebo mohly být způsobené použitím tohoto programu.
 Souhlasíte s používáním tohoto programu na vlastní nebezpečí.\n
 Pokud nesouhlasíte s výše uvedeným, okamžitě přestaňtě tento program používat a odinstalujte jej.\n
-    </string>
+]]></string>
 <string name="keys_text">
     "\tJak používat aplikaci:\n
 Pro označení souboru stiskněte pravou polovinu daného řádku.\n

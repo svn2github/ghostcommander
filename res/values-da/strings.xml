@@ -381,19 +381,19 @@
 Tap \"OK\" for at gå til PayPal site.\n
 \"Fortryd\" for at fortsætte med at bruge «Ghost Commander» fil manager gratis.\n
     </string>
-<string name="about_text">
-        Ghost Commander v%1$s\n
-        En fil manager fra Ghost Squared.\n\n
-        Send email bugs/forslag til:\n
-        ghost.sq2@gmail.com\n
+<string name="about_text"><![CDATA[
+<h1>Ghost Commander v%1$s</h1>
+        En fil manager fra Ghost Squared.<br/>
+        Send email bugs/forslag til:<br/>
+        <a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a>
         Tak.\n\n\n 
-        DISCLAIMER:\n
+<h3>DISCLAIMER:</h3>
 Ved at bruge dette program accepter du følgende:
 Udvikleren afdette program er ikke ansvarlig for nogen skade, tab af information,
 anden skade der kan skyldes brugen af programmet. Du accepter at bruge programmet på eget 
 ansvar.\n
 Hvis du ikke accepterer ovenstående, så hold op med at bruge programmet og afinstaller det.\n
-    </string>
+]]></string>
 <string name="keys_text">"
 \t\tBASICS
 

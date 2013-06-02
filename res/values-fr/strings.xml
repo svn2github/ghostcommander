@@ -264,19 +264,19 @@
 Appuyer \"Ok\" pour donner avec PayPal.\n
 \"Abandon\" pour utiliser «Ghost Commander» gestionnaire de fichiers gratuit .\n
     </string>
-<string name="about_text">
-        Ghost Commander v%1$s\n
-        Gestionnaire de fichiers.\n\n
-        Veuillez envoyer vos suggestions/rapports de bogues à\n
-        ghost.sq2@gmail.com\n
-        Merci.\n\n\n 
-        AVIS DE NON-RESPONSABILITE:\n
+<string name="about_text"><![CDATA[
+<h1>Ghost Commander v%1$s</h1>
+<h3>Gestionnaire de fichiers.</h3>
+Veuillez envoyer vos suggestions/rapports de bogues à<br/>
+<a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a><br/>
+Merci.
+<h3>AVIS DE NON-RESPONSABILITE:</h3>
 En utilisant ce logiciel, vous êtes d\'accord avec ce qui suit:
 L\'auteur de ce logiciel n\'est pas responsable de tout type de dommage, de perte d\'informations, 
 ou de problèmes qui pourraient être causés par l\'utilisation de ce logiciel.
 Vous acceptez d\'utiliser ce logiciel à vos propres risques.\n
 Si vous n\'êtes pas d\'accord, cessez d\'utiliser ce logiciel immédiatement et le désinstallez.\n
-    </string>
+]]></string>
 <string name="keys_text">
     "\tMode d\'emploi:\n
 Pour sélectionner plus d\'un fichier, appuyer sur la moitié droite de la ligne.\n    
