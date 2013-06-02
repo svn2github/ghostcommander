@@ -48,7 +48,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     public Context ctx;
     public Commander commander = null;
     public static final String SLS = File.separator;
-    public static final char SLC = File.separator.charAt( 0 );
+    public static final char   SLC = File.separatorChar;
     public static final String PLS = "..";
     private static final boolean long_date = Locale.getDefault().getLanguage().compareTo( "en" ) != 0;
     private java.text.DateFormat localeDateFormat;

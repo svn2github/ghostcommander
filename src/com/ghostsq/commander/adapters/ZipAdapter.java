@@ -33,9 +33,7 @@ import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.Utils;
 
 public class ZipAdapter extends CommanderAdapterBase {
-    public final static String TAG = "ZipAdapter";
-    private static final char   SLC = File.separatorChar;
-    private static final String SLS = File.separator;
+    public    static final String TAG = "ZipAdapter";
     protected static final int BLOCK_SIZE = 100000;
     // Java compiler creates a thunk function to access to the private owner class member from a subclass
     // to avoid that all the member accessible from the subclasses are public
@@ -287,12 +285,15 @@ public class ZipAdapter extends CommanderAdapterBase {
 	    }
 	    @Override
 	    public void run() {
-	    	int total = copyFiles( mList, "" );
-            if( recipient != null ) {
-                sendReceiveReq( dest_folder );
-                return;
-            }
-			sendResult( Utils.getOpReport( ctx, total, R.string.unpacked ) );
+	        sendProgress( ZipAdapter.this.ctx.getString( R.string.wait ), 1, 1 );
+	        synchronized( ZipAdapter.this.uri ) {
+    	    	int total = copyFiles( mList, "" );
+                if( recipient != null ) {
+                    sendReceiveReq( dest_folder );
+                    return;
+                }
+    			sendResult( Utils.getOpReport( ctx, total, R.string.unpacked ) );
+	        }
 	        super.run();
 	    }
 	    private final int copyFiles( ZipEntry[] list, String path ) {
@@ -424,7 +425,8 @@ public class ZipAdapter extends CommanderAdapterBase {
         @Override
         public void run() {
             if( zip == null ) return;
-            synchronized( ZipAdapter.this ) {
+            sendProgress( ZipAdapter.this.ctx.getString( R.string.wait ), 1, 1 );
+            synchronized( ZipAdapter.this.uri ) {
                 Init( null );
                 File old_file = new File( zipFile.getAbsolutePath() + "_tmp_" + ( new Date() ).getSeconds() + ".zip" );
                 try {
@@ -615,7 +617,7 @@ public class ZipAdapter extends CommanderAdapterBase {
         private boolean newZip = false;
         private boolean move = false;
         private boolean del_src_dir = false;
-        private final String prep = "Preparing...";
+        private String  prep;
         
         /**
          *  Add files to existing zip 
@@ -640,14 +642,15 @@ public class ZipAdapter extends CommanderAdapterBase {
             destPath = "";
             basePathLen = list.length > 0 ? list[0].getParent().length() + 1 : 0;
             newZip = true;
+            prep = ZipAdapter.this.ctx.getString( R.string.preparing );
         }
         @Override
         public void run() {
             int num_files = 0;
             try {
-                synchronized( ZipAdapter.this ) {
+                sendProgress( prep, 1, 1 );
+                synchronized( ZipAdapter.this.uri ) {
                     Init( null );
-                    sendProgress( prep, 1, 1 );
                     ArrayList<File> full_list = new ArrayList<File>( topList.length );
                     totalSize = addToList( topList, full_list );
                     sendProgress( prep, 2, 2 );
