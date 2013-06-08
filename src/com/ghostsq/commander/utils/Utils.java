@@ -39,6 +39,7 @@ public final class Utils {
             { ".csv",  "text/csv" }, 
             { ".db",   "application/x-sqlite3" },
             { ".doc",  "application/msword" },
+            { ".docx", "application/msword" },
             { ".epub", "application/epub" }, 
             { ".fb2",  "application/fb2" },
             { ".flac", "audio/flac" },            
@@ -92,6 +93,8 @@ public final class Utils {
             { ".wav",  "audio/wav" }, 
             { ".wma",  "audio/x-ms-wma" }, 
             { ".wmv",  "video/x-ms-wmv" }, 
+            { ".xls",  "application/vnd.ms-excel" }, 
+            { ".xlsx", "application/vnd.ms-excel" }, 
             { ".xml",  "text/xml" }, 
             { ".zip",  "application/zip" } };
 
