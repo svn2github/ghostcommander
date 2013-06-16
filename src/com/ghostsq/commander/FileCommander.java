@@ -234,8 +234,8 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         super.onDestroy();
         if( notMan != null ) notMan.cancelAll();
         panels.Destroy();
+        unbindService( this );
         if( isFinishing() && exit ) {
-            unbindService( this );
             Log.i( TAG, "Good bye cruel world...");
             System.exit( 0 );
         }
@@ -790,13 +790,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                             bg_ids.add( new NotificationId( d_task_id ) );
                         dh.cancelDialog();
                     }
-                    for( NotificationId bg_id : bg_ids ) {
-                        if( bg_id.is( task_id ) ) {
-                            bg_ids.remove( bg_id );
-                            notMan.cancel( (int)task_id );
-                            break;
-                        }
-                    }
+                    remBgNotifId( task_id );                        
                     dh.setTaskId( task_id );
                     dh.showDialog();
                     
@@ -906,26 +900,27 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 return CONTINUE;
             }
             long task_id = b.getLong( Commander.NOTIFY_TASK );
-            //Log.d( TAG, "got message " + progress.what + " from task " + task_id + " " + string );
+            Log.d( TAG, "got message " + progress.what + " from task " + task_id + " " + string );
             Dialogs dh = null;
             if( progress.what == OPERATION_IN_PROGRESS ) {
-                if( progress.arg1 >= 0 ) { 
+                if( progress.arg1 >= 0 ) {
+                    boolean id_found = false;
                     if( on ) {
-                        boolean id_found = false;
-                        for( NotificationId bg_id : bg_ids ) {
-                            if( bg_id.is( task_id ) ) {
-                                id_found = true;
-                                break;
+                        dh = obtainDialogsInstance( Dialogs.PROGRESS_DIALOG );
+                        if( dh != null ) {
+                            if( task_id == dh.getTaskId() ) {
+                                dh.showDialog();
+                                dh.setProgress( string, progress.arg1, progress.arg2, b != null ? b.getInt( NOTIFY_SPEED, -1 ) : 0 );
+                                remBgNotifId( task_id );
+                                return CONTINUE;
                             }
-                        }
-                        if( !id_found ) {
-                            dh = obtainDialogsInstance( Dialogs.PROGRESS_DIALOG );
-                            if( dh != null ) {
-                                if( task_id == dh.getTaskId() ) {
-                                    dh.showDialog();
-                                    dh.setProgress( string, progress.arg1, progress.arg2, b != null ? b.getInt( NOTIFY_SPEED, -1 ) : 0 );
-                                    return CONTINUE;
+                            for( NotificationId bg_id : bg_ids ) {
+                                if( bg_id.is( task_id ) ) {
+                                    id_found = true;
+                                    break;
                                 }
+                            }
+                            if( !id_found ) {
                                 Dialog dlg = dh.getDialog();
                                 if( dlg == null || !dlg.isShowing() ) {
                                     dh.setTaskId( task_id );
@@ -934,9 +929,10 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                                     return CONTINUE;
                                 }
                             }
-                            bg_ids.add( new NotificationId( task_id ) );
                         }
                     }
+                    if( !id_found )
+                        addBgNotifId( task_id );
                     setSystemOngoingNotification( (int)task_id, string, progress.arg2 > 0 ? progress.arg2 : progress.arg1 );
                     return CONTINUE;
                 } else {
@@ -951,12 +947,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 dh.cancelDialog();
             } else {
                 Log.d( TAG, "No opened dialog found " + task_id );
-                for( NotificationId bg_id : bg_ids ) {
-                    if( bg_id.is( task_id ) ) {
-                        bg_ids.remove( bg_id );
-                        break;
-                    }
-                }
+                remBgNotifId( task_id );
             }
             
             if( notMan != null ) notMan.cancel( (int)task_id ); 
@@ -1025,12 +1016,23 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         return TERMINATE;
     }
 
-    public void addBgNotifId( long id ) {
+    public final void addBgNotifId( long id ) {
         for( NotificationId bg_id : bg_ids ) {
             if( bg_id.is( id ) )
                 return;
         }
         bg_ids.add( new NotificationId( id ) );
+    }
+    
+    private final boolean remBgNotifId( long id ) {
+        for( NotificationId bg_id : bg_ids ) {
+            if( bg_id.is( id ) ) {
+                bg_ids.remove( bg_id );
+                notMan.cancel( (int)id );
+                return true;
+            }
+        }
+        return false;
     }
     
     private PendingIntent getPendingIntent( long task_id, Parcelable parcel ) {
