@@ -286,7 +286,7 @@ public class ZipAdapter extends CommanderAdapterBase {
 	    @Override
 	    public void run() {
 	        sendProgress( ZipAdapter.this.ctx.getString( R.string.wait ), 1, 1 );
-	        synchronized( ZipAdapter.this.uri ) {
+	        synchronized( ZipAdapter.this ) {
     	    	int total = copyFiles( mList, "" );
                 if( recipient != null ) {
                     sendReceiveReq( dest_folder );
@@ -426,7 +426,7 @@ public class ZipAdapter extends CommanderAdapterBase {
         public void run() {
             if( zip == null ) return;
             sendProgress( ZipAdapter.this.ctx.getString( R.string.wait ), 1, 1 );
-            synchronized( ZipAdapter.this.uri ) {
+            synchronized( ZipAdapter.this ) {
                 Init( null );
                 File old_file = new File( zipFile.getAbsolutePath() + "_tmp_" + ( new Date() ).getSeconds() + ".zip" );
                 try {
@@ -649,7 +649,7 @@ public class ZipAdapter extends CommanderAdapterBase {
             int num_files = 0;
             try {
                 sendProgress( prep, 1, 1 );
-                synchronized( ZipAdapter.this.uri ) {
+                synchronized( ZipAdapter.this ) {
                     Init( null );
                     ArrayList<File> full_list = new ArrayList<File>( topList.length );
                     totalSize = addToList( topList, full_list );
