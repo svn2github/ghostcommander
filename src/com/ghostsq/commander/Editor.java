@@ -100,6 +100,7 @@ public class Editor extends Activity implements TextWatcher {
 
     @Override
     protected void onStop() {
+        Log.d( TAG, "onStop" );
         super.onStop();
         if( ca != null )
             ca.prepareToDestroy();
@@ -114,9 +115,11 @@ public class Editor extends Activity implements TextWatcher {
                 DialogInterface.OnClickListener ocl = new DialogInterface.OnClickListener() {
                         public void onClick( DialogInterface dialog, int which_button ) {
                             if( which_button == DialogInterface.BUTTON_POSITIVE ) {
-                                new DataSaveTask().execute( uri );
+                                new DataSaveTask( true ).execute( uri );
                             }
-                            Editor.this.finish();
+                            else if( which_button == DialogInterface.BUTTON_NEGATIVE ) {
+                                Editor.this.finish();
+                            }
                         }
                     };
                 new AlertDialog.Builder( this )
@@ -148,7 +151,7 @@ public class Editor extends Activity implements TextWatcher {
     public boolean onMenuItemSelected( int featureId, MenuItem item ) {
         switch( item.getItemId() ) {
         case MENU_SAVE:
-            new DataSaveTask().execute( uri );
+            new DataSaveTask( false ).execute( uri );
             return true;
         case MENU_SVAS: 
             try {
@@ -164,7 +167,7 @@ public class Editor extends Activity implements TextWatcher {
                         .setView( iv )
                         .setPositiveButton( R.string.save, new DialogInterface.OnClickListener() {
                             public void onClick( DialogInterface dialog, int i ) {
-                                new DataSaveTask().execute( Uri.parse( edit.getText().toString() ) );
+                                new DataSaveTask( false ).execute( Uri.parse( edit.getText().toString() ) );
                             }
                         } ).setNegativeButton( R.string.dialog_cancel, null ).show();
                 }
@@ -265,11 +268,17 @@ public class Editor extends Activity implements TextWatcher {
         protected void onPostExecute( CharSequence cs ) {
             pd.cancel();
             Editor.this.te.setText( cs );
+            Editor.this.dirty = false;
         }
      }
 
      private class DataSaveTask extends AsyncTask<Uri, String, Boolean> {
-        private ProgressDialog pd; 
+        private ProgressDialog pd;
+        private boolean close_on_finish;
+        
+        DataSaveTask( boolean close_on_finish_ ) {
+            close_on_finish = close_on_finish_;
+        }
          
         @Override
         protected void onPreExecute() {
@@ -334,6 +343,8 @@ public class Editor extends Activity implements TextWatcher {
                 Editor.this.dirty = false;
             else
                 Editor.this.showMessage( Editor.this.getString( R.string.cant_save ) );
+            if( close_on_finish )
+                Editor.this.finish();
         }
      }
      

@@ -140,7 +140,7 @@ public class MountAdapter extends CommanderAdapterBase {
             String cmd = null;
             try {
                 cmd = "mount " + pair;
-                execute( cmd, true, 500 );
+                execute( cmd, true, 1500 );
             }
             catch( Exception e ) {
                 Log.e( TAG, "mount, ", e );

@@ -128,13 +128,20 @@ public class ExecEngine extends Engine {
         Log.v( TAG, "executing: " + to_exec );
         os.write( to_exec ); // execute the command
         os.flush();
-
+        boolean ready = false;
         final int swait = 10;
         final int tries = wait_timeout / swait; 
         for( int i = 0; i < tries; i++ ) {
-            if( is.ready() ) break;
+            if( is.ready() ) {
+                ready = true;
+                break;
+            }
             Thread.sleep( swait );
         }
+        if( ready )
+            Log.d( TAG, "After cmd execution the input stream is ready" );
+        else
+            Log.w( TAG, "After " + wait_timeout + "ms the input stream is NOT yet ready!" );            
      }    
 
     // to override by a derived class which wants something more complex

@@ -246,8 +246,11 @@ public class FTP {
     }
     
     
-    public void setActiveMode( boolean a ) {
+    public final void setActiveMode( boolean a ) {
         allowActive = a;
+    }
+    public final boolean getActiveMode() {
+        return allowActive;
     }
     public void setCharset( String charset_ ) {
         try {

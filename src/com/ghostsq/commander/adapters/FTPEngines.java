@@ -29,11 +29,12 @@ public final class FTPEngines {
         protected FTPCredentials crd;
         protected FTP            ftp;
         protected Uri            uri;
-        FTPEngine( Context ctx_, FTPCredentials crd_, Uri uri_ ) {
+        FTPEngine( Context ctx_, FTPCredentials crd_, Uri uri_, boolean active ) {
             ctx = ctx_;
             crd = crd_;
             uri = uri_;
             ftp = new FTP();
+            ftp.setActiveMode( active );
         }
     }    
     
@@ -44,8 +45,8 @@ public final class FTPEngines {
         protected WifiLock  wifiLock;
         protected String    progressMessage = null;
 
-        CopyEngine( Context ctx_, FTPCredentials crd_, Uri uri_ ) {
-            super( ctx_, crd_, uri_ );
+        CopyEngine( Context ctx_, FTPCredentials crd_, Uri uri_, boolean active ) {
+            super( ctx_, crd_, uri_, active );
             startTime = System.currentTimeMillis();
             WifiManager manager = (WifiManager)ctx.getSystemService( Context.WIFI_SERVICE );
             wifiLock = manager.createWifiLock( android.os.Build.VERSION.SDK_INT >= 12 ? 3 : WifiManager.WIFI_MODE_FULL, TAG );
@@ -89,8 +90,8 @@ public final class FTPEngines {
         private boolean   move;
         private Commander commander;
 
-        CopyFromEngine( Commander c, FTPCredentials crd_, Uri uri_, LsItem[] list, File dest, boolean move_, Engines.IReciever recipient_ ) {
-            super( c.getContext(), crd_, uri_ );
+        CopyFromEngine( Commander c, FTPCredentials crd_, Uri uri_, LsItem[] list, File dest, boolean move_, Engines.IReciever recipient_, boolean active ) {
+            super( c.getContext(), crd_, uri_, active );
             commander = c;
             mList = list;
             dest_folder = dest;
@@ -222,8 +223,8 @@ public final class FTPEngines {
         private   boolean move = false;
         private   boolean del_src_dir = false;
         
-        CopyToEngine( Context ctx_, FTPCredentials crd_, Uri uri_, File[] list, boolean move_, boolean del_src_dir_ ) {
-            super( ctx_, crd_, uri_ );
+        CopyToEngine( Context ctx_, FTPCredentials crd_, Uri uri_, File[] list, boolean move_, boolean del_src_dir_, boolean active ) {
+            super( ctx_, crd_, uri_, active );
             mList = list;
             basePathLen = list[0].getParent().length();
             if( basePathLen > 1 ) basePathLen++;
@@ -317,8 +318,8 @@ public final class FTPEngines {
     static class DelEngine extends FTPEngine {
         LsItem[] mList;
         
-        DelEngine( Context ctx_, FTPCredentials crd_, Uri uri_, LsItem[] list ) {
-            super( ctx_, crd_, uri_ );
+        DelEngine( Context ctx_, FTPCredentials crd_, Uri uri_, LsItem[] list, boolean active ) {
+            super( ctx_, crd_, uri_, active );
             mList = list;
         }
         @Override
@@ -382,8 +383,8 @@ public final class FTPEngines {
     static class RenEngine extends FTPEngine {
         private String oldName, newName;
         
-        RenEngine( Context ctx_, FTPCredentials crd_, Uri uri_, String oldName_, String newName_ ) {
-            super( ctx_, crd_, uri_ );
+        RenEngine( Context ctx_, FTPCredentials crd_, Uri uri_, String oldName_, String newName_, boolean active ) {
+            super( ctx_, crd_, uri_, active );
             oldName = oldName_; 
             newName = newName_;
         }
