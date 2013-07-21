@@ -133,6 +133,11 @@
                       android:paddingRight="10dip"/>
           </TableRow>
        </TableLayout>
+      <LinearLayout 
+            android:id="@+id/owner_block" 
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
           <TextView 
               android:id="@+id/user_prompt"
               android:layout_height="wrap_content"
@@ -171,7 +176,8 @@
               android:capitalize="none"
               android:gravity="fill_horizontal"
               android:inputType="textVisiblePassword"/>
-          <LinearLayout
+       </LinearLayout>
+       <LinearLayout
               android:id="@+id/buttons_block"
               android:layout_width="fill_parent"
               android:layout_height="wrap_content"

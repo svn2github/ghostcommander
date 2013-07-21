@@ -106,7 +106,10 @@ class MountsListEngine extends ExecEngine {
     }
     private final boolean getList( boolean su ) {
         if( !su ) sh = "sh";
-        if( !execute( "mount", false, 500 ) ) return false;
+        if( !execute( "mount", false, 1500 ) ) {
+            Log.d( TAG, "Executing mount has failed!" );
+            return false;
+        }
 
         int sz = array.size();
         items_tmp = new MountItem[sz];

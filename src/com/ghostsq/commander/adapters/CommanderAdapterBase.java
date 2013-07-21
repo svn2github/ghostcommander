@@ -332,6 +332,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         return "(ERR)";
     }
 
+    //Virtual
     protected int getPredictedAttributesLength() {
         return 0;
     }

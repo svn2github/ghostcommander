@@ -67,7 +67,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
     private IBackgroundWork     background_work;
     private NotificationManager notMan = null;
     private ArrayList<NotificationId> bg_ids = new ArrayList<NotificationId>();
-    private final static String PARCEL = "parcel", MSG = "msg", TASK_ID = "task_id";
+    private final static String PARCEL = "parcel", TASK_ID = "task_id";
 
     private class NotificationId {
         public long  id;
@@ -415,9 +415,15 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 sendBroadcast( data );
             }
             break;
-        case ACTIVITY_RESULT_REFRESH:
-            Log.i( TAG, "An activity ends. Refresh required." );
-            panels.refreshLists( null );
+        case ACTIVITY_REQUEST_FOR_NOTIFY_RESULT:
+            if( data != null ) {
+                on = true;
+                Message msg = data.getParcelableExtra( MESSAGE_EXTRA );
+                if( msg != null )
+                    notifyMe( msg );
+                else
+                    panels.refreshLists( null );
+            }            
             break;
         }
     }
@@ -884,11 +890,11 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         String string = null;
         try {
             if( progress.obj != null ) {
-                if( progress.obj instanceof String )
+                if( progress.obj instanceof Bundle )
+                    string = ((Bundle)progress.obj).getString( MESSAGE_STRING );
+                else if( progress.obj instanceof String ) {
                     string = (String)progress.obj;
-                else if( progress.obj instanceof Bundle ) {
-                    Bundle b = (Bundle)progress.obj;
-                    string = b.getString( MSG );
+                    Log.w( TAG, "Old version message type!" );
                 }
             }
             Bundle b = progress.getData();
@@ -1069,16 +1075,14 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
     
     private void setSystemNotification( int id, Message msg ) {
         if( notMan == null || msg == null ) return;
-        String str;
+        String str = "Unknown Event";
         try {
-            str = (String)msg.obj;
+            if( msg.obj instanceof Bundle )
+                str = ((Bundle)msg.obj).getString( MESSAGE_STRING );
         } catch( Exception e ) {
-            str = "Unknown Event";
+            Log.e( TAG, "", e );
         }
         Notification notification = new Notification( R.drawable.icon, str, System.currentTimeMillis() );
-        Bundle b = new Bundle( 1 );
-        b.putString( MSG, str );
-        msg.obj = b; // pack not parcelable string message to parcelable bundle  
         notification.setLatestEventInfo( this, getString( R.string.app_name ), str, getPendingIntent( id, msg ) );
         notification.flags |= Notification.FLAG_ONLY_ALERT_ONCE | Notification.FLAG_AUTO_CANCEL;
         

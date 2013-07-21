@@ -49,9 +49,13 @@ public interface Commander {
     
     public final static String NOTIFY_COOKIE = "cookie", NOTIFY_SPEED = "speed", NOTIFY_TASK = "task", NOTIFY_CRD = "crd", NOTIFY_POSTO = "posto";
 
+    public final static String MESSAGE_STRING  = "STRING";
+    
     public final static String NAVIGATE_ACTION = "com.ghostsq.commander.NAVIGATE";
+    public final static String NOTIFY_ACTION   = "com.ghostsq.commander.NOTIFY";
+    public final static String MESSAGE_EXTRA   = "com.ghostsq.commander.MESSAGE";
 
-    public final static int  ACTIVITY_RESULT_REFRESH = 434; 
+    public final static int  ACTIVITY_REQUEST_FOR_NOTIFY_RESULT = 695; 
     
     /**
      * @return current UI context
@@ -109,7 +113,7 @@ public interface Commander {
     /**
      * Procedure completion notification. 
      * @param Message object with the following fields:
-     *          .obj  - the message string
+     *          .obj  - the message string in a bundle by the MESSAGE_STRING key
      *          .what - the event type (see above the OPERATION_... constants)
      *          .arg1 - main progress value (0-100)
      *          .arg2 - secondary progress value (0-100)

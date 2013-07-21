@@ -33,6 +33,9 @@ public final class FTPEngines {
             ctx = ctx_;
             crd = crd_;
             uri = uri_;
+            if( crd == null ) {
+                crd = new FTPCredentials( uri.getUserInfo() ); 
+            }
             ftp = new FTP();
             ftp.setActiveMode( active );
         }
@@ -404,5 +407,32 @@ public final class FTPEngines {
                 Log.e( TAG, "", e );
             }
         }
-    }    
+    }
+
+
+    static class ChmodEngine extends FTPEngine {
+        private String chmod;
+        
+        ChmodEngine( Context ctx_, Uri uri_, String chmod_ ) {
+            super( ctx_, null, uri_, false );
+            chmod = chmod_;
+        }
+        @Override
+        public void run() {
+            try {
+                if( ftp.connectAndLogin( uri, crd.getUserName(), crd.getPassword(), true ) < 0 ) {
+                    error( ctx.getString( R.string.ftp_nologin ) );
+                    sendResult( "" );
+                    return;
+                }
+                if( !ftp.site( chmod ) )
+                    error( ctx.getString( R.string.failed ) + ftp.getLog() );
+                sendResult( "" );
+                super.run();
+            } catch( Exception e ) {
+                Log.e( TAG, "", e );
+            }
+        }
+    }
+
 }

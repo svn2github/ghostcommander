@@ -12,6 +12,7 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
@@ -46,6 +47,7 @@ import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.adapters.Engines;
 import com.ghostsq.commander.adapters.FSAdapter;
 import com.ghostsq.commander.utils.LsItem;
+import com.ghostsq.commander.utils.Permissions;
 import com.ghostsq.commander.utils.Utils;
 import com.ghostsq.commander.utils.LsItem.LsItemPropComparator;
 import com.ghostsq.commander.root.MountsListEngine;
@@ -281,7 +283,8 @@ public class RootAdapter extends CommanderAdapterBase {
                             try {
                                 Intent in = new Intent( ctx, TextViewer.class );
                                 in.setData( Uri.parse( TextViewer.STRURI ) );
-                                in.putExtra( TextViewer.STRKEY, (String)msg.obj );
+                                if( msg.obj instanceof Bundle )
+                                    in.putExtra( TextViewer.STRKEY, ((Bundle)msg.obj).getString( Commander.MESSAGE_STRING ) );
                                 commander.issue( in, 0 );
                             } catch( Exception e ) {
                                 Log.e( TAG, null, e );
@@ -389,7 +392,7 @@ public class RootAdapter extends CommanderAdapterBase {
                     if( f == null ) continue;
                     String file_name = f.getName();
                     String full_name = src_base_path + file_name;
-                    String cmd = move ? " mv -f" : ( f.isDirectory() ? " cp -r" : " cp" );
+                    String cmd = move ? " mv -f" : ( f.isDirectory() ? " cp -a" : " cp" );
                     String to_exec = cmd + " " + ExecEngine.prepFileName( full_name ) 
                                          + " " + esc_dest;
                     outCmd( true, to_exec, os );
@@ -621,7 +624,7 @@ public class RootAdapter extends CommanderAdapterBase {
         @Override
         protected boolean cmdDialog( OutputStreamWriter os, BufferedReader is, BufferedReader es ) { 
             try {
-                String cmd = move ? " mv" : " cp -r";
+                String cmd = move ? " mv" : " cp -a";
                 String esc_dest = prepFileName( dest );
                 int num = src_full_names.length;
                 double conv = 100./(double)num;
@@ -649,7 +652,6 @@ public class RootAdapter extends CommanderAdapterBase {
                     String to_exec = cmd + " " + esc_src_fn + " " + esc_dest;
                     outCmd( true, to_exec, os );
                     if( procError( es ) ) return false;
-                    
                     if( probe_item != null ) {
                         Permissions src_p = new Permissions( probe_item.getAttr() );
                         String chown_cmd = "chown " + src_p.generateChownString().append(" ").append( esc_dst_fn ).toString();
@@ -657,7 +659,6 @@ public class RootAdapter extends CommanderAdapterBase {
                         String chmod_cmd = "chmod " + src_p.generateChmodString().append(" ").append( esc_dst_fn ).toString();
                         outCmd( true, chmod_cmd, os );
                     }
-                    
                     if( !quiet ) sendProgress( full_name + "   ", (int)(i * conv) );
                     counter++;
                 }
@@ -782,10 +783,10 @@ public class RootAdapter extends CommanderAdapterBase {
                 boolean selected_one = items_todo != null && items_todo.length > 0 && items_todo[0] != null;
                 if( CHMOD_CMD == command_id ) {
                     if( selected_one ) {
-                        Intent i = new Intent( ctx, EditPermissions.class );
+                        Intent i = new Intent( ctx, EditRootPermissions.class );
                         i.putExtra( "perm", items_todo[0].getAttr() );
                         i.putExtra( "path", Utils.mbAddSl( uri.getPath() ) + items_todo[0].getName() );
-                        commander.issue( i, Commander.ACTIVITY_RESULT_REFRESH );
+                        commander.issue( i, Commander.ACTIVITY_REQUEST_FOR_NOTIFY_RESULT );
                     }
                     else
                         commander.showError( commander.getContext().getString( R.string.select_some ) );

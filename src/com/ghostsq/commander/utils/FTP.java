@@ -425,9 +425,12 @@ public class FTP {
     	executeCommand( "NOOP" );
     }
     public final synchronized boolean rename( String from, String to ) throws InterruptedException {
-    	if( !executeCommand( "RNFR " + from ) )
-    		return false;
-    	return executeCommand( "RNTO " + to );
+        if( !executeCommand( "RNFR " + from ) )
+            return false;
+        return executeCommand( "RNTO " + to );
+    }
+    public final synchronized boolean site( String cmd ) throws InterruptedException {
+        return executeCommand( "SITE " + cmd );
     }
     public final synchronized OutputStream prepStore( String fn ) {
     	

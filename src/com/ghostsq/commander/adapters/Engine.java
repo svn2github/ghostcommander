@@ -7,6 +7,7 @@ import com.ghostsq.commander.R;
 import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.Utils;
 
+import android.location.Address;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -61,6 +62,14 @@ public class Engine extends Thread {
     protected boolean isStopReq() {
         return stop || isInterrupted();
     }
+    protected Bundle wrap( String str ) {
+        Bundle b = new Bundle( 1 );
+        b.putString( Commander.MESSAGE_STRING, str );
+        return b;
+    }
+    
+
+    
     protected final void sendProgress( String s, int p ) {
         sendProgress( s, p, -1, -1 );
     }
@@ -70,39 +79,38 @@ public class Engine extends Thread {
     protected final void sendProgress() {   // launch the spinner 
         if( thread_handler == null ) return;
         Message msg = thread_handler.obtainMessage( Commander.OPERATION_IN_PROGRESS, -1, -1, null );
-        Bundle b = new Bundle();
+        Bundle b = msg.getData();
         b.putLong( Commander.NOTIFY_TASK, getId() );
-        msg.setData( b );
         thread_handler.sendMessage( msg );
     }
     protected final void sendProgress( String s, int p1, int p2, int speed ) {
         //Log.v( TAG, "sendProgress: " + speed );
         if( thread_handler == null ) return;
         Message msg = null;
-        if( p1 < 0 )
-            msg = thread_handler.obtainMessage( p1, -1, -1, s );
-        else
-            msg = thread_handler.obtainMessage( Commander.OPERATION_IN_PROGRESS, p1, p2, s );
         
-        Bundle b = new Bundle();
+        if( p1 < 0 )
+            msg = thread_handler.obtainMessage( p1, -1, -1, wrap( s ) );
+        else
+            msg = thread_handler.obtainMessage( Commander.OPERATION_IN_PROGRESS, p1, p2, wrap( s ) );
+        
+        Bundle b = msg.getData();
         b.putLong( Commander.NOTIFY_TASK, getId() );
         if( speed >= 0 )
             b.putInt( Commander.NOTIFY_SPEED, speed );
-        msg.setData( b );
         thread_handler.sendMessage( msg );
     }
     protected final void sendProgress( String s, int p, String cookie ) {
         //Log.v( TAG, "sendProgress: " + s + ", cookie: " + cookie );
         if( thread_handler == null ) return;
+        
         Message msg = null;
         if( p < 0 )
-            msg = thread_handler.obtainMessage( p, -1, -1, s );
+            msg = thread_handler.obtainMessage( p, -1, -1, wrap( s ) );
         else
-            msg = thread_handler.obtainMessage( Commander.OPERATION_IN_PROGRESS, p, -1, s );
-        Bundle b = new Bundle();
+            msg = thread_handler.obtainMessage( Commander.OPERATION_IN_PROGRESS, p, -1, wrap( s ) );
+        Bundle b = msg.getData();
         b.putLong( Commander.NOTIFY_TASK, getId() );
         b.putString( Commander.NOTIFY_COOKIE, cookie );
-        msg.setData( b );
         thread_handler.sendMessage( msg );
     }
 
@@ -111,13 +119,13 @@ public class Engine extends Thread {
     }
     protected final void sendLoginReq( String s, Credentials crd, String cookie ) {
         if( thread_handler == null ) return;
-        Message msg = thread_handler.obtainMessage( Commander.OPERATION_FAILED_LOGIN_REQUIRED, -1, -1, s );
-        Bundle b = new Bundle();
+        
+        Message msg = thread_handler.obtainMessage( Commander.OPERATION_FAILED_LOGIN_REQUIRED, -1, -1, wrap( s ) );
+        Bundle b = msg.getData();
         b.putLong( Commander.NOTIFY_TASK, getId() );
         b.putParcelable( Commander.NOTIFY_CRD, crd );
         if( cookie != null )
             b.putString( Commander.NOTIFY_COOKIE, cookie );
-        msg.setData( b );
         thread_handler.sendMessage( msg );
     }
     
@@ -128,10 +136,9 @@ public class Engine extends Thread {
             return;
         }
         Message msg = thread_handler.obtainMessage( Commander.OPERATION_COMPLETED );
-        Bundle b = new Bundle();
+        Bundle b = msg.getData();
         b.putLong( Commander.NOTIFY_TASK, getId() );
         b.putStringArray( Engines.IReciever.NOTIFY_ITEMS_TO_RECEIVE, items );
-        msg.setData( b );
         thread_handler.sendMessage( msg );
     }
     protected final void sendReceiveReq( File dest_folder ) {
@@ -162,19 +169,18 @@ public class Engine extends Thread {
         if( thread_handler == null ) return;
         Message msg = thread_handler.obtainMessage( Commander.OPERATION_COMPLETED_REFRESH_REQUIRED );
         if( posto != null ) {
-            Bundle b = new Bundle();
+            Bundle b = msg.getData();
             b.putLong( Commander.NOTIFY_TASK, getId() );
             b.putString( Commander.NOTIFY_POSTO, posto );
-            msg.setData( b );
         }
         thread_handler.sendMessage( msg );
     }
     protected final void sendReport( String s ) {
         if( thread_handler == null ) return;
-        Message msg = thread_handler.obtainMessage( Commander.OPERATION_COMPLETED, Commander.OPERATION_REPORT_IMPORTANT, -1, s );
-        Bundle b = new Bundle();
+        Address a;
+        Message msg = thread_handler.obtainMessage( Commander.OPERATION_COMPLETED, Commander.OPERATION_REPORT_IMPORTANT, -1, wrap( s ) );
+        Bundle b = msg.getData();
         b.putLong( Commander.NOTIFY_TASK, getId() );
-        msg.setData( b );
         thread_handler.sendMessage( msg );
     }
     protected final void doneReading( String msg, String cookie ) {

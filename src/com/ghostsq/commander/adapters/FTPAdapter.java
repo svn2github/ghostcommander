@@ -26,10 +26,13 @@ import com.ghostsq.commander.utils.LsItem;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.ContextMenu;
+import android.widget.AdapterView;
 
 public class FTPAdapter extends CommanderAdapterBase implements Engines.IReciever {
     private final static String TAG = "FTPAdapter";
@@ -41,6 +44,7 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
     private Timer    heartBeat;
     public  boolean  noHeartBeats = false;
     public  FTPCredentials theUserPass = null;
+    private final static int CHMOD_CMD = 36793;
 
     public FTPAdapter( Context ctx_ ) {
         super( ctx_ );
@@ -55,6 +59,12 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
     public int getType() {
         return CA.FTP;
     }
+    
+    @Override
+    protected int getPredictedAttributesLength() {
+        return 25;
+    }
+    
     class Noop extends TimerTask {
 		@Override
 		public void run() {
@@ -292,7 +302,39 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
         }  
     }
 
-	@Override
+    @Override
+    public void populateContextMenu( ContextMenu menu, AdapterView.AdapterContextMenuInfo acmi, int num ) {
+        try {
+            super.populateContextMenu( menu, acmi, num );
+            if( acmi.position > 0 )
+                menu.add( 0, CHMOD_CMD, 0, R.string.permissions );
+        } catch( Exception e ) {
+            Log.e( TAG, null, e );
+        }
+    }    
+
+    @Override
+    public void doIt( int command_id, SparseBooleanArray cis ) {
+        try {
+            if( CHMOD_CMD == command_id ) {
+                LsItem[] items_todo = bitsToItems( cis );
+                boolean selected_one = items_todo != null && items_todo.length > 0 && items_todo[0] != null;
+                if( selected_one ) {
+                    Intent i = new Intent( ctx, EditFTPPermissions.class );
+                    i.putExtra( "perm", items_todo[0].getAttr() );
+                    i.putExtra( "path", Utils.mbAddSl( uri.getPath() ) + items_todo[0].getName() );
+                    i.putExtra( "uri",  Utils.getUriWithAuth( uri, theUserPass ) );
+                    commander.issue( i, Commander.ACTIVITY_REQUEST_FOR_NOTIFY_RESULT );
+                }
+                else
+                    commander.showError( commander.getContext().getString( R.string.select_some ) );
+            }
+        } catch( Exception e ) {
+            Log.e( TAG, "Can't do the command " + command_id, e );
+        }
+    }
+    
+    @Override
 	public void reqItemsSize( SparseBooleanArray cis ) {
 		notify( "Not supported.", Commander.OPERATION_FAILED );
 	}
@@ -514,12 +556,12 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
             }
             else {
                 if( items != null && position > 0 && position <= items.length ) {
-                    LsItem curItem;
-                    curItem = items[position - 1];
-                    item.dir = curItem.isDirectory();
-                    item.name = item.dir ? SLS + curItem.getName() : curItem.getName();
-                    item.size = !item.dir || curItem.length() > 0 ? curItem.length() : -1;
-                    item.date = curItem.getDate();
+                    LsItem ls_item = items[position - 1];
+                    item.dir = ls_item.isDirectory();
+                    item.name = item.dir ? SLS + ls_item.getName() : ls_item.getName();
+                    item.size = !item.dir || ls_item.length() > 0 ? ls_item.length() : -1;
+                    item.date = ls_item.getDate();
+                    item.attr = ls_item.getAttr();
                 }
             }
         }

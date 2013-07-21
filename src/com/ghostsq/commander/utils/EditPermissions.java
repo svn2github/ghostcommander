@@ -1,5 +1,6 @@
-package com.ghostsq.commander.root;
+package com.ghostsq.commander.utils;
 
+import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
 
@@ -8,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -16,12 +18,12 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class EditPermissions extends Activity implements View.OnClickListener {
+public abstract class EditPermissions extends Activity implements View.OnClickListener {
     public final static String TAG = "EditPermissions";    
-    private Permissions p;
-    private CheckBox    urc, uwc, uxc, usc, grc, gwc, gxc, gsc, orc, owc, oxc, otc;
-    private EditText    ue, ge;
-    private String      file_path;
+    private     CheckBox    urc, uwc, uxc, usc, grc, gwc, gxc, gsc, orc, owc, oxc, otc;
+    private     EditText    ue, ge;
+    protected   Permissions p;
+    protected   String      file_path;
     
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -31,7 +33,7 @@ public class EditPermissions extends Activity implements View.OnClickListener {
         getWindow().setFeatureDrawableResource( Window.FEATURE_LEFT_ICON, android.R.drawable.ic_dialog_dialer );
         Intent i = getIntent();
         String perm = i.getStringExtra( "perm" );
-        file_path = i.getStringExtra( "path" );
+        file_path   = i.getStringExtra( "path" );
         if( perm == null || file_path == null ) {
             finish();
             return;
@@ -107,23 +109,7 @@ public class EditPermissions extends Activity implements View.OnClickListener {
                 np.ot = otc.isChecked();
                 np.user  = ue.getText().toString();
                 np.group = ge.getText().toString();
-                String cmd = null;
-                StringBuilder a = p.generateChownString( np );
-                if( a != null && a.length() > 0 ) {
-                    a.append( " '" ).append( file_path ).append( "'\n" );
-                    cmd = "chown " + a.toString();
-                }
-                a = p.generateChmodString( np );
-                if( a != null && a.length() > 0 ) {
-                    a.append( " '" ).append( file_path ).append( "'" );
-                    if( cmd == null ) cmd = "";
-                    cmd += "busybox chmod " + a.toString();
-                }
-                if( cmd != null ) {
-                    ExecEngine ee = new ExecEngine( this, null, cmd, false, 500 );
-                    ee.setHandler( new DoneHandler() );
-                    ee.start();
-                }
+                apply( np );
             }
             else {
                 setResult( RESULT_CANCELED );
@@ -133,19 +119,26 @@ public class EditPermissions extends Activity implements View.OnClickListener {
             Log.e( TAG, "file: " + file_path, e );
         }
     }
+    
+    protected abstract void apply( Permissions np );
 
     protected class DoneHandler extends Handler {
+        public DoneHandler() {
+        }
+
         @Override
         public void handleMessage( Message msg ) {
             try {
-                if( msg.what < 0 ) {
-                    setResult( RESULT_OK );//, new Intent( Intent.ACTION_VIEW ) );
-                    finish();
+                if( msg != null && msg.what < 0 ) {
+                    Intent in = new Intent( Commander.NOTIFY_ACTION );
+                    in.putExtra( Commander.MESSAGE_EXTRA, (Parcelable)msg );
+                    EditPermissions.this.setResult( RESULT_OK, in );
+                    EditPermissions.this.finish();
                 }
             } catch( Exception e ) {
-                e.printStackTrace();
+                Log.e( TAG, "", e );
             }
         }
     };    
-}
 
+}

@@ -1,14 +1,14 @@
-package com.ghostsq.commander.root;
+package com.ghostsq.commander.utils;
 
 public class Permissions {
     public boolean  ur,  uw,  ux,  us,  gr,  gw,  gx,  gs,  or,  ow,  ox,  ot;
     public String   user, group;
-    Permissions( String u, String g, String a ) {
+    public Permissions( String u, String g, String a ) {
         Init( a );
         user = u;
         group = g;
     }
-    Permissions( String a ) {
+    public Permissions( String a ) {
         if( a == null ) return;
         Init( a );
         String[] aa = a.substring( 10 ).split( "\\s+" );
@@ -24,7 +24,7 @@ public class Permissions {
         }       
     }
 
-    private void Init( String a ) {
+    private final void Init( String a ) {
         ur = a.charAt( 1 ) == 'r';
         uw = a.charAt( 2 ) == 'w';
         char uxl = a.charAt( 3 );
@@ -90,7 +90,7 @@ public class Permissions {
         return a.toString();
     }
     
-    StringBuilder generateChmodString() {
+    public final StringBuilder generateChmodString() {
         StringBuilder a = new StringBuilder( 256 );
         a.append( 'u' ).append( ur ? '+' : '-' ).append( 'r' ).append( ',' );
         a.append( 'u' ).append( uw ? '+' : '-' ).append( 'w' ).append( ',' );
@@ -106,7 +106,7 @@ public class Permissions {
         a.append( ot ? '+' : '-' ).append( 't' );  
         return a;
     }
-    StringBuilder generateChmodString( Permissions np ) {
+    public final StringBuilder generateChmodString( Permissions np ) {
         StringBuilder a = new StringBuilder( 256 );
         if( np.ur != ur ) {
             a.append( 'u' ).append( np.ur ? '+' : '-' ).append( 'r' );  
@@ -171,12 +171,32 @@ public class Permissions {
         }
         return a;
     }
-    StringBuilder generateChownString() {
+    
+    public final String generateChmodStringOct( boolean base_only ) {
+        int bits = 0; 
+        if( ur ) bits |= 00400; 
+        if( uw ) bits |= 00200; 
+        if( ux ) bits |= 00100; 
+        if( gr ) bits |= 00040; 
+        if( gw ) bits |= 00020; 
+        if( gx ) bits |= 00010; 
+        if( or ) bits |= 00004; 
+        if( ow ) bits |= 00002; 
+        if( ox ) bits |= 00001;
+        if( !base_only ) {
+            if( us ) bits |= 04000;
+            if( gs ) bits |= 02000;
+            if( ot ) bits |= 01000;
+        }
+        return Integer.toOctalString( bits );
+    }
+    
+    public final StringBuilder generateChownString() {
         StringBuilder a = new StringBuilder( 256 );
         a.append( user ).append( "." ).append( group );
         return a;
     }
-    StringBuilder generateChownString( Permissions np ) {
+    public final StringBuilder generateChownString( Permissions np ) {
         if( np.user  == null || np.user.length()  == 0 ) return null;
         if( np.group == null || np.group.length() == 0 ) return null;
         StringBuilder a = new StringBuilder( 256 );
