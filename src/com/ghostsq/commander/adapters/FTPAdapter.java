@@ -116,7 +116,7 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
                         need_reconnect = theUserPass.dirty; 
                 if( uri != null ) 
                     synchronized( uri ) {
-                        uri = tmp_uri;
+                        setUri( tmp_uri );
                     }
                 else
                     setUri( tmp_uri );

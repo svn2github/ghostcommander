@@ -172,7 +172,8 @@ public class FTP {
             return null;
 		}
     }
-    public final synchronized boolean connect( String host, int port ) throws UnknownHostException, IOException, InterruptedException {
+    public final synchronized boolean connect( String host_, int port ) throws UnknownHostException, IOException, InterruptedException {
+        host = host_;
         cmndSocket = new Socket( host, port );
         InetAddress ia = cmndSocket.getInetAddress();
         ipv6 = ia instanceof Inet6Address;
@@ -275,7 +276,8 @@ public class FTP {
         int localport = serverSocket.getLocalPort();
         String port_command = null;
         if( ipv6 ) {
-            port_command = "EPRT |2|" + cmndSocket.getLocalAddress() + "|" + localport + "|";
+            InetAddress la = cmndSocket.getLocalAddress();
+            port_command = "EPRT |2|" + la.getHostAddress() + "|" + localport + "|";
         } else {
         // get local ip address in high byte order
             byte[] addrbytes = cmndSocket.getLocalAddress().getAddress();
@@ -350,8 +352,14 @@ public class FTP {
     	try {
     	    if( commands == null || commands.length() == 0 ) return null;
     	    Socket data_socket = null;
-            serverSocket = new ServerSocket( 0 );
-            if( !allowActive || !announcePort( serverSocket ) ) {
+    	    if( allowActive ) {
+    	        serverSocket = new ServerSocket( 0 );
+    	        if( !announcePort( serverSocket ) ) {
+    	            allowActive = false;
+    	            executeCommand( "ABOR" );
+    	        }
+    	    }
+            if( !allowActive ) {
                 flushReply();   // emulator has a bug, it adds \n\r in the end of translated PORT
                 serverSocket = null;
                 // active mode failed. let's try passive
@@ -366,7 +374,7 @@ public class FTP {
                 if( ipv6 )
                     data_socket = new Socket( host, server_port );
                 else
-                data_socket = new Socket( InetAddress.getByAddress( addr ), server_port );
+                    data_socket = new Socket( InetAddress.getByAddress( addr ), server_port );
                 if( !data_socket.isConnected() ) {
                     Log.e( TAG, "Can't open PASV data socket" );
                     return null;

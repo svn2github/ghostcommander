@@ -821,7 +821,7 @@ public class RootAdapter extends CommanderAdapterBase {
                 @Override
                 public void handleMessage( Message msg ) {
                     try {
-                        String str = (String)msg.obj;
+                        String str = ((Bundle)msg.obj).getString( Commander.MESSAGE_STRING );
                         if( !Utils.str( str ) ) {
                             msg.obj = ctx.getString( R.string.nothing ); 
                             commander.notifyMe( msg );
