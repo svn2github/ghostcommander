@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
+import java.net.Inet6Address;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -29,6 +30,7 @@ public class FTP {
     private final static int BLOCK_SIZE = 100000;
     private final static boolean PRINT_DEBUG_INFO = true;
     private StringBuffer debugBuf = new StringBuffer();
+    private String host = null;
     private Socket cmndSocket = null;
     private OutputStream outputStream = null;
     private BufferedInputStream inputStream = null;
@@ -37,6 +39,8 @@ public class FTP {
     private InputStream inDataStream = null;
     private boolean loggedIn = false;
     private boolean allowActive = false;
+    private boolean ipv6 = false;
+    
     private Charset charset = null;
     
     private final boolean sendCommand( String cmd ) {
@@ -170,6 +174,8 @@ public class FTP {
     }
     public final synchronized boolean connect( String host, int port ) throws UnknownHostException, IOException, InterruptedException {
         cmndSocket = new Socket( host, port );
+        InetAddress ia = cmndSocket.getInetAddress();
+        ipv6 = ia instanceof Inet6Address;
         outputStream = cmndSocket.getOutputStream();
         inputStream = new BufferedInputStream( cmndSocket.getInputStream(), 256 );
 
@@ -267,20 +273,25 @@ public class FTP {
     private boolean announcePort( ServerSocket serverSocket )
             throws IOException, InterruptedException {
         int localport = serverSocket.getLocalPort();
+        String port_command = null;
+        if( ipv6 ) {
+            port_command = "EPRT |2|" + cmndSocket.getLocalAddress() + "|" + localport + "|";
+        } else {
         // get local ip address in high byte order
-        byte[] addrbytes = cmndSocket.getLocalAddress().getAddress();
-
-        // tell server what port we are listening on
-        short addrshorts[] = new short[4];
-
-        // problem: bytes greater than 127 are printed as negative numbers
-        for( int i = 0; i <= 3; i++ ) {
-            addrshorts[i] = addrbytes[i];
-            if( addrshorts[i] < 0 )
-                addrshorts[i] += 256;
-        }
-        String port_command = "PORT " + addrshorts[0] + "," + addrshorts[1] + "," + addrshorts[2] + "," + addrshorts[3] + "," +
+            byte[] addrbytes = cmndSocket.getLocalAddress().getAddress();
+    
+            // tell server what port we are listening on
+            short addrshorts[] = new short[4];
+    
+            // problem: bytes greater than 127 are printed as negative numbers
+            for( int i = 0; i <= 3; i++ ) {
+                addrshorts[i] = addrbytes[i];
+                if( addrshorts[i] < 0 )
+                    addrshorts[i] += 256;
+            }
+            port_command = "PORT " + addrshorts[0] + "," + addrshorts[1] + "," + addrshorts[2] + "," + addrshorts[3] + "," +
                 ((localport & 0xff00) >> 8) + "," + (localport & 0x00ff);
+        }
         if( executeCommand( port_command ) )
             return true;
         Log.e( TAG, "Active mode failed" );
@@ -293,6 +304,7 @@ public class FTP {
             if( !isPositiveComplete( Integer.parseInt( s.substring( 0, 3 ) ) ) )
                 return -1;
             // responses could be:
+            // 229 Entering Extended Passive Mode (|||40839|).
             // 227 Entering Passive Mode (10,0,0,4,134,65)
             // 227 Entering Passive Mode. 10,0,0,4,134,65
             int opt = s.indexOf( '(' );
@@ -304,8 +316,14 @@ public class FTP {
             	String addr_str = s.replaceFirst( "\\d{3}\\s[^\\d]+", "" );
             	addr_tokenizer = new StringTokenizer( addr_str, "," );
             }
-            else
-            	addr_tokenizer = new StringTokenizer( s.substring( opt + 1, cpt ), "," );
+            else {
+                String in = s.substring( opt + 1, cpt );
+                if( ipv6 ) {
+                    String[] ss = in.split("\\|");
+                    return Integer.parseInt( ss[3] );
+                }
+                addr_tokenizer = new StringTokenizer( in, "," );
+            }
             int a = 0, b = 0;
             for( int i = 0; i < 6; i++ ) {
                 short n = Short.parseShort( addr_tokenizer.nextToken() );
@@ -337,14 +355,17 @@ public class FTP {
                 flushReply();   // emulator has a bug, it adds \n\r in the end of translated PORT
                 serverSocket = null;
                 // active mode failed. let's try passive
-                final String pasv_command = "PASV";
+                final String pasv_command = ipv6 ? "EPSV" : "PASV" ;
                 sendCommand( pasv_command );
                 byte[] addr = new byte[4];
                 int server_port = parsePassiveResponse( getReplyLine(), addr );
                 if( server_port < 0 ) {
-                    debugPrint( "Can't negotiate the PASV" );
+                    debugPrint( "Can't negotiate the " + pasv_command );
                     return null;
                 }
+                if( ipv6 )
+                    data_socket = new Socket( host, server_port );
+                else
                 data_socket = new Socket( InetAddress.getByAddress( addr ), server_port );
                 if( !data_socket.isConnected() ) {
                     Log.e( TAG, "Can't open PASV data socket" );

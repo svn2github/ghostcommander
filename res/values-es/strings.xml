@@ -231,7 +231,7 @@ copied >5 will produce:
     <string name="connect">Conectar</string>
     <string name="cancel">Cancelar</string>
     <string name="ftp_connected">Conectado a \"%1$s\",\n Identificado como \"%2$s\"</string>
-    <string name="ftp_upload_failed">Subida fallida de \"%1$s\".\n FTP log:\n\n%2$%</string>
+    <string name="ftp_upload_failed">Subida fallida de \"%1$s\".\n FTP log:\n\n%2$s</string>
     <string name="ftp_mkdir_failed">Error al crear carpeta \"%1$s\".\n FTP log:\n\n\"%2$s\</string>            
     <string name="ftp_nologin">No se ha logueado!</string>            
 

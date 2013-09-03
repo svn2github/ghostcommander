@@ -2,7 +2,8 @@ package com.ghostsq.commander;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
+
+import com.ghostsq.commander.R;
 
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
@@ -20,7 +21,6 @@ import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.Utils;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;

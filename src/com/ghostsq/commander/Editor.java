@@ -46,6 +46,7 @@ public class Editor extends Activity implements TextWatcher {
 	public  CommanderAdapter ca;
 	public  boolean dirty = false;
 	public  String encoding;
+	private DataLoadTask loader = null;
 	
     /** Called when the activity is first created. */
     @Override
@@ -79,7 +80,8 @@ public class Editor extends Activity implements TextWatcher {
                     act_name_tv.setText( R.string.editor_label );
             }
             uri = getIntent().getData();
-            new DataLoadTask().execute();
+            loader = new DataLoadTask();
+            loader.execute();
             TextView file_name_tv = (TextView)findViewById( R.id.file_name );
             if( file_name_tv!= null )
                 file_name_tv.setText( " - " + uri.getPath() );
@@ -107,6 +109,13 @@ public class Editor extends Activity implements TextWatcher {
         ca = null;
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if( loader != null )
+            loader.cancel( true );
+    }
+    
     @Override
     public boolean onKeyDown( int keyCode, KeyEvent event ) {
         switch( keyCode ) {
@@ -176,7 +185,8 @@ public class Editor extends Activity implements TextWatcher {
             }
             return true;
         case MENU_RELD:
-            new DataLoadTask().execute();
+            loader = new DataLoadTask();
+            loader.execute();
             return true;
         case MENU_ENC: {
                 int cen = Integer.parseInt( Utils.getEncodingDescr( this, encoding, Utils.ENC_DESC_MODE_NUMB ) );
@@ -269,6 +279,7 @@ public class Editor extends Activity implements TextWatcher {
             pd.cancel();
             Editor.this.te.setText( cs );
             Editor.this.dirty = false;
+            Editor.this.loader = null; 
         }
      }
 
