@@ -57,6 +57,7 @@
 <string name="enter_ftp">FTP kapcsolat</string>
 <string name="enter_smb">Samba kapcsolat</string>
 <string name="search_file">Keres</string>
+<string name="menu">Menü</string>
 <string name="sort_by_name">Rendez: név</string>
 <string name="sort_by_ext">Rendez: kiterjesztés</string>
 <string name="sort_by_size">Rendez: méret</string>
