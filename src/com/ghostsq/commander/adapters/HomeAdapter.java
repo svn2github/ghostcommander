@@ -25,6 +25,7 @@ public class HomeAdapter extends CommanderAdapterBase {
         FTP(   R.string.ftp,   R.string.ftp_descr,    R.drawable.ftp     ),  
         SFTP(  R.string.sftp,  R.string.sftp_descr,   R.drawable.sftp    ), 
         SMB(   R.string.smb,   R.string.smb_descr,    R.drawable.smb     ), 
+        BOX(   R.string.box,   R.string.box_descr,    R.drawable.box     ), 
         ROOT(  R.string.root,  R.string.root_descr,   R.drawable.root    ), 
         MOUNT( R.string.mount, R.string.mount_descr,  R.drawable.mount   ),
         APPS(  R.string.apps,  R.string.apps_descr,   R.drawable.android ),
@@ -118,8 +119,9 @@ public class HomeAdapter extends CommanderAdapterBase {
         if( p == Mode.ROOT.pos ) uri_s = RootAdapter.DEFAULT_LOC;    else
         if( p == Mode.MOUNT.pos) uri_s = MountAdapter.DEFAULT_LOC;   else
         if( p == Mode.APPS.pos ) uri_s = "apps:";                    else
+        if( p == Mode.BOX.pos  ) uri_s = "box:";                     else
         if( p == Mode.FTP.pos  ) { commander.dispatchCommand( FileCommander.FTP_ACT ); return; }
-        if( p == Mode.SFTP.pos ) { commander.dispatchCommand( FileCommander.SFTP_ACT );return; }
+        if( p == Mode.SFTP.pos ) { commander.dispatchCommand( FileCommander.SFTP_ACT); return; }
         if( p == Mode.SMB.pos  ) { commander.dispatchCommand( FileCommander.SMB_ACT ); return; }
         if( p == Mode.EXIT.pos ) { commander.dispatchCommand( R.id.exit );             return; } 
         commander.Navigate( Uri.parse( uri_s ), null, null );
