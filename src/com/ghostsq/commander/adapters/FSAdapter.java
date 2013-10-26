@@ -968,7 +968,12 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
                     long last_modified = file.lastModified();
                     String fn = file.getName();
                     outFile = dest_is_full_name ? new File( dest ) : new File( dest, fn );
+                    String out_dir_path = new File( dest ).getCanonicalPath();
                     if( file.isDirectory() ) {
+                        if( out_dir_path.startsWith( file.getCanonicalPath() ) ) {
+                            error( ctx.getString( R.string.cant_copy_to_itself, file.getName() ) );
+                            break;
+                        }
                         if( depth++ > 40 ) {
                             error( ctx.getString( R.string.too_deep_hierarchy ) );
                             break;
@@ -982,6 +987,7 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
                         else
                             error( c.getString( R.string.cant_md, outFile.getAbsolutePath() ) );
                         depth--;
+                        counter++;
                     }
                     else {
                         if( existed = outFile.exists() ) {

@@ -153,11 +153,12 @@
 <string name="login_title">Login</string>
 <string name="delete_title">Delete</string>
 <string name="delete_err">Nothing to delete</string>
-<string name="delete_q">Delete %1$s ?</string>
+<string name="delete_q">Delete \"%1$s\"?</string>
 <string name="rescan_q">Are you sure you want to do the search again?</string>
 <string name="search_done">Search complete</string>
 <string name="done">Done</string>
 <string name="interrupted">Interrupted</string>
+<string name="cant_copy_to_itself">Can not copy the directory \"%s\" to itself or below.</string>
 <string name="too_deep_hierarchy">The file hierarchy is too deep.</string>
 <string name="nothing_found">No files found</string>
 <string name="preparing">Preparing…</string>

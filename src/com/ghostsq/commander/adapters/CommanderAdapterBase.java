@@ -21,6 +21,7 @@ import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -163,6 +164,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         sizeWidth = 0;
         dateWidth = 0;
         attrWidth = 0;
+    }
+    
+    public void setContext( Context ctx_ ) {
+        ctx = ctx_;
     }
 
     private final void calcWidths() {
@@ -320,7 +325,9 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         ListView flv = (ListView)parent;
         SparseBooleanArray cis = flv.getCheckedItemPositions();
         item.sel = cis != null ? cis.get( position ) : false;
-        return getView( convertView, parent, item );
+        View v = getView( convertView, parent, item );
+        if( v == null ) Log.e( TAG, "View for the position " + position + " is null!" );
+        return v;
     }
 
     protected String getLocalDateTimeStr( Date date ) {
@@ -715,6 +722,12 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     @Override
     public void doIt( int command_id, SparseBooleanArray cis ) {
         // to be implemented in derived classes
+    }
+
+    @Override
+    public boolean handleActivityResult( int requestCode, int resultCode, Intent data ) {
+        // to be implemented in derived classes
+        return false;
     }
 
     @Override

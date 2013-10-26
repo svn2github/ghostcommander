@@ -425,6 +425,14 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                     panels.refreshLists( null );
             }            
             break;
+            default: {
+                CommanderAdapter ca = panels.getListAdapter( true );
+                if( ca != null && ca.handleActivityResult( requestCode, resultCode, data ) )
+                    return;
+                ca = panels.getListAdapter( false );
+                if( ca != null )
+                    ca.handleActivityResult( requestCode, resultCode, data );
+            }
         }
     }
 
@@ -906,7 +914,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 return CONTINUE;
             }
             long task_id = b.getLong( Commander.NOTIFY_TASK );
-            Log.d( TAG, "got message " + progress.what + " from task " + task_id + " " + string );
+            //Log.v( TAG, "got message " + progress.what + " from task " + task_id + " " + string );
             Dialogs dh = null;
             if( progress.what == OPERATION_IN_PROGRESS ) {
                 if( progress.arg1 >= 0 ) {
@@ -952,7 +960,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 Log.d( TAG, "Cancelling dialog " + task_id );
                 dh.cancelDialog();
             } else {
-                Log.d( TAG, "No opened dialog found " + task_id );
+                //Log.d( TAG, "No opened dialog found " + task_id );
                 remBgNotifId( task_id );
             }
             

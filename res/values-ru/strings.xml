@@ -154,6 +154,7 @@
 <string name="search_done">Поиск завершен</string>
 <string name="done">Сделано</string>
 <string name="interrupted">Выполнение прервано</string>
+<string name="cant_copy_to_itself">Нельзя скопировать папку \"%s\" саму в себя.</string>
 <string name="too_deep_hierarchy">Слишком глубокое вложение папок</string>
 <string name="nothing_found">Файлы не найдены</string>
 <string name="preparing">Подготовка…</string>

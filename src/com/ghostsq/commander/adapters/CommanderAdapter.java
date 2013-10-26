@@ -8,6 +8,7 @@ import java.util.Date;
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.utils.Credentials;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.SparseBooleanArray;
@@ -303,6 +304,11 @@ public interface CommanderAdapter {
      * @param items - selected or checked items to work with  
      */
     public void doIt( int command_id, SparseBooleanArray cis );
+
+    /**
+     * this method is called when the Commander can't find what to do with an activity result
+     */
+    public boolean handleActivityResult( int requestCode, int resultCode, Intent data );
     
     /**
      * to be called before the adapter is going to be destroyed

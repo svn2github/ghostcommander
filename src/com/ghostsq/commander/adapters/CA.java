@@ -1,6 +1,7 @@
 package com.ghostsq.commander.adapters;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -41,7 +42,8 @@ final public class CA {
     public static final int DBOX  = 0x00040000;
     public static final int GDOCS = 0x00080000;
     public static final int SFTP  = 0x00100000;
-    public static final int NET   = FTP | SMB | GDOCS | SFTP;
+    public static final int BOX   = 0x00200000;
+    public static final int NET   = FTP | SMB | GDOCS | SFTP | BOX;
     public static final int REAL  = LOCAL | ARCH | ROOT | NET;
     public static final int CHKBL  = REAL | APPS | FAVS;
     public static final int ALL   = 0xFFFFFFFF;
@@ -58,6 +60,7 @@ final public class CA {
     protected static final int  favs_schema_h =  "favs".hashCode();
     protected static final int   smb_schema_h =   "smb".hashCode();
     protected static final int  dbox_schema_h =  "dbox".hashCode();
+    protected static final int   box_schema_h =   "box".hashCode();
     protected static final int    gd_schema_h =    "gd".hashCode();
     protected static final int gdocs_schema_h = "gdocs".hashCode();
 
@@ -79,6 +82,7 @@ final public class CA {
         if( favs_schema_h == scheme_h )  return FAVS;
         if(  smb_schema_h == scheme_h )  return SMB;
         if( dbox_schema_h == scheme_h )  return DBOX;
+        if(  box_schema_h == scheme_h )  return BOX;
         if(   gd_schema_h == scheme_h )  return GDOCS;
         if(gdocs_schema_h == scheme_h )  return GDOCS;
         return FS;
@@ -102,7 +106,7 @@ final public class CA {
     }    
 
     public final static CommanderAdapter CreateAdapterInstance( int type_id, Context c ) {
-        CommanderAdapter ca = null;
+        CommanderAdapter ca;
         if( type_id == FS   ) ca = new FSAdapter( c );    else
         if( type_id == HOME ) ca = new HomeAdapter( c );  else
         if( type_id == ZIP  ) ca = new ZipAdapter( c );   else
@@ -112,9 +116,11 @@ final public class CA {
         if( type_id == MNT  ) ca = new MountAdapter( c ); else
         if( type_id == APPS ) ca = new AppsAdapter( c );  else
         if( type_id == FAVS ) ca = new FavsAdapter( c );  else
-        if( type_id == SMB  ) ca = CreateExternalAdapter( c, "samba",  "SMBAdapter" );
-        if( type_id == DBOX ) ca = CreateExternalAdapter( c, "dropbox","DBoxAdapter" );
-        if( type_id == SFTP ) ca = CreateExternalAdapter( c, "sftp",   "SFTPAdapter" );
+        if( type_id == SMB  ) ca = CreateExternalAdapter( c, "samba",  "SMBAdapter" );  else
+        if( type_id == DBOX ) ca = CreateExternalAdapter( c, "dropbox","DBoxAdapter" ); else
+        if( type_id == BOX  ) ca = CreateExternalAdapter( c, "box",    "BoxAdapter" );  else
+        if( type_id == SFTP ) ca = CreateExternalAdapter( c, "sftp",   "SFTPAdapter" ); else
+            ca = null;
         return ca;
     }
     
@@ -154,8 +160,16 @@ final public class CA {
                 Log.w( TAG, "Can't remove the plugin's .dex: ", e );
             }
             if( adapterClass != null ) {
-                CommanderAdapter ca = (CommanderAdapter)adapterClass.newInstance();
-                return ca;
+                Constructor<?> constr = null;
+                try {
+                    constr = adapterClass.getConstructor( Context.class );
+                } catch( Exception e ) {
+                    e.printStackTrace();
+                }
+                if( constr != null )
+                    return (CommanderAdapter)constr.newInstance( ctx );
+                else
+                    return (CommanderAdapter)adapterClass.newInstance();
             }
         }
         catch( Throwable e ) {

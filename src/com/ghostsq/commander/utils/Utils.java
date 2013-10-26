@@ -584,7 +584,8 @@ public final class Utils {
         too_deep_hierarchy(R.string.too_deep_hierarchy),
         
         failed(R.string.failed),
-        ftp_connected(R.string.ftp_connected)
+        ftp_connected(R.string.ftp_connected),
+        rtexcept(R.string.rtexcept)
         ;
         private int r;
 

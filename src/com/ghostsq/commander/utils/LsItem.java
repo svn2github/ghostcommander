@@ -21,17 +21,20 @@ public class LsItem {
 //  -rw-rw-rw- 1 system system 93578 Sep 26 00:26 Quote Pro 1.2.4.apk
 //Win2K3 IIS        
 //  -rwxrwxrwx   1 owner    group          314800 Feb 10  2008 classic.jar
-    private static Pattern unix = Pattern.compile( "^([\\-bcdlprwxsStT]{9,10}\\s+\\d+\\s+[^\\s]+\\s+[^\\s]+)\\s+(\\d+)\\s+((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\s+\\d{1,2}\\s+(?:\\d{4}|\\d{1,2}:\\d{2}))\\s+(.+)" );
+    private static Pattern unix = Pattern.compile( "^([\\-bcdlprwxsStT]{9,10}\\s+\\d+\\s+[^\\s]+\\s+[^\\s]+)\\s+(\\d+)\\s+((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\s+\\d{1,2}\\s+(?:\\d{4}|\\d{1,2}:\\d{2}))\\s(.+)" );
 // inetutils-ftpd:
 //  drwx------  3 user     80 2009-02-15 12:33 .adobe
-    private static Pattern inet = Pattern.compile( "^([\\-bcdlprwxsStT]{9,10}\\s+.+)\\s+(\\d*)\\s+(\\d{4}-\\d{2}-\\d{2}\\s\\d{1,2}:\\d{2})\\s+(.+)" );
+// android native:
+//  ----rwxr-x system   sdcard_rw      683 2013-05-25 19:52 1.zip
+
+    private static Pattern inet = Pattern.compile( "^([\\-bcdlprwxsStT]{9,10}\\s+.+)\\s+(\\d*)\\s+(\\d{4}-\\d{2}-\\d{2}\\s\\d{1,2}:\\d{2})\\s(.+)" );
     // MSDOS style
 //  02-10-08  02:08PM               314800 classic.jar
     private static Pattern msdos = Pattern.compile( "^(\\d{2,4}-\\d{2}-\\d{2,4}\\s+\\d{1,2}:\\d{2}[AP]M)\\s+(\\d+|<DIR>)\\s+(.+)" );
-    private static SimpleDateFormat format_date_time  = new SimpleDateFormat( "MMM d HH:mm", Locale.ENGLISH );
-    private static SimpleDateFormat format_date_year  = new SimpleDateFormat( "MMM d yyyy",  Locale.ENGLISH );
-    private static SimpleDateFormat format_full_date  = new SimpleDateFormat( "yyyy-MM-dd HH:mm", Locale.ENGLISH );
-    private static SimpleDateFormat format_msdos_date = new SimpleDateFormat( "MM-dd-yy  HH:mmaa", Locale.ENGLISH );
+    private static SimpleDateFormat format_date_time  = new SimpleDateFormat( "MMM d HH:mm",        Locale.ENGLISH );
+    private static SimpleDateFormat format_date_year  = new SimpleDateFormat( "MMM d yyyy",         Locale.ENGLISH );
+    private static SimpleDateFormat format_full_date  = new SimpleDateFormat( "yyyy-MM-dd HH:mm",   Locale.ENGLISH );
+    private static SimpleDateFormat format_msdos_date = new SimpleDateFormat( "MM-dd-yy  HH:mmaa",  Locale.ENGLISH );
     
     private String  name, link_target_name = null, attr = null;
     private boolean directory = false;
