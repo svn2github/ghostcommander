@@ -8,15 +8,13 @@ import java.util.regex.Matcher;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.ghostsq.commander.TextViewer;
 import com.ghostsq.commander.adapters.Engine;;
 
 public class ExecEngine extends Engine {
-    protected String sh = "su";
+    protected String sh;
     protected Context context;
     private   String bb = "";
     private   String  where, command;
@@ -34,16 +32,23 @@ public class ExecEngine extends Engine {
         where = null;
         command = null;
         result = null;
+        sh = getSuPath();
     }
     public ExecEngine( Context context_, String where_, String command_, boolean use_bb, int timeout ) {
         context = context_;
         where = where_;
         command = command_;
+        sh = getSuPath();
         use_busybox = use_bb; 
         wait_timeout = timeout;
         result = new StringBuilder( 1024 );
     }
 
+    protected final String getSuPath() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( context );
+        return sharedPref.getString( "su_path", "su" );
+    }     
+    
     @Override
     public void run() {
         try {

@@ -32,11 +32,9 @@ import android.util.SparseBooleanArray;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ListView;
 
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.R;
@@ -126,7 +124,7 @@ public class RootAdapter extends CommanderAdapterBase {
             // the option -s is not supported on some releases (1.6)
             String to_execute = "ls " + ( ( mode & MODE_HIDDEN ) != HIDE_MODE ? "-a ":"" ) + "-l " + ExecEngine.prepFileName( path ) + " ; echo " + EOL;
             
-            if( !execute( to_execute, false, su ? 5000 : 500 ) ) // 'busybox -l' always outs UID/GID as numbers, not names!  
+            if( !execute( to_execute, false, su ? 5000 : 500 ) ) // 'busybox ls -l' always outs UID/GID as numbers, not names!  
                 return false;   
 
             if( !isStopReq() ) {
@@ -895,13 +893,18 @@ public class RootAdapter extends CommanderAdapterBase {
             file_path = file_path_;
         }
 
+        protected final String getSuPath() {
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( RootAdapter.this.ctx );
+            return sharedPref.getString( "su_path", "su" );
+        }     
+        
         @Override
         public void run() {
             setName( "ContentEngine" );
             OutputStreamWriter osw = null;
             BufferedReader     ebr = null;
             try {
-                Process process = Runtime.getRuntime().exec( "su" );
+                Process process = Runtime.getRuntime().exec( getSuPath() );
                 os = process.getOutputStream();
                 ebr = new BufferedReader( new InputStreamReader( process.getErrorStream() ) );
                 osw = new OutputStreamWriter( os );
