@@ -248,6 +248,11 @@
 		        android:title="@string/editor_activity" 
 		        android:summary="@string/summary_editor_activity" 
 		        android:defaultValue="@string/value_editor_activity"/>
+            <EditTextPreference 
+                android:key="su_path" 
+                android:title="@string/su_location" 
+                android:summary="@string/summary_su_location" 
+                android:defaultValue="su"/> 
 		    <EditTextPreference 
 		        android:key="busybox_path" 
 		        android:title="@string/busybox_location" 
