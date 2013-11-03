@@ -766,7 +766,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     }
     
     protected void reSort() {
-        // to override all the derives
+        // to override by all the derives
     }
 
     /*

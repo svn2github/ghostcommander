@@ -931,15 +931,15 @@ public class ZipAdapter extends CommanderAdapterBase {
                 return f1IsDir ? -1 : 1;
             int ext_cmp = 0;
             switch( type ) {
-            case SORT_EXT:
+            case CommanderAdapter.SORT_EXT:
                 ext_cmp = case_ignore ? 
                         Utils.getFileExt( f1.getName() ).compareToIgnoreCase( Utils.getFileExt( f2.getName() ) ) :
                         Utils.getFileExt( f1.getName() ).compareTo( Utils.getFileExt( f2.getName() ) );
                 break;
-            case SORT_SIZE:
+            case CommanderAdapter.SORT_SIZE:
                 ext_cmp = f1.getSize() - f2.getSize() < 0 ? -1 : 1;
                 break;
-            case SORT_DATE:
+            case CommanderAdapter.SORT_DATE:
                 ext_cmp = f1.getTime() - f2.getTime() < 0 ? -1 : 1;
                 break;
             }
