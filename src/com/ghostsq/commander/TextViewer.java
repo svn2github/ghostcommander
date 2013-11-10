@@ -85,8 +85,13 @@ public class TextViewer extends Activity {
         TextView file_name_tv = (TextView)findViewById( R.id.file_name );
         if( uri != null ) {
             String path = uri.getPath();
-            if( file_name_tv != null && path != null && path.length() > 0 )
-                file_name_tv.setText( " - " + path );
+            if( file_name_tv != null && path != null && path.length() > 0 ) {
+                String label_text = " - " + uri.getPath();
+                String frgm = uri.getFragment();
+                if( frgm != null )
+                    label_text += " (" + frgm + ")";
+                file_name_tv.setText( label_text );
+            }
         }
     }
 

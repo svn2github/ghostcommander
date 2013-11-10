@@ -46,9 +46,9 @@ public interface CommanderAdapter {
         public  int       colorCache = 0;
         public  Item() {}
         public  Item( String name_ )    { name = name_; }
-        public  final boolean  isThumbNail()  { return thumbnail != null; }
+        public  final boolean  isThumbNail()       { return thumbnail != null; }
         public  final Drawable getThumbNail()             { thumbnailUsed = System.currentTimeMillis(); return thumbnail; }
-        public  final void     setThumbNail( Drawable t ) { thumbnailUsed = System.currentTimeMillis(); thumbnail = t; }
+        public  final void     setThumbNail( Drawable t ) { thumbnailUsed = System.currentTimeMillis(); thumbnail = t; thumb_pending = false; }
         public  final void     setIcon( Drawable t ) { setThumbNail( t ); thumb_is_icon = true; }
         public  final boolean  remThumbnailIfOld( int ttl ) { 
             if( thumbnail != null && !need_thumb && System.currentTimeMillis() - thumbnailUsed > ttl ) {
@@ -57,7 +57,7 @@ public interface CommanderAdapter {
             }
             return false;
         }
-        public boolean  need_thumb = false, no_thumb = false, thumb_is_icon = false;
+        public boolean  need_thumb = false, no_thumb = false, thumb_is_icon = false, thumb_pending = false;
     }
     
     /**

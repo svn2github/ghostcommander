@@ -83,8 +83,13 @@ public class Editor extends Activity implements TextWatcher {
             loader = new DataLoadTask();
             loader.execute();
             TextView file_name_tv = (TextView)findViewById( R.id.file_name );
-            if( file_name_tv!= null )
-                file_name_tv.setText( " - " + uri.getPath() );
+            if( file_name_tv != null ) {
+                String label_text = " - " + uri.getPath();
+                String frgm = uri.getFragment();
+                if( frgm != null )
+                    label_text += " (" + frgm + ")";
+                file_name_tv.setText( label_text );
+            }
         }
         catch( Exception e ) {
             Log.e( TAG, "", e );
@@ -331,6 +336,7 @@ public class Editor extends Activity implements TextWatcher {
                         if( end > len )
                             end = len-1;
                     }
+                    osw.flush();
                 }
                 //Log.v( TAG, "Data is sent to the stream" );            
                 Editor.this.ca.closeStream( os );
