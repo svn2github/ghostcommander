@@ -11,6 +11,7 @@ import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.adapters.FSAdapter;
 import com.ghostsq.commander.adapters.FavsAdapter;
 import com.ghostsq.commander.adapters.ZipAdapter;
+import com.ghostsq.commander.adapters.CommanderAdapter.Feature;
 import com.ghostsq.commander.favorites.Favorite;
 import com.ghostsq.commander.favorites.Favorites;
 import com.ghostsq.commander.favorites.LocationBar;
@@ -208,12 +209,11 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 Utils.changeLanguage( c );
                 ToolButtons tba = new ToolButtons();
                 tba.restore( sharedPref, c );
-                int adapter_bit = ca.getType();
                 int bfs = fnt_sz + ( fingerFriendly ? 2 : 1 );
                 for( int i = 0; i < tba.size(); i++ ) {
                     ToolButton tb = tba.get( i );
                     int bid = tb.getId();
-                    if( tb.isVisible() && ( adapter_bit & tb.getSuitableAdapter() ) != 0 ) {
+                    if( tb.isVisible() && ca.hasFeature( ToolButton.getFeature( bid ) ) ) {
                         String caption = "";
                         if( keyboard ) {
                             char ch = tb.getBoundKey();
@@ -400,15 +400,10 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     public final void setSelection( int which, String name ) {
         list[which].setSelection( name );
     }
-    public final int getAdapterType( boolean active ) {
-        CommanderAdapter ca = getListAdapter( active );
-        return ca.getType();
-    }
-    
     public final File getCurrentFile() {
         try {
             CommanderAdapter ca = getListAdapter( true );
-            if( ( ca.getType() & ( CA.LOCAL | CA.APPS ) ) != 0 ) {
+            if( ca.hasFeature( Feature.SEND ) ) {
                 int pos = getSelection( true );
                 if( pos < 0 )
                     return null;
@@ -653,7 +648,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         if( ( scheme == null || scheme.equals( "file" ) ) && ( path == null || !isSafeLocation( path ) ) ) {
             if( warnOnRoot ) {
                 CommanderAdapter ca = list[which].getListAdapter();
-                if( ca != null && CA.FS == ca.getType() ) {
+                if( ca != null && ca.hasFeature( Feature.FS ) ) {
                     String cur_path = ca.toString();
                     if( cur_path != null && isSafeLocation( cur_path ) ) {
                         try {
@@ -733,7 +728,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             CommanderAdapter ca = getListAdapter( true );
             if( ca == null )
                 return;
-            if( ( ca.getType() & ( CA.LOCAL | CA.APPS ) ) == 0 ) {
+            if( ca.hasFeature( Feature.SEND ) ) {
                 c.showError( c.getString( R.string.on_fs_only ) );
                 return;
             }
@@ -854,7 +849,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
 
     public final void openForEdit( String file_name ) {
         CommanderAdapter ca = getListAdapter( true );
-        if( ca == null || !CA.suitable( R.id.F4, ca.getType() ) ) {
+        if( ca == null || !ca.hasFeature( Feature.F4 ) ) {
             c.showMessage( c.getString( R.string.edit_err ) );
             return;
         }
@@ -1054,7 +1049,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 boolean make_copy = false;
                 if( dest.indexOf( SLC ) < 0 )  // just a file name to copy to
                     make_copy = true;
-                else if( cur_adapter.getType() == CA.FS && dest.charAt( dest.length()-1 ) != SLC ) {
+                else if( cur_adapter.hasFeature( Feature.FS ) && dest.charAt( dest.length()-1 ) != SLC ) {
                     if( dest.charAt( 0 ) == SLC ) { // local FS
                         File dest_file = new File( dest );
                         if( !dest_file.exists() || !dest_file.isDirectory() )
@@ -1081,7 +1076,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             }
             if( create_new_adapter ) {
                 if( "..".equals( dest ) ) {
-                    oth_adapter = CA.CreateAdapter( cur_adapter.getType(), c );
+                    oth_adapter = CA.CreateAdapter( cur_adapter.getScheme(), c );
                     Uri cur_uri = cur_adapter.getUri();
                     String p = cur_uri.getEncodedPath();
                     if( !Utils.str( p ) || "/".equals( p ) ) {
@@ -1102,8 +1097,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                         return;
                     }
                     String scheme = dest_uri.getScheme();
-                    int type_id = CA.GetAdapterTypeId( scheme );
-                    oth_adapter = CA.CreateAdapter( type_id, c );
+                    oth_adapter = CA.CreateAdapter( scheme, c );
                     if( oth_adapter == null ) {
                         c.showError( c.getString( R.string.inv_dest ) );
                         return;
@@ -1221,9 +1215,10 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         if( position == 0 )
             flv.setItemChecked( 0, false ); // parent item never selected
         list[current].setCurPos( position );
-        if( disableOpenSelectOnly && ( ( (CommanderAdapter)flv.getAdapter() ).getType() & CA.CHKBL ) != 0 ) {
+        CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
+        if( disableOpenSelectOnly && ca.hasFeature( Feature.CHKBL ) ) {
             disableOpenSelectOnly = false;
-            BaseAdapter ba = (BaseAdapter)flv.getAdapter();
+            BaseAdapter ba = (BaseAdapter)ca;
             ba.notifyDataSetChanged();
         } else {
             openItem( position );
@@ -1605,7 +1600,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 Uri lu = s.leftUri != null ? s.leftUri : Uri.parse( "home:" );
                 list_h.mbNavigate( lu, s.leftCrd, s.leftItem, s.current == LEFT );
             } else {
-                if( ca.getType() != CA.FIND )
+                if( !"find".equals( ca.getScheme() ) )
                     list_h.refreshList( s.current == LEFT, s.leftItem );
             }
         }
@@ -1616,7 +1611,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 Uri ru = s.rightUri != null ? s.rightUri : Uri.parse( "home:" );
                 list_h.mbNavigate( ru, s.rightCrd, s.rightItem, s.current == RIGHT );
             } else
-                if( ca.getType() != CA.FIND )
+                if( !"find".equals( ca.getScheme() ) )
                     list_h.refreshList( s.current == RIGHT, s.rightItem );
         }
         applyColors();

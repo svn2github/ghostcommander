@@ -56,8 +56,19 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
     }
     
     @Override
-    public int getType() {
-        return CA.FTP;
+    public String getScheme() {
+        return "ftp";
+    }
+
+    @Override
+    public boolean hasFeature( Feature feature ) {
+        switch( feature ) {
+        case REAL:
+            return true;
+        case SZ:
+            return false;
+        default: return super.hasFeature( feature );
+        }
     }
     
     @Override
@@ -78,10 +89,6 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
 		}
     }
 
-    @Override
-    public void setIdentities( String name, String pass ) {
-        theUserPass = new FTPCredentials( name, pass );
-    }
     @Override
     public void setCredentials( Credentials crd ) {
         theUserPass = crd != null ? new FTPCredentials( crd ) : null;
@@ -293,10 +300,10 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
         uri = uri_;
         try {
             setFTPMode( uri );
-            String charset = uri.getQueryParameter( "e" );
-            boolean e_set = Utils.str( charset );
+            String charset_ = uri.getQueryParameter( "e" );
+            boolean e_set = Utils.str( charset_ );
             if( ( mode & MODE_CLONE ) == NORMAL_MODE || e_set )
-                ftp.setCharset( charset );
+                ftp.setCharset( charset_ );
         } catch( Exception e ) {
             Log.e( TAG,  "Uri: " + uri_, e );
         }  

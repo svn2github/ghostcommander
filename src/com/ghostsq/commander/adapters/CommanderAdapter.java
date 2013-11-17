@@ -27,6 +27,10 @@ import android.widget.AdapterView;
  * which is routed to the {@link Commander#notifyMe Commander.notifyMe( Message m )}
  * 
  */
+/**
+ * @author zc2
+ *
+ */
 public interface CommanderAdapter {
 
     /**
@@ -72,6 +76,11 @@ public interface CommanderAdapter {
 	 */
 	public void Init( Commander c );
 
+	/**
+	 * @return the scheme the adapter implements
+	 */
+	public String getScheme();
+	
     /**
      * Just passive set the current URI without an attempt to obtain the list or the similar
      * 
@@ -136,20 +145,56 @@ public interface CommanderAdapter {
      */
     public void populateContextMenu( ContextMenu menu, AdapterView.AdapterContextMenuInfo acmi, int num );
 
+    
     /**
-     * returns the adapter implementation type
-     * 
-     * @return the adapter type bit {@link CA} 
+     *  features to be probed by calling the {@code hasFeature()} 
      */
-    public int getType();
-
+    public enum Feature {
+        FS,
+        LOCAL,
+        REAL,
+        F1,
+        F2,
+        F3,
+        F4,
+        SF4,
+        F5,
+        F6,
+        F7,
+        F8,
+        F9,
+        F10,
+        EQ,
+        TGL,
+        SZ,
+        SORTING,
+        BY_NAME,
+        BY_EXT,
+        BY_SIZE,
+        BY_DATE,
+        SEL_UNS,
+        ENTER,
+        ADD_FAV,
+        REMOUNT,
+        HOME,
+        FAVS,
+        SDCARD,
+        ROOT,
+        MOUNT,
+        HIDDEN,
+        REFRESH,
+        SOFTKBD,
+        SEARCH,
+        MENU,
+        SEND,
+        CHKBL
+    }
+    
     /**
-     * The setIdentities() method is deprecated and to be removed. Use the setCredentials() instead
-     *  
-     * @param name, pass 
-     * @deprecated 
+     * queries an implemented feature
+     * @return true if the feature  
      */
-    public void setIdentities( String name, String pass );
+    public boolean hasFeature( Feature feature );
 
     /**
      * Pass the user credentials to be used later

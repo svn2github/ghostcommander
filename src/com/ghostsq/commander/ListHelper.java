@@ -60,7 +60,7 @@ public class ListHelper {
     }
 
     public final void mbNavigate( Uri uri, Credentials crd, String posTo, boolean was_current_ ) {
-        if( CA.GetAdapterTypeId( uri.getScheme() ) == CA.FIND ) {
+        if( "find".equals( uri.getScheme() ) ) {
             // closure
             final Uri         _uri = uri; 
             final Credentials _crd = crd;
@@ -94,14 +94,14 @@ public class ListHelper {
             flv.invalidateViews();
             CommanderAdapter ca_new = null, ca = (CommanderAdapter)flv.getAdapter();
             String scheme = uri.getScheme();
-            int type_id = CA.GetAdapterTypeId( scheme );
-            if( ca == null || type_id != ca.getType() ) {
-                ca_new = CA.CreateAdapter( type_id, p.c );
+            if( scheme == null ) scheme = "";
+            if( ca == null || !scheme.equals( ca.getScheme() ) ) {
+                ca_new = CA.CreateAdapter( scheme, p.c );
                 if( ca_new == null ) {
                     Log.e( TAG, "Can't create adapter of type '" + scheme + "'" );
                     if( ca != null )
                         return;
-                    ca_new = CA.CreateAdapter( CA.GetAdapterTypeId( null ), p.c );
+                    ca_new = CA.CreateAdapter( null, p.c );
                 }
                 if( ca != null )
                     ca.prepareToDestroy();

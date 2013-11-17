@@ -13,6 +13,7 @@ import com.ghostsq.commander.adapters.Engines.IReciever;
 import com.ghostsq.commander.favorites.Favorite;
 import com.ghostsq.commander.favorites.FavDialog;
 import com.ghostsq.commander.utils.Credentials;
+import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
 import android.content.Intent;
@@ -37,6 +38,11 @@ public class FavsAdapter extends CommanderAdapterBase {
         numItems = 1;
     }
 
+    @Override
+    public String getScheme() {
+        return "favs";
+    }
+
     public void setFavorites( ArrayList<Favorite> favs_ ) {
         favs = favs_;
         numItems = favs.size() + 1; 
@@ -50,8 +56,21 @@ public class FavsAdapter extends CommanderAdapterBase {
     }    
     
     @Override
-    public int getType() {
-        return CA.FAVS;
+    public boolean hasFeature( Feature feature ) {
+        switch( feature ) {
+        case  F2:
+        case  F4:
+        case  F8:
+        case  SORTING:
+        case  MOUNT:
+        case  REFRESH:
+        case  CHKBL:
+            return true;
+        case  BY_DATE:
+        case  FAVS:
+            return false;
+        default: return super.hasFeature( feature );
+        }
     }
     
     @Override
@@ -195,29 +214,11 @@ public class FavsAdapter extends CommanderAdapterBase {
         if( name == null || name.length() == 0 )
             name = f.getUriString( true );
         intent.putExtra( Intent.EXTRA_SHORTCUT_NAME, name );
-        Parcelable iconResource = Intent.ShortcutIconResource.fromContext( ctx, getDrawableIconId( uri ) );
+        int ic_id = CA.getDrawableIconId( uri != null ? uri.getScheme() : "" );
+        Parcelable iconResource = Intent.ShortcutIconResource.fromContext( ctx, ic_id );
         intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, iconResource);
         intent.setAction( "com.android.launcher.action.INSTALL_SHORTCUT" );
         ctx.sendBroadcast( intent );
-    }
-
-    private final int getDrawableIconId( Uri uri ) {
-        if( uri != null ) {
-            String sch = uri.getScheme();
-            if( sch != null && sch.length() != 0 ) {
-                int t_id = CA.GetAdapterTypeId( sch );
-                if( CA.ZIP  == t_id ) return R.drawable.zip;     else   
-                if( CA.FTP  == t_id ) return R.drawable.server;  else   
-                if( CA.SFTP == t_id ) return R.drawable.server;  else   
-                if( CA.SMB  == t_id ) return R.drawable.smb;     else
-                if( CA.ROOT == t_id ) return R.drawable.root;    else  
-                if( CA.MNT  == t_id ) return R.drawable.mount;   else  
-                if( CA.HOME == t_id ) return R.drawable.icon;    else
-                if( CA.APPS == t_id ) return R.drawable.android; else
-                    return R.drawable.folder;
-            }
-        }
-        return R.drawable.folder;
     }
     
     @Override
@@ -253,7 +254,9 @@ public class FavsAdapter extends CommanderAdapterBase {
                     item.sel = false;
                     item.date = null;
                     item.attr = f.getComment();
-                    item.icon_id = getDrawableIconId( f.getUri() );
+                    Uri uri = f.getUri();
+                    item.icon_id = CA.getDrawableIconId( uri != null ? uri.getScheme() : "" ); 
+                    
                 }
             }
         }

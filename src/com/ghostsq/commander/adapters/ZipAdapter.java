@@ -47,8 +47,18 @@ public class ZipAdapter extends CommanderAdapterBase {
         parentLink = PLS;
     }
     @Override
-    public int getType() {
-        return CA.ZIP;
+    public String getScheme() {
+        return "zip";
+    }
+    @Override
+    public boolean hasFeature( Feature feature ) {
+        switch( feature ) {
+        case REAL:
+            return true;
+        case F4:
+            return false;
+        default: return super.hasFeature( feature );
+        }
     }
     @Override
     public boolean readSource( Uri tmp_uri, String pass_back_on_done ) {
@@ -225,9 +235,6 @@ public class ZipAdapter extends CommanderAdapterBase {
         uri = uri_;
     }
     
-    @Override
-    public void setIdentities( String name, String pass ) {
-    }
 	@Override
 	public void reqItemsSize( SparseBooleanArray cis ) {
 		notify( "Not supported.", Commander.OPERATION_FAILED );

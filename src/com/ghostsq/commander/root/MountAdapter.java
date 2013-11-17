@@ -35,6 +35,11 @@ public class MountAdapter extends CommanderAdapterBase {
     }
 
     @Override
+    public String getScheme() {
+        return "mount";
+    }
+
+    @Override
     public int setMode( int mask, int val ) {
         if( ( mask & ( MODE_WIDTH | MODE_DETAILS | MODE_ATTR ) ) == 0 )
             return super.setMode( mask, val );
@@ -42,8 +47,13 @@ public class MountAdapter extends CommanderAdapterBase {
     }
     
     @Override
-    public int getType() {
-        return CA.MNT;
+    public boolean hasFeature( Feature feature ) {
+        switch( feature ) {
+        case F7:
+            return true;
+        default: 
+            return false;
+        }
     }
     
     @Override

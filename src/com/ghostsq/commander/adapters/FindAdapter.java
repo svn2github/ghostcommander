@@ -25,9 +25,22 @@ public class FindAdapter extends FSAdapter {
         super( ctx_ );
         parentLink = PLS;
     }
+    
     @Override
-    public int getType() {
-        return CA.FIND;
+    public String getScheme() {
+        return "find";
+    }
+
+    @Override
+    public boolean hasFeature( Feature feature ) {
+        switch( feature ) {
+        case LOCAL:
+        case SZ:
+        case SEARCH:
+        case SEND:
+            return true;
+        default: return super.hasFeature( feature );
+        }
     }
     @Override
     public int setMode( int mask, int mode_ ) {
@@ -128,11 +141,6 @@ public class FindAdapter extends FSAdapter {
     public boolean receiveItems( String[] fileURIs, int move_mode ) {
         notify( ctx.getString( R.string.not_supported ),Commander.OPERATION_FAILED );
         return false;
-    }
-
-    @Override
-    public void setIdentities( String name, String pass ) {
-        commander.showError( ctx.getString( R.string.not_supported ) );
     }
 
     class SearchEngine extends Engine {

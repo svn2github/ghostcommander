@@ -73,6 +73,8 @@ public final class Utils {
             { ".pdf",  "application/pdf" }, 
             { ".php",  "text/php" },
             { ".png",  "image/png" }, 
+            { ".ppt",  "application/vnd.ms-powerpoint" }, 
+            { ".pptx", "application/vnd.ms-powerpoint" }, 
             { ".prop", "application/x-prop" }, 
             { ".ra",   "audio/x-pn-realaudio" }, 
             { ".ram",  "audio/x-pn-realaudio" },

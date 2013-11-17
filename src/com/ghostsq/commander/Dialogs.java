@@ -8,6 +8,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
+import com.ghostsq.commander.adapters.CommanderAdapter.Feature;
 import com.ghostsq.commander.favorites.Favorite;
 import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.Utils;
@@ -339,7 +340,8 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 }
                 if( edit != null ) {
                     edit.setWidth( owner.getWidth() - 70 );
-                    String path = owner.panels.getFolderUriWithAuth( ( owner.panels.getAdapterType( false ) & CA.FS ) == 0 ) + ".zip";
+                    CommanderAdapter oth_ca = owner.panels.getListAdapter( false );
+                    String path = owner.panels.getFolderUriWithAuth( !oth_ca.hasFeature( Feature.FS ) ) + ".zip";
                     edit.setText( path );
                     edit.setSelection( path.length() - 4 );
                 }

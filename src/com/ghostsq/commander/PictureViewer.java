@@ -140,7 +140,7 @@ public class PictureViewer extends Activity {
                         FileOutputStream fos = null;
                         InputStream is = null;
                         try {
-                            ca = CA.CreateAdapterInstance( CA.GetAdapterTypeId( scheme ), ctx );            
+                            ca = CA.CreateAdapterInstance( scheme, ctx );            
                             if( ca == null ) return;
                             Credentials crd = null; 
                             try {

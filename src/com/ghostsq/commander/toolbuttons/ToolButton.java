@@ -4,6 +4,7 @@ package com.ghostsq.commander.toolbuttons;
 
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.adapters.CA;
+import com.ghostsq.commander.adapters.CommanderAdapter.Feature;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -53,6 +54,45 @@ public class ToolButton {
         if( cn.equals( "search"  ) ) return        R.id.search;
         if( cn.equals( "menu"    ) ) return        R.id.menu;
         return 0;
+    }
+
+    public final static Feature getFeature( int id_ ) {
+        switch( id_ ) {
+        case  R.id.F1:           return  Feature.F1;
+        case  R.id.F2:           return  Feature.F2;
+        case  R.id.F3:           return  Feature.F3;
+        case  R.id.F4:           return  Feature.F4;
+        case  R.id.SF4:          return  Feature.SF4;
+        case  R.id.F5:           return  Feature.F5;
+        case  R.id.F6:           return  Feature.F6;
+        case  R.id.F7:           return  Feature.F7;
+        case  R.id.F8:           return  Feature.F8;
+        case  R.id.F9:           return  Feature.F9;
+        case  R.id.F10:          return  Feature.F10;
+        case  R.id.eq:           return  Feature.EQ;
+        case  R.id.tgl:          return  Feature.TGL;
+        case  R.id.sz:           return  Feature.SZ;
+        case  R.id.by_name:      return  Feature.BY_NAME;
+        case  R.id.by_ext:       return  Feature.BY_EXT;
+        case  R.id.by_size:      return  Feature.BY_SIZE;
+        case  R.id.by_date:      return  Feature.BY_DATE;
+        case  R.id.sel_all:
+        case  R.id.uns_all:      return  Feature.SEL_UNS;
+        case  R.id.enter:        return  Feature.ENTER;
+        case  R.id.add_fav:      return  Feature.ADD_FAV;
+        case  R.id.remount:      return  Feature.REMOUNT;
+        case  R.id.home:         return  Feature.HOME;
+        case  R.id.favs:         return  Feature.FAVS;
+        case  R.id.sdcard:       return  Feature.SDCARD;
+        case  R.id.root:         return  Feature.ROOT;
+        case  R.id.mount:        return  Feature.MOUNT;
+        case  R.id.hidden:       return  Feature.HIDDEN;
+        case  R.id.refresh:      return  Feature.REFRESH;
+        case  R.id.softkbd:      return  Feature.SOFTKBD;
+        case  R.id.search:       return  Feature.SEARCH;
+        case  R.id.menu:         return  Feature.MENU;
+        }
+        return null;
     }
 
     public final static String getCodeName( int id_ ) {
@@ -189,10 +229,6 @@ public class ToolButton {
         case  R.id.uns_all:      return  true;
         }
         return false;
-    }
-
-    public final int getSuitableAdapter() {
-        return CA.getSuitableAdapter( id );
     }
 
     ToolButton( int id_ ) {

@@ -69,9 +69,25 @@ public class AppsAdapter extends CommanderAdapterBase {
         
         
     }
+
     @Override
-    public int getType() {
-        return CA.APPS;
+    public String getScheme() {
+        return "apps";
+    }
+
+    @Override
+    public boolean hasFeature( Feature feature ) {
+        switch( feature ) {
+        case SORTING:
+        case  F5:
+        case  F8:
+        case  SZ:
+        case  SEL_UNS:
+        case  SEND:
+        case  CHKBL:
+            return true;
+        default: return super.hasFeature( feature );
+        }
     }
     
     @Override
@@ -535,8 +551,10 @@ public class AppsAdapter extends CommanderAdapterBase {
                 ApplicationInfo ai = pl.get( i ).applicationInfo;
                 if( ai != null ) {
                     try {
+                        PackageInfo pi = pm.getPackageInfo( pl.get( i ).packageName, PackageManager.GET_GIDS | 
+                                                                                     PackageManager.GET_PERMISSIONS ); // PackageManager.GET_SIGNATURES
+                        String tmp_n = tmp_path + pi.packageName + "_" + pi.versionName + ".apk";
                         FileInputStream  fis = new FileInputStream( ai.sourceDir );
-                        String tmp_n = tmp_path + ai.packageName + ".apk";
                         FileOutputStream fos = new FileOutputStream( tmp_n );
                         Utils.copyBytes( fis, fos );
                     } catch( Exception e ) {

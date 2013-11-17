@@ -49,7 +49,6 @@
 <string name="ftp_descr">Connect to an FTP server, browse and transfer files both to and from it.</string>
 <string name="sftp_descr">Connect to a Secured (SSH) FTP server. SFTP plugin is requiered.</string>
 <string name="smb_descr">Connect to shared folders on a Windows machine. SMB plugin is requiered.</string>
-<string name="box_descr">Connect to the Box cloud storage. Box plugin is requiered.</string>
 <string name="root_descr">Use caution - for rooted devices only: Browse and interact with critical system files. Only proceed if you know what you\'re doing.</string>
 <string name="mount_descr">Display a list of all mount points. Remount them to \"rw\" mode, then back to \"ro\" mode after any changes are complete. Proceed with caution.</string>
 <string name="apps_descr">View and manage installed packages.</string>

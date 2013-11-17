@@ -659,6 +659,46 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     }
 
     @Override
+    public boolean hasFeature( Feature feature ) {
+        switch( feature ) {
+        case F1:
+        case F9:
+        case F10:
+        case EQ:
+        case TGL:
+        case ENTER:
+        case ADD_FAV:
+        case SDCARD:
+        case ROOT:
+        case SOFTKBD:
+        case MENU:
+            return true;
+        case BY_NAME:
+        case BY_EXT:
+        case BY_SIZE:
+        case BY_DATE:
+            return hasFeature( Feature.SORTING );
+        case  F2:
+        case  F3:
+        case  F4:
+        case  F5:
+        case  F6:
+        case  F7:
+        case  F8:
+        case  SZ:
+        case  SEL_UNS:
+        case  HIDDEN:
+        case  REFRESH:
+        case  CHKBL:
+            return hasFeature( Feature.REAL );
+        case REAL:
+        case SORTING:
+            return false;
+        default: return false;
+        }
+    }
+    
+    @Override
     public void populateContextMenu( ContextMenu menu, AdapterView.AdapterContextMenuInfo acmi, int num ) {
         try {
             Item item = (Item)getItem( acmi.position );
@@ -669,35 +709,34 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 menu.add( 0, R.id.add_fav, 0, R.string.add_fav );
                 return;
             }
-            int t = getType();
-            if( CA.suitable( R.id.sz, t ) )
+            if( hasFeature( Feature.SZ ) )
                 menu.add( 0, R.id.sz, 0, R.string.show_size );
             if( num <= 1 ) {
-                if( CA.suitable( R.id.F2, t ) )
+                if( hasFeature( Feature.F2 ) )
                     menu.add( 0, R.id.F2, 0, R.string.rename_title );
                 if( file ) {
-                    if( CA.suitable( R.id.F3, t ) )
+                    if( hasFeature( Feature.F3 ) )
                         menu.add( 0, R.id.F3, 0, R.string.view_title );
-                    if( CA.suitable( R.id.F4, t ) )
+                    if( hasFeature( Feature.F4 ) )
                         menu.add( 0, R.id.F4, 0, R.string.edit_title );
                 }
             }
-            if( ( t & CA.LOCAL ) != 0 )
+            if( hasFeature( Feature.LOCAL ) )
                 menu.add( 0, Commander.SEND_TO, 0, R.string.send_to );
-            if( CA.suitable( R.id.F5, t ) )
+            if( hasFeature( Feature.F5 ) )
                 menu.add( 0, R.id.F5, 0, R.string.copy_title );
-            if( CA.suitable( R.id.F6, t ) )
+            if( hasFeature( Feature.F6 ) )
                 menu.add( 0, R.id.F6, 0, R.string.move_title );
-            if( CA.suitable( R.id.F8, t ) )
+            if( hasFeature( Feature.F8 ) )
                 menu.add( 0, R.id.F8, 0, R.string.delete_title );
-            if( ( t & CA.LOCAL ) != 0 ) {
+            if( hasFeature( Feature.LOCAL ) ) {
                 if( file && num <= 1 )
                     menu.add( 0, Commander.OPEN_WITH, 0, R.string.open_with );
                 menu.add( 0, R.id.new_zip, 0, R.string.new_zip );
             }
             if( num <= 1 ) {
                 menu.add( 0, Commander.COPY_NAME, 0, R.string.copy_name );
-                if( ( t & CA.LOCAL ) != 0 )
+                if( hasFeature( Feature.LOCAL ) )
                     menu.add( 0, Commander.SHRCT_CMD, 0, R.string.shortcut );
             }
             if( item.dir && acmi.position != 0 )
@@ -708,9 +747,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         }
     }
 
-    @Override
-    public void setIdentities( String name, String pass ) {
-    }
     @Override
     public void setCredentials( Credentials crd ) {
     }

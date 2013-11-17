@@ -252,14 +252,14 @@ public class StreamServer extends Service {
                 }
                                 
                 String scheme = uri.getScheme();
-                int ca_type = CA.GetAdapterTypeId( scheme );
+                if( scheme == null ) scheme = "";
                 String host = uri.getHost();
                 if( ca != null ) { 
-                    if( ca.getType() != ca_type )
-                        throw new Exception( "Can't switch to different adapter types: " + ca.getType() + "!=" + ca_type );
+                    if( !scheme.equals( ca.getScheme() ) )
+                        throw new Exception( "Can't switch to different adapter types: " + scheme + "!=" + ca.getScheme() );
                 }
                 else {
-                    ca = CA.CreateAdapterInstance( ca_type, ctx );
+                    ca = CA.CreateAdapterInstance( scheme, ctx );
                     if( ca == null ) {
                         Log.e( TAG, "Can't create the adapter for: " + scheme );
                         SendStatus( osw, 500 );

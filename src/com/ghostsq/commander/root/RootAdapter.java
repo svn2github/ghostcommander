@@ -70,6 +70,10 @@ public class RootAdapter extends CommanderAdapterBase {
         super( ctx_, SHOW_ATTR | NARROW_MODE );
     }
     @Override
+    public String getScheme() {
+        return "root";
+    }
+    @Override
     public int setMode( int mask, int val ) {
         if( ( mask & ( MODE_WIDTH ) ) == 0 )
             return super.setMode( mask, val );
@@ -77,8 +81,15 @@ public class RootAdapter extends CommanderAdapterBase {
     }
    
     @Override
-    public int getType() {
-        return CA.ROOT;
+    public boolean hasFeature( Feature feature ) {
+        switch( feature ) {
+        case REAL:
+        case SZ:
+        case MOUNT:
+        case REMOUNT:
+            return true;
+        default: return super.hasFeature( feature );
+        }
     }
     
     class ListEngine extends ExecEngine {
@@ -220,11 +231,6 @@ public class RootAdapter extends CommanderAdapterBase {
     @Override
     public void setUri( Uri uri_ ) {
         uri = uri_;
-    }
-    
-    @Override
-    public void setIdentities( String name, String pass ) {
-        // TODO: provide a password for su ?
     }
     
     @Override

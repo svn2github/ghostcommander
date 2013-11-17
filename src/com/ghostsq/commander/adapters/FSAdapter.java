@@ -84,11 +84,26 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
         dirName = null;
         items = null;
     }
-    @Override
-    public int getType() {
-        return CA.FS;
-    }
 
+    @Override
+    public String getScheme() {
+        return "";
+    }
+    
+    @Override
+    public boolean hasFeature( Feature feature ) {
+        switch( feature ) {
+        case FS:
+        case LOCAL:
+        case REAL:
+        case SF4:
+        case SEARCH:
+        case SEND:
+            return true;
+        default: return super.hasFeature( feature );
+        }
+    }
+    
     @Override
     public String toString() {
         return Utils.mbAddSl( dirName );
