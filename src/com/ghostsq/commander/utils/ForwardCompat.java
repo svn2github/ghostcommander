@@ -3,6 +3,9 @@ package com.ghostsq.commander.utils;
 import java.io.File;
 
 import android.annotation.SuppressLint;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ListView;
 
@@ -18,5 +21,8 @@ public class ForwardCompat
     }
     public static void smoothScrollToPosition( ListView flv, int pos ) {
         flv.smoothScrollToPosition( pos );
+    }
+    public static Drawable getLogo( PackageManager pm, ApplicationInfo pai ) {
+        return pai.logo == 0 ? null : pm.getApplicationLogo( pai );
     }
 }
