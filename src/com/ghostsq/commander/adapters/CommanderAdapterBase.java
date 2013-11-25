@@ -666,11 +666,14 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         case F10:
         case EQ:
         case TGL:
+        case HOME:
         case ENTER:
         case ADD_FAV:
+        case FAVS:
         case SDCARD:
         case ROOT:
         case SOFTKBD:
+        case SORTING:
         case MENU:
             return true;
         case BY_NAME:
@@ -692,7 +695,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         case  CHKBL:
             return hasFeature( Feature.REAL );
         case REAL:
-        case SORTING:
             return false;
         default: return false;
         }

@@ -1,5 +1,6 @@
 package com.ghostsq.commander.adapters;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -14,6 +15,7 @@ import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.Utils;
 
 import android.annotation.TargetApi;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -84,6 +86,7 @@ public class HomeAdapter extends CommanderAdapterBase {
         case MOUNT:
             return true;
         case HOME:
+        case SORTING:
             return false;
         default: return super.hasFeature( feature );
         }
@@ -104,7 +107,6 @@ public class HomeAdapter extends CommanderAdapterBase {
     public void setUri( Uri uri ) {
     }
     
-    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     @Override
     public boolean readSource( Uri tmp_uri, String pbod ) {
         try {
@@ -116,12 +118,22 @@ public class HomeAdapter extends CommanderAdapterBase {
             ApplicationInfo ai = pm.getApplicationInfo( ghost_commander, 0 );
             String[]    ghosts = pm.getPackagesForUid( ai.uid );
             if( ghosts != null &&  ghosts.length > 1 ) {
-                plugins = new Item[ghosts.length - 1];
-                int i = 0;
+                ArrayList<Item> plugins_al = new ArrayList<Item>();
                 for( String pkgn : ghosts ) {
                     if( ghost_commander.equals( pkgn ) ) continue;
+                    ApplicationInfo pai = null;
+                    Resources pre = null;
+                    try {
+                        pai = pm.getApplicationInfo( pkgn, 0 );
+                        if( pai == null ) continue;
+                        pre = pm.getResourcesForApplication( pai );
+                        if( pre == null ) continue;
+                    } catch( Exception e ) { 
+                        continue; //  v4.4
+                    }
                     Log.d( TAG, pkgn );
                     Item item = new Item();
+                    plugins_al.add( item );
                     String scheme = pkgn.substring( scheme_pos );
                     if( "samba".equals( scheme ) ) {
                         item.name = s( R.string.smb );
@@ -133,8 +145,6 @@ public class HomeAdapter extends CommanderAdapterBase {
                         item.attr = s( R.string.sftp_descr );
                         item.icon_id = R.drawable.sftp;
                     } else {                        
-                        ApplicationInfo pai = pm.getApplicationInfo( pkgn, 0 );
-                        Resources pre = pm.getResourcesForApplication( pai );
                         Utils.changeLanguage( ctx, pre );
                         if( pai.descriptionRes != 0 ) {
                             String descr = pre.getString( pai.descriptionRes );
@@ -154,8 +164,11 @@ public class HomeAdapter extends CommanderAdapterBase {
                         item.setIcon( logo != null ?  logo  :  pm.getApplicationIcon( pai ) );
                     }
                     item.origin = scheme; 
-                    plugins[i++] = item;
                 }
+                
+                
+                plugins = new Item[plugins_al.size()];
+                plugins_al.toArray( plugins );
                 
                 Arrays.sort( plugins, new Comparator<Item>() {
                     public int compare( Item i1, Item i2 ) {
@@ -225,7 +238,7 @@ public class HomeAdapter extends CommanderAdapterBase {
             if( p == Mode.PLUGINS.pos ) {
                 Intent i = new Intent( Intent.ACTION_VIEW );
                 i.setData( Uri.parse( s( R.string.plugins_uri ) ) );
-                commander.issue( i, 0 ); 
+                commander.issue( i, 0 );
                 return; 
             }
         }
