@@ -227,6 +227,7 @@ public class ToolButton {
         case  R.id.remount:      return  true;
         case  R.id.sel_all:      return  true;
         case  R.id.uns_all:      return  true;
+        case  R.id.search:       return  true;        
         }
         return false;
     }

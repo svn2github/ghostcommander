@@ -39,6 +39,7 @@ final public class CA {
     protected static final int   mnt_schema_h = "mount".hashCode();  
     protected static final int  apps_schema_h =  "apps".hashCode();
     protected static final int  favs_schema_h =  "favs".hashCode();
+    protected static final int  file_schema_h =  "file".hashCode();
 
     public final static boolean isLocal( String scheme ) {
         return scheme == null || scheme.length() == 0 || "file".equals( scheme ) || "find".equals( scheme );
@@ -68,6 +69,7 @@ final public class CA {
     public final static CommanderAdapter CreateAdapterInstance( String scheme, Context c ) {
         if( !Utils.str( scheme ) ) return new FSAdapter( c );
         final int scheme_h = scheme.hashCode();
+        if(  file_schema_h == scheme_h )  return new FSAdapter( c );
         if(  home_schema_h == scheme_h )  return new HomeAdapter( c );
         if(   zip_schema_h == scheme_h )  return new ZipAdapter( c ); 
         if(   ftp_schema_h == scheme_h )  return new FTPAdapter( c ); 

@@ -134,8 +134,7 @@ public class AppsAdapter extends CommanderAdapterBase {
             ListEngine list_engine = (ListEngine)reader;
             pkgInfos = list_engine.getItems();
             reSort();
-            numItems = pkgInfos != null ? pkgInfos.length+1 : 1;
-            notifyDataSetChanged();
+            setCount( pkgInfos != null ? pkgInfos.length+1 : 1 );
         }
     }
     
@@ -159,7 +158,7 @@ public class AppsAdapter extends CommanderAdapterBase {
     public boolean readSource( Uri tmp_uri, String pbod ) {
         try {
             dirty = true;
-            numItems = 1;
+            setCount( 1 );
             compItems = null;            
             pkgInfos = null;
             actInfos = null;
@@ -191,7 +190,7 @@ public class AppsAdapter extends CommanderAdapterBase {
             String path = uri.getPath();
             if( path == null || path.length() <= 1 ) {
                 ArrayList<Item> ial = new ArrayList<Item>(); 
-                numItems = 1;
+                setCount( 1 );
                 Item manage_item = new Item( MANAGE );
                 manage_item.setIcon( pm.getApplicationIcon( "com.android.settings" ) );
                 manage_item.icon_id = R.drawable.and;
@@ -228,7 +227,7 @@ public class AppsAdapter extends CommanderAdapterBase {
                 
                 compItems = new Item[ial.size()];
                 ial.toArray( compItems );
-                numItems = compItems.length + 1;
+                setCount( compItems.length + 1 );
                 notify( pbod );
                 return true;
             }
@@ -242,14 +241,14 @@ public class AppsAdapter extends CommanderAdapterBase {
                         ins[1] = new Intent( Intent.ACTION_MAIN );
                         resInfos = getResolvers( ins, a );
                         if( resInfos != null )
-                            numItems = resInfos.length + 1;
+                            setCount( resInfos.length + 1 );
                     } else 
                     if( ps.size() >= 2 && ACTIVITIES.equals( ps.get( 0 ) ) ) {
                         if( manUtl == null )
                             manUtl = new MnfUtils( pm, a );
                         intFilters = manUtl.getIntentFilters( ps.get( 1 ) );
                         if( intFilters != null )
-                            numItems = intFilters.length + 1;
+                            setCount( intFilters.length + 1 );
                     } else {
                         PackageInfo pi = pm.getPackageInfo( a, PackageManager.GET_ACTIVITIES | 
                                                                PackageManager.GET_PROVIDERS | 
@@ -257,13 +256,13 @@ public class AppsAdapter extends CommanderAdapterBase {
                         if( ACTIVITIES.equals( ps.get( 0 ) ) ) {
                             actInfos = pi.activities != null ? pi.activities : new ActivityInfo[0];
                             reSort();
-                            numItems = actInfos.length + 1;
+                            setCount( actInfos.length + 1 );
                         } else if( PROVIDERS.equals( ps.get( 0 ) ) ) {
                             prvInfos = pi.providers != null ? pi.providers : new ProviderInfo[0];
-                            numItems = prvInfos.length + 1;
+                            setCount( prvInfos.length + 1 );
                         } else if( SERVICES.equals( ps.get( 0 ) ) ) {
                             srvInfos = pi.services != null ? pi.services : new ServiceInfo[0];
-                            numItems = srvInfos.length + 1;
+                            setCount( srvInfos.length + 1 );
                         }
                     }
                     notify( pbod );
@@ -276,9 +275,6 @@ public class AppsAdapter extends CommanderAdapterBase {
             notify( uri != null ? s( R.string.failed ) + s( R.string.pkg_name ) + ":\n" + uri.getAuthority() : 
                                   s( R.string.fail ), pbod );
             return false;
-        }
-        finally {
-            notifyDataSetChanged();
         }
         notify( s( R.string.fail ), pbod );
         return false;

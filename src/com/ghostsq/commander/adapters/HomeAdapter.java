@@ -59,7 +59,7 @@ public class HomeAdapter extends CommanderAdapterBase {
     public HomeAdapter( Context ctx_ ) {
         super( ctx_, DETAILED_MODE | NARROW_MODE | SHOW_ATTR | ATTR_ONLY );
         modes = Mode.values();
-        numItems = getNumItems();
+        setCount( getNumItems() );
     }
 
     @Override
@@ -74,7 +74,7 @@ public class HomeAdapter extends CommanderAdapterBase {
         mode &= ~ICON_TINY;
         if( ( mask & MODE_ROOT ) != 0 ) {
             root = ( mode & MODE_ROOT ) != 0;
-            numItems = getNumItems();
+            setCount( getNumItems() );
             notifyDataSetChanged();
         }
         return mode;
@@ -177,8 +177,7 @@ public class HomeAdapter extends CommanderAdapterBase {
                         return 0;
                     }
                 } );
-                
-                numItems = getNumItems(); 
+                setCount( getNumItems() );
             }
         } catch( NameNotFoundException e ) {
             e.printStackTrace();

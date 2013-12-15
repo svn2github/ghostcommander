@@ -1083,7 +1083,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
     
     private void setSystemNotification( int id, Message msg ) {
         if( notMan == null || msg == null ) return;
-        String str = "Unknown Event";
+        String str = "";
         try {
             if( msg.obj instanceof Bundle )
                 str = ((Bundle)msg.obj).getString( MESSAGE_STRING );

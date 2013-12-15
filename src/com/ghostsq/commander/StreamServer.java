@@ -168,7 +168,7 @@ public class StreamServer extends Service {
         private final static String TAG = "GCSS.StreamingThread";
         private Socket data_socket;
         private int num_id;
-        private boolean  l = false;
+        private boolean  l = true;
 
         public StreamingThread( Socket data_socket_, int num_id_ ) {
             data_socket = data_socket_;
@@ -239,15 +239,14 @@ public class StreamServer extends Service {
                 long offset = 0;
                 while( br.ready() ) {
                     String hl = br.readLine();
-                    if( hl != null ) {
-                        if( l ) Log( hl );
-                        if( hl.startsWith( "Range: bytes=" ) ) {
-                            int end = hl.indexOf( '-', 13 );
-                            String range_s = hl.substring( 13, end );
-                            try {
-                                offset = Long.parseLong( range_s );
-                            } catch( NumberFormatException nfe ) {}
-                        }
+                    if( !Utils.str( hl ) ) break;
+                    if( l ) Log( hl );
+                    if( hl.startsWith( "Range: bytes=" ) ) {
+                        int end = hl.indexOf( '-', 13 );
+                        String range_s = hl.substring( 13, end );
+                        try {
+                            offset = Long.parseLong( range_s );
+                        } catch( NumberFormatException nfe ) {}
                     }
                 }
                                 

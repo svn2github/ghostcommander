@@ -728,7 +728,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             CommanderAdapter ca = getListAdapter( true );
             if( ca == null )
                 return;
-            if( ca.hasFeature( Feature.SEND ) ) {
+            if( !ca.hasFeature( Feature.SEND ) ) {
                 c.showError( c.getString( R.string.on_fs_only ) );
                 return;
             }
@@ -766,7 +766,13 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         if( f != null ) {
             Intent intent = new Intent( Intent.ACTION_VIEW );
             intent.setDataAndType( Uri.fromFile( f ), "*/*" );
-            c.startActivity( Intent.createChooser( intent, c.getString( R.string.open_title ) ) );
+            
+            if (Build.VERSION.SDK_INT == 19) {
+                // This will open the "Complete action with" dialog if the user doesn't have a default app set.
+                c.startActivity( intent );
+            } else {
+                c.startActivity( Intent.createChooser( intent, c.getString( R.string.open_title ) ) );
+            }
         }
     }
 

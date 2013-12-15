@@ -67,7 +67,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected boolean ascending = true;
     protected String parentLink = SLS;
     protected int numItems = 0;
-    public int shownFrom = 0, shownNum = 3;
+    public  int shownFrom = 0, shownNum = 3;
     
     private static ColorsKeeper ck;
     private static int[]        typeColors   = new int[0];
@@ -157,7 +157,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             localeDateFormat = DateFormat.getDateFormat( ctx );
             localeTimeFormat = DateFormat.getTimeFormat( ctx );
             density = ctx.getResources().getDisplayMetrics().density;
-            Log.i( TAG, "Density: " + density );
+            //Log.i( TAG, "Density: " + density );
         }
         parentWidth = 0;
         nameWidth = 0;
@@ -312,6 +312,11 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         return numItems;
     }
 
+    public void setCount( int n ) {
+        numItems = n;
+        notifyDataSetChanged();
+    }
+    
     @Override
     public long getItemId( int position ) {
         return position;

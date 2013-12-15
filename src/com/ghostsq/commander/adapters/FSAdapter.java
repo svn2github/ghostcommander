@@ -954,7 +954,8 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
 				if( del_src_dir && in_same_src && src_dir_f != null )
 				    src_dir_f.delete();
 				wakeLock.release();
-	            String report = Utils.getOpReport( ctx, num, move ? R.string.moved : R.string.copied );
+				// XXX a hack: assume (move && !del_src_dir)==true when copy from app: to the FS 
+	            String report = Utils.getOpReport( ctx, num, move && !del_src_dir ? R.string.moved : R.string.copied );
 	            sendResult( report );
 			} catch( Exception e ) {
 				sendProgress( e.getMessage(), Commander.OPERATION_FAILED_REFRESH_REQUIRED );
