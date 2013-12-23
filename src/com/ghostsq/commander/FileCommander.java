@@ -425,14 +425,8 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                     panels.refreshLists( null );
             }            
             break;
-            default: {
-                CommanderAdapter ca = panels.getListAdapter( true );
-                if( ca != null && ca.handleActivityResult( requestCode, resultCode, data ) )
-                    return;
-                ca = panels.getListAdapter( false );
-                if( ca != null )
-                    ca.handleActivityResult( requestCode, resultCode, data );
-            }
+            default: 
+                handleActivityResult( requestCode, resultCode, data );
         }
     }
 
@@ -870,10 +864,21 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 }
                 panels.Navigate( panels.getCurrent(), uri, crd, file_name );
                 dont_restore = true;
-            }
+            } 
+            else
+                handleActivityResult( -1, -1, intent );
         } catch( Exception e ) {
             Log.e( TAG, "Can't extract a parcel from intent", e );
         }
+    }
+
+    private final void handleActivityResult( int requestCode, int resultCode, Intent data ) {
+        CommanderAdapter ca = panels.getListAdapter( true );
+        if( ca != null && ca.handleActivityResult( requestCode, resultCode, data ) )
+            return;
+        ca = panels.getListAdapter( false );
+        if( ca != null )
+            ca.handleActivityResult( requestCode, resultCode, data );
     }
     
     @Override

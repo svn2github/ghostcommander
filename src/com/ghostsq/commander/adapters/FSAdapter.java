@@ -824,10 +824,13 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
 		private File[] mList;
 
         DeleteEngine( FileItem[] list ) {
-            setName( ".DeleteEngine" );
-            mList = new File[list.length];
+            this( new File[list.length] );
             for( int i = 0; i < list.length; i++ )
                 mList[i] = list[i].f;
+        }
+        DeleteEngine( File[] list ) {
+            setName( ".DeleteEngine" );
+            mList = list;
         }
         @Override
         public void run() {
@@ -951,10 +954,14 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
 				long sum = getSizes( x_list );
 				conv = 100 / (double)sum;
 				int num = copyFiles( fList, mDest, destIsFullName );
-				if( del_src_dir && in_same_src && src_dir_f != null )
-				    src_dir_f.delete();
+				if( del_src_dir && in_same_src && src_dir_f != null ) {
+				    File[] to_delete = new File[1];
+				    to_delete[0] = src_dir_f; 
+				    DeleteEngine de = new DeleteEngine( to_delete );
+				    de.start();
+				}
 				wakeLock.release();
-				// XXX a hack: assume (move && !del_src_dir)==true when copy from app: to the FS 
+				// XXX: assume (move && !del_src_dir)==true when copy from app: to the FS 
 	            String report = Utils.getOpReport( ctx, num, move && !del_src_dir ? R.string.moved : R.string.copied );
 	            sendResult( report );
 			} catch( Exception e ) {
