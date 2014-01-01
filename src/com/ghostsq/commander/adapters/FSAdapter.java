@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.lang.ref.SoftReference;
 import java.nio.channels.ClosedByInterruptException;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -28,6 +29,7 @@ import com.ghostsq.commander.utils.Utils;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -822,6 +824,7 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
 
 	class DeleteEngine extends Engine {
 		private File[] mList;
+        private ArrayList<String> to_scan;
 
         DeleteEngine( FileItem[] list ) {
             this( new File[list.length] );
@@ -831,6 +834,8 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
         DeleteEngine( File[] list ) {
             setName( ".DeleteEngine" );
             mList = list;
+            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO )
+                to_scan = new ArrayList<String>(); 
         }
         @Override
         public void run() {
@@ -838,6 +843,11 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
                 Init( null );
                 int cnt = deleteFiles( mList );
                 sendResult( Utils.getOpReport( ctx, cnt, R.string.deleted ) );
+                if( to_scan != null && to_scan.size() > 0 ) {
+                    String[] to_scan_a = new String[to_scan.size()];
+                    to_scan.toArray( to_scan_a );
+                    ForwardCompat.scanMedia( ctx, to_scan_a );
+                }
             }
             catch( Exception e ) {
                 sendProgress( e.getMessage(), Commander.OPERATION_FAILED_REFRESH_REQUIRED );
@@ -861,6 +871,12 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
                 else {
                     error( ctx.getString( R.string.cant_del, f.getName() ) );
                     break;
+                }
+                if( to_scan != null ) {
+                    String ext = Utils.getFileExt( f.getName() );
+                    String mime = Utils.getMimeByExt( ext );
+                    if( mime != null && ( mime.startsWith( "image/" ) || mime.startsWith( "audio/" ) || mime.startsWith( "video/" ) ) )
+                        to_scan.add( f.getAbsolutePath() );
                 }
             }
             return cnt;
@@ -917,6 +933,7 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
         private byte[]  buf;
         private static final int BUFSZ = 524288;
         private PowerManager.WakeLock wakeLock;
+        private ArrayList<String> to_scan;
 
         CopyEngine( File[] list, String dest, int move_mode, boolean dest_is_full_name ) {
         	super( null );
@@ -930,6 +947,9 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
                         
             PowerManager pm = (PowerManager)ctx.getSystemService( Context.POWER_SERVICE );
             wakeLock = pm.newWakeLock( PowerManager.PARTIAL_WAKE_LOCK, TAG );
+            
+            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO )
+                to_scan = new ArrayList<String>(); 
         }
         @Override
         public void run() {
@@ -964,6 +984,13 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
 				// XXX: assume (move && !del_src_dir)==true when copy from app: to the FS 
 	            String report = Utils.getOpReport( ctx, num, move && !del_src_dir ? R.string.moved : R.string.copied );
 	            sendResult( report );
+	            
+                if( to_scan != null && to_scan.size() > 0 ) {
+                    String[] to_scan_a = new String[to_scan.size()];
+                    to_scan.toArray( to_scan_a );
+                    ForwardCompat.scanMedia( ctx, to_scan_a );
+                }
+
 			} catch( Exception e ) {
 				sendProgress( e.getMessage(), Commander.OPERATION_FAILED_REFRESH_REQUIRED );
 				return;
@@ -1087,7 +1114,12 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
                         
                         if( i >= list.length-1 )
                         	sendProgress( c.getString( R.string.copied_f, fn ) + sizeOfsize( copied, sz_s ), (int)(totalBytes * conv) );
-                        
+                        if( to_scan != null ) {
+                            String ext = Utils.getFileExt( outFile.getName() );
+                            String mime = Utils.getMimeByExt( ext );
+                                if( mime != null && ( mime.startsWith( "image/" ) || mime.startsWith( "audio/" ) || mime.startsWith( "video/" ) ) )
+                                to_scan.add( outFile.getAbsolutePath() );
+                        }
 // debug only, to remove!
 //Log.v( TAG, c.getString( R.string.copied_f, fn ) );
                         counter++;

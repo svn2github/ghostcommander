@@ -13,6 +13,8 @@ import com.ghostsq.commander.adapters.FindAdapter;
 import com.ghostsq.commander.root.MountAdapter;
 import com.ghostsq.commander.root.RootAdapter;
 import com.ghostsq.commander.utils.Credentials;
+import com.ghostsq.commander.utils.ForwardCompat;
+import com.ghostsq.commander.utils.MediaScanTask;
 import com.ghostsq.commander.utils.Utils;
 
 import android.app.Activity;
@@ -54,7 +56,7 @@ import android.widget.Toast;
 
 public class FileCommander extends Activity implements Commander, ServiceConnection, View.OnClickListener {
     private final static String TAG = "GhostCommanderActivity";
-    public  final static int REQUEST_CODE_PREFERENCES = 1, REQUEST_CODE_SRV_FORM = 2;
+    public final static int REQUEST_CODE_PREFERENCES = 1, REQUEST_CODE_SRV_FORM = 2;
     public  final static int FIND_ACT = 1017, DBOX_APP = 3592, SMB_ACT = 2751, FTP_ACT = 4501, SFTP_ACT = 2450;
     
     private ArrayList<Dialogs> dialogs;
@@ -372,7 +374,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
     @Override
     protected void onActivityResult( int requestCode, int resultCode, Intent data ) {
         super.onActivityResult( requestCode, resultCode, data );
-        Log.d( TAG, "onActivityResult()" );
+        Log.d( TAG, "onActivityResult( " + requestCode + ", " + data + " )" );
         switch( requestCode ) { 
         case REQUEST_CODE_PREFERENCES: {
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
@@ -668,7 +670,11 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 panels.toggleHidden();
                 break;
             case  R.id.rescan:
-                sendBroadcast( new Intent( Intent.ACTION_MEDIA_MOUNTED, Uri.parse( "file://" + Panels.DEFAULT_LOC ) ) );
+                if( android.os.Build.VERSION.SDK_INT >= 19 ) {
+                    showInfo( getString( R.string.wait ) );
+                    MediaScanTask.scanMedia( this, new File( Panels.DEFAULT_LOC ) );
+                } else
+                    sendBroadcast( new Intent( Intent.ACTION_MEDIA_MOUNTED, Uri.parse( "file://" + Panels.DEFAULT_LOC ) ) );
                 break;
             default:
                 CommanderAdapter ca = panels.getListAdapter( true );
