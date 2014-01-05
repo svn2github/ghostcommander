@@ -732,6 +732,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             String scheme = uri.getScheme();
             String path = uri.getPath();
             String ext  = Utils.getFileExt( "zip".equals( scheme ) ? uri.getFragment() : path );
+            if( !Utils.str( ext ) ) ext = Utils.getFileExt( uri.getFragment() );
             String mime = Utils.getMimeByExt( ext );
             if( !Utils.str( scheme ) ) { 
                 if( ext != null && ext.compareToIgnoreCase( ".zip" ) == 0 ) {
