@@ -680,6 +680,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         case SOFTKBD:
         case SORTING:
         case MENU:
+        case SCROLL:
             return true;
         case BY_NAME:
         case BY_EXT:

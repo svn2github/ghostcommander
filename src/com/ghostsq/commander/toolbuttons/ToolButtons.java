@@ -19,6 +19,8 @@ public class ToolButtons extends ArrayList<ToolButton>
             // add new introduced buttons also here like below:
             if( bcns.indexOf( "search" ) < 0 ) bcns += ",search";
             if( bcns.indexOf( "menu"   ) < 0 ) bcns += ",menu";
+            if( bcns.indexOf( "totop"  ) < 0 ) bcns += ",totop";
+            if( bcns.indexOf( "tobot"  ) < 0 ) bcns += ",tobot";
             String[] bcna = bcns.split( "," );
             for( String bcn : bcna ) {
                 int bi = ToolButton.getId( bcn );
@@ -62,7 +64,9 @@ public class ToolButtons extends ArrayList<ToolButton>
                  R.id.mount,   
                  R.id.menu,   
                  R.id.softkbd,   
-                 R.id.search
+                 R.id.search,
+                 R.id.totop,
+                 R.id.tobot
             };
             for( int bi : bia ) {
                 ToolButton tb = new ToolButton( bi );

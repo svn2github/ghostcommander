@@ -7,11 +7,11 @@
         <item android:id="@+id/action_back"
               android:title="Back"
               android:icon="@drawable/ic_menu_back"/>
-          <item android:id="@+id/action_totop"
-              android:title="Top"
+          <item android:id="@+id/totop"
+              android:title="@string/go_top"
               android:icon="@android:drawable/arrow_up_float"/>
-        <item android:id="@+id/action_tobot"
-              android:title="Bottom"
+        <item android:id="@+id/tobot"
+              android:title="@string/go_end"
               android:icon="@android:drawable/arrow_down_float"/>
         <item android:id="@+id/home"
            android:title="@string/home"

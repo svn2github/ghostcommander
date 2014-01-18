@@ -339,8 +339,9 @@
 <string name="save_as">Сохранить как…</string>
 <string name="revert">Восстановить</string>
 <string name="wrap">Длинные строки</string>
-<string name="go_top">Начало</string>
-<string name="go_end">Конец</string>
+<string name="go_up">Назад</string>
+<string name="go_top">В начало</string>
+<string name="go_end">В конец</string>
 <string name="encoding">Кодировка</string>
 <string name="encoding_set">Активная кодировка установлена в \"%1$s\". Пожалуста, загрузите файл заново. Иначе, при сохранении файла, его кодировка изменится на выбранную.</string>
 <string name="no_such_file">Нет такого файла \"%1$s\"</string>

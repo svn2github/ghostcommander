@@ -352,8 +352,9 @@
 <string name="save_as">Save as…</string>
 <string name="revert">Revert</string>
 <string name="wrap">Wrap long lines</string>
+<string name="go_up">Up</string>
 <string name="go_top">Top</string>
-<string name="go_end">End</string>
+<string name="go_end">Bottom</string>
 <string name="encoding">Encoding</string>
 <string name="encoding_set">The Encoding is set to \"%1$s\", please reload. If you save, the original encoding will be changed to the newly chosen one.</string>
 <string name="no_such_file">No such file \"%1$s\".</string>

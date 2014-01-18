@@ -563,10 +563,10 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             case R.id.action_back:
                 panels.goUp();
                 break;
-            case R.id.action_totop:
+            case R.id.totop:
                 panels.goTop();
                 break;
-            case R.id.action_tobot:
+            case R.id.tobot:
                 panels.goBot();
                 break;
             case R.id.home:

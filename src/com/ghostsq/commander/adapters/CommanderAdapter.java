@@ -187,7 +187,8 @@ public interface CommanderAdapter {
         SEARCH,
         MENU,
         SEND,
-        CHKBL
+        CHKBL,
+        SCROLL
     }
     
     /**
