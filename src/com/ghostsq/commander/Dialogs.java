@@ -311,7 +311,8 @@ public class Dialogs implements DialogInterface.OnClickListener {
                     edit.setWidth( owner.getWidth() - 70 );
                     
                     CommanderAdapter ca = owner.panels.getListAdapter( false );
-                    Uri u = ca.getUri();
+
+                    Uri u = ca != null ? ca.getUri() : null;
                     String cts = u != null ? u.toString() : "";
 //                    String cts = Favorite.screenPwd( owner.panels.getFolderUriWithAuth( false ) );
                     if( !Utils.str( cts ) ) return;
