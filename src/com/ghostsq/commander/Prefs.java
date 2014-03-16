@@ -3,6 +3,7 @@ package com.ghostsq.commander;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.zip.ZipEntry;
@@ -203,6 +204,24 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
                 restPrefs( f, sp_dir );
                 ck.restore();
                 finish();
+                break;
+            case R.id.save_log:
+                if( !save_dir.exists() ) save_dir.mkdirs();
+                final String f_save_dir = save_dir.getAbsolutePath();
+                final Context ctx = this; 
+                new Thread( new Runnable() {
+                    @Override
+                    public void run() {
+                        String fn = f_save_dir + "/logcat.txt";
+                        try {
+                            Process prc = Runtime.getRuntime().exec( "logcat -d -v time -f " + fn + " *:v\n" );
+                            Toast.makeText( ctx, prc.waitFor() == 0 ? ctx.getString( R.string.saved, fn ) :
+                                ctx.getString( R.string.fail ), Toast.LENGTH_LONG ).show();
+                        } catch( Exception e ) {
+                            Log.e( TAG, fn, e );
+                        }
+                    }
+                } ).run();
                 break;
             }
         } catch( Exception e ) {

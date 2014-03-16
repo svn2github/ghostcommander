@@ -4,4 +4,6 @@
           android:title="@string/save_prefs"/>
       <item android:id="@+id/rest_prefs"
           android:title="@string/rest_prefs"/>
+      <item android:id="@+id/save_log"
+          android:title="Save Log to file "/>
 </menu>

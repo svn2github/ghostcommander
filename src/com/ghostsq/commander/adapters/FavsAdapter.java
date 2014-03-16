@@ -66,6 +66,7 @@ public class FavsAdapter extends CommanderAdapterBase {
         case  CHKBL:
             return true;
         case  BY_DATE:
+        case  ADD_FAV:
         case  FAVS:
             return false;
         default: return super.hasFeature( feature );
