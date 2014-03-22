@@ -396,7 +396,7 @@ public class RootAdapter extends CommanderAdapterBase {
                     if( f == null ) continue;
                     String file_name = f.getName();
                     String full_name = src_base_path + file_name;
-                    String cmd = move ? " mv -f" : ( f.isDirectory() ? " cp -a" : " cp" );
+                    String cmd = move ? " mv -f" : ( f.isDirectory() ? " cp -a" : " cp -p" );
                     String to_exec = cmd + " " + ExecEngine.prepFileName( full_name ) 
                                          + " " + esc_dest;
                     outCmd( true, to_exec, os );

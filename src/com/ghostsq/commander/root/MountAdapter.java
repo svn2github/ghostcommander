@@ -49,7 +49,18 @@ public class MountAdapter extends CommanderAdapterBase {
     @Override
     public boolean hasFeature( Feature feature ) {
         switch( feature ) {
+        case F1:
         case F7:
+        case F9:
+        case F10:
+        case EQ:
+        case TGL:
+        case HOME:
+        case MENU:
+        case FAVS:
+        case SDCARD:
+        case ROOT:
+        case SOFTKBD:
             return true;
         default: 
             return false;

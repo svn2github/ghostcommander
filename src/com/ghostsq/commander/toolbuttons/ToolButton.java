@@ -55,6 +55,7 @@ public class ToolButton {
         if( cn.equals( "menu"    ) ) return        R.id.menu;
         if( cn.equals( "totop"    ) ) return       R.id.totop;
         if( cn.equals( "tobot"    ) ) return       R.id.tobot;
+        if( cn.equals( "go_up"    ) ) return       R.id.action_back;
         return 0;
     }
 
@@ -94,7 +95,8 @@ public class ToolButton {
         case  R.id.search:       return  Feature.SEARCH;
         case  R.id.menu:         return  Feature.MENU;
         case  R.id.totop:        
-        case  R.id.tobot:        return  Feature.SCROLL;
+        case  R.id.tobot:      
+        case  R.id.action_back:  return  Feature.SCROLL;
         }
         return null;
     }
@@ -136,6 +138,7 @@ public class ToolButton {
         case  R.id.menu:         return  "menu";
         case  R.id.totop:        return  "totop";
         case  R.id.tobot:        return  "tobot";
+        case  R.id.action_back:  return  "go_up";
         }
         return null;
     }
@@ -206,7 +209,8 @@ public class ToolButton {
         case  R.id.search:       return  R.string.search_file;        
         case  R.id.menu:         return  R.string.menu;        
         case  R.id.totop:        return  R.string.go_top;        
-        case  R.id.tobot:        return  R.string.go_end;        
+        case  R.id.tobot:        return  R.string.go_end;
+        case  R.id.action_back:  return  R.string.go_up;
         }
         return 0;
     }

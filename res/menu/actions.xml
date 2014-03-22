@@ -5,7 +5,7 @@
           android:showAsAction="always">
       <menu>
         <item android:id="@+id/action_back"
-              android:title="Back"
+              android:title="@string/go_up"
               android:icon="@drawable/ic_menu_back"/>
         <item android:id="@+id/totop"
               android:title="@string/go_top"
@@ -39,9 +39,9 @@
           android:showAsAction="always">
           <menu>
               <item android:id="@+id/sel_all"
-                   android:title="@string/select_all"/>
+                   android:title="@string/select_b"/>
               <item android:id="@+id/uns_all"
-                   android:title="@string/unselect_all"/>
+                   android:title="@string/unselect_b"/>
           </menu>
     </item>
 </menu>

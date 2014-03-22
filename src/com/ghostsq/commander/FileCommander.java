@@ -13,7 +13,6 @@ import com.ghostsq.commander.adapters.FindAdapter;
 import com.ghostsq.commander.root.MountAdapter;
 import com.ghostsq.commander.root.RootAdapter;
 import com.ghostsq.commander.utils.Credentials;
-import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.MediaScanTask;
 import com.ghostsq.commander.utils.Utils;
 
