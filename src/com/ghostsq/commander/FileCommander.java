@@ -621,6 +621,12 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             case R.id.search:
                 showSearchDialog();
                 break;
+            case R.id.open:
+                String path = panels.getSelectedItemName( true );
+                String ext = Utils.getFileExt( path );
+                if( ".zip".equalsIgnoreCase( ext) )
+                    Navigate( Uri.parse( path ).buildUpon().scheme( "zip" ).build(), null, null );
+                break;
             case R.id.enter:
                 panels.openGoPanel();
                 break;
@@ -689,7 +695,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                     ca.doIt( id, panels.getSelectedOrChecked() );
             }
         } catch( Throwable e ) {
-            e.printStackTrace();
+            Log.e( TAG, "Failed command: " + id, e );
         }
     }
 
@@ -743,10 +749,6 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 ext = Utils.getFileExt( uri.getFragment() );
             String mime = Utils.getMimeByExt( ext );
             if( !Utils.str( scheme ) ) {
-                if( ext != null && ext.compareToIgnoreCase( ".zip" ) == 0 ) {
-                    Navigate( uri.buildUpon().scheme( "zip" ).build(), null, null );
-                    return;
-                }
                 Intent i = new Intent( Intent.ACTION_VIEW );
                 Intent op_intent = getIntent();
                 if( op_intent != null ) {
@@ -763,6 +765,10 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                         finish();
                         return;
                     }
+                }
+                if( ext != null && ext.compareToIgnoreCase( ".zip" ) == 0 ) {
+                    Navigate( uri.buildUpon().scheme( "zip" ).build(), null, null );
+                    return;
                 }
                 i.setDataAndType( uri.buildUpon().scheme( "file" ).authority( "" ).build(), mime );
                 i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET );

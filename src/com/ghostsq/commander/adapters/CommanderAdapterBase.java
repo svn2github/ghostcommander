@@ -714,7 +714,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             if( acmi.position == 0 ) {
                 menu.add( 0, R.id.enter, 0, R.string.enter );
                 menu.add( 0, R.id.eq, 0, R.string.oth_sh_this );
-                menu.add( 0, R.id.add_fav, 0, R.string.add_fav );
                 return;
             }
             if( hasFeature( Feature.SZ ) )

@@ -52,6 +52,8 @@ import android.text.format.DateFormat;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.ContextMenu;
+import android.widget.AdapterView;
 
 public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever {
     private   final static String TAG = "FSAdapter";
@@ -496,6 +498,21 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
         }
         
     }
+
+    @Override
+    public void populateContextMenu( ContextMenu menu, AdapterView.AdapterContextMenuInfo acmi, int num ) {
+        try {
+            if( acmi.position != 0 ) {
+                Item item = (Item)getItem( acmi.position );
+                if( !item.dir && ".zip".equals( Utils.getFileExt( item.name ) ) )
+                    menu.add( 0, R.id.open, 0, R.string.open );
+            }
+            super.populateContextMenu( menu, acmi, num );
+        } catch( Exception e ) {
+            Log.e( TAG, "", e );
+        }
+    }
+    
     
     @Override
     public void openItem( int position ) {
