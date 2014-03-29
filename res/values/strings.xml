@@ -353,7 +353,7 @@
 <string name="save_as">Save as…</string>
 <string name="revert">Revert</string>
 <string name="wrap">Wrap long lines</string>
-<string name="go_up">Up</string>
+<string name="go_up">Parent</string>
 <string name="go_top">Top</string>
 <string name="go_end">Bottom</string>
 <string name="encoding">Encoding</string>

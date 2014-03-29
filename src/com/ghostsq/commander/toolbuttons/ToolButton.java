@@ -257,7 +257,13 @@ public class ToolButton {
         return id;
     }
     final String getName( Context c ) {
-        return c.getString( def_caption_r_id );
+        int id = def_caption_r_id;
+        switch( def_caption_r_id ) {
+        case R.string.F8:   id = R.string.delete_title; break;
+        case R.string.F9:   id = R.string.prefs_label;  break;
+        case R.string.sz:   id = R.string.info;         break;
+        }
+        return c.getString( id );
     }
     private final String getVisiblePropertyName() {
         return "show_" + codename; 
@@ -267,7 +273,7 @@ public class ToolButton {
     }
     public final void restore( SharedPreferences shared_pref, Context context ) {
         visible = shared_pref.getBoolean( getVisiblePropertyName(), visible );
-        caption = shared_pref.getString( getCaptionPropertyName(), getName( context ) );
+        caption = shared_pref.getString( getCaptionPropertyName(), context.getString( def_caption_r_id ) );
     }
     public final void store( SharedPreferences.Editor editor ) {
         editor.putBoolean( getVisiblePropertyName(), visible );

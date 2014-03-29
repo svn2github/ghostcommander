@@ -34,6 +34,7 @@ final public class CA {
     protected static final int   zip_schema_h =   "zip".hashCode();  
     protected static final int   ftp_schema_h =   "ftp".hashCode();  
     protected static final int  sftp_schema_h =  "sftp".hashCode();  
+    protected static final int   smb_schema_h =   "smb".hashCode();  
     protected static final int  find_schema_h =  "find".hashCode();  
     protected static final int  root_schema_h =  "root".hashCode();  
     protected static final int   mnt_schema_h = "mount".hashCode();  
@@ -147,7 +148,9 @@ final public class CA {
         final int scheme_h = scheme.hashCode();
         if(  home_schema_h == scheme_h )  return R.drawable.icon;
         if(   zip_schema_h == scheme_h )  return R.drawable.zip; 
-        if(   ftp_schema_h == scheme_h )  return R.drawable.server; 
+        if(   ftp_schema_h == scheme_h )  return R.drawable.ftp; 
+        if(  sftp_schema_h == scheme_h )  return R.drawable.sftp; 
+        if(   smb_schema_h == scheme_h )  return R.drawable.smb; 
         if(  root_schema_h == scheme_h )  return R.drawable.root;
         if(   mnt_schema_h == scheme_h )  return R.drawable.mount;
         if(  apps_schema_h == scheme_h )  return R.drawable.android; 

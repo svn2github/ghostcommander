@@ -25,8 +25,10 @@ import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.ContextMenu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 
 public class HomeAdapter extends CommanderAdapterBase {
     private final static String TAG = "HomeAdapter";
@@ -301,5 +303,9 @@ public class HomeAdapter extends CommanderAdapterBase {
         Item item = (Item)getItem( position );
         if( item == null ) return null;
         return getView( convertView, parent, item );
+    }
+
+    @Override
+    public void populateContextMenu( ContextMenu menu, AdapterView.AdapterContextMenuInfo acmi, int num ) {
     }
 }
