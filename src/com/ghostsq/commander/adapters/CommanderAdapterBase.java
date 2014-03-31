@@ -608,35 +608,40 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         if( file.indexOf( " -> " ) > 0 )
             return R.drawable.link;
         String ext = Utils.getFileExt( file );
-        if( ".apk".equalsIgnoreCase( ext ) || ".dex".equalsIgnoreCase( ext ) ||".odex".equalsIgnoreCase( ext ) )
-            return R.drawable.and;
-        if( ".zip".equalsIgnoreCase( ext ) || ".jar".equalsIgnoreCase( ext ) || ".tar".equalsIgnoreCase( ext ) ||
-             ".7z".equalsIgnoreCase( ext ) || ".arj".equalsIgnoreCase( ext ) || ".tgz".equalsIgnoreCase( ext ) ||
-             ".gz".equalsIgnoreCase( ext ) || ".rar".equalsIgnoreCase( ext ) ||".gtar".equalsIgnoreCase( ext ) ||
-             ".bz".equalsIgnoreCase( ext ) || ".lzh".equalsIgnoreCase( ext ) || ".cab".equalsIgnoreCase( ext ) ||
-            ".bz2".equalsIgnoreCase( ext ) || ".img".equalsIgnoreCase( ext ) )
-            return R.drawable.zip;
-        if( ".vcf".equalsIgnoreCase( ext ) || ".fb2".equalsIgnoreCase( ext ) || ".epub".equalsIgnoreCase( ext )||
-            ".doc".equalsIgnoreCase( ext ) || ".xls".equalsIgnoreCase( ext ) ||
-           ".docx".equalsIgnoreCase( ext ) ||".xlsx".equalsIgnoreCase( ext ) )
-            return R.drawable.book;
-        if( ".pdf".equalsIgnoreCase( ext ) )
-            return R.drawable.pdf;
-        if( ".html".equalsIgnoreCase( ext ) || ".htm".equalsIgnoreCase( ext ) ||
-             ".xml".equalsIgnoreCase( ext ) || ".xsl".equalsIgnoreCase( ext ) )
-            return R.drawable.xml;
-        String mime = Utils.getMimeByExt( ext );
-        String type = mime.substring( 0, mime.indexOf( '/' ) );
-        if( type.compareTo( "text" ) == 0 )
-            return R.drawable.text;
-        if( type.compareTo( "image" ) == 0 )
-            return R.drawable.image;
-        if( type.compareTo( "audio" ) == 0 )
-            return R.drawable.audio;
-        if( type.compareTo( "video" ) == 0 )
-            return R.drawable.video;
-        if( type.compareTo( "application" ) == 0 )
-            return R.drawable.application;
+        if( Utils.str( ext ) ) {
+            ext = ext.toLowerCase();
+            if( ".apk".equals( ext ) || ".dex".equals( ext ) ||".odex".equals( ext ) )
+                return R.drawable.and;
+            if( ".zip".equals( ext ) || ".jar".equals( ext ) || ".tar".equals( ext ) ||
+                 ".7z".equals( ext ) || ".arj".equals( ext ) || ".tgz".equals( ext ) ||
+                 ".gz".equals( ext ) || ".rar".equals( ext ) ||".gtar".equals( ext ) ||
+                 ".bz".equals( ext ) || ".lzh".equals( ext ) || ".cab".equals( ext ) ||
+                ".bz2".equals( ext ) || ".img".equals( ext ) )
+                return R.drawable.zip;
+            if( ".fb2".equals( ext ) ||".epub".equals( ext ) ||".mobi".equals( ext ) ||
+                ".doc".equals( ext ) || ".xls".equals( ext ) ||
+               ".docx".equals( ext ) ||".xlsx".equals( ext ) ||
+                ".odt".equals( ext ) || ".ods".equals( ext ) ||
+                ".chm".equals( ext ) || ".vcf".equals( ext ) )
+                return R.drawable.book;
+            if( ".pdf".equals( ext ) )
+                return R.drawable.pdf;
+            if( ".html".equals( ext ) || ".htm".equals( ext ) ||
+                 ".xml".equals( ext ) || ".xsl".equals( ext ) )
+                return R.drawable.xml;
+            String mime = Utils.getMimeByExt( ext );
+            String type = mime.substring( 0, mime.indexOf( '/' ) );
+            if( type.compareTo( "text" ) == 0 )
+                return R.drawable.text;
+            if( type.compareTo( "image" ) == 0 )
+                return R.drawable.image;
+            if( type.compareTo( "audio" ) == 0 )
+                return R.drawable.audio;
+            if( type.compareTo( "video" ) == 0 )
+                return R.drawable.video;
+            if( type.compareTo( "application" ) == 0 )
+                return R.drawable.application;
+        }
         return R.drawable.unkn;
     }
 
