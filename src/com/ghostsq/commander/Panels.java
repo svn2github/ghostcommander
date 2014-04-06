@@ -1,6 +1,7 @@
 package com.ghostsq.commander;
 
 import java.io.File;
+import java.security.acl.Owner;
 import java.util.ArrayList;
 
 import com.ghostsq.commander.R;
@@ -385,8 +386,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             Log.e( TAG, "title view was not found!" );
     }
 
-    public final int getSelection( boolean one_checked ) {
-        return list[current].getSelection( one_checked );
+    public final int getSingle( boolean touched ) {
+        return list[current].getSingle( touched );
     }
 
     public final void setSelection( int i ) {
@@ -404,7 +405,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         try {
             CommanderAdapter ca = getListAdapter( true );
             if( ca.hasFeature( Feature.SEND ) ) {
-                int pos = getSelection( true );
+                int pos = getSingle( true );
                 if( pos < 0 )
                     return null;
                 CommanderAdapter.Item item = (CommanderAdapter.Item)( (ListAdapter)ca ).getItem( pos );
@@ -594,9 +595,9 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             refreshList( current, false, null );
     }
 
-    public final void showSizes() {
+    public final void showSizes( boolean touched ) {
         storeChoosedItems();
-        getListAdapter( true ).reqItemsSize( getSelectedOrChecked() );
+        getListAdapter( true ).reqItemsSize( getMultiple( touched ) );
     }
 
     public final void checkItems( boolean set, String mask, boolean dir, boolean file ) {
@@ -719,10 +720,11 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         }
     }
 
+    // called from context menu only
     public final void tryToSend() {
         SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( c );
         boolean use_content = shared_pref.getBoolean( "send_content", true );
-        SparseBooleanArray cis = getSelectedOrChecked();
+        SparseBooleanArray cis = getMultiple( true );
         int num = cis.size();
         if( num > 1 ) {
             CommanderAdapter ca = getListAdapter( true );
@@ -782,7 +784,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             if( ca == null )
                 return;
             ClipboardManager clipboard = (ClipboardManager)c.getSystemService( Context.CLIPBOARD_SERVICE );
-            int pos = getSelection( true );
+            int pos = getSingle( true );
             if( pos >= 0 ) {
                 String in = ca.getItemName( pos, true );
                 if( in != null ) {
@@ -842,7 +844,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             return;
         Uri u = ca.getUri();
         if( u != null ) {
-            int pos = getSelection( true );
+            int pos = getSingle( true );
             if( pos < 0 )
                 return;
             Uri to_add = u.buildUpon().appendEncodedPath( ca.getItemName( pos, false ) ).build();
@@ -853,7 +855,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         }
     }
 
-    public final void openForEdit( String file_name ) {
+    public final void openForEdit( String file_name, boolean touched ) {
         CommanderAdapter ca = getListAdapter( true );
         if( ca == null || !ca.hasFeature( Feature.F4 ) ) {
             c.showMessage( c.getString( R.string.edit_err ) );
@@ -861,7 +863,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         }
         if( ca instanceof FavsAdapter ) {
             FavsAdapter fa = (FavsAdapter)ca;
-            int pos = getSelection( true );
+            int pos = getSingle( true );
             if( pos > 0 )
                 fa.editItem( pos );
             return;
@@ -869,7 +871,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         try {
             Uri u;
             if( file_name == null || file_name.length() == 0 ) {
-                int pos = getSelection( true );
+                int pos = getSingle( touched );
                 CommanderAdapter.Item item = (CommanderAdapter.Item)( (ListAdapter)ca ).getItem( pos );
                 if( item == null ) {
                     c.showError( c.getString( R.string.cant_open ) );
@@ -914,8 +916,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         }
     }
 
-    public final void openForView() {
-        int pos = getSelection( true );
+    public final void openForView( boolean touched ) {
+        int pos = getSingle( touched );
         if( pos < 0 )
             return;
         String name = null;
@@ -926,7 +928,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 return;
             CommanderAdapter.Item item = (CommanderAdapter.Item)( (ListAdapter)ca ).getItem( pos );
             if( item.dir ) {
-                showSizes();
+                showSizes( touched );
                 return;
             }
             String mime = Utils.getMimeByExt( Utils.getFileExt( item.name ) );
@@ -943,20 +945,12 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         }
     }
 
-    public final int getNumItemsChecked() {
-        return list[current].getNumItemsChecked();
+    public final String getActiveItemsSummary( boolean touched ) {
+        return list[current].getActiveItemsSummary( touched );
     }
 
-    public final int getNumItemsSelectedOrChecked() {
-        return list[current].getNumItemsSelectedOrChecked();
-    }
-
-    public final String getActiveItemsSummary() {
-        return list[current].getActiveItemsSummary();
-    }
-
-    public final SparseBooleanArray getSelectedOrChecked() {
-        return list[current].getSelectedOrChecked();
+    public final SparseBooleanArray getMultiple( boolean touch ) {
+        return list[current].getMultiple( touch );
     }
 
     /**
@@ -976,12 +970,12 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         return u;
     }
 
-    public final String getSelectedItemName() {
-        return getSelectedItemName( false );
+    public final String getSelectedItemName( boolean touched ) {
+        return getSelectedItemName( false, touched );
     }
 
-    public final String getSelectedItemName( boolean full ) {
-        int pos = getSelection( true );
+    public final String getSelectedItemName( boolean full, boolean touched ) {
+        int pos = getSingle( touched );
         return pos < 0 ? null : getListAdapter( true ).getItemName( pos, full );
     }
 
@@ -1031,13 +1025,13 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             destAdapter = null;
     }
 
-    public final void copyFiles( String dest, boolean move ) {
+    public final void copyFiles( String dest, boolean move, boolean touch ) {
         try {
             final String SLS = File.separator;
             final char   SLC = SLS.charAt( 0 );
             if( dest == null )
                 return;
-            SparseBooleanArray items = getSelectedOrChecked();
+            SparseBooleanArray items = getMultiple( touch );
             CommanderAdapter cur_adapter = getListAdapter( true );
             Uri dest_uri = Uri.parse( dest );
             if( Favorite.isPwdScreened( dest_uri ) ) {
@@ -1047,8 +1041,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                     return;
                 }
             }
-            if( getNumItemsSelectedOrChecked() == 1 && !"..".equals( dest ) ) {
-                int pos = getSelection( true );
+            if( Utils.getCount( items ) == 1 && !"..".equals( dest ) ) {
+                int pos = Utils.getPosition( items, 0 );
                 if( pos <= 0 )
                     return;
                 final boolean COPY = true;
@@ -1127,9 +1121,9 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         }
     }
 
-    public final void renameItem( String new_name ) {
+    public final void renameItem( String new_name, boolean touched ) {
         CommanderAdapter adapter = getListAdapter( true );
-        int pos = getSelection( true );
+        int pos = getSingle( touched );
         if( pos >= 0 ) {
             adapter.renameItem( pos, new_name, false );
             list[current].setSelection( new_name );
@@ -1146,7 +1140,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         if( ca.createFile( fileName ) ) {
             refreshLists( fileName );
             setSelection( current, local_name );
-            openForEdit( fileName );
+            openForEdit( fileName, false );
         }
     }
 
@@ -1155,11 +1149,11 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         list[current].setSelection( new_name );
     }
 
-    public final void createZip( String new_zip_name ) {
+    public final void createZip( String new_zip_name, boolean touch ) {
         if( new_zip_name == null || new_zip_name.length() == 0 ) return;
         CommanderAdapter ca = getListAdapter( true );
         if( ca instanceof FSAdapter ) {
-            SparseBooleanArray cis = getSelectedOrChecked();
+            SparseBooleanArray cis = getMultiple( touch );
             if( cis == null || cis.size() == 0 ) {
                 c.showError( c.getString( R.string.op_not_alwd ) );
                 return;
@@ -1176,9 +1170,9 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             c.showError( c.getString( R.string.not_supported ) );
     }
 
-    public final void deleteItems() {
+    public final void deleteItems( boolean touch ) {
         // c.showDialog( Dialogs.PROGRESS_DIALOG );
-        if( getListAdapter( true ).deleteItems( getSelectedOrChecked() ) )
+        if( getListAdapter( true ).deleteItems( getMultiple( touch ) ) )
             list[current].flv.clearChoices();
     }
 
@@ -1350,28 +1344,28 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 c.showDialog( ch == '+' ? Dialogs.SELECT_DIALOG : Dialogs.UNSELECT_DIALOG );
                 return true;
             case '"':
-                showSizes();
+                c.dispatchCommand( R.id.sz );
                 return true;
             case '2':
-                c.showDialog( R.id.F2 );
+                c.dispatchCommand( R.id.F2 );
                 return true;
             case '3':
-                openForView();
+                c.dispatchCommand( R.id.F3 );
                 return true;
             case '4':
-                openForEdit( null );
+                c.dispatchCommand( R.id.F4 );
                 return true;
             case '5':
-                c.showDialog( R.id.F5 );
+                c.dispatchCommand( R.id.F5 );
                 return true;
             case '6':
-                c.showDialog( R.id.F6 );
+                c.dispatchCommand( R.id.F6 );
                 return true;
             case '7':
-                c.showDialog( R.id.F7 );
+                c.dispatchCommand( R.id.F7 );
                 return true;
             case '8':
-                c.showDialog( R.id.F8 );
+                c.dispatchCommand( R.id.F8 );
                 return true;
             case ' ':
                 list[current].checkItem( true );

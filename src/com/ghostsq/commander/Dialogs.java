@@ -91,11 +91,15 @@ public class Dialogs implements DialogInterface.OnClickListener {
             switch( id ) {
             case INPUT_DIALOG:
             case R.id.new_zip:
+            case R.id.new_zipt:
             case R.id.F2:
+            case R.id.F2t:
             case R.id.new_file:
             case R.id.SF4:
             case R.id.F5:
             case R.id.F6:
+            case R.id.F5t:
+            case R.id.F6t:
             case R.id.F7:
             {
                 LayoutInflater factory = LayoutInflater.from( owner );
@@ -148,6 +152,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 }
             case CONFIRM_DIALOG:
             case R.id.F8:
+            case R.id.F8t:
             case R.id.donate:
             case SMB_PLG_DIALOG:
             case SFTP_PLG_DIALOG:
@@ -256,13 +261,14 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 break;
             }            
             case R.id.F2: 
+            case R.id.F2t: 
             {
                 final String op_title = owner.getString( R.string.rename_title );
                 String op = owner.getString( R.string.to_rename );
                 if( op == null || op.length() == 0 )
                     op = op_title;
                 dialog.setTitle( op_title );
-                String item_name = owner.panels.getSelectedItemName();
+                String item_name = owner.panels.getSelectedItemName( R.id.F2t == id );
                 if( item_name == null ) {
                     owner.showMessage( owner.getString( R.string.rename_err ) );
                     item_name = "";
@@ -287,16 +293,19 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 break;
             }
             case R.id.F6:
+            case R.id.F6t:
                 move = true;
             case R.id.F5: 
+            case R.id.F5t: 
             {
                 final String op_title = owner.getString( move ? R.string.move_title : R.string.copy_title );
                 String op = owner.getString( move ? R.string.to_move : R.string.to_copy );
                 if( op == null || op.length() == 0 )
                     op = op_title;
                 dialog.setTitle( op_title );
+                boolean touch = dialogId == R.id.F5t || dialogId == R.id.F6t;
                 if( prompt != null ) {
-                    String summ = owner.panels.getActiveItemsSummary();
+                    String summ = owner.panels.getActiveItemsSummary( touch );
                     if( summ == null ) {
                         dialog.cancel();
                         owner.showMessage( owner.getString( R.string.op_not_alwd, op ) );
@@ -322,16 +331,18 @@ public class Dialogs implements DialogInterface.OnClickListener {
                     if( qm_pos > 0 )
                         cts = cts.substring( 0, qm_pos );
                     edit.setText( Utils.mbAddSl( cts ) );
-                    if( owner.panels.getNumItemsSelectedOrChecked() == 1 )
+                    if( Utils.getCount( owner.panels.getMultiple( touch ) ) == 1 )
                         edit.selectAll();
                 }
                 break;
             }
-            case R.id.new_zip: {
+            case R.id.new_zip: 
+            case R.id.new_zipt: 
+            {
                 final String op = owner.getString( R.string.create_zip_title );
                 dialog.setTitle( op );
                 if( prompt != null ) {
-                    String summ = owner.panels.getActiveItemsSummary();
+                    String summ = owner.panels.getActiveItemsSummary( R.id.new_zipt == id );
                     if( summ == null ) {
                         dialog.dismiss();
                         summ = owner.getString( R.string.no_items );
@@ -403,10 +414,11 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 break;
             }
             case R.id.F8: 
+            case R.id.F8t: 
             {
                 AlertDialog ad = (AlertDialog)dialog;
                 ad.setTitle( R.string.delete_title );
-                String str, summ = owner.panels.getActiveItemsSummary();
+                String str, summ = owner.panels.getActiveItemsSummary( R.id.F8t == id );
                 if( summ == null ) {
                     str = owner.getString( R.string.no_items );
                     dialog.cancel();
@@ -537,13 +549,17 @@ public class Dialogs implements DialogInterface.OnClickListener {
             if( valid && whichButton == DialogInterface.BUTTON_POSITIVE ) {
                 switch( dialogId ) {
                 case R.id.F2:
+                case R.id.F2t:
                 case R.id.new_file:
                 case R.id.SF4:
                 case R.id.F5:
                 case R.id.F6:
+                case R.id.F5t:
+                case R.id.F6t:
                 case R.id.F7:
                 case FileCommander.FIND_ACT:
                 case R.id.new_zip:
+                case R.id.new_zipt:
                 case UNSELECT_DIALOG:
                 case SELECT_DIALOG:
                     EditText edit = (EditText)dialogObj.findViewById( R.id.edit_field );
@@ -552,7 +568,8 @@ public class Dialogs implements DialogInterface.OnClickListener {
                         if( !Utils.str( file_name ) ) return;
                         switch( dialogId ) {
                         case R.id.F2:
-                            owner.panels.renameItem( file_name );
+                        case R.id.F2t:
+                            owner.panels.renameItem( file_name, R.id.F2t == dialogId );
                             break;
                         case R.id.SF4:
                         case R.id.new_file:
@@ -560,15 +577,20 @@ public class Dialogs implements DialogInterface.OnClickListener {
                             break;
                         case R.id.F6:
                         case R.id.F5:
+                        case R.id.F6t:
+                        case R.id.F5t:
                             if( file_name.charAt( 0 ) == '/' )
                                 file_name = Utils.escapePath( file_name );
-                            owner.panels.copyFiles( file_name, dialogId == R.id.F6 );
+                            boolean touch = dialogId == R.id.F5t || dialogId == R.id.F6t;
+                            boolean move  = dialogId == R.id.F6  || dialogId == R.id.F6t;
+                            owner.panels.copyFiles( file_name, move, touch );
                             break;
                         case R.id.F7:
                             owner.panels.createFolder( file_name );
                             break;
                         case R.id.new_zip:
-                            owner.panels.createZip( file_name.trim() );
+                        case R.id.new_zipt:
+                            owner.panels.createZip( file_name.trim(), R.id.new_zipt == dialogId );
                             break;
                         case FileCommander.FIND_ACT: 
                             if( file_name.length() > 0 ) {
@@ -627,7 +649,8 @@ public class Dialogs implements DialogInterface.OnClickListener {
                     }
                     break;
                 case R.id.F8:
-                    owner.panels.deleteItems();
+                case R.id.F8t:
+                    owner.panels.deleteItems( R.id.F8t == dialogId );
                     break;
                 case LOGIN_DIALOG: {
                         EditText name_edit = (EditText)dialogObj.findViewById( R.id.username_edit );

@@ -717,30 +717,29 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             Item item = (Item)getItem( acmi.position );
             boolean file = !item.dir && acmi.position != 0;
             if( acmi.position == 0 ) {
-                menu.add( 0, R.id.enter, 0, R.string.enter );
                 menu.add( 0, R.id.eq, 0, R.string.oth_sh_this );
                 return;
             }
             if( hasFeature( Feature.SZ ) )
-                menu.add( 0, R.id.sz, 0, R.string.show_size );
+                menu.add( 0, R.id.szt, 0, R.string.show_size );
             if( num <= 1 ) {
                 if( hasFeature( Feature.F2 ) )
-                    menu.add( 0, R.id.F2, 0, R.string.rename_title );
+                    menu.add( 0, R.id.F2t, 0, R.string.rename_title );
                 if( file ) {
                     if( hasFeature( Feature.F3 ) )
-                        menu.add( 0, R.id.F3, 0, R.string.view_title );
+                        menu.add( 0, R.id.F3t, 0, R.string.view_title );
                     if( hasFeature( Feature.F4 ) )
-                        menu.add( 0, R.id.F4, 0, R.string.edit_title );
+                        menu.add( 0, R.id.F4t, 0, R.string.edit_title );
                 }
             }
             if( hasFeature( Feature.LOCAL ) )
                 menu.add( 0, Commander.SEND_TO, 0, R.string.send_to );
             if( hasFeature( Feature.F5 ) )
-                menu.add( 0, R.id.F5, 0, R.string.copy_title );
+                menu.add( 0, R.id.F5t, 0, R.string.copy_title );
             if( hasFeature( Feature.F6 ) )
-                menu.add( 0, R.id.F6, 0, R.string.move_title );
+                menu.add( 0, R.id.F6t, 0, R.string.move_title );
             if( hasFeature( Feature.F8 ) )
-                menu.add( 0, R.id.F8, 0, R.string.delete_title );
+                menu.add( 0, R.id.F8t, 0, R.string.delete_title );
             if( hasFeature( Feature.LOCAL ) ) {
                 if( file && num <= 1 )
                     menu.add( 0, Commander.OPEN_WITH, 0, R.string.open_with );

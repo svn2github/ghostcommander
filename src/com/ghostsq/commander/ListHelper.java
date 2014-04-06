@@ -271,7 +271,7 @@ public class ListHelper {
     }
 
     public final void checkItem( boolean next ) {
-        final int pos = getSelection( false );
+        final int pos = getSelected();
         if( pos > 0 ) {
             SparseBooleanArray cis = flv.getCheckedItemPositions();
             flv.setItemChecked( pos, !cis.get( pos ) );
@@ -306,19 +306,6 @@ public class ListHelper {
         }
     }
 
-    public final int getSelection( boolean one_checked ) {
-        int pos = flv.getSelectedItemPosition();
-        if( pos != AdapterView.INVALID_POSITION )
-            return currentPosition = pos;
-        if( one_checked && getNumItemsChecked() == 1 ) {
-            SparseBooleanArray cis = flv.getCheckedItemPositions();
-            for( int i = 0; i < cis.size(); i++ )
-                if( cis.valueAt( i ) )
-                    return cis.keyAt( i );
-        }
-        return currentPosition;
-    }
-
     public final void setSelection( int i, int y_ ) {
         final ListView flv$ = flv;
         final int position$ = i, y$ = y_;
@@ -345,38 +332,11 @@ public class ListHelper {
         }
     }
 
-    public final int getNumItemsChecked() {
-        SparseBooleanArray cis = flv.getCheckedItemPositions();
-        int counter = 0;
-        for( int i = 0; i < cis.size(); i++ )
-            if( cis.valueAt( i ) ) {
-                counter++;
-            }
-        return counter;
-    }
-
-    public final int getNumItemsSelectedOrChecked() {
-        int checked = getNumItemsChecked();
-        if( checked > 0 )
-            return checked;
-        return getSelection( false ) >= 1 ? 1 : 0; // excluding the parent (0)
-                                                   // item
-    }
-
-    public final SparseBooleanArray getSelectedOrChecked() {
-        int num_checked = getNumItemsChecked();
-        SparseBooleanArray cis;
-        if( num_checked > 0 )
-            cis = flv.getCheckedItemPositions();
-        else {
-            cis = new SparseBooleanArray( 1 );
-            cis.put( getSelection( false ), true );
-        }
-        return cis;
-    }
-
-    public final String getActiveItemsSummary() {
-        int counter = getNumItemsChecked();
+    // --- new methods
+    
+    public final String getActiveItemsSummary( boolean touched ) {
+        SparseBooleanArray cis = getMultiple( touched );
+        int counter = Utils.getCount( cis );
         if( counter > 1 ) {
             String items = null;
             if( counter < 5 )
@@ -387,24 +347,77 @@ public class ListHelper {
         }
         CommanderAdapter adapter = (CommanderAdapter)flv.getAdapter();
         if( counter == 1 ) {
-            SparseBooleanArray cis = flv.getCheckedItemPositions();
             for( int i = 0; i < cis.size(); i++ )
                 if( cis.valueAt( i ) ) {
-                    String item_name = adapter.getItemName( cis.keyAt( i ), false );
-                    if( item_name == null || item_name.length() == 0 )
-                        item_name = adapter.getItemName( cis.keyAt( i ), true );
+                    int pos = cis.keyAt( i );
+                    String item_name = adapter.getItemName( pos, false );
+                    if( !Utils.str( item_name ) )
+                        item_name = adapter.getItemName( pos, true );   // when that works?
                     return item_name;
                 }
         }
-        int cur_sel = getSelection( false );
-        if( cur_sel <= 0 )
-            return null; // the topmost item is also invalid
-        String item_name = adapter.getItemName( cur_sel, false ); 
-        if( item_name == null || item_name.length() == 0 )
-            item_name = adapter.getItemName( cur_sel, true );
-        return item_name;
+        return "";
     }
 
+    /**
+     * Get the checked/selected position for a single file operation (such as F2,F3,F4)
+     * @param touched - the operation was initiated by the context menu
+     * @return
+     *  when touched = true
+     *      Always returns the selected item
+     *  when touched = false
+     *      If only ONE checked then returns a checked one, otherwise returns all that selected 
+     */
+    public final int getSingle( boolean touched ) {
+        if( touched ) {
+            return getSelected();
+        } else {
+            SparseBooleanArray cis = flv.getCheckedItemPositions();
+            int sel_pos = AdapterView.INVALID_POSITION;
+            for( int i = 0; i < cis.size(); i++ ) {
+                if( cis.valueAt( i ) ) {
+                    if( sel_pos >= 0 )
+                        return getSelected();
+                    sel_pos = cis.keyAt( i );
+                }
+            }
+            return sel_pos >= 0 ? sel_pos : getSelected();
+        }
+    }
+    
+    /**
+     * Get the checked/selected files positions for a multifile operation (such as F5,F6,F8,sz) 
+     * @param touched - the operation was initiated by the context menu
+     * @return
+     *  when touched = true
+     *      Returns selected if it does not belong to checked, returns all checked otherwise
+     *  when touched = false
+     *      If none checked then returns a selected one, else returns all that checked 
+     */
+    public final SparseBooleanArray getMultiple( boolean touched ) {
+        int pos = getSelected();
+        SparseBooleanArray cis = flv.getCheckedItemPositions();
+        for( int i = 0; i < cis.size(); i++ )
+            if( cis.valueAt( i ) && ( !touched || cis.keyAt( i ) == pos ) )
+                return cis;
+        return wrapToSparceArray( pos );
+    }
+    
+    public final SparseBooleanArray wrapToSparceArray( int pos ) {
+        SparseBooleanArray cis = new SparseBooleanArray( 1 );
+        cis.put( pos, true );
+        return cis;
+    }
+
+    public final int getSelected() {
+        int pos = flv.getSelectedItemPosition();
+        if( pos != AdapterView.INVALID_POSITION )
+            return currentPosition = pos;
+        return currentPosition;
+    }
+    
+    // --- end new methods    
+    
     public final void recoverAfterRefresh( String item_name ) {
         try {
             //Log.v( TAG, "restoring panel " + which + " item: " + item_name );
@@ -491,7 +504,7 @@ public class ListHelper {
     }
     public void updateStatus() {
         if( status != null ) {
-            status.setText( getActiveItemsSummary() );
+            status.setText( getActiveItemsSummary( false ) );
         }
     }
 }

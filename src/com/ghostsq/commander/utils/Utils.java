@@ -23,6 +23,7 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.webkit.MimeTypeMap;
 
 public final class Utils {
@@ -553,6 +554,25 @@ public final class Utils {
         return null;
     }
 
+    public final static int getCount( SparseBooleanArray cis ) {
+        int counter = 0;
+        for( int i = 0; i < cis.size(); i++ )
+            if( cis.valueAt( i ) ) {
+                counter++;
+            }
+        return counter;
+    }
+
+    public final static int getPosition( SparseBooleanArray cis, int of_item ) {
+        int counter = 0;
+        for( int i = 0; i < cis.size(); i++ )
+            if( cis.valueAt( i ) ) {
+                if( counter++ == of_item )
+                    return cis.keyAt( i );
+            }
+        return -1;
+    }
+   
     public final static String getCause( Throwable e ) {
         Throwable c = e.getCause();
         if( c != null ) {

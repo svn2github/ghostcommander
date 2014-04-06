@@ -287,7 +287,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo)menuInfo;
             menu.setHeaderTitle( getString( R.string.operation ) );
             CommanderAdapter ca = panels.getListAdapter( true );
-            ca.populateContextMenu( menu, acmi, panels.getNumItemsChecked() );
+            ca.populateContextMenu( menu, acmi, Utils.getCount( panels.getMultiple( true ) ) );
         } catch( Exception e ) {
             Log.e( TAG, "onCreateContextMenu()", e );
         }
@@ -518,17 +518,24 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 showInfo( getString( R.string.keys_text ) );
                 break;
             case R.id.F3:
-                panels.openForView();
+            case R.id.F3t:
+                panels.openForView( R.id.F3t == id );
                 break;
             case R.id.F4:
-                panels.openForEdit( null );
+            case R.id.F4t:
+                panels.openForEdit( null, R.id.F4t == id );
                 break;
             case R.id.F2:
+            case R.id.F2t:
             case R.id.new_zip:
             case R.id.F5:
             case R.id.F6:
             case R.id.F8:
-                if( panels.getNumItemsSelectedOrChecked() > 0 )
+            case R.id.F5t:
+            case R.id.F6t:
+            case R.id.F8t:
+                boolean touch = R.id.F2t == id || R.id.F5t == id || R.id.F6t == id || R.id.F8t == id || R.id.new_zipt == id;  
+                if( Utils.getCount( panels.getMultiple( touch ) ) > 0 )
                     showDialog( id );
                 else
                     showMessage( getString( R.string.no_items ) );
@@ -564,7 +571,8 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 panels.togglePanels( true );
                 break;
             case R.id.sz:
-                panels.showSizes();
+            case R.id.szt:
+                panels.showSizes( R.id.szt == id );
                 break;
             case R.id.action_back:
                 panels.goUp();
@@ -621,7 +629,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 showSearchDialog();
                 break;
             case R.id.open:
-                String path = panels.getSelectedItemName( true );
+                String path = panels.getSelectedItemName( true, true );
                 String ext = Utils.getFileExt( path );
                 if( ".zip".equalsIgnoreCase( ext) )
                     Navigate( Uri.parse( path ).buildUpon().scheme( "zip" ).build(), null, null );
@@ -691,7 +699,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             default:
                 CommanderAdapter ca = panels.getListAdapter( true );
                 if( ca != null )
-                    ca.doIt( id, panels.getSelectedOrChecked() );
+                    ca.doIt( id, panels.getMultiple( true ) );
             }
         } catch( Throwable e ) {
             Log.e( TAG, "Failed command: " + id, e );
