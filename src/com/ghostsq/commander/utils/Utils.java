@@ -27,98 +27,147 @@ import android.util.SparseBooleanArray;
 import android.webkit.MimeTypeMap;
 
 public final class Utils {
+    public final static String C_AUDIO = "a", C_VIDEO = "v", C_TEXT = "t", C_ZIP = "z", C_OFFICE = "o",
+             C_DROID = "d", C_BOOK = "b", C_IMAGE = "i", C_MARKUP = "m", C_APP = "x", C_PDF = "p", C_UNKNOWN = "u";
+    
     private final static String[][] mimes = { // should be sorted!
-            { ".3gpp", "audio/3gpp" }, 
-            { ".7z",   "application/x-7z-compressed" }, 
-            { ".aif",  "audio/x-aiff" }, 
-            { ".apk",  "application/vnd.android.package-archive" },
-            { ".arj",  "application/x-arj" }, 
-            { ".au",   "audio/basic" }, 
-            { ".avi",  "video/x-msvideo" }, 
-            { ".b1",   "application/x-b1" },
-            { ".bmp",  "image/bmp" },
-            { ".bz",   "application/x-bzip2" },
-            { ".bz2",  "application/x-bzip2" },
-            { ".cab",  "application/x-compressed" },
-            { ".chm",  "application/vnd.ms-htmlhelp" },
-            { ".conf", "application/x-conf" },
-            { ".csv",  "text/csv" }, 
-            { ".db",   "application/x-sqlite3" },
-            { ".doc",  "application/msword" },
-            { ".docx", "application/msword" },
-            { ".epub", "application/epub" }, 
-            { ".fb2",  "application/fb2" },
-            { ".flac", "audio/flac" },            
-            { ".flv",  "video/x-flv" },            
-            { ".gif",  "image/gif" }, 
-            { ".gtar", "application/x-gtar" },
-            { ".gz",   "application/x-gzip" },
-            { ".htm",  "text/html" }, 
-            { ".html", "text/html" }, 
-            { ".img",  "application/x-compressed" },
-            { ".jar",  "application/java-archive" },
-            { ".java", "text/java" }, 
-            { ".jpeg", "image/jpeg" }, 
-            { ".jpg",  "image/jpeg" },
-            { ".js",   "text/javascript" },
-            { ".lzh",  "application/x-lzh" },
-            { ".m3u",  "audio/x-mpegurl" }, 
-            { ".md5",  "application/x-md5" },
-            { ".mid",  "audio/midi" }, 
-            { ".midi", "audio/midi" }, 
-            { ".mkv",  "video/x-matroska" },
-            { ".mobi", "application/x-mobipocket" },
-            { ".mov",  "video/quicktime" },
-            { ".mp2",  "video/mpeg" },
-            { ".mp3",  "audio/mp3" },
-            { ".mp4",  "video/mp4" },
-            { ".mpeg", "video/mpeg" }, 
-            { ".mpg",  "video/mpeg" }, 
-            { ".ods",  "application/vnd.oasis.opendocument.spreadsheet" }, 
-            { ".odt",  "application/vnd.oasis.opendocument.text" }, 
-            { ".oga",  "audio/ogg" }, 
-            { ".ogg",  "audio/ogg" },    // RFC 5334 
-            { ".ogv",  "video/ogg" },    // RFC 5334 
-            { ".pdf",  "application/pdf" }, 
-            { ".php",  "text/php" },
-            { ".png",  "image/png" }, 
-            { ".ppt",  "application/vnd.ms-powerpoint" }, 
-            { ".pptx", "application/vnd.ms-powerpoint" }, 
-            { ".prop", "application/x-prop" }, 
-            { ".ra",   "audio/x-pn-realaudio" }, 
-            { ".ram",  "audio/x-pn-realaudio" },
-            { ".rar",  "application/x-rar-compressed" }, 
-            { ".rtf",  "application/rtf" }, 
-            { ".sh",   "application/x-sh" },
-            { ".so",   "application/octet-stream" },
-            { ".sqlite","application/x-sqlite3" },
-            { ".svg",  "image/svg+xml" },
-            { ".swf",  "application/x-shockwave-flash" }, 
-            { ".tar",  "application/x-tar" }, 
-            { ".tcl",  "application/x-tcl" }, 
-            { ".tgz",  "application/x-gzip" }, 
-            { ".tif",  "image/tiff" }, 
-            { ".tiff", "image/tiff" }, 
-            { ".txt",  "text/plain" },
-            { ".vcf",  "text/x-vcard" }, 
-            { ".wav",  "audio/wav" }, 
-            { ".wma",  "audio/x-ms-wma" }, 
-            { ".wmv",  "video/x-ms-wmv" }, 
-            { ".xls",  "application/vnd.ms-excel" }, 
-            { ".xlsx", "application/vnd.ms-excel" }, 
-            { ".xml",  "text/xml" }, 
-            { ".zip",  "application/zip" } };
+            { ".3gpp", "audio/3gpp", C_AUDIO }, 
+            { ".7z",   "application/x-7z-compressed", C_ZIP }, 
+            { ".aif",  "audio/x-aiff", C_AUDIO }, 
+            { ".apk",  "application/vnd.android.package-archive", C_DROID },
+            { ".arj",  "application/x-arj", C_ZIP }, 
+            { ".au",   "audio/basic", C_AUDIO }, 
+            { ".avi",  "video/x-msvideo", C_VIDEO }, 
+            { ".b1",   "application/x-b1", C_APP },
+            { ".bmp",  "image/bmp", C_IMAGE },
+            { ".bz",   "application/x-bzip2", C_ZIP },
+            { ".bz2",  "application/x-bzip2", C_ZIP },
+            { ".cab",  "application/x-compressed", C_ZIP },
+            { ".chm",  "application/vnd.ms-htmlhelp", C_OFFICE },
+            { ".conf", "application/x-conf", C_APP },
+            { ".csv",  "text/csv", C_TEXT }, 
+            { ".db",   "application/x-sqlite3", C_APP },
+            { ".dex",  "application/octet-stream", C_DROID },
+            { ".djvu", "image/vnd.djvu", C_IMAGE },
+            { ".doc",  "application/msword", C_OFFICE },
+            { ".docx", "application/msword", C_OFFICE },
+            { ".epub", "application/epub", C_BOOK }, 
+            { ".fb2",  "application/fb2", C_BOOK },
+            { ".flac", "audio/flac", C_AUDIO },            
+            { ".flv",  "video/x-flv", C_VIDEO },            
+            { ".gif",  "image/gif", C_IMAGE }, 
+            { ".gtar", "application/x-gtar", C_ZIP },
+            { ".gz",   "application/x-gzip", C_ZIP },
+            { ".htm",  "text/html", C_MARKUP }, 
+            { ".html", "text/html", C_MARKUP }, 
+            { ".img",  "application/x-compressed", C_ZIP },
+            { ".jar",  "application/java-archive", C_ZIP },
+            { ".java", "text/java", C_TEXT }, 
+            { ".jpeg", "image/jpeg", C_IMAGE }, 
+            { ".jpg",  "image/jpeg", C_IMAGE },
+            { ".js",   "text/javascript", C_TEXT },
+            { ".lzh",  "application/x-lzh", C_ZIP },
+            { ".m3u",  "audio/x-mpegurl", C_AUDIO }, 
+            { ".md5",  "application/x-md5", C_APP },
+            { ".mid",  "audio/midi", C_AUDIO }, 
+            { ".midi", "audio/midi", C_AUDIO }, 
+            { ".mkv",  "video/x-matroska", C_VIDEO },
+            { ".mobi", "application/x-mobipocket", C_BOOK },
+            { ".mov",  "video/quicktime", C_VIDEO },
+            { ".mp2",  "video/mpeg", C_VIDEO },
+            { ".mp3",  "audio/mp3", C_AUDIO },
+            { ".mp4",  "video/mp4", C_VIDEO },
+            { ".mpeg", "video/mpeg", C_VIDEO }, 
+            { ".mpg",  "video/mpeg", C_VIDEO }, 
+            { ".odex", "application/octet-stream", C_DROID },
+            { ".ods",  "application/vnd.oasis.opendocument.spreadsheet", C_OFFICE }, 
+            { ".odt",  "application/vnd.oasis.opendocument.text", C_OFFICE }, 
+            { ".oga",  "audio/ogg", C_AUDIO }, 
+            { ".ogg",  "audio/ogg", C_AUDIO },    // RFC 5334 
+            { ".ogv",  "video/ogg", C_VIDEO },    // RFC 5334 
+            { ".opml", "text/xml", C_MARKUP }, 
+            { ".pdf",  "application/pdf", C_PDF }, 
+            { ".php",  "text/php", C_MARKUP },
+            { ".pmd",  "application/x-pmd", C_OFFICE },   //      PlanMaker Spreadsheet
+            { ".png",  "image/png", C_IMAGE }, 
+            { ".ppt",  "application/vnd.ms-powerpoint", C_OFFICE }, 
+            { ".pptx", "application/vnd.ms-powerpoint", C_OFFICE }, 
+            { ".prd",  "application/x-prd", C_OFFICE },   //      SoftMaker Presentations Document
+            { ".ra",   "audio/x-pn-realaudio", C_AUDIO }, 
+            { ".ram",  "audio/x-pn-realaudio", C_AUDIO },
+            { ".rar",  "application/x-rar-compressed", C_ZIP }, 
+            { ".rtf",  "application/rtf", C_OFFICE }, 
+            { ".sh",   "application/x-sh", C_APP },
+            { ".so",   "application/octet-stream", C_APP },
+            { ".sqlite","application/x-sqlite3", C_APP },
+            { ".svg",  "image/svg+xml", C_IMAGE },
+            { ".swf",  "application/x-shockwave-flash", C_VIDEO }, 
+            { ".sxw",  "application/vnd.sun.xml.writer", C_MARKUP }, 
+            { ".tar",  "application/x-tar", C_ZIP }, 
+            { ".tcl",  "application/x-tcl", C_APP }, 
+            { ".tgz",  "application/x-gzip", C_ZIP }, 
+            { ".tif",  "image/tiff", C_IMAGE }, 
+            { ".tiff", "image/tiff", C_IMAGE }, 
+            { ".tmd",  "application/x-tmd", C_OFFICE },   //      TextMaker Document
+            { ".txt",  "text/plain", C_TEXT },
+            { ".vcf",  "text/x-vcard", C_OFFICE }, 
+            { ".wav",  "audio/wav", C_AUDIO }, 
+            { ".wma",  "audio/x-ms-wma", C_AUDIO }, 
+            { ".wmv",  "video/x-ms-wmv", C_VIDEO }, 
+            { ".xls",  "application/vnd.ms-excel", C_OFFICE }, 
+            { ".xlsx", "application/vnd.ms-excel", C_OFFICE }, 
+            { ".xml",  "text/xml", C_MARKUP }, 
+            { ".xsl",  "text/xml", C_MARKUP }, 
+            { ".zip",  "application/zip", C_ZIP } 
+        };
 
     public final static String getMimeByExt( String ext ) {
-        if( ext == null || ext.length() == 0 || ext.compareTo( "." ) == 0 )
-            return "*/*";
+        if( str( ext ) ) {
+            String[] descr = getTypeDescrByExt( ext );
+            if( descr != null ) return descr[1];
+            // ask the system
+            MimeTypeMap mime_map = MimeTypeMap.getSingleton();
+            if( mime_map != null ) {
+                String mime = mime_map.getMimeTypeFromExtension( ext.substring( 1 ) );
+                if( str( mime ) ) return mime;
+            }
+        }
+        return "*/*";
+    }
+    public final static String getCategoryByExt( String ext ) {
+        if( str( ext ) ) {
+            String[] descr = getTypeDescrByExt( ext );
+            if( descr != null ) return descr[2];
+            // ask the system
+            MimeTypeMap mime_map = MimeTypeMap.getSingleton();
+            if( mime_map != null ) {
+                String mime = mime_map.getMimeTypeFromExtension( ext.substring( 1 ) );
+                if( str( mime ) ) {
+                    String type = mime.substring( 0, mime.indexOf( '/' ) );
+                    if( type.compareTo( "text" ) == 0 )
+                        return C_TEXT;
+                    if( type.compareTo( "image" ) == 0 )
+                        return C_IMAGE;
+                    if( type.compareTo( "audio" ) == 0 )
+                        return C_AUDIO;
+                    if( type.compareTo( "video" ) == 0 )
+                        return C_VIDEO;
+                    if( type.compareTo( "application" ) == 0 )
+                        return C_APP;
+                }                
+            }
+        }
+        return C_UNKNOWN;
+    }
+    
+    public final static String[] getTypeDescrByExt( String ext ) {
         ext = ext.toLowerCase();
         int from = 0, to = mimes.length;
         for( int l = 0; l < mimes.length; l++ ) {
             int idx = ( to - from ) / 2 + from;
             String tmp = mimes[idx][0];
             if( tmp.compareTo( ext ) == 0 )
-                return mimes[idx][1];
+                return mimes[idx];
             int cp;
             for( cp = 1;; cp++ ) {
                 if( cp >= ext.length() ) {
@@ -141,13 +190,7 @@ public final class Utils {
                 }
             }
         }
-        MimeTypeMap mime_map = MimeTypeMap.getSingleton();
-        if( mime_map != null ) {
-            String mime = mime_map.getMimeTypeFromExtension( ext.substring( 1 ) );
-            if( mime != null && mime.length() > 0 )
-                return mime;
-        }
-        return "*/*";
+        return null;
     }
 
     public final static String getFileExt( String file_name ) {

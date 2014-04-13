@@ -397,6 +397,8 @@ public class ListHelper {
     public final SparseBooleanArray getMultiple( boolean touched ) {
         int pos = getSelected();
         SparseBooleanArray cis = flv.getCheckedItemPositions();
+        if( AdapterView.INVALID_POSITION == pos ) 
+            return cis;
         for( int i = 0; i < cis.size(); i++ )
             if( cis.valueAt( i ) && ( !touched || cis.keyAt( i ) == pos ) )
                 return cis;

@@ -607,41 +607,19 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     public final static int getIconId( String file ) {
         if( file.indexOf( " -> " ) > 0 )
             return R.drawable.link;
-        String ext = Utils.getFileExt( file );
-        if( Utils.str( ext ) ) {
-            ext = ext.toLowerCase();
-            if( ".apk".equals( ext ) || ".dex".equals( ext ) ||".odex".equals( ext ) )
-                return R.drawable.and;
-            if( ".zip".equals( ext ) || ".jar".equals( ext ) || ".tar".equals( ext ) ||
-                 ".7z".equals( ext ) || ".arj".equals( ext ) || ".tgz".equals( ext ) ||
-                 ".gz".equals( ext ) || ".rar".equals( ext ) ||".gtar".equals( ext ) ||
-                 ".bz".equals( ext ) || ".lzh".equals( ext ) || ".cab".equals( ext ) ||
-                ".bz2".equals( ext ) || ".img".equals( ext ) )
-                return R.drawable.zip;
-            if( ".fb2".equals( ext ) ||".epub".equals( ext ) ||".mobi".equals( ext ) ||
-                ".doc".equals( ext ) || ".xls".equals( ext ) ||
-               ".docx".equals( ext ) ||".xlsx".equals( ext ) ||
-                ".odt".equals( ext ) || ".ods".equals( ext ) ||
-                ".chm".equals( ext ) || ".vcf".equals( ext ) )
-                return R.drawable.book;
-            if( ".pdf".equals( ext ) )
-                return R.drawable.pdf;
-            if( ".html".equals( ext ) || ".htm".equals( ext ) ||
-                 ".xml".equals( ext ) || ".xsl".equals( ext ) )
-                return R.drawable.xml;
-            String mime = Utils.getMimeByExt( ext );
-            String type = mime.substring( 0, mime.indexOf( '/' ) );
-            if( type.compareTo( "text" ) == 0 )
-                return R.drawable.text;
-            if( type.compareTo( "image" ) == 0 )
-                return R.drawable.image;
-            if( type.compareTo( "audio" ) == 0 )
-                return R.drawable.audio;
-            if( type.compareTo( "video" ) == 0 )
-                return R.drawable.video;
-            if( type.compareTo( "application" ) == 0 )
-                return R.drawable.application;
-        }
+        String cat = Utils.getCategoryByExt( Utils.getFileExt( file ) );
+        if( Utils.C_UNKNOWN.equals( cat ) )return R.drawable.unkn;
+        if( Utils.C_AUDIO.equals( cat ) )  return R.drawable.audio;
+        if( Utils.C_VIDEO.equals( cat ) )  return R.drawable.video;
+        if( Utils.C_IMAGE.equals( cat ) )  return R.drawable.image;
+        if( Utils.C_TEXT.equals( cat ) )   return R.drawable.text;
+        if( Utils.C_BOOK.equals( cat ) )   return R.drawable.book;
+        if( Utils.C_OFFICE.equals( cat ) ) return R.drawable.book;
+        if( Utils.C_PDF.equals( cat ) )    return R.drawable.pdf;
+        if( Utils.C_ZIP.equals( cat ) )    return R.drawable.zip;
+        if( Utils.C_MARKUP.equals( cat ) ) return R.drawable.xml;
+        if( Utils.C_APP.equals( cat ) )    return R.drawable.application;
+        if( Utils.C_DROID.equals( cat ) )  return R.drawable.and;
         return R.drawable.unkn;
     }
 

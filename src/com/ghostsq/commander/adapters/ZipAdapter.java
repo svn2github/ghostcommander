@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -163,9 +164,10 @@ public class ZipAdapter extends CommanderAdapterBase {
         }       
         @Override
         public void run() {
+            String zip_path = null;
             try {
             	if( uri != null ) {
-            	    String zip_path = uri.getPath(); 
+            	    zip_path = uri.getPath(); 
                 	if( zip_path != null ) {
                   	    zip = new ZipFile( zip_path );
                     	String cur_path = null;
@@ -186,14 +188,20 @@ public class ZipAdapter extends CommanderAdapterBase {
                 	}
                 }
             }
+            catch( ZipException e ) {
+                Log.e( TAG, zip_path, e );
+                sendProgress( ctx.getString( R.string.cant_open ), Commander.OPERATION_FAILED, pass_back_on_done );
+                return;
+            }
             catch( Exception e ) {
-                Log.e( TAG, "ListEngine: " + pass_back_on_done, e );
+                Log.e( TAG, zip_path, e );
                 sendProgress( e.getLocalizedMessage(), Commander.OPERATION_FAILED, pass_back_on_done );
+                return;
             }
             finally {
             	super.run();
             }
-            sendProgress( "ZIP error", Commander.OPERATION_FAILED, pass_back_on_done );
+            sendProgress( ctx.getString( R.string.cant_open ), Commander.OPERATION_FAILED, pass_back_on_done );
         }
     }
     @Override
