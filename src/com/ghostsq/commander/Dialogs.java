@@ -156,7 +156,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
             case R.id.donate:
             case SMB_PLG_DIALOG:
             case SFTP_PLG_DIALOG:
-            case FileCommander.DBOX_APP: {
+            {
                     return dialogObj = new AlertDialog.Builder( owner )
                         .setIcon( android.R.drawable.ic_dialog_alert )
                         .setTitle( R.string.confirm )
@@ -436,10 +436,6 @@ public class Dialogs implements DialogInterface.OnClickListener {
             case SFTP_PLG_DIALOG:
                 ( (AlertDialog)dialog ).setMessage( owner.getString( R.string.sftp_missed ) );
                 break;
-            case FileCommander.DBOX_APP:
-                ( (AlertDialog)dialog ).setMessage( owner.getString( R.string.dbox_missed ) );
-                break;
-                
             case R.id.about: {
                     PackageInfo pi = null;
                     try {

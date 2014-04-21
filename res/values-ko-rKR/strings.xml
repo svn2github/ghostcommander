@@ -75,7 +75,6 @@
     <string name="edit_title">편집</string>
     <string name="newf_prompt">새 파일이름</string>
     <string name="rename_title">변경</string>
-    <string name="rename_prompt">변경 :</string>
     <string name="rename_err">변경대상 없음</string>
     <string name="mkdir_title">폴더생성</string>
     <string name="mkdir_prompt">폴서 생성 :</string>
@@ -87,7 +86,6 @@
     <string name="find_on_fs_only">검색기능은 로컬 파일시스템에서만 동작합니다.</string>
     
     
-    <string name="copy_move_not_alwd">\'%1$s\'은 허용되지 않으니 다른 것을 먼저 선택하세요.</string><!-- copy_title/move_title -->
     <string name="oper_item_to">%1$s %2$s to:"</string><!-- copy_title/move_title, file name/summary -->
     <string name="login_title">로그인 Login</string>
     <string name="delete_title">삭제</string>

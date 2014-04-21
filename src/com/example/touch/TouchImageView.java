@@ -7,6 +7,7 @@
 
 package com.example.touch;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -16,6 +17,7 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.ImageView;
 
+@SuppressLint("NewApi")
 public class TouchImageView extends ImageView {
 
     Matrix matrix = new Matrix();
@@ -43,7 +45,6 @@ public class TouchImageView extends ImageView {
     ScaleGestureDetector mScaleDetector;
     
     Context context;
-
 
     public TouchImageView(Context context) {
         super(context);

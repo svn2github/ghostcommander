@@ -11,6 +11,7 @@ import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 
 public class Favorites extends ArrayList<Favorite> 
@@ -133,6 +134,13 @@ public class Favorites extends ArrayList<Favorite>
             if( isEmpty() ) {
                 add( new Favorite( HomeAdapter.DEFAULT_LOC, c.getString( R.string.home ) ) );
                 add( new Favorite( Panels.DEFAULT_LOC, c.getString( R.string.default_uri_cmnt ) ) );
+                /*
+                add( new Favorite( Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(),"Downloads" ) );
+                add( new Favorite( Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath(),     "Camera" ) );
+                add( new Favorite( Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath(), "Pictures" ) );
+                add( new Favorite( Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath(),    "Music" ) );
+                add( new Favorite( Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).getAbsolutePath(),   "Movies" ) );
+                */
             }
         } catch( Throwable e ) {
             Log.e( TAG, null, e );

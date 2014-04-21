@@ -11,10 +11,12 @@ import android.util.Log;
 public class MediaScanTask extends AsyncTask<Void, Void, Void> {
     private static final String TAG = "MediaScanTask";
     private Context ctx; 
-    private File folder;
-    MediaScanTask( Context ctx, File folder ) {
+    private File    folder;
+    private boolean all = false;
+    MediaScanTask( Context ctx, File folder, boolean all ) {
         this.ctx = ctx;
         this.folder = folder;
+        this.all = all;
     }
     @Override
     protected Void doInBackground( Void... params ) {
@@ -37,9 +39,9 @@ public class MediaScanTask extends AsyncTask<Void, Void, Void> {
                 if( f.isDirectory() )
                     collectFiles( f, to_scan );
                 else {
-                    String ext = Utils.getFileExt( f.getName() );
+                    String ext  = Utils.getFileExt( f.getName() );
                     String mime = Utils.getMimeByExt( ext );
-                    if( mime != null && ( mime.startsWith( "image/" ) || mime.startsWith( "audio/" ) || mime.startsWith( "video/" ) ) )
+                    if( all || ( mime != null && ( mime.startsWith( "image/" ) || mime.startsWith( "audio/" ) || mime.startsWith( "video/" ) ) ) )
                         to_scan.add( f.getAbsolutePath() );
                 }
             } catch( Exception e ) {}
@@ -47,8 +49,8 @@ public class MediaScanTask extends AsyncTask<Void, Void, Void> {
     }    
     
     // entry point
-    public static void scanMedia( Context ctx, File folder ) {
-        MediaScanTask bg_scan = new MediaScanTask( ctx, folder );
+    public static void scanMedia( Context ctx, File folder, boolean all ) {
+        MediaScanTask bg_scan = new MediaScanTask( ctx, folder, all );
         bg_scan.execute();
     }    
 

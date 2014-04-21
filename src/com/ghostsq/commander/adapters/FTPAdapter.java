@@ -361,7 +361,7 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
                 dest = new File( to.toString() );
                 if( !dest.exists() ) dest.mkdirs();
                 if( !dest.isDirectory() )
-                    throw new RuntimeException( s( R.string.dest_exist ) );
+                    throw new RuntimeException( s( R.string.inv_dest ) );
             } else {
                 dest = new File( createTempDir() );
                 recipient = to.getReceiver(); 

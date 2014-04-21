@@ -21,7 +21,7 @@
     <string name="eq">Angleichen</string>
     <string name="change">Wechseln</string>
     <string name="tgl">Wechseln</string>
-    <string name="sz">Grösse</string>
+    <string name="sz">Größe</string>
     <string name="refresh">Aktualisieren</string>
     <string name="enter">Ordner wechseln</string>
     <string name="add_fav">aktuellen Ordner zu den Favoriten hintufügen</string>
@@ -30,11 +30,11 @@
     <string name="search_file">Suchen</string>
     <string name="sort_by_name">Nach Name</string>
     <string name="sort_by_ext">Nach Erweiterung</string>
-    <string name="sort_by_size">Nach Grösse</string>
+    <string name="sort_by_size">Nach Größe</string>
     <string name="sort_by_date">Nach Datum</string>
     <string name="sort_by_name_b">Nach Name</string>
     <string name="sort_by_ext_b">Nach Erweiterung</string>
-    <string name="sort_by_size_b">Nach Grösse</string>
+    <string name="sort_by_size_b">Nach Größe</string>
     <string name="sort_by_date_b">Nach Datum</string>
     <string name="select_all">Markieren</string>
     <string name="unselect_all">Markierung aufheben</string>
@@ -43,7 +43,7 @@
     <string name="keys">Tastenkombinationen</string>
     <string name="new_file">Neue Datei</string>
     <string name="go_button">Öffnen</string>
-    <string name="show_size">Grösse berechnen</string>
+    <string name="show_size">Größe berechnen</string>
     <string name="send_to">Senden an ...</string>
     <string name="open_with">Öffnen mit ...</string>
     <string name="input_settings">Eingabe</string>
@@ -60,7 +60,7 @@
     <string name="dialog_no">Nein</string>
     <string name="dialog_ok">Ok</string>
     <string name="dialog_cancel">Abbrechen</string>
-    <string name="dialog_close">Schliessen</string>
+    <string name="dialog_close">Schließen</string>
     <string name="dialog_exit">Beenden</string>
     <string name="dialog_abort">Abbruch</string>
     <string name="dialog_retry">Wiederholen</string>
@@ -69,7 +69,6 @@
     <string name="edit_title">Bearbeiten</string>
     <string name="newf_prompt">Neuer Dateiname</string>
     <string name="rename_title">Umbenennen</string>
-    <string name="rename_prompt">Umbenennen in:</string>
     <string name="rename_err">Nichts zum Umbenennen.</string>
     <string name="mkdir_title">Ordner neu</string>
     <string name="mkdir_prompt">Ordnername:</string>
@@ -79,9 +78,7 @@
     <string name="move_title">Verschieben</string>
     <string name="no_items">Keine Dateien und/ oder Ordner markiert oder Markierung für gewünschte Operation ungültig.</string>
     <string name="find_on_fs_only">Sie können nur Dateien und Ordner dieses Gerätes durchsuchen.</string>
-    <string name="copy_move_not_alwd">\'%s\' ist nicht möglich.</string>
     <string name="copy_to_local_only">Datei- und Ordneroperationen sind nur zu oder von diesem Gerät erlaubt.</string>
-    <string name="dest_exist">Datei ist bereits vorhanden. Überschreiben fehlgeschlagen.</string>
     <string name="oper_item_to">%1$s %2$s nach:</string>
     <string name="login_title">Login</string>
     <string name="delete_title">Löschen</string>
@@ -136,9 +133,9 @@
     <string name="left_panel_settings">linkes Fenster</string>
     <string name="right_panel_settings">rechtes Fenster</string>
     <string name="detailed_view_SbS">detaillierte Anzeige im Zweifenstermodus</string>
-    <string name="summary_detailed_view_SbS">Grösse und Datum werden im Zweifenstermodus angezeigt.</string>
+    <string name="summary_detailed_view_SbS">Größe und Datum werden im Zweifenstermodus angezeigt.</string>
     <string name="detailed_view_Ovr">detaillierte Anzeige im Einfenstermodus</string>
-    <string name="summary_detailed_view_Ovr">Grösse und Datum werden im Einfenstermodus angezeigt.</string>
+    <string name="summary_detailed_view_Ovr">Größe und Datum werden im Einfenstermodus angezeigt.</string>
     <string name="sorting">Sortierung</string>
     <string name="summary_sorting">Einstellen, wie Dateien und Ordner sortiert werden.</string>
     <string name="sort_case">Gross- und Kleinschreibung bei Sortierung ignorieren</string>

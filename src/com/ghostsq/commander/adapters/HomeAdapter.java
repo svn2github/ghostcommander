@@ -3,6 +3,7 @@ package com.ghostsq.commander.adapters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 import com.ghostsq.commander.FileCommander;
 import com.ghostsq.commander.Panels;
@@ -12,6 +13,7 @@ import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.root.MountAdapter;
 import com.ghostsq.commander.root.RootAdapter;
 import com.ghostsq.commander.utils.ForwardCompat;
+import com.ghostsq.commander.utils.StorageUtils;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
@@ -23,6 +25,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ContextMenu;
@@ -34,31 +37,30 @@ public class HomeAdapter extends CommanderAdapterBase {
     private final static String TAG = "HomeAdapter";
     public static final String DEFAULT_LOC = "home:";
     private boolean root = false;
-    private static enum Mode {
-        FAVS(   R.string.favs,   R.string.favs_descr,   R.drawable.favs    ),  //0
-        LOCAL(  R.string.local,  R.string.local_descr,  R.drawable.sd      ),  //1 
-        FTP(    R.string.ftp,    R.string.ftp_descr,    R.drawable.ftp     ),  //2
-        PLUGINS(R.string.plugins,R.string.plugins_descr,R.drawable.plugins ),  //3
-        ROOT(   R.string.root,   R.string.root_descr,   R.drawable.root    ),  //4+n 
-        MOUNT(  R.string.mount,  R.string.mount_descr,  R.drawable.mount   ),  //5+n
-        APPS(   R.string.apps,   R.string.apps_descr,   R.drawable.android ),  //6+n-(r?0:2)
-        EXIT(   R.string.exit,   R.string.exit_descr,   R.drawable.exit    );  //7+n-(r?0:2)
+    private final int[] FAVS     = { R.string.favs,    R.string.favs_descr,    R.drawable.favs    };
+    private final int[] LOCAL    = { R.string.local,   R.string.local_descr,   R.drawable.sd      }; 
+    private final int[] EXTERNAL = { R.string.external,R.string.external_descr,R.drawable.sd      }; 
+    private final int[] MEDIA    = { R.string.media,   R.string.media_descr,   R.drawable.sd      }; 
+    private final int[] FTP      = { R.string.ftp,     R.string.ftp_descr,     R.drawable.ftp     };
+    private final int[] PLUGINS  = { R.string.plugins, R.string.plugins_descr, R.drawable.plugins };
+    private final int[] ROOT     = { R.string.root,    R.string.root_descr,    R.drawable.root    }; 
+    private final int[] MOUNT    = { R.string.mount,   R.string.mount_descr,   R.drawable.mount   };
+    private final int[] APPS     = { R.string.apps,    R.string.apps_descr,    R.drawable.android };
+    private final int[] EXIT     = { R.string.exit,    R.string.exit_descr,    R.drawable.exit    };
         
-        public final int pos, name_id, descr_id, icon_id;
-        private Mode( int name_id_, int descr_id_, int icon_id_ ) {
-            pos      = ordinal(); 
-            name_id  = name_id_; 
-            descr_id = descr_id_; 
-            icon_id  = icon_id_;
-        }
+    private Item[] items = null;
+
+    private Item makeItem( int[] mode, String scheme ) {
+        Item item = new Item();
+        item.name = s( mode[0] );
+        item.attr = s( mode[1] );
+        item.icon_id = mode[2];
+        item.origin = scheme;
+        return item;
     }
-    private Mode[] modes;
-    private Item[] plugins;
-    private final int offset = Mode.FTP.pos+1;
     
     public HomeAdapter( Context ctx_ ) {
         super( ctx_, DETAILED_MODE | NARROW_MODE | SHOW_ATTR | ATTR_ONLY );
-        modes = Mode.values();
         setCount( getNumItems() );
     }
 
@@ -110,7 +112,28 @@ public class HomeAdapter extends CommanderAdapterBase {
     @Override
     public boolean readSource( Uri tmp_uri, String pbod ) {
         try {
-            plugins = null;
+            items = null;
+            ArrayList<Item> ia = new ArrayList<Item>();
+            Utils.changeLanguage( ctx );
+
+            ia.add( makeItem( FAVS, "favs" ) );
+            ia.add( makeItem( LOCAL, "fs" ) );
+
+            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
+                List<StorageUtils.StorageInfo> sil = StorageUtils.getStorageList();
+                if( sil != null && sil.size() > 0 ) {
+                    for( int i = 0; i < sil.size(); i++ ) {
+                        StorageUtils.StorageInfo si = sil.get( i );
+                        if( !si.internal ) {
+                            ia.add( makeItem( EXTERNAL, si.path ) );
+                            if( android.os.Build.VERSION.SDK_INT >= 18 )
+                                ia.add( makeItem( MEDIA, "ms:" + si.path ) );
+                        }
+                    }
+                }
+            }            
+            ia.add( makeItem( FTP, "ftp" ) );
+            
             Utils.changeLanguage( ctx );            
             final String ghost_commander = "com.ghostsq.commander";
             final int scheme_pos = ghost_commander.length() + 1;
@@ -118,7 +141,14 @@ public class HomeAdapter extends CommanderAdapterBase {
             ApplicationInfo ai = pm.getApplicationInfo( ghost_commander, 0 );
             String[]    ghosts = pm.getPackagesForUid( ai.uid );
             if( ghosts != null &&  ghosts.length > 1 ) {
-                ArrayList<Item> plugins_al = new ArrayList<Item>();
+                Arrays.sort( ghosts, new Comparator<String>() {
+                    public int compare( String i1, String i2 ) {
+                        if( i1.indexOf( "sftp"  ) > 0 ) return -1;
+                        if( i1.indexOf( "samba" ) > 0 ) return i2.indexOf( "sftp" ) > 0 ? 1 : -1;
+                        return 0;
+                    }
+                } );
+                
                 for( String pkgn : ghosts ) {
                     if( ghost_commander.equals( pkgn ) ) continue;
                     ApplicationInfo pai = null;
@@ -133,7 +163,7 @@ public class HomeAdapter extends CommanderAdapterBase {
                     }
                     Log.d( TAG, pkgn );
                     Item item = new Item();
-                    plugins_al.add( item );
+                    ia.add( item );
                     String scheme = pkgn.substring( scheme_pos );
                     if( "samba".equals( scheme ) ) {
                         item.name = s( R.string.smb );
@@ -165,20 +195,19 @@ public class HomeAdapter extends CommanderAdapterBase {
                     }
                     item.origin = scheme; 
                 }
-                
-                
-                plugins = new Item[plugins_al.size()];
-                plugins_al.toArray( plugins );
-                
-                Arrays.sort( plugins, new Comparator<Item>() {
-                    public int compare( Item i1, Item i2 ) {
-                        if( "sftp".equals( i1.origin ) ) return -1;
-                        if("samba".equals( i1.origin ) ) return "sftp".equals( i2.origin ) ? 1 : -1;
-                        return 0;
-                    }
-                } );
-                setCount( getNumItems() );
             }
+            ia.add( makeItem( PLUGINS, "pl" ) );
+            if( root ) {
+                ia.add( makeItem( ROOT, "root" ) );
+                ia.add( makeItem( MOUNT, "mount" ) );
+            }
+            ia.add( makeItem( APPS, "apps" ) );
+            ia.add( makeItem( EXIT, "exit" ) );
+            
+            items = new Item[ia.size()];
+            ia.toArray( items );
+            
+            setCount( getNumItems() );
         } catch( NameNotFoundException e ) {
             e.printStackTrace();
         } 
@@ -211,35 +240,38 @@ public class HomeAdapter extends CommanderAdapterBase {
     
     @Override
     public void openItem( int position ) {
+        Item item = (Item)getItem( position );
         String uri_s = null;
-        if( plugins != null && position >= offset && position < offset + plugins.length ) {
-            Item plugin = plugins[position - offset];
-            if( "sftp".equals( plugin.origin ) ) { 
-                commander.dispatchCommand( FileCommander.SFTP_ACT); 
-                return; 
-            }
-            if( "samba".equals( plugin.origin ) ) { 
-                commander.dispatchCommand( FileCommander.SMB_ACT ); 
-                return; 
-            }
-            uri_s = plugin.origin + ":";
+        if( "ftp".equals( item.origin ) ) { 
+            commander.dispatchCommand( FileCommander.FTP_ACT); 
+            return; 
         }
+        if( "sftp".equals( item.origin ) ) { 
+            commander.dispatchCommand( FileCommander.SFTP_ACT); 
+            return; 
+        }
+        if( "samba".equals( item.origin ) ) { 
+            commander.dispatchCommand( FileCommander.SMB_ACT ); 
+            return; 
+        }
+        if( "pl".equals( item.origin ) ) {
+            Intent i = new Intent( Intent.ACTION_VIEW );
+            i.setData( Uri.parse( s( R.string.plugins_uri ) ) );
+            commander.issue( i, 0 );
+            return; 
+        }
+        if( "exit".equals( item.origin ) ) { 
+            commander.dispatchCommand( R.id.exit ); 
+            return; 
+        }
+        if( "fs".equals( item.origin ) ) 
+            uri_s = Environment.getExternalStorageDirectory().getAbsolutePath(); 
         else {
-            int p = translatePosition( position );
-            if( p < 0 || p >= modes.length ) return;
-            if( p == Mode.FAVS.pos ) uri_s = "favs:";                    else 
-            if( p == Mode.LOCAL.pos) uri_s = Panels.DEFAULT_LOC;         else 
-            if( p == Mode.ROOT.pos ) uri_s = RootAdapter.DEFAULT_LOC;    else
-            if( p == Mode.MOUNT.pos) uri_s = MountAdapter.DEFAULT_LOC;   else
-            if( p == Mode.APPS.pos ) uri_s = "apps:";                    else
-            if( p == Mode.FTP.pos  ) { commander.dispatchCommand( FileCommander.FTP_ACT ); return; }
-            if( p == Mode.EXIT.pos ) { commander.dispatchCommand( R.id.exit );             return; }
-            if( p == Mode.PLUGINS.pos ) {
-                Intent i = new Intent( Intent.ACTION_VIEW );
-                i.setData( Uri.parse( s( R.string.plugins_uri ) ) );
-                commander.issue( i, 0 );
-                return; 
-            }
+            String scheme = (String)item.origin;
+            if( scheme.indexOf( '/' ) >= 0 )
+                uri_s = scheme;
+            else
+                uri_s = item.origin + ":";
         }
         if( Utils.str( uri_s ) )
             commander.Navigate( Uri.parse( uri_s ), null, null );
@@ -256,27 +288,12 @@ public class HomeAdapter extends CommanderAdapterBase {
     }
 
     private int getNumItems() {
-        int num = modes.length;
-        if( !root ) num -= 2;
-        if( plugins != null )
-            num += plugins.length;
-        return num;
-    }
-    
-    private int translatePosition( int p ) {
-        if( plugins != null && p > Mode.FTP.pos )
-            p -= plugins.length;
-        if( !root && p >= Mode.ROOT.pos )
-            p += 2;
-        return p;
+        return items == null ? 0 : items.length;
     }
    
     @Override
     public String getItemName( int position, boolean full ) {
-        if( plugins != null && position >= offset && position < offset + plugins.length )
-            return plugins[position - offset].name;
-        int p = translatePosition( position );
-        return s( modes[p].name_id );
+        return items != null ? "" : items[position].name;
     }
     
     /*
@@ -284,19 +301,7 @@ public class HomeAdapter extends CommanderAdapterBase {
      */
     @Override
     public Object getItem( int position ) {
-        Utils.changeLanguage( ctx );
-        if( plugins != null && position >= offset && position < offset + plugins.length ) {
-            return plugins[position - offset];
-        }
-        position = translatePosition( position );
-        Item item = new Item();
-        item.name = "???";
-        if( position >= 0 && position < modes.length ) {
-            item.name = s( modes[position].name_id );
-            item.icon_id = modes[position].icon_id;
-            item.attr = s( modes[position].descr_id );
-        }
-        return item;
+        return items[position];
     }
     @Override
     public View getView( int position, View convertView, ViewGroup parent ) {

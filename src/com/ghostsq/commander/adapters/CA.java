@@ -1,16 +1,15 @@
 package com.ghostsq.commander.adapters;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.os.Environment;
 import android.util.Log;
 
 import com.ghostsq.commander.Commander;
-import com.ghostsq.commander.Dialogs;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.root.MountAdapter;
 import com.ghostsq.commander.root.RootAdapter;
@@ -41,6 +40,7 @@ final public class CA {
     protected static final int  apps_schema_h =  "apps".hashCode();
     protected static final int  favs_schema_h =  "favs".hashCode();
     protected static final int  file_schema_h =  "file".hashCode();
+    protected static final int    ms_schema_h =    "ms".hashCode();
 
     public final static boolean isLocal( String scheme ) {
         return scheme == null || scheme.length() == 0 || "file".equals( scheme ) || "find".equals( scheme );
@@ -79,6 +79,7 @@ final public class CA {
         if(   mnt_schema_h == scheme_h )  return new MountAdapter( c );
         if(  apps_schema_h == scheme_h )  return new AppsAdapter( c ); 
         if(  favs_schema_h == scheme_h )  return new FavsAdapter( c ); 
+        if(    ms_schema_h == scheme_h )  return new MSAdapter( c ); 
         CommanderAdapter ca = CreateExternalAdapter( c, scheme );
         return ca == null ? new FSAdapter( c ) : ca;
     }
@@ -88,6 +89,7 @@ final public class CA {
      * @param scheme - the suffix of the plugin's package name
      * @return an instance of the adapter or null on failure
      */
+    @SuppressLint("NewApi")     // all of the sudden, lint considers the DexClassLoader.loadClass() as from a higher API, but according to the docs, the method belongs to API level 1
     public static CommanderAdapter CreateExternalAdapter( Context ctx, String scheme ) {
         try {
             File dex_f = ctx.getDir( scheme, Context.MODE_PRIVATE );

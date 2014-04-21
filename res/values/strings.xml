@@ -35,6 +35,8 @@
 <string name="rescan">Rescan media</string>
 <string name="favs">Favorites</string>
 <string name="local">Local storage</string>
+<string name="external">External card</string>
+<string name="media">Media Storage</string>
 <string name="ftp">FTP site</string>
 <string name="sftp">SFTP site</string>
 <string name="smb">Windows share</string>
@@ -46,8 +48,10 @@
 <string name="exit">Exit</string>
 <string name="favs_descr">View and manage your list of favorite folders and sites.</string>
 <string name="local_descr">Browse, organize and modify the contents of the inserted SD card or internal flash memory.</string>
+<string name="external_descr">Files on the physical inserted SD card. May be read-only on some devices</string>
+<string name="media_descr">Make modification on the external SD card via the MesiaStorage interface</string>
 <string name="ftp_descr">Connect to an FTP server, browse and transfer files both to and from it.</string>
-<string name="sftp_descr">Connect to a Secured (SSH) FTP server.</string>
+<string name="sftp_descr">Connect to an SSH FTP (sftp) server.</string>
 <string name="smb_descr">Connect to shared folders on a Windows machine.</string>
 <string name="plugins_descr">Look for more Ghost Commander plugins.</string>
 <string name="root_descr">Use caution - for rooted devices only: Browse and interact with critical system files. Only proceed if you know what you\'re doing.</string>
@@ -161,7 +165,7 @@
 <string name="search_done">Search complete</string>
 <string name="done">Done</string>
 <string name="interrupted">Interrupted</string>
-<string name="cant_copy_to_itself">Can not copy the directory \"%s\" to itself or below.</string>
+<string name="cant_copy_to_itself">Cannot copy the directory \"%s\" to itself or below.</string>
 <string name="too_deep_hierarchy">The file hierarchy is too deep.</string>
 <string name="nothing_found">No files found</string>
 <string name="preparing">Preparing…</string>
@@ -401,7 +405,7 @@ Tap \"OK\" to be redirected to the PayPal site.\n
 &#xA0;&#xA0;&#xA0;<a href="http://sourceforge.net/projects/ghostcommander/">At SourceForge</a> 
 </p>
 <p>Please email bugs/suggestions to:<br/> <a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a></p>
-<p>Like this app? <a href="%2$s">Make a PayPal Donation </a> to support further development.</p>
+<p>Like this app? <a href="%2$s">Make a PayPal Donation</a> to support further development.</p>
 <h3>DISCLAIMER:</h3>
 By using this software, you agree with the following:
 The author of this software is not responsible for any kind of damage, loss of information, 
@@ -410,36 +414,30 @@ You agree to use this software at your own risk.\n
 If you don\'t agree to the above, stop using this software immediately and uninstall it.\n
 ]]></string>
 <string name="keys_text">"
-\t\tBASICS
+\t\tSELECTING FILES
 
-Copy or move files and folders by firstly choosing the target destination in one panel, then swipe (or toggle) back to the other panel and select the items you wish to transfer.\n
-To select files and folders, tap on the right side of the screen and open them by tapping on the left. That\'s right, one side will activate items and the other side will select them.\n
-If you have many items to select, navigate to \"Menu &gt; List &gt; Select all\".\n
-To manually enter a location path (or to see a drop-down list of your favorites) long press on the panel\'s title.
+To select files and folders, tap on the right side of their rows and open them by tapping on the left. 
+That\'s right, one side will activate items and the other side will select them.\n
 
-\t\tHOTKEYS
+\t\tCOPYING AND MOVING
 
-VolumeUp - Select files and folders
-VolumeDn - Toggle between the panels
-+, -  - Select or unselect items in the current folder  
-(, )  - Manually enter a location path and view your favorites
-* - Add the current folder to your favorites
-\" - Show detailed information for the selected item(s)
-= - Display the same location in the other panel (synchronize)
-1 - Help
-2 - Rename selected item
-4 - Edit selected item
-5 - Copy selected item(s)
-6 - Move selected item(s)
-7 - Create a new folder
-8 - Delete selected item(s)
-9 - Open preferences/settings
-0 - Close the application
-[A-z] - Quick search
+Copy or move files and folders by first choosing the target destination in one panel, then swipe (or toggle) back to the other panel and select the items you wish to transfer.\n
 
-\t\tADVANCED
+\t\tZIP FILES
 
-Manually enter resource URIs into the location field as follows:
+Ghost Commander can work with classic ZIP files as if they were directories. Password-protected (encrypted) ZIP files and ZIP files using other compression algorithms are not supported.
+
+\t\tPLUGINS
+
+Plugins, which have to be installed separately, provide access to Windows shared folders, SSH File Transfer Protocol and also access to cloud storage services: Box, Dropbox and Google Drive.
+
+\t\tROOT MODE
+Using the root mode (superuser) and mount point features of Ghost Commander requires caution, a rooted device and BusyBox installed with its path defined in the settings.
+
+\t\tLOCATION EDITOR
+
+To enter a location manually (and to see a drop-down list of your favorites) long-press on the panel\'s header to open the location editor.\n
+You can enter resource URIs into the location editor manually as follows:
 
 ftp://host.com/folder
     - Anonymous FTP
@@ -458,11 +456,24 @@ smb://domain;user:pass@server/share
 root:/path/to/folder
     - Root mode
 
-mount:
-    - Mount points
+\t\tHOTKEYS
 
-Note: Using the root mode (superuser) and mount point features of Ghost Commander requires caution, a rooted device and BusyBox installed with its path defined in settings. 
-Accessing a Windows share can only be done if the Ghost Commander SMB plugin is installed.
-"
-    </string>
+VolumeUp - Select files and folders
+VolumeDn - Toggle between the panels
++, -  - Select or unselect items in the current folder  
+(, )  - Enter a location manually and view your favorites
+* - Add the current folder to your favorites
+\" - Show detailed information for the selected item(s)
+= - Display the same location in the other panel (synchronize)
+1 - Help
+2 - Rename selected item
+4 - Edit selected item
+5 - Copy selected item(s)
+6 - Move selected item(s)
+7 - Create a new folder
+8 - Delete selected item(s)
+9 - Open preferences/settings
+0 - Close the application
+[A-z] - Quick search
+"</string>
 </resources>

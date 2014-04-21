@@ -9,9 +9,11 @@
       android:id="@+id/tb_props" 
       android:layout_width="fill_parent" 
       android:layout_height="wrap_content" 
+      android:layout_marginRight="40dip">
+      <!--       
       android:layout_alignLeft="@+id/tb_caption" 
       android:layout_alignRight="@+id/tb_caption"
-      android:layout_marginRight="40dip">
+       -->
         <CheckBox
           android:id="@+id/tb_visible"
           android:layout_width="0dip" 

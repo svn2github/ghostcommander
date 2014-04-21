@@ -15,8 +15,6 @@
         <item android:id="@+id/enter"
          android:title="@string/enter"
          android:alphabeticShortcut="d"/>
-        <item android:id="@+id/add_fav"
-         android:title="@string/add_fav"/>
         <item android:id="@+id/oth_sh_this"
          android:title="@string/oth_sh_this"/>
         <item android:id="@+id/search"

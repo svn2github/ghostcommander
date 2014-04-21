@@ -102,7 +102,7 @@ public final class Utils {
             { ".sqlite","application/x-sqlite3", C_APP },
             { ".svg",  "image/svg+xml", C_IMAGE },
             { ".swf",  "application/x-shockwave-flash", C_VIDEO }, 
-            { ".sxw",  "application/vnd.sun.xml.writer", C_MARKUP }, 
+            { ".sxw",  "application/vnd.sun.xml.writer", C_OFFICE }, 
             { ".tar",  "application/x-tar", C_ZIP }, 
             { ".tcl",  "application/x-tcl", C_APP }, 
             { ".tgz",  "application/x-gzip", C_ZIP }, 

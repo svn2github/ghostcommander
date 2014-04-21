@@ -262,7 +262,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                 dest = new File( to.toString() );
                 if( !dest.exists() ) dest.mkdirs();
                 if( !dest.isDirectory() )
-                    throw new RuntimeException( ctx.getString( R.string.dest_exist ) );
+                    throw new RuntimeException( ctx.getString( R.string.inv_dest ) );
             } else {
                 dest = new File( createTempDir() );
                 recipient = to.getReceiver(); 

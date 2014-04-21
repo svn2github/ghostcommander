@@ -104,7 +104,6 @@
 <string name="inv_dest">Neplatný cíl</string><!-- !!! -->
 <string name="find_on_fs_only">Vyhledávat je možné pouze na lokálním filesystému.</string>
 <string name="op_not_alwd">\'%1$s\' není povoleno. Nejprve něco označte.</string><!-- !!! -->
-<string name="copy_to_local_only">Kopírovat je možné pouze na lokální filesystém.</string>
 <string name="oper_item_to">%1$s %2$s do:"</string>
 <string name="login_title">Přihlásit</string>
 <string name="delete_title">Odstranit</string>
@@ -261,11 +260,6 @@
     Prosím, ujistěte se, že balíček\n
     \"Ghost Commander - Samba plugin\"\n
     (com.ghostsq.commander.samba) je nainstalován.</string>
-<string name="dbox_missed">
-    Nelze nahrát plugin Dropboxu.\n
-    Prosím, ujistěte se, že balíček\n
-    \"Ghost Commander - Dropbox plugin\"\n
-    (com.ghostsq.commander.dropbox) je nainstalován.</string>
 <string name="donate">  Podpořit</string>
 <string name="online_help">  Online nápověda</string>
 <string name="donation">Líbí se Vám Ghost Commander? Opravdu? Můžete přispět jakoukoliv částkou a podpořit tím tak další vývoj aplikace.\n

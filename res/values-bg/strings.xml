@@ -103,7 +103,6 @@
 <string name="inv_dest">Невалидна посока</string>
 <string name="find_on_fs_only">Търсенето работи само локално.</string>
 <string name="op_not_alwd">The \'%1$s\' не е позволено. Първо трябва да изберете нещо.</string>
-<string name="copy_to_local_only">Поддържа се копиране само в локалната файлова система!</string>
 <string name="oper_item_to">%1$s %2$s в:"</string>
 <string name="login_title">Вход</string>
 <string name="delete_title">изтриване</string>
@@ -115,7 +114,6 @@
 <string name="too_deep_hierarchy">Много дълбоко вложени папки</string>
 <string name="nothing_found">Няма намерени файлове</string>
 <string name="preparing">Подготвям...</string>
-<string name="coping">Копирани\n\"%s\"...</string>
 <string name="copied_f">Копирани\n\"%s\"...</string>
 <string name="deleting">Изтривам\n\"%s\"...</string>
 <string name="deleting_a">Изтривам...</string>
