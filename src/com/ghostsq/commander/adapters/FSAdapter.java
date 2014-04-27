@@ -39,15 +39,30 @@ import android.widget.AdapterView;
 public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever {
     private   final static String TAG = "FSAdapter";
     class FileItem extends Item {
-        public File f = null;
-        public long size = -1;
         public FileItem( String name ) {
-            f = new File( name );
-            origin = f;
+            this( new File( name ) );
         }
-        public FileItem( File f_ ) {
-            f = f_;
+        public FileItem( File f ) {
             origin = f;
+            
+            dir  = f.isDirectory();
+            if( dir ) {
+                /*
+                if( ( mode & ICON_MODE ) == ICON_MODE )  
+                    item.name = f.f.getName() + SLS;
+                else
+                */
+                name = SLS + f.getName();
+            } else {
+                name = f.getName();
+                size = f.length();
+            }
+            long msFileDate = f.lastModified();
+            if( msFileDate != 0 )
+                date = new Date( msFileDate );
+        }
+        public final File f() {
+            return origin != null ? (File)origin : null;
         }
     }
 
@@ -216,7 +231,7 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
             }
         }
         else {
-            File file = items[position - 1].f;
+            File file = items[position - 1].f();
             if( file == null ) return;
             Uri open_uri = Uri.parse( Utils.escapePath( file.getAbsolutePath() ) );
             if( file.isDirectory() )
@@ -241,9 +256,9 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
         if( position < 0 || items == null || position > items.length )
             return position == 0 ? parentLink : null;
         if( full )
-            return position == 0 ? (new File( dirName )).getParent() : items[position - 1].f.getAbsolutePath();
+            return position == 0 ? ( new File( dirName ) ).getParent() : items[position - 1].f().getAbsolutePath();
         else
-            return position == 0 ? parentLink : items[position - 1].f.getName();
+            return position == 0 ? parentLink : items[position - 1].name;
     }
 	@Override
 	public void reqItemsSize( SparseBooleanArray cis ) {
@@ -280,14 +295,14 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
         				    reSort( items );
         				}
                     if( mList.length == 1 ) {
-                        File f = mList[0].f;
-                        if( f.isDirectory() ) {
-                            result.append( c.getString( R.string.sz_folder, f.getName(), num ) );
+                        Item item = mList[0];
+                        if( item.dir ) {
+                            result.append( c.getString( R.string.sz_folder, item.name, num ) );
                             if( dirs > 0 )
                                 result.append( c.getString( R.string.sz_dirnum, dirs, ( dirs > 1 ? c.getString( R.string.sz_dirsfx_p ) : c.getString( R.string.sz_dirsfx_s ) ) ) );
                         }
                         else
-                            result.append( c.getString( R.string.sz_file, f.getName() ) );
+                            result.append( c.getString( R.string.sz_file, item.name ) );
                     } else
                         result.append( c.getString( R.string.sz_files, num ) );
                     if( sum > 0 )
@@ -295,10 +310,11 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
                     if( sum > 1024 )
                         result.append( c.getString( R.string.sz_bytes, sum ) );
                     if( mList.length == 1 ) {
+                        FileItem item = mList[0];
                         result.append( c.getString( R.string.sz_lastmod ) );
                         result.append( " " );
                         String date_s;
-                        Date date = new Date( mList[0].f.lastModified() );
+                        Date date = item.date;
                         if( Locale.getDefault().getLanguage().compareTo( "en" ) != 0 ) {
                             java.text.DateFormat locale_date_format = DateFormat.getDateFormat( ctx );
                             java.text.DateFormat locale_time_format = DateFormat.getTimeFormat( ctx );
@@ -307,8 +323,8 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
                             date_s = (String)DateFormat.format( "MMM dd yyyy hh:mm:ss", date );
                         result.append( date_s );
                         
-                        if( mList[0].f.isFile() ) {
-                            FileInputStream in  = new FileInputStream( mList[0].f );
+                        if( item.f().isFile() ) {
+                            FileInputStream in  = new FileInputStream( mList[0].f() );
                             MessageDigest digester = MessageDigest.getInstance( "MD5" );
                             byte[] bytes = new byte[8192];
                             int byteCount;
@@ -338,11 +354,11 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
     		for( int i = 0; i < list.length; i++ ) {
                 if( isStopReq() ) return -1;
     			FileItem f = list[i];
-    			if( f.f.isDirectory() ) {
+    			if( f.dir ) {
     				dirs++;
     				if( depth++ > 20 )
     					throw new Exception( s( R.string.too_deep_hierarchy ) );
-    				File[] subfiles = f.f.listFiles();
+    				File[] subfiles = f.f().listFiles();
     				if( subfiles != null ) {
         				int l = subfiles.length;
         				FileItem[] subfiles_ex = new FileItem[l];
@@ -357,7 +373,7 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
     			}
     			else {
     				num++;
-    				count += f.f.length();
+    				count += f.size;
     			}
     		}
     		return count;
@@ -397,7 +413,7 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
             if( copy ) {
                 // newName could be just name
                 notify( Commander.OPERATION_STARTED );
-                File[] list = { items[position - 1].f };
+                File[] list = { items[position - 1].f() };
                 String dest_name;
                 if( newName.indexOf( SLC ) < 0 ) {
                     dest_name = dirName;
@@ -411,7 +427,7 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
                 return true;
             }
             boolean ok = false;
-            File f = items[position - 1].f;
+            File f = items[position - 1].f();
             File new_file = new File( dirName, newName );
             if( new_file.exists() ) {
                 if( f.equals( new_file ) ) return false;
@@ -534,7 +550,7 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
         DeleteEngine( FileItem[] list ) {
             this( new File[list.length] );
             for( int i = 0; i < list.length; i++ )
-                mList[i] = list[i].f;
+                mList[i] = list[i].f();
         }
         DeleteEngine( File[] list ) {
             setName( ".DeleteEngine" );
@@ -910,7 +926,7 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
                 if( cis.valueAt( i ) ) {
                     int k = cis.keyAt( i );
                     if( k > 0 )
-                        res[j++] = items[ k - 1 ].f;
+                        res[j++] = items[ k - 1 ].f();
                 }
             return res;
         } catch( Exception e ) {
@@ -947,24 +963,7 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
             if( items != null && position <= items.length ) {
                 synchronized( items ) {
                     try {
-                        FileItem f = items[position - 1];
-                        item = f;
-                        //item.origin = f.f;
-                        item.dir  = f.f.isDirectory();
-                        if( item.dir ) {
-                            /*
-                            if( ( mode & ICON_MODE ) == ICON_MODE )  
-                                item.name = f.f.getName() + SLS;
-                            else
-                            */
-                                item.name = SLS + f.f.getName();
-                        } else
-                            item.name = f.f.getName();
-                        item.size = item.dir ? f.size : f.f.length();
-                        long msFileDate = f.f.lastModified();
-                        if( msFileDate != 0 )
-                            item.date = new Date( msFileDate );
-                        //Log.v( TAG, "getItem(" + (position-1) + ") for " + item.name ); // DEBUG!!!
+                        return items[position - 1];
                     } catch( Exception e ) {
                         Log.e( TAG, "getItem(" + position + ")", e );
                     }
@@ -978,47 +977,13 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
         return item;
     }
 
-    public class FilePropComparator implements Comparator<FileItem> {
-        int     type;
-        boolean case_ignore, ascending;
-
-        public FilePropComparator( int type_, boolean case_ignore_, boolean ascending_ ) {
-            type = type_;
-            case_ignore = case_ignore_;
-            ascending = ascending_;
-        }
-        public int compare( FileItem f1, FileItem f2 ) {
-            boolean f1IsDir = f1.f.isDirectory();
-            boolean f2IsDir = f2.f.isDirectory();
-            if( f1IsDir != f2IsDir )
-                return f1IsDir ? -1 : 1;
-            int ext_cmp = 0;
-            switch( type ) { 
-            case SORT_EXT:
-                ext_cmp = case_ignore ? Utils.getFileExt( f1.f.getName() ).compareToIgnoreCase( Utils.getFileExt( f2.f.getName() ) ) 
-                                      : Utils.getFileExt( f1.f.getName() ).compareTo( Utils.getFileExt( f2.f.getName() ) );
-                break;
-            case SORT_SIZE:
-                ext_cmp = ( f1IsDir ? f1.size - f2.size
-                                    : f1.f.length() - f2.f.length() ) < 0 ? -1 : 1;
-                break;
-            case SORT_DATE:
-                ext_cmp = f1.f.lastModified() - f2.f.lastModified() < 0 ? -1 : 1;
-                break;
-            }
-            if( ext_cmp == 0 )
-                ext_cmp = case_ignore ? f1.f.getName().compareToIgnoreCase( f2.f.getName() ) : f1.f.compareTo( f2.f );
-            return ascending ? ext_cmp : -ext_cmp;
-        }
-    }
-
     @Override
     protected void reSort() {
         reSort( items );
     }
     public void reSort( FileItem[] items_ ) {
         if( items_ == null ) return;
-        FilePropComparator comp = new FilePropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0, ascending );
+        ItemComparator comp = new ItemComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0, ascending );
         Arrays.sort( items_, comp );
     }
 

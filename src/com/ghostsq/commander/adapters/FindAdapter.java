@@ -325,7 +325,7 @@ public class FindAdapter extends FSAdapter {
             if( o != null ) {
                 if( o instanceof FileItem ) {
                     FileItem fi = (FileItem)o;
-                    fi.name = fi.f.getAbsolutePath();
+                    fi.name = fi.f().getAbsolutePath();
                 }
                 return o;
             }

@@ -36,7 +36,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.net.Uri;
-import android.net.UrlQuerySanitizer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;

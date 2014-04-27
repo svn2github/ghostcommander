@@ -1,5 +1,6 @@
 package com.ghostsq.commander.adapters;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -50,7 +51,7 @@ class ThumbnailsThread extends Thread {
             ".PNG".hashCode(), ".gif".hashCode(), ".GIF".hashCode(), apk_h };
     public static final Map<Integer, SoftReference<Drawable>> thumbnailCache = new HashMap<Integer, SoftReference<Drawable>>();
 
-    ThumbnailsThread(CommanderAdapterBase owner, Handler thread_handler, String base_path, Item[] list) {
+    ThumbnailsThread( CommanderAdapterBase owner, Handler thread_handler, String base_path, Item[] list ) {
         this.owner = owner;
         setName( getClass().getName() );
         this.thread_handler = thread_handler;
@@ -77,32 +78,24 @@ class ThumbnailsThread extends Thread {
                 int processed = 0;
                 for( int i = 0; i < list.length; i++ ) {
                     visible_only = visible_only || fails_count > 1;
-                    // if( visible_only ) Log.v( TAG, "thumb on requests only"
-                    // );
+                    if( visible_only ) Log.v( TAG, "thumb on requests only" );
+                    
                     int n = -1;
                     while( true ) {
                         for( int j = 0; j < list.length; j++ ) {
                             if( list[j].need_thumb ) {
                                 n = j;
                                 proc_visible = true;
-                                // Log.v( TAG,
-                                // "A thumbnail requested ahead of time!!! " + n
-                                // + ", " + list[n].f.getName() );
+                                //Log.v( TAG,"A thumbnail requested ahead of time!!! " + n + ", " + list[n].name );
                                 break;
                             } else {
-                                list[j].remThumbnailIfOld( visible_only ? 10000 : 60000 ); // clear
-                                                                                           // not
-                                                                                           // in
-                                                                                           // use
-                                                                                           // to
-                                                                                           // free
-                                                                                           // memory
+                                list[j].remThumbnailIfOld( visible_only ? 10000 : 60000 ); 
+                                // to free some memory
                             }
                         }
                         if( !visible_only || proc_visible )
                             break;
-                        // Log.v( TAG, "Tired. Waiting for a request to proceed"
-                        // );
+                        // Log.v( TAG, "Tired. Waiting for a request to proceed" );
                         synchronized( owner ) {
                             owner.wait();
                         }
@@ -117,19 +110,32 @@ class ThumbnailsThread extends Thread {
                         sleep( 10 );
                     }
                     Item f = list[n];
+                    //Log.v( TAG,  " " + f.name );
                     f.need_thumb = false;
 
                     if( f.isThumbNail() )
                         continue; // already exist
-
-                    String fn = base_path + f.name;
+                    String fn;
+                    if( f.name.indexOf( '/' ) >= 0 )
+                        fn = f.name;
+                    else {
+                        if( Utils.str( base_path ) )
+                            fn = Utils.mbAddSl( base_path ) + f.name;
+                        else {
+                            if( f.origin instanceof File )
+                                fn = ((File)f.origin).getAbsolutePath();
+                            else
+                                continue;
+                        }
+                    }
                     int fn_h = ( fn + " " + f.size ).hashCode();
                     SoftReference<Drawable> cached_soft = null;
                     synchronized( thumbnailCache ) {
                         cached_soft = thumbnailCache.get( fn_h );
                     }
-                    if( cached_soft != null )
+                    if( cached_soft != null ) {
                         f.setThumbNail( cached_soft.get() );
+                    }
 
                     String ext = Utils.getFileExt( fn );
                     if( ext == null )
@@ -190,60 +196,14 @@ class ThumbnailsThread extends Thread {
     private final boolean createThumbnail( String fn, Item f, int h ) {
         final String func_name = "createThubnail()";
         try {
-            if( h == apk_h ) {
-                try {
-                    f.thumb_is_icon = true;
-                    PackageManager pm = owner.ctx.getPackageManager();
-                    PackageInfo info = pm.getPackageArchiveInfo( fn, 0 );
-                    Drawable icon = null;
-                    if( info != null ) {
-                        try {
-                            icon = pm.getApplicationIcon( info.packageName );
-                        } catch( Exception e ) {
-                        }
-                        if( icon != null ) {
-                            f.setIcon( icon );
-                            return true;
-                        }
-                    }
-                    try {
-                        String filePath = base_path + f.name;
-                        PackageInfo packageInfo = owner.ctx.getPackageManager().getPackageArchiveInfo( filePath,
-                                PackageManager.GET_ACTIVITIES );
-                        if( packageInfo != null ) {
-                            ApplicationInfo appInfo = packageInfo.applicationInfo;
-                            if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO ) {
-                                appInfo.sourceDir = filePath;
-                                appInfo.publicSourceDir = filePath;
-                            }
-                            icon = appInfo.loadIcon( owner.ctx.getPackageManager() );
-                            // bmpIcon = ((BitmapDrawable) icon).getBitmap();
-                        }
-                    } catch( Exception e ) {
-                        Log.e( TAG, "File: " + fn, e );
-                    }
-                    if( icon != null ) {
-                        f.setIcon( icon );
-                        return true;
-                    }
-                    MnfUtils mnfu = new MnfUtils( fn );
-                    icon = mnfu.extractIcon();
-                    if( icon != null ) {
-                        f.setIcon( icon );
-                        return true;
-                    }
-                    f.setIcon( pm.getDefaultActivityIcon() );
-                    return true;
-                } catch( Exception e ) {
-                }
-                return false;
-            }
+            if( h == apk_h )
+                return getApkIcon( fn, f );
             // let's try to take it from the mediastore
             try {
                 final String[] th_proj = new String[] { 
-                        BaseColumns._ID, // 0
-                        Thumbnails.WIDTH, // 1
-                        Thumbnails.HEIGHT, // 2
+                        BaseColumns._ID,    // 0
+                        Thumbnails.WIDTH,   // 1
+                        Thumbnails.HEIGHT,  // 2
                         Thumbnails.IMAGE_ID // 3
                 };
                 Cursor cursor = null;
@@ -322,6 +282,7 @@ class ThumbnailsThread extends Thread {
                     // drawable.setBounds( 0, 0, 60, 60 );
                     f.setThumbNail( drawable );
                     fis.close();
+                    //Log.v( TAG, fn + " - OK" );
                     return true;
                 }
             } else
@@ -340,4 +301,53 @@ class ThumbnailsThread extends Thread {
         return false;
     }
 
+    private final boolean getApkIcon( String fn, Item f ) {
+        try {
+            f.thumb_is_icon = true;
+            PackageManager pm = owner.ctx.getPackageManager();
+            PackageInfo info = pm.getPackageArchiveInfo( fn, 0 );
+            Drawable icon = null;
+            if( info != null ) {
+                try {
+                    icon = pm.getApplicationIcon( info.packageName );
+                } catch( Exception e ) {
+                }
+                if( icon != null ) {
+                    f.setIcon( icon );
+                    return true;
+                }
+            }
+            try {
+                String filePath = base_path + f.name;
+                PackageInfo packageInfo = owner.ctx.getPackageManager().getPackageArchiveInfo( filePath,
+                        PackageManager.GET_ACTIVITIES );
+                if( packageInfo != null ) {
+                    ApplicationInfo appInfo = packageInfo.applicationInfo;
+                    if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO ) {
+                        appInfo.sourceDir = filePath;
+                        appInfo.publicSourceDir = filePath;
+                    }
+                    icon = appInfo.loadIcon( owner.ctx.getPackageManager() );
+                    // bmpIcon = ((BitmapDrawable) icon).getBitmap();
+                }
+            } catch( Exception e ) {
+                Log.e( TAG, "File: " + fn, e );
+            }
+            if( icon != null ) {
+                f.setIcon( icon );
+                return true;
+            }
+            MnfUtils mnfu = new MnfUtils( fn );
+            icon = mnfu.extractIcon();
+            if( icon != null ) {
+                f.setIcon( icon );
+                return true;
+            }
+            f.setIcon( pm.getDefaultActivityIcon() );
+            return true;
+        } catch( Exception e ) {
+        }
+        return false;
+        
+    }
 }

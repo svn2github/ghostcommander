@@ -197,6 +197,7 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
                           int end_pos = path.indexOf( "/", cdl );
                           if( end_pos > 0 && path.length() > end_pos ) continue;
                           String name = path.substring( cdl );
+                          if( !Utils.str( name ) ) continue;
                           File f = new File( dirName, name );
                           Item item = new Item();
                           item.origin = MediaStore.Files.getContentUri( "external", cursor.getLong( ici ) );
@@ -378,23 +379,30 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
     public void createFolder( String new_name ) {
 	    if( createFolderAbs( dirName + new_name ) )
     	    notifyRefr( new_name );
-	    else
-    	    notify( ctx.getString( R.string.cant_md, new_name ), Commander.OPERATION_FAILED );
+	    else {
+	        String err_str = ctx.getString( R.string.cant_md, new_name );
+	        if( android.os.Build.VERSION.SDK_INT >= 19 )
+	            err_str += "\n" + ctx.getString( R.string.not_supported );
+    	    notify( err_str, Commander.OPERATION_FAILED );
+	    }
     }
 
     public boolean createFolderAbs( String abs_new_name ) {
+      if( android.os.Build.VERSION.SDK_INT >= 19 )
+          return false;
       String fn;
       Uri uri;
       ContentResolver cr;
       try {
          cr = ctx.getContentResolver();
-         fn = abs_new_name + "/dummy.jpg";
+         fn = Utils.mbAddSl( abs_new_name ) + "/dummy.jpg";
          ContentValues cv = new ContentValues();
          cv.put( MediaStore.MediaColumns.DATA, fn );
+         cv.put( MediaStore.Files.FileColumns.MEDIA_TYPE, MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE );
          uri = cr.insert( MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cv );
-         if( uri!=null ) {
+         if( uri != null ) {
              try {
-                cr.delete( uri,null,null );
+                cr.delete( uri, null, null );
              } catch( Throwable e ) {
                  Log.e( TAG, "delete dummy file", e );
              }
@@ -594,7 +602,10 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
                         }
                         File out_dir_file = new File( out_full_name );
                         if( !out_dir_file.exists() )
-                            MSAdapter.this.createFolderAbs( out_full_name );
+                            if( !MSAdapter.this.createFolderAbs( out_full_name ) ) {
+                                error( ctx.getString( R.string.not_supported ) );
+                                break;
+                            }
                         copyFiles( file.listFiles(), Utils.mbAddSl( out_full_name ) );
                         if( errMsg != null )
                             break;
@@ -781,40 +792,4 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
     public IReciever getReceiver() {
         return this;
     }
-
-    public class ItemComparator implements Comparator<Item> {
-        int type;
-        boolean case_ignore, ascending;
-        public ItemComparator( int type_, boolean case_ignore_, boolean ascending_ ) {
-            type = type_;
-            case_ignore = case_ignore_ && ( type_ == CommanderAdapter.SORT_EXT || 
-                                            type_ == CommanderAdapter.SORT_NAME );
-            ascending = ascending_;
-        }
-        @Override
-        public int compare( Item f1, Item f2 ) {
-            boolean f1IsDir = f1.dir;
-            boolean f2IsDir = f2.dir;
-            if( f1IsDir != f2IsDir )
-                return f1IsDir ? -1 : 1;
-            int ext_cmp = 0;
-            switch( type ) {
-            case CommanderAdapter.SORT_EXT:
-                ext_cmp = case_ignore ? 
-                        Utils.getFileExt( f1.name ).compareToIgnoreCase( Utils.getFileExt( f2.name ) ) :
-                        Utils.getFileExt( f1.name ).compareTo( Utils.getFileExt( f2.name ) );
-                break;
-            case CommanderAdapter.SORT_SIZE:
-                ext_cmp = f1.size - f2.size < 0 ? -1 : 1;
-                break;
-            case CommanderAdapter.SORT_DATE:
-                ext_cmp = f1.date.compareTo( f2.date );
-                break;
-            }
-            if( ext_cmp == 0 )
-                ext_cmp = case_ignore ? f1.name.compareToIgnoreCase( f2.name ) : f1.name.compareTo( f2.name );
-            return ascending ? ext_cmp : -ext_cmp;
-        }
-    }
-
 }
