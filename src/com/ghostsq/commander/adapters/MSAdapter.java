@@ -23,6 +23,7 @@ import com.ghostsq.commander.adapters.Engine;
 import com.ghostsq.commander.adapters.Engines.IReciever;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.utils.ForwardCompat;
+import com.ghostsq.commander.utils.MediaFile;
 import com.ghostsq.commander.utils.MediaScanTask;
 import com.ghostsq.commander.utils.MnfUtils;
 import com.ghostsq.commander.utils.Utils;
@@ -272,6 +273,8 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
             Item item = items[position - 1];
             if( item.dir )
                 commander.Navigate( Uri.parse( SCHEME + Utils.escapePath( dirName + item.name ) ), null, null );
+            else
+                commander.Open( Uri.parse( Utils.escapePath( dirName + item.name ) ), null );
         }
     }
 
@@ -377,14 +380,20 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
 
 	@Override
     public void createFolder( String new_name ) {
-	    if( createFolderAbs( dirName + new_name ) )
-    	    notifyRefr( new_name );
-	    else {
-	        String err_str = ctx.getString( R.string.cant_md, new_name );
-	        if( android.os.Build.VERSION.SDK_INT >= 19 )
-	            err_str += "\n" + ctx.getString( R.string.not_supported );
-    	    notify( err_str, Commander.OPERATION_FAILED );
-	    }
+        try {
+            MediaFile mf = new MediaFile( ctx, new File( dirName, new_name ) );
+            if( mf.mkdir() )
+                notifyRefr( new_name );
+            else {
+                String err_str = ctx.getString( R.string.cant_md, new_name );
+                if( android.os.Build.VERSION.SDK_INT >= 19 )
+                    err_str += "\n" + ctx.getString( R.string.not_supported );
+                notify( err_str, Commander.OPERATION_FAILED );
+            }
+        } catch( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     public boolean createFolderAbs( String abs_new_name ) {
@@ -601,11 +610,13 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
                             break;
                         }
                         File out_dir_file = new File( out_full_name );
-                        if( !out_dir_file.exists() )
-                            if( !MSAdapter.this.createFolderAbs( out_full_name ) ) {
+                        if( !out_dir_file.exists() ) {
+                            MediaFile mf = new MediaFile( ctx, new File( out_full_name ) );
+                            if( !mf.mkdir() ) {
                                 error( ctx.getString( R.string.not_supported ) );
                                 break;
                             }
+                        }
                         copyFiles( file.listFiles(), Utils.mbAddSl( out_full_name ) );
                         if( errMsg != null )
                             break;

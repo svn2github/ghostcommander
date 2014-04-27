@@ -1,23 +1,15 @@
 package com.ghostsq.commander.utils;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
-import com.ghostsq.commander.BuildConfig;
-
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
