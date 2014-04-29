@@ -416,28 +416,41 @@ If you don\'t agree to the above, stop using this software immediately and unins
 <string name="keys_text">"
 \t\tSELECTING FILES
 
-To select files and folders, tap on the right side of their rows and open them by tapping on the left. 
-That\'s right, one side will activate items and the other side will select them.\n
+To select files and folders, tap on the right side of their rows and
+open them by tapping on the left. That\'s right, one side will activate
+items and the other side will select them.
 
 \t\tCOPYING AND MOVING
 
-Copy or move files and folders by first choosing the target destination in one panel, then swipe (or toggle) back to the other panel and select the items you wish to transfer.\n
+Copy or move files and folders by first choosing the target destination
+in one panel, then swipe (or toggle) back to the other panel and select
+the items you wish to transfer.
 
 \t\tZIP FILES
 
-Ghost Commander can work with classic ZIP files as if they were directories. Password-protected (encrypted) ZIP files and ZIP files using other compression algorithms are not supported.
+Ghost Commander can work with classic ZIP files as if they were
+directories. Password-protected (encrypted) ZIP files and ZIP files
+using other compression algorithms are not supported.
 
 \t\tPLUGINS
 
-Plugins, which have to be installed separately, provide access to Windows shared folders, SSH File Transfer Protocol and also access to cloud storage services: Box, Dropbox and Google Drive.
+Plugins, which have to be installed separately, provide access to
+Windows shared folders, SSH File Transfer Protocol and also access to
+cloud storage services: Box, Dropbox and Google Drive.
 
 \t\tROOT MODE
-Using the root mode (superuser) and mount point features of Ghost Commander requires caution, a rooted device and BusyBox installed with its path defined in the settings.
+
+Using the root mode (superuser) and mount point features of Ghost
+Commander requires caution, a rooted device and BusyBox installed with
+its path defined in the settings.
 
 \t\tLOCATION EDITOR
 
-To enter a location manually (and to see a drop-down list of your favorites) long-press on the panel\'s header to open the location editor.\n
-You can enter resource URIs into the location editor manually as follows:
+To enter a location manually (and to see a drop-down list of your
+favorites) long-press on the panel\'s header to open the location
+editor.\n
+You can enter resource URIs into the location editor manually as
+follows:
 
 ftp://host.com/folder
     - Anonymous FTP
@@ -447,8 +460,9 @@ ftp://user:pass@ftp_host/folder
 
 sftp://user:pass@sftp_host/folder
     - SSH FTP
-    If you have a keyfile to authenticate, please put it to the file /sdcard/.GhostCommander/keys/&lt;host name&gt;
-    In this case the password is the passphrase to your key file.
+    If you have a keyfile to authenticate, please put it to the file
+    /sdcard/.GhostCommander/keys/&lt;host name&gt;
+    In this case the password is the passphrase to your keyfile.
 
 smb://domain;user:pass@server/share
     - Windows share

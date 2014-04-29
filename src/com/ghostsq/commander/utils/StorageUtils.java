@@ -72,6 +72,7 @@ public class StorageUtils {
             //Log.d( TAG, "/proc/mounts" );
             while( ( line = buf_reader.readLine() ) != null ) {
                 Log.d( TAG, line );
+                if( line.contains( "/mnt/asec" ) ) continue;
                 if( line.contains( "vfat" ) || line.contains( "/mnt" ) ) {
                     StringTokenizer tokens = new StringTokenizer( line, " " );
                     String unused = tokens.nextToken(); // device
@@ -92,6 +93,8 @@ public class StorageUtils {
                             paths.add( mount_point );
                             list.add( new StorageInfo( mount_point, false, readonly, cur_display_number++ ) );
                         }
+                    } else if( line.contains( "extSdCard" ) ) {
+                        list.add( new StorageInfo( mount_point, false, readonly, cur_display_number++ ) );
                     }
                 }
             }
