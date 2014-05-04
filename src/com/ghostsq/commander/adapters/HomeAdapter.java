@@ -38,9 +38,9 @@ public class HomeAdapter extends CommanderAdapterBase {
     public static final String DEFAULT_LOC = "home:";
     private boolean root = false;
     private final int[] FAVS     = { R.string.favs,    R.string.favs_descr,    R.drawable.favs    };
-    private final int[] LOCAL    = { R.string.local,   R.string.local_descr,   R.drawable.sd      }; 
-    private final int[] EXTERNAL = { R.string.external,R.string.external_descr,R.drawable.sd      }; 
-    private final int[] MEDIA    = { R.string.media,   R.string.media_descr,   R.drawable.sd      }; 
+    private final int[] LOCAL    = { R.string.local,   R.string.local_descr,   R.drawable.fs      }; 
+    private final int[] EXTERNAL = { R.string.external,R.string.external_descr,R.drawable.usd     }; 
+    private final int[] MEDIA    = { R.string.media,   R.string.media_descr,   R.drawable.ms      }; 
     private final int[] FTP      = { R.string.ftp,     R.string.ftp_descr,     R.drawable.ftp     };
     private final int[] PLUGINS  = { R.string.plugins, R.string.plugins_descr, R.drawable.plugins };
     private final int[] ROOT     = { R.string.root,    R.string.root_descr,    R.drawable.root    }; 

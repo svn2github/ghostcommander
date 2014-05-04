@@ -215,8 +215,7 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
             Log.e( TAG, "", e );
         }
     }
-    
-    
+        
     @Override
     public void openItem( int position ) {
         if( position == 0 ) {
@@ -257,8 +256,13 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
             return position == 0 ? parentLink : null;
         if( full )
             return position == 0 ? ( new File( dirName ) ).getParent() : items[position - 1].f().getAbsolutePath();
-        else
-            return position == 0 ? parentLink : items[position - 1].name;
+        else {
+            if( position == 0 ) return parentLink; 
+            String name = items[position - 1].name;
+            if( name != null )
+                return name.replace( "/", "" );
+        }
+        return null;
     }
 	@Override
 	public void reqItemsSize( SparseBooleanArray cis ) {

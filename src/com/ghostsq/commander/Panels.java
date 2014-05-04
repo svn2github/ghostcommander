@@ -400,6 +400,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     public final void setSelection( int which, String name ) {
         list[which].setSelection( name );
     }
+
     public final File getCurrentFile() {
         try {
             CommanderAdapter ca = getListAdapter( true );
@@ -407,9 +408,9 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 int pos = getSingle( true );
                 if( pos < 0 )
                     return null;
-                CommanderAdapter.Item item = (CommanderAdapter.Item)( (ListAdapter)ca ).getItem( pos );
-                if( item != null && item.origin != null )
-                    return (File)item.origin;
+                String full_name = ca.getItemName( pos, true );
+                if( full_name != null )
+                    return new File( full_name );
             }
         } catch( Exception e ) {
             Log.e( TAG, "getCurrentFile()", e );

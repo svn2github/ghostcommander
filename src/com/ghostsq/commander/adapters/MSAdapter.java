@@ -88,7 +88,10 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
         case FS:
         case LOCAL:
         case REAL:
+        case SEND:
             return true;
+        case SZ:
+            return false;
         default: return super.hasFeature( feature );
         }
     }
@@ -185,31 +188,55 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
                 try {
                    if( cursor.getCount() > 0 ) {
                       cursor.moveToFirst();
-                      ArrayList<Item> tmp_list = new ArrayList<Item>();
+                      ArrayList<Item>   tmp_list = new ArrayList<Item>();
+                      ArrayList<String> subdirs  = new ArrayList<String>();
                       int ici = cursor.getColumnIndex( MediaStore.MediaColumns._ID );
                       int pci = cursor.getColumnIndex( MediaStore.MediaColumns.DATA );
                       int sci = cursor.getColumnIndex( MediaStore.MediaColumns.SIZE );
                       int mci = cursor.getColumnIndex( MediaStore.MediaColumns.MIME_TYPE );
                       int dci = cursor.getColumnIndex( MediaStore.MediaColumns.DATE_MODIFIED );
                       int cdl = dirName.length();
+                      
                       do {
                           String path = cursor.getString( pci );
                           if( path == null || !path.startsWith( dirName ) ) continue;
                           int end_pos = path.indexOf( "/", cdl );
-                          if( end_pos > 0 && path.length() > end_pos ) continue;
+                          if( end_pos > 0 && path.length() > end_pos ) {
+                              String subdir = path.substring( cdl, end_pos );
+                              if( subdirs.indexOf( subdir ) < 0 )
+                                  subdirs.add( subdir );
+                              continue;
+                          }
                           String name = path.substring( cdl );
                           if( !Utils.str( name ) ) continue;
                           File f = new File( dirName, name );
                           Item item = new Item();
+                          item.dir = f.isDirectory();
                           item.origin = MediaStore.Files.getContentUri( "external", cursor.getLong( ici ) );
-                          item.name = name;
+                          item.name = ( item.dir ? "/" : "" ) + name;
                           item.size = cursor.getLong( sci );
                           item.date = new Date( cursor.getLong( dci ) * 1000 );
                           item.attr = cursor.getString( mci );
-                          item.dir = f.isDirectory();
                           if( item.dir ) item.size = -1;
                           tmp_list.add( item );
                       } while( cursor.moveToNext() );
+                      
+                      for( String sd : subdirs ) {
+                          boolean has = false;
+                          for( Item item : tmp_list ) {
+                              if( item.name.equals( sd ) ) {
+                                  has = true;
+                                  break;
+                              }
+                          }
+                          if( !has ) {
+                              Item item = new Item();
+                              item.dir = true;
+                              item.name = sd;
+                              tmp_list.add( item );
+                          }                          
+                      }
+                      
                       items = new Item[tmp_list.size()];
                       tmp_list.toArray( items );
                       reSort( items );
@@ -272,7 +299,7 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
         else {
             Item item = items[position - 1];
             if( item.dir )
-                commander.Navigate( Uri.parse( SCHEME + Utils.escapePath( dirName + item.name ) ), null, null );
+                commander.Navigate( Uri.parse( SCHEME + Utils.escapePath( dirName + item.name.replaceAll( "/", "" ) ) ), null, null );
             else
                 commander.Open( Uri.parse( Utils.escapePath( dirName + item.name ) ), null );
         }
@@ -294,8 +321,13 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
             return position == 0 ? parentLink : null;
         if( full )
             return position == 0 ? (new File( dirName )).getParent() : dirName + items[position - 1].name;
-        else
-            return position == 0 ? parentLink : items[position - 1].name;
+        else {
+            if( position == 0 ) return parentLink; 
+            String name = items[position - 1].name;
+            if( name != null )
+                return name.replace( "/", "" );
+        }
+        return null;
     }
 	@Override
 	public void reqItemsSize( SparseBooleanArray cis ) {
@@ -734,8 +766,7 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
             return counter;
         }
     }
-    
-    
+        
     @Override
 	public void prepareToDestroy() {
         super.prepareToDestroy();
