@@ -711,7 +711,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                         menu.add( 0, R.id.F4t, 0, R.string.edit_title );
                 }
             }
-            if( hasFeature( Feature.LOCAL ) )
+            if( hasFeature( Feature.LOCAL ) && file )
                 menu.add( 0, Commander.SEND_TO, 0, R.string.send_to );
             if( hasFeature( Feature.F5 ) )
                 menu.add( 0, R.id.F5t, 0, R.string.copy_title );

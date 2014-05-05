@@ -195,14 +195,14 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
                       int sci = cursor.getColumnIndex( MediaStore.MediaColumns.SIZE );
                       int mci = cursor.getColumnIndex( MediaStore.MediaColumns.MIME_TYPE );
                       int dci = cursor.getColumnIndex( MediaStore.MediaColumns.DATE_MODIFIED );
-                      int cdl = dirName.length();
+                      int cdl = Utils.mbAddSl( dirName ).length();
                       
                       do {
                           String path = cursor.getString( pci );
                           if( path == null || !path.startsWith( dirName ) ) continue;
                           int end_pos = path.indexOf( "/", cdl );
                           if( end_pos > 0 && path.length() > end_pos ) {
-                              String subdir = path.substring( cdl, end_pos );
+                              String subdir = path.substring( cdl-1, end_pos );
                               if( subdirs.indexOf( subdir ) < 0 )
                                   subdirs.add( subdir );
                               continue;
@@ -510,7 +510,7 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
                 if( f.dir ) {
                      final String selection = MediaStore.MediaColumns.DATA + " like ? ";
                      String[] selectionParams = new String[1];
-                     selectionParams[0] = Utils.mbAddSl( base_path + l[i].name ) + "%";
+                     selectionParams[0] = Utils.mbAddSl( base_path + l[i].name.replaceAll( "/", "" ) ) + "%";
                      cr.update( baseContentUri, cv, selection, selectionParams );
                      cnt += cr.delete( baseContentUri, selection, selectionParams );
                 }

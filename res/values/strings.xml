@@ -36,7 +36,7 @@
 <string name="favs">Favorites</string>
 <string name="local">Local storage</string>
 <string name="external">External card</string>
-<string name="media">Media Storage</string>
+<string name="media">Media Store</string>
 <string name="ftp">FTP site</string>
 <string name="sftp">SFTP site</string>
 <string name="smb">Windows share</string>
@@ -47,9 +47,9 @@
 <string name="apps">Applications</string>
 <string name="exit">Exit</string>
 <string name="favs_descr">View and manage your list of favorite folders and sites.</string>
-<string name="local_descr">Browse, organize and modify the contents of the inserted SD card or internal flash memory.</string>
-<string name="external_descr">Files on the physical inserted SD card. May be read-only on some devices</string>
-<string name="media_descr">Make modification on the external SD card via the MesiaStorage interface</string>
+<string name="local_descr">Browse, organize and modify the contents of the primary file system.</string>
+<string name="external_descr">Access files on the physical inserted SD card. May be read-only on some devices</string>
+<string name="media_descr">Make modification on the external SD card via the MediaStore interface</string>
 <string name="ftp_descr">Connect to an FTP server, browse and transfer files both to and from it.</string>
 <string name="sftp_descr">Connect to an SSH FTP (sftp) server.</string>
 <string name="smb_descr">Connect to shared folders on a Windows machine.</string>
