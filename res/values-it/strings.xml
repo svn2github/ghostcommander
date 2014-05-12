@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources><string name="app_name">Ghost Commander</string>
+<resources>
+<string name="app_name">Ghost Commander</string>
 <string name="file">Nuovo</string>
 <string name="location">Posizione</string>
 <string name="list">Elenco</string>
@@ -27,7 +28,7 @@
 <string name="sdcard">/sdcard</string>
 <string name="softkbd">Tastiera</string>
 <string name="enter_b">Posizione</string>
-<string name="add_fav">ggiungi ai favoriti</string>
+<string name="add_fav">Aggiungi ai favoriti</string>
 <string name="add_fav_b">Aggiungi favorito</string>
 <string name="remount_b">Rimonta /system</string>
 <string name="remount">Rimonta</string>
@@ -35,17 +36,25 @@
 <string name="rescan">Riscansiona supporto</string>
 <string name="favs">Favorite</string>
 <string name="local">Archiviazione locale</string>
+<string name="external">Scheda esterna</string>
+<string name="media">Media Store</string>
 <string name="ftp">Sito FTP</string>
+<string name="sftp">Sito SFTP</string>
 <string name="smb">Condivisione samba (Windows)</string>
-<string name="root">LA modalità root</string>
+<string name="plugins">Sfoglia plugins</string>
+<string name="root">La modalità root</string>
 <string name="mount">Punti di montaggio</string>
 <string name="mount_b">Punti di montaggio</string>
 <string name="apps">Applicazioni</string>
 <string name="exit">Esci</string>
 <string name="favs_descr">Gestisce l\'elenco delle cartelle e dei siti favoriti. Modifica, rinomina, inserisce una scorciatoia alla schermata principale del proprio dispositivo ecc...</string>
 <string name="local_descr">Sfoglia, organizza e permette di manipolare il contenuto della scheda SD inserita e nella memoria flash interna.</string>
+<string name="external_descr">Accede ai files sulla scheda SD fisica inserita. Potrebbe essere in sola lettura su alcuni dispositivi</string>
+<string name="media_descr">Effettua le modifiche sulla scheda SD esterna mediante l'interfaccia MediaStore</string>
 <string name="ftp_descr">Connette a un server FTP e permette di caricare o scaricare dei file.</string>
+<string name="sftp_descr">Connette a un server SSH FTP (sftp) server.</string>
 <string name="smb_descr">Questa funzione richiede l\'installazione del plugin  \"Ghost Commander SMB\" e permette di connettersi a una cartella condivisa su un PC Windows.</string>
+<string name="plugins_descr">Cerca ulteriori plugins per Ghost Commander.</string>
 <string name="root_descr">Se il telefono è rootato, usare questa modalità per interagire con i contenuti di sistema. Se non se ne conosce il significato, non usare questa funzionalità.</string>
 <string name="mount_descr">Sfoglia l\'elenco dei dispositivi montati e rimonta nelle modalità  \"rw\" e  \"ro\". Usare con cautela.</string>
 <string name="apps_descr">Gestisce i pacchetti installati.</string>
@@ -54,6 +63,7 @@
 <string name="enter_ftp">Apri sito FTP</string>
 <string name="enter_smb">Apri Samba (condivisioni di rete Windows)</string>
 <string name="search_file">Cerca</string>
+<string name="menu">Menu</string>
 <string name="sort_by_name">Per nome</string>
 <string name="sort_by_ext">Per estensione</string>
 <string name="sort_by_size">Per dimensione</string>
@@ -81,6 +91,7 @@
 <string name="show_size">Informazioni</string>
 <string name="send_to">Invia a...</string>
 <string name="open_with">Apri con...</string>
+<string name="open">Apri</string>
 <string name="copy_name">Copia il nome nella memoria</string>
 <string name="fav_fld">Aggiungi \"%s\" alle favorite</string>
 <string name="create_zip">ZIP...</string>
@@ -134,9 +145,9 @@
 <string name="move_title">Sposta</string>
 <string name="send_title">Condividi tramite</string>
 <string name="open_title">Apri con</string>
-<string name="to_copy"/>
-<string name="to_move"/>
-<string name="to_rename"/>
+<string name="to_copy" />
+<string name="to_move" />
+<string name="to_rename" />
 <string name="copy_err">Nulla da copiare</string>
 <string name="rename_err">Nulla da rinominare</string>
 <string name="edit_err">Non modificabile</string>
@@ -144,15 +155,18 @@
 <string name="inv_dest">Destinazione non valida</string>
 <string name="inv_path">Percorso non valido</string>
 <string name="find_on_fs_only">La ricerca funziona solo per il file system locale.</string>
+<string name="on_fs_only">Questa operazione funziona solo per il file system locale.</string>
 <string name="op_not_alwd">L\'operazione non è permessa; selezionare prima qualcosa</string>
 <string name="oper_item_to">%1$s %2$s in:"</string>
 <string name="login_title">Login</string>
 <string name="delete_title">Elimina</string>
 <string name="delete_err">Nulla da eliminare</string>
 <string name="delete_q">"Eliminare «%1$s» ?"</string>
+<string name="rescan_q">Sei sicuro di voler effettuare nuovamente la ricerca?</string>
 <string name="search_done">Ricerca completata</string>
 <string name="done">Fatto</string>
 <string name="interrupted">Interrotto</string>
+<string name="cant_copy_to_itself">Impossibile copiare la cartella \"%s\" su se stessa o a un livello inferiore.</string>
 <string name="too_deep_hierarchy">La struttura è troppo profonda</string>
 <string name="nothing_found">Nessun file trovato</string>
 <string name="preparing">In preparazione...</string>
@@ -192,10 +206,10 @@
 <string name="unpacked">decompresso </string>
 <string name="remounted">Rimontato \"%1$s\" in \"%2$s\".</string>
 <string name="tried_to_exec">Si è tentato di eseguire \"%s\"</string>
-<string name="verb_plural_sfx"/>
+<string name="verb_plural_sfx" />
 <string name="item">elemento</string>
 <string name="items">elementi</string>
-<string name="items24"/>
+<string name="items24" />
 <string name="were">sono stati</string>
 <string name="was">è stato</string>
 <string name="nothing">Niente</string>
@@ -223,11 +237,14 @@
 <string name="inprogress">Operazione su file in svolgimento.</string>
 <string name="server">Server:</string>
 <string name="path">Percorso:</string>
+<string name="active">Attivo</string>
 <string name="domain">Dominio:</string>
 <string name="username">Nome utente:</string>
 <string name="password">Password:</string>
+<string name="command">Comando:</string>
 <string name="user">Utente</string>
 <string name="group">Gruppo</string>
+<string name="other">Altro</string>
 <string name="connect">Connetti</string>
 <string name="cancel">Annulla</string>
 <string name="ftp_connected">Connesso a \"%1$s\",\n come \"%2$s\"</string>
@@ -296,6 +313,8 @@
 <string name="summary_show_hidden">Se non selezionata, i file che iniziano con un punto non verranno visualizzati</string>
 <string name="compatibility_settings">Compatibilità</string>
 <string name="summary_compatibility_settings">Abilita o disabilita l\'annullamento dei pulsanti hardware</string>
+<string name="panels_sliding">Abilita i pannelli scorrevoli</string>
+<string name="summary_panels_sliding">Scambia i pannelli con una gesture scorrevole orizzontale</string>
 <string name="arrow_mode">Escludi i pulsanti freccia</string>
 <string name="summary_arrow_mode">Freccia sinistra e destra selezionano e cambiano</string>
 <string name="volume_mode">Escludi i pulsanti del volume</string>
@@ -327,6 +346,8 @@
 <string name="summary_editor_activity">Inserire il nome dell\'attibità di un editor di testo esterno</string>
 <string name="busybox_location">Percorso a BusyBox</string>
 <string name="summary_busybox_location">Specificare la posizione dell\'eseguibile di BusyBox</string>
+<string name="su_location">Percorso per su</string>
+<string name="summary_su_location">Indicare la posizione dell'eseguibile su</string>
 <string name="execute_command">Esegui un comando</string>
 <string name="nothing_to_open">Nulla da aprire.</string>
 <string name="remind_to_save">Salvare i propri cambiamenti.</string>
@@ -336,6 +357,7 @@
 <string name="save_as">Salva come...</string>
 <string name="revert">Ripristina</string>
 <string name="wrap">Taglia le linee lunghe</string>
+<string name="go_up">Precedente</string>
 <string name="go_top">Inizio</string>
 <string name="go_end">Fine</string>
 <string name="encoding">Codifica</string>
@@ -367,16 +389,17 @@
 <string name="flags">Flag</string>
 <string name="not_exported">L\'attività non è esportata</string>
 <string name="smb_missed">Impossibile caricare l\'adattatore Samba.\n Assicurarsi che il pacchetto\n \"Ghost Commander - Samba plugin\"\n (com.ghostsq.commander.samba) sia installato.</string>
+<string name="sftp_missed">Impossibile caricare lo adattatore SFTP: accertarsi che il pluging SFTP di Ghost Commander sia installato.</string>
 <string name="donate">Donazione</string>
 <string name="online_help">Aiuto online</string>
 <string name="donation">Una piccola donazione contribuirà agli sviluppi futuri.\nSeleziona \"Ok\" per farla tramite PayPal.\n \"Annulla\" per goderti il gestore di file «Ghost Commander» gratuitamente.\n</string>
-<string name="about_text"><![CDATA[
-<h1>Ghost Commander v%1$s</h1>
-<h2>Un gestore di file.</h2> Inviare via email i bug e i suggerimenti a<br/> 
-<a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a><br/>
+<string name="about_text">
+&lt;h1&gt;Ghost Commander v%1$s&lt;/h1&gt;
+&lt;h2&gt;Un gestore di file.&lt;/h2&gt; Inviare via email i bug e i suggerimenti a&lt;br/&gt; 
+&lt;a href="mailto:ghost.sq2@gmail.com"&gt;ghost.sq2@gmail.com&lt;/a&gt;&lt;br/&gt;
  Grazie!
-<h3>DISCLAIMER:</h3>
+&lt;h3&gt;DISCLAIMER:&lt;/h3&gt;
   Utilizzando questo programma, si accettano le seguenti condizioni: l\'autore di questo programma non è può essere ritenuto responsabile per qualsiasi tipo di danno, perdita di informazioni, o qualsiasi problema che è o può essere causato dall\'uso di questo programma. Si accetta di utilizzare questo programma a proprio rischio.\n Se non si accettano le precedenti condizioni, cessare immediatamente di utilizzare il programma e disinstallarlo.
-  ]]></string>
+  </string>
 <string name="keys_text">"\tGuida all\'utilizzo\n Per selezionare più di un file, selezionare la parte destra della riga.\n Per inserire manualmente il percorso (e visualizzare i favoriti), mantenere premuto il titolo del pannello\n Tasti scorciatoia:\n Volume su - Seleziona file e cartelle Volume giù - Scambia i pannelli +, - - Seleziona o deseleziona gli elementi nella cartella corrente (, ) - Inserisce la posizione per il pannello destro/sinistro e i favoriti * - Aggiunge la cartella corrente alle favorite \" - Mostra informazioni dettagliate sugli elementi selezionati = - Visualizza la stessa posizione nell\'altro pannello (sincronizza) 1 - Aiuto 2 - Rinomina l\'elemento corrente 4 - Modifica l\'elemento corrente 5 - Copia gli elementi selezionati 6 - Sposta gli elementi selezionati 7 - Crea una nuova cartella 8 - Elimina gli elementi selezionati 9 - Apre le preferenze 0 - Esce dal programma [A-z] - Ricerca veloce Per aprire una cartella FTP anonima, inserire un percorso come:\n ftp://host.com/cartella\n Oppure, se è necessario fornire un\'identità:\n ftp://utente:password@host.com/cartella\n\n Per accedere come root (su), inserire la posizione nel seguente modo:\n \"root:///data\"\n Assicurarsi di aver installato \"BusyBox\" e che la sua posizione sia specificata nelle impostazioni.\n Per elencare i dispositivi montati, digitare \"mount://\" Fare clic su una posizione di montaggio per renderla \"rw\" o farla tornare \"ro\". "</string>
 </resources>
