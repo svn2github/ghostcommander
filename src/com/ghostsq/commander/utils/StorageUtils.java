@@ -93,7 +93,7 @@ public class StorageUtils {
                             paths.add( mount_point );
                             list.add( new StorageInfo( mount_point, false, readonly, cur_display_number++ ) );
                         }
-                    } else if( line.contains( "extSdCard" ) ) {
+                    } else if( line.contains( "extSdCard" ) || line.contains( "external_sd" ) ) {
                         list.add( new StorageInfo( mount_point, false, readonly, cur_display_number++ ) );
                     }
                 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import com.ghostsq.commander.FileCommander;
 import com.ghostsq.commander.Panels;
@@ -120,17 +121,30 @@ public class HomeAdapter extends CommanderAdapterBase {
             ia.add( makeItem( LOCAL, "fs" ) );
 
             if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
+                Map<String, String> env = System.getenv();
+                String sec_storage = env.get( "SECONDARY_STORAGE" );
+                if( Utils.str( sec_storage ) ) {
+                    String[] ss = sec_storage.split( ":" );
+                    ia.add( makeItem( EXTERNAL, ss[0] ) );
+                    if( android.os.Build.VERSION.SDK_INT >= 18 )
+                        ia.add( makeItem( MEDIA, "ms:" + ss[0] ) );
+                }
+                
+                /*
                 List<StorageUtils.StorageInfo> sil = StorageUtils.getStorageList();
                 if( sil != null && sil.size() > 0 ) {
                     for( int i = 0; i < sil.size(); i++ ) {
                         StorageUtils.StorageInfo si = sil.get( i );
                         if( !si.internal ) {
                             ia.add( makeItem( EXTERNAL, si.path ) );
-                            if( android.os.Build.VERSION.SDK_INT >= 18 )
+                            if( android.os.Build.VERSION.SDK_INT >= 18 ) {
                                 ia.add( makeItem( MEDIA, "ms:" + si.path ) );
+                                break;
+                            }
                         }
                     }
                 }
+                */
             }            
             ia.add( makeItem( FTP, "ftp" ) );
             

@@ -220,6 +220,7 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
                           if( item.dir ) item.size = -1;
                           tmp_list.add( item );
                       } while( cursor.moveToNext() );
+                      cursor.close();
                       
                       for( String sd : subdirs ) {
                           boolean has = false;
@@ -247,7 +248,6 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
                 } catch( Throwable e ) {
                     Log.e( TAG, "inner", e );
                 }
-                cursor.close();
             }     	    
     	    startThumbnailCreation();
             notify( pass_back_on_done );
@@ -342,13 +342,22 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
 	
 	@Override
     public boolean renameItem( int position, String newName, boolean copy ) {
-        if( position <= 0 || position > items.length )
+        if( position <= 0 || position > items.length ) 
             return false;
         try {
+            ContentResolver cr = ctx.getContentResolver();
+            ContentValues cv = new ContentValues();
+            cv.put( MediaStore.MediaColumns.DATA, dirName + newName );
+            final String selection = MediaStore.MediaColumns.DATA + " = ? ";
+            String[] selectionParams = new String[1];
+            Item item = items[position-1];
+            selectionParams[0] = dirName + item.name.replaceAll( "/", "" );
+            if( item.dir )
+                selectionParams[0] = Utils.mbAddSl( selectionParams[0] );
+            return 1 == cr.update( baseContentUri, cv, selection, selectionParams );
         }
-        catch( SecurityException e ) {
+        catch( Exception e ) {
             commander.showError( ctx.getString( R.string.sec_err, e.getMessage() ) );
-            return false;
         }
         return false;
     }

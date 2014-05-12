@@ -11,6 +11,7 @@ import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.adapters.FSAdapter;
 import com.ghostsq.commander.adapters.FavsAdapter;
+import com.ghostsq.commander.adapters.HomeAdapter;
 import com.ghostsq.commander.adapters.ZipAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapter.Feature;
 import com.ghostsq.commander.favorites.Favorite;
@@ -615,11 +616,13 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             uri = uri_;
             posTo = posTo_;
             LayoutInflater factory = LayoutInflater.from( c );
-            new AlertDialog.Builder( c ).setIcon( android.R.drawable.ic_dialog_alert ).setTitle( R.string.confirm )
+            new AlertDialog.Builder( c ).setIcon( android.R.drawable.ic_dialog_alert )
+                    .setTitle( R.string.confirm )
                     .setView( factory.inflate( R.layout.rootmpw, null ) )
                     // .setMessage( c.getString( R.string.nav_warn, uri ) )
-                    .setPositiveButton( R.string.dialog_ok, this ).setNeutralButton( R.string.dialog_cancel, this )
-                    .setNegativeButton( R.string.dialog_exit, this ).show();
+                    .setPositiveButton( R.string.dialog_ok, this )
+                    .setNeutralButton( R.string.dialog_cancel, this )
+                    .setNegativeButton( R.string.home, this ).show();
         }
 
         @Override
@@ -632,7 +635,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             } else if( whichButton == DialogInterface.BUTTON_NEUTRAL ) {
                 NavigateInternal( which, sdcard, null, null );
             } else
-                c.finish();
+                NavigateInternal( which, Uri.parse( HomeAdapter.DEFAULT_LOC ), null, null );
             idialog.dismiss();
         }
     }
