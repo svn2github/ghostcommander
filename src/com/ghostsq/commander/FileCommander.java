@@ -773,7 +773,8 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                         return;
                     }
                 }
-                if( ext != null && ext.compareToIgnoreCase( ".zip" ) == 0 ) {
+                if( ext != null && ( ext.compareToIgnoreCase( ".zip" ) == 0 ||
+                                     ext.compareToIgnoreCase( ".jar" ) == 0 ) ) {
                     Navigate( uri.buildUpon().scheme( "zip" ).build(), null, null );
                     return;
                 }
