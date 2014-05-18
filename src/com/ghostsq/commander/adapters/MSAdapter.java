@@ -680,8 +680,6 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
                             content_uri = cr.insert( baseContentUri, cv );
                         }                        
                         
-                        
-                        
                         is = new FileInputStream( file );
                         os = cr.openOutputStream( content_uri );
                         long copied = 0, size  = file.length();
