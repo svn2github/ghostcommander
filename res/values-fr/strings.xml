@@ -8,7 +8,7 @@
 <string name="F1">Aide</string>
 <string name="F2">Renommer</string>
 <string name="F3">Voir</string>
-<string name="F4">Editer</string>
+<string name="F4">Éditer</string>
 <string name="SF4">Créer</string>
 <string name="F5">Copier</string>
 <string name="F6">Déplacer</string>
@@ -23,14 +23,46 @@
 <string name="sz">Taille</string>
 <string name="refresh">Rafraîchir</string>
 <string name="enter">Changer emplacement</string>
+<string name="home">Accueil</string>
+<string name="sdcard">/sdcard</string>
+<string name="softkbd">Clavier</string>
 <string name="enter_b">Emplacement</string>
 <string name="add_fav">Mettre en favoris le répertoire courant</string>
 <string name="add_fav_b">Favoris</string>
 <string name="remount_b">Remonter /system</string>
 <string name="remount">Remonter</string>
+<string name="hidden">Caché</string>
+<string name="rescan">Rescan media</string><!-- !!! -->
+<string name="favs">Favoris</string>
+<string name="local">Local storage</string><!-- !!! -->
+<string name="external">Carte externe</string>
+<string name="media">Media Store</string><!-- !!! -->
+<string name="ftp">Site FTP</string>
+<string name="sftp">Site SFTP</string>
+<string name="smb">Windows share</string><!-- !!! -->
+<string name="plugins">Browse plugins</string><!-- !!! -->
+<string name="root">Mode root</string>
+<string name="mount">Points de montage</string>
+<string name="mount_b">Mounts</string><!-- !!! -->
+<string name="apps">Applications</string>
+<string name="exit">Quitter</string>
+<string name="favs_descr">View and manage your list of favorite folders and sites.</string><!-- !!! -->
+<string name="local_descr">Browse, organize and modify the contents of the primary file system.</string><!-- !!! -->
+<string name="external_descr">Access files on the physical inserted SD card. May be read-only on some devices</string><!-- !!! -->
+<string name="media_descr">Make modification on the external SD card via the MediaStore interface</string><!-- !!! -->
+<string name="ftp_descr">Connect to an FTP server, browse and transfer files both to and from it.</string><!-- !!! -->
+<string name="sftp_descr">Connect to an SSH FTP (sftp) server.</string><!-- !!! -->
+<string name="smb_descr">Connect to shared folders on a Windows machine.</string><!-- !!! -->
+<string name="plugins_descr">Look for more Ghost Commander plugins.</string><!-- !!! -->
+<string name="root_descr">Use caution - for rooted devices only: Browse and interact with critical system files. Only proceed if you know what you\'re doing.</string><!-- !!! -->
+<string name="mount_descr">Display a list of all mount points. Remount them to \"rw\" mode, then back to \"ro\" mode after any changes are complete. Proceed with caution.</string><!-- !!! -->
+<string name="apps_descr">View and manage installed packages.</string><!-- !!! -->
+<string name="exit_descr">Quitter l'application.</string>
+<string name="shortcut">Create a desktop shortcut</string><!-- !!! -->
 <string name="enter_ftp">Connecter au site FTP</string>
 <string name="enter_smb">Ouvrir partage Samba (Windows)</string>
 <string name="search_file">Rechercher fichier</string>
+<string name="menu">Menu</string>
 <string name="sort_by_name">Par Nom</string>
 <string name="sort_by_ext">Par Extension</string>
 <string name="sort_by_size">Par Taille</string>
@@ -45,38 +77,42 @@
 <string name="unselect_b">Désélectionner</string>
 <string name="toggle_panels_mode">Changer mode d\'affichage des panneaux</string>
 <string name="prefs">Configuration</string>
-<string name="about">A propos</string>
+<string name="save_prefs">Sauvegarder configuration</string>
+<string name="rest_prefs">Rétablir configuration</string>
+<string name="prefs_saved">Your preferences have been saved.</string><!-- !!! -->
+<string name="prefs_restr">Your preferences have been restored.</string><!-- !!! -->
+<string name="about">À propos</string>
 <string name="keys">Raccourcis clavier</string>
 <string name="new_file">Créer un nouveau fichier</string>
 <string name="new_folder">Créer un nouveau répertoire</string>
 <string name="new_zip">Créer un nouveau fichier ZIP</string>
 <string name="go_button">Valider</string>
 <string name="show_size">Calculer Taille</string>
-<string name="send_to">Envoyer à...</string>
-<string name="open_with">Ouvrir avec...</string>
+<string name="send_to">Envoyer à…</string>
+<string name="open_with">Ouvrir avec…</string>
+<string name="open">Ouvrir</string>
 <string name="copy_name">Copier le nom dans le presse-papier</string>
 <string name="fav_fld">Mettre en favori le répertoire \"%s\"</string>
-<string name="create_zip">ZIP...</string>
+<string name="create_zip">ZIP…</string>
 <string name="create_zip_title">ZIP</string>
-<string name="input_settings">Saisie</string>
-<string name="arrow_mode">Commandes fléchées</string>
-<string name="summary_arrow_mode">Flèche Gauche/Droite =  basculer/sélectionner</string>
-<string name="show_confirm">Afficher la confirmation</string>
-<string name="summary_show_confirm">Afficher le dialogue de confirmation à chaque fin d\'opération</string>
-<string name="prefs_label">Configuration</string>
-<string name="editor_label">Editeur de texte</string>
-<string name="advanced">Avancés</string>
-<string name="advanced_settings">Paramètres avancés</string>
-<string name="summary_advanced_settings">Paramètres supplémentaires pour utilisateurs avancés</string>
-<string name="wait"> attente... </string>
+<string name="wait"> attente… </string>
 <string name="fail"> (échec) </string>
 <string name="failed">Erreur:\n</string>
+<string name="default_uri_cmnt">Emplacement par défaut</string>
+<string name="default_color">Par défaut</string>
+<string name="base_color">Base color</string><!-- !!! -->
+<string name="typemasks">Masques de fichiers</string>
+<string name="color_sample">Exemple</string>
+<string name="add_new_type">Ajouter un nouveau</string>
+<string name="fav_comment">Commentaire:</string>
+<string name="fav_dialog">Éditer favori</string>
 <string name="dialog_yes">Oui</string>
 <string name="dialog_no">Non</string>
 <string name="dialog_ok">Ok</string>
-<string name="dialog_cancel">Abandonner</string>
+<string name="dialog_cancel">Annuler</string>
 <string name="dialog_close">Fermer</string>
 <string name="dialog_exit">Sortir</string>
+<string name="dialog_browse">Browse</string><!-- !!! -->
 <string name="dialog_abort">Abandonner</string>
 <string name="dialog_retry">Réessayer</string>
 <string name="dialog_ignore">Ignorer</string>
@@ -84,8 +120,20 @@
 <string name="dialog_skip_all">Tout ignorer</string>
 <string name="dialog_select">Sélectionner</string>
 <string name="dialog_unselect">Désélectionner</string>
+<string name="filemask">Masque de fichiers:</string>
+<string name="for_files">Fichiers</string>
+<string name="for_dirs">Répertoires</string>
+<string name="in_subf">Sous-répertoires</string>
+<string name="content">Content:</string><!-- !!! -->
+<string name="bigger_than">Plus grand\nque:</string>
+<string name="smaller_than">Plus petit\nque:</string>
+<string name="mod_after">Après</string>
+<string name="mod_before">Avant</string>
+<string name="launch">Launch</string><!-- !!! -->
 <string name="operation">Opération</string>
-<string name="edit_title">Editer</string>
+<string name="view_title">Voir</string>
+<string name="edit_title">Éditer</string>
+<string name="newf_title">Créer fichier</string>
 <string name="newf_prompt">Nouveau nom de fichier</string>
 <string name="mkdir_title">Créer répertoire</string>
 <string name="mkdir_prompt">Créer répertoire:</string>
@@ -94,38 +142,51 @@
 <string name="rename_title">Renommer</string>
 <string name="copy_title">Copier</string>
 <string name="move_title">Déplacer</string>
+<string name="send_title">Envoyer à…</string>
+<string name="open_title">Ouvrir avec…</string>
+<string name="to_copy"/><!-- !!! -->
+<string name="to_move"/><!-- !!! -->
+<string name="to_rename"/><!-- !!! -->
 <string name="copy_err">Rien à copier</string>
-<string name="rename_err">Rien à renommer.</string>
+<string name="rename_err">Rien à renommer</string>
+<string name="edit_err">Impossible de éditer</string>
 <string name="no_items">Pas de fichiers valides pour terminer l\'opération.</string>
 <string name="inv_dest">Destination invalide</string>
+<string name="inv_path">Chemin invalide</string>
 <string name="find_on_fs_only">La fonction recherche ne s\'applique qu\'avec les fichiers locaux.</string>
+<string name="on_fs_only">This feature works only on a local file system.</string><!-- !!! -->
 <string name="op_not_alwd">Opération \'%1$s\' non permise. Sélectionner d\'abord un élément.</string>
-<string name="copy_to_local_only">Copie possible vers fichiers locaux uniquement.</string>
 <string name="oper_item_to">%1$s %2$s à:"</string>
 <string name="login_title">Connecter</string>
 <string name="delete_title">Supprimer</string>
 <string name="delete_err">Rien à supprimer</string>
 <string name="delete_q">"Supprimer %1$s ?"</string>
+<string name="rescan_q">Are you sure you want to do the search again?</string><!-- !!! -->
 <string name="search_done">Fin de recherche</string>
 <string name="done">Fini</string>
 <string name="interrupted">Interrompu</string>
+<string name="cant_copy_to_itself">Cannot copy the directory \"%s\" to itself or below.</string><!-- !!! -->
 <string name="too_deep_hierarchy">La hiérarchie des fichiers est trop profonde</string>
 <string name="nothing_found">Aucun fichier trouvé</string>
-<string name="preparing">Préparation...</string>
-<string name="copying">Copie\n\"%s\"...</string>
+<string name="preparing">Préparation…</string>
+<string name="copying">Copie\n\"%s\"…</string>
 <string name="copied_f">Copié\n\"%s\"   </string>
-<string name="deleting">Suppression\n\"%s\"...</string>
-<string name="deleting_a">Suppression...</string>
+<string name="deleting">Suppression\n\"%s\"…</string>
+<string name="deleting_a">Suppression…</string>
 <string name="fail_del">Fichier "%1$s\" incomplet, supprimé.</string>
-<string name="unpacking">Décompression \n\"%s\"...</string>
+<string name="unpacking">Décompression \n\"%s\"…</string>
 <string name="unpacked_p">Décompressé \n\"%s\"   </string>
-<string name="packing">Compression \n\"%s\"...</string>
-<string name="retrieving">Lecture \n\"%s\"...</string>
-<string name="uploading">Téléchargement \n\"%s\"...</string>
+<string name="packing">Compression \n\"%s\"…</string>
+<string name="retrieving">Lecture \n\"%s\"…</string>
+<string name="uploading">Téléchargement \n\"%s\"…</string>
 <string name="uploaded_p">Téléchargé \n\"%s\"   </string>
+<string name="loading">Chargement…</string>
+<string name="second">s</string>
 <string name="canceled">Annulé</string>
+<string name="oom_err">La mémoire est insuffisante</string>
 <string name="unkn_err">Erreur inconnue</string>
 <string name="cant_md">Impossible de créer le répertoire \"%s\"</string>
+<string name="cant_cd">Cannot browse the directory \"%s\"</string><!-- !!! -->
 <string name="file_exist">Le fichier \"%s\" existe déjà dans le répertoire de destination.</string>
 <string name="sec_err">Problème de sécurité :\n%s</string>
 <string name="not_accs">Fichier non accessible.\n%s</string>
@@ -152,13 +213,13 @@
 <string name="was"/>
 <string name="nothing">Aucun élément</string>
 <string name="sz_folder">Répertoire \"%1$s\":\n %2$d fichiers,</string>
+<string name="sz_dirnum">,\ndans %1$d répertoire%2$s</string>
+<string name="sz_dirsfx_s">.</string>
+<string name="sz_dirsfx_p">s.</string>
 <string name="sz_file">Fichier \"%s\":</string>
 <string name="sz_files">Fichiers trouvés : %d </string>
 <string name="sz_Nbytes">\nTaille : %1$sb</string>
 <string name="sz_bytes">\n ( %d octets )</string>
-<string name="sz_dirnum">,\ndans %1$d répertoire%2$s</string>
-<string name="sz_dirsfx_s">.</string>
-<string name="sz_dirsfx_p">s.</string>
 <string name="sz_lastmod">\nDernière modification :\n </string>
 <string name="sz_total">Total : %1$soctets,\nLibre : %2$soctets.</string>
 <string name="busy">Occupé!</string>
@@ -170,41 +231,74 @@
 <string name="error">Erreur</string>
 <string name="info">Information</string>
 <string name="confirm">Confirmer</string>
-<string name="progress">Progression</string>
 <string name="alert">Alerte</string>
+<string name="progress">Progression</string>
+<string name="inprogress">A file operation is in progress.</string><!-- !!! -->
 <string name="server">Serveur:</string>
 <string name="path">Chemin:</string>
+<string name="active">Actif</string>
 <string name="domain">Domaine:</string>
 <string name="username">Nom utilisateur:</string>
 <string name="password">Mot de passe:</string>
+<string name="command">Commande:</string>
+<string name="use_busybox">busybox</string>
+<string name="user">Utilisateur</string>
+<string name="group">Groupe</string>
+<string name="other">Autres</string>
 <string name="connect">Connecter</string>
-<string name="cancel">Abandonner</string>
+<string name="cancel">Annuler</string>
 <string name="ftp_connected">Connecté à \"%1$s\",\n Connecté comme \"%2$s\"</string>
 <string name="ftp_upload_failed">Echec téléchargement \"%1$s\".\n Fichier log FTP \n\n%2$s</string>
 <string name="ftp_mkdir_failed">Echec création répertoire  \"%1$s\".\n Fichier log FTP :\n\n\"%2$s\</string>
 <string name="ftp_nologin">Pas loggué!</string>
-<string name="layout_settings">Paramétrage de l\'affichage:</string>
+<string name="data_settings">Listes des fichiers</string>
+<string name="layout_settings">Paramétrage de l\'affichage</string>
+<string name="input_settings">Saisie</string>
+<string name="selection_zone_setup">Selection area</string><!-- !!! -->
+<string name="summary_selection_zone_setup">Customize the way files and folders are selected</string><!-- !!! -->
+<string name="sel_onright">Sélectionner du cote drôit</string>
+<string name="show_confirm">Afficher la confirmation</string>
+<string name="summary_show_confirm">Afficher le dialogue de confirmation à chaque fin d\'opération</string>
+<string name="prefs_label">Configuration</string>
+<string name="filetypes_label">Couleurs par type</string>
+<string name="editor_label">Éditeur de texte</string>
+<string name="pictvw_label">Picture Viewer</string><!-- !!! -->
+<string name="textvw_label">Text Viewer</string><!-- !!! -->
+<string name="perms_label">chmod / chown</string>
+<string name="advanced">Avancé</string>
+<string name="advanced_settings">Paramètres avancés</string>
+<string name="summary_advanced_settings">Paramètres supplémentaires pour utilisateurs avancés</string>
+<string name="send_content">Send using content provider</string><!-- !!! -->
+<string name="summary_send_content">Try to uncheck if your file sending application does not implement a content resolver</string><!-- !!! -->
 <string name="panels_mode">Panneaux côte-à-côte</string>
-<string name="summary_panels_mode">Afficher les panneaux côte-à-côte dans un écran divisé.</string>
+<string name="summary_panels_mode">Afficher les panneaux côte-à-côte dans un écran divisé</string>
 <string name="two_lines">Deux lignes par élément affiché</string>
-<string name="summary_two_lines">Toujours afficher les attributs de fichier sur la deuxième ligne.</string>
+<string name="summary_two_lines">Toujours afficher les attributs de fichier sur la deuxième ligne</string>
 <string name="show_icons">Icones de fichier</string>
 <string name="summary_show_icons">Afficher l\'icone pour chaque fichier</string>
+<string name="toolbar_settings">Toolbar settings</string><!-- !!! -->
+<string name="summary_toolbar_settings">Customize the row of buttons on the toolbar</string><!-- !!! -->
 <string name="show_toolbar">Affichage de la barre d\'outils</string>
 <string name="summary_show_toolbar">Afficher ou cacher les boutons en bas de l\'écran</string>
+<string name="show_hotkeys">Afficher raccourci clavier</string>
+<string name="summary_show_hotkeys">Always display hotkey shortcuts on certain buttons</string><!-- !!! -->
 <string name="toolbar_preference">Choisir les boutons à afficher</string>
 <string name="summary_toolbar_preference">Personnaliser les boutons dans la barre d\'outils</string>
-
+<string name="tblist_label">Select, edit and arrange</string><!-- !!! -->
 <string name="finger_friendly">Appui plus facile</string>
 <string name="summary_finger_friendly">Agrandir les éléments de l\'interface utilisateur</string>
 <string name="prevent_root">Avertissement en quittant la carte SD</string>
-<string name="summary_prevent_root">Afficher un avertissement en allant vers la racine de l\'appareil.</string>
+<string name="summary_prevent_root">Afficher un avertissement en allant vers la racine de l\'appareil</string>
+<string name="show_root">Show root and mounts</string><!-- !!! -->
+<string name="summary_show_root">Home view will display root and mount entries</string><!-- !!! -->
 <string name="root_root">Mode root en quittant la carte SD</string>
-<string name="summary_root_root">Bascule automatique en mode \"root\" en allant vers le répertoire racine (pas /sdcard) de l\'appareil.</string>
+<string name="summary_root_root">Bascule automatique en mode \"root\" en allant vers le répertoire racine (pas /sdcard) de l\'appareil</string>
 <string name="thumbnails">Activer les vignettes</string>
 <string name="summary_thumbnails">Utiliser les vignettes au lieu de l\'icône standard des fichiers images</string>
 <string name="thumbnails_size">Taille des vignettes</string>
 <string name="summary_thumbnails_size">En pourcentage de la taille des icônes</string>
+<string name="font_size">Taille de la police</string>
+<string name="summary_font_size">Mettre la taille de la police</string>
 <string name="left_panel_settings">Configuration panneau Gauche</string>
 <string name="right_panel_settings">Configuration panneau Droite</string>
 <string name="detailed_view_SbS">Affichage détaillée dans le mode côte-à-côte</string>
@@ -214,37 +308,65 @@
 <string name="sorting">Tri</string>
 <string name="summary_sorting">Comment trier les éléments dans l\'affichage</string>
 <string name="sort_case">Tri indépendant de la casse des caractères</string>
-<string name="summary_sort_case">Si non coché, le tri sera dépendant de la casse des caractères.</string>
+<string name="summary_sort_case">Si non coché, le tri sera dépendant de la casse des caractères</string>
 <string name="show_hidden">Afficher les fichiers cachés</string>
-<string name="summary_show_hidden">Si non coché, les fichiers commençant par un point ne sont pas affichés.</string>
+<string name="summary_show_hidden">Si non coché, les fichiers commençant par un point ne sont pas affichés</string>
+<string name="compatibility_settings">Compatibility</string><!-- !!! -->
+<string name="summary_compatibility_settings">Enable or disable the overriding of hardware button functions</string><!-- !!! -->
+<string name="panels_sliding">Enable sliding gesture</string><!-- !!! -->
+<string name="summary_panels_sliding">Switch panels by a horizontal scroll gesture</string><!-- !!! -->
+<string name="arrow_mode">Commandes fléchées</string>
+<string name="summary_arrow_mode">Flèche Gauche/Droite =  basculer/sélectionner</string>
+<string name="volume_mode">Override volume buttons</string><!-- !!! -->
+<string name="summary_volume_mode">The volume change buttons perform toggle/select</string><!-- !!! -->
+<string name="exit_on_back">Back key exits</string><!-- !!! -->
+<string name="summary_exit_on_back">Close the application by pressing the back button</string><!-- !!! -->
 <string name="colors">Paramétrage des couleurs</string>
 <string name="summary_colors">Personnaliser les couleurs du fond, de la sélection etc.</string>
 <string name="bgr_color_picker">Couleur de fond</string>
 <string name="summary_bgr_color_picker">Choisir une couleur pour le fond</string>
 <string name="fgr_color_picker">Couleur d\'avant-plan</string>
 <string name="summary_fgr_color_picker">Choisir une couleur pour les noms de fichier</string>
-<string name="sel_color_picker">Couleur des sélections</string>
+<string name="cur_color_picker">Focused</string><!-- !!! -->
+<string name="summary_cur_color_picker">Choose a color for items in focus</string><!-- !!! -->
+<string name="sel_color_picker">Couleur de fond des sélections</string>
 <string name="summary_sel_color_picker">Choisir une couleur pour les fichiers sélectionnés et pour le titre du panneau</string>
+<string name="sfg_color_picker">Selected foreground</string><!-- !!! -->
+<string name="summary_sfg_color_picker">Choose a text color for selected files and the current panel\'s title</string><!-- !!! -->
 <string name="ttl_color_picker">Couleur du titre du panneau</string>
 <string name="summary_ttl_color_picker">Couleur de fond du titre du panneau</string>
+<string name="btn_color_picker">Boutons</string>
+<string name="summary_btn_color_picker">Choisir une couleur de fond pour les boutons</string>
 <string name="pick_color">Choisir les couleurs</string>
+<string name="color">Couleur</string>
 <string name="language">Langage</string>
 <string name="summary_language">Remplacer le langage par défaut du système</string>
 <string name="restart_to_apply_lang">Veuillez redémarrer l\'application pour activer le language choisi</string>
-<string name="editor_activity">Nom de l\'éditeur de texte</string>
+<string name="editor_activity">Nom de l\'éditeur de textes</string>
 <string name="summary_editor_activity">Nom complet de la classe de l\'éditeur de texte. Nom du paquetage = préfixe du nom de la classe.</string>
-<string name="value_editor_activity">com.ghostsq.commander.Editor</string>
 <string name="busybox_location">Chemin de busybox</string>
 <string name="summary_busybox_location">Pour une utilisation en mode root, l\'exécutable busybox est nécessaire</string>
+<string name="su_location">Chemin de su</string>
+<string name="summary_su_location">Specify the location of the su executable</string><!-- !!! -->
 <string name="execute_command">Exécuter une commande</string>
 <string name="nothing_to_open">Pas de fichier à ouvrir</string>
 <string name="remind_to_save">N\'oubliez pas d\'enregistrer vos modifications (utiliser le menu)</string>
+<string name="saved">\"%1$s\" enregistré</string>
+<string name="not_saved">Enregistrer changements?</string>
 <string name="save">Enregistrer</string>
+<string name="save_as">Enregistrer sous…</string>
 <string name="revert">Annuler</string>
 <string name="wrap">Retour à la lignes sur lignes longues</string>
+<string name="go_up">Parent</string>
+<string name="go_top">Haut</string>
+<string name="go_end">Bas</string>
+<string name="encoding">Encodage</string>
+<string name="encoding_set">The Encoding is set to \"%1$s\", please reload. If you save, the original encoding will be changed to the newly chosen one.</string><!-- !!! -->
 <string name="no_such_file">Fichier non trouvé \"%1$s\"</string>
 <string name="too_big_file">Le fichier \"%1$s\" est trop gros.</string>
-<string name="binary_file">Le fichier \"%1$s\" est de type binaire. Vous pouvez l\'endommager. Editer à vos risques.</string>
+<string name="binary_file">Le fichier \"%1$s\" est de type binaire. Vous pouvez l\'endommager. Éditer à vos risques.</string>
+<string name="cant_open_dir">\"%1$s\" est un répertoire.</string>
+<string name="cant_view_empt">Fichier \"%1$s\" est vide.</string>
 <string name="cant_open">Impossible d\'ouvrir le fichier.</string>
 <string name="cant_save">Impossible de sauvegarder le fichier.</string>
 <string name="nav_warn">Vous aller ouvrir un répertoire système. Cela pourrait-être dangereux. Continuer ?</string>
@@ -252,13 +374,24 @@
 <string name="no_such_folder">\"%1$s\" n\'est pas un répertoire valide !</string>
 <string name="fav_added">Répertoire \"%1$s\" ajouté aux favoris</string>
 <string name="no_root">N\'est pas root?</string>
-<string name="smb_missed">
-    Impossible de charger l\'adaptateur Samba.\n
-    Veuillez vérifier que le paquetage\n
-    \"Ghost Commander - Samba plugin\"\n
-    (com.ghostsq.commander.samba) est installé.</string>
-<string name="donate">  Don</string>
-<string name="online_help">  Aide en ligne</string>
+<string name="manage">Manage</string><!-- !!! -->
+<string name="shortcuts">Raccourcis</string>
+<string name="pkg_name">Nom du paquetage</string>
+<string name="version">Version</string>
+<string name="version_code">Version code</string><!-- !!! -->
+<string name="target_sdk">Target SDK</string><!-- !!! -->
+<string name="inst_date">Date</string>
+<string name="pkg_size">Taille</string>
+<string name="process">Process name</string><!-- !!! -->
+<string name="app_class">App. class</string><!-- !!! -->
+<string name="affinity">Task Affinity</string><!-- !!! -->
+<string name="permissions">Permissions</string><!-- !!! -->
+<string name="flags">Marqueurs</string>
+<string name="not_exported">Activity is not exported</string><!-- !!! -->
+<string name="smb_missed">Impossible de charger l\'adaptateur Samba. Veuillez vérifier que le paquetage \"Ghost Commander - Samba plugin\"\n est installé.</string>
+<string name="sftp_missed">Impossible de charger l\'adaptateur SFTP. Veuillez vérifier que le paquetage \"Ghost Commander - SFTP plugin\" est installé.</string>
+<string name="donate">Don</string>
+<string name="online_help">Aide en ligne</string>
 <string name="donation">Aimez-vous cette application ? Réellement ? Et si vous faites un petit don
     pour supporter son développement ?\n
 Appuyer \"Ok\" pour donner avec PayPal.\n
@@ -266,10 +399,14 @@ Appuyer \"Ok\" pour donner avec PayPal.\n
     </string>
 <string name="about_text"><![CDATA[
 <h1>Ghost Commander v%1$s</h1>
-<h3>Gestionnaire de fichiers.</h3>
-Veuillez envoyer vos suggestions/rapports de bogues à<br/>
-<a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a><br/>
-Merci.
+<h4>Gestionnaire de fichiers.</h4>
+
+<p>Web:<br>
+&#xA0;&#xA0;&#xA0;<a href="https://sites.google.com/site/ghostcommander1/">Site web</a><br>
+&#xA0;&#xA0;&#xA0;<a href="http://sourceforge.net/projects/ghostcommander/">@ SourceForge</a> 
+</p>
+<p>Veuillez envoyer vos suggestions/rapports de bogues à<br/> <a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a></p>
+<p>Aimez-vous cette application? Réellement? Et si vous faites <a href="%2$s">un petit don avec PayPal</a> pour supporter son développement?</p>
 <h3>AVIS DE NON-RESPONSABILITE:</h3>
 En utilisant ce logiciel, vous êtes d\'accord avec ce qui suit:
 L\'auteur de ce logiciel n\'est pas responsable de tout type de dommage, de perte d\'informations, 
@@ -278,10 +415,10 @@ Vous acceptez d\'utiliser ce logiciel à vos propres risques.\n
 Si vous n\'êtes pas d\'accord, cessez d\'utiliser ce logiciel immédiatement et le désinstallez.\n
 ]]></string>
 <string name="keys_text">
-    "\tMode d\'emploi:\n
+"\t\tMode d\'emploi:\n
 Pour sélectionner plus d\'un fichier, appuyer sur la moitié droite de la ligne.\n    
-Pour saisir manuellement le chemin (et voir les favoris), appuyer longuement sur le titre du panneau\n
-Touches de raccourci :\n
+Pour saisir manuellement le chemin (et voir les favoris), appuyer longuement sur le titre du panneau.\n
+\t\tTouches de raccourci:\n
 VolumeHaut - Sélectionner l\'élément courant (fichier)
 VolumeBas - Permuter les panneaux
 +, -  - Sélectionner ou désélectionner les éléments dans le répertoire courant  
@@ -291,7 +428,7 @@ VolumeBas - Permuter les panneaux
 = - Afficher dans l\'autre panneau le même contenu que celui en cours
 1 - Aide
 2 - Renommer le fichier courant
-4 - Editer le fichier courant
+4 - Éditer le fichier courant
 5 - Copier les fichiers sélectionnés
 6 - Déplacer les fichiers sélectionnés
 7 - Créer un nouveau répertoire
@@ -304,8 +441,7 @@ Pour établir une connexion FTP anonyme sur un répertoire, saisir le chemin tel
     ftp://serveur.com/repertoire\n
 Ou, si des identifiants sont nécessaires:\n
     ftp://nom_utilisateur:mot_de_passe@serveur.com/repertoire\n\n
-Pour accéder comme root (su), 
-rentrer l\'emplacement comme:\n
+Pour accéder comme root (su),  rentrer l\'emplacement comme:\n
     \"root:/data\"\n
 Assurez-vous que \"busybox\" est installé, et/ou que son emplacement est spécifié dans les paramètres.\n
 
