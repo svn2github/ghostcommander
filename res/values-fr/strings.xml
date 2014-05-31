@@ -387,7 +387,7 @@
 <string name="affinity">Task Affinity</string><!-- !!! -->
 <string name="permissions">Autorisations</string>
 <string name="flags">Marqueurs</string>
-<string name="not_exported">L'activité n\'est pas exportée</string>
+<string name="not_exported">L\'activité n\'est pas exportée</string>
 <string name="smb_missed">Impossible de charger l\'adaptateur Samba. Veuillez vérifier que le paquetage \"Ghost Commander - Samba plugin\"\n est installé.</string>
 <string name="sftp_missed">Impossible de charger l\'adaptateur SFTP. Veuillez vérifier que le paquetage \"Ghost Commander - SFTP plugin\" est installé.</string>
 <string name="donate">Don</string>
