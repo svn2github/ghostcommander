@@ -175,7 +175,7 @@
                 android:key="toolbar_settings"
                 android:title="@string/toolbar_settings"
                 android:summary="@string/summary_toolbar_settings">
-                <CheckBoxPreference
+            <CheckBoxPreference
                         android:key="show_toolbar"
                         android:title="@string/show_toolbar"
                         android:summary="@string/summary_show_toolbar"
@@ -191,15 +191,15 @@
                         android:summary="@string/summary_toolbar_preference">
                 </PreferenceScreen>
         </PreferenceScreen>
+        <CheckBoxPreference
+                android:key="panels_sliding"
+                android:title="@string/panels_sliding"
+                android:summary="@string/summary_panels_sliding"
+                android:defaultValue="true"/>
         <PreferenceScreen
                 android:key="compatibility_settings"
                 android:title="@string/compatibility_settings"
                 android:summary="@string/summary_compatibility_settings">
-                <CheckBoxPreference
-                            android:key="panels_sliding"
-                            android:title="@string/panels_sliding"
-                            android:summary="@string/summary_panels_sliding"
-                            android:defaultValue="true"/>
                 <CheckBoxPreference
                             android:key="arrow_legc"
                             android:title="@string/arrow_mode"

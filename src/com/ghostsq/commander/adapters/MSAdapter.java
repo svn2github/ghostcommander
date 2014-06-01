@@ -91,6 +91,8 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
         case SEND:
             return true;
         case SZ:
+        case F2:
+        case F6:
             return false;
         default: return super.hasFeature( feature );
         }
@@ -548,9 +550,6 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
             notify( Commander.OPERATION_FAILED );
             return ok;
         }
-        if( move ) {
-            commander.startEngine( new DeleteEngine( bitsToItems( cis ) ) );
-        }
         return ok;
     }
 
@@ -573,7 +572,7 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
 
     class CopyEngine extends Engine {
         private String  mDest;
-        private int     counter = 0, depth = 0;
+        private int     counter = 0, delerr_counter = 0, depth = 0;
         private long    totalBytes = 0;
         private double  conv;
         private File[]  fList = null;
@@ -617,7 +616,8 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
                 to_scan.toArray( to_scan_a );
                 ForwardCompat.scanMedia( ctx, to_scan_a );
                 wakeLock.release();
-                // XXX: assume (move && !del_src_dir)==true when copy from app: to the FS 
+                // XXX: assume (move && !del_src_dir)==true when copy from app: to the FS
+                if( delerr_counter == counter ) move = false;  // report as copy
                 String report = Utils.getOpReport( ctx, num, move && !del_src_dir ? R.string.moved : R.string.copied );
                 sendResult( report );
             } catch( Exception e ) {
@@ -734,8 +734,12 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
                         to_scan.add( out_full_name );
                         counter++;
                     }
-                    if( move )
-                        file.delete();
+                    if( move ) {
+                        if( !file.delete() ) {
+                            sendProgress( ctx.getString( R.string.cant_del, fn ), -1 );
+                            delerr_counter++;
+                        }
+                    }
                 }
                 catch( SecurityException e ) {
                     Log.e( TAG, "", e );

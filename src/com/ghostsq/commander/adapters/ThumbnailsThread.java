@@ -78,7 +78,7 @@ class ThumbnailsThread extends Thread {
                 int processed = 0;
                 for( int i = 0; i < list.length; i++ ) {
                     visible_only = visible_only || fails_count > 1;
-                    if( visible_only ) Log.v( TAG, "thumb on requests only" );
+                    //if( visible_only ) Log.v( TAG, "thumb on requests only" );
                     
                     int n = -1;
                     while( true ) {
