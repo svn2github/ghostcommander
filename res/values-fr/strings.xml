@@ -361,7 +361,7 @@
 <string name="go_top">Haut</string>
 <string name="go_end">Bas</string>
 <string name="encoding">Encodage</string>
-<string name="encoding_set">L'encodage est \"%1$s\", rechargez-le. Si vous l'enregistrez, l'encodage original sera changé en encodage nouveau.</string>
+<string name="encoding_set">L\'encodage est \"%1$s\", rechargez-le. Si vous l\'enregistrez, l\'encodage original sera changé en encodage nouveau.</string>
 <string name="no_such_file">Fichier non trouvé \"%1$s\"</string>
 <string name="too_big_file">Le fichier \"%1$s\" est trop gros.</string>
 <string name="binary_file">Le fichier \"%1$s\" est de type binaire. Vous pouvez l\'endommager. Éditez à vos risques.</string>
