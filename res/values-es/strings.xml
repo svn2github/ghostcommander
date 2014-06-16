@@ -1,353 +1,428 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Ghost Commander</string>
-    
-    <string name="file">Archivo</string>
-    <string name="location">Ruta</string>
-    <string name="list">Lista</string>
-    <string name="app">Aplicación</string>
-    <string name="help">Ayuda</string>
-    
-    <string name="F1">Ayuda</string>
-    <string name="F2">Renombrar</string>
-    <string name="F3">Ver</string>
-    <string name="F4">Editar</string>
-    <string name="SF4">Crear</string>
-    <string name="F5">Copiar</string>
-    <string name="F6">Mover</string>
-    <string name="F7">MkDir</string>
-    <string name="F8">Eliminar</string>
-    <string name="F9">Ajustes</string>
-    <string name="F10">Salir</string>
-    <string name="oth_sh_this">Igualar rutas</string>
-    <string name="eq">Ig. Ruta</string>
-    <string name="change">Alternar</string>
-    <string name="tgl">Alternar</string>
-    <string name="sz">Calc Tamaño</string>
-    <string name="refresh">Actualizar</string>
-    <string name="enter">Editar Ruta</string>
-    <string name="enter_b">Ruta</string>
-    <string name="add_fav">Añadir a favoritos</string>
-    <string name="add_fav_b">Favorito</string>
-    
-    <string name="remount_b">Remontar /system</string>
-    <string name="remount">Remontar</string>
-    
-    <string name="enter_ftp">Abrir sitio FTP</string>
-    <string name="enter_smb">Abrir unidad Samba (Windows)</string>
-    <string name="search_file">Buscar archivos</string>
-
-    <string name="sort_by_name">Ordenar por nombre</string>
-    <string name="sort_by_ext" >Ordenar por extensión</string>
-    <string name="sort_by_size">Ordenar por tamaño</string>
-    <string name="sort_by_date">Ordenar por fecha</string>
-
-    <string name="sort_by_name_b">Ord Nombre</string>
-    <string name="sort_by_ext_b" >Ord Extensión</string>
-    <string name="sort_by_size_b">Ord Tamaño</string>
-    <string name="sort_by_date_b">Ord Fecha</string>
-
-    <string name="select_all">Seleccionar todo</string>
-    <string name="unselect_all">Deseleccionar todo</string>
-    <string name="select_b">Seleccionar</string>
-    <string name="unselect_b">Deseleccionar</string>
-        
-    <string name="toggle_panels_mode">Alternar vista</string>
-    <string name="prefs">Ajustes</string>
-    <string name="about">Acerca de</string>
-    <string name="keys">Atajos de teclado</string>
-    <string name="new_file">Crear archivo</string>
-    <string name="new_folder">Crear carpeta</string>
-    <string name="new_zip">Comprimir en ZIP</string>
-
-    <string name="go_button">Ir</string>
-    <string name="show_size">Ver información</string>
-    <string name="send_to">Enviar a...</string>
-    <string name="open_with">Abrir con...</string>
-    <string name="copy_name">Copiar nombre</string>
-    <string name="fav_fld">Añadir \"%s\" a favoritos</string>
-    
-    <string name="create_zip">Comprimir...</string>
-    <string name="create_zip_title">Comprimir en ZIP</string>
-
-    <string name="input_settings">Controles</string>
-    <string name="arrow_mode">Usar teclas de dirección</string>
-    <string name="summary_arrow_mode">Tecla izquierda/derecha alterna/selecciona</string>
-
-    <string name="show_confirm">Mostar confirmaciones</string>
-    <string name="summary_show_confirm">Mostrar diálogo de confirmación al completar cada operación</string>
-
-    <string name="prefs_label">Ajustes</string>
-    <string name="editor_label">Editor de texto</string>
-    <string name="advanced">Avanzado</string>
-    <string name="advanced_settings">Opciones avanzadas</string>
-    <string name="summary_advanced_settings">Opciones adicionales para usuarios avanzados</string>
-
-    <string name="wait"> espera... </string>
-    <string name="fail"> FALLIDO </string>
-    <string name="failed">Error:\n</string>
-
-    <string name="dialog_yes">Si</string>
-    <string name="dialog_no">No</string>
-    <string name="dialog_ok">Ok</string>
-    <string name="dialog_cancel">Cancelar</string>
-    <string name="dialog_close">Cerrar</string>
-    <string name="dialog_exit">Salir</string>
-
-    <string name="dialog_abort">Abortar</string>
-    <string name="dialog_retry">Reintentar</string>
-    <string name="dialog_ignore">Ignorar</string>
-
-    <string name="dialog_replace_all">Remplazar Todos</string>
-    <string name="dialog_skip_all">Saltar Todos</string>
-
-    <string name="dialog_select">Seleccionar</string>
-    <string name="dialog_unselect">Deseleccionar</string>
-    
-    <string name="operation">Operacion</string>
-    <string name="edit_title">Editar</string>
-    <string name="newf_prompt">Nombre del nuevo archivo</string>
-    <string name="mkdir_title">MkDir</string>
-    <string name="mkdir_prompt">Crear carpeta:</string>
-    <string name="search_title">Buscar</string>
-    <string name="search_prompt">Nombre de archivo (comodín \"*\"):</string>
-    <string name="rename_title">Renom</string>
-    <string name="copy_title">Copiar</string>
-    <string name="move_title">Mover</string>
-    <!-- Will be used the copy/move _title if the following empty  -->
-    <string name="to_copy"></string>
-    <string name="to_move"></string>
-    <string name="to_rename"></string>
-    <string name="copy_err">Nada para copiar.</string>
-    <string name="rename_err">Nada para renombrar.</string>
-    <string name="no_items">No se encontraron archivos válidos para completar la operación.</string>
-    <string name="inv_dest">Destino incorrecto</string>
-    <string name="find_on_fs_only">La función de búsqueda sólo funciona en el sistema de archivos local.</string>
-    <string name="op_not_alwd">No se puede \'%1$s\'. Selecciona algo primero.</string><!-- copy_title/move_title -->
-    <string name="copy_to_local_only">Sólo es posible copiar al sistema de archivos local.</string>    
-    <string name="oper_item_to">%1$s %2$s a:"</string><!-- copy_title/move_title, file name/summary -->
-    <string name="login_title">Identificación</string>
-    <string name="delete_title">Eliminar</string>
-    <string name="delete_err">Nada que eliminar</string>
-    <string name="delete_q">"¿Eliminar %1$s ?"</string><!-- file name/summary -->
-    <string name="search_done">Búsqueda finalizada</string>
-    <string name="done">Finalizado</string>
-    <string name="interrupted">Interrumpido</string>
-    <string name="too_deep_hierarchy">La jeranquía de archivos es demasiado profunda</string>
-    <string name="nothing_found">No se encontraron archivos</string>
-    <string name="preparing">Preparando...</string>
-
-
-    <string name="copying">Copiando\n\"%s\"...</string>
-    <string name="copied_f">Copiado\n\"%s\"...</string>
-    <string name="deleting">Eliminando\n\"%s\"...</string>
-    <string name="deleting_a">Eliminando...</string>
-    <string name="fail_del">El archivo "%1$s\" no se ha podido eliminar.</string>
-    <string name="unpacking">Descomprimiendo \n\"%s\"...</string>
-    <string name="unpacked_p">Descomprimido \n\"%s\"   </string>
-    <string name="packing">Comprimiendo \n\"%s\"...</string>
-    
-    <string name="retrieving">Obteniendo \n\"%s\"...</string>
-    <string name="uploading">Subiendo \n\"%s\"...</string>
-    <string name="uploaded_p">Subido \n\"%s\"   </string>
-    
-    <string name="canceled">Cancelado</string>
-    <string name="unkn_err">Error desconocido</string>
-    <string name="cant_md">No se ha podido crear la carpeta \"%s\"</string>
-    <string name="file_exist">El archivo \"%s\" ya existe la carpeta de destino.</string>
-    <string name="sec_err">Problema de seguridad:\n%s</string>
-    <string name="not_accs">Archivo inaccesible\n%s</string>
-    <string name="acc_err">Error al acceder al archivo \"%1$s\"\n %2$s</string>
-    <string name="rtexcept">Error en archivo \"%1$s\"\n %2$s</string>
-    <string name="cant_move">Imposible mover el archivo \"%s\"</string>
-    <string name="cant_create">Imposible crear archivo \"%1$s\"\n%2$s</string>
-    <string name="cant_del">Imposible borrar \"%1$s\"</string>
-    <string name="dest_wrtble">Por favor asegúsere de que la carpeta \"%s\" permite escritura</string>    
-    
-    <string name="copied">copiado</string>
-    <string name="moved">movido</string>
-    <string name="deleted">borrado</string>
-    <string name="downloaded">descargado</string>
-    <string name="uploaded">subido</string>
-    <string name="packed">comprimido</string>
-    <string name="unpacked">descomprimido</string>
-    <string name="remounted">Remontado \"%1$s\" a \"%2$s\".</string>
-    <string name="tried_to_exec">Se intentó ejecutar: \"%s\"</string>
-    
-
-    <string name="verb_plural_sfx"></string>
-    <string name="item">elemento</string>
-    <string name="items">elementos</string>
-    <string name="items24"></string>    
-    <string name="were">fueron</string>
-    <string name="was">fue</string>
-    <string name="nothing">Nada</string>
-<!-- 
-copied 0 will produce:
-"nothing" + "was" + "copied"
-
-copied 1 will produce:
- 1 + "item" + "was" + "copied"
-
-copied >1 and <5 will produce:
- # + "items24" + "were" + "copied" + "verb_plural_sfx"
-
-copied >5 will produce:
- # + "items" + "were" + "copied" + "verb_plural_sfx"
-
- -->
-
-
-    <string name="sz_folder">Carpeta \"%1$s\":\n %2$d archivos,</string>
-    <string name="sz_file">Archivo \"%s\":</string>
-    <string name="sz_files">Archivos encontrados: %d </string>
-    <string name="sz_Nbytes">\nTamaño: %1$sb</string>
-    <string name="sz_bytes">\n ( %d bytes )</string>
-    <string name="sz_dirnum">,\nen %1$d carpeta%2$s</string>
-    <string name="sz_dirsfx_s">y.</string>
-    <string name="sz_dirsfx_p">ies.</string>
-    <string name="sz_lastmod">\nÚlt. modificación:\n </string>
-    <string name="sz_total">Total: %1$sbytes,\nLibres: %2$sbytes.</string>
-
-    <string name="busy">Ocupado!</string>
-    
-    <string name="cd_title">Ir a</string>
-    <string name="cd_prompt">Cambiar a carpeta:</string>
-
-    <string name="not_supported">Operación no soportada</string>
-    <string name="select_some">Ninguna selección realizada</string>
-    <string name="select">Seleccionar</string>
-    <string name="error">Error</string>
-    <string name="info">Información</string>
-    <string name="confirm">Confirmar</string>
-    <string name="progress">Progreso</string>
-    <string name="alert">Alerta</string>
-
-    <string name="server">Servidor:</string>
-    <string name="path">Ruta:</string>
-    <string name="domain">Dominio:</string>
-    <string name="username">Usuario:</string>
-    <string name="password">Contraseña:</string>
-    <string name="connect">Conectar</string>
-    <string name="cancel">Cancelar</string>
-    <string name="ftp_connected">Conectado a \"%1$s\",\n Identificado como \"%2$s\"</string>
-    <string name="ftp_upload_failed">Subida fallida de \"%1$s\".\n FTP log:\n\n%2$s</string>
-    <string name="ftp_mkdir_failed">Error al crear carpeta \"%1$s\".\n FTP log:\n\n\"%2$s\</string>            
-    <string name="ftp_nologin">No se ha logueado!</string>            
-
-    <string name="layout_settings">Vista</string>
-    <string name="panels_mode">Vista doble</string>
-    <string name="summary_panels_mode">Mostrar ambos paneles a pantalla partida</string>
-    <string name="two_lines">Dos líneas por fila</string>
-    <string name="summary_two_lines">Mostrar siempre los atributos del archivo en segunda fila</string>
-    <string name="show_icons">Mostrar iconos</string>
-    <string name="summary_show_icons">Mostrar el icono de tipo de archivo para cada elemento</string>
-    <string name="show_toolbar">Mostrar barra de acciones</string>
-    <string name="summary_show_toolbar">Mostrar u ocultar la barra inferior de botones</string>
-    <string name="toolbar_preference">Configurar botones</string>
-    <string name="summary_toolbar_preference">Personalizar los botones a mostrar en la barra de acciones</string>
-
-    <string name="finger_friendly">Facilitar uso táctil</string>
-    <string name="summary_finger_friendly">Aumenta el tamaño los elementos en pantalla</string>
-    <string name="prevent_root">Avisar al salir de tarjeta</string>
-    <string name="summary_prevent_root">Muestra un aviso al intentar acceder a la raíz del sistema</string>
-
-    <string name="root_root">Modo \"root\"</string>
-    <string name="summary_root_root">Cambia automáticamente al modo \"root:\" cuando se accede a la raíz del sistema</string>
-
-    <string name="thumbnails">Mostrar miniaturas</string>
-    <string name="summary_thumbnails">Muestra miniaturas en lugar de iconos para las imágenes</string>
-    <string name="thumbnails_size">Tamaño de miniaturas</string>
-    <string name="summary_thumbnails_size">Expresado en porcentaje respecto al tamaño de los iconos</string>
-
-    <string name="left_panel_settings">Opciones del panel izquierdo</string>
-    <string name="right_panel_settings">Opciones del panel derecho</string>
-    <string name="detailed_view_SbS">Detalles en vista doble</string>
-    <string name="summary_detailed_view_SbS">Mostrar tamaño y fecha del archivo en vista doble</string>
-    <string name="detailed_view_Ovr">Detalles en vista de pestañas</string>
-    <string name="summary_detailed_view_Ovr">Mostrar tamaño y fecha del archivo en vista de pestañas</string>
-    <string name="sorting">Ordenar por</string>
-    <string name="summary_sorting">Cómo ordenar los elementos en la lista</string>
-    <string name="sort_case">Ignorar mayúsculas</string>
-    <string name="summary_sort_case">Desmarcado las mayúsculas afectarán al orden de los elementos</string>
-    
-    <string name="show_hidden">Mostrar archivos ocultos</string>
-    <string name="summary_show_hidden">Desmarcado los archivos precedidos de un punto no se mostrarán</string>
-
-    <string name="colors">Definir colores</string>
-    <string name="summary_colors">Personalizar los color de fondo, selección, etc.</string>
-    <string name="bgr_color_picker">Color de fondo</string>
-    <string name="summary_bgr_color_picker">Elige el color del fondo deseado</string>
-    <string name="fgr_color_picker">Color de texto</string>
-    <string name="summary_fgr_color_picker">Elige el color del texto deseado</string>
-    <string name="sel_color_picker">Color de selección</string>
-    <string name="summary_sel_color_picker">Elige el color de los elementos seleccionados y el título del panel activo deseado</string>
-    <string name="ttl_color_picker">Color de título</string>
-    <string name="summary_ttl_color_picker">Elige el color del título del panel</string>
-    <string name="pick_color">Elegir color</string>
-
-    <string name="language">Idioma</string>
-    <string name="summary_language">Seleccionar el idioma de la interfaz</string>
-    <string name="restart_to_apply_lang">Por favor, reinicia la aplicación para aplicar el nuevo idioma</string>        
-
-    <string name="editor_activity">Nombre de actividad del editor</string>
-    <string name="summary_editor_activity">Nombre de la actividad asociada al comando \"Editar\". Nombre del paquete = prefijo de nombre de clase.</string>
-    <string name="value_editor_activity">com.ghostsq.commander.Editor</string>
-    
-    <string name="busybox_location">Ruta a busybox</string>
-    <string name="summary_busybox_location">Es necesario acceso a busybox para ejecutar el modo Root</string>
-    <string name="execute_command">Ejecutar un comando</string>   
-    
-    <string name="nothing_to_open">Nada que abrir</string>
-    <string name="remind_to_save">No olvides guardar los cambios (usando el menú)</string>
-    <string name="save">Guardar</string>
-    <string name="revert">Deshacer</string>
-    <string name="wrap">Romper líneas largas</string>
-    <string name="no_such_file">No existe el archivo \"%1$s\"</string>
-    <string name="too_big_file">El archivo \"%1$s\" es demasiado grande.</string>
-    <string name="binary_file">El archivo \"%1$s\" es binario. Puede que lo dañes. Edítalo bajo tu propia responsabilidad.</string>    
-    <string name="cant_open">No se puede abrir el archivo.</string>    
-    <string name="cant_save">No se puede guardar el archivo.</string>
-    <string name="nav_warn">Estás abriendo una carpeta del sistema. Su manipulación puede producir fallos en el sistema. ¿Continuar esta vez?</string>
-    <string name="nav_warn_cmt">(Puedes ocultar este aviso permanentemente desde el menú)\nPresiona \"Cancelar\" para volver a la carpeta /sdcard. Presiona \"Salir\" para abandonar la aplicación.</string>
-    <string name="no_such_folder">¡\"%1$s\" no es una carpeta válida!</string>
-    <string name="fav_added">\"%1$s\" fue añadido a favoritos</string>
-
-    <string name="no_root">¿No root?</string>
-
-    <string name="smb_missed">
+<string name="app_name">Ghost Commander</string>
+<string name="file">Nuevo</string>
+<string name="location">Ruta</string>
+<string name="list">Lista</string>
+<string name="app">Aplicación</string>
+<string name="help">Ayuda</string>
+<string name="F1">Ayuda</string>
+<string name="F2">Renombrar</string>
+<string name="F3">Ver</string>
+<string name="F4">Editar</string>
+<string name="SF4">Crear</string>
+<string name="F5">Copiar</string>
+<string name="F6">Mover</string>
+<string name="F7">MkDir</string>
+<string name="F8">Eliminar</string>
+<string name="F9">Ajustes</string>
+<string name="F10">Salir</string>
+<string name="oth_sh_this">Igualar rutas</string>
+<string name="eq">Ig. ruta</string>
+<string name="change">Alternar</string>
+<string name="tgl">Alternar</string>
+<string name="sz">Calc tamaño</string>
+<string name="refresh">Actualizar</string>
+<string name="enter">Editar ruta</string>
+<string name="home">Inicio</string>
+<string name="sdcard">/sdcard</string>
+<string name="softkbd">Teclado</string>
+<string name="enter_b">Ruta</string>
+<string name="add_fav">Añadir a favoritos</string>
+<string name="add_fav_b">Favorito</string>
+<string name="remount_b">Remontar /system</string>
+<string name="remount">Remontar</string>
+<string name="hidden">Oculto</string>
+<string name="rescan">Rescan media</string><!-- !!! -->
+<string name="favs">Favoritos</string>
+<string name="local">Almacenamiento local</string>
+<string name="external">Tarjeta externa</string>
+<string name="media">Media Store</string><!-- !!! -->
+<string name="ftp">Sitio FTP</string>
+<string name="sftp">Sitio SFTP</string>
+<string name="smb">Windows share</string><!-- !!! -->
+<string name="plugins">Browse plugins</string><!-- !!! -->
+<string name="root">Modo \"root\"</string>
+<string name="mount">Mount points</string><!-- !!! -->
+<string name="mount_b">Mounts</string><!-- !!! -->
+<string name="apps">Aplicaciones</string>
+<string name="exit">Salir</string>
+<string name="favs_descr">View and manage your list of favorite folders and sites</string><!-- !!! -->
+<string name="local_descr">Browse, organize and modify the contents of the primary file system</string><!-- !!! -->
+<string name="external_descr">Access files on the physically inserted SD card. It may be read-only on some devices.</string><!-- !!! -->
+<string name="media_descr">Make modifications on the external SD card via the MediaStore interface</string><!-- !!! -->
+<string name="ftp_descr">Connect to an FTP server</string><!-- !!! -->
+<string name="sftp_descr">Connect to an SSH FTP (sftp) server</string><!-- !!! -->
+<string name="smb_descr">Connect to shared folders on a Windows machine</string><!-- !!! -->
+<string name="plugins_descr">Look for more Ghost Commander plugins</string><!-- !!! -->
+<string name="root_descr">For rooted devices only: manage critical system files. Only proceed if you know what you\'re doing.</string><!-- !!! -->
+<string name="mount_descr">Display a list of all mount points. Remount them to \"rw\" mode, then back to \"ro\" mode after changes. Proceed with caution.</string><!-- !!! -->
+<string name="apps_descr">View and manage installed packages</string><!-- !!! -->
+<string name="exit_descr">Close the application</string><!-- !!! -->
+<string name="shortcut">Crear un acceso directo al escritorio</string>
+<string name="enter_ftp">Abrir sitio FTP</string>
+<string name="enter_smb">Abrir unidad Samba (Windows)</string>
+<string name="search_file">Buscar archivos</string>
+<string name="menu">Menú</string>
+<string name="sort_by_name">Ordenar por nombre</string>
+<string name="sort_by_ext">Ordenar por extensión</string>
+<string name="sort_by_size">Ordenar por tamaño</string>
+<string name="sort_by_date">Ordenar por fecha</string>
+<string name="sort_by_name_b">Ord Nombre</string>
+<string name="sort_by_ext_b">Ord Extensión</string>
+<string name="sort_by_size_b">Ord Tamaño</string>
+<string name="sort_by_date_b">Ord Fecha</string>
+<string name="select_all">Seleccionar todo</string>
+<string name="unselect_all">Deseleccionar todo</string>
+<string name="select_b">Seleccionar</string>
+<string name="unselect_b">Deseleccionar</string>
+<string name="toggle_panels_mode">Alternar vista</string>
+<string name="prefs">Ajustes</string>
+<string name="save_prefs">Hacer una copia de seguridad de configuración</string>
+<string name="rest_prefs">Restaurar la configuración</string>
+<string name="prefs_saved">Your preferences have been saved</string><!-- !!! -->
+<string name="prefs_restr">Your preferences have been restored</string><!-- !!! -->
+<string name="about">Acerca de</string>
+<string name="keys">Atajos de teclado</string>
+<string name="new_file">Crear archivo</string>
+<string name="new_folder">Crear carpeta</string>
+<string name="new_zip">Comprimir en ZIP</string>
+<string name="go_button">Ir</string>
+<string name="show_size">Ver información</string>
+<string name="send_to">Enviar a…</string>
+<string name="open_with">Abrir con…</string>
+<string name="open">Abrir</string>
+<string name="copy_name">Copiar nombre</string>
+<string name="fav_fld">Añadir \"%s\" a favoritos</string>
+<string name="create_zip">Comprimir…</string>
+<string name="create_zip_title">Comprimir en ZIP</string>
+<string name="wait"> espera… </string>
+<string name="fail"> FALLIDO </string>
+<string name="failed">Error:\n</string>
+<string name="default_uri_cmnt">Ubicación predeterminado</string>
+<string name="default_color">Por defecto</string>
+<string name="base_color">Base color</string><!-- !!! -->
+<string name="typemasks">File masks</string><!-- !!! -->
+<string name="color_sample">Muestra</string>
+<string name="add_new_type">Add new</string><!-- !!! -->
+<string name="fav_comment">Comment:</string><!-- !!! -->
+<string name="fav_dialog">Edit favorite</string><!-- !!! -->
+<string name="dialog_yes">Si</string>
+<string name="dialog_no">No</string>
+<string name="dialog_ok">Ok</string>
+<string name="dialog_cancel">Cancelar</string>
+<string name="dialog_close">Cerrar</string>
+<string name="dialog_exit">Salir</string>
+<string name="dialog_browse">Examinar</string>
+<string name="dialog_abort">Abortar</string>
+<string name="dialog_retry">Reintentar</string>
+<string name="dialog_ignore">Ignorar</string>
+<string name="dialog_replace_all">Remplazar Todos</string>
+<string name="dialog_skip_all">Saltar Todos</string>
+<string name="dialog_select">Seleccionar</string>
+<string name="dialog_unselect">Deseleccionar</string>
+<string name="filemask">Máscara de archivo:</string>
+<string name="for_files">Archivos</string>
+<string name="for_dirs">Carpetas</string>
+<string name="in_subf">Subdirectorios</string>
+<string name="content">Content:</string><!-- !!! -->
+<string name="bigger_than">Bigger\nthan:</string><!-- !!! -->
+<string name="smaller_than">Smaller\nthan:</string><!-- !!! -->
+<string name="mod_after">After</string><!-- !!! -->
+<string name="mod_before">Before</string><!-- !!! -->
+<string name="launch">Launch</string><!-- !!! -->
+<string name="operation">Operaciones</string>
+<string name="view_title">Ver</string>
+<string name="edit_title">Editar</string>
+<string name="newf_title">Crear archivo</string>
+<string name="newf_prompt">Nombre del nuevo archivo:</string>
+<string name="mkdir_title">Crear carpeta</string>
+<string name="mkdir_prompt">Nombre:</string>
+<string name="search_title">Buscar</string>
+<string name="search_prompt">Nombre de archivo (comodín \"*\"):</string>
+<string name="rename_title">Renom</string>
+<string name="copy_title">Copiar</string>
+<string name="move_title">Mover</string>
+<string name="send_title">Enviar a…</string>
+<string name="open_title">Abrir con…</string>
+<string name="to_copy"></string>
+<string name="to_move"></string>
+<string name="to_rename"></string>
+<string name="copy_err">Nada para copiar.</string>
+<string name="rename_err">Nada para renombrar.</string>
+<string name="edit_err">No editable</string>
+<string name="no_items">No se encontraron archivos válidos para completar la operación.</string>
+<string name="inv_dest">Destino incorrecto</string>
+<string name="inv_path">Ruta no válida</string>
+<string name="find_on_fs_only">La función de búsqueda sólo funciona en el sistema de archivos local.</string>
+<string name="on_fs_only">This feature only works on the local file system</string><!-- !!! -->
+<string name="op_not_alwd">No se puede \'%1$s\'. Selecciona algo primero.</string>
+<string name="oper_item_to">%1$s %2$s a:"</string>
+<string name="login_title">Identificación</string>
+<string name="delete_title">Eliminar</string>
+<string name="delete_err">Nada que eliminar</string>
+<string name="delete_q">"¿Eliminar %1$s ?"</string>
+<string name="rescan_q">Are you sure you want to do the search again?</string><!-- !!! -->
+<string name="search_done">Búsqueda finalizada</string>
+<string name="done">Finalizado</string>
+<string name="interrupted">Interrumpido</string>
+<string name="cant_copy_to_itself">Cannot copy the directory \"%s\" to itself or below</string><!-- !!! -->
+<string name="too_deep_hierarchy">La jeranquía de archivos es demasiado profunda</string>
+<string name="nothing_found">No se encontraron archivos</string>
+<string name="preparing">Preparando…</string>
+<string name="copying">Copiando\n\"%s\"…</string>
+<string name="copied_f">Copiado\n\"%s\"…</string>
+<string name="deleting">Eliminando\n\"%s\"…</string>
+<string name="deleting_a">Eliminando…</string>
+<string name="fail_del">El archivo "%1$s\" no se ha podido eliminar.</string>
+<string name="unpacking">Descomprimiendo \n\"%s\"…</string>
+<string name="unpacked_p">Descomprimido \n\"%s\"   </string>
+<string name="packing">Comprimiendo \n\"%s\"…</string>
+<string name="retrieving">Obteniendo \n\"%s\"…</string>
+<string name="uploading">Subiendo \n\"%s\"…</string>
+<string name="uploaded_p">Subido \n\"%s\"   </string>
+<string name="loading">Loading…</string><!-- !!! -->
+<string name="second">s</string><!-- !!! -->
+<string name="canceled">Cancelado</string>
+<string name="oom_err">Out of memory</string><!-- !!! -->
+<string name="unkn_err">Error desconocido</string>
+<string name="cant_md">No se ha podido crear la carpeta \"%s\"</string>
+<string name="cant_cd">Cannot browse the directory \"%s\"</string><!-- !!! -->
+<string name="file_exist">El archivo \"%s\" ya existe la carpeta de destino.</string>
+<string name="sec_err">Problema de seguridad:\n%s</string>
+<string name="not_accs">Archivo inaccesible\n%s</string>
+<string name="acc_err">Error al acceder al archivo \"%1$s\"\n %2$s</string>
+<string name="rtexcept">Error en archivo \"%1$s\"\n %2$s</string>
+<string name="cant_move">Imposible mover el archivo \"%s\"</string>
+<string name="cant_create">Imposible crear archivo \"%1$s\"\n%2$s</string>
+<string name="cant_del">Imposible borrar \"%1$s\"</string>
+<string name="dest_wrtble">Por favor asegúsere de que la carpeta \"%s\" permite escritura</string>
+<string name="copied">copiado</string>
+<string name="moved">movido</string>
+<string name="deleted">borrado</string>
+<string name="downloaded">descargado</string>
+<string name="uploaded">subido</string>
+<string name="packed">comprimido</string>
+<string name="unpacked">descomprimido</string>
+<string name="remounted">Remontado \"%1$s\" a \"%2$s\".</string>
+<string name="tried_to_exec">Se intentó ejecutar: \"%s\"</string>
+<string name="verb_plural_sfx"></string>
+<string name="item">elemento</string>
+<string name="items">elementos</string>
+<string name="items24"></string>
+<string name="were">fueron</string>
+<string name="was">fue</string>
+<string name="nothing">Nada</string>
+<string name="sz_folder">Carpeta \"%1$s\":\n %2$d archivos,</string>
+<string name="sz_dirnum">,\nen %1$d carpeta%2$s</string>
+<string name="sz_dirsfx_s">y.</string>
+<string name="sz_dirsfx_p">ies.</string>
+<string name="sz_file">Archivo \"%s\":</string>
+<string name="sz_files">Archivos encontrados: %d </string>
+<string name="sz_Nbytes">\nTamaño: %1$sb</string>
+<string name="sz_bytes">\n ( %d bytes )</string>
+<string name="sz_lastmod">\nÚlt. modificación:\n </string>
+<string name="sz_total">Total: %1$sbytes,\nLibres: %2$sbytes.</string>
+<string name="busy">Ocupado!</string>
+<string name="cd_title">Ir a</string>
+<string name="cd_prompt">Cambiar a carpeta:</string>
+<string name="not_supported">Operación no soportada</string>
+<string name="select_some">Ninguna selección realizada</string>
+<string name="select">Seleccionar</string>
+<string name="error">Error</string>
+<string name="info">Información</string>
+<string name="confirm">Confirmar</string>
+<string name="alert">Alerta</string>
+<string name="progress">Progreso</string>
+<string name="inprogress">A file operation is in progress</string><!-- !!! -->
+<string name="server">Servidor:</string>
+<string name="path">Ruta:</string>
+<string name="active">Activo</string>
+<string name="domain">Dominio:</string>
+<string name="username">Usuario:</string>
+<string name="password">Contraseña:</string>
+<string name="command">Command:</string><!-- !!! -->
+<string name="use_busybox">busybox</string><!-- !!! -->
+<string name="user">User</string><!-- !!! -->
+<string name="group">Group</string><!-- !!! -->
+<string name="other">Other</string><!-- !!! -->
+<string name="connect">Conectar</string>
+<string name="cancel">Cancelar</string>
+<string name="ftp_connected">Conectado a \"%1$s\",\n Identificado como \"%2$s\"</string>
+<string name="ftp_upload_failed">Subida fallida de \"%1$s\".\n FTP log:\n\n%2$s</string>
+<string name="ftp_mkdir_failed">Error al crear carpeta \"%1$s\".\n FTP log:\n\n\"%2$s\</string>
+<string name="ftp_nologin">No se ha logueado!</string>
+<string name="data_settings">File lists</string><!-- !!! -->
+<string name="layout_settings">Vista</string>
+<string name="input_settings">Controles</string>
+<string name="selection_zone_setup">Selection area</string><!-- !!! -->
+<string name="summary_selection_zone_setup">Customize the way files and folders are selected</string><!-- !!! -->
+<string name="sel_onright">Select on the right</string><!-- !!! -->
+<string name="show_confirm">Confirmaciones</string>
+<string name="summary_show_confirm">Mostrar diálogo de confirmación al completar cada operación</string>
+<string name="prefs_label">Ajustes</string>
+<string name="filetypes_label">Colors by type</string><!-- !!! -->
+<string name="editor_label">Editor de texto</string>
+<string name="pictvw_label">Picture Viewer</string><!-- !!! -->
+<string name="textvw_label">Text Viewer</string><!-- !!! -->
+<string name="perms_label">chmod / chown</string><!-- !!! -->
+<string name="advanced">Avanzado</string>
+<string name="advanced_settings">Opciones avanzadas</string>
+<string name="summary_advanced_settings">Opciones adicionales para usuarios avanzados</string>
+<string name="send_content">Send using content provider</string><!-- !!! -->
+<string name="summary_send_content">Try to uncheck if your file sending application does not implement a content resolver</string><!-- !!! -->
+<string name="panels_mode">Vista doble</string>
+<string name="summary_panels_mode">Mostrar ambos paneles a pantalla partida</string>
+<string name="two_lines">Dos líneas por fila</string>
+<string name="summary_two_lines">Mostrar siempre los atributos del archivo en segunda fila</string>
+<string name="show_icons">Mostrar iconos</string>
+<string name="summary_show_icons">Mostrar el icono de tipo de archivo para cada elemento</string>
+<string name="toolbar_settings">Barra de herramientas</string>
+<string name="summary_toolbar_settings">Customize the toolbar at the bottom of the screen</string><!-- !!! -->
+<string name="show_toolbar">Mostrar barra de acciones</string>
+<string name="summary_show_toolbar">Mostrar la barra inferior de botones</string>
+<string name="show_hotkeys">Mostrar teclas de acceso rápido</string>
+<string name="summary_show_hotkeys">Show hotkey shortcuts on certain buttons</string><!-- !!! -->
+<string name="toolbar_preference">Configurar botones</string>
+<string name="summary_toolbar_preference">Personalizar los botones a mostrar en la barra de acciones</string>
+<string name="tblist_label">Personalizar la barra de herramientas</string><!-- !!! -->
+<string name="finger_friendly">Facilitar uso táctil</string>
+<string name="summary_finger_friendly">Aumenta el tamaño los elementos en pantalla</string>
+<string name="prevent_root">Avisar al salir de tarjeta</string>
+<string name="summary_prevent_root">Muestra un aviso al intentar acceder a la raíz del sistema</string>
+<string name="show_root">Show root and mounts</string><!-- !!! -->
+<string name="summary_show_root">Home view will display \"Root mode\" and \"Mount points\"</string><!-- !!! -->
+<string name="root_root">Modo \"root\"</string>
+<string name="summary_root_root">Cambia automáticamente al modo \"root:\" cuando se accede a la raíz del sistema</string>
+<string name="thumbnails">Mostrar miniaturas</string>
+<string name="summary_thumbnails">Muestra miniaturas en lugar de iconos para las imágenes</string>
+<string name="thumbnails_size">Tamaño de miniaturas</string>
+<string name="summary_thumbnails_size">Expresado en porcentaje respecto al tamaño de los iconos</string>
+<string name="font_size">Tamaño de fuente</string>
+<string name="summary_font_size">Set the font size</string><!-- !!! -->
+<string name="left_panel_settings">Panel izquierdo</string>
+<string name="right_panel_settings">Panel derecho</string>
+<string name="detailed_view_SbS">Detalles en vista doble</string>
+<string name="summary_detailed_view_SbS">Mostrar tamaño y fecha del archivo en vista doble</string>
+<string name="detailed_view_Ovr">Detalles en vista de pestañas</string>
+<string name="summary_detailed_view_Ovr">Mostrar tamaño y fecha del archivo en vista de pestañas</string>
+<string name="sorting">Ordenar por</string>
+<string name="summary_sorting">Cómo ordenar los elementos en la lista</string>
+<string name="sort_case">Ignorar mayúsculas</string>
+<string name="summary_sort_case">Desmarcado las mayúsculas afectarán al orden de los elementos</string>
+<string name="show_hidden">Mostrar archivos ocultos</string>
+<string name="summary_show_hidden">Marcado los archivos precedidos de un punto se mostrarán</string>
+<string name="compatibility_settings">Hardware buttons</string><!-- !!! -->
+<string name="summary_compatibility_settings">Customize the overriding of hardware button functions</string><!-- !!! -->
+<string name="panels_sliding">Enable sliding gesture</string><!-- !!! -->
+<string name="summary_panels_sliding">Switch panels by a horizontal scroll gesture</string><!-- !!! -->
+<string name="arrow_mode">Usar teclas de dirección</string>
+<string name="summary_arrow_mode">Tecla izquierda/derecha alterna/selecciona</string>
+<string name="volume_mode">Override volume buttons</string><!-- !!! -->
+<string name="summary_volume_mode">Volume buttons perform toggle/select</string><!-- !!! -->
+<string name="exit_on_back">Back button exits</string><!-- !!! -->
+<string name="summary_exit_on_back">Back button closes the application</string><!-- !!! -->
+<string name="colors">Colores</string>
+<string name="summary_colors">Personalizar los color de fondo, selección, etc.</string>
+<string name="bgr_color_picker">Color de fondo</string>
+<string name="summary_bgr_color_picker">Elige el color del fondo deseado</string>
+<string name="fgr_color_picker">Color de texto</string>
+<string name="summary_fgr_color_picker">Elige el color del texto deseado</string>
+<string name="cur_color_picker">Focused</string><!-- !!! -->
+<string name="summary_cur_color_picker">Choose a color for items in focus</string><!-- !!! -->
+<string name="sel_color_picker">Color de selección</string>
+<string name="summary_sel_color_picker">Elige el color de los elementos seleccionados y el título del panel activo deseado</string>
+<string name="sfg_color_picker">Selected foreground</string><!-- !!! -->
+<string name="summary_sfg_color_picker">Choose a text color for selected files and the current panel\'s title</string><!-- !!! -->
+<string name="ttl_color_picker">Color de título</string>
+<string name="summary_ttl_color_picker">Elige el color del título del panel</string>
+<string name="btn_color_picker">Botones</string>
+<string name="summary_btn_color_picker">Choose a background color for the buttons</string><!-- !!! -->
+<string name="pick_color">Elegir color</string>
+<string name="color">Color</string>
+<string name="language">Idioma</string>
+<string name="summary_language">Seleccionar el idioma de la interfaz</string>
+<string name="restart_to_apply_lang">Por favor, reinicia la aplicación para aplicar el nuevo idioma</string>
+<string name="editor_activity">Nombre de actividad del editor</string>
+<string name="summary_editor_activity">Nombre de la actividad asociada al comando \"Editar\". Nombre del paquete = prefijo de nombre de clase.</string>
+<string name="busybox_location">Ruta a busybox</string>
+<string name="summary_busybox_location">Es necesario acceso a busybox para ejecutar el modo root</string>
+<string name="su_location">Path to su</string><!-- !!! -->
+<string name="summary_su_location">Specify the location of the su executable</string><!-- !!! -->
+<string name="execute_command">Ejecutar un comando</string>
+<string name="nothing_to_open">Nada que abrir</string>
+<string name="remind_to_save">No olvides guardar los cambios (usando el menú)</string>
+<string name="saved">\"%1$s\" saved.</string><!-- !!! -->
+<string name="not_saved">¿Guardar cambios?</string>
+<string name="save">Guardar</string>
+<string name="save_as">Guardar como…</string>
+<string name="revert">Deshacer</string>
+<string name="wrap">Romper líneas largas</string>
+<string name="go_up">Parent</string><!-- !!! -->
+<string name="go_top">Top</string><!-- !!! -->
+<string name="go_end">Bottom</string><!-- !!! -->
+<string name="encoding">Codificación</string>
+<string name="encoding_set">The encoding is set to \"%1$s\", select reload. If you save it, the original encoding will be changed to the new one.</string><!-- !!! -->
+<string name="no_such_file">No existe el archivo \"%1$s\"</string>
+<string name="too_big_file">El archivo \"%1$s\" es demasiado grande.</string>
+<string name="binary_file">El archivo \"%1$s\" es binario. Puede que lo dañes. Edítalo bajo tu propia responsabilidad.</string>
+<string name="cant_open_dir">\"%1$s\" is a directory</string><!-- !!! -->
+<string name="cant_view_empt">File \"%1$s\" is empty</string><!-- !!! -->
+<string name="cant_open">No se puede abrir el archivo.</string>
+<string name="cant_save">No se puede guardar el archivo.</string>
+<string name="nav_warn">Estás abriendo una carpeta del sistema. Su manipulación puede producir fallos en el sistema. ¿Continuar esta vez?</string>
+<string name="nav_warn_cmt">(Puedes ocultar este aviso permanentemente desde el menú)\nPresiona \"Cancelar\" para volver a la carpeta /sdcard. Presiona \"Salir\" para abandonar la aplicación.</string>
+<string name="no_such_folder">¡\"%1$s\" no es una carpeta válida!</string>
+<string name="fav_added">\"%1$s\" fue añadido a favoritos</string>
+<string name="no_root">¿No root?</string>
+<string name="manage">Manage</string><!-- !!! -->
+<string name="shortcuts">Accesos directos</string>
+<string name="pkg_name">Nombre del paquete</string>
+<string name="version">Version</string><!-- !!! -->
+<string name="version_code">Version code</string><!-- !!! -->
+<string name="target_sdk">Target SDK</string><!-- !!! -->
+<string name="inst_date">Fecha</string>
+<string name="pkg_size">Tamaño</string>
+<string name="process">Process name</string><!-- !!! -->
+<string name="app_class">App. class</string><!-- !!! -->
+<string name="affinity">Task Affinity</string><!-- !!! -->
+<string name="permissions">Permissions</string><!-- !!! -->
+<string name="flags">Flags</string><!-- !!! -->
+<string name="not_exported">Activity is not exported</string><!-- !!! -->
+<string name="smb_missed">
     No se puede cargar el adaptador Samba.\n
     Asegúrate de que el paquete\n
     \"Ghost Commander - Samba plugin\"\n
     (com.ghostsq.commander.samba) está instalado.</string>
-
-    <string name="donate">&#xA0; Hacer donación</string>
-    <string name="online_help">&#xA0; Ayuda en línea</string>
-
-    <string name="donation">¿Te gusta esta aplicación? ¿De verdad? ¿Qué te parece una donación, 
+<string name="sftp_missed">Cannot load the SFTP adapter: make sure the Ghost Commander SFTP plugin is installed.</string><!-- !!! -->
+<string name="donate">Hacer donación</string>
+<string name="online_help">Ayuda en línea</string>
+<string name="donation">¿Te gusta esta aplicación? ¿De verdad? ¿Qué te parece una donación, 
     no importa la cuantía, para apoyar futuras versiones?\n
 Presiona \"Ok\" para hacer una donación fácilmente vía PayPal.\n
-\"Cancelar\" para disfrutar de &#xAB;Ghost Commander&#xBB; file manager gratis.\n
+\"Cancelar\" para disfrutar de «Ghost Commander» file manager gratis.\n
     </string>
+<string name="about_text"><![CDATA[
+<h1>Ghost Commander v%1$s</h1>
+<h4>Un gestor de archivos por Ghost Squared.</h4>
 
-    <string name="about_text"><![CDATA[
-        <h1>Ghost Commander v%1$s</h1>
-        <h2>Un gestor de archivos por Ghost Squared.</h2>
-        Por favor, envía bugs o sugerencias a<br/>
-        <a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a><br/>
-        gracias.
-        <h3>DISCLAIMER:</h3>
+<p>On the Web:<br>
+<a href="https://sites.google.com/site/ghostcommander1/">Web site</a><br>
+<a href="http://sourceforge.net/projects/ghostcommander/">At SourceForge</a> 
+</p>
+
+<p>Por favor, envía bugs o sugerencias a<br/> <a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a></p>
+<h3>DISCLAIMER:</h3>
 By using this software, you agree with the following:
 The author of this software is not responsible for any kind of damage, loss of information, 
 consequential damages, or any issues that are, or could be caused by the use of this software.
-You agree to use this software at your own risk.\n
-If you don\'t agree to the above, stop using this software immediately and uninstall it.\n
-    ]]></string>
-    <string name="keys_text">
-    "\tIntrucciones de uso:\n
-Para seleccionar más de un archivo, presiona en la mitad derecha de la fila.\n    
-Para introducir la ruta manualmente (y ver los favoritos), haz una pulsación larga sobre el título del panel\n
-Atajos de teclado:\n
+You agree to use this software at your own risk. If you don\'t agree to the above, stop using this software immediately and uninstall it.\n
+]]></string>
+<string name="keys_text">
+    "\t\tINTRUCCIONES DE USO\n
+Para seleccionar más de un archivo, presiona en la mitad derecha de la fila.\n
+Para introducir la ruta manualmente (y ver los favoritos), haz una pulsación larga sobre el título del panel.\n
+\t\tATAJOS DE TECLADO\n
 SubirVolumen - Seleccionar elemento actual (archivo)
 BajarVolumen - Cambiar de panel
 +, -  - Seleccionar o deseleccionar archivos en la carpeta actual  
@@ -379,5 +454,4 @@ Para mostrar los volúmenes montados, teclea \"mount://\"
 Presiona en un volumen montado para hacerlo \"rw\" o de nuevo \"ro\".
     "
     </string>
-    
 </resources>

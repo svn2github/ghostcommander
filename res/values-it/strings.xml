@@ -47,18 +47,18 @@
 <string name="mount_b">Punti di montaggio</string>
 <string name="apps">Applicazioni</string>
 <string name="exit">Esci</string>
-<string name="favs_descr">Gestisce l\'elenco delle cartelle e dei siti favoriti. Modifica, rinomina, inserisce una scorciatoia alla schermata principale del proprio dispositivo ecc&#8230;</string>
-<string name="local_descr">Sfoglia, organizza e permette di manipolare il contenuto della scheda SD inserita e nella memoria flash interna.</string>
-<string name="external_descr">Accede ai files sulla scheda SD fisica inserita. Potrebbe essere in sola lettura su alcuni dispositivi</string>
+<string name="favs_descr">Gestisce l\'elenco delle cartelle e dei siti favoriti</string>
+<string name="local_descr">Sfoglia, organizza e permette di manipolare il contenuto della scheda SD inserita e nella memoria flash interna</string>
+<string name="external_descr">Accede ai files sulla scheda SD fisica inserita. Potrebbe essere in sola lettura su alcuni dispositivi.</string>
 <string name="media_descr">Effettua le modifiche sulla scheda SD esterna mediante l\'interfaccia MediaStore</string>
-<string name="ftp_descr">Connette a un server FTP e permette di caricare o scaricare dei file.</string>
-<string name="sftp_descr">Connette a un server SSH FTP (sftp) server.</string>
-<string name="smb_descr">Questa funzione richiede l\'installazione del plugin  \"Ghost Commander SMB\" e permette di connettersi a una cartella condivisa su un PC Windows.</string>
-<string name="plugins_descr">Cerca ulteriori plugins per Ghost Commander.</string>
+<string name="ftp_descr">Connette a un server FTP</string>
+<string name="sftp_descr">Connette a un server SSH FTP (sftp)</string>
+<string name="smb_descr">Permette di connettersi a una cartella condivisa su un PC Windows</string>
+<string name="plugins_descr">Cerca ulteriori plugins per Ghost Commander</string>
 <string name="root_descr">Se il telefono è rootato, usare questa modalità per interagire con i contenuti di sistema. Se non se ne conosce il significato, non usare questa funzionalità.</string>
-<string name="mount_descr">Sfoglia l\'elenco dei dispositivi montati e rimonta nelle modalità  \"rw\" e  \"ro\". Usare con cautela.</string>
-<string name="apps_descr">Gestisce i pacchetti installati.</string>
-<string name="exit_descr">Esce da questa applicazione.</string>
+<string name="mount_descr">Sfoglia l\'elenco dei dispositivi montati e rimonta nelle modalità \"rw\" e  \"ro\". Usare con cautela.</string>
+<string name="apps_descr">Gestisce i pacchetti installati</string>
+<string name="exit_descr">Esce da questa applicazione</string>
 <string name="shortcut">Crea una nuova scorciatoia</string>
 <string name="enter_ftp">Apri sito FTP</string>
 <string name="enter_smb">Apri Samba (condivisioni di rete Windows)</string>
@@ -81,7 +81,7 @@
 <string name="save_prefs">Impostazioni di backup</string>
 <string name="rest_prefs">Ripristina impostazioni</string>
 <string name="prefs_saved">Le preferenze sono state salvate.</string>
-<string name="prefs_restr">Le preferenze sono state ripristinate</string>
+<string name="prefs_restr">Le preferenze sono state ripristinate.</string>
 <string name="about">Informazioni</string>
 <string name="keys">Tasti scorciatoia</string>
 <string name="new_file">Crea un nuovo file</string>
@@ -89,14 +89,14 @@
 <string name="new_zip">Crea un nuovo file ZIP</string>
 <string name="go_button">Vai</string>
 <string name="show_size">Informazioni</string>
-<string name="send_to">Invia a&#8230;</string>
-<string name="open_with">Apri con&#8230;</string>
+<string name="send_to">Invia a…</string>
+<string name="open_with">Apri con…</string>
 <string name="open">Apri</string>
 <string name="copy_name">Copia il nome nella memoria</string>
 <string name="fav_fld">Aggiungi \"%s\" alle favorite</string>
-<string name="create_zip">ZIP&#8230;</string>
+<string name="create_zip">ZIP…</string>
 <string name="create_zip_title">Crea ZIP</string>
-<string name="wait">Attendere&#8230;</string>
+<string name="wait">Attendere…</string>
 <string name="fail">NON RIUSCITO</string>
 <string name="failed">Errore:\n</string>
 <string name="default_uri_cmnt">Posizione predefinita</string>
@@ -169,19 +169,19 @@
 <string name="cant_copy_to_itself">Impossibile copiare la cartella \"%s\" su se stessa o a un livello inferiore.</string>
 <string name="too_deep_hierarchy">La struttura è troppo profonda</string>
 <string name="nothing_found">Nessun file trovato</string>
-<string name="preparing">In preparazione&#8230;</string>
-<string name="copying">Copia di\n\"%s\"&#8230;</string>
+<string name="preparing">In preparazione…</string>
+<string name="copying">Copia di\n\"%s\"…</string>
 <string name="copied_f">Copiato\n\"%s\"</string>
-<string name="deleting">Eliminazione di\n«%s»&#8230;</string>
-<string name="deleting_a">Eliminazione in corso&#8230;</string>
-<string name="fail_del">Il file "%1$s\" non è stato completato, cancellazione&#8230;</string>
-<string name="unpacking">Decompressione di\n«%s»&#8230;</string>
-<string name="unpacked_p">Decompresso:\n«%s»&#8230;</string>
-<string name="packing">Compressione di\n«%s»&#8230;</string>
-<string name="retrieving">Recupero di\n«%s»&#8230;</string>
-<string name="uploading">Caricamento di\n«%s»&#8230;</string>
-<string name="uploaded_p">Caricato:\n«%s»&#8230;</string>
-<string name="loading">In caricamento&#8230;</string>
+<string name="deleting">Eliminazione di\n«%s»…</string>
+<string name="deleting_a">Eliminazione in corso…</string>
+<string name="fail_del">Il file "%1$s\" non è stato completato, cancellazione…</string>
+<string name="unpacking">Decompressione di\n«%s»…</string>
+<string name="unpacked_p">Decompresso:\n«%s»…</string>
+<string name="packing">Compressione di\n«%s»…</string>
+<string name="retrieving">Recupero di\n«%s»…</string>
+<string name="uploading">Caricamento di\n«%s»…</string>
+<string name="uploaded_p">Caricato:\n«%s»…</string>
+<string name="loading">In caricamento…</string>
 <string name="second">s</string>
 <string name="canceled">Annullato</string>
 <string name="oom_err">Memoria esaurita</string>
@@ -227,7 +227,7 @@
 <string name="cd_title">Vai</string>
 <string name="cd_prompt">Cambia cartella in:</string>
 <string name="not_supported">L\'operazione non è supportata.</string>
-<string name="select_some">Nessuna selezione.</string>
+<string name="select_some">Nessuna selezione</string>
 <string name="select">Seleziona</string>
 <string name="error">Errore</string>
 <string name="info">Informazioni</string>
@@ -242,6 +242,7 @@
 <string name="username">Nome utente:</string>
 <string name="password">Password:</string>
 <string name="command">Comando:</string>
+<string name="use_busybox">busybox</string><!-- !!! -->
 <string name="user">Utente</string>
 <string name="group">Gruppo</string>
 <string name="other">Altro</string>
@@ -257,7 +258,7 @@
 <string name="selection_zone_setup">Zona di selezione</string>
 <string name="summary_selection_zone_setup">Personalizzazione del metodo di selezione degli elementi</string>
 <string name="sel_onright">Selezione a destra</string>
-<string name="show_confirm">Mostra schermata di conferma</string>
+<string name="show_confirm">Conferme</string>
 <string name="summary_show_confirm">Mostra una schermata di conferma al completamento di ogni operazione</string>
 <string name="prefs_label">Impostazioni</string>
 <string name="filetypes_label">Colori per tipo</string>
@@ -276,10 +277,10 @@
 <string name="summary_two_lines">Mostra sempre gli attributi sotto al nome del file</string>
 <string name="show_icons">Abilita icone</string>
 <string name="summary_show_icons">Mostra le icone di cartelle e file in luogo del solo testo</string>
-<string name="toolbar_settings">Impostazioni della barra strumenti</string>
+<string name="toolbar_settings">Barra strumenti</string>
 <string name="summary_toolbar_settings">Personalizzazione della riga dei pulsanti degli strumenti</string>
 <string name="show_toolbar">Mostra la barra strumenti</string>
-<string name="summary_show_toolbar">Mostra o nasconde i pulsanti in basso nello schermo</string>
+<string name="summary_show_toolbar">Mostra i pulsanti in basso nello schermo</string>
 <string name="show_hotkeys">Mostra i tasti rapidi</string>
 <string name="summary_show_hotkeys">Mostra sempre i tasti rapidi nella barra strumenti</string>
 <string name="toolbar_preference">Personalizzazione della barra strumenti</string>
@@ -291,16 +292,16 @@
 <string name="summary_prevent_root">Visualizza un avviso quando si accede alla cartella radice del dispositivo</string>
 <string name="show_root">Mostra root e gli elementi montati</string>
 <string name="summary_show_root">La vista Home visualizzerà la cartella root e gli elementi montati</string>
-<string name="root_root">comportamento modalità root</string>
-<string name="summary_root_root">Abilita automaticamente la modalità \"root\" quando si accede a una cartella di root del dispositivo.</string>
+<string name="root_root">Comportamento modalità root</string>
+<string name="summary_root_root">Abilita automaticamente la modalità \"root\" quando si accede a una cartella di root del dispositivo</string>
 <string name="thumbnails">Mostra miniature</string>
 <string name="summary_thumbnails">Mostra le miniature in luogo delle icone per le immagini</string>
 <string name="thumbnails_size">Dimensione della miniatura</string>
 <string name="summary_thumbnails_size">Imposta il valore in funzione della dimensione delle icone</string>
 <string name="font_size">Dimensione carattere</string>
 <string name="summary_font_size">Imposta la dimensione del carattere</string>
-<string name="left_panel_settings">Impostazioni del pannello di sinistra</string>
-<string name="right_panel_settings">Impostazioni del pannello di destra</string>
+<string name="left_panel_settings">Pannello di sinistra</string>
+<string name="right_panel_settings">Pannello di destra</string>
 <string name="detailed_view_SbS">Dettagliata in modalità affiancata</string>
 <string name="summary_detailed_view_SbS">Mostra dimensione e data per i file nella modalità affiancata</string>
 <string name="detailed_view_Ovr">Dettagliata in modalità sovrapposta</string>
@@ -310,9 +311,9 @@
 <string name="sort_case">Ignora le lettere maiusc./minusc. nell\'ordinamento</string>
 <string name="summary_sort_case">Se non selezionata, l\'ordinamento dipenderà dalle lettere maiusc.\\minusc.</string>
 <string name="show_hidden">Mostra file nascosti</string>
-<string name="summary_show_hidden">Se non selezionata, i file che iniziano con un punto non verranno visualizzati</string>
-<string name="compatibility_settings">Compatibilità</string>
-<string name="summary_compatibility_settings">Abilita o disabilita l\'annullamento dei pulsanti hardware</string>
+<string name="summary_show_hidden">Se selezionata, i file che iniziano con un punto verranno visualizzati</string>
+<string name="compatibility_settings">Pulsanti hardware</string>
+<string name="summary_compatibility_settings">Abilita l\'annullamento dei pulsanti hardware</string>
 <string name="panels_sliding">Abilita i pannelli scorrevoli</string>
 <string name="summary_panels_sliding">Scambia i pannelli con una gesture scorrevole orizzontale</string>
 <string name="arrow_mode">Escludi i pulsanti freccia</string>
@@ -321,7 +322,7 @@
 <string name="summary_volume_mode">I pulsanti per la modifica del volume selezionano o cambiano stato</string>
 <string name="exit_on_back">Comportamento del tasto indietro</string>
 <string name="summary_exit_on_back">Esce dall\'applicazione premendo il pulsante di sistema \"Indietro\"</string>
-<string name="colors">Impostazione dei colori</string>
+<string name="colors">Colori</string>
 <string name="summary_colors">Personalizzazione del colore dello sfondo e altro</string>
 <string name="bgr_color_picker">Sfondo</string>
 <string name="summary_bgr_color_picker">Seleziona un colore per lo sfondo principale</string>
@@ -339,7 +340,7 @@
 <string name="summary_btn_color_picker">Colore di sfondo del pulsante degli strumenti</string>
 <string name="pick_color">Colore selezionato</string>
 <string name="color">Colore</string>
-<string name="language">Lingua interfaccia</string>
+<string name="language">Lingua</string>
 <string name="summary_language">Ignora la lingua predefinita di sistema</string>
 <string name="restart_to_apply_lang">Riavviare l\'applicazione per usare la nuova lingua</string>
 <string name="editor_activity">Editor di testo personalizzato</string>
@@ -354,7 +355,7 @@
 <string name="saved">\"%1$s\" salvato.</string>
 <string name="not_saved">Salvare le modifiche?</string>
 <string name="save">Salva</string>
-<string name="save_as">Salva come&#8230;</string>
+<string name="save_as">Salva come…</string>
 <string name="revert">Ripristina</string>
 <string name="wrap">Taglia le linee lunghe</string>
 <string name="go_up">Precedente</string>
@@ -393,13 +394,38 @@
 <string name="donate">Donazione</string>
 <string name="online_help">Aiuto online</string>
 <string name="donation">Una piccola donazione contribuirà agli sviluppi futuri.\nSeleziona \"Ok\" per farla tramite PayPal.\n \"Annulla\" per goderti il gestore di file «Ghost Commander» gratuitamente.\n</string>
-<string name="about_text">
-&lt;h1&gt;Ghost Commander v%1$s&lt;/h1&gt;
-&lt;h2&gt;Un gestore di file.&lt;/h2&gt; Inviare via email i bug e i suggerimenti a&lt;br/&gt; 
-&lt;a href="mailto:ghost.sq2@gmail.com"&gt;ghost.sq2@gmail.com&lt;/a&gt;&lt;br/&gt;
- Grazie!
-&lt;h3&gt;DISCLAIMER:&lt;/h3&gt;
-  Utilizzando questo programma, si accettano le seguenti condizioni: l\'autore di questo programma non è può essere ritenuto responsabile per qualsiasi tipo di danno, perdita di informazioni, o qualsiasi problema che è o può essere causato dall\'uso di questo programma. Si accetta di utilizzare questo programma a proprio rischio.\n Se non si accettano le precedenti condizioni, cessare immediatamente di utilizzare il programma e disinstallarlo.
-  </string>
-<string name="keys_text">"\tGuida all\'utilizzo\n Per selezionare più di un file, selezionare la parte destra della riga.\n Per inserire manualmente il percorso (e visualizzare i favoriti), mantenere premuto il titolo del pannello\n Tasti scorciatoia:\n Volume su - Seleziona file e cartelle Volume giù - Scambia i pannelli +, - - Seleziona o deseleziona gli elementi nella cartella corrente (, ) - Inserisce la posizione per il pannello destro/sinistro e i favoriti * - Aggiunge la cartella corrente alle favorite \" - Mostra informazioni dettagliate sugli elementi selezionati = - Visualizza la stessa posizione nell\'altro pannello (sincronizza) 1 - Aiuto 2 - Rinomina l\'elemento corrente 4 - Modifica l\'elemento corrente 5 - Copia gli elementi selezionati 6 - Sposta gli elementi selezionati 7 - Crea una nuova cartella 8 - Elimina gli elementi selezionati 9 - Apre le preferenze 0 - Esce dal programma [A-z] - Ricerca veloce Per aprire una cartella FTP anonima, inserire un percorso come:\n ftp://host.com/cartella\n Oppure, se è necessario fornire un\'identità:\n ftp://utente:password@host.com/cartella\n\n Per accedere come root (su), inserire la posizione nel seguente modo:\n \"root:///data\"\n Assicurarsi di aver installato \"BusyBox\" e che la sua posizione sia specificata nelle impostazioni.\n Per elencare i dispositivi montati, digitare \"mount://\" Fare clic su una posizione di montaggio per renderla \"rw\" o farla tornare \"ro\". "</string>
+<string name="about_text"><![CDATA[
+<h1>Ghost Commander v%1$s</h1>
+<h4>Un gestore di file.</h4>
+<p>On the Web:<br>
+<a href="https://sites.google.com/site/ghostcommander1/">Web site</a><br>
+<a href="http://sourceforge.net/projects/ghostcommander/">At SourceForge</a> 
+</p>
+<p>Inviare via email i bug e i suggerimenti a<br><a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a></p>
+<p>Like this app? <a href="%2$s">Make a PayPal Donation</a> to support further development.</p>
+<h3>DISCLAIMER:</h3>
+Utilizzando questo programma, si accettano le seguenti condizioni: l\'autore di questo programma non è può essere ritenuto responsabile per qualsiasi tipo di danno, perdita di informazioni, o qualsiasi problema che è o può essere causato dall\'uso di questo programma. Si accetta di utilizzare questo programma a proprio rischio.\n Se non si accettano le precedenti condizioni, cessare immediatamente di utilizzare il programma e disinstallarlo.
+]]></string>
+<string name="keys_text">"\t\tGUIDA ALL\'UTILIZZO\n 
+Per selezionare più di un file, selezionare la parte destra della riga.\n Per inserire manualmente il percorso (e visualizzare i favoriti), mantenere premuto il titolo del pannello.\n
+\t\tTASTI SCORCIATOIA\n
+Volume su - Seleziona file e cartelle
+Volume giù - Scambia i pannelli
++, - - Seleziona o deseleziona gli elementi nella cartella corrente
+(, ) - Inserisce la posizione per il pannello destro/sinistro e i favoriti
+* - Aggiunge la cartella corrente alle favorite
+\" - Mostra informazioni dettagliate sugli elementi selezionati
+= - Visualizza la stessa posizione nell\'altro pannello (sincronizza)
+1 - Aiuto
+2 - Rinomina l\'elemento corrente
+4 - Modifica l\'elemento corrente
+5 - Copia gli elementi selezionati
+6 - Sposta gli elementi selezionati
+7 - Crea una nuova cartella
+8 - Elimina gli elementi selezionati
+9 - Apre le preferenze
+0 - Esce dal programma
+[A-z] - Ricerca veloce
+
+Per aprire una cartella FTP anonima, inserire un percorso come:\n ftp://host.com/cartella\n Oppure, se è necessario fornire un\'identità:\n ftp://utente:password@host.com/cartella\n\n Per accedere come root (su), inserire la posizione nel seguente modo:\n \"root:///data\"\n Assicurarsi di aver installato \"BusyBox\" e che la sua posizione sia specificata nelle impostazioni.\n Per elencare i dispositivi montati, digitare \"mount://\" Fare clic su una posizione di montaggio per renderla \"rw\" o farla tornare \"ro\". "</string>
 </resources>
