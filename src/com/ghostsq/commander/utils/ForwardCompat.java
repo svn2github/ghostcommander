@@ -52,5 +52,10 @@ public class ForwardCompat
                     }
                 } 
              } );                    
-    }    
+    }
+    
+    @TargetApi(Build.VERSION_CODES.FROYO)
+    public static File getExternalFilesDir( Context ctx ) { 
+        return ctx.getExternalFilesDir( null );
+    }
 }

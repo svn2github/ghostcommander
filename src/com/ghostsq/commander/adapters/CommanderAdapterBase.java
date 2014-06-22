@@ -19,6 +19,7 @@ import com.ghostsq.commander.R;
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.root.RootAdapter;
 import com.ghostsq.commander.utils.Credentials;
+import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
@@ -26,6 +27,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -303,7 +305,12 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
 
     protected final String createTempDir() {
         Date d = new Date();
-        File temp_dir = new File( DEFAULT_DIR + "/temp/gc_" + d.getHours() + d.getMinutes() + d.getSeconds() + "/" );
+        File parent_dir = null;
+        if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO )
+             parent_dir = ForwardCompat.getExternalFilesDir( ctx );
+        else
+             parent_dir = new File( DEFAULT_DIR );
+        File temp_dir = new File( parent_dir, "/temp/gc_" + d.getHours() + d.getMinutes() + d.getSeconds() + "/" );
         temp_dir.mkdirs();
         return temp_dir.getAbsolutePath();
     }
@@ -524,7 +531,9 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                         nameWidth += attrWidth; // sacrifice the attr. field 
                         attrWidth = 0;
                     }
-                    nameView.setWidth( nameWidth );
+                    int nw = nameWidth;
+                    if( !Utils.str( item.attr ) ) nw += attrWidth; 
+                    nameView.setWidth( nw );
                 }
                 nameView.setText( name != null ? name : "???" );
                 nameView.setTextColor( fg_color_m );
@@ -555,7 +564,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             if( attrView != null ) {
                 boolean vis = dm && attrWidth > 0;
                 attrView.setVisibility( vis ? View.VISIBLE : View.GONE );
-                if( vis) {
+                if( vis ) {
                     String attr_text = item.attr != null ? item.attr.trim() : "";
                     if( !wm ) {
                         //attrView.setPadding( img_width + 2, 0, 4, 0 ); // not to overlap the icon
@@ -576,14 +585,20 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                             attrView.setLayoutParams( rllp );
                         }
                     }
-                    attrView.setWidth( attrWidth );
-                    attrView.setTextSize( fnt_sz_rdc );
-                    attrView.setVisibility( View.VISIBLE );
-                    attrView.setText( attr_text );
-                    attrView.setTextColor( fg_color_m );
-                    if( this instanceof RootAdapter ) {
-                        attrView.setTypeface( Typeface.create( "monospace", Typeface.NORMAL ) );
-                        attrView.setTextSize( fnt_sz_rdc * 0.9f );
+                    if( Utils.str( item.attr ) ) {
+                        attrView.setWidth( attrWidth );
+                        attrView.setTextSize( fnt_sz_rdc );
+                        attrView.setVisibility( View.VISIBLE );
+                        attrView.setText( attr_text );
+                        attrView.setTextColor( fg_color_m );
+                        if( this instanceof RootAdapter ) {
+                            attrView.setTypeface( Typeface.create( "monospace", Typeface.NORMAL ) );
+                            attrView.setTextSize( fnt_sz_rdc * 0.9f );
+                        }
+                    }
+                    else {
+                        attrView.setWidth( 0 );
+                        attrView.setText( attr_text );
                     }
 //attrView.setBackgroundColor( 0xFFFF0000 );  // DEBUG!!!!!!
                 }

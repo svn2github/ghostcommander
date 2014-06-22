@@ -207,38 +207,48 @@
                 android:gravity="fill_horizontal"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/buttons_block"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginTop="10dip"
             android:gravity="center_horizontal"
-            android:layout_marginTop="10dip">
-            <CheckBox 
-                android:id="@+id/active" 
-                android:text="@string/active" 
-                android:layout_width="wrap_content" 
+            android:orientation="horizontal" >
+
+            <CheckBox
+                android:id="@+id/active"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
                 android:paddingRight="16dip"
-                android:visibility="gone"/>
-            <Button 
-                android:text="@string/dialog_ok" 
-                android:id="@+id/connect" 
-                android:layout_width="80dip" 
+                android:text="@string/active"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/connect"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="10dip"/>            
-            <Button 
-                android:text="@string/dialog_browse" 
-                android:id="@+id/browse" 
-                android:layout_width="90dip" 
+                android:layout_marginRight="10dip"
+                android:layout_weight="0.02"
+                android:text="@string/dialog_ok" />
+
+            <Button
+                android:id="@+id/browse"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="10dip"/>            
-            <Button 
-                android:text="@string/dialog_cancel" 
+                android:layout_marginRight="10dip"
+                android:layout_weight="0.04"
+                android:text="@string/dialog_browse" />
+
+            <Button
                 android:id="@+id/cancel"
-                android:layout_width="80dip" 
-                android:layout_height="wrap_content"/>            
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.01"
+                android:text="@string/dialog_cancel" />
+
         </LinearLayout>
+
 </LinearLayout>
 		

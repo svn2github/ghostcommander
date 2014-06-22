@@ -604,14 +604,13 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
 //                long sum = getSizes( x_list );
 //                conv = 100 / (double)sum;
                 int num = copyFiles( fList, Utils.mbAddSl( mDest ) );
-/*
-                if( del_src_dir && in_same_src && src_dir_f != null ) {
-                    File[] to_delete = new File[1];
-                    to_delete[0] = src_dir_f; 
-                    DeleteEngine de = new DeleteEngine( to_delete );
-                    de.start();
+
+                if( del_src_dir ) {
+                    File src_dir = fList[0].getParentFile();
+                    if( src_dir != null )
+                        src_dir.delete();
                 }
-*/
+
                 String[] to_scan_a = new String[to_scan.size()];
                 to_scan.toArray( to_scan_a );
                 ForwardCompat.scanMedia( ctx, to_scan_a );
