@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="sorting">
-        <item>Par nom</item>
-        <item>Par extension</item>
-        <item>Par taille</item>
-        <item>Par date</item>  
+        <item>Efter Navn</item>
+        <item>Efter Type</item>
+        <item>Efter Størrelse</item>
+        <item>Efter Dato</item>  
     </string-array>
     <string-array name="sorting_vals">
         <item>n</item>
@@ -13,8 +13,8 @@
         <item>d</item>  
     </string-array>
     <string-array name="panels_mode">
-        <item>Oui</item>
-        <item>Non</item>
-        <item>Automatique</item>
+        <item>Ja</item>
+        <item>Ingen</item>
+        <item>Automatisk</item>
     </string-array>
 </resources>

@@ -43,14 +43,14 @@
 <string name="mount_b">Mounts</string>
 <string name="apps">App\'s</string>
 <string name="exit">Exit</string>
-<string name="favs_descr">Se og håndter favorit foldere og sites. Editer omdøb og placer genveje på "home screen" etc.</string>
-<string name="local_descr">Se, organiser og modificer indholdet af SD kortet og intern flash hukommelse.</string>
-<string name="ftp_descr">Forbind til FTP-server, se og overfør filer til og fra dette.</string>
-<string name="sftp_descr">Forbind til sikker FTP-server. SFTP plugn påkrævet.</string>
-<string name="root_descr">Forsigtigt - kun for rootede enheder: Se og modificer kritiske system filer. Fortsæt kun, hvis du ved hvad du er i gang med!</string>
+<string name="favs_descr">Se og håndter favorit foldere og sites</string>
+<string name="local_descr">Se, organiser og modificer indholdet af SD kortet og intern flash hukommelse</string>
+<string name="ftp_descr">Forbind til FTP-server</string>
+<string name="sftp_descr">Forbind til SSH FTP-server</string>
+<string name="root_descr">Kun for rootede enheder: Se og modificer kritiske system filer. Fortsæt kun, hvis du ved hvad du er i gang med!</string>
 <string name="mount_descr">Vis liste med alle mount points. Remount them to \"rw\" mode, then back to \"ro\" mode after any changes are complete. Proceed with caution.</string>
-<string name="apps_descr">Se og håndter installerede pakker.</string>
-<string name="exit_descr">Luk programmet.</string>
+<string name="apps_descr">Se og håndter installerede pakker</string>
+<string name="exit_descr">Luk programmet</string>
 <string name="shortcut">Ny genvej</string>
 <string name="enter_ftp">Forbind til FTP</string>
 <string name="enter_smb">Forbind til Windows PC</string>
@@ -245,7 +245,7 @@
 <string name="selection_zone_setup">Selection area</string> 
 <string name="summary_selection_zone_setup">Opsæt hvordan filer og foldere vælges</string> 
 <string name="sel_onright">Vælg til højre</string> 
-<string name="show_confirm">Slå konfirmation til</string>
+<string name="show_confirm">Konfirmation</string>
 <string name="summary_show_confirm">Vis besked når visse operationer er færdige</string>
 <string name="prefs_label">Opsætning</string>
 <string name="filetypes_label">Colors by type</string>
@@ -264,10 +264,10 @@
 <string name="summary_two_lines">Vis altid fil attibutter under filnavnene</string>
 <string name="show_icons">Vis ikoner</string>
 <string name="summary_show_icons">Vis fil og folder ikoner istedet for kun tekst</string>
-<string name="toolbar_settings">Toolbar opsætning</string> 
+<string name="toolbar_settings">Toolbar</string> 
 <string name="summary_toolbar_settings">Opsæt knapper på toolbaren i bunden af skærmen</string> 
 <string name="show_toolbar">Vis toolbar</string>
-<string name="summary_show_toolbar">Vis eller skjul knapper i bunden af app\'en</string>
+<string name="summary_show_toolbar">Vis knapper i bunden af app\'en</string>
 <string name="show_hotkeys">Vis hotkeys</string>
 <string name="summary_show_hotkeys">Vis aldrig hotkeys genveje på knapper</string>
 <string name="toolbar_preference">Konfigurer toolbar</string>
@@ -287,8 +287,8 @@
 <string name="summary_thumbnails_size">Sæt procentværdien i forhold til ikon størrelsen</string>
 <string name="font_size">Font størrelse</string>
 <string name="summary_font_size">Sæt font størrelsen</string>
-<string name="left_panel_settings">Venstre panel indstillinger</string>
-<string name="right_panel_settings">Højre panel indstillinger</string>
+<string name="left_panel_settings">Venstre panel</string>
+<string name="right_panel_settings">Højre panel</string>
 <string name="detailed_view_SbS">Detaljeret side-ved-side mode</string>
 <string name="summary_detailed_view_SbS">Vis størrelse og dato for filer i side-ved-side mode</string>
 <string name="detailed_view_Ovr">Detaljeret overlappet mode</string>
@@ -298,9 +298,9 @@
 <string name="sort_case">Ignorer case ved sortering</string>
 <string name="summary_sort_case">Hvis ikke tjekket, filer og foldere vil sorteres case sensitivt</string>
 <string name="show_hidden">Vis skjulte filer</string>
-<string name="summary_show_hidden">Hvis ikke tjekket, filer og foldere der starter med . i deres navn ikke vises</string>
-<string name="compatibility_settings">Kompatabilitet</string> 
-<string name="summary_compatibility_settings">Tænd eller sluk for overtagning af hardware knapper</string> 
+<string name="summary_show_hidden">Filer og foldere der starter med . i deres navn vises</string>
+<string name="compatibility_settings">Hardware knapper</string> 
+<string name="summary_compatibility_settings">Tilpasse overtagning af hardware knapper</string> 
 <string name="panels_sliding">Tænd for sliding gesture</string>
 <string name="summary_panels_sliding">Skift paneler med en horisontals scroll gesture</string>
 <string name="arrow_mode">Overtag pile knapper</string>
@@ -309,7 +309,7 @@
 <string name="summary_volume_mode">Brug volume knapper til at vælge/fravælge</string>
 <string name="exit_on_back">Tilbage knap afslutter</string>
 <string name="summary_exit_on_back">Luk programmet med tilbage knappen</string>
-<string name="colors">Konfigurer farver</string>
+<string name="colors">Farver</string>
 <string name="summary_colors">Modificer baggrund og forgrunds farverne</string>
 <string name="bgr_color_picker">Baggrund</string>
 <string name="summary_bgr_color_picker">Vælg baggrundsfarven</string>
@@ -321,14 +321,14 @@
 <string name="summary_sel_color_picker">Vælg baggrundsfarve for valgte filer og aktive panels titel</string>
 <string name="sfg_color_picker">Vælg forgrund</string>
 <string name="summary_sfg_color_picker">Vælg tekstfarvenfor valgte filer og  aktivt panels titel</string>
-<string name="ttl_color_picker">Titelbar</string>
+<string name="ttl_color_picker">Panel titel</string>
 <string name="summary_ttl_color_picker">Vælgpanelets baggrundsfarve</string>
 <string name="btn_color_picker">Knapper</string>
 <string name="summary_btn_color_picker">Vælg tool knpappernes baggrundsfarve</string>
 <string name="pick_color">Set farve</string>
 <string name="color">Farve</string>
-<string name="language">Interface sprog</string>
-<string name="summary_language">Overskriv systemet default sprog</string>
+<string name="language">Sprog</string>
+<string name="summary_language">Overskriv systemet sprog</string>
 <string name="restart_to_apply_lang">Genstart app\'en for at aktivere det valgte sprog</string>
 <string name="editor_activity">Opsæt tekst editor</string>
 <string name="summary_editor_activity">Indtast aktivitetsnavnet for den eksterne tekst editor</string>
@@ -383,24 +383,27 @@ Tap \"OK\" for at gå til PayPal site.\n
     </string>
 <string name="about_text"><![CDATA[
 <h1>Ghost Commander v%1$s</h1>
-        En fil manager fra Ghost Squared.<br/>
-        Send email bugs/forslag til:<br/>
-        <a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a>
-        Tak.\n\n\n 
+<h4>En fil manager fra Ghost Squared.</h4>
+
+<p>On the Web:<br>
+<a href="https://sites.google.com/site/ghostcommander1/">Web site</a><br>
+<a href="http://sourceforge.net/projects/ghostcommander/">At SourceForge</a>
+</p> 
+<p>Send email bugs/forslag til:<br/>
+<a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a></p>
+<p>Like this app? <a href="%2$s">Make a PayPal Donation</a> to support further development.</p>
 <h3>DISCLAIMER:</h3>
 Ved at bruge dette program accepter du følgende:
 Udvikleren afdette program er ikke ansvarlig for nogen skade, tab af information,
 anden skade der kan skyldes brugen af programmet. Du accepter at bruge programmet på eget 
-ansvar.\n
-Hvis du ikke accepterer ovenstående, så hold op med at bruge programmet og afinstaller det.\n
+ansvar. Hvis du ikke accepterer ovenstående, så hold op med at bruge programmet og afinstaller det.\n
 ]]></string>
 <string name="keys_text">"
 \t\tBASICS
 
-Copy or move files and folders by firstly choosing the target destination in one panel, then swipe (or toggle) back to the other panel and select the items you wish to transfer.\n
+Copy or move files and folders by first choosing the target destination in one panel, then swipe (or toggle) back to the other panel and select the items you wish to transfer.\n
 To select files and folders, tap on the right side of the screen and open them by tapping on the left. That\'s right, one side will activate items and the other side will select them.\n
-If you have many items to select, navigate to \"Menu &gt; List &gt; Select all\".\n
-To manually enter a location path (or to see a drop-down list of your favorites) long press on the panel\'s title.
+To enter a location path manually (or to see a drop-down list of your favorites) long press on the panel\'s title.
 
 \t\tGENVEJSTASTER
 
@@ -441,8 +444,7 @@ root:/path/to/folder
 mount:
     - Mount points
 
-Bemærk: Bruger du root mode (superuser) and mount poit mulighederne i Ghost Commander 
-så kræves forsigtighed og en rooted tilefon samt busybox installeret og og konfigureret i opsætningen.
+Bemærk: Bruger du root mode (superuser) and mount poit mulighederne i Ghost Commander så kræves forsigtighed og en rooted tilefon samt busybox installeret og og konfigureret i opsætningen.
 Du kan kun få forbindelse med Windows share hvis Ghost Commander SMB plugin er installeret.
 "
     </string>
