@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="sorting">
-        <item>Név</item>
-        <item>Kiterjesztés</item>
-        <item>Méret</item>
-        <item>Dátum</item>  
+        <item>Név szerint</item>
+        <item>Kiterjesztés szerint</item>
+        <item>Méret szerint</item>
+        <item>Dátum szerint</item>  
     </string-array>
     <string-array name="sorting_vals">
         <item>n</item>
         <item>e</item>
         <item>s</item>
         <item>d</item>  
+    </string-array>
+    <string-array name="panels_mode">
+        <item>Igen</item>
+        <item>Nem</item>
+        <item>Automatikus</item>
     </string-array>
 </resources>
