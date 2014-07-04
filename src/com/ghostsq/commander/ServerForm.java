@@ -23,8 +23,7 @@ public class ServerForm extends Activity implements View.OnClickListener {
     private enum Type { 
         FTP(   "ftp", "FTP" ), 
         SFTP( "sftp", "SSH FTP" ), 
-        SMB(   "smb", "Windows PC" ), 
-        UNKNOWN( "?", "" );
+        SMB(   "smb", "Windows PC" );
         
         public String schema, title;
         
@@ -36,10 +35,11 @@ public class ServerForm extends Activity implements View.OnClickListener {
             if( s.equals(  FTP.schema ) ) return  FTP; 
             if( s.equals( SFTP.schema ) ) return SFTP; 
             if( s.equals(  SMB.schema ) ) return  SMB; 
-            return UNKNOWN;
+            return null;
         }
     };
-    private Type type;
+    private Type     type;
+    private String   schema;
     
     private EditText server_edit;
     private EditText path_edit;
@@ -52,11 +52,15 @@ public class ServerForm extends Activity implements View.OnClickListener {
     public void onCreate( Bundle savedInstanceState ) {
         try {
             super.onCreate( savedInstanceState );
-            type = Type.getInstance( getIntent().getStringExtra( "schema" ) );            
-
-            // "Leave fields blank to see a list of nodes"
-            
-            setTitle( getString( R.string.connect ) + " " + type.title );
+            schema = getIntent().getStringExtra( "schema" );
+            if( !Utils.str( schema ) ) {
+                Log.e( TAG, "No schema given" );
+                finish();
+                return;
+            }
+            type = Type.getInstance( schema );            
+            String title = type != null ? type.title : getIntent().getStringExtra( "title" );
+            setTitle( getString( R.string.connect ) + " " + title );
             requestWindowFeature( Window.FEATURE_LEFT_ICON );
             setContentView( R.layout.server );
             getWindow().setLayout(LayoutParams.FILL_PARENT /* width */, LayoutParams.WRAP_CONTENT /* height */);            
@@ -100,12 +104,12 @@ public class ServerForm extends Activity implements View.OnClickListener {
         try {
             super.onStart();
             SharedPreferences prefs = getPreferences( MODE_PRIVATE );
-            server_edit.setText( prefs.getString( "SERV", "" ) );            
-            path_edit.setText( prefs.getString( "PATH", "/" ) );            
-            domain_edit.setText( prefs.getString( "DOMAIN", "" ) );            
-            name_edit.setText( prefs.getString( "USER", "" ) );            
-            active_ftp_cb.setChecked( prefs.getBoolean( "ACTIVE", false ) );            
-            encoding_spin.setSelection( prefs.getInt( "ENCODING", 0 ) );            
+            server_edit.setText(        prefs.getString( schema + "_SERV", "" ) );            
+            path_edit.setText(          prefs.getString( schema + "_PATH", "/" ) );            
+            domain_edit.setText(        prefs.getString( schema + "_DOMAIN", "" ) );            
+            name_edit.setText(          prefs.getString( schema + "_USER", "" ) );            
+            active_ftp_cb.setChecked(   prefs.getBoolean(schema + "_ACTIVE", false ) );            
+            encoding_spin.setSelection( prefs.getInt(    schema + "_ENCODING", 0 ) );            
         }
         catch( Exception e ) {
             Log.e( TAG, "onStart() Exception: ", e );
@@ -117,12 +121,12 @@ public class ServerForm extends Activity implements View.OnClickListener {
         try {
             super.onPause();
             SharedPreferences.Editor editor = getPreferences( MODE_PRIVATE ).edit();
-            editor.putString( "SERV", server_edit.getText().toString() );            
-            editor.putString( "PATH", path_edit.getText().toString() );            
-            editor.putString( "DOMAIN", domain_edit.getText().toString() );            
-            editor.putString( "USER", name_edit.getText().toString() );            
-            editor.putBoolean( "ACTIVE", active_ftp_cb.isChecked() );            
-            editor.putInt( "ENCODING", encoding_spin.getSelectedItemPosition() );            
+            editor.putString( schema + "_SERV", server_edit.getText().toString() );            
+            editor.putString( schema + "_PATH", path_edit.getText().toString() );            
+            editor.putString( schema + "_DOMAIN", domain_edit.getText().toString() );            
+            editor.putString( schema + "_USER", name_edit.getText().toString() );            
+            editor.putBoolean(schema + "_ACTIVE", active_ftp_cb.isChecked() );            
+            editor.putInt(    schema + "_ENCODING", encoding_spin.getSelectedItemPosition() );            
             editor.commit();
         }
         catch( Exception e ) {
@@ -133,11 +137,12 @@ public class ServerForm extends Activity implements View.OnClickListener {
     @Override
     protected void onSaveInstanceState( Bundle outState ) {
         try {
-            outState.putString( "SERV", server_edit.getText().toString() );            
-            outState.putString( "PATH", path_edit.getText().toString() );            
-            outState.putString( "USER", name_edit.getText().toString() );            
-            outState.putString( "DOMAIN", domain_edit.getText().toString() );            
-            outState.putBoolean( "ACTIVE", active_ftp_cb.isChecked() );            
+            outState.putString( schema + "_SERV", server_edit.getText().toString() );            
+            outState.putString( schema + "_PATH", path_edit.getText().toString() );            
+            outState.putString( schema + "_USER", name_edit.getText().toString() );            
+            outState.putString( schema + "_DOMAIN", domain_edit.getText().toString() );            
+            outState.putBoolean(schema + "_ACTIVE", active_ftp_cb.isChecked() );            
+            outState.putInt(    schema + "_ENCODING", encoding_spin.getSelectedItemPosition() );            
             super.onSaveInstanceState(outState);
         }
         catch( Exception e ) {
@@ -148,11 +153,12 @@ public class ServerForm extends Activity implements View.OnClickListener {
     @Override
     protected void onRestoreInstanceState( Bundle savedInstanceState ) {
         try {
-            server_edit.setText( savedInstanceState.getString( "SERV" ) );            
-            path_edit.setText( savedInstanceState.getString( "PATH" ) );            
-            name_edit.setText( savedInstanceState.getString( "USER" ) );            
-            domain_edit.setText( savedInstanceState.getString( "DOMAIN" ) );            
-            active_ftp_cb.setChecked( savedInstanceState.getBoolean( "ACTIVE", false ) );            
+            server_edit.setText( savedInstanceState.getString(  schema + "_SERV" ) );            
+            path_edit.setText( savedInstanceState.getString(    schema + "_PATH" ) );            
+            name_edit.setText( savedInstanceState.getString(    schema + "_USER" ) );            
+            domain_edit.setText( savedInstanceState.getString(  schema + "_DOMAIN" ) );            
+            active_ftp_cb.setChecked( savedInstanceState.getBoolean( schema + "_ACTIVE", false ) );            
+            encoding_spin.setSelection( savedInstanceState.getInt(   schema + "_ENCODING", 0 ) );            
             super.onRestoreInstanceState(savedInstanceState);
         }
         catch( Exception e ) {
@@ -182,7 +188,7 @@ public class ServerForm extends Activity implements View.OnClickListener {
                     crd = new Credentials( user, pass ); 
                 }
                 Uri.Builder uri_b = new Uri.Builder()
-                    .scheme( type.schema )
+                    .scheme( schema )
                     .encodedAuthority( Utils.encodeToAuthority( server_edit.getText().toString().trim() ) )
                     .path( path_edit.getText().toString().trim() );
                 if( type == Type.FTP ) {

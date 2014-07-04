@@ -16,6 +16,8 @@ import android.os.Message;
  *
  */
 public interface Commander {
+    public final static int REQUEST_CODE_PREFERENCES = 1, REQUEST_CODE_SRV_FORM = 2;    
+    
 	final static int UNKNOWN = 0, 
 	                 ABORT   = 1,
 	                 REPLACE = 2, 

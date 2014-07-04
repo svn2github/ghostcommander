@@ -3,7 +3,7 @@
     <string-array name="sorting">
         <item>Nach Name</item>
         <item>Nach Erweiterung</item>
-        <item>Nach Grösse</item>
+        <item>Nach Größe</item>
         <item>Nach Datum</item>  
     </string-array>
     <string-array name="sorting_vals">
@@ -12,4 +12,9 @@
         <item>s</item>
         <item>d</item>  
     </string-array>
+    <string-array name="panels_mode">
+        <item>Ja</item>
+        <item>Nein</item>
+        <item>Automatisch</item>
+    </string-array> 
 </resources>

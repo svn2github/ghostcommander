@@ -25,9 +25,13 @@
     <string name="refresh">Aktualisieren</string>
     <string name="enter">Ordner wechseln</string>
     <string name="add_fav">aktuellen Ordner zu den Favoriten hintufügen</string>
+    <string name="hidden">Ausgeblendet</string>
+    <string name="favs">Favoriten</string>
+    <string name="softkbd">Tastatur</string>
     <string name="enter_ftp">FTP verbinden</string>
     <string name="enter_smb">Windows-Freigabe öffnen</string>
     <string name="search_file">Suchen</string>
+    <string name="menu">Menü</string>
     <string name="sort_by_name">Nach Name</string>
     <string name="sort_by_ext">Nach Erweiterung</string>
     <string name="sort_by_size">Nach Größe</string>
@@ -44,8 +48,8 @@
     <string name="new_file">Neue Datei</string>
     <string name="go_button">Öffnen</string>
     <string name="show_size">Größe berechnen</string>
-    <string name="send_to">Senden an ...</string>
-    <string name="open_with">Öffnen mit ...</string>
+    <string name="send_to">Senden an …</string>
+    <string name="open_with">Öffnen mit …</string>
     <string name="input_settings">Eingabe</string>
     <string name="arrow_mode">Pfeil-Kommandos</string>
     <string name="summary_arrow_mode">Pfeil rechts/ links wechselt/ markiert</string>
@@ -54,7 +58,7 @@
     <string name="advanced">Erweitert</string>
     <string name="advanced_settings">Erweiterte Einstellungen</string>
     <string name="summary_advanced_settings">Einstellungen für fortgeschrittene Benutzer</string>
-    <string name="wait">Bitte warten ...</string>
+    <string name="wait">Bitte warten …</string>
     <string name="fail">(fehlgeschlagen)</string>
     <string name="dialog_yes">Ja</string>
     <string name="dialog_no">Nein</string>
@@ -66,7 +70,9 @@
     <string name="dialog_retry">Wiederholen</string>
     <string name="dialog_ignore">Ignorieren</string>
     <string name="operation">Vorgang</string>
+    <string name="view_title">Anzeigen</string>
     <string name="edit_title">Bearbeiten</string>
+    <string name="shortcut">Eine Desktopverknüpfung erstellen</string>
     <string name="newf_prompt">Neuer Dateiname</string>
     <string name="rename_title">Umbenennen</string>
     <string name="rename_err">Nichts zum Umbenennen.</string>
@@ -89,7 +95,7 @@
     <string name="interrupted">unterbrochen</string>
     <string name="too_deep_hierarchy">Zu viele Verzeichnisebenen.</string>
     <string name="nothing_found">Keine Datei(en) gefunden.</string>
-    <string name="preparing">Vorbereitung ...</string>
+    <string name="preparing">Vorbereitung …</string>
     <string name="cd_title">Gehe zu</string>
     <string name="cd_prompt">Ordner wechseln nach:</string>
     <string name="not_supported">Funktion wird nicht unterstützt.</string>
@@ -110,57 +116,58 @@
     <string name="ftp_connected">Verbunden mit \"%1$s\"\n angemeldet als \"%2$s\".</string>
     <string name="layout_settings">Erscheinungsbild</string>
     <string name="panels_mode">Zweifenstermodus</string>
-    <string name="summary_panels_mode">Zwei Fenster auf geteiltem Bildschirm anzeigen.</string>
+    <string name="summary_panels_mode">Zwei Fenster auf geteiltem Bildschirm anzeigen</string>
     <string name="two_lines">Zwei Zeilen in einer Reihe</string>
-    <string name="summary_two_lines">Immer Dateiattribute in der zweiten Zeile anzeigen.</string>
+    <string name="summary_two_lines">Immer Dateiattribute in der zweiten Zeile anzeigen</string>
     <string name="show_icons">Dateityp-Symbole</string>
-    <string name="summary_show_icons">Dateityp-Symbole für alle Dateien anzeigen.</string>
+    <string name="summary_show_icons">Dateityp-Symbole für alle Dateien anzeigen</string>
+    <string name="toolbar_settings">Werkzeugleiste</string> 
     <string name="show_toolbar">Werkzeugleiste anzeigen</string>
-    <string name="summary_show_toolbar">Ein- oder Ausblenden der Werkzeugleiste am unteren Bildschirmrand.</string>
+    <string name="summary_show_toolbar">Einblenden der Werkzeugleiste am unteren Bildschirmrand</string>
     <string name="toolbar_preference">Schaltflächen auswählen</string>
-    <string name="summary_toolbar_preference">einzelne Schaltflächen der Werkzeugleiste ein- oder ausblenden.</string>
+    <string name="summary_toolbar_preference">Einzelne Schaltflächen der Werkzeugleiste einblenden</string>
 
     <string name="finger_friendly">Fingerfreundliche Benutzeroberfläche</string>
-    <string name="summary_finger_friendly">Bedienelemente der Benutzeroberfläche werden vergrössert dargestellt.</string>
+    <string name="summary_finger_friendly">Bedienelemente der Benutzeroberfläche werden vergrössert dargestellt</string>
     <string name="prevent_root">Beim Verlassen der Speicherkarte warnen</string>
-    <string name="summary_prevent_root">Es wird eine Warnmeldung angezeigt, wenn Sie in das Stammverzeichnis des Gerätes wechseln wollen.</string>
+    <string name="summary_prevent_root">Es wird eine Warnmeldung angezeigt, wenn Sie in das Stammverzeichnis des Gerätes wechseln wollen</string>
     
     <string name="thumbnails">Miniaturansicht einschalten</string>
-    <string name="summary_thumbnails">Anstelle der Symbole werden Miniaturansichten für Bilddateien angezeigt.</string>
+    <string name="summary_thumbnails">Anstelle der Symbole werden Miniaturansichten für Bilddateien angezeigt</string>
     <string name="thumbnails_size">Grösse der Miniaturansichten</string>
     <string name="summary_thumbnails_size">In Prozent der Symbolgrösse</string>
 
     <string name="left_panel_settings">linkes Fenster</string>
     <string name="right_panel_settings">rechtes Fenster</string>
     <string name="detailed_view_SbS">detaillierte Anzeige im Zweifenstermodus</string>
-    <string name="summary_detailed_view_SbS">Größe und Datum werden im Zweifenstermodus angezeigt.</string>
+    <string name="summary_detailed_view_SbS">Größe und Datum werden im Zweifenstermodus angezeigt</string>
     <string name="detailed_view_Ovr">detaillierte Anzeige im Einfenstermodus</string>
-    <string name="summary_detailed_view_Ovr">Größe und Datum werden im Einfenstermodus angezeigt.</string>
+    <string name="summary_detailed_view_Ovr">Größe und Datum werden im Einfenstermodus angezeigt</string>
     <string name="sorting">Sortierung</string>
-    <string name="summary_sorting">Einstellen, wie Dateien und Ordner sortiert werden.</string>
+    <string name="summary_sorting">Einstellen, wie Dateien und Ordner sortiert werden</string>
     <string name="sort_case">Gross- und Kleinschreibung bei Sortierung ignorieren</string>
-    <string name="summary_sort_case">Abwählen, um die Gross- und Kleinschreibung bei der Sortierung zu berücksichtigen.</string>
+    <string name="summary_sort_case">Abwählen, um die Gross- und Kleinschreibung bei der Sortierung zu berücksichtigen</string>
     <string name="show_hidden">Versteckte Dateien anzeigen</string>
-    <string name="summary_show_hidden">Dateien, die mit einem Punkt beginnen werden angezeigt.</string>
-    <string name="colors">Farben einstellen</string>
-    <string name="summary_colors">Hintergrundfarbe, Vordergrundfarbe, ... einstellen.</string>
+    <string name="summary_show_hidden">Dateien, die mit einem Punkt beginnen werden angezeigt</string>
+    <string name="colors">Farben</string>
+    <string name="summary_colors">Hintergrundfarbe, Vordergrundfarbe, … einstellen</string>
     <string name="bgr_color_picker">Hintergrundfarbe</string>
-    <string name="summary_bgr_color_picker">Wählen Sie die gewünschte Farbe für den Hintergrund.</string>
+    <string name="summary_bgr_color_picker">Wählen Sie die gewünschte Farbe für den Hintergrund</string>
     <string name="fgr_color_picker">Vordergrundfarbe</string>
-    <string name="summary_fgr_color_picker">Wählen Sie die gewünschte Farbe für die Anzeige von Datei- und Ordnernamen.</string>
+    <string name="summary_fgr_color_picker">Wählen Sie die gewünschte Farbe für die Anzeige von Datei- und Ordnernamen</string>
     <string name="sel_color_picker">Markierungsfarbe</string>
     <string name="summary_sel_color_picker">Wählen Sie die gewünschte Farbe für markierte Dateien und Ordner sowie für den Fenstertitel.</string>
     <string name="ttl_color_picker">Fenstertitel</string>
-    <string name="summary_ttl_color_picker">Wählen Sie die gewünschte Farbe für den Hintergrund der Fenstertitel.</string>
+    <string name="summary_ttl_color_picker">Wählen Sie die gewünschte Farbe für den Hintergrund der Fenstertitel</string>
     <string name="pick_color">Farbe einstellen</string>
-    <string name="language">Sprache wählen (Choose Language)</string>
-    <string name="summary_language">Automatische Spracherkennung ausschalten.</string>
+    <string name="language">Sprache</string>
+    <string name="summary_language">Automatische Spracherkennung ausschalten</string>
     <string name="restart_to_apply_lang">Bitte starten Sie Ghost Commander neu, um die geänderten Spracheinstellungen zu übernehmen.</string>
     <string name="editor_activity">Name der Editor Activity</string>
     <string name="summary_editor_activity">Editor Activity bearbeiten. Paketname=Klassennamenpräfix.</string>
     <string name="value_editor_activity">com.ghostsq.commander.Editor</string>
     <string name="busybox_location">Pfad zu Busybox</string>
-    <string name="summary_busybox_location">Zur Nutzung der Root-Funktionen wird Busybox benötigt.</string>
+    <string name="summary_busybox_location">Zur Nutzung der Root-Funktionen wird Busybox benötigt</string>
     <string name="nothing_to_open">Nichts zu Öffnen</string>
     <string name="remind_to_save">Bitte vergessen Sie nicht, die Änderungen über das Menü zu speichern.</string>
     <string name="save">Speichern</string>
@@ -183,54 +190,62 @@
     wurde nicht gefunden. Stellen Sie
     sicher, dass es installiert ist.</string>
     <string name="no_root">Der Rootzugriff (su) wurde verweigert. </string>
-    <string name="donate">  Spenden</string>
-    <string name="online_help">  Online-Hilfe</string>
+    <string name="donate">Spenden</string>
+    <string name="online_help">Online-Hilfe</string>
     <string name="donation">Gefällt Ihnen Ghost Commander? Wenn ja, sollten Sie mit
     einer kleinen Spende die weitere Entwicklung unterstützen.
     Berühren Sie \"Ok\", um über Paypal zu spenden.
     Berühren Sie \"Abbrechen\", um Ghost Commander einfach weiter zu nutzen. </string>
     <string name="about_text"><![CDATA[
-       <h1>Ghost Commander v%s</h1>
-    <h2>Ein Dateimanager</h2>
-    Fehler oder Verbesserungsvorschläge, senden Sie bitte an<br/>
-    <a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a>
-    <h3>Haftungsausschluss:</h3>
-    Mit Nutzung dieser Software erkennen Sie die folgenden Bedingungen an.
-    Der Entwickler dieser Software ist nicht verantwortlich für jegliche Art von Problemen (Datenverlust, Hardwareschäden, Folgeschäden, ...), die durch die Nutzung dieser Software verursacht werden könnten. Sie nutzen diese Software auf eigene Verantwortung.\n
-    Wenn Sie mit diesen Bedingungen nicht einverstanden sind, hören Sie umgehend auf diese Software zu nutzen und deinstallieren Sie Sie.\n
+<h1>Ghost Commander v%s</h1>
+<h4>Ein Dateimanager</h4>
+
+<p>On the Web:<br>
+<a href="https://sites.google.com/site/ghostcommander1/">Web site</a><br>
+<a href="http://sourceforge.net/projects/ghostcommander/">At SourceForge</a>
+</p> 
+<p>Fehler oder Verbesserungsvorschläge, senden Sie bitte an<br/><a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a></p>
+<p>Like this app? <a href="%2$s">Make a PayPal Donation</a> to support further development.</p>
+<h3>Haftungsausschluss:</h3>
+Mit Nutzung dieser Software erkennen Sie die folgenden Bedingungen an. Der Entwickler dieser Software ist nicht verantwortlich für jegliche Art von Problemen (Datenverlust, Hardwareschäden, Folgeschäden, …), die durch die Nutzung dieser Software verursacht werden könnten. Sie nutzen diese Software auf eigene Verantwortung.\n
+Wenn Sie mit diesen Bedingungen nicht einverstanden sind, hören Sie umgehend auf diese Software zu nutzen und deinstallieren Sie Sie.\n
     ]]></string>
-    <string name="keys_text">Kurzanleitung:\n\n
-    Zum Markieren berühren Sie die rechte Hälfte eines Datei- oder Ordnereintrages im jeweiligen Fenster.\n
-    Um den Ordner direkt zu öffnen und um die Favoriten anzuzeigen, berühren und halten Sie den Fenstertitel.\n\n
-    Tastenkürzel:\n
-    Lautstärke+ - aktuelle Datei oder aktuellen Ordner markieren\n
-    Lautstärke- - Fenster wechseln\n
-    +,- - Markieren oder Markierung aufheben\n
-    (, ) - Ordner im rechten oder linken Fenster direkt öffnen und Favoriten anzeigen\n
-    * - aktuellen Ordner zu den Favoriten hinzufügen\n
-    \ - Gesamtgrösse aller markierten Dateien und Ordner anzeigen\n
-    = - Fenster angleichen\n
-    1 - Hilfe\n
-    2 - aktuelle Datei umbenennen\n
-    4 - Datei bearbeiten\n
-    5 - markierte Dateien/ Ordner kopieren\n
-    6 - markierte Dateien/ Ordner verschieben\n
-    7 - Neuen Ordner erstellen\n
-    8 - Dateien und/ oder Verzeichnisse löschen\n
-    9 - Einstellungen öffnen\n
-    0 - Ghost Commander schliessen\n
-    [A-z] - Schnellsuche\n\n
+    <string name="keys_text">"
+\t\tKURZANLEITUNG\n
 
-    Zum Öffnen einer anonymen FTP-Verbindung, geben Sie die URL z.B. so ein:\n
-    ftp://Server.de/Ordner\n
-    Zum Öffnen einer FTP-Verbindung mit Zugangsdaten, geben Sie die URL in folgender Form an:\n
-    ftp://Benutzername:Kennwort@Server.de/Ordner\n\n
+Zum Markieren berühren Sie die rechte Hälfte eines Datei- oder Ordnereintrages im jeweiligen Fenster.\n
+Um den Ordner direkt zu öffnen und um die Favoriten anzuzeigen, berühren und halten Sie den Fenstertitel.\n
 
-    Für den Rootzugriff geben Sie den Pfad in folgender Form ein:\n
-    root://Ordner\n
-    Stellen Sie dazu sicher, dass Busybox installiert ist und dass Sie den Installationspfad in den Einstellungen angegeben haben.\n\n
+\t\tTASTENKÜRZEL\n
 
-    Zur Anzeige der eingehängten Geräte geben Sie\n
-    mount://\n
-    ein. Klicken Sie anschliessend auf einen Eintrag um zwischen "rw" und "ro" umzuschalten.</string>
+Lautstärke+ - aktuelle Datei oder aktuellen Ordner markieren\n
+Lautstärke- - Fenster wechseln\n
++,- - Markieren oder Markierung aufheben\n
+(, ) - Ordner im rechten oder linken Fenster direkt öffnen und Favoriten anzeigen\n
+* - aktuellen Ordner zu den Favoriten hinzufügen\n
+\ - Gesamtgrösse aller markierten Dateien und Ordner anzeigen\n
+= - Fenster angleichen\n
+1 - Hilfe\n
+2 - aktuelle Datei umbenennen\n
+4 - Datei bearbeiten\n
+5 - markierte Dateien/ Ordner kopieren\n
+6 - markierte Dateien/ Ordner verschieben\n
+7 - Neuen Ordner erstellen\n
+8 - Dateien und/ oder Verzeichnisse löschen\n
+9 - Einstellungen öffnen\n
+0 - Ghost Commander schliessen\n
+[A-z] - Schnellsuche\n\n
+
+Zum Öffnen einer anonymen FTP-Verbindung, geben Sie die URL z.B. so ein:\n
+ftp://Server.de/Ordner\n
+Zum Öffnen einer FTP-Verbindung mit Zugangsdaten, geben Sie die URL in folgender Form an:\n
+ftp://Benutzername:Kennwort@Server.de/Ordner\n\n
+
+Für den Rootzugriff geben Sie den Pfad in folgender Form ein:\n
+root://Ordner\n
+Stellen Sie dazu sicher, dass Busybox installiert ist und dass Sie den Installationspfad in den Einstellungen angegeben haben.\n\n
+
+Zur Anzeige der eingehängten Geräte geben Sie\n
+mount://\n
+ein. Klicken Sie anschliessend auf einen Eintrag um zwischen "rw" und "ro" umzuschalten."</string>
 </resources>
