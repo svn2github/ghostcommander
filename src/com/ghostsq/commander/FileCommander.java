@@ -564,6 +564,9 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             case R.id.eq:
                 panels.makeOtherAsCurrent();
                 break;
+            case R.id.swap:
+                panels.swapPanels();
+                break;
             case R.id.toggle_panels_mode:
                 panels.togglePanelsMode();
                 break;

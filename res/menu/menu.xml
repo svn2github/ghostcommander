@@ -44,11 +44,14 @@
              android:alphabeticShortcut="r"/>
         <item android:id="@+id/sel_all"
              android:title="@string/select_all"
-             android:alphabeticShortcut="a"/>
+             android:alphabeticShortcut="+"/>
         <item android:id="@+id/uns_all"
              android:title="@string/unselect_all"
+             android:alphabeticShortcut="-"/>
+        <item android:id="@+id/swap"
+             android:title="@string/swap"
              android:alphabeticShortcut="u"/>
-      </menu>
+        </menu>
     </item>
 
     <item android:id="@+id/file"

@@ -328,17 +328,31 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
                         result.append( date_s );
                         
                         if( item.f().isFile() ) {
-                            FileInputStream in  = new FileInputStream( mList[0].f() );
-                            MessageDigest digester = MessageDigest.getInstance( "MD5" );
-                            byte[] bytes = new byte[8192];
-                            int byteCount;
-                            while((byteCount = in.read(bytes)) > 0) {
-                                digester.update( bytes, 0, byteCount );
+                            {
+                                FileInputStream in  = new FileInputStream( mList[0].f() );
+                                MessageDigest digester = MessageDigest.getInstance( "MD5" );
+                                byte[] bytes = new byte[8192];
+                                int byteCount;
+                                while((byteCount = in.read(bytes)) > 0) {
+                                    digester.update( bytes, 0, byteCount );
+                                }
+                                byte[] digest = digester.digest();
+                                in.close();
+                                result.append( "\n\nMD5:\n" );
+                                result.append( Utils.toHexString( digest, null ) );
+                            } {
+                                FileInputStream in  = new FileInputStream( mList[0].f() );
+                                MessageDigest digester = MessageDigest.getInstance( "SHA" );
+                                byte[] bytes = new byte[8192];
+                                int byteCount;
+                                while((byteCount = in.read(bytes)) > 0) {
+                                    digester.update( bytes, 0, byteCount );
+                                }
+                                byte[] digest = digester.digest();
+                                in.close();
+                                result.append( "\n\nSHA:\n" );
+                                result.append( Utils.toHexString( digest, null ) );
                             }
-                            byte[] digest = digester.digest();
-                            in.close();
-                            result.append( "\n\nMD5:\n" );
-                            result.append( Utils.toHexString( digest, null ) );
                         }
                     }
                     result.append( "\n\n" );

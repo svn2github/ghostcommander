@@ -17,11 +17,12 @@ public class ToolButtons extends ArrayList<ToolButton>
         String bcns = shared_pref.getString( pref_key, null );
         if( bcns != null && bcns.length() > 0 ) {
             // add new introduced buttons here like below:
-            if( bcns.indexOf( "search" ) < 0 ) bcns += ",search";
-            if( bcns.indexOf( "menu"   ) < 0 ) bcns += ",menu";
-            if( bcns.indexOf( "totop"  ) < 0 ) bcns += ",totop";
-            if( bcns.indexOf( "tobot"  ) < 0 ) bcns += ",tobot";
-            if( bcns.indexOf( "go_up"  ) < 0 ) bcns += ",go_up";
+            if( bcns.indexOf( "search") < 0 ) bcns += ",search";
+            if( bcns.indexOf( "menu"  ) < 0 ) bcns += ",menu";
+            if( bcns.indexOf( "totop" ) < 0 ) bcns += ",totop";
+            if( bcns.indexOf( "tobot" ) < 0 ) bcns += ",tobot";
+            if( bcns.indexOf( "go_up" ) < 0 ) bcns += ",go_up";
+            if( bcns.indexOf( "swap"  ) < 0 ) bcns += ",swap";
             String[] bcna = bcns.split( "," );
             for( String bcn : bcna ) {
                 int bi = ToolButton.getId( bcn );

@@ -22,6 +22,7 @@
 <string name="tgl">Toggle</string>
 <string name="sz">Info</string>
 <string name="refresh">Refresh</string>
+<string name="swap">Swap</string>
 <string name="enter">Change location</string>
 <string name="home">Home</string>
 <string name="sdcard">/sdcard</string>

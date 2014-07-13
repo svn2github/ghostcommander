@@ -53,9 +53,10 @@ public class ToolButton {
         if( cn.equals( "softkbd" ) ) return        R.id.softkbd;
         if( cn.equals( "search"  ) ) return        R.id.search;
         if( cn.equals( "menu"    ) ) return        R.id.menu;
-        if( cn.equals( "totop"    ) ) return       R.id.totop;
-        if( cn.equals( "tobot"    ) ) return       R.id.tobot;
-        if( cn.equals( "go_up"    ) ) return       R.id.action_back;
+        if( cn.equals( "totop"   ) ) return        R.id.totop;
+        if( cn.equals( "tobot"   ) ) return        R.id.tobot;
+        if( cn.equals( "go_up"   ) ) return        R.id.action_back;
+        if( cn.equals( "swap"    ) ) return        R.id.swap;
         return 0;
     }
 
@@ -74,6 +75,7 @@ public class ToolButton {
         case  R.id.F10:          return  Feature.F10;
         case  R.id.eq:           return  Feature.EQ;
         case  R.id.tgl:          return  Feature.TGL;
+        case  R.id.swap:         return  Feature.TGL;
         case  R.id.sz:           return  Feature.SZ;
         case  R.id.by_name:      return  Feature.BY_NAME;
         case  R.id.by_ext:       return  Feature.BY_EXT;
@@ -139,6 +141,7 @@ public class ToolButton {
         case  R.id.totop:        return  "totop";
         case  R.id.tobot:        return  "tobot";
         case  R.id.action_back:  return  "go_up";
+        case  R.id.swap:         return  "swap";
         }
         return null;
     }
@@ -169,6 +172,7 @@ public class ToolButton {
         case  R.id.add_fav:      return  '*';
         case  R.id.remount:      return  0;
         case  R.id.search:       return  '/';        
+        case  R.id.swap:         return  '~';        
         }
         return 0;
     }
@@ -211,6 +215,7 @@ public class ToolButton {
         case  R.id.totop:        return  R.string.go_top;        
         case  R.id.tobot:        return  R.string.go_end;
         case  R.id.action_back:  return  R.string.go_up;
+        case  R.id.swap:         return  R.string.swap;
         }
         return 0;
     }
@@ -240,6 +245,7 @@ public class ToolButton {
         case  R.id.sel_all:      return  true;
         case  R.id.uns_all:      return  true;
         case  R.id.search:       return  true;        
+        case  R.id.swap:         return  true;        
         }
         return false;
     }

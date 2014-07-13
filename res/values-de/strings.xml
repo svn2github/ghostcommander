@@ -196,7 +196,7 @@
     einer kleinen Spende die weitere Entwicklung unterstützen.
     Berühren Sie \"Ok\", um über Paypal zu spenden.
     Berühren Sie \"Abbrechen\", um Ghost Commander einfach weiter zu nutzen. </string>
-    <string name="about_text"><![CDATA[
+    <string name="about_text" formatted="false"><![CDATA[
 <h1>Ghost Commander v%s</h1>
 <h4>Ein Dateimanager</h4>
 

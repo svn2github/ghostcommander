@@ -153,7 +153,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         if( panelsView != null )
             panelsView.setMode( sxs_ );
     }
-
+  
     public final int getCurrent() {
         return current;
     }
@@ -520,6 +520,15 @@ public class Panels implements AdapterView.OnItemSelectedListener,
 
     public final void refreshList( int which, boolean was_current, String posto ) {
         list[which].refreshList( was_current, posto );
+    }
+    public final void swapPanels() {
+        ListAdapter  left_a =  list[LEFT].flv.getAdapter();
+        ListAdapter right_a = list[RIGHT].flv.getAdapter();
+         list[LEFT].flv.setAdapter( right_a );
+        list[RIGHT].flv.setAdapter(  left_a );
+        boolean left_cur = current == LEFT;
+         list[LEFT].refreshList(  left_cur, null );
+        list[RIGHT].refreshList( !left_cur, null );
     }
 
     public final void redrawLists() {
@@ -1341,6 +1350,9 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 return true;
             case '#':
                 setLayoutMode( !sxs );
+                return true;
+            case '~':
+                swapPanels();
                 return true;
             case '+':
             case '-':
