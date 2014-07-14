@@ -1,9 +1,14 @@
 package com.ghostsq.commander.utils;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 import java.io.OutputStream;
 
@@ -542,6 +547,12 @@ public final class Utils {
         UrlQuerySanitizer urlqs = new UrlQuerySanitizer();
         return urlqs.unescape( s.replaceAll( "\\+", "_pLuS_" ) ).replaceAll( "_pLuS_", "+" );
     }
+
+    public final static boolean isHTML( String s ) {
+        return s.indexOf( "</", 3 ) > 0 ||
+               s.indexOf( "/>", 3 ) > 0 ||
+               s.indexOf( "&#x" ) >= 0;
+    }
     
     public static byte[] hexStringToBytes( String hexString ) {
         int len = hexString.length() / 2;
@@ -565,6 +576,23 @@ public final class Utils {
         return result.toString();
     }
 
+    public static String getHash( File f, String algorithm ) {
+        try {
+            FileInputStream in  = new FileInputStream( f );
+            MessageDigest digester = MessageDigest.getInstance( algorithm );
+            byte[] bytes = new byte[8192];
+            int byteCount;
+            while((byteCount = in.read(bytes)) > 0)
+                digester.update( bytes, 0, byteCount );
+            byte[] digest = digester.digest();
+            in.close();
+            return toHexString( digest, null );
+        } catch( Exception e ) {
+            Log.e( "getHash", "", e );
+            return null;
+        }
+    }    
+    
     public final static float getBrightness( int color ) {
         float[] hsv = new float[3];
         Color.colorToHSV( color, hsv );

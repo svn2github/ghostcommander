@@ -48,6 +48,7 @@ import android.view.KeyEvent;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.text.Html;
 import android.util.Log;
 import android.widget.AdapterView;
 import android.widget.RemoteViews;
@@ -93,7 +94,8 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
     }
 
     public final void showMessage( String s ) {
-        Toast.makeText( this, s, Toast.LENGTH_LONG ).show();
+        boolean html = Utils.isHTML( s );
+        Toast.makeText( this, html ? Html.fromHtml( s ) : s, Toast.LENGTH_LONG ).show();
     }
 
     public int getWidth() {

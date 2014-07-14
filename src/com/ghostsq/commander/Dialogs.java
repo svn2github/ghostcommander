@@ -468,7 +468,12 @@ public class Dialogs implements DialogInterface.OnClickListener {
                         }
                         int fs = ( reduce_size ? 15 : 18 ) + ( fnt_sz - 12 );
                         tv.setTextSize( fs > 12 ? fs : 12 );
-                        tv.setText( toShowInAlertDialog );
+                        if( Utils.isHTML( toShowInAlertDialog ) ) {
+                            if( toShowInAlertDialog.indexOf( "</a>", 3 ) > 0 )
+                                tv.setMovementMethod( LinkMovementMethod.getInstance() );                            
+                            tv.setText( Html.fromHtml( toShowInAlertDialog.replaceAll( "\\n", "<br/>" ) ) );
+                        } else
+                            tv.setText( toShowInAlertDialog );
                     } else 
                         ( (AlertDialog)dialog ).setMessage( toShowInAlertDialog ); 
                     toShowInAlertDialog = null;

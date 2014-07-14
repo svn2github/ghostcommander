@@ -316,7 +316,7 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
                     if( mList.length == 1 ) {
                         FileItem item = mList[0];
                         result.append( c.getString( R.string.sz_lastmod ) );
-                        result.append( " " );
+                        result.append( "&#xA0;" );
                         String date_s;
                         Date date = item.date;
                         if( Locale.getDefault().getLanguage().compareTo( "en" ) != 0 ) {
@@ -326,43 +326,30 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
                         } else 
                             date_s = (String)DateFormat.format( "MMM dd yyyy hh:mm:ss", date );
                         result.append( date_s );
-                        
-                        if( item.f().isFile() ) {
-                            {
-                                FileInputStream in  = new FileInputStream( mList[0].f() );
-                                MessageDigest digester = MessageDigest.getInstance( "MD5" );
-                                byte[] bytes = new byte[8192];
-                                int byteCount;
-                                while((byteCount = in.read(bytes)) > 0) {
-                                    digester.update( bytes, 0, byteCount );
-                                }
-                                byte[] digest = digester.digest();
-                                in.close();
-                                result.append( "\n\nMD5:\n" );
-                                result.append( Utils.toHexString( digest, null ) );
-                            } {
-                                FileInputStream in  = new FileInputStream( mList[0].f() );
-                                MessageDigest digester = MessageDigest.getInstance( "SHA" );
-                                byte[] bytes = new byte[8192];
-                                int byteCount;
-                                while((byteCount = in.read(bytes)) > 0) {
-                                    digester.update( bytes, 0, byteCount );
-                                }
-                                byte[] digest = digester.digest();
-                                in.close();
-                                result.append( "\n\nSHA:\n" );
-                                result.append( Utils.toHexString( digest, null ) );
+                        File f = item.f(); 
+                        if( f.isFile() ) {
+                            String ext  = Utils.getFileExt( item.name );
+                            String mime = Utils.getMimeByExt( ext );
+                            if( mime != null && !"*/*".equals( mime ) )
+                                result.append( "\n\n<b>MIME:</b>\n&#xA0;<small>" + mime + "</small>" );
+                            String md5sum = Utils.getHash( f, "MD5" );
+                            if( md5sum != null ) {
+                                result.append( "\n\n<b>MD5:</b>\n&#xA0;<small>" + md5sum + "</small>" );
+                            }
+                            String shasum = Utils.getHash( f, "SHA" );
+                            if( shasum != null ) {
+                                result.append( "\n\n<b>SHA:</b>\n&#xA0;<small>" + shasum + "</small>" );
                             }
                         }
                     }
-                    result.append( "\n\n" );
+                    result.append( "\n\n<hr/>" );
         	    }
                 StatFs stat = new StatFs( dirName );
                 long block_size = stat.getBlockSize( );
                 result.append( c.getString( R.string.sz_total, Formatter.formatFileSize( ctx, stat.getBlockCount() * block_size ), 
                                                                Formatter.formatFileSize( ctx, stat.getAvailableBlocks() * block_size ) ) );
-                
-				sendReport( result.toString() );
+                String str = result.toString();
+				sendReport( str );
 			} catch( Exception e ) {
 				sendProgress( e.getMessage(), Commander.OPERATION_FAILED );
 			}

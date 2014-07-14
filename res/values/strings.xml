@@ -213,16 +213,16 @@
 <string name="were">were</string>
 <string name="was">was</string>
 <string name="nothing">Nothing</string>
-<string name="sz_folder">Folder \"%1$s\"\n%2$d files </string>
-<string name="sz_dirnum"> in %1$d director%2$s</string>
+<string name="sz_folder"><![CDATA[<b>Folder</b> \"%1$s\"\n&#xA0;%2$d files ]]></string>
+<string name="sz_dirnum"><![CDATA[ in %1$d director%2$s]]></string>
 <string name="sz_dirsfx_s">y</string>
 <string name="sz_dirsfx_p">ies</string>
-<string name="sz_file">File: \"%s\"</string>
-<string name="sz_files">Files: %d </string>
-<string name="sz_Nbytes">\nSize: %1$s</string>
-<string name="sz_bytes"> (%db)</string>
-<string name="sz_lastmod">\n\nLast modified:\n </string>
-<string name="sz_total">Total: %1$s\nFree: %2$s</string>
+<string name="sz_file"><![CDATA[<b>File:</b> \"%s\"]]></string>
+<string name="sz_files"><![CDATA[<b>Files:</b> %d ]]></string>
+<string name="sz_Nbytes"><![CDATA[\n<b>Size:</b> %1$s]]></string>
+<string name="sz_bytes"> (<small>%db</small>)</string>
+<string name="sz_lastmod"><![CDATA[\n\n<b>Last modified:</b>\n ]]></string>
+<string name="sz_total"><![CDATA[<b>Total:</b> %1$s\n<b>Free:</b> %2$s]]></string>
 <string name="busy">Busy!</string>
 <string name="cd_title">Go</string>
 <string name="cd_prompt">Change directory to:</string>
@@ -402,7 +402,7 @@ Tap \"OK\" to be redirected to the PayPal site.\n
 <h4>A file manager by Ghost Squared.</h4>
 
 <p>On the Web:<br>
-&#xA0;&#xA0;&#xA0;<a href="https://sites.google.com/site/ghostcommander1/">Web site</a><br>
+&#xA0;&#xA0;&#xA0;<a href="https://sites.google.com/site/ghostcommander1/">Web site</a><br/>
 &#xA0;&#xA0;&#xA0;<a href="http://sourceforge.net/projects/ghostcommander/">At SourceForge</a> 
 </p>
 <p>Please email bugs/suggestions to:<br/> <a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a></p>
@@ -414,81 +414,85 @@ consequential damages, or any issues that are, or could be caused by the use of 
 You agree to use this software at your own risk.\n
 If you don\'t agree to the above, stop using this software immediately and uninstall it.\n
 ]]></string>
-<string name="keys_text">"
-\t\tSELECTING FILES
-
-To select files and folders, tap on the right side of their rows and
-open them by tapping on the left. That\'s right, one side will activate
+<string name="keys_text"><![CDATA[
+<h3>SELECTING FILES</h3>
+<p>
+To select files and folders, tap on the <b>right</b> side of their rows and
+open them by tapping on the <b>left</b>. That\'s right, one side will activate
 items and the other side will select them.
-
-\t\tCOPYING AND MOVING
-
+</p>
+<h3>COPYING AND MOVING</h3>
+<p>
 Copy or move files and folders by first choosing the target destination
 in one panel, then swipe (or toggle) back to the other panel and select
 the items you wish to transfer.
-
-\t\tZIP FILES
-
+</p>
+<h3>ZIP FILES</h3>
+<p>
 Ghost Commander can work with classic ZIP files as if they were
 directories. Password-protected (encrypted) ZIP files and ZIP files
 using other compression algorithms are not supported.
-
-\t\tPLUGINS
-
+</p>
+<h3>PLUGINS</h3>
+<p>
 Plugins, which have to be installed separately, provide access to
 Windows shared folders, SSH File Transfer Protocol and also access to
 cloud storage services: Box, Dropbox and Google Drive.
-
-\t\tROOT MODE
-
+</p>
+<h3>ROOT MODE</h3>
+<p>
 Using the root mode (superuser) and mount point features of Ghost
 Commander requires caution, a rooted device and BusyBox installed with
 its path defined in the settings.
-
-\t\tLOCATION EDITOR
-
+</p>
+<h3>LOCATION EDITOR</h3>
+<p>
 To enter a location manually (and to see a drop-down list of your
 favorites) long-press on the panel\'s header to open the location
 editor.\n
 You can enter resource URIs into the location editor manually as
 follows:
-
-ftp://host.com/folder
+</p><p>
+<b>ftp://</b><i>host.com</i><b>/</b><i>folder</i><br/>
     - Anonymous FTP
-
-ftp://user:pass@ftp_host/folder
+</p><p>
+<b>ftp://</b><i>user</i><b>:</b><i>pass</i><b>@</b><i>ftp_host</i><b>/</b><i>folder</i><br/>
     - Authenticated FTP
-
-sftp://user:pass@sftp_host/folder
-    - SSH FTP
-    If you have a keyfile to authenticate, put it to the file
-    /sdcard/.GhostCommander/keys/&lt;host name&gt;
+</p><p>
+<b>sftp://</b><i>user</i><b>:</b><i>pass</i><b>@</b><i>sftp_host</i><b>/</b><i>folder</i><br/>
+    - SSH FTP<br/>
+    If you have a private key to authenticate, put it to the file
+    <b>/sdcard/.GhostCommander/keys/</b><i>exact_host_name</i><br/>
     In this case the password is the passphrase to your keyfile.
-
-smb://domain;user:pass@server/share
+</p><p>
+<b>smb://</b><i>domain</i><b>;</b><i>user</i><b>:</b><i>pass</i><b>@</b><i>server</i><b>/</b><i>share</i><br/>
     - Windows share
-
-root:/path/to/folder
+</p><p>
+<b>root:/</b><i>path/to/folder</i><br/>
     - Root mode
-
-\t\tHOTKEYS
-
-VolumeUp - Select files and folders
-VolumeDn - Toggle between the panels
-+, -  - Select or unselect items in the current folder  
-(, )  - Enter a location manually and view your favorites
-* - Add the current folder to your favorites
-\" - Show detailed information for the selected item(s)
-= - Display the same location in the other panel (synchronize)
-1 - Help
-2 - Rename selected item
-4 - Edit selected item
-5 - Copy selected item(s)
-6 - Move selected item(s)
-7 - Create a new folder
-8 - Delete selected item(s)
-9 - Open preferences/settings
-0 - Close the application
-[A-z] - Quick search
-"</string>
+</p>
+<h3>HOTKEYS</h3>
+<p>
+<b><i>VolumeUp</i></b> - Select files and folders<br/>
+<b><i>VolumeDn</i></b> - Toggle between the panels<br/>
+<b>+</b>, <b>-</b>  - Select or unselect items in the current folder<br/>  
+<b>(</b>, <b>)</b>  - Enter a location manually and view your favorites<br/>
+<b>*</b> - Add the current folder to your favorites<br/>
+<b>\"</b> - Show detailed information for the selected item(s)<br/>
+<b>=</b> - Display the same location in the other panel (synchronize)<br/>
+<b>1</b> - Help<br/>
+<b>2</b> - Rename selected item<br/>
+<b>4</b> - Edit selected item<br/>
+<b>5</b> - Copy selected item(s)<br/>
+<b>6</b> - Move selected item(s)<br/>
+<b>7</b> - Create a new folder<br/>
+<b>8</b> - Delete selected item(s)<br/>
+<b>9</b> - Open preferences/settings<br/>
+<b>0</b> - Close the application<br/>
+<b>[A-z]</b> - Quick search<br/>
+</p>
+<p>
+<a href="https://sites.google.com/site/ghostcommander1/info">More help...</a>
+</p>
+]]></string>
 </resources>
