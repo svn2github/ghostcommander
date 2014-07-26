@@ -80,6 +80,7 @@
 <string name="prefs">Settings</string>
 <string name="save_prefs">Back up settings</string>
 <string name="rest_prefs">Restore settings</string>
+<string name="save_log">Save Log to file</string>
 <string name="prefs_saved">Your preferences have been saved</string>
 <string name="prefs_restr">Your preferences have been restored</string>
 <string name="about">About</string>
@@ -213,7 +214,7 @@
 <string name="were">were</string>
 <string name="was">was</string>
 <string name="nothing">Nothing</string>
-<string name="sz_folder"><![CDATA[<b>Folder</b> \"%1$s\"\n&#xA0;%2$d files ]]></string>
+<string name="sz_folder"><![CDATA[<b>Folder:</b> \"%1$s\"\n&#xA0;%2$d files ]]></string>
 <string name="sz_dirnum"><![CDATA[ in %1$d director%2$s]]></string>
 <string name="sz_dirsfx_s">y</string>
 <string name="sz_dirsfx_p">ies</string>
@@ -221,7 +222,7 @@
 <string name="sz_files"><![CDATA[<b>Files:</b> %d ]]></string>
 <string name="sz_Nbytes"><![CDATA[\n<b>Size:</b> %1$s]]></string>
 <string name="sz_bytes"> (<small>%db</small>)</string>
-<string name="sz_lastmod"><![CDATA[\n\n<b>Last modified:</b>\n ]]></string>
+<string name="sz_lastmod"><![CDATA[\n<b>Last modified:</b>\n ]]></string>
 <string name="sz_total"><![CDATA[<b>Total:</b> %1$s\n<b>Free:</b> %2$s]]></string>
 <string name="busy">Busy!</string>
 <string name="cd_title">Go</string>
