@@ -3,7 +3,6 @@ package com.ghostsq.commander;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.zip.ZipEntry;
@@ -13,7 +12,6 @@ import java.util.zip.ZipOutputStream;
 import com.ghostsq.commander.toolbuttons.ToolButtonsProps;
 import com.ghostsq.commander.utils.Utils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -214,6 +212,8 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
                     public void run() {
                         String fn = f_save_dir + "/logcat.txt";
                         try {
+                            File f = new File( fn );
+                            if( f.exists() ) f.delete();
                             Process prc = Runtime.getRuntime().exec( "logcat -d -v time -f " + fn + " *:v\n" );
                             Toast.makeText( ctx, prc.waitFor() == 0 ? ctx.getString( R.string.saved, fn ) :
                                 ctx.getString( R.string.fail ), Toast.LENGTH_LONG ).show();

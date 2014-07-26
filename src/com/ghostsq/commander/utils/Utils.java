@@ -577,16 +577,29 @@ public final class Utils {
     }
 
     public static String getHash( File f, String algorithm ) {
+        String[] hashes = getHash( f, new String[] { algorithm } );
+        return hashes != null ? hashes[0] : null;
+    }
+
+    public static String[] getHash( File f, String[] algorithms ) {
         try {
             FileInputStream in  = new FileInputStream( f );
-            MessageDigest digester = MessageDigest.getInstance( algorithm );
+            MessageDigest[] digesters = new MessageDigest[algorithms.length];
+            for( int i = 0; i < algorithms.length; i++ )
+                digesters[i] = MessageDigest.getInstance( algorithms[i] );
             byte[] bytes = new byte[8192];
             int byteCount;
-            while((byteCount = in.read(bytes)) > 0)
-                digester.update( bytes, 0, byteCount );
-            byte[] digest = digester.digest();
+            while((byteCount = in.read(bytes)) > 0) {
+                for( int i = 0; i < digesters.length; i++ )
+                    digesters[i].update( bytes, 0, byteCount );
+            }
             in.close();
-            return toHexString( digest, null );
+            String[] hashes = new String[digesters.length];
+            for( int i = 0; i < digesters.length; i++ ) {
+                byte[] digest = digesters[i].digest();
+                hashes[i] = toHexString( digest, null ); 
+            }
+            return hashes;
         } catch( Exception e ) {
             Log.e( "getHash", "", e );
             return null;

@@ -332,13 +332,11 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
                             String mime = Utils.getMimeByExt( ext );
                             if( mime != null && !"*/*".equals( mime ) )
                                 result.append( "\n\n<b>MIME:</b>\n&#xA0;<small>" + mime + "</small>" );
-                            String md5sum = Utils.getHash( f, "MD5" );
-                            if( md5sum != null ) {
-                                result.append( "\n\n<b>MD5:</b>\n&#xA0;<small>" + md5sum + "</small>" );
-                            }
-                            String shasum = Utils.getHash( f, "SHA" );
-                            if( shasum != null ) {
-                                result.append( "\n\n<b>SHA:</b>\n&#xA0;<small>" + shasum + "</small>" );
+                            
+                            String[] hashes = Utils.getHash( f, new String[] { "MD5", "SHA-1" } );
+                            if( hashes != null ) {
+                                result.append( "\n<b>MD5:</b>\n&#xA0;<small>"   + hashes[0] + "</small>" );
+                                result.append( "\n<b>SHA-1:</b>\n&#xA0;<small>" + hashes[1] + "</small>" );
                             }
                         }
                     }
