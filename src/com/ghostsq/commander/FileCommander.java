@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Random;
 
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.Engine;
@@ -536,7 +537,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             case R.id.F5t:
             case R.id.F6t:
             case R.id.F8t:
-                boolean touch = R.id.F2t == id || R.id.F5t == id || R.id.F6t == id || R.id.F8t == id || R.id.new_zipt == id;  
+                boolean touch = R.id.F2t == id || R.id.F5t == id || R.id.F6t == id || R.id.F8t == id || R.id.new_zipt == id;
                 if( Utils.getCount( panels.getMultiple( touch ) ) > 0 )
                     showDialog( id );
                 else
@@ -636,7 +637,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             case R.id.open:
                 String path = panels.getSelectedItemName( true, true );
                 String ext = Utils.getFileExt( path );
-                if( ".zip".equalsIgnoreCase( ext) )
+                if( ".zip".equalsIgnoreCase( ext ) )
                     Navigate( Uri.parse( path ).buildUpon().scheme( "zip" ).build(), null, null );
                 break;
             case R.id.enter:
@@ -778,8 +779,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                         return;
                     }
                 }
-                if( ext != null && ( ext.compareToIgnoreCase( ".zip" ) == 0 ||
-                                     ext.compareToIgnoreCase( ".jar" ) == 0 ) ) {
+                if( ext != null && ( ext.compareToIgnoreCase( ".zip" ) == 0 || ext.compareToIgnoreCase( ".jar" ) == 0 ) ) {
                     Navigate( uri.buildUpon().scheme( "zip" ).build(), null, null );
                     return;
                 }
@@ -791,9 +791,13 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 startService( new Intent( this, StreamServer.class ) );
                 Intent i = new Intent( Intent.ACTION_VIEW );
 
+                if( crd != null ) {
+                    String seed = StreamServer.getEncKey( this );                    
+                    String enc = crd.exportToEncriptedString( seed );
+                    uri = Utils.updateUserInfo( uri, enc );
+                }
+
                 String http_url = "http://127.0.0.1:5322/" + Uri.encode( uri.toString() );
-                if( crd != null )
-                    StreamServer.credentials = crd;
                 // Log.d( TAG, "Stream " + mime + " from: " + http_url );
                 i.setDataAndType( Uri.parse( http_url ), mime );
                 i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET );

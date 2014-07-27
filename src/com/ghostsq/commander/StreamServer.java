@@ -8,7 +8,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.SecureRandom;
 import java.util.Date;
+import java.util.Random;
 
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
@@ -19,6 +21,7 @@ import com.ghostsq.commander.utils.Utils;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
@@ -35,7 +38,7 @@ public class StreamServer extends Service {
     public  CommanderAdapter ca = null;
     
     // pass the credentials through static is better then through a foreign application
-    public  static Credentials credentials = null;  
+//    public  static Credentials credentials = null;  
 
     @Override
     public void onCreate() {
@@ -76,6 +79,24 @@ public class StreamServer extends Service {
         }
     }
 
+    public static String getEncKey( Context ctx ) {
+        String seed = null;
+        SharedPreferences ssp = ctx.getSharedPreferences( StreamServer.class.getSimpleName(), MODE_PRIVATE );
+        if( ssp != null ) {
+            final String pk = "enc_key";
+            seed = ssp.getString( pk, null );
+            if( seed == null ) {
+                SecureRandom rnd = new SecureRandom();
+                seed = "" + Math.abs( rnd.nextLong() );
+                seed = seed.substring( 0, 16 );
+                SharedPreferences.Editor edt = ssp.edit();
+                edt.putString( pk, seed );
+                edt.commit();
+            }
+        }
+        return seed;
+    }
+    
     private class ListenThread extends Thread {
         private final static String TAG = "GCSS.ListenThread";
         private Thread stream_thread;
@@ -253,11 +274,14 @@ public class StreamServer extends Service {
                 String scheme = uri.getScheme();
                 if( scheme == null ) scheme = "";
                 String host = uri.getHost();
-                if( ca != null ) { 
-                    if( !scheme.equals( ca.getScheme() ) )
-                        throw new Exception( "Can't switch to different adapter types: " + scheme + "!=" + ca.getScheme() );
+                if( ca != null ) {
+                    if( !scheme.equals( ca.getScheme() ) ) ca = null; else {
+                        Uri prev_uri = ca.getUri();
+                        if( !host.equals( prev_uri.getHost() ) ) ca = null;
+                    }
                 }
-                else {
+
+                if( ca == null ) {
                     ca = CA.CreateAdapterInstance( scheme, ctx );
                     if( ca == null ) {
                         Log.e( TAG, "Can't create the adapter for: " + scheme );
@@ -268,8 +292,16 @@ public class StreamServer extends Service {
                     if( l ) Log( "Adapter is created" );
                 }
                 last_host = host;
-                if( credentials != null )
-                    ca.setCredentials( credentials );
+                
+                String ui = uri.getUserInfo();
+                if( ui != null ) {
+                    uri = Utils.updateUserInfo( uri, null );
+                    String seed = StreamServer.getEncKey( StreamServer.this );
+                    Credentials credentials = Credentials.createFromEncriptedString( ui, seed );
+                    if( credentials != null )
+                        ca.setCredentials( credentials );
+                }
+                ca.setUri( uri );
                 Item item = ca.getItem( uri );
                 if( item == null ) {
                     Log.e( TAG, "Can't get the item for " + uri );
@@ -390,7 +422,7 @@ public class StreamServer extends Service {
         private int      data_size = 0;
         private int      num_id;
         private boolean  stop = false;
-        private boolean  l = false;
+        private boolean  l = true;//false;
         
         public ReaderThread( InputStream is_, int num_id_ ) {
             is = is_;

@@ -16,6 +16,7 @@ import android.util.Log;
 public class Credentials extends UsernamePasswordCredentials implements Parcelable {
     private static String  TAG  = "GC.Credentials";
     private static String  seed = "5hO@%#O7&!H3#R";
+    private static byte[] rawKey = null;
     public  static String  pwScreen = "***";
     public  static String  KEY  = "CRD";
 
@@ -34,7 +35,7 @@ public class Credentials extends UsernamePasswordCredentials implements Parcelab
              String un = in.readString();
              String pw = "";
              try {
-                 pw = new String( decrypt( getRawKey( seed.getBytes() ), in.createByteArray() ) );
+                 pw = new String( decrypt( getRawKey( seed ), in.createByteArray() ) );
              } catch( Exception e ) {
                  Log.e( TAG, "on password decryption", e );
              }
@@ -55,7 +56,7 @@ public class Credentials extends UsernamePasswordCredentials implements Parcelab
     public void writeToParcel( Parcel dest, int f ) {
         byte[] enc_pw = null;
         try {
-            enc_pw = encrypt( getRawKey( seed.getBytes() ), getPassword().getBytes() );
+            enc_pw = encrypt( getRawKey( seed ), getPassword().getBytes() );
         } catch( Exception e ) {
             Log.e( TAG, "on password encryption", e );
         }
@@ -64,16 +65,25 @@ public class Credentials extends UsernamePasswordCredentials implements Parcelab
     }
 
     public static Credentials createFromEncriptedString( String s ) {
+        return createFromEncriptedString( s, Credentials.seed );
+    }
+
+    public static Credentials createFromEncriptedString( String s, String seed_ ) {
         try {
-            return new Credentials( decrypt( seed, s ) );
+            if( seed_ == null ) seed_ = Credentials.seed;
+            return new Credentials( decrypt( seed_, s ) );
         } catch( Exception e ) {
             Log.e( TAG, "on creating from an encrypted string", e );
         }
         return null;
     }
     public String exportToEncriptedString() {
+        return exportToEncriptedString( this.seed );
+    }
+    public String exportToEncriptedString( String seed_ ) {
         try {
-            return encrypt( seed, getUserName() + ":" + getPassword() );
+            if( seed_ == null ) seed_ = this.seed;
+            return encrypt( seed_, getUserName() + ":" + getPassword() );
         } catch( Exception e ) {
             e.printStackTrace();
         }
@@ -85,25 +95,29 @@ public class Credentials extends UsernamePasswordCredentials implements Parcelab
     }
     
     public static String encrypt( String seed, String cleartext ) throws Exception {
-        byte[] rawKey = getRawKey( seed.getBytes() );
+        byte[] rawKey = getRawKey( seed );
         byte[] result = encrypt( rawKey, cleartext.getBytes() );
         return Utils.toHexString( result, null );
     }
 
     public static String decrypt( String seed, String encrypted ) throws Exception {
-        byte[] rawKey = getRawKey( seed.getBytes() );
+        byte[] rawKey  = getRawKey( seed );
         byte[] enc = Utils.hexStringToBytes( encrypted );
         byte[] result = decrypt( rawKey, enc );
         return new String( result );
     }
 
-    private static byte[] getRawKey( byte[] seed ) throws Exception {
+    private static byte[] getRawKey( String seed ) throws Exception {
+        boolean primary = Credentials.seed.equals( seed );
+        if( primary && Credentials.rawKey != null ) return Credentials.rawKey;
         KeyGenerator kgen = KeyGenerator.getInstance( "AES" );
         SecureRandom sr = SecureRandom.getInstance( "SHA1PRNG", "Crypto" );
-        sr.setSeed( seed );
+        sr.setSeed( seed.getBytes() );
         kgen.init( 128, sr ); // 192 and 256 bits may not be available
         SecretKey skey = kgen.generateKey();
         byte[] raw = skey.getEncoded();
+        if( primary )
+            Credentials.rawKey = raw;
         return raw;
     }
 
@@ -122,14 +136,4 @@ public class Credentials extends UsernamePasswordCredentials implements Parcelab
         byte[] decrypted = cipher.doFinal( encrypted );
         return decrypted;
     }
-
-    public static String toHex( String txt ) {
-        return Utils.toHexString( txt.getBytes(), null );
-    }
-
-    public static String fromHex( String hex ) {
-        return new String( Utils.hexStringToBytes( hex ) );
-    }
-    
-    
 }
