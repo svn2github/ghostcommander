@@ -17,13 +17,14 @@
 <string name="F8">Töröl</string>
 <string name="F9">Beállít</string>
 <string name="F10">Kilép</string>
-<string name="oth_sh_this">Másik panel legyen ugyanaz</string>
+<string name="oth_sh_this">Másik panel ugyanaz</string>
 <string name="eq">Ugyanaz</string>
 <string name="change">Vált</string>
 <string name="tgl">Vált</string>
 <string name="sz">Méret</string>
 <string name="refresh">Frissít</string>
-<string name="enter">Mappa változtatása</string>
+<string name="swap">Csere</string>
+<string name="enter">Mappa megadása</string>
 <string name="home">Kezdő</string>
 <string name="sdcard">SD-gyökér</string>
 <string name="softkbd">Billentyűzet</string>
@@ -80,6 +81,7 @@
 <string name="prefs">Beállítások</string>
 <string name="save_prefs">Beállítások mentése</string>
 <string name="rest_prefs">Beállítások betöltése</string>
+<string name="save_log">Napló mentése fájlba</string>
 <string name="prefs_saved">A beállítások el lettek mentve</string>
 <string name="prefs_restr">A beállítások vissza lettek töltve</string>
 <string name="about">Névjegy</string>
@@ -88,9 +90,9 @@
 <string name="new_folder">Új mappa</string>
 <string name="new_zip">Új ZIP fájl</string>
 <string name="go_button">Ugrás</string>
-<string name="show_size">Méretszámolás</string>
+<string name="show_size">Tulajdonságok</string>
 <string name="send_to">Küldés…</string>
-<string name="open_with">Megnyit a következővel:…</string>
+<string name="open_with">Megnyit a következővel…</string>
 <string name="open">Megnyit</string>
 <string name="copy_name">Név másolása a vágólapra</string>
 <string name="fav_fld">Kedvencekhez: „%s”</string>
@@ -386,7 +388,7 @@
 <string name="process">Folyamat neve</string>
 <string name="app_class">App. osztály</string>
 <string name="affinity">Folyamatrokonság</string>
-<string name="permissions">Jogok</string>
+<string name="permissions">Jogusultságok</string>
 <string name="flags">Jelzők</string>
 <string name="not_exported">Az aktivitás nem exportált</string>
 <string name="smb_missed">Nem tölthető be a Samba adapter: a Ghost Commander SMB beépülő legyen telepítve</string>
