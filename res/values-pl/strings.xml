@@ -42,14 +42,14 @@
 <string name="mount_b">mount:</string>
 <string name="apps">Aplikacje</string>
 <string name="exit">Wyjście</string>
-<string name="favs_descr">Zarządzaj swoimi Ulubionymi miejscami - mogą to być foldery, serwery, udziały, etc. Edytuj, zmieniaj nazwy, dodawaj skróty do Ulubionych na pulpit, oraz wiele innych.</string>
-<string name="local_descr">Przeglądaj i edytuj zawartość lokalnej pamięci: pamięci wewnętrznej, pamięci operacyjnej, kart pamięci. </string>
-<string name="ftp_descr">Połącz się z serwerem FTP i zarządzaj jego zawartością.</string>
-<string name="smb_descr">Połącz się z udostępnionym udziałem/katalogiem (Samba) na komputerze z systemem Windows (wymaga zainstalowanej wtyczki Ghost Commander SMB).</string>
+<string name="favs_descr">Zarządzaj swoimi Ulubionymi miejscami - mogą to być foldery, serwery, udziały</string>
+<string name="local_descr">Przeglądaj i edytuj zawartość lokalnej pamięci: pamięci wewnętrznej, pamięci operacyjnej, kart pamięci</string>
+<string name="ftp_descr">Połącz się z serwerem FTP i zarządzaj jego zawartością</string>
+<string name="smb_descr">Połącz się z udostępnionym udziałem/katalogiem (Samba) na komputerze z systemem Windows (wymaga zainstalowanej wtyczki Ghost Commander SMB)</string>
 <string name="root_descr">Jeśli Twoje urządzenie jest zrootowane, możesz użyć trybu roota, aby uzyskać dostęp do zawartości systemowej. Jeśli nie wiesz, lub nie jesteś pewien, co to dokładnie oznacza - nie używaj tej funkcji!</string>
 <string name="mount_descr">Przeglądaj listę zamontowanych urządzeń i zamontuj ponownie do trybu \"rw\", a następnie z powrotem do trybu \"ro\". Używaj ostrożnie!</string>
-<string name="apps_descr">Lista zainstalowanych aplikacji - funkcja nie zaimplementowana w pełni.</string>
-<string name="exit_descr">Zamyka aplikację.</string>
+<string name="apps_descr">Lista zainstalowanych aplikacji - funkcja nie zaimplementowana w pełni</string>
+<string name="exit_descr">Zamyka aplikację</string>
 <string name="shortcut">Utwórz nowy skrót</string>
 <string name="enter_ftp">Połącz z FTPem</string>
 <string name="enter_smb">Połącz z Samba (Windows)</string>
@@ -72,20 +72,20 @@
 <string name="rest_prefs">Przywróć ustawienia aplikacji</string>
 <string name="prefs_saved">Ustawienia aplikacji zostały zapisane.</string>
 <string name="prefs_restr">Ustawienia aplikacji zostały pomyślnie przywrócone.</string>
-<string name="about">O programie...</string>
+<string name="about">O programie…</string>
 <string name="keys">Klawisze skrótów</string>
 <string name="new_file">Utwórz nowy plik</string>
 <string name="new_folder">Utwórz nowy katalog</string>
 <string name="new_zip">Spakuj do archiwum .ZIP</string>
 <string name="go_button">Idź</string>
 <string name="show_size">Pokaż szczegóły</string>
-<string name="send_to">Wyślij do...</string>
-<string name="open_with">Otwórz za pomocą...</string>
+<string name="send_to">Wyślij do…</string>
+<string name="open_with">Otwórz za pomocą…</string>
 <string name="copy_name">Kopiuj nazwę pliku do Schowka</string>
 <string name="fav_fld">Dodaj do Ulubionych: \"%s\"</string>
-<string name="create_zip">Spakuj do archiwum .ZIP...</string>
+<string name="create_zip">Spakuj do archiwum .ZIP…</string>
 <string name="create_zip_title">Spakuj</string>
-<string name="wait">czekaj...</string>
+<string name="wait">czekaj…</string>
 <string name="fail">(niepowodzenie)</string>
 <string name="failed">Błąd:\n</string>
 <string name="default_uri_cmnt">Domyślna lokalizacja</string>
@@ -122,7 +122,7 @@
 <string name="launch">Uruchom</string>
 <string name="operation">Operacja</string>
 <string name="view_title">Podgląd</string>
-<string name="edit_title">Edytuj...</string>
+<string name="edit_title">Edytuj…</string>
 <string name="newf_title">Utwórz plik</string>
 <string name="newf_prompt">Nazwa nowego pliku:</string>
 <string name="mkdir_title">Nowy katalog</string>
@@ -155,19 +155,19 @@
 <string name="interrupted">Przerwano</string>
 <string name="too_deep_hierarchy">Ścieżka dostępu jest zbyt głęboka</string>
 <string name="nothing_found">Nie znaleziono plików</string>
-<string name="preparing">Przygotowuję...</string>
-<string name="copying">Kopiuję\n\"%s\"...</string>
-<string name="copied_f">Skopiowano\n\"%s\"...</string>
-<string name="deleting">Usuwam\n\"%s\"...</string>
-<string name="deleting_a">Usuwanie...</string>
+<string name="preparing">Przygotowuję…</string>
+<string name="copying">Kopiuję\n\"%s\"…</string>
+<string name="copied_f">Skopiowano\n\"%s\"…</string>
+<string name="deleting">Usuwam\n\"%s\"…</string>
+<string name="deleting_a">Usuwanie…</string>
 <string name="fail_del">Plik "%1$s\" niekompletny, usuwam.</string>
-<string name="unpacking">Rozpakowuję \n\"%s\"...</string>
+<string name="unpacking">Rozpakowuję \n\"%s\"…</string>
 <string name="unpacked_p">Rozpakowano \n\"%s\"   </string>
-<string name="packing">Archiwizuję \n\"%s\"...</string>
-<string name="retrieving">Odzyskuję \n\"%s\"...</string>
-<string name="uploading">Wgrywam \n\"%s\"...</string>
+<string name="packing">Archiwizuję \n\"%s\"…</string>
+<string name="retrieving">Odzyskuję \n\"%s\"…</string>
+<string name="uploading">Wgrywam \n\"%s\"…</string>
 <string name="uploaded_p">Wgrano \n\"%s\"   </string>
-<string name="loading">Ładuję...</string>
+<string name="loading">Ładuję…</string>
 <string name="second">s</string>
 <string name="canceled">Anulowano</string>
 <string name="oom_err">Brak pamięci</string>
@@ -199,11 +199,11 @@
 <string name="were"/>
 <string name="was"/>
 <string name="nothing">Nic nie</string>
-<string name="sz_folder">Katalog \"%1$s\":\n%2$d plik(ów),</string>
-<string name="sz_dirnum">,\nw %1$d katalog%2$s</string>
+<string name="sz_folder">Katalog: \"%1$s\"\n%2$d plik(ów),</string>
+<string name="sz_dirnum">w %1$d katalog%2$s</string>
 <string name="sz_dirsfx_s">u.</string>
 <string name="sz_dirsfx_p">ach.</string>
-<string name="sz_file">Plik \"%s\":</string>
+<string name="sz_file">Plik: \"%s\":</string>
 <string name="sz_files">%d pliki(ów):</string>
 <string name="sz_Nbytes">\n %1$sB</string>
 <string name="sz_bytes">\n(%d B)</string>
@@ -254,46 +254,46 @@
 <string name="send_content">Użyj dostawcy treści do udostępniania plików</string>
 <string name="summary_send_content">Odznacz, jeśli Twoja aplikacja do udostępniania plików nie obsługuje dostawcy treści</string>
 <string name="panels_mode">Widok 2 paneli</string>
-<string name="summary_panels_mode">Pokazuj obydwa panele obok siebie (podzielony ekran).</string>
+<string name="summary_panels_mode">Pokazuj obydwa panele obok siebie (podzielony ekran)</string>
 <string name="two_lines">Dwie linie w wierszu</string>
-<string name="summary_two_lines">Zawsze pokazuj atrybuty pliku w drugiej linii.</string>
+<string name="summary_two_lines">Zawsze pokazuj atrybuty pliku w drugiej linii</string>
 <string name="show_icons">Ikony plików</string>
-<string name="summary_show_icons">Pokazuj ikony (typ pliku) dla każdego elementu.</string>
+<string name="summary_show_icons">Pokazuj ikony (typ pliku) dla każdego elementu</string>
 <string name="toolbar_settings">Ustawienia paska przycisków</string>
 <string name="summary_toolbar_settings">Wybierz linię paska przycisków</string>
 <string name="show_toolbar">Pasek przycisków</string>
-<string name="summary_show_toolbar">Pokazuj pasek przycisków (skróty) na dole ekranu.</string>
+<string name="summary_show_toolbar">Pokazuj pasek przycisków (skróty) na dole ekranu</string>
 <string name="show_hotkeys">Pokaż skróty</string>
 <string name="summary_show_hotkeys">Zawsze pokazuj skróty klawiszowe w pasku przycisków</string>
 <string name="toolbar_preference">Elementy w pasku przycisków</string>
-<string name="summary_toolbar_preference">Wybierz, które polecenia mają być pokazywane w pasku przycisków (skrótów) na dole ekranu.</string>
+<string name="summary_toolbar_preference">Wybierz, które polecenia mają być pokazywane w pasku przycisków (skrótów) na dole ekranu</string>
 <string name="tblist_label">Wybierz, edytuj i ułóż</string>
 <string name="finger_friendly">Duże elementy</string>
-<string name="summary_finger_friendly">Większe elementy, polecenia, ikony, etc. (widok \"Finger Friendly\").</string>
+<string name="summary_finger_friendly">Większe elementy, polecenia, ikony, etc. (widok \"Finger Friendly\")</string>
 <string name="prevent_root">Ostrzegaj przed wyjściem z /sdcard</string>
-<string name="summary_prevent_root">Wyświetlaj ostrzeżenie przy próbie wejścia do katalogów systemowych.</string>
+<string name="summary_prevent_root">Wyświetlaj ostrzeżenie przy próbie wejścia do katalogów systemowych</string>
 <string name="show_root">Pokaż root i zamontuj pliki/katalogi</string>
 <string name="summary_show_root">W widoku początkowym będą wyświetlane tryby roota i montowania plików/katalogów</string>
 <string name="root_root">Root przy wyjściu z /sdcard</string>
-<string name="summary_root_root">Automatycznie przełącz na tryb root-a przy wejściu do katalogów systemowych (wyjście poza /sdcard).</string>
+<string name="summary_root_root">Automatycznie przełącz na tryb root-a przy wejściu do katalogów systemowych (wyjście poza /sdcard)</string>
 <string name="thumbnails">Miniaturki</string>
-<string name="summary_thumbnails">Wyświetlaj miniaturki zawartości plików zamiast zwykłych ikon rodzaju plików.</string>
+<string name="summary_thumbnails">Wyświetlaj miniaturki zawartości plików zamiast zwykłych ikon rodzaju plików</string>
 <string name="thumbnails_size">Rozmiar miniaturek</string>
-<string name="summary_thumbnails_size">Procentowo, względem rozmiaru zwykłych ikonek plików.</string>
+<string name="summary_thumbnails_size">Procentowo, względem rozmiaru zwykłych ikonek plików</string>
 <string name="font_size">Rozmiar czcionki</string>
 <string name="summary_font_size">Ustaw rozmiar czcionki</string>
 <string name="left_panel_settings">Ustawienia lewego panelu</string>
 <string name="right_panel_settings">Ustawienia prawego panelu</string>
 <string name="detailed_view_SbS">Szczegóły w widoku 2 paneli</string>
-<string name="summary_detailed_view_SbS">Pokazuj rozmiar i datę przy plikach w widoku 2 paneli.</string>
+<string name="summary_detailed_view_SbS">Pokazuj rozmiar i datę przy plikach w widoku 2 paneli</string>
 <string name="detailed_view_Ovr">Szczegóły w widoku 1 panelu</string>
-<string name="summary_detailed_view_Ovr">Pokazuj rozmiar i datę przy plikach w widoku 1 panelu.</string>
+<string name="summary_detailed_view_Ovr">Pokazuj rozmiar i datę przy plikach w widoku 1 panelu</string>
 <string name="sorting">Sortowanie</string>
-<string name="summary_sorting">W jaki sposób są sortowane pliki/katalogi.</string>
+<string name="summary_sorting">W jaki sposób są sortowane pliki/katalogi</string>
 <string name="sort_case">Ignoruj wielkość liter przy sortowaniu</string>
-<string name="summary_sort_case">Przy odznaczonej opcji sortowanie będzie wrażliwe na wielkość liter.</string>
+<string name="summary_sort_case">Przy odznaczonej opcji sortowanie będzie wrażliwe na wielkość liter</string>
 <string name="show_hidden">Pokazuj ukryte pliki</string>
-<string name="summary_show_hidden">Przy odznaczonej opcji nie będą pokazywane pliki ukryte (zaczynające się od kropki).</string>
+<string name="summary_show_hidden">Przy odznaczonej opcji nie będą pokazywane pliki ukryte (zaczynające się od kropki)</string>
 <string name="compatibility_settings">Kompatybilność</string>
 <string name="summary_compatibility_settings">Włącz/wyłącz przyciski sprzętowe</string>
 <string name="arrow_mode">Zaznaczanie kursorem</string>
@@ -305,35 +305,35 @@
 <string name="colors">Ustawienia kolorów</string>
 <string name="summary_colors">Zdefiniuj kolory dla tła, tekstu, zaznaczenia, itd.</string>
 <string name="bgr_color_picker">Tło</string>
-<string name="summary_bgr_color_picker">Wybierz kolor tła paneli.</string>
+<string name="summary_bgr_color_picker">Wybierz kolor tła paneli</string>
 <string name="fgr_color_picker">Tekst</string>
-<string name="summary_fgr_color_picker">Wybierz kolor tekstu (nazwy plików, nazwy katalogów, atrybuty, itp.), jak również kolor plików w zależności od maski.</string>
+<string name="summary_fgr_color_picker">Wybierz kolor tekstu (nazwy plików, nazwy katalogów, atrybuty, itp.), jak również kolor plików w zależności od maski</string>
 <string name="cur_color_picker">Wybierane</string>
 <string name="summary_cur_color_picker">Wybierz kolor dla elementów, które są aktualnie wybierane (naciskane)</string>
 <string name="sel_color_picker">Zaznaczenie</string>
-<string name="summary_sel_color_picker">Wybierz kolor zaznaczanych elementów oraz paska z aktualnym katalogiem.</string>
+<string name="summary_sel_color_picker">Wybierz kolor zaznaczanych elementów oraz paska z aktualnym katalogiem</string>
 <string name="sfg_color_picker">Tekst zaznaczenia</string>
-<string name="summary_sfg_color_picker">Wybierz kolor tekstu dla zaznaczonych elementów oraz dla tytułu górnych paneli.</string>
+<string name="summary_sfg_color_picker">Wybierz kolor tekstu dla zaznaczonych elementów oraz dla tytułu górnych paneli</string>
 <string name="ttl_color_picker">Górny pasek</string>
-<string name="summary_ttl_color_picker">Wybierz kolor górnego paska paneli.</string>
+<string name="summary_ttl_color_picker">Wybierz kolor górnego paska paneli</string>
 <string name="btn_color_picker">Przyciski</string>
-<string name="summary_btn_color_picker">Wybierz kolor dla tła przycisków skrótów.</string>
+<string name="summary_btn_color_picker">Wybierz kolor dla tła przycisków skrótów</string>
 <string name="pick_color">Ustaw kolor</string>
 <string name="color">Kolor</string>
 <string name="language">Język</string>
-<string name="summary_language">Wymuś język aplikacji (niezależnie od ustawień systemowych).</string>
-<string name="restart_to_apply_lang">Zrestartuj aplikację w celu ustawienia wybranego języka.</string>
+<string name="summary_language">Wymuś język aplikacji (niezależnie od ustawień systemowych)</string>
+<string name="restart_to_apply_lang">Zrestartuj aplikację w celu ustawienia wybranego języka</string>
 <string name="editor_activity">Paczka edytora zewnętrznego</string>
-<string name="summary_editor_activity">Jeśli chcesz używać innego edytora niż wbudowany, wpisz nazwę paczki aplikacji. Nazwa paczki = pełna nazwa klasy paczki edytora.</string>
+<string name="summary_editor_activity">Jeśli chcesz używać innego edytora niż wbudowany, wpisz nazwę paczki aplikacji (nazwa paczki = pełna nazwa klasy paczki edytora</string>
 <string name="busybox_location">Ścieżka do busybox-a</string>
-<string name="summary_busybox_location">Używanie trybu root-a wymaga podania ścieżki do busybox-a.</string>
+<string name="summary_busybox_location">Używanie trybu root-a wymaga podania ścieżki do busybox-a</string>
 <string name="execute_command">Wykonaj komendę</string>
 <string name="nothing_to_open">Nie ma niczego do otwarcia.</string>
 <string name="remind_to_save">Nie zapomnij zapisać (przy pomocy menu) swoich zmian w pliku! Zapisywanie nie jest dokonywane automatycznie.</string>
 <string name="saved">\"%1$s\" zapisano.</string>
 <string name="not_saved">Zapisać zmiany?</string>
 <string name="save">Zapisz</string>
-<string name="save_as">Zapisz jako...</string>
+<string name="save_as">Zapisz jako…</string>
 <string name="revert">Przywróć poprzednie</string>
 <string name="wrap">Zawijaj długie linie</string>
 <string name="go_top">Początek</string>
@@ -377,30 +377,31 @@ Upewnij się, że wtyczka\n
 Wybierz \"OK\" aby wpłacić datek za pośrednictwem PayPal-a.\n
 Wybierz \"Anuluj\", jeśli nadal się wahasz i póki co chcesz używać «Ghost Commander-a» za darmo (nadal będziesz mógł wesprzeć nas finansowo w późniejszym terminie).\n
     </string>
-<string name="about_text">
+<string name="about_text"><![CDATA[
 <h1>Ghost Commander v%1$s</h1>
-<h2>Menedżer plików autorstwa Ghost Squared.</h2>
-Zauważone błędy, sugestie, uwagi proszę zgłaszać na<br/>
-<a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a><br/>
+<h4>Menedżer plików autorstwa Ghost Squared.</h4>
 
-<h2>Polskie tłumaczenie:</h2>
-Robert Malara\n
-robert.malara+gc@gmail.com\n\n
-        Dziękujęmy.\n\n
-        
-         
-<h2>ZASTRZEŻENIA:</h2>
+<p>On the Web:<br>
+<a href="https://sites.google.com/site/ghostcommander1/">Web site</a><br/>
+<a href="http://sourceforge.net/projects/ghostcommander/">At SourceForge</a>
+</p>
+<p>Zauważone błędy, sugestie, uwagi proszę zgłaszać na<br/>
+<a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a></p>
+<p>Like this app? <a href="%2$s">Make a PayPal Donation</a> to support further development.</p>
+<p>Polskie tłumaczenie: Robert Malara robert.malara+gc@gmail.com</p>       
+<h3>ZASTRZEŻENIA</h3>
 Używając niniejszej aplikacji, zgadzasz się z poniższym zastrzeżeniem:
 Autor nie jest odpowiedzialny za żadnego rodzaju zniszczenia lub uszkodzenia plików/katalogów czy też nieprawidłowe działanie systemu, utratę danych oraz żadnego rodzaju błędy, które mogą być spowodowane przez użycie tej aplikacji. 
 Zgadzasz się na używanie niniejszej aplikacji na własne ryzyko.\n
 Jeśli nie zgadzasz się z powyższym, proszę o natychmiastowe zaprzestanie użytkowania tej aplikacji i jej odinstalowanie.\n
-    </string>
-<string name="keys_text">
-    "Jak korzystać z programu:\n
-Aby zmienić katalog lub uruchomić plik, kliknij na lewej części wiersza.\n    
-Aby wybrać więcej niż jeden plik/katalog, kliknij na prawej części wiersza.\n
-Aby ręcznie wpisać ścieżkę (i zobaczyć Ulubione), kliknij i przytrzymaj górny pasek z aktualną ścieżką.\n
-Klawisze skrótów:\n
+]]></string>
+<string name="keys_text">"
+/t/tJAK KORZYSTAĆ Z PROGRAMU
+
+Aby zmienić katalog lub uruchomić plik, kliknij na lewej części wiersza. Aby wybrać więcej niż jeden plik/katalog, kliknij na prawej części wiersza. Aby ręcznie wpisać ścieżkę (i zobaczyć Ulubione), kliknij i przytrzymaj górny pasek z aktualną ścieżką.
+
+/t/tKLAWISZE SKRÓTÓW
+
 Głośność+ - Zaznacz bieżący plik/katalog
 Głośność- - Przełącz bieżący panel
 +, -  - Zaznacz lub odznacz pliki/katalogi w bieżącej lokalizacji  
@@ -419,17 +420,19 @@ Głośność- - Przełącz bieżący panel
 0 - Zamknij program
 [A-z] - Szybkie szukanie    
     
-Aby połączyć się z anonimowym serwerem FTP, wprowadź ścieżkę jak poniżej:\n
-    ftp://host.com/folder\n
-Jeśli serwer wymaga logowania, użyj następującej składni:\n
-    ftp://user:password@host.com/folder\n\n
-Aby uzyskać dostęp jako root (su), 
-wprowadź lokalizację w ten sposób:\n
-    \"root:///data\"\n
-Upewnij się, że \"busybox\" jest zainstalowany, a jego lokalizacja jest wprowadzona prawidłowo w opcjach.\n
+Aby połączyć się z anonimowym serwerem FTP, wprowadź ścieżkę jak poniżej:
+    ftp://host.com/folder
+
+Jeśli serwer wymaga logowania, użyj następującej składni:
+    ftp://user:password@host.com/folder
+
+Aby uzyskać dostęp jako root (su), wprowadź lokalizację w ten sposób:
+    \"root:///data\"
+
+Upewnij się, że \"busybox\" jest zainstalowany, a jego lokalizacja jest wprowadzona prawidłowo w opcjach.
 
 Aby wylistować zamontowane urządzenia, wpisz \"mount://\"
 Kliknij na zamontowanym urządzenia, aby nadać mu uprawnienia \"rw\", kliknij ponownie aby nadać \"ro\".
-    "
-    </string>
+"
+</string>
 </resources>
