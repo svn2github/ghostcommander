@@ -11,6 +11,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Base64;
 import android.util.Log;
 
 public class Credentials extends UsernamePasswordCredentials implements Parcelable {
@@ -64,49 +65,6 @@ public class Credentials extends UsernamePasswordCredentials implements Parcelab
         dest.writeByteArray( enc_pw );
     }
 
-    public static Credentials createFromEncriptedString( String s ) {
-        return createFromEncriptedString( s, Credentials.seed );
-    }
-
-    public static Credentials createFromEncriptedString( String s, String seed_ ) {
-        try {
-            if( seed_ == null ) seed_ = Credentials.seed;
-            return new Credentials( decrypt( seed_, s ) );
-        } catch( Exception e ) {
-            Log.e( TAG, "on creating from an encrypted string", e );
-        }
-        return null;
-    }
-    public String exportToEncriptedString() {
-        return exportToEncriptedString( this.seed );
-    }
-    public String exportToEncriptedString( String seed_ ) {
-        try {
-            if( seed_ == null ) seed_ = this.seed;
-            return encrypt( seed_, getUserName() + ":" + getPassword() );
-        } catch( Exception e ) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    
-    public static String decrypt( String encrypted ) throws Exception {
-        return decrypt( seed, encrypted );
-    }
-    
-    public static String encrypt( String seed, String cleartext ) throws Exception {
-        byte[] rawKey = getRawKey( seed );
-        byte[] result = encrypt( rawKey, cleartext.getBytes() );
-        return Utils.toHexString( result, null );
-    }
-
-    public static String decrypt( String seed, String encrypted ) throws Exception {
-        byte[] rawKey  = getRawKey( seed );
-        byte[] enc = Utils.hexStringToBytes( encrypted );
-        byte[] result = decrypt( rawKey, enc );
-        return new String( result );
-    }
-
     private static byte[] getRawKey( String seed ) throws Exception {
         boolean primary = Credentials.seed.equals( seed );
         if( primary && Credentials.rawKey != null ) return Credentials.rawKey;
@@ -119,6 +77,60 @@ public class Credentials extends UsernamePasswordCredentials implements Parcelab
         if( primary )
             Credentials.rawKey = raw;
         return raw;
+    }
+
+    public static Credentials createFromEncriptedString( String s ) {
+        return createFromEncriptedString( s, null );
+    }
+
+    public static Credentials createFromEncriptedString( String s, String seed_ ) {
+        try {
+            boolean base64 = true;
+            if( seed_ == null ) {
+                seed_ = Credentials.seed;
+                base64 = false;
+            }
+            return new Credentials( decrypt( seed_, s, base64 ) );
+        } catch( Exception e ) {
+            Log.e( TAG, "on creating from an encrypted string", e );
+        }
+        return null;
+    }
+    public String exportToEncriptedString() {
+        return exportToEncriptedString( null );
+    }
+    public String exportToEncriptedString( String seed_ ) {
+        try {
+            boolean base64 = true;
+            if( seed_ == null ) {
+                seed_ = this.seed;
+                base64 = false;
+            }
+            return encrypt( seed_, getUserName() + ":" + getPassword(), base64 );
+        } catch( Exception e ) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    public static String decrypt( String encrypted ) throws Exception {
+        return decrypt( seed, encrypted, false );
+    }
+    
+    public static String encrypt( String seed, String cleartext, boolean base64out ) throws Exception {
+        byte[] rawKey = getRawKey( seed );
+        byte[] result = encrypt( rawKey, cleartext.getBytes() );
+        if( base64out )
+            return ForwardCompat.toBase64( result );
+        else
+            return Utils.toHexString( result, null );
+    }
+
+    public static String decrypt( String seed, String encrypted, boolean base64in ) throws Exception {
+        byte[] rawKey  = getRawKey( seed );
+        byte[] enc = base64in ? ForwardCompat.fromBase64( encrypted ) : Utils.hexStringToBytes( encrypted );
+        byte[] result = decrypt( rawKey, enc );
+        return new String( result );
     }
 
     private static byte[] encrypt( byte[] raw, byte[] clear ) throws Exception {

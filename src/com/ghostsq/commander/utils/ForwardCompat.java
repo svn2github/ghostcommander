@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
@@ -57,5 +58,15 @@ public class ForwardCompat
     @TargetApi(Build.VERSION_CODES.FROYO)
     public static File getExternalFilesDir( Context ctx ) { 
         return ctx.getExternalFilesDir( null );
+    }
+    
+    @TargetApi(Build.VERSION_CODES.FROYO)
+    public static String toBase64( byte[] in ) {
+        return Base64.encodeToString( in, Base64.DEFAULT );
+    }
+
+    @TargetApi(Build.VERSION_CODES.FROYO)
+    public static byte[] fromBase64( String in ) {
+        return Base64.decode( in, Base64.DEFAULT );
     }
 }

@@ -129,7 +129,8 @@ public class RootAdapter extends CommanderAdapterBase {
             if( path == null ) {
                 path = SLS;
                 src = src.buildUpon().encodedPath( path ).build();
-            }
+            } else
+                path = Utils.mbAddSl( path );
             parentLink = path == null || path.length() == 0 || path.equals( SLS ) ? SLS : "..";
             array = new ArrayList<LsItem>();
             // the option -s is not supported on some releases (1.6)
@@ -159,9 +160,17 @@ public class RootAdapter extends CommanderAdapterBase {
                 String ln = br.readLine();
                 if( ln == null || ln.startsWith( EOL ) ) break;
                 LsItem item = new LsItem( ln );
-                if( item.isValid() ) {
-                    if( !"..".equals( item.getName() ) && !".".equals( item.getName() ) )
-                        array.add( item ); // a problem - if the item is a symlink - how to know it's a dir or a file???
+                if( item.isValid() && !"..".equals( item.getName() ) && !".".equals( item.getName() ) ) {
+                    String link_target = item.getLinkTarget();
+                    if( Utils.str( link_target ) ) {
+                        try {
+                            File ltf = new File( link_target );
+                            if( ltf.isDirectory() )
+                                item.setDirectory();
+                        } catch( Throwable e ) {
+                        }
+                    }
+                    array.add( item ); // a problem - if the item is a symlink - how to know is it a dir or a file???
                 }
             }
        }
@@ -716,9 +725,10 @@ public class RootAdapter extends CommanderAdapterBase {
                     item.dir = curItem.isDirectory();
                     item.name = item.dir ? SLS + curItem.getName() : curItem.getName();
                     String lnk = curItem.getLinkTarget();
-                    if( lnk != null ) 
-                        item.name += " -> " + lnk; 
-                    
+                    if( lnk != null ) { 
+                        item.name += LsItem.LINK_PTR + lnk;
+                        item.icon_id = item.dir ? R.drawable.folder : R.drawable.link;
+                    }
                     item.size = curItem.isDirectory() ? -1 : curItem.length();
                     item.date = curItem.getDate();
                     item.attr = curItem.getAttr();
@@ -729,7 +739,7 @@ public class RootAdapter extends CommanderAdapterBase {
                             String path = Utils.mbAddSl( uri.getPath() );
                             PackageInfo info = pm.getPackageArchiveInfo( path + item.name, 0 );
                             item.setIcon( info != null ? pm.getApplicationIcon( info.packageName ) :
-                                                           pm.getDefaultActivityIcon() );
+                                                         pm.getDefaultActivityIcon() );
                         }
                         catch( Exception e ) {
                         }

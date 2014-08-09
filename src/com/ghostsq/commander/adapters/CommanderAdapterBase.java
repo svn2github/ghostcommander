@@ -5,10 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -621,8 +619,6 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     }
 
     public final static int getIconId( String file ) {
-        if( file.indexOf( " -> " ) > 0 )
-            return R.drawable.link;
         String cat = Utils.getCategoryByExt( Utils.getFileExt( file ) );
         if( Utils.C_UNKNOWN.equals( cat ) )return R.drawable.unkn;
         if( Utils.C_AUDIO.equals( cat ) )  return R.drawable.audio;

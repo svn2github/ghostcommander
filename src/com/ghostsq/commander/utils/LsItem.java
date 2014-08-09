@@ -14,7 +14,7 @@ import com.ghostsq.commander.adapters.CommanderAdapter;
 import android.util.Log;
 
 public class LsItem {
-    private static String           TAG = "LsItem";
+    private static final String TAG = "LsItem";
  // Debian FTP site      
 //  -rw-r--r--    1 1176     1176         1062 Sep 04 18:54 README      
 //Android FTP server
@@ -41,6 +41,7 @@ public class LsItem {
     private boolean link = false;
     private long    size = 0;
     private Date    date;
+    public static final String LINK_PTR = " -> ";
     public LsItem( String ls_string ) {
         Matcher m = unix.matcher( ls_string );
         if( m.matches() ) {
@@ -79,7 +80,7 @@ public class LsItem {
                 name = m.group( 4 );
                 if( ls_string.charAt( 0 ) == 'l' ) {    // link
                     link = true;
-                    int arr_pos = name.indexOf( " -> " );
+                    int arr_pos = name.indexOf( LINK_PTR );
                     if( arr_pos > 0 ) {
                         link_target_name = name.substring( arr_pos + 4 );
                         name = name.substring( 0, arr_pos );
@@ -131,6 +132,9 @@ public class LsItem {
     }
     public final boolean isDirectory() {
         return directory;
+    }
+    public final void setDirectory() {
+        directory = true;
     }
     public final String getLinkTarget() {
         return link ? link_target_name : null;
