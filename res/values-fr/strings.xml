@@ -22,6 +22,7 @@
 <string name="tgl">Basculer</string>
 <string name="sz">Taille</string>
 <string name="refresh">Rafraîchir</string>
+<string name="swap">Permuter</string>
 <string name="enter">Changer emplacement</string>
 <string name="home">Démarrage</string>
 <string name="sdcard">/sdcard</string>
@@ -79,6 +80,7 @@
 <string name="prefs">Paramètres</string>
 <string name="save_prefs">Sauvegarder paramètres</string>
 <string name="rest_prefs">Rétablir paramètres</string>
+<string name="save_log">Enregistrer le fichier journal</string>
 <string name="prefs_saved">Vos préférences ont été sauvegardées</string>
 <string name="prefs_restr">Vos préférences ont été rétablies</string>
 <string name="about">À propos</string>
@@ -87,7 +89,7 @@
 <string name="new_folder">Créer un nouveau répertoire</string>
 <string name="new_zip">Créer un nouveau fichier ZIP</string>
 <string name="go_button">Atteindre</string>
-<string name="show_size">Calculer taille</string>
+<string name="show_size">Propriétés</string>
 <string name="send_to">Envoyer à…</string>
 <string name="open_with">Ouvrir avec…</string>
 <string name="open">Ouvrir</string>
@@ -95,7 +97,7 @@
 <string name="fav_fld">Ajouter le répertoire \"%s\" aux favoris</string>
 <string name="create_zip">ZIP…</string>
 <string name="create_zip_title">Fichier ZIP</string>
-<string name="wait"> attente… </string>
+<string name="wait"> attendez… </string>
 <string name="fail"> (échec) </string>
 <string name="failed">Erreur:\n</string>
 <string name="default_uri_cmnt">Emplacement par défaut</string>
@@ -212,16 +214,16 @@
 <string name="were"/>
 <string name="was"/>
 <string name="nothing">Aucun élément</string>
-<string name="sz_folder">Répertoire \"%1$s\":\n %2$d fichiers,</string>
-<string name="sz_dirnum">,\ndans %1$d répertoire%2$s</string>
+<string name="sz_folder">Répertoire \"%1$s\":\n %2$d fichiers </string>
+<string name="sz_dirnum">dans %1$d répertoire%2$s</string>
 <string name="sz_dirsfx_s">.</string>
 <string name="sz_dirsfx_p">s.</string>
-<string name="sz_file">Fichier \"%s\":</string>
+<string name="sz_file">Fichier: \"%s\"</string>
 <string name="sz_files">Fichiers trouvés: %d </string>
 <string name="sz_Nbytes">\nTaille: %1$sb</string>
-<string name="sz_bytes">\n ( %d octets )</string>
+<string name="sz_bytes">\n (%d octets)</string>
 <string name="sz_lastmod">\nDernière modification:\n </string>
-<string name="sz_total">Total: %1$soctets,\nLibre: %2$soctets.</string>
+<string name="sz_total">Total: %1$soctets\nLibre: %2$soctets</string>
 <string name="busy">Occupé!</string>
 <string name="cd_title">Aller à</string>
 <string name="cd_prompt">Changer le répertoire à:</string>
@@ -294,7 +296,7 @@
 <string name="root_root">Mode root en quittant la carte SD</string>
 <string name="summary_root_root">Bascule automatique en mode root en allant vers le répertoire racine (pas /sdcard) de l\'appareil</string>
 <string name="thumbnails">Activer les miniatures</string>
-<string name="summary_thumbnails">Utiliser les miniature au lieu de l\'icône standard des fichiers images</string>
+<string name="summary_thumbnails">Utiliser miniature au lieu de l\'icône standard des fichiers images</string>
 <string name="thumbnails_size">Taille des miniatures</string>
 <string name="summary_thumbnails_size">En pourcentage de la taille des icônes</string>
 <string name="font_size">Taille de la police</string>
@@ -401,8 +403,8 @@ Appuyer \"Ok\" pour donner avec PayPal.\n
 <h4>Gestionnaire de fichiers.</h4>
 
 <p>Web:<br>
-&#xA0;&#xA0;&#xA0;<a href="https://sites.google.com/site/ghostcommander1/">Site web</a><br>
-&#xA0;&#xA0;&#xA0;<a href="http://sourceforge.net/projects/ghostcommander/">@ SourceForge</a> 
+<a href="https://sites.google.com/site/ghostcommander1/">Site web</a><br>
+<a href="http://sourceforge.net/projects/ghostcommander/">@ SourceForge</a> 
 </p>
 <p>Veuillez envoyer vos suggestions/rapports de bogues à<br/> <a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a></p>
 <p>Aimez-vous cette application? Réellement? Et si vous faites <a href="%2$s">un petit don avec PayPal</a> pour supporter son développement?</p>
@@ -414,10 +416,10 @@ Vous acceptez d\'utiliser ce logiciel à vos propres risques.\n
 Si vous n\'êtes pas d\'accord, cessez d\'utiliser ce logiciel immédiatement et le désinstallez.\n
 ]]></string>
 <string name="keys_text">
-"\t\tMode d\'emploi:\n
+"\t\tMODE D\'EMPLOI\n
 Pour sélectionner plus d\'un fichier, appuyez sur la moitié droite de la ligne.\n    
 Pour saisir manuellement le chemin (et voir les favoris), appuyez longuement sur le titre du panneau.\n
-\t\tTouches de raccourci:\n
+\t\tTOUCHES DE RACCOURCI\n
 VolumeHaut - Sélectionner l\'élément courant (fichier)
 VolumeBas - Permuter les panneaux
 +, -  - Sélectionner ou désélectionner les éléments dans le répertoire courant  

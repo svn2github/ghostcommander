@@ -222,7 +222,7 @@
 <string name="sz_files"><![CDATA[<b>Files:</b> %d ]]></string>
 <string name="sz_Nbytes"><![CDATA[\n<b>Size:</b> %1$s]]></string>
 <string name="sz_bytes"> (<small>%db</small>)</string>
-<string name="sz_lastmod"><![CDATA[\n<b>Last modified:</b>\n ]]></string>
+<string name="sz_lastmod"><![CDATA[\n<b>Last modified:</b> ]]></string>
 <string name="sz_total"><![CDATA[<b>Total:</b> %1$s\n<b>Free:</b> %2$s]]></string>
 <string name="busy">Busy!</string>
 <string name="cd_title">Go</string>
