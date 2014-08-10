@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.io.OutputStream;
 
@@ -163,6 +164,17 @@ public final class Utils {
             }
         }
         return C_UNKNOWN;
+    }
+
+    public final static String[] getExtsByCategory( String c ) {
+        if( c == null ) return null;
+        ArrayList<String> exts = new ArrayList<String>();
+        for( int l = 0; l < mimes.length; l++ ) {
+            if( c.equals( mimes[l][2] ) )
+                exts.add( mimes[l][0] );
+        }
+        String[] ret = new String[exts.size()];
+        return exts.toArray( ret );
     }
     
     public final static String[] getTypeDescrByExt( String ext ) {

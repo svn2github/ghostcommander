@@ -2,6 +2,8 @@ package com.ghostsq.commander;
 
 import java.util.ArrayList;
 
+import com.ghostsq.commander.utils.Utils;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -61,15 +63,38 @@ public final class ColorsKeeper {
                 editor.putString( pref_key, masks );
             }
         }
+        
         public final String getDefMasks( int i ) {
+            String cat = null;
             switch( i ) {
             case 1: return "/*;*/";     // directories
-            case 2: return "*.gif;*.jpg;*.png;*.bmp";
-            case 3: return "*.avi;*.mov;*.mp4;*.mpeg";
-            case 4: return "*.mp3;*.wav;*.mid*";
+            case 2:    // "*.gif;*.jpg;*.png;*.bmp";
+                cat = Utils.C_IMAGE;
+                break;
+            case 3: // "*.avi;*.mov;*.mp4;*.mpeg";
+                cat = Utils.C_VIDEO;
+                break;
+            case 4: // "*.mp3;*.wav;*.mid*";
+                cat = Utils.C_AUDIO;
+                break;
             case 5: return "*.htm*;*.xml;*.pdf;*.csv;*.doc*;*.xls*";
             case 6: return "*.apk;*.zip;*.jar;*.rar";
             }
+            if( cat != null ) {
+                String[] exts = Utils.getExtsByCategory( cat );
+                if( exts != null ) {
+                    StringBuffer ret_buf = new StringBuffer();
+                    boolean fst = true;
+                    for( int k = 0; k < exts.length; k++ ) {
+                        if( !fst )
+                            ret_buf.append( ";" );
+                        ret_buf.append( "*" );
+                        ret_buf.append( exts[k] );
+                        fst = false;
+                    }
+                    return ret_buf.toString();
+                }
+            }            
             return null;
         }
         public int getDefColor( Context ctx, int i ) {
