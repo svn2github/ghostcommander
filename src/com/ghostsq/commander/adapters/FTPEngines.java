@@ -19,6 +19,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
+import android.text.format.Formatter;
 import android.util.Log;
 
 public final class FTPEngines {
@@ -409,7 +410,6 @@ public final class FTPEngines {
         }
     }
 
-
     static class ChmodEngine extends FTPEngine {
         private String chmod;
         
@@ -434,5 +434,102 @@ public final class FTPEngines {
             }
         }
     }
+    
+    public static class CalcSizesEngine extends FTPEngine {
+        private int num = 0, dirs = 0, depth = 0;
+        private LsItem[]  list;
+    
+        CalcSizesEngine( Commander c, FTPCredentials crd_, Uri uri_, LsItem[] list_, boolean active ) {
+            super( c.getContext(), crd_, uri_, active );
+            list = list_;
+        }
 
+        @Override
+        public void run() {
+            try {
+                if( crd == null || crd.isNotSet() )
+                    crd = new FTPCredentials( uri.getUserInfo() );
+                
+                if( ftp.connectAndLogin( uri, crd.getUserName(), crd.getPassword(), true ) < 0 ) {
+                    error( ctx.getString( R.string.ftp_nologin ) );
+                    sendResult( "" );
+                    return;
+                }
+                
+                long total = getSizes( list, "" );
+                
+                StringBuffer result = new StringBuffer();
+                if( list.length == 1 ) {
+                    LsItem f = list[0];
+                    if( f.isDirectory() ) {
+                        result.append( ctx.getString( Utils.RR.sz_folder.r(), f.getName(), num ) );
+                        if( dirs > 0 )
+                            result.append( ctx.getString( Utils.RR.sz_dirnum.r(), dirs, ( dirs > 1 ? ctx.getString( Utils.RR.sz_dirsfx_p.r() ) : ctx.getString( Utils.RR.sz_dirsfx_s.r() ) ) ) );
+                    }
+                    else 
+                        result.append( ctx.getString( Utils.RR.sz_file.r(), f.getName() ) );
+                } else {
+                    result.append( ctx.getString( Utils.RR.sz_files.r(), num ) );
+                    if( dirs > 0 )
+                        result.append( ctx.getString( Utils.RR.sz_dirnum.r(), dirs, ( dirs > 1 ? ctx.getString( Utils.RR.sz_dirsfx_p.r() ) : ctx.getString( Utils.RR.sz_dirsfx_s.r() ) ) ) );
+                }
+                if( total > 0 )
+                    result.append( ctx.getString( Utils.RR.sz_Nbytes.r(), Formatter.formatFileSize( ctx, total ).trim() ) );
+                if( total > 1024 )
+                    result.append( ctx.getString( Utils.RR.sz_bytes.r(), total ) );
+                if( list.length == 1 ) {
+                    LsItem f = list[0];
+                    result.append( ctx.getString( Utils.RR.sz_lastmod.r() ) );
+                    result.append( " " );
+                    result.append( "<small>" );
+                    result.append( Utils.formatDate( f.getDate(), ctx ) );
+                    result.append( "</small>" );
+                }
+                sendReport( result.toString() );            
+                super.run();
+            } catch( InterruptedException e ) {
+                sendResult( ctx.getString( R.string.canceled ) );
+            } catch( Exception e ) {
+                error( ctx.getString( R.string.failed ) + e.getLocalizedMessage() );
+                e.printStackTrace();
+            }
+            super.run();
+        }
+    
+        protected final long getSizes( LsItem[] list, String path ) throws InterruptedException {
+            long total = 0;
+            try {
+                for( int i = 0; i < list.length; i++ ) {
+                    if( stop || isInterrupted() ) {
+                        error( ctx.getString( R.string.interrupted ) );
+                        break;
+                    }
+                    LsItem f = list[i];
+                    if( f != null ) {
+                        String pathName = path + f.getName();
+                        if( f.isDirectory() ) {
+                            dirs++;
+                            LsItem[] subItems = ftp.getDirList( pathName, true );
+                            if( subItems == null ) {
+                                errMsg = "Failed to get the file list of the subfolder '" + pathName + "'.\n FTP log:\n\n" + ftp.getLog();
+                                break;
+                            }
+                            total += getSizes( subItems, pathName + File.separator );
+                            if( errMsg != null ) break;
+                        }
+                        else {
+                            total += f.length();
+                            num++;
+                        }
+                    }
+                }
+            }
+            catch( RuntimeException e ) {
+                error( "Runtime Exception: " + e.getMessage() );
+                Log.e( TAG, "", e );
+            }
+            return total;
+        }
+    }
+    
 }

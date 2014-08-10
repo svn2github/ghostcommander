@@ -10,6 +10,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Locale;
 import java.io.OutputStream;
 
@@ -31,6 +32,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.webkit.MimeTypeMap;
+import android.text.format.DateFormat;
 
 public final class Utils {
     public final static String C_AUDIO = "a", C_VIDEO = "v", C_TEXT = "t", C_ZIP = "z", C_OFFICE = "o",
@@ -680,6 +682,23 @@ public final class Utils {
                 return s;
         }
         return null;        
+    }
+ 
+    public final static String formatDate( Date date, Context ctx ) {
+        boolean no_time = date.getHours() == 0 && date.getMinutes() == 0 && date.getSeconds() == 0;
+        if( Locale.getDefault().getLanguage().compareTo( "en" ) != 0 ) {
+            java.text.DateFormat locale_date_format = DateFormat.getDateFormat( ctx );
+            String ret = locale_date_format.format( date );
+            if( !no_time ) {
+                java.text.DateFormat locale_time_format = DateFormat.getTimeFormat( ctx );
+                ret += " " + locale_time_format.format( date ); 
+            }
+            return ret;
+        } else {
+            String fmt = "MMM dd yyyy";
+            if( !no_time ) fmt += " hh:mm:ss";
+            return (String)DateFormat.format( fmt, date );
+        }
     }
     
     public enum RR {

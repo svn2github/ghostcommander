@@ -199,14 +199,14 @@
 <string name="were"/>
 <string name="was"/>
 <string name="nothing">Nic nie</string>
-<string name="sz_folder">Katalog: \"%1$s\"\n%2$d plik(ów),</string>
-<string name="sz_dirnum">w %1$d katalog%2$s</string>
-<string name="sz_dirsfx_s">u.</string>
-<string name="sz_dirsfx_p">ach.</string>
-<string name="sz_file">Plik: \"%s\":</string>
+<string name="sz_folder">Katalog: \"%1$s\"\n%2$d plik(ów) </string>
+<string name="sz_dirnum"> w %1$d katalog%2$s</string>
+<string name="sz_dirsfx_s">u</string>
+<string name="sz_dirsfx_p">ach</string>
+<string name="sz_file">Plik: \"%s\"</string>
 <string name="sz_files">%d pliki(ów):</string>
 <string name="sz_Nbytes">\n %1$sB</string>
-<string name="sz_bytes">\n(%d B)</string>
+<string name="sz_bytes"> (%d B)</string>
 <string name="sz_lastmod">\nOstatnio zmodyfikowany:\n</string>
 <string name="sz_total">Pojemność dysku: %1$sB\nWolne miejsce: %2$sB</string>
 <string name="busy">Zajęty!</string>
@@ -395,12 +395,12 @@ Autor nie jest odpowiedzialny za żadnego rodzaju zniszczenia lub uszkodzenia pl
 Zgadzasz się na używanie niniejszej aplikacji na własne ryzyko.\n
 Jeśli nie zgadzasz się z powyższym, proszę o natychmiastowe zaprzestanie użytkowania tej aplikacji i jej odinstalowanie.\n
 ]]></string>
-<string name="keys_text">"
-/t/tJAK KORZYSTAĆ Z PROGRAMU
+<string name="keys_text">
+"\t\tJAK KORZYSTAĆ Z PROGRAMU
 
 Aby zmienić katalog lub uruchomić plik, kliknij na lewej części wiersza. Aby wybrać więcej niż jeden plik/katalog, kliknij na prawej części wiersza. Aby ręcznie wpisać ścieżkę (i zobaczyć Ulubione), kliknij i przytrzymaj górny pasek z aktualną ścieżką.
 
-/t/tKLAWISZE SKRÓTÓW
+\t\tKLAWISZE SKRÓTÓW
 
 Głośność+ - Zaznacz bieżący plik/katalog
 Głośność- - Przełącz bieżący panel

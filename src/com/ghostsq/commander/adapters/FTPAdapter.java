@@ -17,6 +17,7 @@ import com.ghostsq.commander.R;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.adapters.Engines.IReciever;
+import com.ghostsq.commander.adapters.FTPEngines.CalcSizesEngine;
 import com.ghostsq.commander.adapters.FTPEngines.CopyFromEngine;
 import com.ghostsq.commander.favorites.Favorite;
 import com.ghostsq.commander.utils.Credentials;
@@ -65,8 +66,6 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
         switch( feature ) {
         case REAL:
             return true;
-        case SZ:
-            return false;
         default: return super.hasFeature( feature );
         }
     }
@@ -342,9 +341,16 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
     }
     
     @Override
-	public void reqItemsSize( SparseBooleanArray cis ) {
-		notify( "Not supported.", Commander.OPERATION_FAILED );
-	}
+    public void reqItemsSize( SparseBooleanArray cis ) {
+        try {
+            LsItem[] subItems = bitsToItems( cis );
+            notify( Commander.OPERATION_STARTED );
+            CalcSizesEngine cse = new FTPEngines.CalcSizesEngine( commander, theUserPass, uri, subItems, ftp.getActiveMode() );
+            commander.startEngine( cse );
+        }
+        catch(Exception e) {
+        }
+    }
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
         String err_msg = null;

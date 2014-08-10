@@ -29,7 +29,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
 import android.os.StatFs;
-import android.text.format.DateFormat;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -317,22 +316,15 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
                         FileItem item = mList[0];
                         result.append( c.getString( R.string.sz_lastmod ) );
                         result.append( "&#xA0;" );
-                        String date_s;
-                        Date date = item.date;
-                        if( Locale.getDefault().getLanguage().compareTo( "en" ) != 0 ) {
-                            java.text.DateFormat locale_date_format = DateFormat.getDateFormat( ctx );
-                            java.text.DateFormat locale_time_format = DateFormat.getTimeFormat( ctx );
-                            date_s = locale_date_format.format( date ) + " " + locale_time_format.format( date );
-                        } else 
-                            date_s = (String)DateFormat.format( "MMM dd yyyy hh:mm:ss", date );
+                        String date_s = Utils.formatDate( item.date, ctx );
                         result.append( date_s );
                         File f = item.f(); 
                         if( f.isFile() ) {
                             String ext  = Utils.getFileExt( item.name );
                             String mime = Utils.getMimeByExt( ext );
+                            result.append( "\n" );
                             if( mime != null && !"*/*".equals( mime ) )
-                                result.append( "\n\n<b>MIME:</b>\n&#xA0;<small>" + mime + "</small>" );
-                            
+                                result.append( "\n<b>MIME:</b>\n&#xA0;<small>" + mime + "</small>" );
                             String[] hashes = Utils.getHash( f, new String[] { "MD5", "SHA-1" } );
                             if( hashes != null ) {
                                 result.append( "\n<b>MD5:</b>\n&#xA0;<small>"   + hashes[0] + "</small>" );

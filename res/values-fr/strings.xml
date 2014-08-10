@@ -214,14 +214,14 @@
 <string name="were"/>
 <string name="was"/>
 <string name="nothing">Aucun élément</string>
-<string name="sz_folder">Répertoire \"%1$s\":\n %2$d fichiers </string>
-<string name="sz_dirnum">dans %1$d répertoire%2$s</string>
-<string name="sz_dirsfx_s">.</string>
-<string name="sz_dirsfx_p">s.</string>
+<string name="sz_folder">Répertoire: \"%1$s\":\n %2$d fichiers </string>
+<string name="sz_dirnum"> dans %1$d répertoire%2$s</string>
+<string name="sz_dirsfx_s"></string>
+<string name="sz_dirsfx_p">s</string>
 <string name="sz_file">Fichier: \"%s\"</string>
 <string name="sz_files">Fichiers trouvés: %d </string>
 <string name="sz_Nbytes">\nTaille: %1$sb</string>
-<string name="sz_bytes">\n (%d octets)</string>
+<string name="sz_bytes"> (%d octets)</string>
 <string name="sz_lastmod">\nDernière modification:\n </string>
 <string name="sz_total">Total: %1$soctets\nLibre: %2$soctets</string>
 <string name="busy">Occupé!</string>
@@ -441,13 +441,12 @@ VolumeBas - Permuter les panneaux
 Pour établir une connexion FTP anonyme sur un répertoire, saisissez le chemin tel que:\n
     ftp://serveur.com/repertoire\n
 Ou, si des identifiants sont nécessaires:\n
-    ftp://nom_utilisateur:mot_de_passe@serveur.com/repertoire\n\n
+    ftp://nom_utilisateur:mot_de_passe@serveur.com/repertoire\n
 Pour accéder comme root (su), rentrez l\'emplacement comme:\n
     \"root:/data\"\n
 Assurez-vous que \"busybox\" est installé, et/ou que son emplacement est spécifié dans les paramètres.\n
-
 Pour lister les disques montés, tapez \"mount:\"
 Cliquez sur un élément pour le rendre \"rw\" (lecture/écriture) ou \"ro\" (lecture seule).
-    "
-    </string>
+"
+</string>
 </resources>
