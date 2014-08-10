@@ -81,6 +81,7 @@ public final class MnfUtils {
                 InputStream is = zip.getInputStream( entry );
                 return is != null ? new BitmapDrawable( is ) : null;
             }
+            /*
             Enumeration<? extends ZipEntry> entries = zip.entries();
             if( entries != null ) {
                 while( entries.hasMoreElements() ) {
@@ -94,6 +95,7 @@ public final class MnfUtils {
                     }
                 }
             }
+            */
             // TODO: find icon from the manifest
         } catch( Throwable e ) {
             Log.e( TAG, "Can't get icon for " + apk_path, e );

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources><string name="app_name">Ghost コマンダー</string>
+<resources><string name="app_name">Ghost Commander</string>
 <string name="file">新規</string>
 <string name="location">ロケーション</string>
 <string name="list">リスト</string>
@@ -54,7 +54,7 @@
 <string name="ftp_descr">FTP サーバーに接続します</string>
 <string name="sftp_descr">SSH FTP (sftp) サーバーに接続します</string>
 <string name="smb_descr">Windows 機器の共有フォルダーに接続します</string>
-<string name="plugins_descr">Ghost コマンダー・プラグインを検索します</string>
+<string name="plugins_descr">Ghost Commander プラグインを検索します</string>
 <string name="root_descr">root化されたデバイスのみ: 重要なシステムファイルを管理します. 何を行うか理解している人のみ使用してください.</string>
 <string name="mount_descr">全てのマウントポイントをリスト表示します. \"rw\" モードで再マウントし、変更後に \"ro\" モードに戻します. 注意して使用してください.</string>
 <string name="apps_descr">インストールされたパッケージを表示、管理します</string>
@@ -83,7 +83,7 @@
 <string name="save_log">ログをファイルに保存</string>
 <string name="prefs_saved">設定を保存しました</string>
 <string name="prefs_restr">設定を復元しました</string>
-<string name="about">Ghost コマンダーについて</string>
+<string name="about">Ghost Commander について</string>
 <string name="keys">ホットキー &amp; Tips</string>
 <string name="new_file">新規ファイルを作成</string>
 <string name="new_folder">新規フォルダーを作成</string>
@@ -390,17 +390,17 @@
 <string name="permissions">パーミッション</string>
 <string name="flags">フラグ</string>
 <string name="not_exported">アクティビティはエクスポートされていません</string>
-<string name="smb_missed">Samba アダプターをロードできません: Ghost コマンダー SMB プラグインがインストールされているか確認してください.</string>
-<string name="sftp_missed">SFTP アダプターをロードできません: Ghost コマンダー SFTP プラグインがインストールされているか確認してください.</string>
+<string name="smb_missed">Samba アダプターをロードできません: Ghost Commander SMB プラグインがインストールされているか確認してください.</string>
+<string name="sftp_missed">SFTP アダプターをロードできません: Ghost Commander SFTP プラグインがインストールされているか確認してください.</string>
 <string name="donate">寄付する</string>
 <string name="online_help">オンライン・ヘルプ</string>
 <string name="donation">少しの寄付がさらに開発を支援します.\n
 \"OK\" をタップすると PayPal サイトにリダイレクトします.\n
-\"キャンセル\" をタップすると、引き続き無料で «Ghost コマンダー・ファイル管理をご利用いただけます.\n
+\"キャンセル\" をタップすると、引き続き無料で «Ghost Commander ファイルマネージャーをご利用いただけます.\n
     </string>
 <string name="about_text"><![CDATA[
-<h1>Ghost コマンダー v%1$s</h1>
-<h4>ファイル管理 by Ghost Squared.</h4>
+<h1>Ghost Commander v%1$s</h1>
+<h4>ファイルマネージャー by Ghost Squared.</h4>
 
 <p>Web で:<br>
 &#xA0;&#xA0;&#xA0;<a href="https://sites.google.com/site/ghostcommander1/">Web サイト</a><br/>
@@ -410,9 +410,9 @@
 <p>このアプリを気に入っていただきましたか? <a href="%2$s">PayPal で寄付</a> して、さらなる開発を支援します.</p>
 <h3>免責事項:</h3>
 このソフトウェアの使用は, 下記の同意を前提とします:
-このソフトウェアの使用によって引き起こされる何らかのダメージ, 情報の損失,　
-重大なダメージ, またはその他の問題に対して, このソフトウェアの作者は責任を負いません.
-あなたはご自身のリスクでこのソフトウェアを使用することに同意します.\n
+このソフトウェアの使用によって引き起こされる何らかの損害, 情報の損失,　
+重大な損害, またはその他の問題に対して, このソフトウェアの作者は責任を負いません.
+あなたご自身のリスクでこのソフトウェアを使用することに同意します.\n
 これに同意しない場合は,　直ちにこのソフトウェアの使用を停止しアンインストールしてください.\n
 ]]></string>
 <string name="keys_text"><![CDATA[
@@ -429,7 +429,7 @@
 </p>
 <h3>ZIP ファイル</h3>
 <p>
-Ghost コマンダーはディレクトリーのようにクラッシックの ZIP ファイルを操作することができます.
+Ghost Commander はディレクトリーのようにクラッシックの ZIP ファイルを操作することができます.
 パスワード保護 (暗号化) された ZIP ファイルやその他の圧縮アルゴリズムを使用した ZIP ファイルは
 サポートされていません.
 </p>
@@ -440,7 +440,7 @@ Ghost コマンダーはディレクトリーのようにクラッシックの Z
 </p>
 <h3>ROOT モード</h3>
 <p>
-Ghost コマンダーの root モード (スーパーユーザー) やマウント・ポイント機能の使用には注意が必要です.
+Ghost Commander の root モード (スーパーユーザー) やマウント・ポイント機能の使用には注意が必要です.
 root 化されたデバイスやインストールされた BusyBox のパスは設定画面で設定します.
 </p>
 <h3>ロケーション・エディター</h3>
@@ -449,22 +449,22 @@ root 化されたデバイスやインストールされた BusyBox のパスは
 パネルのヘッダーを長押ししてロケーション・エディターを開きます.\n
 次のように手動でロケーション・エディターにリソースの URI を入力します:
 </p><p>
-<b>ftp://</b><i>host.com</i><b>/</b><i>フォルダー</i><br/>
+<b>ftp://</b><i>ftp_ホスト</i><b>/</b><i>フォルダー</i><br/>
     - Anonymous FTP
 </p><p>
-<b>ftp://</b><i>user</i><b>:</b><i>pass</i><b>@</b><i>ftp_host</i><b>/</b><i>フォルダー</i><br/>
+<b>ftp://</b><i>ユーザー</i><b>:</b><i>パスワード</i><b>@</b><i>ftp_ホスト</i><b>/</b><i>フォルダー</i><br/>
     - 認証 FTP
 </p><p>
-<b>sftp://</b><i>user</i><b>:</b><i>pass</i><b>@</b><i>sftp_host</i><b>/</b><i>フォルダー</i><br/>
+<b>sftp://</b><i>ユーザー</i><b>:</b><i>パスワード</i><b>@</b><i>sftp_ホスト</i><b>/</b><i>フォルダー</i><br/>
     - SSH FTP<br/>
     もし認証のプライベート・キーがある場合は, ファイル 
-    <b>/sdcard/.GhostCommander/keys/</b><i>exact_host_name</i> に入れてください<br/>
+    <b>/sdcard/.GhostCommander/keys/</b><i>ホスト名</i> に入れてください<br/>
     この場合, パスワードはキーファイルのパスフレーズになります.
 </p><p>
-<b>smb://</b><i>domain</i><b>;</b><i>user</i><b>:</b><i>pass</i><b>@</b><i>server</i><b>/</b><i>share</i><br/>
+<b>smb://</b><i>ドメイン</i><b>;</b><i>ユーザー</i><b>:</b><i>パスワード</i><b>@</b><i>サーバー</i><b>/</b><i>共有名</i><br/>
     - Windows 共有
 </p><p>
-<b>root:/</b><i>path/to/folder</i><br/>
+<b>root:/</b><i>フォルダー/への/パス</i><br/>
     - Root モード
 </p>
 <h3>ホットキー</h3>
@@ -488,7 +488,7 @@ root 化されたデバイスやインストールされた BusyBox のパスは
 <b>[A-z]</b> - クイック検索<br/>
 </p>
 <p>
-<a href="https://sites.google.com/site/ghostcommander1/info">More help...</a>
+<a href="https://sites.google.com/site/ghostcommander1/info">詳しいヘルプ...</a>
 </p>
 ]]></string>
 </resources>

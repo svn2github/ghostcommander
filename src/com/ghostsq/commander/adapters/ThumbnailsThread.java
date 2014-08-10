@@ -318,7 +318,7 @@ class ThumbnailsThread extends Thread {
                 }
             }
             try {
-                String filePath = base_path + f.name;
+                String filePath = Utils.mbAddSl( base_path ) + f.name;
                 PackageInfo packageInfo = owner.ctx.getPackageManager().getPackageArchiveInfo( filePath,
                         PackageManager.GET_ACTIVITIES );
                 if( packageInfo != null ) {
@@ -343,8 +343,10 @@ class ThumbnailsThread extends Thread {
                 f.setIcon( icon );
                 return true;
             }
+            /*
             f.setIcon( pm.getDefaultActivityIcon() );
             return true;
+            */
         } catch( Exception e ) {
         }
         return false;

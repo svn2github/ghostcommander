@@ -84,7 +84,7 @@
 <string name="prefs_saved">Your preferences have been saved</string>
 <string name="prefs_restr">Your preferences have been restored</string>
 <string name="about">About</string>
-<string name="keys">Hotkeys &amp; Tips</string>
+<string name="keys">Help</string>
 <string name="new_file">Create a new file</string>
 <string name="new_folder">Create a new folder</string>
 <string name="new_zip">Create a new ZIP file</string>
@@ -493,7 +493,7 @@ follows:
 <b>[A-z]</b> - Quick search<br/>
 </p>
 <p>
-<a href="https://sites.google.com/site/ghostcommander1/info">More help...</a>
+<a href="https://sites.google.com/site/ghostcommander1/info">More help online…</a>
 </p>
 ]]></string>
 </resources>
