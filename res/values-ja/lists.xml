@@ -32,42 +32,6 @@
         <item>22</item>
         <item>24</item>
     </string-array>
-    <string-array name="language">
-        <item>Default</item>
-        <item>Čeština</item>
-        <item>Dansk</item>
-        <item>Deutsch</item>
-        <item>English</item>
-        <item>Español</item>
-        <item>Français</item>
-        <item>Italiano</item>
-        <item>Magyar</item>
-        <item>日本語</item>
-        <item>Polski</item>
-        <item>Български</item>
-        <item>Русский</item>
-        <item>한국어</item>
-        <item>中文</item>
-        <item>文言</item>
-        </string-array>
-    <string-array name="language_vals">
-        <item></item>
-        <item>cs_CZ</item>
-        <item>da</item>
-        <item>de</item>
-        <item>en</item>
-        <item>es</item>
-        <item>fr</item>
-        <item>it</item>
-        <item>hu</item>
-        <item>ja</item>
-        <item>pl</item>
-        <item>bg</item>
-        <item>ru</item>
-        <item>ko_KR</item>
-        <item>zh_CN</item>
-        <item>zh_TW</item>
-        </string-array>
     <string-array name="encoding">
         <item>Default</item>
         <item>windows-1250\n\t  Eastern European</item>
