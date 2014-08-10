@@ -31,6 +31,7 @@ import android.util.Log;
 public class StreamServer extends Service {
     private final static String TAG = "StreamServer";
     private final static String CRLF = "\r\n";
+    private final static String SALT = "GCSS";
     private Context ctx;
     public  ListenThread  thread = null;
     public  WifiLock wifiLock = null;
@@ -94,7 +95,7 @@ public class StreamServer extends Service {
                 edt.commit();
             }
         }
-        return seed;
+        return seed + SALT;
     }
     
     private class ListenThread extends Thread {
@@ -142,7 +143,7 @@ public class StreamServer extends Service {
                     Socket data_socket = ss.accept();
                     //Log.d( TAG, "Connection accepted" );
                     if( data_socket != null && data_socket.isConnected() ) {
-                        int tn = -1; //count++
+                        int tn = -1;//count++;//
                         stream_thread = new StreamingThread( data_socket, tn );
                         stream_thread.start();
                     }
@@ -186,7 +187,7 @@ public class StreamServer extends Service {
     };    
 
     private class StreamingThread extends Thread {
-        private final static String TAG = "GCSS.StreamingThread";
+        private final static String TAG = "GCSS.WT";
         private Socket data_socket;
         private int num_id;
         private boolean  l = true;
@@ -197,10 +198,32 @@ public class StreamServer extends Service {
             l = num_id >= 0; 
         }
         
-        private void Log( String s ) {
+        private final void Log( String s ) {
             if( l ) Log.d( TAG, "" + num_id + ": " + s );
         }
+
+        private final void SendStatus( OutputStreamWriter osw, int code ) throws IOException {
+            final String http = "HTTP/1.0 ";
+            String descr;
+            switch( code ) {
+            case 200: descr = "OK";                     break;
+            case 206: descr = "Partial Content";        break;
+            case 400: descr = "Invalid";                break;
+            case 404: descr = "Not found";              break;
+            case 416: descr = "Bad Requested Range";    break;
+            case 500: descr = "Server error";           break;
+            default:  descr = "";  
+            }
+            String resp = http + code + " " + descr; 
+            osw.write( resp + CRLF );
+            if( l ) Log( resp );
+            Date date = new Date();
+            osw.write( "Date: " + date + CRLF );
+            if( l ) Log( "Date: " + date + CRLF );
+            
+        }        
         
+        @Override
         public void run() {
             InputStream  is = null;
             OutputStream os = null;
@@ -345,16 +368,20 @@ public class StreamServer extends Service {
 
                 osw.write( "Connection: close" + CRLF );
                 osw.write( CRLF );
-                osw.flush();
-                
+                osw.flush();                
                 ReaderThread rt = new ReaderThread( cs, num_id );
                 rt.start();
                 setPriority( Thread.MAX_PRIORITY );
                 int count = 0;
                 while( rt.isAlive() ) {
                     try {
-                        if( br.ready() )
-                            if( l ) Log( "HTTP additional command arrived!!! " + br.readLine() );
+                        if( isr.ready() ) {
+                            char[] isb = new char[32]; 
+                            if( isr.read( isb ) > 0 ) {
+                                Log.d( TAG, "" + isb );
+                                if( l ) Log( "Some additional HTTP line has arrived!!! " /*+ BLOCKS!br.readLine()*/ );
+                            }
+                        }
                         thread.touch();
                         byte[] out_buf = rt.getOutputBuffer();
                         if( out_buf == null ) break;
@@ -371,8 +398,9 @@ public class StreamServer extends Service {
                         rt.doneOutput( true );
                         break;
                     }
-                }                                            
-                ca.closeStream( cs );
+                }
+                if( ca != null )
+                    ca.closeStream( cs );
                 //rt.interrupt();
                 if( l ) Log( "----------- done -------------" );
             }
@@ -390,34 +418,14 @@ public class StreamServer extends Service {
                 }
             }
         }
-        private void SendStatus( OutputStreamWriter osw, int code ) throws IOException {
-            final String http = "HTTP/1.1 ";
-            String descr;
-            switch( code ) {
-            case 200: descr = "OK";                     break;
-            case 206: descr = "Partial Content";        break;
-            case 400: descr = "Invalid";                break;
-            case 404: descr = "Not found";              break;
-            case 416: descr = "Bad Requested Range";    break;
-            case 500: descr = "Server error";           break;
-            default:  descr = "";  
-            }
-            String resp = http + code + " " + descr; 
-            osw.write( resp + CRLF );
-            if( l ) Log( resp );
-            Date date = new Date();
-            osw.write( "Date: " + date + CRLF );
-            if( l ) Log( "Date: " + date + CRLF );
-            
-        }        
     };
     
     class ReaderThread extends Thread {
         private final static String TAG = "GCSS.RT";
         private InputStream is;
-        private int      roller = 0, chunk = 4096;
-        private final static int MAX = 32768; //524288
-        private byte[][] bufs = { new byte[MAX], new byte[MAX] };
+        private long roller = 0;
+        private final int chunk = 16384, MAX = 16384;
+        private byte[][] bufs = null;
         private byte[]   out_buf = null;
         private int      data_size = 0;
         private int      num_id;
@@ -428,27 +436,33 @@ public class StreamServer extends Service {
             is = is_;
             setName( TAG );
             num_id = num_id_;
-            l = num_id >= 0; 
+            l = num_id >= 0;
+            bufs = new byte[][] { new byte[MAX], new byte[MAX] };
+            Log.d( TAG, "Buffers size: " + MAX );
         }
         
-        private void Log( String s ) {
+        private final void Log( String s ) {
             if( l ) Log.d( TAG, "" + num_id + ": " + s );
         }
+
+        @Override
         public void run() {
             try {
                 setPriority( Thread.MAX_PRIORITY );
                 int count = 0;
                 while( !stop ) {
-                    byte[] inp_buf = bufs[roller++ % 2];
+                    byte[] inp_buf = bufs[(int)( roller++ % 2 )];
                     if( l ) Log( "R..." );
                     int has_read = 0;
                     has_read = is.read( inp_buf, 0, chunk );
                     if( stop || has_read < 0 )
                         break;
+/*
                     if( has_read == chunk && chunk < MAX )
                         chunk <<= 1;
                     if( chunk > MAX )
-                        chunk = MAX;                    
+                        chunk = MAX;
+*/
                     if( l ) Log( "...R " + has_read + "/" + ( count += has_read ) );
                     synchronized( this ) {
                         int wcount = 0; 
