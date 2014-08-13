@@ -1,196 +1,487 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Ghost Commander</string>
-    
-    <string name="file">文件</string>
-    <string name="location">地址</string>
-    <string name="list">列表</string>
-    <string name="app">应用程序</string>
-    
-    <string name="F1">帮助</string>
-    <string name="F2">重命名</string>
-    <string name="F3">查看</string>
-    <string name="F4">编辑</string>
-    <string name="SF4">创建</string>
-    <string name="F5">复制</string>
-    <string name="F6">移动</string>
-    <string name="F7">新建目录</string>
-    <string name="F8">删除</string>
-    <string name="F9">设置</string>
-    <string name="F10">退出</string>
-    <string name="oth_sh_this">使其他的与此相同</string>
-    <string name="eq">设为相同</string>
-    <string name="change">切换当前面板</string>
-    <string name="tgl">切换当前面板</string>
-    <string name="sz">大小</string>
-    <string name="refresh">刷新</string>
-    <string name="enter">变更位置</string>
-    <string name="enter_ftp">FTP 助手</string>
-
-    <string name="sort_by_name">根据文件名</string>
-    <string name="sort_by_size">根据文件大小</string>
-    <string name="sort_by_date">根据修改时间</string>
-    <string name="sort_by_name_b">根据文件名</string>
-    <string name="sort_by_size_b">根据文件大小</string>
-    <string name="sort_by_date_b">根据修改时间</string>
-    <string name="select_all">全选</string>
-    <string name="unselect_all">取消全选</string>
-        
-    <string name="prefs">设置</string>
-    <string name="about">关于</string>
-    <string name="keys">快捷键</string>
-    <string name="new_file">创建新文件</string>
-
-    <string name="go_button">转到</string>
-    <string name="show_size">大小</string>
-    <string name="send_to">发送到</string>
-
-    <string name="input_settings">输入</string>
-    <string name="arrow_mode">标记命令</string>
-    <string name="summary_arrow_mode">左/右 进行 切换/选定</string>
-
-    <string name="prefs_label">设置</string>
-    <string name="editor_label">文本编辑器</string>
-
-    <string name="dialog_ok">确定</string>
-    <string name="dialog_cancel">取消</string>
-    <string name="dialog_close">关闭</string>
-
-    <string name="dialog_abort">中止</string>
-    <string name="dialog_retry">重试</string>
-    <string name="dialog_ignore">忽略</string>
-    
-    <string name="edit_title">编辑</string>
-    <string name="newf_prompt">新的文件名</string>
-    <string name="rename_title">重命名</string>
-    <string name="rename_prompt">重命名为:</string>
-    <string name="rename_err">没有要重命名的。</string>
-    <string name="mkdir_title">新建目录</string>
-    <string name="mkdir_prompt">创建目录:</string>
-    <string name="copy_title">复制</string>
-    <string name="move_title">移动</string>
-    <string name="no_items">没有有效的文件来完成此操作。</string>
-    
-    <string name="copy_move_not_alwd">此 \'%1$s\' 不被允许。先选择一些文件。</string><!-- copy_title/move_title -->
-    <string name="oper_item_to">%1$s %2$s 到："</string><!-- copy_title/move_title, file name/summary -->
-    <string name="login_title">登陆</string>
-    <string name="delete_title">删除</string>
-    <string name="delete_err">没有要删的文件</string>
-    <string name="delete_q">"删除 %1$s ?"</string><!-- file name/summary -->
-    <string name="too_deep_hierarchy">文件路径太深</string>
-    <string name="preparing">准备中...</string>
-    
-    <string name="cd_title">转到</string>
-    <string name="cd_prompt">更改目录到：</string>
-
-    <string name="select_some">请选择一些文件。</string>
-    <string name="select">选择</string>
-    <string name="error">错误</string>
-    <string name="info">信息</string>
-    <string name="confirm">确认</string>
-    <string name="progress">进程</string>
-    <string name="alert">警报</string>
-
-    <string name="server">服务器:</string>
-    <string name="path">的路径：</string>
-    <string name="username">用户名：</string>
-    <string name="password">密码：</string>
-    <string name="connect">连接</string>
-    <string name="cancel">取消</string>
-    
-
-    <string name="layout_settings">配置布局:</string>
-    <string name="panels_mode">并排面板模式</string>
-    <string name="summary_panels_mode">分割的屏幕中显示两个并排面板。</string>
-    <string name="two_lines">一排显示两行</string>
-    <string name="summary_two_lines">第二行总是显示文件属性。</string>
-    <string name="show_toolbar">显示工具栏</string>
-    <string name="summary_show_toolbar">显示或隐藏屏幕底部的按钮</string>
-    <string name="toolbar_preference">选择显示哪些按钮</string>
-    <string name="summary_toolbar_preference">自定义工具栏上的命令按钮</string>
-
-    <string name="finger_friendly">手指触摸优化</string>
-    <string name="summary_finger_friendly">增大用户界面的元素</string>
-    <string name="prevent_root">在root目录时警告</string>
-    <string name="summary_prevent_root">当转到设备的root目录时发出警告。</string>
-
-    <string name="left_panel_settings">左面板设置</string>
-    <string name="right_panel_settings">右面板设置</string>
-    <string name="detailed_view_SbS">在并排模式中显示详情</string>
-    <string name="summary_detailed_view_SbS">在并排模式中显示目录的大小和日期</string>
-    <string name="detailed_view_Ovr">在重叠模式中显示详情</string>
-    <string name="summary_detailed_view_Ovr">在重叠模式中显示目录的大小和日期</string>
-    <string name="sorting">排序</string>
-    <string name="summary_sorting">在列表中如何排序项目</string>
-
-    <string name="show_hidden">显示隐藏文件</string>
-    <string name="summary_show_hidden">如果不先检查，那么点击文件后将不显示</string>
-
-    <string name="editor_activity">编辑动作名称</string>
-    <string name="summary_editor_activity">编辑操作将激活完整的类名。包名 = 类名前缀。</string>
-    
-    <string name="nothing_to_open">没有要打开的</string>
-    <string name="save">保存</string>
-    <string name="wrap">自动换行</string>
-    <string name="no_such_file">没有此文件 \"%1$s\"</string>
-    <string name="too_big_file">文件 \"%1$s\" 太大。</string>
-    <string name="binary_file">文件 \"%1$s\" 是二进制的。您可能会损坏它。编辑它将由您自担风险。</string>    
-    <string name="cant_open">无法打开此文件。</string>    
-    <string name="cant_save">无法保存此文件。</string>
-    <string name="nav_warn">目录 是系统目录。擅改他可能会导致失败。继续么?</string>
-    <string name="no_such_folder">\"%1$s\" 不是一个有效的目录!</string>
-
-    <string name="donate">  捐赠</string>
-    <string name="online_help">  在线帮助</string>
-    
-    <string name="donation">通过捐赠您将鼓励帮助«Ghost Commander»文件管理器的进一步开发。\n
-点击\"确认\"通过PayPal来做一个任意金额的捐赠。\n
-或者点击\"取消\"继续免费使用«Ghost Commander» 文件管理器。\n
-    </string>
-
-    <string name="about_text"><![CDATA[
-        <h1>Ghost Commander v%1$s</h1>
-        <h4>一款文件管理器</h4>
-        请发送 BUG/建议到<br/>
-        <a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a><br/>
-        非常感谢。<br/>
-	安智网汉化（http://goapk.com）;
-<h3>        免责声明：</h3>
-使用本软件，您同意以下:
-本软件的作者不为任何损坏, 丢失信息, 间接损坏, 
-或者任何由或可能由使用本软件引起的问题承担责任。
-您同意使用此软件并自担风险。\n
+<string name="app_name">Ghost Commander</string>
+<string name="file">文件</string>
+<string name="location">位置</string><!-- 地址 -->
+<string name="list">列表</string>
+<string name="app">应用程序</string>
+<string name="help">帮助</string><!-- !!! -->
+<string name="F1">帮助</string>
+<string name="F2">重命名</string>
+<string name="F3">查看</string>
+<string name="F4">编辑</string>
+<string name="SF4">新建文件</string><!-- 创建 -->
+<string name="F5">复制</string>
+<string name="F6">移动</string>
+<string name="F7">新建文件夹</string><!-- 新建目录 -->
+<string name="F8">删除</string>
+<string name="F9">设置</string>
+<string name="F10">退出</string>
+<string name="oth_sh_this">同步面板</string><!-- 使其他的与此相同 -->
+<string name="eq">同步面板</string>
+<string name="change">切换面板</string><!-- 切换当前面板 -->
+<string name="tgl">切换面板</string><!-- 切换当前面板 -->
+<string name="sz">属性</string><!-- 大小 -->
+<string name="refresh">刷新</string>
+<string name="enter">改变位置</string><!-- 变更位置 -->
+<string name="home">主页</string><!-- !!! -->
+<string name="sdcard">/sd卡</string><!-- !!! -->
+<string name="softkbd">键盘</string><!-- !!! -->
+<string name="enter_b">位置</string><!-- !!! -->
+<string name="add_fav">添加到书签</string><!-- !!! -->
+<string name="add_fav_b">添加书签</string><!-- !!! -->
+<string name="remount_b">挂载读写</string><!-- !!! --><!-- ? -->
+<string name="remount">重新挂载</string><!-- !!! --><!-- ? -->
+<string name="hidden">隐藏文件</string><!-- !!! -->
+<string name="rescan">重新扫描媒体</string><!-- !!! --><!-- 刷新? -->
+<string name="favs">书签</string><!-- !!! -->
+<string name="local">本地储存</string><!-- !!! -->
+<string name="external">外部储存卡</string><!-- !!! -->
+<string name="media">媒体商店</string><!-- !!! -->
+<string name="ftp">FTP站点</string><!-- !!! -->
+<string name="sftp">SFTP站点</string><!-- !!! -->
+<string name="smb">Windows share</string><!-- !!! -->
+<string name="plugins">浏览插件</string><!-- !!! -->
+<string name="root">Root模式</string><!-- !!! -->
+<string name="mount">挂载点</string><!-- !!! -->
+<string name="mount_b">挂载</string><!-- !!! --><!-- ? -->
+<string name="apps">应用管理</string><!-- !!! -->
+<string name="exit">退出</string><!-- !!! -->
+<string name="favs_descr">查看、管理书签和站点</string><!-- !!! -->
+<string name="local_descr">浏览、整理和修改主要文件系统的内容</string><!-- !!! -->
+<string name="external_descr">使用外部储存代替sd卡，但它可能是只读的</string><!-- !!! --><!-- ? -->
+<string name="media_descr">通过媒体商店界面对外部sd卡进行修改</string><!-- !!! --><!-- ? -->
+<string name="ftp_descr">连接到一个FTP服务</string><!-- !!! --><!-- ? -->
+<string name="sftp_descr">连接到一个安全FTP(sftp)服务</string><!-- !!! --><!-- ? -->
+<string name="smb_descr">连接到Windows PC共享文件</string><!-- !!! -->
+<string name="plugins_descr">查看更多Ghost Commander的插件</string><!-- !!! -->
+<string name="root_descr">仅对于已root的设备:管理危险的系统文件，确保你知道自己正在做什么</string><!-- !!! -->
+<string name="mount_descr">显示挂载点列表，切换至读写(rw\)模式，然后在有所改变后返回只读(ro\)模式，开始请小心</string><!-- !!! -->
+<string name="apps_descr">查看和管理已安装的应用程序</string><!-- !!! -->
+<string name="exit_descr">关闭此应用</string><!-- !!! -->
+<string name="shortcut">创建桌面快捷方式</string><!-- !!! -->
+<string name="enter_ftp">FTP 助手</string>
+<string name="enter_smb">连接至Windows PC</string><!-- !!! -->
+<string name="search_file">搜索</string><!-- !!! -->
+<string name="menu">菜单</string><!-- !!! -->
+<string name="sort_by_name">按名称排序</string>
+<string name="sort_by_ext">按类别排序</string><!-- !!! -->
+<string name="sort_by_size">按大小排序</string>
+<string name="sort_by_date">按时间排序</string>
+<string name="sort_by_name_b">按名称排序</string>
+<string name="sort_by_ext_b">按类别排序</string><!-- !!! -->
+<string name="sort_by_size_b">按大小排序</string>
+<string name="sort_by_date_b">按时间排序</string>
+<string name="select_all">选择</string><!-- 全选 -->
+<string name="unselect_all">取消选择</string><!-- 取消全选 -->
+<string name="select_b">选择</string><!-- !!! -->
+<string name="unselect_b">取消选择</string><!-- !!! -->
+<string name="toggle_panels_mode">改变面板模式</string><!-- !!! -->
+<string name="prefs">设置</string>
+<string name="save_prefs">备份设置</string><!-- !!! -->
+<string name="rest_prefs">恢复设置</string><!-- !!! -->
+<string name="prefs_saved">设置已保存</string><!-- !!! -->
+<string name="prefs_restr">设置已恢复</string><!-- !!! -->
+<string name="about">关于</string>
+<string name="keys">信息</string><!-- 快捷键 -->
+<string name="new_file">新建文件</string>
+<string name="new_folder">新建文件夹</string><!-- !!! -->
+<string name="new_zip">新建ZIP文件</string><!-- !!! -->
+<string name="go_button">转到</string>
+<string name="show_size">属性</string><!-- 大小 -->
+<string name="send_to">发送至…</string><!-- 发送到 -->
+<string name="open_with">打开方式…</string><!-- !!! -->
+<string name="open">打开</string><!-- !!! -->
+<string name="copy_name">复制完整路径</string><!-- !!! -->
+<string name="fav_fld">添加 \"%s\" 到书签</string><!-- !!! -->
+<string name="create_zip">新建ZIP文件</string><!-- !!! -->
+<string name="create_zip_title">新建ZIP文件</string><!-- !!! -->
+<string name="wait"> wait… </string><!-- !!! -->
+<string name="fail"> 失败 </string><!-- !!! -->
+<string name="failed">错误:\n</string><!-- !!! -->
+<string name="default_uri_cmnt">默认位置</string><!-- !!! -->
+<string name="default_color">默认</string><!-- !!! -->
+<string name="base_color">基础颜色</string><!-- !!! -->
+<string name="typemasks">文件类型</string><!-- !!! -->
+<string name="color_sample">示例Abc</string><!-- !!! -->
+<string name="add_new_type">添加</string><!-- !!! -->
+<string name="fav_comment">备注:</string><!-- !!! --><!-- ? -->
+<string name="fav_dialog">编辑书签</string><!-- !!! -->
+<string name="dialog_yes">是</string><!-- !!! --><!-- ? -->
+<string name="dialog_no">否</string><!-- !!! --><!-- ? -->
+<string name="dialog_ok">确定</string>
+<string name="dialog_cancel">取消</string>
+<string name="dialog_close">关闭</string>
+<string name="dialog_exit">退出</string><!-- !!! -->
+<string name="dialog_browse">浏览</string><!-- !!! --><!-- ? -->
+<string name="dialog_abort">中止</string>
+<string name="dialog_retry">重试</string>
+<string name="dialog_ignore">忽略</string>
+<string name="dialog_replace_all">替换全部</string><!-- !!! -->
+<string name="dialog_skip_all">跳过全部</string><!-- !!! -->
+<string name="dialog_select">选择</string><!-- !!! -->
+<string name="dialog_unselect">取消选择</string><!-- !!! -->
+<string name="filemask">文件类型:</string><!-- !!! --><!-- ? -->
+<string name="for_files">文件</string><!-- !!! -->
+<string name="for_dirs">文件夹</string><!-- !!! -->
+<string name="in_subf">子目录</string><!-- !!! -->
+<string name="content">目录:</string><!-- !!! -->
+<string name="bigger_than">大于:</string><!-- !!! --><!-- Remove the line feed should there will be no exception? -->
+<string name="smaller_than">小于:</string><!-- !!! -->
+<string name="mod_after">晚于</string><!-- !!! -->
+<string name="mod_before">早于</string><!-- !!! -->
+<string name="launch">Launch</string><!-- !!! --><!-- ? -->
+<string name="operation">Operations</string><!-- !!! --><!-- ? -->
+<string name="view_title">查看</string><!-- !!! -->
+<string name="edit_title">编辑</string>
+<string name="newf_title">新建文件</string><!-- !!! -->
+<string name="newf_prompt">文件名称:</string>
+<string name="mkdir_title">新建文件夹</string>
+<string name="mkdir_prompt">文件夹名称:</string>
+<string name="search_title">搜索</string><!-- !!! -->
+<string name="search_prompt">关键字:</string><!-- !!! -->
+<string name="rename_title">重命名</string>
+<string name="copy_title">复制</string>
+<string name="move_title">移动</string>
+<string name="send_title">发送至…</string><!-- !!! -->
+<string name="open_title">打开方式…</string><!-- !!! -->
+<string name="to_copy" /><!-- !!! -->
+<string name="to_move" /><!-- !!! -->
+<string name="to_rename" /><!-- !!! -->
+<string name="copy_err">没有完成复制</string><!-- !!! --><!-- ? -->
+<string name="rename_err">没有完成重命名</string>
+<string name="edit_err">无法编辑</string><!-- !!! -->
+<string name="no_items">没有有效的文件来完成此操作</string><!-- ? -->
+<string name="inv_dest">无效的目的地</string><!-- !!! --><!-- ? -->
+<string name="inv_path">无效的路径</string><!-- !!! -->
+<string name="find_on_fs_only">搜索特性仅在本地文件系统工作</string><!-- !!! -->
+<string name="on_fs_only">此特性仅在本地文件系统工作</string><!-- !!! -->
+<string name="op_not_alwd">操作不被允许，先选择一些吧</string><!-- !!! -->
+<string name="oper_item_to">%1$s %2$s 到："</string>
+<string name="login_title">登录</string><!-- 登陆 -->
+<string name="delete_title">删除</string>
+<string name="delete_err">没有选择要删除的文件</string><!-- 没有要删的文件 -->
+<string name="delete_q">"删除 %1$s ?"</string>
+<string name="rescan_q">确定再次搜索?</string><!-- !!! -->
+<string name="search_done">搜索完成</string><!-- !!! -->
+<string name="done">完成</string><!-- !!! -->
+<string name="interrupted">被中断</string><!-- !!! --><!-- ? -->
+<string name="cant_copy_to_itself">不能复制文件夹 \"%s\" 到他自身或其下目录</string><!-- !!! -->
+<string name="too_deep_hierarchy">文件路径太深</string>
+<string name="nothing_found">没有找到任何文件</string><!-- !!! -->
+<string name="preparing">准备中...</string>
+<string name="copying">正在复制\n\"%s\"…</string><!-- !!! -->
+<string name="copied_f">完成复制\n\"%s\"   </string><!-- !!! -->
+<string name="deleting">正在删除\n\"%s\"…</string><!-- !!! -->
+<string name="deleting_a">正在删除…</string><!-- !!! -->
+<string name="fail_del">文件 "%1$s\" 不完整，正在删除…</string><!-- !!! -->
+<string name="unpacking">正在解压 \n\"%s\"…</string><!-- !!! -->
+<string name="unpacked_p">完成解压 \n\"%s\"    </string><!-- !!! -->
+<string name="packing">正在压缩 \n\"%s\"…</string><!-- !!! -->
+<string name="retrieving">恢复中…\n\"%s\"</string><!-- !!! --><!-- ? -->
+<string name="uploading">正在上传…\n\"%s\"</string><!-- !!! -->
+<string name="uploaded_p">完成上传 \n\"%s\"   </string><!-- !!! --><!-- ? -->
+<string name="loading">Loading…</string><!-- !!! -->
+<string name="second">s</string><!-- !!! -->
+<string name="canceled">已撤销</string><!-- !!! -->
+<string name="oom_err">储存空间不足</string><!-- !!! -->
+<string name="unkn_err">未知错误</string><!-- !!! -->
+<string name="cant_md">无法新建文件夹 \"%s\"</string><!-- !!! -->
+<string name="cant_cd">无法浏览这个目录 \"%s\"</string><!-- !!! -->
+<string name="file_exist">文件 \"%s\" 已存在</string><!-- !!! -->
+<string name="sec_err">安全问题\n%s</string><!-- !!! --><!-- ? -->
+<string name="not_accs">无法打开文件\n%s</string><!-- !!! -->
+<string name="acc_err">存取错误在文件 \"%1$s\"\n %2$s</string><!-- !!! --><!-- ? -->
+<string name="rtexcept">错误在文件 \"%1$s\"\n %2$s</string><!-- !!! --><!-- ? -->
+<string name="cant_move">无法移动文件 \"%s\"</string><!-- !!! -->
+<string name="cant_create">无法新建文件 \"%1$s\"\n%2$s</string><!-- !!! -->
+<string name="cant_del">无法删除 \"%1$s\"</string><!-- !!! -->
+<string name="dest_wrtble">确认文件夹 \"%s\" 可写</string><!-- !!! -->
+<string name="copied">已复制</string><!-- !!! -->
+<string name="moved">已移动</string><!-- !!! -->
+<string name="deleted">已删除</string><!-- !!! -->
+<string name="downloaded">已下载</string><!-- !!! -->
+<string name="uploaded">已上传</string><!-- !!! -->
+<string name="packed">已压缩</string><!-- !!! -->
+<string name="unpacked">已解压</string><!-- !!! -->
+<string name="remounted">重新挂载 \"%1$s\" 到 \"%2$s\"</string><!-- !!! --><!-- ? -->
+<string name="tried_to_exec">尝试执行 \"%s\"</string><!-- !!! --><!-- ? -->
+<string name="verb_plural_sfx" /><!-- !!! -->
+<string name="item">项目</string><!-- !!! -->
+<string name="items">个项目</string><!-- !!! --><!-- ? -->
+<string name="items24" /><!-- !!! -->
+<string name="were">曾经是</string><!-- !!! --><!-- ? -->
+<string name="was">曾经是</string><!-- !!! --><!-- ? -->
+<string name="nothing">无内容</string><!-- !!! -->
+<string name="sz_folder">文件夹 \"%1$s\"\n%2$d 个文件 </string><!-- !!! -->
+<string name="sz_dirnum"> 共 %1$d 个子目录%2$s</string><!-- !!! -->
+<string name="sz_dirsfx_s">y</string><!-- !!! -->
+<string name="sz_dirsfx_p">ies</string><!-- !!! -->
+<string name="sz_file">文件: \"%s\"</string><!-- !!! -->
+<string name="sz_files">文件数: %d </string><!-- !!! -->
+<string name="sz_Nbytes">\n大小: %1$s</string><!-- !!! -->
+<string name="sz_bytes"> (%db)</string><!-- !!! -->
+<string name="sz_lastmod">\n\n修改时间:\n </string><!-- !!! -->
+<string name="sz_total">总计: %1$s\n空闲: %2$s</string><!-- !!! -->
+<string name="busy">Busy!</string><!-- !!! -->
+<string name="cd_title">转到</string>
+<string name="cd_prompt">更改目录到：</string><!-- ? -->
+<string name="not_supported">此操作不被支持</string><!-- !!! -->
+<string name="select_some">请选择一些文件</string>
+<string name="select">选择</string>
+<string name="error">错误</string>
+<string name="info">信息</string>
+<string name="confirm">确认</string>
+<string name="alert">警报</string>
+<string name="progress">进程</string>
+<string name="inprogress">一个文件操作正在进行</string><!-- !!! -->
+<string name="server">服务器:</string>
+<string name="path">路径：</string><!-- 的路径 -->
+<string name="active">激活</string><!-- !!! -->
+<string name="domain">端口:</string><!-- !!! --><!-- ? -->
+<string name="username">用户名：</string>
+<string name="password">密码：</string>
+<string name="command">控制:</string><!-- !!! --><!-- ? -->
+<string name="use_busybox">busybox</string><!-- !!! -->
+<string name="user">用户</string><!-- !!! -->
+<string name="group">组</string><!-- !!! -->
+<string name="other">其他的</string><!-- !!! --><!-- ? -->
+<string name="connect">连接</string>
+<string name="cancel">取消</string>
+<string name="ftp_connected">连接到 \"%1$s\",\n 登录为 \"%2$s\"</string><!-- !!! -->
+<string name="ftp_upload_failed">上传 \"%1$s\" 失败.\n FTP log:\n\n%2$s</string><!-- !!! -->
+<string name="ftp_mkdir_failed">失败在新建文件夹 \"%1$s\".\n FTP log:\n\n\"%2$s\</string><!-- !!! --><!-- ? -->
+<string name="ftp_nologin">没有登录!</string><!-- !!! -->
+<string name="data_settings">文件列表</string><!-- !!! -->
+<string name="layout_settings">配置布局:</string>
+<string name="input_settings">输入</string>
+<string name="selection_zone_setup">选择范围</string><!-- !!! -->
+<string name="summary_selection_zone_setup">自定义项目的直击选择区域</string><!-- !!! -->
+<string name="sel_onright">右侧选择</string><!-- !!! -->
+<string name="show_confirm">操作提示</string><!-- !!! -->
+<string name="summary_show_confirm">在某些操作后显示提示信息</string><!-- !!! -->
+<string name="prefs_label">设置</string>
+<string name="filetypes_label">Colors by type</string><!-- !!! --><!-- ? -->
+<string name="editor_label">Text Editor</string>
+<string name="pictvw_label">Picture Viewer</string><!-- !!! -->
+<string name="textvw_label">Text Viewer</string><!-- !!! -->
+<string name="perms_label">chmod / chown</string><!-- !!! --><!-- ? -->
+<string name="advanced">高级</string><!-- !!! --><!-- ? -->
+<string name="advanced_settings">高级</string><!-- !!! -->
+<string name="summary_advanced_settings">为高级用户准备的更多设置项</string><!-- !!! -->
+<string name="send_content">使用内容提供者发送</string><!-- !!! -->
+<string name="summary_send_content">如果你的文件发送应用没有执行内容解析，请尝试取消该选择</string><!-- !!! -->
+<string name="panels_mode">并排面板模式</string>
+<string name="summary_panels_mode">分割屏幕同时显示两个面板</string><!-- 分割的屏幕中显示两个并排面板 -->
+<string name="two_lines">分行显示</string><!-- 一排显示两行 -->
+<string name="summary_two_lines">第二行专门显示文件属性</string><!-- 第二行总是显示文件属性 -->
+<string name="show_icons">启用图标</string><!-- !!! -->
+<string name="summary_show_icons">显示文件和文件夹的图标而不是仅文本</string><!-- !!! -->
+<string name="toolbar_settings">工具栏</string><!-- !!! -->
+<string name="summary_toolbar_settings">定制工具栏的按钮及其显示效果</string><!-- !!! -->
+<string name="show_toolbar">显示工具栏</string>
+<string name="summary_show_toolbar">显示或隐藏屏幕底部的按钮</string>
+<string name="show_hotkeys">显示热键</string><!-- !!! -->
+<string name="summary_show_hotkeys">在某些功能键前显示热键</string><!-- !!! -->
+<string name="toolbar_preference">选择显示哪些按钮</string>
+<string name="summary_toolbar_preference">自定义工具栏上的命令按钮</string>
+<string name="tblist_label">定制工具栏</string><!-- !!! -->
+<string name="finger_friendly">手指触摸优化</string>
+<string name="summary_finger_friendly">增大用户界面元素</string><!-- 增大用户界面的元素 -->
+<string name="prevent_root">在root目录时警告</string>
+<string name="summary_prevent_root">将跳转到设备的root目录时发出警告。</string><!-- 当转到设备的root目录时发出警告。 -->
+<string name="show_root">显示root和挂载</string><!-- !!! --><!-- ? -->
+<string name="summary_show_root">主页将会显示 \"Root模式\" 和 \"挂载点\"</string><!-- !!! -->
+<string name="root_root">自动root模式</string><!-- !!! -->
+<string name="summary_root_root">进入root目录时将会自动切换至root模式</string><!-- !!! -->
+<string name="thumbnails">启用缩略图</string><!-- !!! -->
+<string name="summary_thumbnails">对于图片文件显示缩略图代替图标</string><!-- !!! -->
+<string name="thumbnails_size">缩略图大小</string><!-- !!! -->
+<string name="summary_thumbnails_size">设置缩略图大小的百分比值</string><!-- !!! -->
+<string name="font_size">字体大小</string><!-- !!! -->
+<string name="summary_font_size">调整字体尺寸</string><!-- !!! -->
+<string name="left_panel_settings">左面板设置</string>
+<string name="right_panel_settings">右面板设置</string>
+<string name="detailed_view_SbS">在并排模式中显示详情</string>
+<string name="summary_detailed_view_SbS">在并排模式中显示目录的大小和日期</string>
+<string name="detailed_view_Ovr">在重叠模式中显示详情</string>
+<string name="summary_detailed_view_Ovr">在重叠模式中显示目录的大小和日期</string>
+<string name="sorting">排序</string>
+<string name="summary_sorting">在列表中如何排序项目</string>
+<string name="sort_case">忽略大小写排序</string><!-- !!! -->
+<string name="summary_sort_case">启用这个选项以忽略大小写敏感性排序</string><!-- !!! -->
+<string name="show_hidden">显示隐藏文件</string>
+<string name="summary_show_hidden">如果不先检查，那么点击文件后将不显示</string><!-- ? -->
+<string name="compatibility_settings">实体键选项</string><!-- !!! -->
+<string name="summary_compatibility_settings">定制主要的实体键功能</string><!-- !!! -->
+<string name="panels_sliding">启用滑动手势</string><!-- !!! -->
+<string name="summary_panels_sliding">使用水平的滑动手势切换面板</string><!-- !!! -->
+<string name="arrow_mode">标记命令</string><!-- ? -->
+<string name="summary_arrow_mode">左/右 进行 切换/选定</string><!-- ? -->
+<string name="volume_mode">覆盖音量键</string><!-- !!! -->
+<string name="summary_volume_mode">更改音量键功能为 切换/选择</string><!-- !!! -->
+<string name="exit_on_back">返回键退出</string><!-- !!! -->
+<string name="summary_exit_on_back">通过返回键关闭应用</string><!-- !!! -->
+<string name="colors">主题</string><!-- !!! -->
+<string name="summary_colors">修改背景色和前景色</string><!-- !!! -->
+<string name="bgr_color_picker">背景</string><!-- !!! -->
+<string name="summary_bgr_color_picker">选择一个颜色作为主要的背景色</string><!-- !!! -->
+<string name="fgr_color_picker">前景</string><!-- !!! -->
+<string name="summary_fgr_color_picker">为不同类型的文件选择不同的字体颜色</string><!-- !!! -->
+<string name="cur_color_picker">按下效果</string><!-- !!! -->
+<string name="summary_cur_color_picker">选择一个项目被按下时的颜色</string><!-- !!! -->
+<string name="sel_color_picker">已选择背景</string><!-- !!! -->
+<string name="summary_sel_color_picker">选择已选定项目和当前面板标题的背景色</string><!-- !!! -->
+<string name="sfg_color_picker">已选择前景</string><!-- !!! -->
+<string name="summary_sfg_color_picker">选择已选定项目和当前面板标题的字体颜色</string><!-- !!! -->
+<string name="ttl_color_picker">面板标题背景</string><!-- !!! -->
+<string name="summary_ttl_color_picker">选择一个面板标题的底色</string><!-- !!! -->
+<string name="btn_color_picker">工具栏按钮</string><!-- !!! -->
+<string name="summary_btn_color_picker">选择工具栏按钮的颜色</string><!-- !!! -->
+<string name="pick_color">选择颜色</string><!-- !!! -->
+<string name="color">颜色</string><!-- !!! -->
+<string name="language">语言</string><!-- !!! -->
+<string name="summary_language">无视系统语言</string><!-- !!! -->
+<string name="restart_to_apply_lang">重启应用程序以应用新的语言</string><!-- !!! -->
+<string name="editor_activity">编辑动作名称</string><!-- ? -->
+<string name="summary_editor_activity">编辑操作将激活完整的类名。包名 = 类名前缀</string><!-- ? -->
+<string name="busybox_location">Path to BusyBox</string><!-- !!! -->
+<string name="summary_busybox_location">指定BusyBox可执行的位置</string><!-- !!! -->
+<string name="su_location">Path to su</string><!-- !!! -->
+<string name="summary_su_location">指定su可执行的位置</string><!-- !!! -->
+<string name="execute_command">执行一个命令</string><!-- !!! --><!-- ? -->
+<string name="nothing_to_open">没有要打开的</string>
+<string name="remind_to_save">不要忘记保存你的更改!</string><!-- !!! -->
+<string name="saved">\"%1$s\" 已保存。</string><!-- !!! -->
+<string name="not_saved">保存更改?</string><!-- !!! -->
+<string name="save">保存</string>
+<string name="save_as">另存为…</string><!-- !!! -->
+<string name="revert">撤销</string><!-- !!! -->
+<string name="wrap">自动换行</string>
+<string name="go_up">父目录</string><!-- !!! -->
+<string name="go_top">上翻页</string><!-- !!! -->
+<string name="go_end">下翻页</string><!-- !!! -->
+<string name="encoding">编码</string><!-- !!! -->
+<string name="encoding_set">编码已设置为 \"%1$s\", 选择重新加载. 如果此时保存它,新的将替换原来的编码.</string><!-- !!! -->
+<string name="no_such_file">没有此文件 \"%1$s\"</string>
+<string name="too_big_file">文件 \"%1$s\" 太大。</string>
+<string name="binary_file">文件 \"%1$s\" 是二进制的。您可能会损坏它。编辑它将由您自担风险。</string>
+<string name="cant_open_dir">\"%1$s\" 是一个目录</string><!-- !!! -->
+<string name="cant_view_empt">文件 \"%1$s\" 是空的</string><!-- !!! -->
+<string name="cant_open">无法打开此文件。</string>
+<string name="cant_save">无法保存此文件。</string>
+<string name="nav_warn">将前往的是系统目录。擅自更改他可能会导致损失。继续?</string>
+<string name="nav_warn_cmt">点击“取消”至安全的/ sdcard文件夹,或点击“退出”按钮关闭应用程序.</string><!-- !!! -->
+<string name="no_such_folder">\"%1$s\" 不是一个有效的目录!</string>
+<string name="fav_added">\"%1$s\" 已添加到书签</string><!-- !!! -->
+<string name="no_root">没有root?</string><!-- !!! -->
+<string name="manage">管理</string><!-- !!! -->
+<string name="shortcuts">快捷方式</string><!-- !!! --><!-- ? -->
+<string name="pkg_name">包名</string><!-- !!! -->
+<string name="version">版本</string><!-- !!! -->
+<string name="version_code">版本编号</string><!-- !!! -->
+<string name="target_sdk">目标 SDK</string><!-- !!! -->
+<string name="inst_date">安装日期</string><!-- !!! -->
+<string name="pkg_size">大小</string><!-- !!! -->
+<string name="process">进程名</string><!-- !!! -->
+<string name="app_class">应用系列</string><!-- !!! --><!-- ? -->
+<string name="affinity">任务关联</string><!-- !!! -->
+<string name="permissions">许可</string><!-- !!! -->
+<string name="flags">标记</string><!-- !!! -->
+<string name="not_exported">活动没有输出</string><!-- !!! --><!-- ? -->
+<string name="smb_missed">无法加载Samba适配器，请安装Ghost Commander SMB插件。</string><!-- !!! -->
+<string name="sftp_missed">无法加载SFTP适配器，请安装Ghost Commander SFTP插件。</string><!-- !!! -->
+<string name="donate">  捐赠</string>
+<string name="online_help">  在线帮助</string>
+<string name="donation">一个小捐赠将支持进一步发展。\n
+点击 \"OK\" 重定向到 PayPal 网站.\n
+\"Cancel\" 继续享受免费 «Ghost Commander» \n
+    </string><!-- !!! -->
+<string name="about_text">
+        &lt;h1&gt;Ghost Commander v%1$s&lt;/h1&gt;
+        &lt;h4&gt;一款文件管理器&lt;/h4&gt;
+        请发送 BUG/建议到&lt;br/&gt;
+        &lt;a href="mailto:ghost.sq2@gmail.com"&gt;ghost.sq2@gmail.com&lt;/a&gt;&lt;br/&gt;
+        非常感谢。&lt;br/&gt;
+	Gearkey译（tieba.baidu→齿轮key）;
+&lt;h3&gt;        免责声明：&lt;/h3&gt;
+欲使用本软件，您需要同意以下条例:
+本软件作者不会为任何损坏, 丢失信息, 间接损坏, 或者任何可能由使用本软件引起的问题承担责任。
+您必须同意使用此软件并自担风险。\n
 如果您不同意上述条件，请立即停止使用本软件并卸载它。\n
-    ]]></string>
-    <string name="keys_text">
-    "
-快捷键:\n
-音量下键 - 切换当前面板\n
-音量上键 - 选择当前项目\n
-左/右 如果可用则标记同样的。\n
-\t(或者通过点击项目行的右侧来选定)\n
-+,-   - 全选或去掉当前目录所有文件的选择\n  
-(, )  - 为左/右面板输入路径\n
-* - 添加当前目录到收藏\n
-\" -显示所选文件的总大小\n
-= - 让另一个面板的路径与当前相同\n
-1 - 本帮助界面\n
-2 - 重命名当前文件\n
-4 - 编辑当前文件\n
-5 - 复制所选文件\n
-6 - 移动所选文件\n
-7 - 创建新目录\n
-8 - 删除文件或目录\n
-9 - 打开首选项\n
-0 - 退出程序\n
-[A-z] - 快速搜索\n    
-    \n
-输入类似如下的地址可以打开一个匿名的FTP文件夹：\n
-    ftp://host.com/folder\n
-或者，如果您需要提供身份验证：\n
-    ftp://user:password@host.com/folder\n\n
-目前而言，并不是所有的FTP功能都可用。\n
-      "
     </string>
-    
+<string name="keys_text">"
+\t\t选择文件
+
+选择文件和文件夹，仅需点击右侧，点击左侧可以打开它们。
+可以在设置-选择面积，进行设置。
+
+\t\t复制和移动
+
+若想要复制或移动文件和文件夹，
+首先请在另一个面板选择目的地，
+然后在当前面板复制就飞过去了。
+
+\t\tZIP文件
+
+Ghost Commander可以像打开文件夹一样打开标准的ZIP文件，支持打开加密的ZIP文件。
+但不支持使用其他压缩算法。
+
+\t\t插件
+
+扩展功能需要安装插件实现。
+例如访问Windows共享文件夹,SSH文件传输协议和访问权。
+以及云储存:Box, Dropbox and Google Drive.
+
+\t\tROOT模式
+
+要谨慎使用root模式(超级用户)和挂载点特性的Ghost Commander，BusyBox的设备和安装
+其路径中定义的设置。
+
+\t\t位置编辑
+
+手动输入一个位置(你会看到一个书签列表)。
+长按面板的标题打开位置编辑。
+您可以输入资源URL位置手动编辑，
+就像这样:
+
+ftp://host.com/folder
+    - Anonymous FTP
+
+ftp://user:pass@ftp_host/folder
+    - Authenticated FTP
+
+sftp://user:pass@sftp_host/folder
+    - SSH FTP
+    如果你有一个密钥文件可以进行身份验证,把它放进这个文件
+    /sdcard/.GhostCommander/keys/&lt;host name&gt;
+    在这种情况下,密码是你的密钥文件的密码。
+
+smb://domain;user:pass@server/share
+    - Windows share
+
+root:/path/to/folder
+    - Root mode
+
+\t\t热键
+
+音量上键 - 选择文件和文件夹
+音量下键 - 在面板之间切换
++,- - 在当前文件夹中选择或取消选择
+(,) - 进入位置手动操作和查看您的书签
+* - 添加当前文件夹到书签
+\" - 显示所选条目的详细信息(属性)
+= - 让另一个面板显示相同的位置(同步)
+1 - 帮助
+2 - 重命名选定的项目
+4 - 编辑选定的项目
+5 - 复制选定的项目
+6 - 移动选定的项目
+7 - 新建文件夹
+8 - 删除选定的项目
+9 - 打开设置
+0 - 关闭应用程序
+[A-z] - 快速搜索
+"</string><!-- !!! -->
 </resources>
+

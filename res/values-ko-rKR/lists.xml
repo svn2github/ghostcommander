@@ -12,4 +12,14 @@
         <item>s</item>
         <item>d</item>  
     </string-array>
+    <string-array name="panels_mode">
+        <item>예</item>
+        <item>아니요</item>
+        <item>자동</item>
+    </string-array>
+    <string-array name="panels_mode_vals">
+        <item>y</item>
+        <item>n</item>
+        <item>a</item>
+    </string-array> 
 </resources>

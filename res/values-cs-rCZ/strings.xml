@@ -35,17 +35,17 @@
 <string name="hidden">Skrytý</string>
 <string name="rescan">Rescan media</string><!-- !!! -->
 <string name="favs">Oblíbené položky</string>
-<string name="local">Local storage</string><!-- !!! -->
+<string name="local">Místního úložiště</string>
 <string name="external">External card</string><!-- !!! -->
 <string name="media">Media Store</string><!-- !!! -->
 <string name="ftp">Server FTP</string>
 <string name="sftp">Server SFTP</string>
 <string name="smb">Windows share</string><!-- !!! -->
 <string name="plugins">Browse plugins</string><!-- !!! -->
-<string name="root">Root mód</string>
-<string name="mount">Mount points</string><!-- !!! -->
+<string name="root">Režim bez omezení</string>
+<string name="mount">Přípojné body</string>
 <string name="mount_b">Mounts</string><!-- !!! -->
-<string name="apps">Applications</string><!-- !!! -->
+<string name="apps">Aplikace</string>
 <string name="exit">Konec</string>
 <string name="favs_descr">View and manage your list of favorite folders and sites</string><!-- !!! -->
 <string name="local_descr">Browse, organize and modify the contents of the primary file system</string><!-- !!! -->
@@ -99,13 +99,13 @@
 <string name="wait"> Vyčkejte… </string>
 <string name="fail"> (selhalo) </string>
 <string name="failed">Chyba:\n</string>
-<string name="default_uri_cmnt">Default location</string><!-- !!! -->
-<string name="default_color">Default</string><!-- !!! -->
+<string name="default_uri_cmnt">Výchozí umístění</string>
+<string name="default_color">Výchozí</string>
 <string name="base_color">Base color</string><!-- !!! -->
 <string name="typemasks">File masks</string><!-- !!! -->
 <string name="color_sample">Sample</string><!-- !!! -->
 <string name="add_new_type">Add new</string><!-- !!! -->
-<string name="fav_comment">Comment:</string><!-- !!! -->
+<string name="fav_comment">Komentář:</string>
 <string name="fav_dialog">Edit favorite</string><!-- !!! -->
 <string name="dialog_yes">Ano</string>
 <string name="dialog_no">Ne</string>
@@ -143,7 +143,7 @@
 <string name="rename_title">Přejmenovat</string>
 <string name="copy_title">Kopírovat</string>
 <string name="move_title">Přesunout</string>
-<string name="send_title">Send to…</string><!-- !!! -->
+<string name="send_title">Odeslat do…</string>
 <string name="open_title">Otevřít v aplikaci…</string>
 <string name="to_copy"></string>
 <string name="to_move"></string>
@@ -181,10 +181,10 @@
 <string name="retrieving">Získávání \n\"%s\"…</string>
 <string name="uploading">Uploadování \n\"%s\"…</string>
 <string name="uploaded_p">Uploadováno \n\"%s\"   </string>
-<string name="loading">Loading…</string><!-- !!! -->
+<string name="loading">Načítám…</string>
 <string name="second">s</string><!-- !!! -->
 <string name="canceled">Zrušeno</string>
-<string name="oom_err">Out of memory</string><!-- !!! -->
+<string name="oom_err">Nedostatek paměti!</string>
 <string name="unkn_err">Neznámá chyba</string>
 <string name="cant_md">Nepodařilo se vytvořit složku \"%s\"</string>
 <string name="cant_cd">Cannot browse the directory \"%s\"</string><!-- !!! -->
@@ -213,16 +213,16 @@
 <string name="were">byly</string>
 <string name="was">byla</string>
 <string name="nothing">Nic</string>
-<string name="sz_folder">Složka \"%1$s\":\n %2$d soubory,</string>
-<string name="sz_dirnum">,\nve %1$d slož%2$s</string>
+<string name="sz_folder">Složka: \"%1$s\"\n %2$d soubory </string>
+<string name="sz_dirnum">\nve %1$d slož%2$s</string>
 <string name="sz_dirsfx_s">ce</string>
-<string name="sz_dirsfx_p">kách.</string>
+<string name="sz_dirsfx_p">kách</string>
 <string name="sz_file">Soubor \"%s\":</string>
 <string name="sz_files">Nalezeny soubory: %d </string>
 <string name="sz_Nbytes">\nVelikost: %1$sb</string>
-<string name="sz_bytes">\n ( %d bytů )</string>
-<string name="sz_lastmod">\nNaposledy změněno:\n </string>
-<string name="sz_total">Celkem: %1$sbytů,\nVolné: %2$sbytů.</string>
+<string name="sz_bytes">\n (%d bytů)</string>
+<string name="sz_lastmod">\nNaposledy změněno: </string>
+<string name="sz_total">Celkem: %1$sbytů\nVolné: %2$sbytů</string>
 <string name="busy">Zaneprázdněný!</string>
 <string name="cd_title">Přejít na</string>
 <string name="cd_prompt">Změnit složku na:</string>
@@ -241,7 +241,7 @@
 <string name="domain">Doména:</string>
 <string name="username">Jméno uživ.:</string>
 <string name="password">Heslo:</string>
-<string name="command">Command:</string><!-- !!! -->
+<string name="command">Příkaz:</string>
 <string name="use_busybox">busybox</string><!-- !!! -->
 <string name="user">Vlastník</string>
 <string name="group">Skupina</string>
@@ -377,16 +377,16 @@
 <string name="no_root">Vaše zařízení zřejmě neumožňuje root (su) přístup.</string>
 <string name="manage">Manage</string><!-- !!! -->
 <string name="shortcuts">Zástupci</string>
-<string name="pkg_name">Package name</string><!-- !!! -->
-<string name="version">Version</string><!-- !!! -->
-<string name="version_code">Version code</string><!-- !!! -->
+<string name="pkg_name">Název balíčku</string>
+<string name="version">Verze</string>
+<string name="version_code">Kód verze</string>
 <string name="target_sdk">Target SDK</string><!-- !!! -->
 <string name="inst_date">Datum</string>
 <string name="pkg_size">Velikost</string>
-<string name="process">Process name</string><!-- !!! -->
+<string name="process">Název procesu</string>
 <string name="app_class">App. class</string><!-- !!! -->
 <string name="affinity">Task Affinity</string><!-- !!! -->
-<string name="permissions">Permissions</string><!-- !!! -->
+<string name="permissions">Oprávnění</string>
 <string name="flags">Flags</string><!-- !!! -->
 <string name="not_exported">Activity is not exported</string><!-- !!! -->
 <string name="smb_missed">
@@ -400,7 +400,7 @@
 <string name="donation">Líbí se Vám Ghost Commander? Opravdu? Můžete přispět jakoukoliv částkou a podpořit tím tak další vývoj aplikace.\n
 Stiskněte \"OK\" a jednoduše přispějte pomocí PayPalu.\n
 Stisknětě \"Zrušit\" a užijte si «Ghost Commander» zadarmo.\n
-    </string>
+</string>
 <string name="about_text"><![CDATA[
 <h1>Ghost Commander v%1$s</h1>
 <h4>Souborový manažer.</h4>
@@ -414,7 +414,7 @@ Stisknětě \"Zrušit\" a užijte si «Ghost Commander» zadarmo.\n
 Použitím tohoto programu souhlasíte s následujícím: Autor programu není odpovědný za jakékoliv poškození, ztrátu informace, ani z toho vyplývající ztráty či jakékoliv jiné problémy, který byly nebo mohly být způsobené použitím tohoto programu. Souhlasíte s používáním tohoto programu na vlastní nebezpečí. Pokud nesouhlasíte s výše uvedeným, okamžitě přestaňtě tento program používat a odinstalujte jej.\n
 ]]></string>
 <string name="keys_text">
-    "\t\tJAK POUŽÍVAT APLIKACI\n
+"\t\tJAK POUŽÍVAT APLIKACI\n
 Pro označení souboru stiskněte pravou polovinu daného řádku.\n
 Pro ruční vložení složky či FTP adresy (a pro výpis seznamu Oblíbených), podržte prst na titulku panelu (na názvu otevřené složky)\n
 \t\tZKRATKOVÉ KLÁVESY\n
