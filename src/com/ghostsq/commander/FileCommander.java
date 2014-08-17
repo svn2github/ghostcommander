@@ -411,6 +411,10 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                     Credentials crd = null;
                     try {
                         crd = (Credentials)data.getParcelableExtra( Credentials.KEY );
+                        boolean aff_fave = data.getBooleanExtra( ServerForm.ADD_FAVE_KEY, false );
+                        String  comment  = data.getStringExtra( ServerForm.COMMENT_KEY );
+                        if( aff_fave )
+                            panels.addToFavorites( uri, crd, comment );
                     } catch( Exception e ) {
                         Log.e( TAG, "on taking credentials from parcel", e );
                     }

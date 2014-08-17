@@ -184,7 +184,7 @@
     
     <string name="nothing_to_open">열 파일 없음</string>
     <string name="remind_to_save">파일이 변경되었으니 저장하세요.</string>
-    <string name="save">저장</string>저장
+    <string name="save">저장</string>
     <string name="save_as">다른 이름으로 저장…</string>
     <string name="revert">복귀</string>
     <string name="wrap">긴 줄 바꾸기</string>

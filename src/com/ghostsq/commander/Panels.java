@@ -841,12 +841,16 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         c.sendBroadcast( intent );
     }
 
+    public final void addToFavorites( Uri u, Credentials crd, String comment ) {
+        favorites.addToFavorites( u, crd, comment );
+    }
+
     public final void addCurrentToFavorites() {
         CommanderAdapter ca = getListAdapter( true );
         if( ca == null )
             return;
         Uri u = ca.getUri();
-        favorites.addToFavorites( u, ca.getCredentials() );
+        favorites.addToFavorites( u, ca.getCredentials(), null );
         c.showMessage( c.getString( R.string.fav_added, Favorite.screenPwd( u ) ) );
     }
 
@@ -861,7 +865,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 return;
             Uri to_add = u.buildUpon().appendEncodedPath( ca.getItemName( pos, false ) ).build();
             if( to_add != null ) {
-                favorites.addToFavorites( to_add, ca.getCredentials() );
+                favorites.addToFavorites( to_add, ca.getCredentials(), null );
                 c.showMessage( c.getString( R.string.fav_added, Favorite.screenPwd( to_add ) ) );
             }
         }

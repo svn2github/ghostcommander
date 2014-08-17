@@ -15,11 +15,15 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-public class ServerForm extends Activity implements View.OnClickListener {
+public class ServerForm extends Activity 
+        implements View.OnClickListener, OnCheckedChangeListener {
     private static final String TAG = "ServerForm";
+    public  static final String ADD_FAVE_KEY = "ADD_FAVE", COMMENT_KEY = "COMMENT";
     private enum Type { 
         FTP(   "ftp", "FTP" ), 
         SFTP( "sftp", "SSH FTP" ), 
@@ -41,13 +45,14 @@ public class ServerForm extends Activity implements View.OnClickListener {
     private Type     type;
     private String   schema;
     
+    
     private EditText server_edit;
     private EditText path_edit;
     private EditText domain_edit;
     private EditText name_edit;
-    private CheckBox active_ftp_cb;
+    private CheckBox active_ftp_cb, add_fave_cb;
     private Spinner  encoding_spin;
-    private View     domain_block;
+    private View     domain_block, comment_block;
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         try {
@@ -70,11 +75,16 @@ public class ServerForm extends Activity implements View.OnClickListener {
             server_edit = (EditText)findViewById( R.id.server_edit );
             path_edit = (EditText)findViewById( R.id.path_edit );
             domain_edit = (EditText)findViewById( R.id.domain_edit );
-            domain_block = findViewById( R.id.domain_block );
+            domain_block = findViewById( R.id.domainbrowse_block );
             name_edit = (EditText)findViewById( R.id.username_edit );
             active_ftp_cb = (CheckBox)findViewById( R.id.active );
             encoding_spin = (Spinner)findViewById( R.id.encoding );
-            View encoding_block = findViewById( R.id.encoding_block );
+            add_fave_cb = (CheckBox)findViewById( R.id.add_fave );
+            comment_block = findViewById( R.id.comment_block );
+            
+            add_fave_cb.setOnCheckedChangeListener( this );
+            
+            View ftp_block = findViewById( R.id.ftp_block );
             if( type == Type.FTP ) {
                 ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource( this,
                         R.array.encoding, android.R.layout.simple_spinner_item );
@@ -89,10 +99,9 @@ public class ServerForm extends Activity implements View.OnClickListener {
             Button cancel_button = (Button)findViewById( R.id.cancel );
             cancel_button.setOnClickListener( this );
 
-           encoding_block.setVisibility( type == Type.FTP ? View.VISIBLE : View.GONE );
-            active_ftp_cb.setVisibility( type == Type.FTP ? View.VISIBLE : View.GONE );
-            browse_button.setVisibility( type == Type.SMB ? View.VISIBLE : View.GONE );
+                ftp_block.setVisibility( type == Type.FTP ? View.VISIBLE : View.GONE );
              domain_block.setVisibility( type == Type.SMB ? View.VISIBLE : View.GONE );
+              add_fave_cb.setVisibility( View.VISIBLE );
         }
         catch( Exception e ) {
             Log.e( TAG, "onCreate() Exception: ", e );
@@ -206,6 +215,11 @@ public class ServerForm extends Activity implements View.OnClickListener {
                 Intent in = new Intent( Commander.NAVIGATE_ACTION, uri_b.build() );
                 if( crd != null )
                     in.putExtra( Credentials.KEY, crd );
+                if( add_fave_cb.isChecked() ) {
+                    in.putExtra( ADD_FAVE_KEY, true );
+                    EditText cmt = (EditText)comment_block.findViewById( R.id.comment_edit );
+                    in.putExtra( COMMENT_KEY, cmt.getText().toString() );
+                }
                 setResult( RESULT_OK, in );
             }
             else
@@ -215,5 +229,10 @@ public class ServerForm extends Activity implements View.OnClickListener {
         catch( Exception e ) {
             Log.e( TAG, "onClick() Exception: ", e );
         }       
+    }
+
+    @Override
+    public void onCheckedChanged( CompoundButton buttonView, boolean isChecked ) {
+        comment_block.setVisibility( isChecked ? View.VISIBLE : View.GONE );
     }
 }

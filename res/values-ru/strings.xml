@@ -26,8 +26,8 @@
 <string name="home">Домой</string>
 <string name="softkbd">Клавиатура</string>
 <string name="enter_b">Адрес</string>
-<string name="add_fav">* Закладка на тек.адрес</string>
-<string name="add_fav_b">* Запомнить</string>
+<string name="add_fav">Закладка на тек.адрес</string>
+<string name="add_fav_b">Запомнить</string>
 <string name="remount_b">Remount /system</string>
 <string name="remount">Remount</string>
 <string name="hidden">Скрыт.</string>

@@ -7,10 +7,13 @@ import com.ghostsq.commander.Panels;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.adapters.HomeAdapter;
 import com.ghostsq.commander.utils.Credentials;
+import com.ghostsq.commander.utils.ForwardCompat;
+import com.ghostsq.commander.utils.ForwardCompat.PubPathType;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 
@@ -25,11 +28,14 @@ public class Favorites extends ArrayList<Favorite>
         c = c_;
     }
     
-    public final void addToFavorites( Uri u, Credentials crd ) {
+    public final void addToFavorites( Uri u, Credentials crd, String comment ) {
         removeFromFavorites( u );
         if( crd == null && Favorite.isPwdScreened( u ) )
             crd = searchForPassword( u );
-        add( new Favorite( u, crd ) );
+        Favorite f = new Favorite( u, crd );
+        add( f );
+        if( comment != null )
+            f.setComment( comment ); 
     }
     public final void removeFromFavorites( Uri u ) {
         int pos = findIgnoreAuth( u );
@@ -134,13 +140,13 @@ public class Favorites extends ArrayList<Favorite>
             if( isEmpty() ) {
                 add( new Favorite( HomeAdapter.DEFAULT_LOC, c.getString( R.string.home ) ) );
                 add( new Favorite( Panels.DEFAULT_LOC, c.getString( R.string.default_uri_cmnt ) ) );
-                /*
-                add( new Favorite( Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(),"Downloads" ) );
-                add( new Favorite( Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath(),     "Camera" ) );
-                add( new Favorite( Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath(), "Pictures" ) );
-                add( new Favorite( Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath(),    "Music" ) );
-                add( new Favorite( Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).getAbsolutePath(),   "Movies" ) );
-                */
+                if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO ) {
+                    add( new Favorite( ForwardCompat.getPath( PubPathType.DOWNLOADS ),"Downloads" ) );
+                    add( new Favorite( ForwardCompat.getPath( PubPathType.DCIM ),     "Camera" ) );
+                    add( new Favorite( ForwardCompat.getPath( PubPathType.PICTURES ), "Pictures" ) );
+                    add( new Favorite( ForwardCompat.getPath( PubPathType.MUSIC ),    "Music" ) );
+                    add( new Favorite( ForwardCompat.getPath( PubPathType.MOVIES ),   "Movies" ) );
+                }
             }
         } catch( Throwable e ) {
             Log.e( TAG, null, e );

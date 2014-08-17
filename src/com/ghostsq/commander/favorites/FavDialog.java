@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -23,6 +24,7 @@ public class FavDialog implements OnClickListener {
     private Uri      uri;
     private EditText ce, pe, se, de, ue, we;
     private Spinner  en;
+    private CheckBox active_ftp_cb;
     private boolean  sftp, ftp, smb; 
     
     public FavDialog( Context c, Favorite f_, FavsAdapter owner_ ) {
@@ -55,8 +57,9 @@ public class FavDialog implements OnClickListener {
             
             String schm = uri.getScheme();
             View sb = fdv.findViewById( R.id.server_block );
+            View db = fdv.findViewById( R.id.domainbrowse_block );
             View ib = fdv.findViewById( R.id.credentials_block );
-            View eb = fdv.findViewById( R.id.encoding_block );
+            View fb = fdv.findViewById( R.id.ftp_block );
             
             sftp = "sftp".equals( schm );
              ftp =  "ftp".equals( schm );
@@ -71,7 +74,6 @@ public class FavDialog implements OnClickListener {
                     se.setText( host );    
                 }
                 if( ftp || sftp ) {
-                    View db = ib.findViewById( R.id.domain_block );
                     db.setVisibility( View.GONE );
                 }
                 String username = f.getUserName();
@@ -90,9 +92,9 @@ public class FavDialog implements OnClickListener {
                 ue.setText( username );
                 we = (EditText)ib.findViewById( R.id.password_edit );
                 we.setText( f.getPassword() );
-                eb.setVisibility( ftp ? View.VISIBLE : View.GONE );
+                fb.setVisibility( ftp ? View.VISIBLE : View.GONE );
                 if( ftp ) {
-                    en = (Spinner)eb.findViewById( R.id.encoding );
+                    en = (Spinner)fb.findViewById( R.id.encoding );
                     ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource( c,
                             R.array.encoding, android.R.layout.simple_spinner_item );
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -109,13 +111,16 @@ public class FavDialog implements OnClickListener {
                     } catch( Exception e ) {
                         Log.e( TAG, "", e );
                     }
+                    active_ftp_cb = (CheckBox)fb.findViewById( R.id.active );
+                    String a_s = uri.getQueryParameter( "a" );
+                    active_ftp_cb.setChecked( "true".equals( a_s ) );
                 }
-
             }
             else {
                 sb.setVisibility( View.GONE );
+                db.setVisibility( View.GONE );
                 ib.setVisibility( View.GONE );
-                eb.setVisibility( View.GONE );
+                fb.setVisibility( View.GONE );
             }
             
             new AlertDialog.Builder( c )
@@ -138,8 +143,6 @@ public class FavDialog implements OnClickListener {
                     Uri.Builder uri_b = uri.buildUpon();
                     if( ftp ) {
                         uri_b.encodedQuery( "" );
-                        String a_s = uri.getQueryParameter( "a" );
-                        if( Utils.str( a_s ) ) uri_b.appendQueryParameter( "a", a_s ); 
                         Object esio = en.getSelectedItem();
                         if( esio instanceof String ) {
                             String enc_s = (String)esio; 
@@ -148,6 +151,7 @@ public class FavDialog implements OnClickListener {
                                 uri_b.appendQueryParameter( "e", enc_s );
                             }
                         }
+                        if( active_ftp_cb.isChecked() ) uri_b.appendQueryParameter( "a", "true" ); 
                     }                
                     String serv = se.getText().toString().trim();
                     f.setUri( uri_b.encodedAuthority( Utils.encodeToAuthority( serv ) ).

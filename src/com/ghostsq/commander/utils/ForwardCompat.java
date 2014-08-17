@@ -2,6 +2,7 @@ package com.ghostsq.commander.utils;
 
 import java.io.File;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -10,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -68,5 +70,27 @@ public class ForwardCompat
     @TargetApi(Build.VERSION_CODES.FROYO)
     public static byte[] fromBase64( String in ) {
         return Base64.decode( in, Base64.DEFAULT );
+    }
+
+    public enum PubPathType {
+        DOWNLOADS,
+        DCIM,
+        PICTURES,
+        MUSIC,
+        MOVIES          
+    }
+    
+    @TargetApi(Build.VERSION_CODES.FROYO)
+    public static String getPath( PubPathType ppt ) {
+        String pps = null;
+        switch( ppt ) {
+        case DOWNLOADS: pps =  Environment.DIRECTORY_DOWNLOADS; break;
+        case DCIM:      pps =  Environment.DIRECTORY_DCIM; break;
+        case PICTURES:  pps =  Environment.DIRECTORY_PICTURES; break;
+        case MUSIC:     pps =  Environment.DIRECTORY_MUSIC; break;
+        case MOVIES:    pps =  Environment.DIRECTORY_MOVIES;
+        }
+        
+        return Environment.getExternalStoragePublicDirectory( pps ).getAbsolutePath();
     }
 }
