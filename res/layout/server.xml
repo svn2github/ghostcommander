@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scroll_view"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fillViewport="false">
+
+  <LinearLayout 
     android:layout_width="fill_parent" 
     android:layout_height="match_parent"
     android:gravity="center_vertical|center_horizontal"
@@ -74,7 +81,8 @@
 		<LinearLayout
             android:id="@+id/domainbrowse_block"
 		    android:layout_width="fill_parent"
-		    android:layout_height="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
 		    android:orientation="horizontal">
 
 			<Button
@@ -85,10 +93,11 @@
                 android:text="@string/dialog_browse" />
 		    
         	<LinearLayout
-		        android:layout_height="fill_parent"
-                android:layout_width="0dip"
-		        android:layout_weight="1"
-			    android:orientation="vertical">
+        	    android:layout_width="0dip"
+		        android:layout_height="wrap_content"
+        	    android:layout_weight="1"
+        	    android:orientation="vertical" >
+
 			    <TextView 
 			        android:id="@+id/domain_prompt"
                     android:text="@string/domain"
@@ -179,7 +188,7 @@
 			</LinearLayout>
 		</LinearLayout>
 		
-    <!-- forth row: encoding, ftp active android:visibility="gone"-->    		
+    <!-- forth row: encoding, ftp active -->    		
     
         <LinearLayout
             android:id="@+id/ftp_block"
@@ -193,7 +202,7 @@
         	<LinearLayout
                   android:layout_width="0dip"
                   android:layout_height="wrap_content"
-                  android:layout_weight="1"
+                  android:layout_weight="2"
                   android:orientation="vertical">
     			<TextView
         	        android:id="@+id/encoding_prompt"
@@ -229,7 +238,6 @@
               android:visibility="gone"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="16dip"
             android:text="@string/add_fav_b"/>
         
     <!-- sixth row: faves comment -->      
@@ -290,5 +298,5 @@
 
         </LinearLayout>
 
-</LinearLayout>
-		
+  </LinearLayout>
+</ScrollView>		
