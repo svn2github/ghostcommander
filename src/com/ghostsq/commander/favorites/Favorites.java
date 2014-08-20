@@ -168,7 +168,7 @@ public class Favorites extends ArrayList<Favorite>
             Log.e( TAG, null, e );
         }
         if( isEmpty() )
-            add( new Favorite( "home:", c.getString( R.string.default_uri_cmnt ) ) );
+            add( new Favorite( "home:", c.getString( R.string.home ) ) );
     }
 
     private final String unescape( String s ) {
