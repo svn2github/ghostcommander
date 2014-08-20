@@ -69,7 +69,8 @@ public class ToolButtons extends ArrayList<ToolButton>
                  R.id.search,
                  R.id.totop,
                  R.id.tobot,
-                 R.id.action_back
+                 R.id.action_back,
+                 R.id.swap
             };
             for( int bi : bia ) {
                 ToolButton tb = new ToolButton( bi );
