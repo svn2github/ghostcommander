@@ -455,7 +455,7 @@ public final class FTPEngines {
                     sendResult( "" );
                     return;
                 }
-                
+                sendProgress();
                 long total = getSizes( list, "" );
                 
                 StringBuffer result = new StringBuffer();
@@ -496,7 +496,7 @@ public final class FTPEngines {
             super.run();
         }
     
-        protected final long getSizes( LsItem[] list, String path ) throws InterruptedException {
+        protected final long getSizes( LsItem[] list, String path ) throws Exception {
             long total = 0;
             try {
                 for( int i = 0; i < list.length; i++ ) {
@@ -509,9 +509,12 @@ public final class FTPEngines {
                         String pathName = path + f.getName();
                         if( f.isDirectory() ) {
                             dirs++;
+                            if( depth++ > 20 )
+                                throw new Exception( ctx.getString( R.string.too_deep_hierarchy ) );
                             LsItem[] subItems = ftp.getDirList( pathName, true );
+                            --depth;
                             if( subItems == null ) {
-                                errMsg = "Failed to get the file list of the subfolder '" + pathName + "'.\n FTP log:\n\n" + ftp.getLog();
+                                error( "Failed to get the file list of the subfolder '" + pathName + "'.\n FTP log:\n\n" + ftp.getLog() );
                                 break;
                             }
                             total += getSizes( subItems, pathName + File.separator );

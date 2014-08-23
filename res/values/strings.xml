@@ -150,7 +150,7 @@
 <string name="to_move"/>
 <string name="to_rename"/>
 <string name="copy_err">Nothing to copy</string>
-<string name="rename_err">Nothing to rename</string>
+<string name="rename_err">Can not rename</string>
 <string name="edit_err">Not editable</string>
 <string name="no_items">No valid files to complete the operation</string>
 <string name="inv_dest">Invalid destination</string>

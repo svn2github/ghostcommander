@@ -3,7 +3,6 @@ package com.ghostsq.commander.adapters;
 import java.io.File;
 import java.lang.reflect.Method;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.os.Environment;
@@ -89,7 +88,7 @@ final public class CA {
      * @param scheme - the suffix of the plugin's package name
      * @return an instance of the adapter or null on failure
      */
-    @SuppressLint("NewApi")     // all of the sudden, lint considers the DexClassLoader.loadClass() as from a higher API, but according to the docs, the method belongs to API level 1
+//    @SuppressLint("NewApi")     // all of the sudden, lint considers the DexClassLoader.loadClass() as from a higher API, but according to the docs, the method belongs to API level 1
     public static CommanderAdapter CreateExternalAdapter( Context ctx, String scheme ) {
         try {
             File dex_f = ctx.getDir( scheme, Context.MODE_PRIVATE );

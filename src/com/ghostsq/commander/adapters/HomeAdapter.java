@@ -3,18 +3,13 @@ package com.ghostsq.commander.adapters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 
 import com.ghostsq.commander.FileCommander;
-import com.ghostsq.commander.Panels;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
-import com.ghostsq.commander.root.MountAdapter;
-import com.ghostsq.commander.root.RootAdapter;
 import com.ghostsq.commander.utils.ForwardCompat;
-import com.ghostsq.commander.utils.StorageUtils;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
@@ -129,22 +124,6 @@ public class HomeAdapter extends CommanderAdapterBase {
                     if( android.os.Build.VERSION.SDK_INT >= 18 )
                         ia.add( makeItem( MEDIA, "ms:" + ss[0] ) );
                 }
-                
-                /*
-                List<StorageUtils.StorageInfo> sil = StorageUtils.getStorageList();
-                if( sil != null && sil.size() > 0 ) {
-                    for( int i = 0; i < sil.size(); i++ ) {
-                        StorageUtils.StorageInfo si = sil.get( i );
-                        if( !si.internal ) {
-                            ia.add( makeItem( EXTERNAL, si.path ) );
-                            if( android.os.Build.VERSION.SDK_INT >= 18 ) {
-                                ia.add( makeItem( MEDIA, "ms:" + si.path ) );
-                                break;
-                            }
-                        }
-                    }
-                }
-                */
             }            
             ia.add( makeItem( FTP, "ftp" ) );
             

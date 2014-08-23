@@ -147,7 +147,7 @@
   <string name="send_title">Послать через&#8230;</string>
   <string name="open_title">Открыть с&#8230;</string>
   <string name="copy_err">Нечего копировать</string>
-  <string name="rename_err">Нечего переименовывать</string>
+  <string name="rename_err">Нельзя переименовать</string>
   <string name="edit_err">Не редактируемо.</string>
   <string name="no_items">Не с чем совершить данную операцию.</string>
   <string name="inv_dest">Недопустимое место для копирования</string>

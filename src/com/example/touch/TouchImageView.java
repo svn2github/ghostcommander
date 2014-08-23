@@ -7,17 +7,18 @@
 
 package com.example.touch;
 
-import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.PointF;
+import android.os.Build;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.ImageView;
 
-@SuppressLint("NewApi")
+@TargetApi(Build.VERSION_CODES.FROYO)
 public class TouchImageView extends ImageView {
 
     Matrix matrix = new Matrix();

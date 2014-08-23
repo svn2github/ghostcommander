@@ -288,6 +288,7 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
         	    Context c = ctx;
                 StringBuffer result = new StringBuffer( );
         	    if( mList != null && mList.length > 0 ) {
+        	        sendProgress();
     				long sum = getSizes( mList );
     				if( sum < 0 ) {
     				    sendProgress( "Interrupted", Commander.OPERATION_FAILED );
@@ -425,7 +426,10 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
             File f = items[position - 1].f();
             File new_file = new File( dirName, newName );
             if( new_file.exists() ) {
-                if( f.equals( new_file ) ) return false;
+                if( f.equals( new_file ) ) {
+                    commander.showError( s( R.string.rename_err ) );
+                    return false;
+                }
                 String old_ap =        f.getAbsolutePath();
                 String new_ap = new_file.getAbsolutePath();
                 if( old_ap.equalsIgnoreCase( new_ap ) ) {
@@ -434,6 +438,8 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
                     ok = tmp_file.renameTo( new_file );
                 } else {
                     AskEngine ae = new AskEngine( simpleHandler, ctx.getString( R.string.file_exist, newName ), f, new_file );
+                    commander.startEngine( ae );
+                    //commander.showError( s( R.string.rename_err ) );
                     return true;
                 }
             }
