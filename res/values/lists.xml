@@ -23,6 +23,9 @@
         <item>a</item>
     </string-array>
     <string-array name="font_size">
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
         <item>10</item>
         <item>12</item>
         <item>14</item>
@@ -70,7 +73,7 @@
         </string-array>
     <string-array name="encoding">
         <item>Default</item>
-        <item>windows-1250\n\t  Eastern European</item>
+        <item>windows-1250\n\t  Central European</item>
         <item>windows-1251\n\t  Cyrillic</item>
         <item>windows-1252\n\t  Western Latin</item>
         <item>windows-1253\n\t  Greek</item>

@@ -181,10 +181,8 @@ public class ListHelper {
             if( show_icons ) {
                 icon_mode = CommanderAdapter.ICON_MODE;
                 if( p.fnt_sz < 18 && !p.fingerFriendly ) {
-                    if( h * w <= 480 * 854 ) {   // medium
-                        if( p.sxs || same_line )
-                            icon_mode |= CommanderAdapter.ICON_TINY;
-                    }
+                    if( p.fnt_sz <= 10 || ( h * w <= 480 * 854 && ( p.sxs || same_line ) ) )
+                      icon_mode |= CommanderAdapter.ICON_TINY;
                 }
             }
             else

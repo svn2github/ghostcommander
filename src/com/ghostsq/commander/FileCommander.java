@@ -796,9 +796,9 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 Intent i = new Intent( Intent.ACTION_VIEW );
 
                 if( crd != null ) {
-                    String seed = StreamServer.getEncKey( this );                    
-                    String enc = crd.exportToEncriptedString( seed );
-                    uri = Utils.updateUserInfo( uri, enc );
+                    String username = crd.getUserName();
+                    StreamServer.storeCredentials( this, crd, uri );
+                    uri = Utils.updateUserInfo( uri, username );
                 }
 
                 String http_url = "http://127.0.0.1:5322/" + Uri.encode( uri.toString() );

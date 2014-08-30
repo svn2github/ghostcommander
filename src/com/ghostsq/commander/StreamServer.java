@@ -97,6 +97,24 @@ public class StreamServer extends Service {
         }
         return seed + SALT;
     }
+
+    public static void storeCredentials( Context ctx, Credentials crd, Uri uri ) {
+        String seed = StreamServer.getEncKey( ctx );                    
+        int hash = ( crd.getUserName() + uri.getHost() ).hashCode();
+        SharedPreferences ssp = ctx.getSharedPreferences( StreamServer.class.getSimpleName(), MODE_PRIVATE );
+        SharedPreferences.Editor edt = ssp.edit();
+        edt.putString( "" + hash, crd.exportToEncriptedString( seed ) );
+        edt.commit();
+    }
+
+    public static Credentials restoreCredentials( Context ctx, Uri uri ) {
+        int hash = ( uri.getUserInfo() + uri.getHost() ).hashCode();
+        SharedPreferences ssp = ctx.getSharedPreferences( StreamServer.class.getSimpleName(), MODE_PRIVATE );
+        String crd_enc_s = ssp.getString( "" + hash, null );
+        if( crd_enc_s == null ) return null;
+        String seed = StreamServer.getEncKey( ctx );                    
+        return Credentials.createFromEncriptedString( crd_enc_s, seed );
+    }
     
     private class ListenThread extends Thread {
         private final static String TAG = "GCSS.ListenThread";
@@ -318,11 +336,11 @@ public class StreamServer extends Service {
                 
                 String ui = uri.getUserInfo();
                 if( ui != null ) {
-                    uri = Utils.updateUserInfo( uri, null );
-                    String seed = StreamServer.getEncKey( StreamServer.this );
-                    Credentials credentials = Credentials.createFromEncriptedString( ui, seed );
-                    if( credentials != null )
+                    Credentials credentials = StreamServer.restoreCredentials( StreamServer.this, uri );
+                    if( credentials != null ) {
                         ca.setCredentials( credentials );
+                        uri = Utils.updateUserInfo( uri, null );
+                    }
                 }
                 ca.setUri( uri );
                 Item item = ca.getItem( uri );

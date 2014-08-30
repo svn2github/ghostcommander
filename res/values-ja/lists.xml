@@ -22,19 +22,9 @@
         <item>n</item>
         <item>a</item>
     </string-array>
-    <string-array name="font_size">
-        <item>10</item>
-        <item>12</item>
-        <item>14</item>
-        <item>16</item>
-        <item>18</item>
-        <item>20</item>
-        <item>22</item>
-        <item>24</item>
-    </string-array>
     <string-array name="encoding">
         <item>Default</item>
-        <item>windows-1250\n\t  Eastern European</item>
+        <item>windows-1250\n\t  Central European</item>
         <item>windows-1251\n\t  Cyrillic</item>
         <item>windows-1252\n\t  Western Latin</item>
         <item>windows-1253\n\t  Greek</item>
