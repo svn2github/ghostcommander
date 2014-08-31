@@ -207,9 +207,9 @@
 <string name="unpacked">解凍しました</string>
 <string name="remounted">\"%1$s\" から \"%2$s\" に再マウントしました</string>
 <string name="tried_to_exec">実行を試行しました \"%s\"</string>
-<string name="verb_plural_sfx"/>
 <string name="item">アイテム</string>
 <string name="items">アイテム</string>
+<string name="verb_plural_sfx"/>
 <string name="items24"/>
 <string name="were"></string>
 <string name="was"></string>

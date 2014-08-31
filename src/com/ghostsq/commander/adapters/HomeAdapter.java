@@ -1,5 +1,6 @@
 package com.ghostsq.commander.adapters;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -13,6 +14,7 @@ import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -20,8 +22,11 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.nfc.cardemulation.OffHostApduService;
 import android.os.Build;
 import android.os.Environment;
+import android.provider.CalendarContract.Instances;
+import android.renderscript.Type;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ContextMenu;
@@ -32,6 +37,7 @@ import android.widget.AdapterView;
 public class HomeAdapter extends CommanderAdapterBase {
     private final static String TAG = "HomeAdapter";
     public static final String DEFAULT_LOC = "home:";
+    private final static int FORGET_CMD = 4945;
     private boolean root = false;
     private final int[] FAVS     = { R.string.favs,    R.string.favs_descr,    R.drawable.favs    };
     private final int[] LOCAL    = { R.string.local,   R.string.local_descr,   R.drawable.fs      }; 
@@ -185,6 +191,7 @@ public class HomeAdapter extends CommanderAdapterBase {
                         if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD )
                             logo = ForwardCompat.getLogo( pm, pai );
                         item.setIcon( logo != null ?  logo  :  pm.getApplicationIcon( pai ) );
+                        item.dir = true;    // to be used in the "forget" feature
                     }
                     item.origin = scheme; 
                 }
@@ -305,5 +312,46 @@ public class HomeAdapter extends CommanderAdapterBase {
 
     @Override
     public void populateContextMenu( ContextMenu menu, AdapterView.AdapterContextMenuInfo acmi, int num ) {
+        Item item = (Item)getItem( acmi.position );
+        if( item.dir && item.origin instanceof String && Utils.str( (String)item.origin ) ) {
+            File plugin_prefs_f = getPluginPrefsFile( (String)item.origin ); 
+            if( plugin_prefs_f.exists() )
+                menu.add( 0, FORGET_CMD, 0, R.string.forget );
+        }
+    }
+
+    private final File getPluginPrefsFile( String schema ) {
+        File shared_prefs_f = new File( ctx.getFilesDir().getParentFile(), "shared_prefs" );
+        File plugin_prefs_f = new File( shared_prefs_f, schema + ".xml" );
+        return plugin_prefs_f;
+    }
+    
+    @Override
+    public void doIt( int command_id, SparseBooleanArray cis ) {
+        try {
+            if( FORGET_CMD == command_id ) {
+                Item item = bitsToItem( cis );
+                if( item != null && item.dir && item.origin instanceof String && Utils.str( (String)item.origin ) ) {
+                    File plugin_prefs_f = getPluginPrefsFile( (String)item.origin ); 
+                    if( plugin_prefs_f.exists() ) {
+                        plugin_prefs_f.delete();
+                        commander.dispatchCommand( R.id.exit );
+                    }
+                }
+            }
+        } catch( Exception e ) {
+            Log.e( TAG, "" + command_id, e );
+        }
+    }
+
+    private final Item bitsToItem( SparseBooleanArray cis ) {
+        try {
+            for( int i = 0; i < cis.size(); i++ )
+                if( cis.valueAt( i ) )
+                    return items[ cis.keyAt( i ) ];
+        } catch( Exception e ) {
+            Log.e( TAG, "", e );
+        }
+        return null;
     }
 }
