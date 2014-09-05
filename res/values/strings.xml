@@ -47,7 +47,7 @@
 <string name="mount_b">Mounts</string>
 <string name="apps">Applications</string>
 <string name="exit">Exit</string>
-<string name="forget">Forget plugin\'s data and exit</string>
+<string name="forget">Forget account (app exits)</string>
 <string name="favs_descr">View and manage your list of favorite folders and sites</string>
 <string name="local_descr">Browse, organize and modify the contents of the primary file system</string>
 <string name="external_descr">Access files on the physically inserted SD card. It may be read-only on some devices.</string>
@@ -215,7 +215,7 @@
 <string name="were">were</string>
 <string name="was">was</string>
 <string name="nothing">Nothing</string>
-<string name="sz_folder"><![CDATA[<b>Folder:</b> \"%1$s\"\n&#xA0;%2$d files ]]></string>
+<string name="sz_folder"><![CDATA[<b>Folder:</b> \"%1$s\"\n%2$d files ]]></string>
 <string name="sz_dirnum"><![CDATA[ in %1$d director%2$s]]></string>
 <string name="sz_dirsfx_s">y</string>
 <string name="sz_dirsfx_p">ies</string>
@@ -402,19 +402,17 @@ Tap \"OK\" to be redirected to the PayPal site.\n
 <string name="about_text"><![CDATA[
 <h1>Ghost Commander v%1$s</h1>
 <h4>A file manager by Ghost Squared.</h4>
-
-<p>On the Web:<br>
+<p>On the Web:<br/>
 <a href="https://sites.google.com/site/ghostcommander1/">Web site</a><br/>
 <a href="http://sourceforge.net/projects/ghostcommander/">At SourceForge</a> 
 </p>
-<p>Please email bugs/suggestions to:<br/> <a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a></p>
+<p>Please email bugs/suggestions to:<br/><a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a></p>
 <p>Like this app? <a href="%2$s">Make a PayPal Donation</a> to support further development.</p>
 <h3>DISCLAIMER:</h3>
-By using this software, you agree with the following:
+<p>By using this software, you agree with the following:
 The author of this software is not responsible for any kind of damage, loss of information, 
 consequential damages, or any issues that are, or could be caused by the use of this software.
-You agree to use this software at your own risk.\n
-If you don\'t agree to the above, stop using this software immediately and uninstall it.\n
+You agree to use this software at your own risk. If you don\'t agree to the above, stop using this software immediately and uninstall it.</p>
 ]]></string>
 <string name="keys_text"><![CDATA[
 <h3>SELECTING FILES</h3>
