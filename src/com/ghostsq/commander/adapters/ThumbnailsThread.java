@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.ghostsq.commander.adapters.CommanderAdapter.Item;
-import com.ghostsq.commander.adapters.FSAdapter.FileItem;
 import com.ghostsq.commander.utils.MnfUtils;
 import com.ghostsq.commander.utils.Utils;
 

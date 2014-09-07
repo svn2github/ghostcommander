@@ -220,6 +220,10 @@ public class ServerForm extends Activity
                     EditText cmt = (EditText)comment_block.findViewById( R.id.comment_edit );
                     in.putExtra( COMMENT_KEY, cmt.getText().toString() );
                 }
+                
+                int current_panel = getIntent().getIntExtra( "current_panel", -1 );
+                if( current_panel >= 0 )
+                    in.putExtra( "current_panel", current_panel );
                 setResult( RESULT_OK, in );
             }
             else

@@ -1,9 +1,12 @@
 package com.ghostsq.commander.adapters;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Map;
 
 import com.ghostsq.commander.FileCommander;
@@ -11,11 +14,14 @@ import com.ghostsq.commander.R;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.utils.ForwardCompat;
+import com.ghostsq.commander.utils.PrefStealer;
 import com.ghostsq.commander.utils.Utils;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -37,7 +43,7 @@ import android.widget.AdapterView;
 public class HomeAdapter extends CommanderAdapterBase {
     private final static String TAG = "HomeAdapter";
     public static final String DEFAULT_LOC = "home:";
-    private final static int FORGET_CMD = 4945;
+    private final static int FORGET_CMD = 4945, PREFS_CMD = 4342;
     private boolean root = false;
     private final int[] FAVS     = { R.string.favs,    R.string.favs_descr,    R.drawable.favs    };
     private final int[] LOCAL    = { R.string.local,   R.string.local_descr,   R.drawable.fs      }; 
@@ -49,7 +55,9 @@ public class HomeAdapter extends CommanderAdapterBase {
     private final int[] MOUNT    = { R.string.mount,   R.string.mount_descr,   R.drawable.mount   };
     private final int[] APPS     = { R.string.apps,    R.string.apps_descr,    R.drawable.android };
     private final int[] EXIT     = { R.string.exit,    R.string.exit_descr,    R.drawable.exit    };
-        
+
+  
+    
     private Item[] items = null;
 
     private Item makeItem( int[] mode, String scheme ) {
@@ -318,6 +326,7 @@ public class HomeAdapter extends CommanderAdapterBase {
             if( plugin_prefs_f.exists() )
                 menu.add( 0, FORGET_CMD, 0, R.string.forget );
         }
+        menu.add( 0, PREFS_CMD, 0, R.string.prefs );
     }
 
     private final File getPluginPrefsFile( String schema ) {
@@ -329,14 +338,26 @@ public class HomeAdapter extends CommanderAdapterBase {
     @Override
     public void doIt( int command_id, SparseBooleanArray cis ) {
         try {
-            if( FORGET_CMD == command_id ) {
-                Item item = bitsToItem( cis );
-                if( item != null && item.dir && item.origin instanceof String && Utils.str( (String)item.origin ) ) {
+            Item item = bitsToItem( cis );
+            if( item != null && item.dir && item.origin instanceof String && Utils.str( (String)item.origin ) ) {
+                if( FORGET_CMD == command_id ) {
                     File plugin_prefs_f = getPluginPrefsFile( (String)item.origin ); 
                     if( plugin_prefs_f.exists() ) {
                         plugin_prefs_f.delete();
                         commander.dispatchCommand( R.id.exit );
                     }
+                    return;
+                }
+                if( PREFS_CMD == command_id ) {
+                    String package_n = "com.ghostsq.commander." + (String)item.origin;
+                    String class_n    = package_n + ".Prefs";
+
+                    Intent intent = new Intent();
+                    intent.setComponent( new ComponentName( package_n, class_n ) );
+            
+                    Log.d( TAG, "Starting Activity" );
+                    commander.issue( intent, 0 );
+                    return;
                 }
             }
         } catch( Exception e ) {

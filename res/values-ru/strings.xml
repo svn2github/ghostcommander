@@ -125,7 +125,7 @@
   <string name="dialog_unselect">Снять пометку</string>
   <string name="filemask">Маска</string>
   <string name="for_files">Файлы</string>
-  <string name="for_dirs">Папки</string>
+  <string name="for_dirs">Папки&#xA0;&#xA0;</string>
   <string name="in_subf">Подпапки</string>
   <string name="content">Содержит текст</string>
   <string name="bigger_than">Больше чем:</string>
@@ -207,9 +207,17 @@
   <string name="tried_to_exec">Пробовали выпонить: \"%s\"</string>
   <string name="item">файл</string>
   <string name="items">файлов</string>
-  <string name="were">were</string>
-  <string name="was">was</string>
+  <string name="items24">файла</string>
+  <string name="were">были</string>
+  <string name="was">был</string>
   <string name="nothing">Ни один файл не</string>
+  
+  <string name="report_0" ><![CDATA[ Ни один файл не был ]]></string>   
+  <string name="report_1" ><![CDATA[ Один файл был ]]></string>   
+  <string name="report_24"><![CDATA[ %1$d файла были ]]></string>   
+  <string name="report_m" ><![CDATA[ %1$d файлов были ]]></string>   
+  
+  <string name="verb_plural_sfx">ы</string>
   <string name="sz_folder">Папка \"%1$s\"\n%2$d файлов</string>
   <string name="sz_dirnum">&#160;в %1$d папк%2$s</string>
   <string name="sz_dirsfx_s">е.</string>

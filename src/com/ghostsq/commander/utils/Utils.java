@@ -259,7 +259,7 @@ public final class Utils {
         return list;
     }
 
-    public final static String getOpReport( Context ctx, int total, int verb_id ) {
+    public final static String getOpReport_( Context ctx, int total, int verb_id ) {
         String items = null;
         if( total > 1 ) {
             if( total < 5 )
@@ -278,6 +278,23 @@ public final class Utils {
                 + verb
                 + ( total > 1 ? ctx.getString( R.string.verb_plural_sfx ) : "" ) + ".";
         return report;
+    }
+
+    public final static String getOpReport( Context ctx, int total, int verb_id ) {
+        String verb = " " + ctx.getString( verb_id );
+        if( total == 0 )
+            return ctx.getString( R.string.report_0 ) + verb;
+        if( total == 1 )
+            return ctx.getString( R.string.report_1 ) + verb;
+        if( total > 1 ) {
+            verb += ctx.getString( R.string.verb_plural_sfx );
+            if( total < 5 ) {
+                String rep24 = ctx.getString( R.string.report_24, total );
+                if( str( rep24 ) ) return rep24 + verb;
+            }
+            return ctx.getString( R.string.report_m, total ) + verb;
+        }
+        return null;
     }
 
     static final char[] spaces = { '\u00A0', '\u00A0', '\u00A0', '\u00A0', '\u00A0', '\u00A0', '\u00A0', '\u00A0' }; 

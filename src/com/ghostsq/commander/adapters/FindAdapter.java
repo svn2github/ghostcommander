@@ -8,6 +8,7 @@ import java.util.Date;
 
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.R;
+import com.ghostsq.commander.adapters.FSEngines.FileItem;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;

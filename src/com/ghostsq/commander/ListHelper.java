@@ -2,6 +2,8 @@ package com.ghostsq.commander;
 
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
+import com.ghostsq.commander.adapters.CommanderAdapter.Item;
+import com.ghostsq.commander.adapters.FSAdapter;
 import com.ghostsq.commander.adapters.FavsAdapter;
 import com.ghostsq.commander.adapters.HomeAdapter;
 import com.ghostsq.commander.utils.Credentials;
@@ -333,28 +335,35 @@ public class ListHelper {
     // --- new methods
     
     public final String getActiveItemsSummary( boolean touched ) {
+        CommanderAdapter adapter = (CommanderAdapter)flv.getAdapter();
         SparseBooleanArray cis = getMultiple( touched );
         int counter = Utils.getCount( cis );
-        if( counter > 1 ) {
-            String items = null;
-            if( counter < 5 )
-                items = p.c.getString( R.string.items24 );
-            if( items == null || items.length() == 0 )
-                items = p.c.getString( R.string.items );
-            return "" + counter + " " + items;
-        }
-        CommanderAdapter adapter = (CommanderAdapter)flv.getAdapter();
-        if( counter == 1 ) {
-            for( int i = 0; i < cis.size(); i++ )
-                if( cis.valueAt( i ) ) {
-                    int pos = cis.keyAt( i );
+        long total_size = 0;
+        for( int i = 0; i < cis.size(); i++ ) {
+            if( cis.valueAt( i ) ) {
+                int pos = cis.keyAt( i );
+                if( counter == 1 ) {
                     String item_name = adapter.getItemName( pos, false );
                     if( !Utils.str( item_name ) )
                         item_name = adapter.getItemName( pos, true );   // when that works?
                     return item_name;
                 }
+                if( adapter instanceof FSAdapter ) {
+                    Item item = adapter.getItem( adapter.getItemUri( pos ) );
+                    if( item != null && !item.dir )
+                        total_size += item.size;
+                }
+            }
         }
-        return "";
+        String items = null;
+        if( counter < 5 )
+            items = p.c.getString( R.string.items24 );
+        if( items == null || items.length() == 0 )
+            items = p.c.getString( R.string.items );
+        String res = "" + counter + " " + items;
+        if( total_size > 0 )
+            res += ", " + Utils.getHumanSize( total_size ) + "b";
+        return res;
     }
 
     /**
