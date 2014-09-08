@@ -362,7 +362,7 @@ public class ListHelper {
             items = p.c.getString( R.string.items );
         String res = "" + counter + " " + items;
         if( total_size > 0 )
-            res += ", " + Utils.getHumanSize( total_size ) + "b";
+            res += " (" + Utils.getHumanSize( total_size ) + "b)";
         return res;
     }
 

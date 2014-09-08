@@ -98,6 +98,7 @@
 <string name="fav_fld">Add \"%s\" to favorites</string>
 <string name="create_zip">Create a new ZIP file</string>
 <string name="create_zip_title">Create ZIP file</string>
+<string name="extract_zip">Extract ZIP</string>
 <string name="wait">wait…</string>
 <string name="fail">FAILED</string>
 <string name="failed">Error:\n</string>

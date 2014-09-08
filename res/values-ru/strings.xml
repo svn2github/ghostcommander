@@ -89,6 +89,7 @@
   <string name="new_file">Создать текстовый файл</string>
   <string name="new_folder">Создать новую папку</string>
   <string name="new_zip">Создать ZIP архив</string>
+  <string name="extract_zip">Распаковать ZIP</string>
   <string name="go_button">Иди</string>
   <string name="show_size">Информация</string>
   <string name="send_to">Послать&#8230;</string>

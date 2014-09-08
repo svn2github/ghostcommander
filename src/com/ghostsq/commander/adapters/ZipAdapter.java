@@ -247,6 +247,21 @@ public class ZipAdapter extends CommanderAdapterBase {
 	public void reqItemsSize( SparseBooleanArray cis ) {
 		notify( "Not supported.", Commander.OPERATION_FAILED );
 	}
+	
+    public boolean unpackZip( File zip_file ) {   // to the same folder
+        try {
+            if( !checkReadyness() ) return false;
+            zip = new ZipFile( zip_file );
+            notify( Commander.OPERATION_STARTED );
+            commander.startEngine( new CopyFromEngine( zip_file.getParentFile() ) );
+            return true;
+        } catch( Exception e ) {
+            notify( "Exception: " + e.getMessage(), Commander.OPERATION_FAILED );
+        }
+        return false;
+    }
+    
+	
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
         try {
@@ -298,10 +313,22 @@ public class ZipAdapter extends CommanderAdapterBase {
                 Log.e( TAG, "", e );
             }
 	    }
+	    
+        CopyFromEngine( File dest ) {
+            dest_folder = dest;
+        }
+	    
 	    @Override
 	    public void run() {
 	        sendProgress( ZipAdapter.this.ctx.getString( R.string.wait ), 1, 1 );
 	        synchronized( ZipAdapter.this ) {
+	            if( mList == null ) {
+	                mList = GetFolderList( "" );
+	                if( mList == null ) {
+	                    sendProgress( ctx.getString( R.string.cant_open ), Commander.OPERATION_FAILED );
+	                    return;
+	                }
+	            }
     	    	int total = copyFiles( mList, "" );
                 if( recipient != null ) {
                     sendReceiveReq( dest_folder );

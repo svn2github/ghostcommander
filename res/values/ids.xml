@@ -38,6 +38,7 @@
   <item type="id" name="menu" />
   <item type="id" name="create_shortcut" />
   <item type="id" name="open" />
+  <item type="id" name="extract" />
   <item type="id" name="new_zipt" />  
 </resources>
 

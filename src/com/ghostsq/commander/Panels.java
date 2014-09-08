@@ -1186,6 +1186,21 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             c.showError( c.getString( R.string.not_supported ) );
     }
 
+    public final void unpackZip() {
+        CommanderAdapter ca = getListAdapter( true );
+        if( ca instanceof FSAdapter ) {
+            FSAdapter fsa = (FSAdapter)ca;
+            SparseBooleanArray cis = getMultiple( true );
+            if( cis == null || cis.size() == 0 ) return;
+            File[] files = fsa.bitsToFiles( cis );
+            if( files == null || files.length == 0 ) return;
+            if( !".zip".equalsIgnoreCase( Utils.getFileExt( files[0].getName() ) ) ) return;
+            ZipAdapter z = new ZipAdapter( c );
+            z.Init( c );
+            z.unpackZip( files[0] );
+        }
+    }
+    
     public final void deleteItems( boolean touch ) {
         // c.showDialog( Dialogs.PROGRESS_DIALOG );
         if( getListAdapter( true ).deleteItems( getMultiple( touch ) ) )

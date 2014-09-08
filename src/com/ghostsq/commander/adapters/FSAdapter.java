@@ -172,8 +172,10 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
         try {
             if( acmi.position != 0 ) {
                 Item item = (Item)getItem( acmi.position );
-                if( !item.dir && ".zip".equals( Utils.getFileExt( item.name ) ) )
+                if( !item.dir && ".zip".equals( Utils.getFileExt( item.name ) ) ) {
                     menu.add( 0, R.id.open, 0, R.string.open );
+                    menu.add( 0, R.id.extract, 0, R.string.extract_zip );
+                }
             }
             super.populateContextMenu( menu, acmi, num );
         } catch( Exception e ) {
