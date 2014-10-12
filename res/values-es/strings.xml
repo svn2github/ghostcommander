@@ -23,6 +23,7 @@
   <string name="tgl">Alternar</string>
   <string name="sz">Calc tamaño</string>
   <string name="refresh">Actualizar</string>
+  <string name="swap">Intercambiar</string>
   <string name="enter">Editar ruta</string>
   <string name="home">Inicio</string>
   <string name="softkbd">Teclado</string>
@@ -40,7 +41,7 @@
   <string name="root">Modo \"root\"</string>
   <string name="apps">Aplicaciones</string>
   <string name="exit">Salir</string>
-  <string name="shortcut">Crear un acceso directo al escritorio</string>
+  <string name="shortcut">Crear un acceso directo</string>
   <string name="enter_ftp">Abrir sitio FTP</string>
   <string name="enter_smb">Abrir unidad Samba (Windows)</string>
   <string name="search_file">Buscar archivos</string>
@@ -62,7 +63,7 @@
   <string name="save_prefs">Hacer una copia de seguridad de configuración</string>
   <string name="rest_prefs">Restaurar la configuración</string>
   <string name="about">Acerca de</string>
-  <string name="keys">Atajos de teclado</string>
+  <string name="keys">Ayuda</string>
   <string name="new_file">Crear archivo</string>
   <string name="new_folder">Crear carpeta</string>
   <string name="new_zip">Comprimir en ZIP</string>
@@ -75,12 +76,14 @@
   <string name="fav_fld">Añadir \"%s\" a favoritos</string>
   <string name="create_zip">Comprimir…</string>
   <string name="create_zip_title">Comprimir en ZIP</string>
+  <string name="extract_zip">Extraer ZIP</string>
   <string name="wait"> espera&#8230; </string>
   <string name="fail"> FALLIDO </string>
   <string name="failed">Error:\n</string>
   <string name="default_uri_cmnt">Ubicación predeterminado</string>
   <string name="default_color">Por defecto</string>
   <string name="color_sample">Muestra</string>
+  <string name="fav_comment">Comentario:</string>
   <string name="dialog_yes">Si</string>
   <string name="dialog_no">No</string>
   <string name="dialog_ok">Ok</string>
@@ -99,6 +102,7 @@
   <string name="for_files">Archivos</string>
   <string name="for_dirs">Carpetas</string>
   <string name="in_subf">Subdirectorios</string>
+  <string name="content">Contenido:</string>
   <string name="operation">Operaciones</string>
   <string name="view_title">Ver</string>
   <string name="edit_title">Editar</string>
@@ -144,6 +148,7 @@
   <string name="uploading">Subiendo \n\"%s\"&#8230;</string>
   <string name="uploaded_p">Subido \n\"%s\"   </string>
   <string name="canceled">Cancelado</string>
+  <string name="oom_err">Memoria insuficiente</string>
   <string name="unkn_err">Error desconocido</string>
   <string name="cant_md">No se ha podido crear la carpeta \"%s\"</string>
   <string name="file_exist">El archivo \"%s\" ya existe la carpeta de destino.</string>
@@ -168,14 +173,15 @@
   <string name="items">elementos</string>
   <string name="were">fueron</string>
   <string name="was">fue</string>
-  <string name="verb_plural_sfx"></string>
   <string name="nothing">Nada</string>
-  <string name="sz_folder"><![CDATA[Carpeta "%1$s":\n %2$d archivos,]]></string>
-  <string name="sz_dirnum"><![CDATA[,\nen %1$d carpeta%2$s]]></string>
-  <string name="sz_file"><![CDATA[Archivo "%s":]]></string>
+  <string name="sz_folder"><![CDATA[Carpeta: \"%1$s\"\n %2$d archivos]]></string>
+  <string name="sz_dirnum"><![CDATA[   en %1$d carpeta%2$s]]></string>
+  <string name="sz_dirsfx_s">a</string>
+  <string name="sz_dirsfx_p">as</string>
+  <string name="sz_file"><![CDATA[Archivo: \"%s\"]]></string>
   <string name="sz_files"><![CDATA[Archivos encontrados: %d ]]></string>
   <string name="sz_Nbytes"><![CDATA[\nTamaño: %1$sb]]></string>
-  <string name="sz_bytes">\n ( %d bytes )</string>
+  <string name="sz_bytes">&#160;&#160;&#160;(%d bytes)</string>
   <string name="sz_lastmod"><![CDATA[\nÚlt. modificación:\n ]]></string>
   <string name="sz_total"><![CDATA[Total: %1$sbytes,\nLibres: %2$sbytes.]]></string>
   <string name="busy">Ocupado!</string>
@@ -195,6 +201,7 @@
   <string name="domain">Dominio:</string>
   <string name="username">Usuario:</string>
   <string name="password">Contraseña:</string>
+  <string name="command">Comando:</string>
   <string name="connect">Conectar</string>
   <string name="cancel">Cancelar</string>
   <string name="ftp_connected">Conectado a \"%1$s\",\n Identificado como \"%2$s\"</string>
@@ -289,8 +296,11 @@
   <string name="no_root">¿No root?</string>
   <string name="shortcuts">Accesos directos</string>
   <string name="pkg_name">Nombre del paquete</string>
+  <string name="version">Versión</string>
+  <string name="version_code">Código de versión</string>
   <string name="inst_date">Fecha</string>
   <string name="pkg_size">Tamaño</string>
+  <string name="permissions">Permisos</string>
   <string name="smb_missed">
     No se puede cargar el adaptador Samba.\n
     Asegúrate de que el paquete\n
@@ -306,18 +316,16 @@ Presiona \"Ok\" para hacer una donación fácilmente vía PayPal.\n
   <string name="about_text"><![CDATA[
 <h1>Ghost Commander v%1$s</h1>
 <h4>Un gestor de archivos por Ghost Squared.</h4>
-
-<p>On the Web:<br>
+<p>On the Web:<br/>
 <a href="https://sites.google.com/site/ghostcommander1/">Web site</a><br>
 <a href="http://sourceforge.net/projects/ghostcommander/">At SourceForge</a> 
 </p>
-
-<p>Por favor, envía bugs o sugerencias a<br/> <a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a></p>
+<p>Por favor, envía bugs o sugerencias a<br/><a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a></p>
 <h3>DISCLAIMER:</h3>
-By using this software, you agree with the following:
+<p>By using this software, you agree with the following:
 The author of this software is not responsible for any kind of damage, loss of information, 
 consequential damages, or any issues that are, or could be caused by the use of this software.
-You agree to use this software at your own risk. If you don\'t agree to the above, stop using this software immediately and uninstall it.\n
+You agree to use this software at your own risk. If you don\'t agree to the above, stop using this software immediately and uninstall it.</p>
 ]]></string>
   <string name="keys_text"><![CDATA["\t\tINTRUCCIONES DE USO\n
 Para seleccionar más de un archivo, presiona en la mitad derecha de la fila.\n

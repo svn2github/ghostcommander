@@ -358,7 +358,7 @@ public class ListHelper {
         String items = null;
         if( counter < 5 )
             items = p.c.getString( R.string.items24 );
-        if( items == null || items.length() == 0 )
+        if( items == null || items.length() == 0 || "\u00A0".equals( items ) )
             items = p.c.getString( R.string.items );
         String res = "" + counter + " " + items;
         if( total_size > 0 )

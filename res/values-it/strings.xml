@@ -23,6 +23,7 @@
   <string name="tgl">Cambia</string>
   <string name="sz">Informazioni</string>
   <string name="refresh">Aggiorna</string>
+  <string name="swap">Scambia</string>
   <string name="enter">Cambia posizione</string>
   <string name="home">Home</string>
   <string name="softkbd">Tastiera</string>
@@ -58,7 +59,7 @@
   <string name="mount_descr">Sfoglia l\'elenco dei dispositivi montati e rimonta nelle modalità \"rw\" e  \"ro\". Usare con cautela.</string>
   <string name="apps_descr">Gestisce i pacchetti installati</string>
   <string name="exit_descr">Esce da questa applicazione</string>
-  <string name="shortcut">Crea una nuova scorciatoia</string>
+  <string name="shortcut">Crea una scorciatoia</string>
   <string name="enter_ftp">Apri sito FTP</string>
   <string name="enter_smb">Apri Samba (condivisioni di rete Windows)</string>
   <string name="search_file">Cerca</string>
@@ -82,7 +83,7 @@
   <string name="prefs_saved">Le preferenze sono state salvate.</string>
   <string name="prefs_restr">Le preferenze sono state ripristinate.</string>
   <string name="about">Informazioni</string>
-  <string name="keys">Tasti scorciatoia</string>
+  <string name="keys">Aiuto</string>
   <string name="new_file">Crea un nuovo file</string>
   <string name="new_folder">Crea una nuova cartella</string>
   <string name="new_zip">Crea un nuovo file ZIP</string>
@@ -204,19 +205,23 @@
   <string name="tried_to_exec">Si è tentato di eseguire \"%s\"</string>
   <string name="item">elemento</string>
   <string name="items">elementi</string>
+  <string name="items24">&amp;#xA0;</string>
   <string name="were">sono stati</string>
   <string name="was">è stato</string>
-  <string name="verb_plural_sfx"/>
   <string name="nothing">Niente</string>
-  <string name="sz_folder"><![CDATA[Cartella "%1$s"\n %2$d file]]></string>
+  <string name="report_0"><![CDATA[ Nulla ]]></string>
+  <string name="report_1"><![CDATA[ un elemento è stato ]]></string>
+  <string name="report_24">&amp;#xA0;</string>
+  <string name="report_m"><![CDATA[ %1$d elementi sono stati ]]></string>
+  <string name="sz_folder"><![CDATA[Cartella: \"%1$s\"\n %2$d file]]></string>
   <string name="sz_dirnum"><![CDATA[in %1$d cartell%2$s]]></string>
   <string name="sz_dirsfx_s">a</string>
   <string name="sz_dirsfx_p">e</string>
-  <string name="sz_file"><![CDATA[File: "%s"]]></string>
+  <string name="sz_file"><![CDATA[File: \"%s\"]]></string>
   <string name="sz_files"><![CDATA[File: %d ]]></string>
   <string name="sz_Nbytes"><![CDATA[\nDimensione: %1$s]]></string>
   <string name="sz_bytes">&#160;(%db)</string>
-  <string name="sz_lastmod"><![CDATA[\n\nUltima modifica:\n]]></string>
+  <string name="sz_lastmod"><![CDATA[\nUltima modifica:    ]]></string>
   <string name="sz_total"><![CDATA[Totale: %1$s\nLiberi: %2$s]]></string>
   <string name="busy">Occupato!</string>
   <string name="cd_title">Vai</string>
@@ -235,6 +240,7 @@
   <string name="active">Attivo</string>
   <string name="domain">Dominio:</string>
   <string name="username">Nome utente:</string>
+  <string name="password">Password:</string>
   <string name="command">Comando:</string>
   <string name="user">Utente</string>
   <string name="group">Gruppo</string>
@@ -247,6 +253,7 @@
   <string name="ftp_nologin">Non connesso!</string>
   <string name="data_settings">Elenco file</string>
   <string name="layout_settings">Aspetto</string>
+  <string name="input_settings">Input</string>
   <string name="selection_zone_setup">Zona di selezione</string>
   <string name="summary_selection_zone_setup">Personalizzazione del metodo di selezione degli elementi</string>
   <string name="sel_onright">Selezione a destra</string>
@@ -389,36 +396,50 @@
   <string name="about_text"><![CDATA[
 <h1>Ghost Commander v%1$s</h1>
 <h4>Un gestore di file.</h4>
-<p>On the Web:<br>
-<a href="https://sites.google.com/site/ghostcommander1/">Web site</a><br>
+<p>On the Web:<br/>
+<a href="https://sites.google.com/site/ghostcommander1/">Web site</a><br/>
 <a href="http://sourceforge.net/projects/ghostcommander/">At SourceForge</a> 
 </p>
-<p>Inviare via email i bug e i suggerimenti a<br><a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a></p>
+<p>Inviare via email i bug e i suggerimenti a<br/><a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a></p>
 <p>Like this app? <a href="%2$s">Make a PayPal Donation</a> to support further development.</p>
 <h3>DISCLAIMER:</h3>
-Utilizzando questo programma, si accettano le seguenti condizioni: l\'autore di questo programma non è può essere ritenuto responsabile per qualsiasi tipo di danno, perdita di informazioni, o qualsiasi problema che è o può essere causato dall\'uso di questo programma. Si accetta di utilizzare questo programma a proprio rischio.\n Se non si accettano le precedenti condizioni, cessare immediatamente di utilizzare il programma e disinstallarlo.
+<p>Utilizzando questo programma, si accettano le seguenti condizioni: l\'autore di questo programma non è può essere ritenuto responsabile per qualsiasi tipo di danno, perdita di informazioni, o qualsiasi problema che è o può essere causato dall\'uso di questo programma. Si accetta di utilizzare questo programma a proprio rischio. Se non si accettano le precedenti condizioni, cessare immediatamente di utilizzare il programma e disinstallarlo.</p>
 ]]></string>
-  <string name="keys_text"><![CDATA["\t\tGUIDA ALL\'UTILIZZO\n 
-Per selezionare più di un file, selezionare la parte destra della riga.\n Per inserire manualmente il percorso (e visualizzare i favoriti), mantenere premuto il titolo del pannello.\n
-\t\tTASTI SCORCIATOIA\n
-Volume su - Seleziona file e cartelle
-Volume giù - Scambia i pannelli
-+, - - Seleziona o deseleziona gli elementi nella cartella corrente
-(, ) - Inserisce la posizione per il pannello destro/sinistro e i favoriti
-* - Aggiunge la cartella corrente alle favorite
-" - Mostra informazioni dettagliate sugli elementi selezionati
-= - Visualizza la stessa posizione nell\'altro pannello (sincronizza)
-1 - Aiuto
-2 - Rinomina l\'elemento corrente
-4 - Modifica l\'elemento corrente
-5 - Copia gli elementi selezionati
-6 - Sposta gli elementi selezionati
-7 - Crea una nuova cartella
-8 - Elimina gli elementi selezionati
-9 - Apre le preferenze
-0 - Esce dal programma
+  <string name="keys_text"><![CDATA["
+<h3>GUIDA ALL\'UTILIZZO</h3>
+<p>Per selezionare più di un file, selezionare la parte destra della riga. Per inserire manualmente il percorso (e visualizzare i favoriti), mantenere premuto il titolo del pannello.</p>
+<h3>TASTI SCORCIATOIA</h3>
+<p>
+Volume su - Seleziona file e cartelle<br/>
+Volume giù - Scambia i pannelli<br/>
++, - - Seleziona o deseleziona gli elementi nella cartella corrente<br/>
+(, ) - Inserisce la posizione per il pannello destro/sinistro e i favoriti<br/>
+* - Aggiunge la cartella corrente alle favorite<br/>
+" - Mostra informazioni dettagliate sugli elementi selezionati<br/>
+= - Visualizza la stessa posizione nell\'altro pannello (sincronizza)<br/>
+1 - Aiuto<br/>
+2 - Rinomina l\'elemento corrente<br/>
+4 - Modifica l\'elemento corrente<br/>
+5 - Copia gli elementi selezionati<br/>
+6 - Sposta gli elementi selezionati<br/>
+7 - Crea una nuova cartella<br/>
+8 - Elimina gli elementi selezionati<br/>
+9 - Apre le preferenze<br/>
+0 - Esce dal programma<br/>
 [A-z] - Ricerca veloce
-
-Per aprire una cartella FTP anonima, inserire un percorso come:\n ftp://host.com/cartella\n Oppure, se è necessario fornire un\'identità:\n ftp://utente:password@host.com/cartella\n\n Per accedere come root (su), inserire la posizione nel seguente modo:\n "root:///data"\n Assicurarsi di aver installato "BusyBox" e che la sua posizione sia specificata nelle impostazioni.\n Per elencare i dispositivi montati, digitare "mount://" Fare clic su una posizione di montaggio per renderla "rw" o farla tornare "ro"."
+</p>
+<p>
+Per aprire una cartella FTP anonima, inserire un percorso come:<br/>
+ftp://host.com/cartella<br/>
+<br/>
+Oppure, se è necessario fornire un\'identità:<br/>
+ftp://utente:password@host.com/cartella<br/>
+<br/>
+Per accedere come root (su), inserire la posizione nel seguente modo:<br/>
+"root:///data"<br/>
+<br/>
+Assicurarsi di aver installato "BusyBox" e che la sua posizione sia specificata nelle impostazioni.<br/>
+Per elencare i dispositivi montati, digitare "mount://"<br/>Fare clic su una posizione di montaggio per renderla "rw" o farla tornare "ro".
+</p>
 ]]></string>
 </resources>

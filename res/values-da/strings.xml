@@ -21,6 +21,7 @@
   <string name="eq">Synk</string>
   <string name="sz">Info</string>
   <string name="refresh">Opdater</string>
+  <string name="swap">Ombyt</string>
   <string name="enter">Skift placering</string>
   <string name="home">Hjem</string>
   <string name="softkbd">Tastatur</string>
@@ -30,7 +31,12 @@
   <string name="hidden">Skjult</string>
   <string name="favs">Favoritter</string>
   <string name="local">Lokalt lager</string>
+  <string name="ftp">FTP-sted</string>
+  <string name="sftp">SFTP-sted</string>
+  <string name="root">Tilstanden Root-adgang</string>
+  <string name="mount">Mount-points</string>
   <string name="apps">App\'s</string>
+  <string name="exit">Afslut</string>
   <string name="favs_descr">Se og håndter favorit foldere og sites</string>
   <string name="local_descr">Se, organiser og modificer indholdet af SD kortet og intern flash hukommelse</string>
   <string name="ftp_descr">Forbind til FTP-server</string>
@@ -39,10 +45,11 @@
   <string name="mount_descr">Vis liste med alle mount points. Remount them to \"rw\" mode, then back to \"ro\" mode after any changes are complete. Proceed with caution.</string>
   <string name="apps_descr">Se og håndter installerede pakker</string>
   <string name="exit_descr">Luk programmet</string>
-  <string name="shortcut">Ny genvej</string>
+  <string name="shortcut">Tilføj genvej</string>
   <string name="enter_ftp">Forbind til FTP</string>
   <string name="enter_smb">Forbind til Windows PC</string>
   <string name="search_file">Søg</string>
+  <string name="menu">Menu</string>
   <string name="sort_by_name">Efter Navn</string>
   <string name="sort_by_ext">Efter Type</string>
   <string name="sort_by_size">Efter Størrelse</string>
@@ -62,6 +69,7 @@
   <string name="prefs_saved">Din opsætning er gemt.</string>
   <string name="prefs_restr">Din opsætning er reetableret.</string>
   <string name="about">Om</string>
+  <string name="keys">Hjælp</string>
   <string name="new_file">Opret ny fil</string>
   <string name="new_folder">Opret ny folder</string>
   <string name="new_zip">Opret ny ZIP fil</string>
@@ -69,13 +77,17 @@
   <string name="show_size">Info</string>
   <string name="send_to">Send til&#8230;</string>
   <string name="open_with">Åbn med&#8230;</string>
+  <string name="open">Åbn</string>
   <string name="copy_name">Kopier navn til clipboard</string>
   <string name="fav_fld">Tilføj \"%s\" til farviritter</string>
   <string name="create_zip">Opret ny ZIP fil</string>
   <string name="create_zip_title">Opret ZIP</string>
+  <string name="extract_zip">Udpak ZIP</string>
   <string name="wait"> vent&#8230; </string>
   <string name="fail"> FEJLEDE </string>
   <string name="failed">Fejl:\n</string>
+  <string name="default_uri_cmnt">Standardplacering</string>
+  <string name="default_color">Standard</string>
   <string name="typemasks">Fil masker</string>
   <string name="color_sample">Prøve</string>
   <string name="add_new_type">Tilføj ny</string>
@@ -87,6 +99,7 @@
   <string name="dialog_cancel">Fortryd</string>
   <string name="dialog_close">Luk</string>
   <string name="dialog_exit">Afslut</string>
+  <string name="dialog_browse">Gennemse</string>
   <string name="dialog_abort">Afbryd</string>
   <string name="dialog_retry">Prøv igen</string>
   <string name="dialog_ignore">Ignorer</string>
@@ -127,6 +140,7 @@
   <string name="find_on_fs_only">Der kan kun søges i lokale filsystemer.</string>
   <string name="op_not_alwd">Operationen ikke tilladt - vælg først noget.</string>
   <string name="oper_item_to">%1$s %2$s til:\"</string>
+  <string name="login_title">Logon</string>
   <string name="delete_title">Slet</string>
   <string name="delete_err">Intet at slette</string>
   <string name="delete_q">Slet %1$s ?</string>
@@ -150,6 +164,7 @@
   <string name="loading">Loading&#8230;</string>
   <string name="second">s</string>
   <string name="canceled">Afbrudt</string>
+  <string name="oom_err">Ikke nok hukommelse</string>
   <string name="unkn_err">Ukendt fejl</string>
   <string name="cant_md">Kunne ikke oprette mappen \"%s\"</string>
   <string name="cant_cd">Kan ikke vise mappen \"%s\"</string>
@@ -172,16 +187,18 @@
   <string name="were">var</string>
   <string name="was">var</string>
   <string name="nothing">Intet</string>
-  <string name="sz_folder"><![CDATA[Folder "%1$s"\n%2$d filer ]]></string>
-  <string name="sz_dirnum"><![CDATA[ i %1$d mapper %2$s]]></string>
-  <string name="sz_dirsfx_s">j</string>
-  <string name="sz_file"><![CDATA[Fil: "%s"]]></string>
+  <string name="sz_folder"><![CDATA[Folder: "%1$s"\n%2$d filer ]]></string>
+  <string name="sz_dirnum"><![CDATA[ i %1$d mapp%2$s]]></string>
+  <string name="sz_dirsfx_s">e</string>
+  <string name="sz_dirsfx_p">er</string>
+  <string name="sz_file"><![CDATA[Fil: \"%s\"]]></string>
   <string name="sz_files"><![CDATA[Filer: %d ]]></string>
   <string name="sz_Nbytes"><![CDATA[\nStørrelse: %1$s]]></string>
   <string name="sz_bytes">&#160;(%db)</string>
-  <string name="sz_lastmod"><![CDATA[\n\nSidst ændret:\n ]]></string>
+  <string name="sz_lastmod"><![CDATA[\nSidst ændret:]]></string>
   <string name="sz_total"><![CDATA[Total: %1$s\nFri: %2$s]]></string>
   <string name="busy">Optaget!</string>
+  <string name="cd_title">Gå til</string>
   <string name="cd_prompt">Skift til mappen:</string>
   <string name="not_supported">Beklare, operation ikke understøttet.</string>
   <string name="select_some">Intet valgt.</string>
@@ -192,6 +209,9 @@
   <string name="alert">Bemærk</string>
   <string name="progress">Progress</string>
   <string name="inprogress">Fil operation i gang.</string>
+  <string name="server">Server:</string>
+  <string name="path">Sti:</string>
+  <string name="active">Aktiv</string>
   <string name="domain">Domæne:</string>
   <string name="username">Brugernavn:</string>
   <string name="password">Kodeord:</string>
@@ -207,6 +227,7 @@
   <string name="ftp_nologin">Ikke logget ind!</string>
   <string name="data_settings">Fil liste</string>
   <string name="layout_settings">Udseende</string>
+  <string name="input_settings">Input</string>
   <string name="summary_selection_zone_setup">Opsæt hvordan filer og foldere vælges</string>
   <string name="sel_onright">Vælg til højre</string>
   <string name="show_confirm">Konfirmation</string>
@@ -215,6 +236,7 @@
   <string name="editor_label">Tekst Editor</string>
   <string name="pictvw_label">Billed Viser</string>
   <string name="textvw_label">Tekst Viser</string>
+  <string name="perms_label">chmod / chown</string>
   <string name="advanced">Avanceret</string>
   <string name="advanced_settings">Diverse</string>
   <string name="summary_advanced_settings">Ekstra opsætning for avancerede brugere</string>
@@ -302,6 +324,7 @@
   <string name="save_as">Gem som&#8230;</string>
   <string name="revert">Fortryd</string>
   <string name="wrap">Ombryd lange linjer</string>
+  <string name="go_up">Overordnet</string>
   <string name="go_top">Top</string>
   <string name="go_end">Slut</string>
   <string name="encoding">Encoding</string>
@@ -342,8 +365,7 @@ Tap \"OK\" for at gå til PayPal site.\n
   <string name="about_text"><![CDATA[
 <h1>Ghost Commander v%1$s</h1>
 <h4>En fil manager fra Ghost Squared.</h4>
-
-<p>On the Web:<br>
+<p>On the Web:<br/>
 <a href="https://sites.google.com/site/ghostcommander1/">Web site</a><br>
 <a href="http://sourceforge.net/projects/ghostcommander/">At SourceForge</a>
 </p> 
@@ -351,10 +373,10 @@ Tap \"OK\" for at gå til PayPal site.\n
 <a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a></p>
 <p>Like this app? <a href="%2$s">Make a PayPal Donation</a> to support further development.</p>
 <h3>DISCLAIMER:</h3>
-Ved at bruge dette program accepter du følgende:
+<p>Ved at bruge dette program accepter du følgende:
 Udvikleren afdette program er ikke ansvarlig for nogen skade, tab af information,
 anden skade der kan skyldes brugen af programmet. Du accepter at bruge programmet på eget 
-ansvar. Hvis du ikke accepterer ovenstående, så hold op med at bruge programmet og afinstaller det.\n
+ansvar. Hvis du ikke accepterer ovenstående, så hold op med at bruge programmet og afinstaller det.</p>
 ]]></string>
   <string name="keys_text"><![CDATA["\t\tBASICS
 

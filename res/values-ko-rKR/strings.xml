@@ -27,6 +27,7 @@
   <string name="softkbd">키보드</string>
   <string name="enter_b">위치</string>
   <string name="add_fav">즐겨찾기에 추가</string>
+  <string name="hidden">숨김</string>
   <string name="favs">즐겨찾기</string>
   <string name="exit">종료</string>
   <string name="enter_ftp">FTP도움말</string>
@@ -45,7 +46,7 @@
   <string name="unselect_all">선택해제</string>
   <string name="prefs">설정 (S)</string>
   <string name="about">정보</string>
-  <string name="keys">단축키</string>
+  <string name="keys">도움</string>
   <string name="new_file">파일생성</string>
   <string name="go_button">실행 Go</string>
   <string name="show_size">상세정보</string>
@@ -54,6 +55,7 @@
   <string name="open">열기</string>
   <string name="wait">대기&#8230; </string>
   <string name="fail"> 실패 </string>
+  <string name="failed">오류:\n</string>
   <string name="default_color">기본값</string>
   <string name="dialog_yes">예</string>
   <string name="dialog_no">아니오</string>

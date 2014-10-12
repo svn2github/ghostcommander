@@ -23,6 +23,7 @@
   <string name="tgl">Nastavit</string>
   <string name="sz">Velikost</string>
   <string name="refresh">Obnovit</string>
+  <string name="swap">Zaměnit</string>
   <string name="enter">Změnit umístění</string>
   <string name="home">Domů</string>
   <string name="softkbd">Klávesnice</string>
@@ -40,7 +41,7 @@
   <string name="mount">Přípojné body</string>
   <string name="apps">Aplikace</string>
   <string name="exit">Konec</string>
-  <string name="shortcut">Vytvořit zástupce na ploše</string>
+  <string name="shortcut">Přidat zástupce</string>
   <string name="enter_ftp">Připojit FTP server</string>
   <string name="enter_smb">Připojit Samba server</string>
   <string name="search_file">Hledat soubor</string>
@@ -60,7 +61,7 @@
   <string name="toggle_panels_mode">Změna módu panelů</string>
   <string name="prefs">Nastavení</string>
   <string name="about">O programu</string>
-  <string name="keys">Klávesové zkratky</string>
+  <string name="keys">Nápověda</string>
   <string name="new_file">Vytvořit nový soubor</string>
   <string name="new_folder">Vytvořit novou složku</string>
   <string name="new_zip">Vytvořit komprimovaný soubor ZIP</string>
@@ -73,6 +74,7 @@
   <string name="fav_fld">Přidat složku \"%s\" do Oblíbených</string>
   <string name="create_zip">ZIP…</string>
   <string name="create_zip_title">ZIP</string>
+  <string name="extract_zip">Extrahovat ZIP</string>
   <string name="wait"> Vyčkejte&#8230; </string>
   <string name="fail"> (selhalo) </string>
   <string name="failed">Chyba:\n</string>
@@ -172,14 +174,16 @@
   <string name="were">byly</string>
   <string name="was">byla</string>
   <string name="nothing">Nic</string>
-  <string name="sz_folder"><![CDATA[Složka: "%1$s"\n %2$d soubory ]]></string>
-  <string name="sz_dirnum"><![CDATA[\nve %1$d slož%2$s]]></string>
+  <string name="report_1"><![CDATA[Jedna položka byla ]]></string>
+  <string name="report_m"><![CDATA[%1$d položky byly ]]></string>
+  <string name="sz_folder"><![CDATA[Složka: \"%1$s\"\n %2$d soubory ]]></string>
+  <string name="sz_dirnum"><![CDATA[  ve %1$d slož%2$s]]></string>
   <string name="sz_dirsfx_s">ce</string>
   <string name="sz_dirsfx_p">kách</string>
-  <string name="sz_file"><![CDATA[Soubor "%s":]]></string>
-  <string name="sz_files"><![CDATA[Nalezeny soubory: %d ]]></string>
+  <string name="sz_file"><![CDATA[Soubor: "%s"]]></string>
+  <string name="sz_files"><![CDATA[Soubory: %d ]]></string>
   <string name="sz_Nbytes"><![CDATA[\nVelikost: %1$sb]]></string>
-  <string name="sz_bytes">\n (%d bytů)</string>
+  <string name="sz_bytes">&#160;&#160;&#160;(%d bytů)</string>
   <string name="sz_lastmod"><![CDATA[\nNaposledy změněno: ]]></string>
   <string name="sz_total"><![CDATA[Celkem: %1$sbytů\nVolné: %2$sbytů]]></string>
   <string name="busy">Zaneprázdněný!</string>
@@ -317,46 +321,55 @@ Stisknětě \"Zrušit\" a užijte si «Ghost Commander» zadarmo.\n
   <string name="about_text"><![CDATA[
 <h1>Ghost Commander v%1$s</h1>
 <h4>Souborový manažer.</h4>
-<p>On the Web:<br>
+<p>On the Web:<br/>
 <a href="https://sites.google.com/site/ghostcommander1/">Web site</a><br>
 <a href="http://sourceforge.net/projects/ghostcommander/">At SourceForge</a> 
 </p>
-<p>Chyby či návrhy prosím zašlete na<br><a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a></p>
+<p>Chyby či návrhy prosím zašlete na<br/><a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a></p>
 <p>Like this app? <a href="%2$s">Make a PayPal Donation</a> to support further development.</p>
 <h3>PRÁVNÍ DOLOŽKA:</h3>
-Použitím tohoto programu souhlasíte s následujícím: Autor programu není odpovědný za jakékoliv poškození, ztrátu informace, ani z toho vyplývající ztráty či jakékoliv jiné problémy, který byly nebo mohly být způsobené použitím tohoto programu. Souhlasíte s používáním tohoto programu na vlastní nebezpečí. Pokud nesouhlasíte s výše uvedeným, okamžitě přestaňtě tento program používat a odinstalujte jej.\n
+<p>
+Použitím tohoto programu souhlasíte s následujícím: Autor programu není odpovědný za jakékoliv poškození, ztrátu informace, ani z toho vyplývající ztráty či jakékoliv jiné problémy, který byly nebo mohly být způsobené použitím tohoto programu. Souhlasíte s používáním tohoto programu na vlastní nebezpečí. Pokud nesouhlasíte s výše uvedeným, okamžitě přestaňtě tento program používat a odinstalujte jej.
+</p>
 ]]></string>
   <string name="keys_text"><![CDATA[
-"\t\tJAK POUŽÍVAT APLIKACI\n
-Pro označení souboru stiskněte pravou polovinu daného řádku.\n
-Pro ruční vložení složky či FTP adresy (a pro výpis seznamu Oblíbených), podržte prst na titulku panelu (na názvu otevřené složky)\n
-\t\tZKRATKOVÉ KLÁVESY\n
-Zvýšení hlasitosti - Označení současné položky (souboru)
-Snížení hlasitosti - Přepínání mezi panely
-+,-   - Označit či odznačit položky ve složce  
-(, )  - Vložte umístění pro levý/pravý panel a Oblíbené
-* - Přidání aktuální složky do Oblíbených
-" - Zobrazí celkovou velikost označených souborů/složek
-= - Přepne druhý panel do stejné složky
-1 - Nápověda
-2 - Přejmenovat soubor/složku
-4 - Upravit soubor
-5 - Kopírovat označené soubory/složky
-6 - Přesunout označené soubory/složky
-7 - Vytvořit novou složku
-8 - Odstranit soubory/složky
-9 - Upravit nastavení
-0 - Zavřít program
-[A-z] - Rychlé hledání
-    
-Pro anonymní připojení k FTP serveru vložte adresu:
-    ftp://ftp.server.cz/slozka\n
-Pro připojení k FTP serveru s přihlášením:
-    ftp://uzivatel:heslo@ftp.server.cz/slozka\n
-Pro přístup jako root (su), vložte složku následovně:
-    "root:///data"\n
-Ujistěte se, že je nainstalován "busybox", a/nebo cesta k němu je vyplněna v nastavení.\n
-Pro vypsání namountovaných zařízení napište "mount://".
-Klikněte na namountovaný záznam pro změnu práv pro zápis "rw" nebo zpět pro čtení "ro"."
+<h3>JAK POUŽÍVAT APLIKACI</h3>
+<p>
+Pro označení souboru stiskněte pravou polovinu daného řádku. Pro ruční vložení složky či FTP adresy (a pro výpis seznamu Oblíbených), podržte prst na titulku panelu (na názvu otevřené složky)
+</p>
+<h3>ZKRATKOVÉ KLÁVESY</h3>
+<p>
+Zvýšení hlasitosti - Označení současné položky (souboru)<br/>
+Snížení hlasitosti - Přepínání mezi panely<br/>
++,-   - Označit či odznačit položky ve složce<br/>
+(, )  - Vložte umístění pro levý/pravý panel a Oblíbené<br/>
+* - Přidání aktuální složky do Oblíbených<br/>
+" - Zobrazí celkovou velikost označených souborů/složek<br/>
+= - Přepne druhý panel do stejné složky<br/>
+1 - Nápověda<br/>
+2 - Přejmenovat soubor/složku<br/>
+4 - Upravit soubor<br/>
+5 - Kopírovat označené soubory/složky<br/>
+6 - Přesunout označené soubory/složky<br/>
+7 - Vytvořit novou složku<br/>
+8 - Odstranit soubory/složky<br/>
+9 - Upravit nastavení<br/>
+0 - Zavřít program<br/>
+[A-z] - Rychlé hledání<br/>
+</p>
+<p>    
+Pro anonymní připojení k FTP serveru vložte adresu:<br/>
+ftp://ftp.server.cz/slozka<br/>
+<br/>
+Pro připojení k FTP serveru s přihlášením:<br/>
+ftp://uzivatel:heslo@ftp.server.cz/slozka<br/>
+<br/>
+Pro přístup jako root (su), vložte složku následovně:<br/>
+"root:///data"<br/>
+<br/>
+Ujistěte se, že je nainstalován "busybox", a/nebo cesta k němu je vyplněna v nastavení.<br/>
+Pro vypsání namountovaných zařízení napište "mount://".<br/>
+Klikněte na namountovaný záznam pro změnu práv pro zápis "rw" nebo zpět pro čtení "ro".
+</p>
 ]]></string>
 </resources>

@@ -47,7 +47,8 @@
   <string name="mount_b">Points de montage</string>
   <string name="apps">Applications</string>
   <string name="exit">Quitter</string>
-  <string name="favs_descr">Administrer votre liste de dossiers et sites favorites</string>
+  <string name="forget">Oublier le compte (l\'application quitte)</string>
+  <string name="favs_descr">Administrer la liste de dossiers et sites favorites</string>
   <string name="local_descr">Relancer, organiser et modifier le contenu de système de fichiers primaire</string>
   <string name="external_descr">Accéder aux fichiers sur la carte SD externe. Elle peut être en lecture seule sur certains appareils.</string>
   <string name="media_descr">Apporter des modifications à la carte SD externe avec interface Stockage Multimédia</string>
@@ -59,7 +60,7 @@
   <string name="mount_descr">Afficher tous les points de montage. Activer mode \"rw\" et mode \"ro\". Avancez avec prudence!</string>
   <string name="apps_descr">Administrer paquetages installés</string>
   <string name="exit_descr">Quitter l\'application</string>
-  <string name="shortcut">Créer un raccourci sur le bureau</string>
+  <string name="shortcut">Ajouter un raccourci</string>
   <string name="enter_ftp">Connecter au site FTP</string>
   <string name="enter_smb">Ouvrir partage Samba (Windows)</string>
   <string name="search_file">Rechercher fichier</string>
@@ -81,10 +82,10 @@
   <string name="save_prefs">Sauvegarder paramètres</string>
   <string name="rest_prefs">Rétablir paramètres</string>
   <string name="save_log">Enregistrer le fichier journal</string>
-  <string name="prefs_saved">Vos préférences ont été sauvegardées</string>
-  <string name="prefs_restr">Vos préférences ont été rétablies</string>
+  <string name="prefs_saved">Les préférences ont été sauvegardées</string>
+  <string name="prefs_restr">Les préférences ont été rétablies</string>
   <string name="about">À propos</string>
-  <string name="keys">Raccourcis clavier</string>
+  <string name="keys">Aide</string>
   <string name="new_file">Créer un nouveau fichier</string>
   <string name="new_folder">Créer un nouveau répertoire</string>
   <string name="new_zip">Créer un nouveau fichier ZIP</string>
@@ -95,10 +96,11 @@
   <string name="open">Ouvrir</string>
   <string name="copy_name">Copier le nom dans le presse-papier</string>
   <string name="fav_fld">Ajouter le répertoire \"%s\" aux favoris</string>
-  <string name="create_zip">ZIP…</string>
-  <string name="create_zip_title">Fichier ZIP</string>
+  <string name="create_zip">Créer un nouveau fichier ZIP</string>
+  <string name="create_zip_title">Créer fichier ZIP</string>
+  <string name="extract_zip">Extraire ZIP</string>
   <string name="wait"> attendez&#8230; </string>
-  <string name="fail"> (échec) </string>
+  <string name="fail">ÉCHEC</string>
   <string name="failed">Erreur:\n</string>
   <string name="default_uri_cmnt">Emplacement par défaut</string>
   <string name="default_color">Par défaut</string>
@@ -138,7 +140,7 @@
   <string name="newf_title">Créer fichier</string>
   <string name="newf_prompt">Nom:</string>
   <string name="mkdir_title">Créer répertoire</string>
-  <string name="mkdir_prompt">Nom de répertoire:</string>
+  <string name="mkdir_prompt">Nom:</string>
   <string name="search_title">Rechercher fichier</string>
   <string name="search_prompt">Nom de fichier:</string>
   <string name="rename_title">Renommer</string>
@@ -178,11 +180,11 @@
   <string name="packing">Compression \n\"%s\"&#8230;</string>
   <string name="retrieving">Lecture \n\"%s\"&#8230;</string>
   <string name="uploading">Téléchargement \n\"%s\"&#8230;</string>
-  <string name="uploaded_p">Téléchargé \n\"%s\"…</string>
+  <string name="uploaded_p">Téléchargé \n\"%s\"</string>
   <string name="loading">Chargement&#8230;</string>
   <string name="second">s</string>
   <string name="canceled">Annulé</string>
-  <string name="oom_err">La mémoire est insuffisante</string>
+  <string name="oom_err">Mémoire insuffisante</string>
   <string name="unkn_err">Erreur inconnue</string>
   <string name="cant_md">Impossible de créer le répertoire \"%s\"</string>
   <string name="cant_cd">Impossible de parcourir le répertoire \"%s\"</string>
@@ -195,32 +197,32 @@
   <string name="cant_create">Impossible de créer le fichier \"%1$s\"\n%2$s</string>
   <string name="cant_del">Impossible de supprimer le fichier \"%1$s\"</string>
   <string name="dest_wrtble">Vérifiez que le répertoire \"%s\" n\'est pas protégé en écriture</string>
-  <string name="copied">copié</string>
-  <string name="moved">déplacé</string>
-  <string name="deleted">supprimé</string>
-  <string name="downloaded">téléchargé</string>
-  <string name="uploaded">téléchargés</string>
-  <string name="packed">compresssé</string>
-  <string name="unpacked">décompressé</string>
+  <string name="copied">copié(s)</string>
+  <string name="moved">déplacé(s)</string>
+  <string name="deleted">supprimé(s)</string>
+  <string name="downloaded">téléchargé(s)</string>
+  <string name="uploaded">téléchargé(s)</string>
+  <string name="packed">compressé(s)</string>
+  <string name="unpacked">décompressé(s)</string>
   <string name="remounted">Remonté \"%1$s\" en \"%2$s\"</string>
   <string name="tried_to_exec">Essai d\'exécution: \"%s\"</string>
-  
   <string name="item">élément</string>
   <string name="items">éléments</string>
-  <string name="items24"/>
-  <string name="were"/>
-  <string name="was"/>
-  <string name="verb_plural_sfx">s</string>
-  
+  <string name="were">ont été</string>
+  <string name="was">a été</string>
   <string name="nothing">Aucun élément</string>
-  <string name="sz_folder"><![CDATA[Répertoire: "%1$s":\n %2$d fichiers ]]></string>
-  <string name="sz_dirnum"><![CDATA[ dans %1$d répertoire%2$s]]></string>
-  <string name="sz_dirsfx_p">s</string>
-  <string name="sz_file"><![CDATA[Fichier: "%s"]]></string>
-  <string name="sz_files"><![CDATA[Fichiers trouvés: %d ]]></string>
+  <string name="report_0"><![CDATA[Rien n\'a été]]></string>
+  <string name="report_1"><![CDATA[ Un élément a été]]></string>
+  <string name="report_m"><![CDATA[ %1$d éléments ont été ]]></string>
+  <string name="sz_folder"><![CDATA[Répertoire: "%1$s"\n %2$d fichiers  ]]></string>
+  <string name="sz_dirnum"><![CDATA[  dans %1$d répertoir%2$s ]]></string>
+  <string name="sz_dirsfx_s">e</string>
+  <string name="sz_dirsfx_p">es</string>
+  <string name="sz_file"><![CDATA[Fichier: \"%s\"]]></string>
+  <string name="sz_files"><![CDATA[Fichiers: %d ]]></string>
   <string name="sz_Nbytes"><![CDATA[\nTaille: %1$sb]]></string>
   <string name="sz_bytes">&#160;(%d octets)</string>
-  <string name="sz_lastmod"><![CDATA[\nDernière modification:\n ]]></string>
+  <string name="sz_lastmod"><![CDATA[\nDernière modification: ]]></string>
   <string name="sz_total"><![CDATA[Total: %1$soctets\nLibre: %2$soctets]]></string>
   <string name="busy">Occupé!</string>
   <string name="cd_title">Aller à</string>
@@ -248,8 +250,8 @@
   <string name="connect">Connecter</string>
   <string name="cancel">Annuler</string>
   <string name="ftp_connected">Connecté à \"%1$s\",\n Connecté comme \"%2$s\"</string>
-  <string name="ftp_upload_failed">Échec téléchargement \"%1$s\".\n Fichier log FTP \n\n%2$s</string>
-  <string name="ftp_mkdir_failed">Échec création répertoire  \"%1$s\".\n Fichier log FTP:\n\n\"%2$s\</string>
+  <string name="ftp_upload_failed">Échec du téléchargement \"%1$s\".\n Fichier log FTP \n\n%2$s</string>
+  <string name="ftp_mkdir_failed">Échec de la création répertoire  \"%1$s\".\n Fichier log FTP:\n\n\"%2$s\</string>
   <string name="ftp_nologin">Pas loggué!</string>
   <string name="data_settings">Listes des fichiers</string>
   <string name="layout_settings">Paramètres de l\'affichage</string>
@@ -350,7 +352,7 @@
   <string name="summary_su_location">Définir l\'emplacement de la commande su</string>
   <string name="execute_command">Exécuter une commande</string>
   <string name="nothing_to_open">Pas de fichier à ouvrir</string>
-  <string name="remind_to_save">N\'oubliez pas d\'enregistrer vos modifications (utilisez le menu)</string>
+  <string name="remind_to_save">N\'oubliez pas d\'enregistrer les modifications</string>
   <string name="saved">\"%1$s\" enregistré</string>
   <string name="not_saved">Enregistrer changements?</string>
   <string name="save">Enregistrer</string>
@@ -399,52 +401,57 @@ Appuyer \"Ok\" pour donner avec PayPal.\n
   <string name="about_text"><![CDATA[
 <h1>Ghost Commander v%1$s</h1>
 <h4>Gestionnaire de fichiers.</h4>
-
-<p>Web:<br>
-<a href="https://sites.google.com/site/ghostcommander1/">Site web</a><br>
+<p>Web:<br/>
+<a href="https://sites.google.com/site/ghostcommander1/">Site web</a><br/>
 <a href="http://sourceforge.net/projects/ghostcommander/">@ SourceForge</a> 
 </p>
-<p>Veuillez envoyer vos suggestions/rapports de bogues à<br/> <a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a></p>
+<p>Veuillez envoyer vos suggestions/rapports de bogues à<br/><a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a></p>
 <p>Aimez-vous cette application? Réellement? Et si vous faites <a href="%2$s">un petit don avec PayPal</a> pour supporter son développement?</p>
 <h3>AVIS DE NON-RESPONSABILITE:</h3>
-En utilisant ce logiciel, vous êtes d\'accord avec ce qui suit:
+<p>En utilisant ce logiciel, vous êtes d\'accord avec ce qui suit:
 L\'auteur de ce logiciel n\'est pas responsable de tout type de dommage, de perte d\'informations, 
 ou de problèmes qui pourraient être causés par l\'utilisation de ce logiciel.
-Vous acceptez d\'utiliser ce logiciel à vos propres risques.\n
-Si vous n\'êtes pas d\'accord, cessez d\'utiliser ce logiciel immédiatement et le désinstallez.\n
+Vous acceptez d\'utiliser ce logiciel à vos propres risques.
+Si vous n\'êtes pas d\'accord, cessez d\'utiliser ce logiciel immédiatement et le désinstallez.</p>
 ]]></string>
   <string name="keys_text"><![CDATA[
-"\t\tMODE D\'EMPLOI\n
-Pour sélectionner plus d\'un fichier, appuyez sur la moitié droite de la ligne.\n    
-Pour saisir manuellement le chemin (et voir les favoris), appuyez longuement sur le titre du panneau.\n
-\t\tTOUCHES DE RACCOURCI\n
-VolumeHaut - Sélectionner l\'élément courant (fichier)
-VolumeBas - Permuter les panneaux
-+, -  - Sélectionner ou désélectionner les éléments dans le répertoire courant  
-(, )  - Saisir l\'emplacement pour les panneaux gauche/droite et les favoris
-* - Ajouter le répertoire courant aux favoris
-" - Afficher la taille totale des fichiers sélectionnés
-= - Afficher dans l\'autre panneau le même contenu que celui en cours
-1 - Aide
-2 - Renommer le fichier courant
-4 - Éditer le fichier courant
-5 - Copier les fichiers sélectionnés
-6 - Déplacer les fichiers sélectionnés
-7 - Créer un nouveau répertoire
-8 - Supprimer les fichiers ou répertoires
-9 - Paramètres
-0 - Quitter le programme
+<h3>MODE D\'EMPLOI</h3>
+<p>
+Pour sélectionner plus d\'un fichier, appuyez sur la moitié droite de la ligne. Pour saisir manuellement le chemin (et voir les favoris), appuyez longuement sur le titre du panneau.
+</p>
+<h3>TOUCHES DE RACCOURCI</h3>
+<p>
+VolumeHaut - Sélectionner l\'élément courant (fichier)<br/>
+VolumeBas - Permuter les panneaux<br/>
++, -  - Sélectionner ou désélectionner les éléments dans le répertoire courant<br/> 
+(, )  - Saisir l\'emplacement pour les panneaux gauche/droite et les favoris<br/>
+* - Ajouter le répertoire courant aux favoris<br/>
+" - Afficher la taille totale des fichiers sélectionnés<br/>
+= - Afficher dans l\'autre panneau le même contenu que celui en cours<br/>
+1 - Aide<br/>
+2 - Renommer le fichier courant<br/>
+4 - Éditer le fichier courant<br/>
+5 - Copier les fichiers sélectionnés<br/>
+6 - Déplacer les fichiers sélectionnés<br/>
+7 - Créer un nouveau répertoire<br/>
+8 - Supprimer les fichiers ou répertoires<br/>
+9 - Paramètres<br/>
+0 - Quitter le programme<br/>
 [A-z] - Recherche rapide    
-    
-Pour établir une connexion FTP anonyme sur un répertoire, saisissez le chemin tel que:\n
-    ftp://serveur.com/repertoire\n
-Ou, si des identifiants sont nécessaires:\n
-    ftp://nom_utilisateur:mot_de_passe@serveur.com/repertoire\n
-Pour accéder comme root (su), rentrez l\'emplacement comme:\n
-    "root:/data"\n
-Assurez-vous que "busybox" est installé, et/ou que son emplacement est spécifié dans les paramètres.\n
-Pour lister les disques montés, tapez "mount:"
+</p>
+<p>   
+Pour établir une connexion FTP anonyme sur un répertoire, saisissez le chemin tel que:<br/>
+ftp://serveur.com/repertoire<br/>
+<br/>
+Ou, si des identifiants sont nécessaires:<br/>
+ftp://nom_utilisateur:mot_de_passe@serveur.com/repertoire<br/>
+<br/>
+Pour accéder comme root (su), rentrez l\'emplacement comme:<br/>
+"root:/data"<br/>
+<br/>
+Assurez-vous que "busybox" est installé, et/ou que son emplacement est spécifié dans les paramètres.<br/>
+Pour lister les disques montés, tapez "mount:"<br/>
 Cliquez sur un élément pour le rendre "rw" (lecture/écriture) ou "ro" (lecture seule).
-"
+</p>
 ]]></string>
 </resources>

@@ -212,16 +212,15 @@
 <string name="verb_plural_sfx"/>
 <string name="item">item</string>
 <string name="items">items</string>
-<string name="items24"/>
+<string name="items24">&#xA0;</string>
 <string name="were">were</string>
 <string name="was">was</string>
 <string name="nothing">Nothing</string>
 
-<string name="report_0" ><![CDATA[ Nothing ]]></string>   
-<string name="report_1" ><![CDATA[ One item was ]]></string>   
-<string name="report_24"></string>   
-<string name="report_m" ><![CDATA[ %1$d items were ]]></string>   
-
+<string name="report_0" ><![CDATA[ Nothing ]]></string>
+<string name="report_1" ><![CDATA[ One item was ]]></string>
+<string name="report_24">&#xA0;</string>
+<string name="report_m" ><![CDATA[ %1$d items were ]]></string>
 
 <string name="sz_folder"><![CDATA[<b>Folder:</b> \"%1$s\"\n%2$d files ]]></string>
 <string name="sz_dirnum"><![CDATA[ in %1$d director%2$s]]></string>
@@ -291,8 +290,8 @@
 <string name="summary_toolbar_settings">Customize the toolbar at the bottom of the screen</string> 
 <string name="show_toolbar">Enable toolbar</string>
 <string name="summary_show_toolbar">Show the toolbar at the bottom of the screen</string>
-<string name="show_hotkeys">Show hotkeys</string>
-<string name="summary_show_hotkeys">Show hotkey shortcuts on certain buttons</string>
+<string name="show_hotkeys">Show hot keys</string>
+<string name="summary_show_hotkeys">Show hot key shortcuts on certain buttons</string>
 <string name="toolbar_preference">Customize the toolbar</string>
 <string name="summary_toolbar_preference">Select which buttons to display, edit and arrange them</string>
 <string name="tblist_label">Customize the toolbar</string>
@@ -479,7 +478,7 @@ follows:
 <b>root:/</b><i>path/to/folder</i><br/>
     - Root mode
 </p>
-<h3>HOTKEYS</h3>
+<h3>HOT KEYS</h3>
 <p>
 <b><i>VolumeUp</i></b> - Select files and folders<br/>
 <b><i>VolumeDn</i></b> - Toggle between the panels<br/>
@@ -502,5 +501,13 @@ follows:
 <p>
 <a href="https://sites.google.com/site/ghostcommander1/info">More help online…</a>
 </p>
+]]></string>
+<string name="license_text"><![CDATA[
+<h3>Ghost Manager</h3>
+<p>A file manager</p>
+<p>Copyright © 2009-2014 Ghost Squared</p>
+<p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
+<p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/></p>
 ]]></string>
 </resources>
