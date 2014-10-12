@@ -206,13 +206,9 @@
   <string name="tried_to_exec">実行を試行しました \"%s\"</string>
   <string name="item">アイテム</string>
   <string name="items">アイテム</string>
-  <string name="items24">&amp;#xA0;</string>
   <string name="nothing">なし</string>
-  <string name="report_24">&amp;#xA0;</string>
-  <string name="sz_folder"><![CDATA[<b>フォルダー:</b> \"%1$s\"\n&#xA0;%2$d ファイル ]]></string>
+  <string name="sz_folder"><![CDATA[<b>フォルダー:</b> \"%1$s\"\n%2$d ファイル ]]></string>
   <string name="sz_dirnum"><![CDATA[ %1$d ディレクトリ中%2$s]]></string>
-  <string name="sz_dirsfx_s">&amp;#xA0;</string>
-  <string name="sz_dirsfx_p">&amp;#xA0;</string>
   <string name="sz_file"><![CDATA[<b>ファイル:</b> \"%s\"]]></string>
   <string name="sz_files"><![CDATA[<b>ファイル:</b> %d ]]></string>
   <string name="sz_Nbytes"><![CDATA[\n<b>サイズ:</b> %1$s]]></string>

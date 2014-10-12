@@ -20,6 +20,7 @@
   <string name="oth_sh_this">= Tот же адрес</string>
   <string name="eq">Сравняй</string>
   <string name="change">Смени панель</string>
+  <string name="swap">Обменяй</string>
   <string name="tgl">Сменить</string>
   <string name="sz">Размер</string>
   <string name="refresh">Обнови</string>
@@ -46,6 +47,8 @@
   <string name="mount_b">Разделы</string>
   <string name="apps">Приложения</string>
   <string name="exit">Выход</string>
+  <string name="forget">Забыть аккаунт и выйти</string>
+  <string name="save_log">Сохранить протокол работы в файл</string>  
   <string name="favs_descr">Просмотр и редактирование списка закладок на часто используемые папки и сетевые ресурсы</string>
   <string name="local_descr">Работа с файлами на основном устройстве</string>
   <string name="external_descr">Доступ к файлам на внешней подключеной карте памяти. Может быть \"только для чтения\" на некоторый устройствах</string>
@@ -91,7 +94,6 @@
   <string name="send_to">Послать&#8230;</string>
   <string name="open_with">Открыть с&#8230;</string>
   <string name="open">Открыть</string>
-  <string name="forget">Забыть аккаунт и выйти</string>
   <string name="copy_name">Копировать имя в буфер</string>
   <string name="fav_fld">Закладка на папку \"%s\"</string>
   <string name="create_zip">Создать ZIP файл</string>

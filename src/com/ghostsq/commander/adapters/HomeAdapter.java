@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import com.ghostsq.commander.FileCommander;
@@ -25,6 +26,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -326,7 +328,12 @@ public class HomeAdapter extends CommanderAdapterBase {
             if( plugin_prefs_f.exists() )
                 menu.add( 0, FORGET_CMD, 0, R.string.forget );
         }
-        menu.add( 0, PREFS_CMD, 0, R.string.prefs );
+
+        Intent intent = getPluginPrefIntent( (String)item.origin );
+        PackageManager packageManager = ctx.getPackageManager();
+        List<ResolveInfo> list = packageManager.queryIntentActivities( intent, PackageManager.MATCH_DEFAULT_ONLY );
+        if( list.size() > 0 )
+            menu.add( 0, PREFS_CMD, 0, R.string.prefs );
     }
 
     private final File getPluginPrefsFile( String schema ) {
@@ -335,6 +342,14 @@ public class HomeAdapter extends CommanderAdapterBase {
         return plugin_prefs_f;
     }
     
+    private final Intent getPluginPrefIntent( String plugin_name ) {
+        String package_n = "com.ghostsq.commander." + plugin_name;
+        String class_n    = package_n + ".Prefs";
+        Intent intent = new Intent();
+        intent.setComponent( new ComponentName( package_n, class_n ) );
+        return intent;
+    }        
+   
     @Override
     public void doIt( int command_id, SparseBooleanArray cis ) {
         try {
@@ -349,12 +364,7 @@ public class HomeAdapter extends CommanderAdapterBase {
                     return;
                 }
                 if( PREFS_CMD == command_id ) {
-                    String package_n = "com.ghostsq.commander." + (String)item.origin;
-                    String class_n    = package_n + ".Prefs";
-
-                    Intent intent = new Intent();
-                    intent.setComponent( new ComponentName( package_n, class_n ) );
-            
+                    Intent intent = getPluginPrefIntent( (String)item.origin );
                     Log.d( TAG, "Starting Activity" );
                     commander.issue( intent, 0 );
                     return;

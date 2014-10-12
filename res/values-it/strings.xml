@@ -205,13 +205,11 @@
   <string name="tried_to_exec">Si è tentato di eseguire \"%s\"</string>
   <string name="item">elemento</string>
   <string name="items">elementi</string>
-  <string name="items24">&amp;#xA0;</string>
   <string name="were">sono stati</string>
   <string name="was">è stato</string>
   <string name="nothing">Niente</string>
   <string name="report_0"><![CDATA[ Nulla ]]></string>
   <string name="report_1"><![CDATA[ un elemento è stato ]]></string>
-  <string name="report_24">&amp;#xA0;</string>
   <string name="report_m"><![CDATA[ %1$d elementi sono stati ]]></string>
   <string name="sz_folder"><![CDATA[Cartella: \"%1$s\"\n %2$d file]]></string>
   <string name="sz_dirnum"><![CDATA[in %1$d cartell%2$s]]></string>
