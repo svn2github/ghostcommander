@@ -157,7 +157,7 @@
   <string name="find_on_fs_only">La fonction recherche ne s\'applique qu\'avec les fichiers locaux</string>
   <string name="on_fs_only">Cette fonction ne s\'applique qu\'avec les fichiers locaux</string>
   <string name="op_not_alwd">Opération \'%1$s\' non permise. Sélectionnez d\'abord un élément.</string>
-  <string name="oper_item_to">%1$s %2$s à:\"</string>
+  <string name="oper_item_to">%1$s %2$s à:</string>
   <string name="login_title">Connecter</string>
   <string name="delete_title">Supprimer</string>
   <string name="delete_err">Rien à supprimer</string>
@@ -220,7 +220,7 @@
   <string name="sz_dirsfx_p">es</string>
   <string name="sz_file"><![CDATA[Fichier: \"%s\"]]></string>
   <string name="sz_files"><![CDATA[Fichiers: %d ]]></string>
-  <string name="sz_Nbytes"><![CDATA[\nTaille: %1$sb]]></string>
+  <string name="sz_Nbytes"><![CDATA[\nTaille: %1$s]]></string>
   <string name="sz_bytes">&#160;(%d octets)</string>
   <string name="sz_lastmod"><![CDATA[\nDernière modification: ]]></string>
   <string name="sz_total"><![CDATA[Total: %1$soctets\nLibre: %2$soctets]]></string>

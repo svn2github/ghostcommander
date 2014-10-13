@@ -154,7 +154,7 @@
   <string name="find_on_fs_only">搜索特性仅在本地文件系统工作</string>
   <string name="on_fs_only">此特性仅在本地文件系统工作</string>
   <string name="op_not_alwd">操作不被允许，先选择一些吧</string>
-  <string name="oper_item_to">%1$s %2$s 到：\"</string>
+  <string name="oper_item_to">%1$s %2$s 到：</string>
   <string name="login_title">登录</string>
   <string name="delete_title">删除</string>
   <string name="delete_err">没有选择要删除的文件</string>

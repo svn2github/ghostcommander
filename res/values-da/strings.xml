@@ -139,7 +139,7 @@
   <string name="inv_path">Ulovlig sti</string>
   <string name="find_on_fs_only">Der kan kun søges i lokale filsystemer.</string>
   <string name="op_not_alwd">Operationen ikke tilladt - vælg først noget.</string>
-  <string name="oper_item_to">%1$s %2$s til:\"</string>
+  <string name="oper_item_to">%1$s %2$s til:</string>
   <string name="login_title">Logon</string>
   <string name="delete_title">Slet</string>
   <string name="delete_err">Intet at slette</string>

@@ -155,7 +155,7 @@
   <string name="find_on_fs_only">検索機能はローカル・ファイルシステムのみ使用可能です</string>
   <string name="on_fs_only">この機能はローカル・ファイルシステムのみ使用可能です</string>
   <string name="op_not_alwd">操作できません - 先に選択してください</string>
-  <string name="oper_item_to">%1$s %2$s 先:\"</string>
+  <string name="oper_item_to">%1$s %2$s 先:</string>
   <string name="login_title">ログイン</string>
   <string name="delete_title">削除</string>
   <string name="delete_err">削除対象がありません</string>

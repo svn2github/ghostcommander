@@ -125,7 +125,7 @@
   <string name="inv_path">Ruta no válida</string>
   <string name="find_on_fs_only">La función de búsqueda sólo funciona en el sistema de archivos local.</string>
   <string name="op_not_alwd">No se puede \'%1$s\'. Selecciona algo primero.</string>
-  <string name="oper_item_to">%1$s %2$s a:\"</string>
+  <string name="oper_item_to">%1$s %2$s a:</string>
   <string name="login_title">Identificación</string>
   <string name="delete_title">Eliminar</string>
   <string name="delete_err">Nada que eliminar</string>
@@ -180,7 +180,7 @@
   <string name="sz_dirsfx_p">as</string>
   <string name="sz_file"><![CDATA[Archivo: \"%s\"]]></string>
   <string name="sz_files"><![CDATA[Archivos encontrados: %d ]]></string>
-  <string name="sz_Nbytes"><![CDATA[\nTamaño: %1$sb]]></string>
+  <string name="sz_Nbytes"><![CDATA[\nTamaño: %1$s]]></string>
   <string name="sz_bytes">&#160;&#160;&#160;(%d bytes)</string>
   <string name="sz_lastmod"><![CDATA[\nÚlt. modificación:\n ]]></string>
   <string name="sz_total"><![CDATA[Total: %1$sbytes,\nLibres: %2$sbytes.]]></string>

@@ -154,7 +154,7 @@
   <string name="find_on_fs_only">La ricerca funziona solo per il file system locale.</string>
   <string name="on_fs_only">Questa operazione funziona solo per il file system locale.</string>
   <string name="op_not_alwd">L\'operazione non è permessa; selezionare prima qualcosa</string>
-  <string name="oper_item_to">%1$s %2$s in:\"</string>
+  <string name="oper_item_to">%1$s %2$s in:</string>
   <string name="login_title">Login</string>
   <string name="delete_title">Elimina</string>
   <string name="delete_err">Nulla da eliminare</string>

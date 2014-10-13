@@ -143,7 +143,7 @@
   <string name="inv_path">Błędna ścieżka</string>
   <string name="find_on_fs_only">Wyszukiwanie działa jedynie na dyskach lokalnych.</string>
   <string name="op_not_alwd">\'%1$s\' nie jest możliwe. Musisz zaznaczyć pliki.</string>
-  <string name="oper_item_to">%1$s %2$s do:\"</string>
+  <string name="oper_item_to">%1$s %2$s do:</string>
   <string name="login_title">Login</string>
   <string name="delete_title">Usuń</string>
   <string name="delete_err">Nie ma niczego do usunięcia.</string>
@@ -204,7 +204,7 @@
   <string name="sz_dirsfx_p">ach</string>
   <string name="sz_file"><![CDATA[Plik: "%s"]]></string>
   <string name="sz_files"><![CDATA[%d pliki(ów):]]></string>
-  <string name="sz_Nbytes"><![CDATA[\n %1$sB]]></string>
+  <string name="sz_Nbytes"><![CDATA[\n %1$s]]></string>
   <string name="sz_bytes">&#160;(%d B)</string>
   <string name="sz_lastmod"><![CDATA[\nOstatnio zmodyfikowany:\n]]></string>
   <string name="sz_total"><![CDATA[Pojemność dysku: %1$sB\nWolne miejsce: %2$sB]]></string>

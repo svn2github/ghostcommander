@@ -157,7 +157,7 @@
   <string name="find_on_fs_only">A keresés csak a helyi fájlrendszerben működik</string>
   <string name="on_fs_only">Ez a funkció csak a helyi fájlrendszerben működik</string>
   <string name="op_not_alwd">Nem megengedett művelet - előbb jelöljön ki valamit</string>
-  <string name="oper_item_to">%1$s %2$s:\"</string>
+  <string name="oper_item_to">%1$s %2$s:</string>
   <string name="login_title">Bejelentkezés</string>
   <string name="delete_title">Törlés</string>
   <string name="delete_err">Nincs mit törölni</string>

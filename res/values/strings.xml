@@ -160,7 +160,7 @@
 <string name="find_on_fs_only">The search feature only works on the local file system</string>
 <string name="on_fs_only">This feature only works on the local file system</string>
 <string name="op_not_alwd">Operation is not allowed - select something first</string>
-<string name="oper_item_to">%1$s %2$s to:"</string>
+<string name="oper_item_to">%1$s %2$s to:</string>
 <string name="login_title">Login</string>
 <string name="delete_title">Delete</string>
 <string name="delete_err">Nothing to delete</string>

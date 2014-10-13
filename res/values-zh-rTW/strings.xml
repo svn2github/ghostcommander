@@ -55,7 +55,7 @@
   <string name="move_title">移動</string>
   <string name="rename_err">沒有要重新命名的。</string>
   <string name="no_items">沒有有效的檔案來完成此操作。</string>
-  <string name="oper_item_to">%1$s %2$s 到：\"</string>
+  <string name="oper_item_to">%1$s %2$s 到：</string>
   <string name="login_title">登陸</string>
   <string name="delete_title">刪除</string>
   <string name="delete_err">沒有要刪的檔案</string>

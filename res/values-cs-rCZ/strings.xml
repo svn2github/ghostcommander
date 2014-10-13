@@ -124,7 +124,7 @@
   <string name="inv_path">Neplatná cesta</string>
   <string name="find_on_fs_only">Vyhledávat je možné pouze na lokálním filesystému.</string>
   <string name="op_not_alwd">\'%1$s\' není povoleno. Nejprve něco označte.</string>
-  <string name="oper_item_to">%1$s %2$s do:\"</string>
+  <string name="oper_item_to">%1$s %2$s do:</string>
   <string name="login_title">Přihlásit</string>
   <string name="delete_title">Odstranit</string>
   <string name="delete_err">Nic k odstranění</string>

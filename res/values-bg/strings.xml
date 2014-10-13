@@ -103,7 +103,7 @@
   <string name="inv_dest">Невалидна посока</string>
   <string name="find_on_fs_only">Търсенето работи само локално.</string>
   <string name="op_not_alwd">The \'%1$s\' не е позволено. Първо трябва да изберете нещо.</string>
-  <string name="oper_item_to">%1$s %2$s в:\"</string>
+  <string name="oper_item_to">%1$s %2$s в:</string>
   <string name="login_title">Вход</string>
   <string name="delete_title">изтриване</string>
   <string name="delete_err">Няма нищо за изтриване</string>
@@ -156,7 +156,7 @@
   <string name="sz_dirsfx_p">и</string>
   <string name="sz_file"><![CDATA[Файл: \"%s\"]]></string>
   <string name="sz_files"><![CDATA[Намерени файлове: %d ]]></string>
-  <string name="sz_Nbytes"><![CDATA[\nГолемина: %1$sb]]></string>
+  <string name="sz_Nbytes"><![CDATA[\nГолемина: %1$s]]></string>
   <string name="sz_bytes">(%d байта)</string>
   <string name="sz_lastmod"><![CDATA[\nПоследно променяна:   ]]></string>
   <string name="sz_total"><![CDATA[Всичко: %1$sбайта\nСвободни: %2$sбайта]]></string>

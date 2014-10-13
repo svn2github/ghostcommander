@@ -157,7 +157,7 @@
   <string name="find_on_fs_only">Функция поиска пока работает только на локальной файловой системе.</string>
   <string name="on_fs_only">Данная операция работает только с локальной файловой системой</string>
   <string name="op_not_alwd">Операция \'%s\' не допустима. Выберите сперва что-либо.</string>
-  <string name="oper_item_to">%1$s %2$s в:\"</string>
+  <string name="oper_item_to">%1$s %2$s в:</string>
   <string name="login_title">Идентификация</string>
   <string name="delete_title">Удаление</string>
   <string name="delete_err">Нечего удалять</string>
