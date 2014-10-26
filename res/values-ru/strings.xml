@@ -20,10 +20,10 @@
   <string name="oth_sh_this">= Tот же адрес</string>
   <string name="eq">Сравняй</string>
   <string name="change">Смени панель</string>
-  <string name="swap">Обменяй</string>
   <string name="tgl">Сменить</string>
   <string name="sz">Размер</string>
   <string name="refresh">Обнови</string>
+  <string name="swap">Обменяй</string>
   <string name="enter">Ввести адрес или URI</string>
   <string name="home">Домой</string>
   <string name="softkbd">Клавиатура</string>
@@ -48,7 +48,6 @@
   <string name="apps">Приложения</string>
   <string name="exit">Выход</string>
   <string name="forget">Забыть аккаунт и выйти</string>
-  <string name="save_log">Сохранить протокол работы в файл</string>  
   <string name="favs_descr">Просмотр и редактирование списка закладок на часто используемые папки и сетевые ресурсы</string>
   <string name="local_descr">Работа с файлами на основном устройстве</string>
   <string name="external_descr">Доступ к файлам на внешней подключеной карте памяти. Может быть \"только для чтения\" на некоторый устройствах</string>
@@ -82,6 +81,7 @@
   <string name="prefs">9 Настройки</string>
   <string name="save_prefs">Сохранить настройки</string>
   <string name="rest_prefs">Восстановить настройки</string>
+  <string name="save_log">Сохранить протокол работы в файл</string>
   <string name="prefs_saved">Настройки сохранены.</string>
   <string name="prefs_restr">Настройки восстановлены.</string>
   <string name="about">О программе</string>
@@ -224,8 +224,8 @@
   <string name="sz_files"><![CDATA[Найдено файлов: %d ]]></string>
   <string name="sz_Nbytes"><![CDATA[\nОбъем: %1$s]]></string>
   <string name="sz_bytes">&#160;(%dБ)</string>
-  <string name="sz_lastmod"><![CDATA[\n\nДата изменения:\n ]]></string>
-  <string name="sz_total"><![CDATA[Раздел: %1$s,\nСвободно: %2$s.]]></string>
+  <string name="sz_lastmod"><![CDATA[\nДата изменения: ]]></string>
+  <string name="sz_total"><![CDATA[Раздел: %1$s\nСвободно: %2$s]]></string>
   <string name="busy">Занят!</string>
   <string name="cd_title">Смена папки</string>
   <string name="cd_prompt">Сменить текущую папку на:</string>

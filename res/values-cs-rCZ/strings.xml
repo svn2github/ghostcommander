@@ -171,10 +171,12 @@
   <string name="tried_to_exec">Zkusilo se spustit: \"%s\"</string>
   <string name="item">položka</string>
   <string name="items">položky</string>
+  <string name="items24">&#160;</string>
   <string name="were">byly</string>
   <string name="was">byla</string>
   <string name="nothing">Nic</string>
   <string name="report_1"><![CDATA[Jedna položka byla ]]></string>
+  <string name="report_24">&#160;</string>
   <string name="report_m"><![CDATA[%1$d položky byly ]]></string>
   <string name="sz_folder"><![CDATA[<b>Složka:</b> \"%1$s\"\n %2$d soubory ]]></string>
   <string name="sz_dirnum"><![CDATA[  ve %1$d slož%2$s]]></string>

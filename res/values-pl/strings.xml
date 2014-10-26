@@ -36,6 +36,7 @@
   <string name="favs">Ulubione</string>
   <string name="local">Pamięć lokalna</string>
   <string name="ftp">Serwer FTP</string>
+  <string name="sftp">Serwer SFTP</string>
   <string name="smb">Udział Samba (Windows)</string>
   <string name="root">root:</string>
   <string name="mount">Punkty montowania</string>
@@ -204,9 +205,9 @@
   <string name="sz_dirsfx_p">ach</string>
   <string name="sz_file"><![CDATA[Plik: "%s"]]></string>
   <string name="sz_files"><![CDATA[%d pliki(ów):]]></string>
-  <string name="sz_Nbytes"><![CDATA[\n %1$s]]></string>
+  <string name="sz_Nbytes"><![CDATA[\nSize: %1$s]]></string>
   <string name="sz_bytes">&#160;(%d B)</string>
-  <string name="sz_lastmod"><![CDATA[\nOstatnio zmodyfikowany:\n]]></string>
+  <string name="sz_lastmod"><![CDATA[\nOstatnio zmodyfikowany: ]]></string>
   <string name="sz_total"><![CDATA[Pojemność dysku: %1$sB\nWolne miejsce: %2$sB]]></string>
   <string name="busy">Zajęty!</string>
   <string name="cd_title">Idź do</string>

@@ -7,4 +7,9 @@
     <item>По размер</item>
     <item>По дата</item>
   </string-array>
+  <string-array name="panels_mode">
+    <item>Да</item>
+    <item>Не</item>
+    <item>Автоматично</item>
+  </string-array>
 </resources>

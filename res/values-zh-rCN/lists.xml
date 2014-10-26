@@ -3,7 +3,7 @@
 <resources>
   <string-array name="sorting">
     <item>按名称</item>
-    <item>推而广之</item>
+    <item>按类型</item>
     <item>按大小</item>
     <item>按日期</item>
   </string-array>

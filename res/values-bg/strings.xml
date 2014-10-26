@@ -23,7 +23,9 @@
   <string name="tgl">Смени</string>
   <string name="sz">Размер</string>
   <string name="refresh">Обнови</string>
+  <string name="swap">Размяна</string>
   <string name="enter">Въведи адрес или URI</string>
+  <string name="home">Начало</string>
   <string name="softkbd">Клавиатура</string>
   <string name="enter_b">Местоположение</string>
   <string name="add_fav">Запази тек.адрес</string>
@@ -34,6 +36,7 @@
   <string name="favs">Предпочитани</string>
   <string name="ftp">FTP сайт</string>
   <string name="sftp">SFTP сайт</string>
+  <string name="apps">Приложения</string>
   <string name="exit">Изход</string>
   <string name="enter_ftp">Отвори FTP сайт</string>
   <string name="enter_smb">Отвори мрежова папка на Windows</string>
@@ -147,9 +150,11 @@
   <string name="tried_to_exec">Опит да се изпълни: \"%s\"</string>
   <string name="item">нещо</string>
   <string name="items">неща</string>
+  <string name="items24">&#160;</string>
   <string name="were">бяха</string>
   <string name="was">бях</string>
   <string name="nothing">Нищо</string>
+  <string name="report_24">&#160;</string>
   <string name="sz_folder"><![CDATA[Папка: \"%1$s\"\n%2$d файла]]></string>
   <string name="sz_dirnum"><![CDATA[в %1$d папк%2$s]]></string>
   <string name="sz_dirsfx_s">а</string>

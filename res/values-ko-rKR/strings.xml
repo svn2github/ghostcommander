@@ -79,7 +79,6 @@
   <string name="rename_err">변경대상 없음</string>
   <string name="no_items">유효한 파일이 없습니다.</string>
   <string name="find_on_fs_only">검색기능은 로컬 파일시스템에서만 동작합니다.</string>
-  <string name="oper_item_to">%1$s %2$s to:</string>
   <string name="login_title">로그인 Login</string>
   <string name="delete_title">삭제</string>
   <string name="delete_err">삭제할 것이 없음</string>

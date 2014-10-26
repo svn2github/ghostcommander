@@ -208,14 +208,18 @@
   <string name="tried_to_exec">Futtatásra tett kísérlet: „%s”</string>
   <string name="item">elem</string>
   <string name="items">elem</string>
+  <string name="items24">&#160;</string>
   <string name="were">lett</string>
   <string name="was">lett</string>
   <string name="nothing">Semmi</string>
   <string name="report_0"><![CDATA[Semmi nem ]]></string>
   <string name="report_1"><![CDATA[Egy elem lett ]]></string>
+  <string name="report_24">&#160;</string>
   <string name="report_m"><![CDATA[%1$d elem lett ]]></string>
   <string name="sz_folder"><![CDATA[<b>Mappa:</b> „%1$s”\n%2$d fájl ]]></string>
   <string name="sz_dirnum"><![CDATA[ %1$d könyvtárban %2$s]]></string>
+  <string name="sz_dirsfx_s"> </string>
+  <string name="sz_dirsfx_p"> </string>
   <string name="sz_file"><![CDATA[<b>Fájl:</b> „%s”]]></string>
   <string name="sz_files"><![CDATA[<b>Fájlok:</b> %d]]></string>
   <string name="sz_Nbytes"><![CDATA[\n<b>Méret:</b> %1$s]]></string>
@@ -271,7 +275,7 @@
   <string name="send_content">Tartalomszolgáltatóval történő küldés</string>
   <string name="summary_send_content">Ne legyen aktív, ha a fájlküldő alkalmazásban nincs tartalomfeloldó</string>
   <string name="panels_mode">Párhuzamos panelek</string>
-  <string name="summary_panels_mode">Mindkét panel megjelenítése osztott képernyőn</string>
+  <string name="summary_panels_mode">Mindkét panel megjelenítése egymás mellett osztott képernyő módban</string>
   <string name="two_lines">Két sor</string>
   <string name="summary_two_lines">A jellemzőket a nevek alatti sorban mutassa</string>
   <string name="show_icons">Fájlikonok engedélyezése</string>

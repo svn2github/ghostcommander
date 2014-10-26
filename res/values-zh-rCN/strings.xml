@@ -205,9 +205,13 @@
   <string name="tried_to_exec">尝试执行 \"%s\"</string>
   <string name="item">个项目</string>
   <string name="items">个项目</string>
+  <string name="items24">&#160;</string>
   <string name="nothing">无内容</string>
+  <string name="report_24">&#160;</string>
   <string name="sz_folder"><![CDATA[文件夹 "%1$s"\n%2$d 个文件，]]></string>
   <string name="sz_dirnum"><![CDATA[共 %1$d 个子目录]]></string>
+  <string name="sz_dirsfx_s"> </string>
+  <string name="sz_dirsfx_p"> </string>
   <string name="sz_file"><![CDATA[文件: "%s"]]></string>
   <string name="sz_files"><![CDATA[数量: %d ]]></string>
   <string name="sz_Nbytes"><![CDATA[\n大小: %1$s]]></string>
@@ -233,9 +237,9 @@
   <string name="password">密码：</string>
   <string name="command">控制:</string>
   <string name="use_busybox">busybox</string>
-  <string name="user">用户</string>
-  <string name="group">组</string>
-  <string name="other">其他的</string>
+  <string name="user">所有者</string>
+  <string name="group">用户组</string>
+  <string name="other">其他</string>
   <string name="connect">连接</string>
   <string name="cancel">取消</string>
   <string name="ftp_connected">连接到 \"%1$s\",\n 登录为 \"%2$s\"</string>
@@ -244,7 +248,7 @@
   <string name="ftp_nologin">没有登录!</string>
   <string name="data_settings">文件列表</string>
   <string name="layout_settings">配置布局:</string>
-  <string name="input_settings">输入</string>
+  <string name="input_settings">操作</string>
   <string name="selection_zone_setup">选择范围</string>
   <string name="summary_selection_zone_setup">自定义项目的直击选择区域</string>
   <string name="sel_onright">右侧选择</string>
@@ -255,14 +259,14 @@
   <string name="editor_label">Text Editor</string>
   <string name="pictvw_label">Picture Viewer</string>
   <string name="textvw_label">Text Viewer</string>
-  <string name="perms_label">chmod / chown</string>
+  <string name="perms_label">权限</string>
   <string name="advanced">高级</string>
   <string name="advanced_settings">高级</string>
   <string name="summary_advanced_settings">为高级用户准备的更多设置项</string>
   <string name="send_content">使用内容提供者发送</string>
   <string name="summary_send_content">如果发送文件至应用没有执行内容解析，请尝试取消该选择</string>
   <string name="panels_mode">并排面板模式</string>
-  <string name="summary_panels_mode">分割屏幕同时显示两个面板</string>
+  <string name="summary_panels_mode">分割屏幕以同时显示两个面板</string>
   <string name="two_lines">分行显示</string>
   <string name="summary_two_lines">第二行专门显示文件属性</string>
   <string name="show_icons">启用图标</string>
@@ -360,7 +364,7 @@
   <string name="cant_view_empt">文件 \"%1$s\" 是空的</string>
   <string name="cant_open">无法打开此文件。</string>
   <string name="cant_save">无法保存此文件。</string>
-  <string name="nav_warn">将前往的是系统目录。擅自更改他可能会导致损失。继续?</string>
+  <string name="nav_warn">将前往的是系统目录，擅自更改他可能会导致损失。继续?</string>
   <string name="nav_warn_cmt">点击“取消”至安全的/ sdcard文件夹,或点击“退出”按钮关闭应用程序.</string>
   <string name="no_such_folder">\"%1$s\" 不是一个有效的目录!</string>
   <string name="fav_added">\"%1$s\" 已添加到书签</string>
@@ -395,20 +399,20 @@
 <a href="http://sourceforge.net/projects/ghostcommander/">At SourceForge</a> 
 </p>
 <p>请发送 BUG/建议到:<br/><a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a></p>
-<p>Like this app? <a href="%2$s">Make a PayPal Donation</a> to support further development.</p>
-<p>Gearkey译 (gearkey@163.com);</p>
+<p>喜欢这个软件? <a href="%2$s">在 PayPal 上捐赠我</a> 以便支持未来的开发.</p>
+<p>Gearkey译 (<a href="mailto:gearkey@163.com">gearkey@163.com</a>);</p>
 <h3>免责声明：</h3>
 <p>欲使用本软件，您需要同意以下条例:
-本软件作者不会为任何损坏, 丢失信息, 间接损坏, 或者任何可能由使用本软件引起的问题承担责任。
+本软件作者不会为任何损坏、丢失信息、间接损坏以及任何可能由于使用本软件而引起的问题承担责任。
 您必须同意使用此软件并自担风险。如果您不同意上述条件，请立即停止使用本软件并卸载它。</p>
 ]]></string>
   <string name="keys_text"><![CDATA[
 <h3>选择文件</h3>
 <p>
 若想要选择文件和文件夹，
-仅需点击目标右侧，
+仅需点击目标右侧即可，
 点击左侧可以打开它们。
-你可以在设置-选择面积，进行设置。
+你可以在设置-选择面积里自定此设置。
 </p>
 <h3>复制和移动</h3>
 <p>
@@ -423,21 +427,25 @@ Ghost Commander可以像打开文件夹一样打开标准的ZIP文件，支持�
 </p>
 <h3>插件</h3>
 <p>
-扩展功能需要安装插件实现。
-例如访问Windows共享文件夹，SSH文件传输协议和访问权。
+一些扩展功能需要安装插件实现。
+例如访问Windows的共享文件夹，SSH文件传输协议和访问权。
 以及云储存:Box, Dropbox and Google Drive.
 </p>
 <h3>ROOT模式</h3>
 <p>
-要谨慎使用root模式(超级用户)和挂载点特性的Ghost Commander，BusyBox的设备和安装
+请谨慎使用带root模式(超级用户)和挂载点特性的Ghost Commander、已root的设备以及BusyBox安装
 其路径中定义的设置。
+</p>
+<h3>译者的话</h3>
+<p>
+首先，位置是GC的特色，你可以把常用的文件夹加为书签，然后就可以便捷的在常用文件夹中切换。然后，善用同步面板的话有时会事半功倍，快速的使另一个面板参与到工作中来。最后，搜索、选择、取消选择中善用通配符，祝使用愉快:)
 </p>
 <h3>位置编辑</h3>
 <p>
-你可以手动输入一个位置，
-然后会看到一个书签列表。
-长按面板标题可打开位置编辑。
-您可以输入资源URL位置手动编辑，
+若使用位置这一功能，
+你会看到一个书签列表和地址栏。
+长按面板标题也可以打开位置编辑。
+你可以手动输入资源URL位置并编辑，
 就像这样:<br/>
 <br/>
 ftp://host.com/folder<br/>
@@ -448,7 +456,7 @@ ftp://user:pass@ftp_host/folder<br/>
 <br/>
 sftp://user:pass@sftp_host/folder<br/>
 - SSH FTP<br/>
-如果你有一个密钥文件可以进行身份验证,把它放进这个文件
+如果你有一个密钥文件可以进行身份验证，就把它放进这个文件里
 /sdcard/.GhostCommander/keys/&lt;host name&gt;
 在这种情况下,密码是你的密钥文件的密码。<br/>
 <br/>
