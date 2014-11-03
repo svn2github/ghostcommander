@@ -49,7 +49,8 @@ public interface Commander {
 
     public final static int  OPEN = 903, OPEN_WITH = 902, SEND_TO = 236, COPY_NAME = 390, FAV_FLD = 414, SHRCT_CMD = 269;
     
-    public final static String NOTIFY_COOKIE = "cookie", NOTIFY_SPEED = "speed", NOTIFY_TASK = "task", NOTIFY_CRD = "crd", NOTIFY_POSTO = "posto";
+    public final static String NOTIFY_COOKIE = "cookie", NOTIFY_SPEED = "speed", NOTIFY_TASK = "task", NOTIFY_CRD = "crd", 
+            NOTIFY_POSTO = "posto", NOTIFY_URI = "uri";
 
     public final static String MESSAGE_STRING  = "STRING";
     

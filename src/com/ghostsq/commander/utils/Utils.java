@@ -290,7 +290,8 @@ public final class Utils {
             verb += ctx.getString( R.string.verb_plural_sfx );
             if( total < 5 ) {
                 String rep24 = ctx.getString( R.string.report_24, total );
-                if( str( rep24 ) ) return rep24 + verb;
+                if( str( rep24 ) && !"\u00A0".equals( rep24 ) ) 
+                    return rep24 + verb;
             }
             return ctx.getString( R.string.report_m, total ) + verb;
         }

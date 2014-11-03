@@ -8,9 +8,11 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import com.ghostsq.commander.adapters.CommanderAdapter;
+import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.adapters.Engine;
 import com.ghostsq.commander.adapters.FSAdapter;
 import com.ghostsq.commander.adapters.FindAdapter;
+import com.ghostsq.commander.adapters.MediaScanEngine;
 import com.ghostsq.commander.root.MountAdapter;
 import com.ghostsq.commander.root.RootAdapter;
 import com.ghostsq.commander.utils.Credentials;
@@ -27,6 +29,7 @@ import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Parcelable;
@@ -703,9 +706,13 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 panels.toggleHidden();
                 break;
             case R.id.rescan:
-                if( android.os.Build.VERSION.SDK_INT >= 19 ) {
-                    showInfo( getString( R.string.wait ) );
-                    MediaScanTask.scanMedia( this, new File( Panels.DEFAULT_LOC ), false );
+                if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO ) {
+//                    showInfo( getString( R.string.wait ) );
+//                    MediaScanTask.scanMedia( this, new File( Panels.DEFAULT_LOC ), false );
+                    
+                    MediaScanEngine mse = new MediaScanEngine( this, new File( Panels.DEFAULT_LOC ), false );
+                    mse.setHandler( new SimpleHandler() );
+                    startEngine( mse );
                 } else
                     sendBroadcast( new Intent( Intent.ACTION_MEDIA_MOUNTED, Uri.parse( "file://" + Panels.DEFAULT_LOC ) ) );
                 break;
@@ -718,6 +725,13 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             Log.e( TAG, "Failed command: " + id, e );
         }
     }
+
+    public class SimpleHandler extends Handler {
+        @Override
+        public void handleMessage( Message msg ) {
+            FileCommander.this.notifyMe( msg );
+        }
+    };
 
     private final void openPrefs() {
         try {
@@ -1063,6 +1077,11 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 return TERMINATE;
             case OPERATION_COMPLETED_REFRESH_REQUIRED:
                 String posto = b != null ? b.getString( NOTIFY_POSTO ) : null;
+                Uri uri = b != null ? (Uri)b.getParcelable( NOTIFY_URI ) : null;
+                if( uri != null ) {
+                    Navigate( uri, null, posto );
+                    break;
+                }
                 panels.refreshLists( posto );
                 break;
             case OPERATION_COMPLETED:

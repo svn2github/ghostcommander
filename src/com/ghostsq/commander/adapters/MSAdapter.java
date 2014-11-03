@@ -38,15 +38,13 @@ import android.util.SparseBooleanArray;
 public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever {
     private final static String TAG    = "MSAdapter";    // MediaStore
     private final static String SCHEME = "ms:";
-    private final static Uri baseContentUri = MediaStore.Files.getContentUri( "external" );
-    
-    private   String dirName;
+    private   Uri    baseContentUri;
+    private   Uri    ms_uri;
     protected Item[] items;
     private   ThumbnailsThread tht = null;
     
     public MSAdapter( Context ctx_ ) {
         super( ctx_ );
-        dirName = null;
         items = null;
     }
 
@@ -83,7 +81,7 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
     @Override
     public Uri getUri() {
         try {
-            return Uri.parse( SCHEME + Utils.escapePath( dirName ) );
+            return ms_uri;
         } catch( Exception e ) {
             e.printStackTrace();
         }
@@ -92,7 +90,12 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
 
     @Override
     public void setUri( Uri uri ) {
-        dirName = Utils.mbAddSl( uri.toString() );
+        ms_uri = uri;
+        String fr = ms_uri.getFragment();
+        if( "Audio".equalsIgnoreCase( fr ) )
+            baseContentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        else
+            baseContentUri = MediaStore.Files.getContentUri( "external" );
     }
     
     private Uri getContentUri( String fullname ) {
@@ -135,8 +138,28 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
       return null;
    }     
     
+    private void listAudio() {
+        String[] prj = new String[]{ 
+            MediaStore.Audio.Media.ALBUM_ID, 
+            MediaStore.Audio.Media.ALBUM, 
+            MediaStore.Audio.Media.ARTIST, 
+            MediaStore.Audio.Media.DATA 
+        };
+        Cursor cursor = ctx.getContentResolver().query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, prj, null, null, null);
+
+        if( cursor == null ) return;
+        for( cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext() ) {
+            Log.d( "", "Album=" + cursor.getString(1) + " Artist=" + cursor.getString(2) + " Data=" + cursor.getString(3) );
+        }
+        cursor.close();
+    }
+    
+    
     @Override
-    public boolean readSource( Uri d, String pass_back_on_done ) {
+    public boolean readSource( Uri new_uri, String pass_back_on_done ) {
+//        listAudio();
+        
         final String[] projection = {
                  MediaStore.MediaColumns._ID,
                  MediaStore.MediaColumns.DATA,
@@ -146,12 +169,13 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
                  MediaStore.MediaColumns.TITLE
         };
         try {
-            if( d != null ) {
-                dirName = Utils.mbAddSl( d.getPath() );
+            if( new_uri != null ) {
+                setUri( new_uri );
             } else {
-                if( !Utils.str( dirName ))
-                    dirName = Environment.getExternalStorageDirectory().getAbsolutePath();
+                if( ms_uri == null )
+                    setUri( Uri.parse( SCHEME + Environment.getExternalStorageDirectory().getAbsolutePath() ) );
             }
+            String dirName = Utils.mbAddSl( ms_uri.getPath() );  
     	    parentLink = !Utils.str( dirName ) || SLS.equals( dirName ) ? SLS : PLS;
     	     ContentResolver cr = ctx.getContentResolver();
              if( cr == null ) return false;
@@ -174,6 +198,7 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
                       
                       do {
                           String path = cursor.getString( pci );
+                          Log.d( TAG, path );
                           if( path == null || !path.startsWith( dirName ) ) continue;
                           int end_pos = path.indexOf( "/", cdl );
                           if( end_pos > 0 && path.length() > end_pos ) {
@@ -244,7 +269,7 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
             tht = new ThumbnailsThread( this, new Handler() {
                 public void handleMessage( Message msg ) {
                     notifyDataSetChanged();
-                } }, dirName, items );
+                } }, Utils.mbAddSl( ms_uri.getPath() ), items );
             tht.start();
         }
     }
@@ -261,20 +286,28 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
    
     @Override
     public void openItem( int position ) {
+        String dirName = Utils.mbAddSl( ms_uri.getPath() );
         if( position == 0 ) {
             if( parentLink == SLS || dirName == null ) 
                 commander.Navigate( Uri.parse( HomeAdapter.DEFAULT_LOC ), null, null );
             else {
-                File cur_dir_file = new File( dirName );
-                String parent_dir = cur_dir_file.getParent();
-                commander.Navigate( Uri.parse( SCHEME + Utils.escapePath( parent_dir != null ? parent_dir : DEFAULT_DIR ) ), null,
-                                    cur_dir_file.getName() );
+                String path = ms_uri.getPath();
+                int len_ = path.length()-1;
+                if( len_ > 0 ) {
+                    if( path.charAt( len_ ) == SLC )
+                        path = path.substring( 0, len_ );
+                    path = path.substring( 0, path.lastIndexOf( SLC ) );
+                    if( path.length() == 0 )
+                        path = SLS;
+                    commander.Navigate( ms_uri.buildUpon().encodedPath( path ).build(), null, ms_uri.getLastPathSegment() );
+                } else
+                    commander.Navigate( Uri.parse( HomeAdapter.DEFAULT_LOC ), null, null );
             }
         }
         else {
             Item item = items[position - 1];
             if( item.dir )
-                commander.Navigate( Uri.parse( SCHEME + Utils.escapePath( dirName + item.name.replaceAll( "/", "" ) ) ), null, null );
+                commander.Navigate( ms_uri.buildUpon().appendEncodedPath( Utils.escapePath( item.name.replaceAll( "/", "" ) ) ).build(), null, null );
             else
                 commander.Open( Uri.parse( Utils.escapePath( dirName + item.name ) ), null );
         }
@@ -294,8 +327,10 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
     public String getItemName( int position, boolean full ) {
         if( position < 0 || items == null || position > items.length )
             return position == 0 ? parentLink : null;
-        if( full )
+        if( full ) {
+            String dirName = Utils.mbAddSl( ms_uri.getPath() );
             return position == 0 ? (new File( dirName )).getParent() : dirName + items[position - 1].name;
+        }
         else {
             if( position == 0 ) return parentLink; 
             String name = items[position - 1].name;
@@ -320,6 +355,7 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
         if( position <= 0 || position > items.length ) 
             return false;
         try {
+            String dirName = Utils.mbAddSl( ms_uri.getPath() );
             ContentResolver cr = ctx.getContentResolver();
             ContentValues cv = new ContentValues();
             cv.put( MediaStore.MediaColumns.DATA, dirName + newName );
@@ -397,7 +433,7 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
 	@Override
     public void createFolder( String new_name ) {
         try {
-            MediaFile mf = new MediaFile( ctx, new File( dirName, new_name ) );
+            MediaFile mf = new MediaFile( ctx, new File( Utils.mbAddSl( ms_uri.getPath() ), new_name ) );
             if( mf.mkdir() )
                 notifyRefr( new_name );
             else {
@@ -467,7 +503,8 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
             try {
                 Init( null );
                 cr = ctx.getContentResolver();
-                int cnt = deleteFiles( MSAdapter.this.dirName, mList );
+                String dirName = Utils.mbAddSl( MSAdapter.this.ms_uri.getPath() );
+                int cnt = deleteFiles( dirName, mList );
                 sendResult( Utils.getOpReport( ctx, cnt, R.string.deleted ) );
                 if( to_scan != null && to_scan.size() > 0 ) {
                     String[] to_scan_a = new String[to_scan.size()];
@@ -534,6 +571,7 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
             File[] list = Utils.getListOfFiles( uris );
             if( list != null ) {
                 notify( Commander.OPERATION_STARTED );
+                String dirName = Utils.mbAddSl( ms_uri.getPath() );
                 commander.startEngine( new CopyEngine( list, dirName, move_mode ) );
 	            return true;
             }

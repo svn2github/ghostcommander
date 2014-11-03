@@ -296,6 +296,15 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             msg.sendToTarget();
         }
     }
+    protected void notifyNav( Uri uri ) {
+        Message msg = readerHandler.obtainMessage( Commander.OPERATION_COMPLETED_REFRESH_REQUIRED, null );
+        if( msg != null ) {
+            Bundle b = new Bundle();
+            b.putParcelable( Commander.NOTIFY_URI, uri );
+            msg.setData( b );
+            msg.sendToTarget();
+        }
+    }
     protected boolean notErr() {
         notify( s( R.string.not_supported ), Commander.OPERATION_FAILED );
         return false;
