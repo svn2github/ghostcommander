@@ -96,7 +96,7 @@ public class MediaScanEngine extends Engine implements MediaScannerConnection.Me
         }
         else
             rep_path = path;
-        sendProgress( rep_path, ++count * 100 / num );
+        sendProgress( rep_path, count * 100 / num );
         File f = new File( path );
         if( f.isFile() && f.length() == 0 ) {
             if( ctx.getContentResolver().delete( uri, null, null ) > 0 ) {

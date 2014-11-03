@@ -707,9 +707,6 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 break;
             case R.id.rescan:
                 if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO ) {
-//                    showInfo( getString( R.string.wait ) );
-//                    MediaScanTask.scanMedia( this, new File( Panels.DEFAULT_LOC ), false );
-                    
                     MediaScanEngine mse = new MediaScanEngine( this, new File( Panels.DEFAULT_LOC ), false );
                     mse.setHandler( new SimpleHandler() );
                     startEngine( mse );

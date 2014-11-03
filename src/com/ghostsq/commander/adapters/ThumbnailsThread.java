@@ -127,6 +127,9 @@ class ThumbnailsThread extends Thread {
                                 continue;
                         }
                     }
+                    
+                    if( !(new File( fn ).exists() ) ) continue;
+                    
                     int fn_h = ( fn + " " + f.size ).hashCode();
                     SoftReference<Drawable> cached_soft = null;
                     synchronized( thumbnailCache ) {

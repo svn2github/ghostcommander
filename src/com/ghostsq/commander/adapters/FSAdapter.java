@@ -21,6 +21,7 @@ import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -176,13 +177,26 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
                     menu.add( 0, R.id.open, 0, R.string.open );
                     menu.add( 0, R.id.extract, 0, R.string.extract_zip );
                 }
+                if( item.dir && num == 1 && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO )
+                    menu.add( 0, R.id.rescan_dir, 0, R.string.rescan );
             }
             super.populateContextMenu( menu, acmi, num );
         } catch( Exception e ) {
             Log.e( TAG, "", e );
         }
     }
-        
+
+    @Override
+    public void doIt( int command_id, SparseBooleanArray cis ) {
+        if( R.id.rescan_dir == command_id ) {
+            FileItem[] list = bitsToFilesEx( cis );
+            if ( list == null || list.length == 0 ) return;
+            MediaScanEngine mse = new MediaScanEngine( ctx, list[0].f().getAbsoluteFile(), false );
+            mse.setHandler( new SimpleHandler() );
+            commander.startEngine( mse );
+        }
+    }
+    
     @Override
     public void openItem( int position ) {
         if( position == 0 ) {

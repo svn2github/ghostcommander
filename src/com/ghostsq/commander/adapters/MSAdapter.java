@@ -94,6 +94,10 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
         String fr = ms_uri.getFragment();
         if( "Audio".equalsIgnoreCase( fr ) )
             baseContentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        if( "Video".equalsIgnoreCase( fr ) )
+            baseContentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+        if( "Images".equalsIgnoreCase( fr ) )
+            baseContentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         else
             baseContentUri = MediaStore.Files.getContentUri( "external" );
     }
@@ -195,22 +199,34 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
                       int mci = cursor.getColumnIndex( MediaStore.MediaColumns.MIME_TYPE );
                       int dci = cursor.getColumnIndex( MediaStore.MediaColumns.DATE_MODIFIED );
                       int cdl = Utils.mbAddSl( dirName ).length();
+                    
+                      boolean show_missed = Utils.str( ms_uri.getFragment() );
                       
                       do {
                           String path = cursor.getString( pci );
-                          Log.d( TAG, path );
+                          //Log.d( TAG, path );
                           if( path == null || !path.startsWith( dirName ) ) continue;
-                          int end_pos = path.indexOf( "/", cdl );
-                          if( end_pos > 0 && path.length() > end_pos ) {
-                              String subdir = path.substring( cdl-1, end_pos );
-                              if( subdirs.indexOf( subdir ) < 0 )
-                                  subdirs.add( subdir );
-                              continue;
+                          boolean missed = false;
+                          File real_file = show_missed ? new File( path ) : null;
+                          if( real_file != null && !real_file.exists() )
+                              missed = true;
+                          else {
+                              int end_pos = path.indexOf( "/", cdl );
+                              if( end_pos > 0 && path.length() > end_pos ) {
+                                  String subdir = path.substring( cdl-1, end_pos );
+                                  if( subdirs.indexOf( subdir ) < 0 )
+                                      subdirs.add( subdir );
+                                  continue;
+                              }
                           }
                           String name = path.substring( cdl );
                           if( !Utils.str( name ) ) continue;
                           File f = new File( dirName, name );
                           Item item = new Item();
+                          if( missed ) {
+                              item.colorCache = 0xFFFF0000;
+                              item.icon_id    = R.drawable.bad;
+                          }
                           item.dir = f.isDirectory();
                           item.origin = MediaStore.Files.getContentUri( "external", cursor.getLong( ici ) );
                           item.name = ( item.dir ? "/" : "" ) + name;
