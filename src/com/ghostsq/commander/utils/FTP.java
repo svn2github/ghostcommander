@@ -609,7 +609,10 @@ public class FTP {
     	}
     	ArrayList<LsItem> array = null;
         try {
-            dataSocket = executeDataCommand( "LIST" + ( force_hidden ? " -a" : "" ) );
+            String cmd = "LIST";
+            if( force_hidden ) cmd += " -a";
+            if( path != null ) cmd += " " + path;
+            dataSocket = executeDataCommand( cmd );
             if( dataSocket == null )
             	return null;
             inDataStream = dataSocket.getInputStream();

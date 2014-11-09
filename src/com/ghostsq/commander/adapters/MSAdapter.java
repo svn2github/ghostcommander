@@ -33,11 +33,22 @@ import android.os.PowerManager;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.ContextMenu;
+import android.widget.AdapterView;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever {
     private final static String TAG    = "MSAdapter";    // MediaStore
-    private final static String SCHEME = "ms:";
+    public  final static String SCHEME = "ms:";
+    public  final static int FILES     = MediaStore.Files.class.hashCode(); 
+    public  final static int AUDIO     = MediaStore.Audio.class.hashCode(); 
+    public  final static int ALBUMS    = MediaStore.Audio.Albums.class.hashCode(); 
+    public  final static int ARTISTS   = MediaStore.Audio.Artists.class.hashCode(); 
+    public  final static int GENRES    = MediaStore.Audio.Genres.class.hashCode(); 
+    public  final static int PLAYLISTS = MediaStore.Audio.Playlists.class.hashCode(); 
+    public  final static int VIDEO     = MediaStore.Video.class.hashCode(); 
+    public  final static int IMAGES    = MediaStore.Images.class.hashCode(); 
+    
     private   Uri    baseContentUri;
     private   Uri    ms_uri;
     protected Item[] items;
@@ -92,14 +103,59 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
     public void setUri( Uri uri ) {
         ms_uri = uri;
         String fr = ms_uri.getFragment();
+        if( "Alboms".equalsIgnoreCase( fr ) )
+            baseContentUri = MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI;
+        else
+        if( "Artists".equalsIgnoreCase( fr ) )
+            baseContentUri = MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI;
+        else
+        if( "Genres".equalsIgnoreCase( fr ) )
+            baseContentUri = MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI;
+        else
+        if( "Playlists".equalsIgnoreCase( fr ) )
+            baseContentUri = MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI;
+        else
         if( "Audio".equalsIgnoreCase( fr ) )
             baseContentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        else
         if( "Video".equalsIgnoreCase( fr ) )
             baseContentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+        else
         if( "Images".equalsIgnoreCase( fr ) )
             baseContentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         else
             baseContentUri = MediaStore.Files.getContentUri( "external" );
+    }
+
+    @Override
+    public void populateContextMenu( ContextMenu menu, AdapterView.AdapterContextMenuInfo acmi, int num ) {
+        if( num == -1 ) {   // for the Home adapter
+            final String vs = s( R.string.view_title ); 
+            menu.add( 0, FILES,     0, vs + " \"Files\"" );
+            menu.add( 0, AUDIO,     0, vs + " \"Audio\"" );
+            /*
+            menu.add( 0, ALBUMS,    0, vs + " \"Alboms\"" );
+            menu.add( 0, ARTISTS,   0, vs + " \"Artists\"" );
+            menu.add( 0, GENRES,    0, vs + " \"Genres\"" );
+            menu.add( 0, PLAYLISTS, 0, vs + " \"Playlists\"" );
+            */
+            menu.add( 0, VIDEO,     0, vs + " \"Video\"" );
+            menu.add( 0, IMAGES,    0, vs + " \"Images\"" );
+            return;
+        }
+        super.populateContextMenu( menu, acmi, num );
+    }
+    
+    public final static String getFragment( int id ) {
+        if( id == FILES )     return "Files";
+        if( id == AUDIO )     return "Audio";
+        if( id == ALBUMS )    return "Alboms";
+        if( id == ARTISTS )   return "Artists";
+        if( id == GENRES )    return "Genres";
+        if( id == PLAYLISTS ) return "Playlists";
+        if( id == VIDEO )     return "Video";
+        if( id == IMAGES )    return "Images";
+        return null;
     }
     
     private Uri getContentUri( String fullname ) {

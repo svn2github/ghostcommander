@@ -46,11 +46,17 @@ public class LsItem {
         Matcher m = unix.matcher( ls_string );
         if( m.matches() ) {
             try {
+                name = m.group( 4 );
                 if( ls_string.charAt( 0 ) == 'd' )
                     directory = true;
-                if( ls_string.charAt( 0 ) == 'l' )
+                if( ls_string.charAt( 0 ) == 'l' ) {
                     link = true;
-                name = m.group( 4 );
+                    int arr_pos = name.indexOf( LINK_PTR );
+                    if( arr_pos > 0 ) {
+                        link_target_name = name.substring( arr_pos + 4 );
+                        name = name.substring( 0, arr_pos );
+                    }
+                }
                 size = Long.parseLong( m.group( 2 ) );
                 String date_s = m.group( 3 ); 
                 boolean in_year = date_s.indexOf( ':' ) > 0;
@@ -118,6 +124,19 @@ public class LsItem {
         Log.e( TAG, "\nUnmatched string: " + ls_string + "\n" );
     }
 
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        s.append( name );
+        if( link_target_name != null ) s.append( " " + LINK_PTR + " " + link_target_name );
+        if( attr != null ) s.append( " (" + attr + ")" );
+        if( directory ) s.append( " DIR" );
+        if( link ) s.append( " LINK" );
+        s.append( " " + size );
+        s.append( " " + date );
+        return s.toString();
+    }
+    
     public final String getName() {
         return name;
     }

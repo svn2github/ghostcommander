@@ -137,9 +137,9 @@ public class HomeAdapter extends CommanderAdapterBase {
                 if( Utils.str( sec_storage ) ) {
                     String[] ss = sec_storage.split( ":" );
                     ia.add( makeItem( EXTERNAL, ss[0] ) );
-                    if( android.os.Build.VERSION.SDK_INT >= 18 )
-                        ia.add( makeItem( MEDIA, "ms:" + ss[0] ) );
-                }
+                    ia.add( makeItem( MEDIA, MSAdapter.SCHEME + ss[0] ) );
+                } else
+                    ia.add( makeItem( MEDIA, MSAdapter.SCHEME + Environment.getExternalStorageDirectory().getAbsolutePath() ) );
             }            
             ia.add( makeItem( FTP, "ftp" ) );
             
@@ -253,11 +253,11 @@ public class HomeAdapter extends CommanderAdapterBase {
         Item item = (Item)getItem( position );
         String uri_s = null;
         if( "ftp".equals( item.origin ) ) { 
-            commander.dispatchCommand( FileCommander.FTP_ACT); 
+            commander.dispatchCommand( FileCommander.FTP_ACT ); 
             return; 
         }
         if( "sftp".equals( item.origin ) ) { 
-            commander.dispatchCommand( FileCommander.SFTP_ACT); 
+            commander.dispatchCommand( FileCommander.SFTP_ACT ); 
             return; 
         }
         if( "samba".equals( item.origin ) ) { 
@@ -323,17 +323,24 @@ public class HomeAdapter extends CommanderAdapterBase {
     @Override
     public void populateContextMenu( ContextMenu menu, AdapterView.AdapterContextMenuInfo acmi, int num ) {
         Item item = (Item)getItem( acmi.position );
-        if( item.dir && item.origin instanceof String && Utils.str( (String)item.origin ) ) {
+        if( item == null  ) return;
+        String schema = item.origin instanceof String ? (String)item.origin : null;
+        if( !Utils.str( schema ) ) return;
+        if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB &&
+                schema.startsWith( MSAdapter.SCHEME ) ) {
+            MSAdapter msa = new MSAdapter( ctx );
+            msa.populateContextMenu( menu, acmi, -1 );
+        }
+        if( item.dir ) {
             File plugin_prefs_f = getPluginPrefsFile( (String)item.origin ); 
             if( plugin_prefs_f.exists() )
                 menu.add( 0, FORGET_CMD, 0, R.string.forget );
+            Intent intent = getPluginPrefIntent( (String)item.origin );
+            PackageManager packageManager = ctx.getPackageManager();
+            List<ResolveInfo> list = packageManager.queryIntentActivities( intent, PackageManager.MATCH_DEFAULT_ONLY );
+            if( list.size() > 0 )
+                menu.add( 0, PREFS_CMD, 0, R.string.prefs );
         }
-
-        Intent intent = getPluginPrefIntent( (String)item.origin );
-        PackageManager packageManager = ctx.getPackageManager();
-        List<ResolveInfo> list = packageManager.queryIntentActivities( intent, PackageManager.MATCH_DEFAULT_ONLY );
-        if( list.size() > 0 )
-            menu.add( 0, PREFS_CMD, 0, R.string.prefs );
     }
 
     private final File getPluginPrefsFile( String schema ) {
@@ -354,9 +361,18 @@ public class HomeAdapter extends CommanderAdapterBase {
     public void doIt( int command_id, SparseBooleanArray cis ) {
         try {
             Item item = bitsToItem( cis );
-            if( item != null && item.dir && item.origin instanceof String && Utils.str( (String)item.origin ) ) {
+            if( item == null  ) return;
+            String schema = item.origin instanceof String ? (String)item.origin : null;
+            if( !Utils.str( schema ) ) return;
+            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && 
+                    schema.startsWith( MSAdapter.SCHEME ) ) {
+                String fragment = MSAdapter.getFragment( command_id );
+                commander.Navigate( Uri.parse( schema + "#" + fragment ), null, null );
+                return;
+            }
+            if( item.dir ) {
                 if( FORGET_CMD == command_id ) {
-                    File plugin_prefs_f = getPluginPrefsFile( (String)item.origin ); 
+                    File plugin_prefs_f = getPluginPrefsFile( schema ); 
                     if( plugin_prefs_f.exists() ) {
                         plugin_prefs_f.delete();
                         commander.dispatchCommand( R.id.exit );
@@ -364,7 +380,7 @@ public class HomeAdapter extends CommanderAdapterBase {
                     return;
                 }
                 if( PREFS_CMD == command_id ) {
-                    Intent intent = getPluginPrefIntent( (String)item.origin );
+                    Intent intent = getPluginPrefIntent( schema );
                     Log.d( TAG, "Starting Activity" );
                     commander.issue( intent, 0 );
                     return;

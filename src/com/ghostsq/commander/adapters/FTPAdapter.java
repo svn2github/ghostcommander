@@ -109,7 +109,7 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
                     need_reconnect = true;
                 else if( !tmp_uri.getHost().equalsIgnoreCase( uri.getHost() ) ) {
                     need_reconnect = true;
-                    theUserPass = null;
+                    if( theUserPass != null && !theUserPass.dirty ) theUserPass = null;
                 }
                 else if( new_user_info != null  ) {
                     if( theUserPass == null )
@@ -198,8 +198,19 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
                 if( ftp.isLoggedIn() ) {
                     //Log.v( TAG, "ftp is logged in" );
                 	items_tmp = ftp.getDirList( null, ( mode & MODE_HIDDEN ) == SHOW_MODE );
-                	String path = ftp.getCurrentDir();
+                    String path = ftp.getCurrentDir();
                     if( path != null ) 
+                        for( LsItem lsi : items_tmp ) {
+                            String name = lsi.getName();
+                            if( name == null ) continue;
+                            String lt = lsi.getLinkTarget();
+                            if( !Utils.str( lt ) ) continue;
+                            if( lt.charAt( 0 ) != '/' )
+                                lt = Utils.mbAddSl( path ) + lt;
+                            if( ftp.setCurrentDir( lt ) )
+                                lsi.setDirectory();
+                        }
+                        ftp.setCurrentDir( path );
                     	synchronized( uri ) {
                     		uri = uri.buildUpon().encodedPath( path ).build();
 						}

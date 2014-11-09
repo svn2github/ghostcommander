@@ -13,6 +13,7 @@ import android.content.Context;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.MediaStore;
 import android.util.Log;
 
 @TargetApi(Build.VERSION_CODES.FROYO)
@@ -22,8 +23,16 @@ public class MediaScanEngine extends Engine implements MediaScannerConnection.Me
     private Context ctx; 
     private File    folder;
     private boolean all = false;
-    private String[] to_scan_a;
+    private FileItem[] to_scan_a;
     private int     count = 0, num = 0;
+
+    class FileItem {
+        public String path, mime;
+        FileItem( String path, String mime ) {
+            this.path = path; 
+            this.mime = mime;
+        }
+    }
     
     public MediaScanEngine( Context ctx, File folder, boolean all ) {
         this.ctx = ctx;
@@ -34,11 +43,11 @@ public class MediaScanEngine extends Engine implements MediaScannerConnection.Me
     @Override
     public void run() {
         sendProgress( "", Commander.OPERATION_IN_PROGRESS, -1 );
-        ArrayList<String> to_scan = new ArrayList<String>();
+        ArrayList<FileItem> to_scan = new ArrayList<FileItem>();
         collectFiles( folder, to_scan );
         num = to_scan.size();
         if( num > 0 ) {
-            to_scan_a = new String[num];
+            to_scan_a = new FileItem[num];
             to_scan.toArray( to_scan_a );
             msc =  new MediaScannerConnection( ctx, this );
             msc.connect();
@@ -55,18 +64,21 @@ public class MediaScanEngine extends Engine implements MediaScannerConnection.Me
         }
     }
 
-    private void collectFiles( File folder, List<String> to_scan ) {
+    private void collectFiles( File folder, List<FileItem> to_scan ) {
         if( folder == null ) return;
-        for( File f : folder.listFiles() ) {
+        File[] files = folder.listFiles();
+        for( File f : files ) {
             if( f == null ) continue;
             try {
                 if( f.isDirectory() )
                     collectFiles( f, to_scan );
                 else {
-                    String ext  = Utils.getFileExt( f.getName() );
+                    String fn = f.getName();
+                    if( MediaStore.MEDIA_IGNORE_FILENAME.equals( fn ) ) continue;
+                    String ext  = Utils.getFileExt( fn );
                     String mime = Utils.getMimeByExt( ext );
                     if( all || ( mime != null && ( mime.startsWith( "image/" ) || mime.startsWith( "audio/" ) || mime.startsWith( "video/" ) ) ) )
-                        to_scan.add( f.getAbsolutePath() );
+                        to_scan.add( new FileItem( f.getAbsolutePath(), mime ) );
                 }
             } catch( Exception e ) {}
         }
@@ -74,7 +86,8 @@ public class MediaScanEngine extends Engine implements MediaScannerConnection.Me
 
     private final boolean scanNextFile() {
         if( count < num ) {
-            msc.scanFile( to_scan_a[count++], null );
+            FileItem fi = to_scan_a[count++];
+            msc.scanFile( fi.path, fi.mime );
             return true;
         } else
             return false;
@@ -91,11 +104,13 @@ public class MediaScanEngine extends Engine implements MediaScannerConnection.Me
         int pl = path.length();
         if( pl < 256 ) {
             char[] chars = new char[256 - pl];
-            Arrays.fill(chars, ' ');
+            Arrays.fill(chars, '\u00A0');
             rep_path = path + new String(chars);
         }
         else
             rep_path = path;
+        Log.v( TAG, "Scan completed: " + path + " " + uri.toString() );
+        
         sendProgress( rep_path, count * 100 / num );
         File f = new File( path );
         if( f.isFile() && f.length() == 0 ) {
@@ -106,7 +121,9 @@ public class MediaScanEngine extends Engine implements MediaScannerConnection.Me
         }
         if( stop || !scanNextFile() ) {
             msc.disconnect();
-            notify();
+            synchronized( this ) {
+                notify();
+            }
             return;
         }
     }
