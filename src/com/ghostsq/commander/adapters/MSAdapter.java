@@ -72,7 +72,6 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
         case REAL:
         case SEND:
             return true;
-        case SZ:
         case F2:
         case F6:
             return false;
@@ -158,7 +157,7 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
         return null;
     }
     
-    private Uri getContentUri( String fullname ) {
+   private Uri getContentUri( String fullname ) {
         final String[] projection = {
              MediaStore.MediaColumns._ID,
              MediaStore.MediaColumns.DATA
@@ -197,29 +196,61 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
       }
       return null;
    }     
-    
-    private void listAudio() {
-        String[] prj = new String[]{ 
-            MediaStore.Audio.Media.ALBUM_ID, 
-            MediaStore.Audio.Media.ALBUM, 
-            MediaStore.Audio.Media.ARTIST, 
-            MediaStore.Audio.Media.DATA 
-        };
-        Cursor cursor = ctx.getContentResolver().query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, prj, null, null, null);
 
-        if( cursor == null ) return;
-        for( cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext() ) {
-            Log.d( "", "Album=" + cursor.getString(1) + " Artist=" + cursor.getString(2) + " Data=" + cursor.getString(3) );
+    private void enumAudio() {
+        Cursor cursor = null;
+        try {
+            ContentResolver cr = ctx.getContentResolver();
+            cursor = cr.query(  MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI, new String[] { 
+                                MediaStore.Audio.Artists.ARTIST,
+                                MediaStore.Audio.Artists.NUMBER_OF_TRACKS,
+                                MediaStore.Audio.Artists.NUMBER_OF_ALBUMS,
+                                MediaStore.Audio.Artists._ID }, 
+                      null, null, null );
+
+            if( cursor != null && cursor.getCount() > 0 ) {
+                cursor.moveToFirst();
+                do {
+                    Log.v( TAG, "   " + cursor.getString( 0 ) + 
+                                " ! " + cursor.getInt( 1 ) + 
+                                " ! " + cursor.getInt( 2 ) +
+                                " ! " + cursor.getInt( 3 ) );
+                } while( cursor.moveToNext() );
+            }
+        } catch( Throwable e ) {
+            Log.e( TAG, "on query", e );
+        } finally {
+            if( cursor != null )
+                cursor.close();
         }
-        cursor.close();
-    }
-    
-    
+        try {
+            ContentResolver cr = ctx.getContentResolver();
+            cursor = cr.query( MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, new String[] { 
+                              MediaStore.Audio.Albums.ALBUM,
+                              MediaStore.Audio.Albums.NUMBER_OF_SONGS, 
+                              MediaStore.Audio.Albums.ARTIST, 
+                              MediaStore.Audio.Albums._ID }, 
+                              null, null, null );
+
+            if( cursor != null && cursor.getCount() > 0 ) {
+                cursor.moveToFirst();
+                do {
+                    Log.v( TAG, "   " + cursor.getString( 0 ) + 
+                                " ! " + cursor.getInt( 1 ) + 
+                                " ! " + cursor.getString( 2 ) + 
+                                " ! " + cursor.getInt( 3 ) );
+                } while( cursor.moveToNext() );
+            }
+        } catch( Throwable e ) {
+            Log.e( TAG, "on query", e );
+        } finally {
+            if( cursor != null )
+                cursor.close();
+        }
+    }    
+   
     @Override
     public boolean readSource( Uri new_uri, String pass_back_on_done ) {
-//        listAudio();
-        
         final String[] projection = {
                  MediaStore.MediaColumns._ID,
                  MediaStore.MediaColumns.DATA,
@@ -411,16 +442,81 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
         }
         return null;
     }
-	@Override
-	public void reqItemsSize( SparseBooleanArray cis ) {
+
+    @Override
+    public void reqItemsSize( SparseBooleanArray cis ) {
+        
+        //enumAudio();
+        
+        Item[] list = bitsToItems( cis );
+        if( list == null || list.length != 1 )
+            return;
+        notify( Commander.OPERATION_STARTED );
+
+        String[] projection = null;
+
+        String fr = ms_uri.getFragment();
+        if( "Audio".equalsIgnoreCase( fr ) ) {
+            String[] audio_projection = {
+                MediaStore.MediaColumns.DATA,
+                MediaStore.Audio.AudioColumns.ALBUM, 
+                MediaStore.Audio.AudioColumns.ARTIST 
+            };
+            projection = audio_projection;
+        } else if( "Video".equalsIgnoreCase( fr ) ) {
+            String[] video_projection = {
+                MediaStore.MediaColumns.DATA,
+                MediaStore.Video.VideoColumns.ALBUM, 
+                MediaStore.Video.VideoColumns.ARTIST 
+            };
+            projection = video_projection;
+        } else if( "Images".equalsIgnoreCase( fr ) ) {
+            String[] images_projection = {
+                MediaStore.MediaColumns.DATA,
+                MediaStore.Images.ImageColumns.ORIENTATION 
+            };
+            projection = images_projection;
+        } else {
+            String[] files_projection = {
+                MediaStore.MediaColumns.DATA,
+                MediaStore.Files.FileColumns.MEDIA_TYPE
+            };
+            projection = files_projection;
+        }
+/*
+         final String selection = MediaStore.MediaColumns.DATA + " = ? ";
+         String[] selectionParams = new String[1];
+         selectionParams[0] = list[0].name;
+*/
+        
+        Cursor cursor = null;
+        ContentResolver cr = null;
         try {
-        	Item[] list = bitsToItems( cis );
-    		notify( Commander.OPERATION_STARTED );
-//    		commander.startEngine( new CalcSizesEngine( list ) );
-		}
-        catch(Exception e) {
-		}
-	}
+            cr = ctx.getContentResolver();
+//            cursor = cr.query( baseContentUri, projection, selection, selectionParams, null );
+            cursor = cr.query( (Uri)list[0].origin, projection, null, null, null );
+            if( cursor != null && cursor.getCount() > 0 ) {
+                StringBuilder sb = new StringBuilder();
+                do {
+                    cursor.moveToFirst();
+                    for( String col : projection ) {
+                        sb.append( col );
+                        sb.append( ": " );
+                        sb.append( cursor.getString( cursor.getColumnIndex( col ) ) );
+                        sb.append( "\n" );
+                    }
+                } while( cursor.moveToNext() );
+                notify( sb.toString(), Commander.OPERATION_COMPLETED, 0 );
+                return;
+            }
+        } catch( Throwable e ) {
+            Log.e( TAG, "on query", e );
+        }
+        finally {
+            cursor.close();
+        }
+        notify( Commander.OPERATION_FAILED );
+    }
 	
 	@Override
     public boolean renameItem( int position, String newName, boolean copy ) {
@@ -448,6 +544,7 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
     @Override
     public Item getItem( Uri u ) {
         try {
+            if( !"ms".equals( u.getScheme() ) ) return null; 
             File f = new File( u.getPath() );
             if( f.exists() ) {
                 Item item = new Item( f.getName() );

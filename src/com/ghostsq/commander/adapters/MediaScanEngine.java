@@ -60,7 +60,7 @@ public class MediaScanEngine extends Engine implements MediaScannerConnection.Me
                     }
                 }
             }
-            sendReport( count + " files were scanned" );
+             sendReport( count + " files were scanned" );
         }
     }
 
@@ -122,6 +122,7 @@ public class MediaScanEngine extends Engine implements MediaScannerConnection.Me
         if( stop || !scanNextFile() ) {
             msc.disconnect();
             synchronized( this ) {
+                stop = true;
                 notify();
             }
             return;

@@ -47,6 +47,7 @@
   <string name="mount_b">マウント</string>
   <string name="apps">アプリケーション</string>
   <string name="exit">終了</string>
+  <string name="forget">アカウントを忘れる (アプリを終了)</string>
   <string name="favs_descr">お気に入りフォルダとサイトのリストを表示、管理します</string>
   <string name="local_descr">プライマリファイルシステムの内容を表示、編集、更新します</string>
   <string name="external_descr">挿入された SD カードのファイルにアクセスします. デバイスによっては読み取り専用です.</string>
@@ -97,6 +98,7 @@
   <string name="fav_fld">\"%s\" をお気に入りに追加</string>
   <string name="create_zip">新規 ZIP ファイルを作成</string>
   <string name="create_zip_title">ZIP ファイルを作成</string>
+  <string name="extract_zip">ZIP を抽出</string>
   <string name="wait"> お待ちください&#8230; </string>
   <string name="fail"> 失敗しました </string>
   <string name="failed">エラー:\n</string>
@@ -207,8 +209,13 @@
   <string name="item">アイテム</string>
   <string name="items">アイテム</string>
   <string name="items24">&#160;</string>
+  <string name="were">が</string>
+  <string name="was">が</string>
   <string name="nothing">なし</string>
+  <string name="report_0"><![CDATA[ なし ]]></string>
+  <string name="report_1"><![CDATA[ 1 つのアイテムが ]]></string>
   <string name="report_24">&#160;</string>
+  <string name="report_m"><![CDATA[ %1$d のアイテムが ]]></string>
   <string name="sz_folder"><![CDATA[<b>フォルダー:</b> \"%1$s\"\n%2$d ファイル ]]></string>
   <string name="sz_dirnum"><![CDATA[ %1$d ディレクトリ中%2$s]]></string>
   <string name="sz_dirsfx_s"> </string>
