@@ -583,6 +583,12 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
                     LsItem ls_item = items[position - 1];
                     item.dir = ls_item.isDirectory();
                     item.name = item.dir ? SLS + ls_item.getName() : ls_item.getName();
+                    
+                    String lnk = ls_item.getLinkTarget();
+                    if( lnk != null ) { 
+                        item.name += LsItem.LINK_PTR + lnk;
+                        if( !item.dir ) item.icon_id = R.drawable.link;
+                    }
                     item.size = !item.dir || ls_item.length() > 0 ? ls_item.length() : -1;
                     item.date = ls_item.getDate();
                     item.attr = ls_item.getAttr();

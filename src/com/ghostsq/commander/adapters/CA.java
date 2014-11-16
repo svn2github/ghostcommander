@@ -28,18 +28,19 @@ final public class CA {
     public static final String TAG = "CA";
 
     // URI schemes hash codes
-    protected static final int  home_schema_h =  "home".hashCode();  
-    protected static final int   zip_schema_h =   "zip".hashCode();  
-    protected static final int   ftp_schema_h =   "ftp".hashCode();  
-    protected static final int  sftp_schema_h =  "sftp".hashCode();  
-    protected static final int   smb_schema_h =   "smb".hashCode();  
-    protected static final int  find_schema_h =  "find".hashCode();  
-    protected static final int  root_schema_h =  "root".hashCode();  
-    protected static final int   mnt_schema_h = "mount".hashCode();  
-    protected static final int  apps_schema_h =  "apps".hashCode();
-    protected static final int  favs_schema_h =  "favs".hashCode();
-    protected static final int  file_schema_h =  "file".hashCode();
-    protected static final int    ms_schema_h =    "ms".hashCode();
+    protected static final int    home_schema_h =   "home".hashCode();  
+    protected static final int     zip_schema_h =    "zip".hashCode();  
+    protected static final int     ftp_schema_h =    "ftp".hashCode();  
+    protected static final int    sftp_schema_h =   "sftp".hashCode();  
+    protected static final int     smb_schema_h =    "smb".hashCode();  
+    protected static final int    find_schema_h =   "find".hashCode();  
+    protected static final int    root_schema_h =   "root".hashCode();  
+    protected static final int     mnt_schema_h =  "mount".hashCode();  
+    protected static final int    apps_schema_h =   "apps".hashCode();
+    protected static final int    favs_schema_h =   "favs".hashCode();
+    protected static final int    file_schema_h =   "file".hashCode();
+    protected static final int      ms_schema_h =     "ms".hashCode();
+    protected static final int content_schema_h ="content".hashCode();
 
     public final static boolean isLocal( String scheme ) {
         return scheme == null || scheme.length() == 0 || "file".equals( scheme ) || "find".equals( scheme );
@@ -69,16 +70,17 @@ final public class CA {
     public final static CommanderAdapter CreateAdapterInstance( String scheme, Context c ) {
         if( !Utils.str( scheme ) ) return new FSAdapter( c );
         final int scheme_h = scheme.hashCode();
-        if(  file_schema_h == scheme_h )  return new FSAdapter( c );
-        if(  home_schema_h == scheme_h )  return new HomeAdapter( c );
-        if(   zip_schema_h == scheme_h )  return new ZipAdapter( c ); 
-        if(   ftp_schema_h == scheme_h )  return new FTPAdapter( c ); 
-        if(  find_schema_h == scheme_h )  return new FindAdapter( c );
-        if(  root_schema_h == scheme_h )  return new RootAdapter( c );
-        if(   mnt_schema_h == scheme_h )  return new MountAdapter( c );
-        if(  apps_schema_h == scheme_h )  return new AppsAdapter( c ); 
-        if(  favs_schema_h == scheme_h )  return new FavsAdapter( c ); 
-        if(    ms_schema_h == scheme_h )  return new MSAdapter( c ); 
+        if(   file_schema_h == scheme_h ) return new FSAdapter( c );
+        if(   home_schema_h == scheme_h ) return new HomeAdapter( c );
+        if(    zip_schema_h == scheme_h ) return new ZipAdapter( c ); 
+        if(    ftp_schema_h == scheme_h ) return new FTPAdapter( c ); 
+        if(   find_schema_h == scheme_h ) return new FindAdapter( c );
+        if(   root_schema_h == scheme_h ) return new RootAdapter( c );
+        if(    mnt_schema_h == scheme_h ) return new MountAdapter( c );
+        if(   apps_schema_h == scheme_h ) return new AppsAdapter( c ); 
+        if(   favs_schema_h == scheme_h ) return new FavsAdapter( c ); 
+        if(     ms_schema_h == scheme_h ) return new MSAdapter( c ); 
+        if(content_schema_h == scheme_h ) return new ContentAdapter( c ); 
         CommanderAdapter ca = CreateExternalAdapter( c, scheme );
         return ca == null ? new FSAdapter( c ) : ca;
     }

@@ -1,12 +1,9 @@
 package com.ghostsq.commander.adapters;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -15,14 +12,11 @@ import com.ghostsq.commander.R;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.utils.ForwardCompat;
-import com.ghostsq.commander.utils.PrefStealer;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -30,11 +24,8 @@ import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.nfc.cardemulation.OffHostApduService;
 import android.os.Build;
 import android.os.Environment;
-import android.provider.CalendarContract.Instances;
-import android.renderscript.Type;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ContextMenu;
@@ -140,7 +131,8 @@ public class HomeAdapter extends CommanderAdapterBase {
                     ia.add( makeItem( MEDIA, MSAdapter.SCHEME + ss[0] ) );
                 } else
                     ia.add( makeItem( MEDIA, MSAdapter.SCHEME + Environment.getExternalStorageDirectory().getAbsolutePath() ) );
-            }            
+            }
+            
             ia.add( makeItem( FTP, "ftp" ) );
             
             Utils.changeLanguage( ctx );            
@@ -328,8 +320,8 @@ public class HomeAdapter extends CommanderAdapterBase {
         if( !Utils.str( schema ) ) return;
         if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB &&
                 schema.startsWith( MSAdapter.SCHEME ) ) {
-            MSAdapter msa = new MSAdapter( ctx );
-            msa.populateContextMenu( menu, acmi, -1 );
+            MSAdapter.populateHomeContextMenu( ctx, menu );
+            ContentAdapter.populateHomeContextMenu( ctx, menu );
         }
         if( item.dir ) {
             File plugin_prefs_f = getPluginPrefsFile( (String)item.origin ); 
@@ -367,8 +359,15 @@ public class HomeAdapter extends CommanderAdapterBase {
             if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && 
                     schema.startsWith( MSAdapter.SCHEME ) ) {
                 String fragment = MSAdapter.getFragment( command_id );
-                commander.Navigate( Uri.parse( schema + "#" + fragment ), null, null );
-                return;
+                if( fragment != null ) {
+                    commander.Navigate( Uri.parse( schema + "#" + fragment ), null, null );
+                    return;
+                }
+                Uri content_uri = ContentAdapter.getUri( command_id );
+                if( content_uri != null ) {
+                    commander.Navigate( content_uri, null, null );
+                    return;
+                }
             }
             if( item.dir ) {
                 if( FORGET_CMD == command_id ) {

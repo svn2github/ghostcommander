@@ -23,6 +23,7 @@ import com.ghostsq.commander.R;
 import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.Utils;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
@@ -30,6 +31,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
 import android.os.StatFs;
+import android.provider.MediaStore.Audio;
+import android.provider.MediaStore.Images;
+import android.provider.MediaStore.MediaColumns;
+import android.provider.MediaStore.Video;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -199,7 +204,6 @@ public final class FSEngines {
 	public static class DeleteEngine extends Engine {
 	    private CommanderAdapterBase cab;
 		private File[] mList;
-        private ArrayList<String> to_scan;
 
         DeleteEngine( CommanderAdapterBase cab, FileItem[] list ) {
             this( cab, new File[list.length] );
@@ -210,8 +214,6 @@ public final class FSEngines {
             setName( ".DeleteEngine" );
             this.cab = cab;
             mList = list;
-            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO )
-                to_scan = new ArrayList<String>(); 
         }
         @Override
         public void run() {
@@ -219,11 +221,6 @@ public final class FSEngines {
                 cab.Init( null );
                 int cnt = deleteFiles( mList );
                 sendResult( Utils.getOpReport( cab.ctx, cnt, R.string.deleted ) );
-                if( to_scan != null && to_scan.size() > 0 ) {
-                    String[] to_scan_a = new String[to_scan.size()];
-                    to_scan.toArray( to_scan_a );
-                    ForwardCompat.scanMedia( cab.ctx, to_scan_a );
-                }
             }
             catch( Exception e ) {
                 sendProgress( e.getMessage(), Commander.OPERATION_FAILED_REFRESH_REQUIRED );
@@ -248,12 +245,19 @@ public final class FSEngines {
                     error( cab.ctx.getString( R.string.cant_del, f.getName() ) );
                     break;
                 }
-                if( to_scan != null ) {
-                    String ext = Utils.getFileExt( f.getName() );
-                    String mime = Utils.getMimeByExt( ext );
-                    if( mime != null && ( mime.startsWith( "image/" ) || mime.startsWith( "audio/" ) || mime.startsWith( "video/" ) ) )
-                        to_scan.add( f.getAbsolutePath() );
-                }
+                
+                String ext = Utils.getFileExt( f.getName() );
+                String mime = Utils.getMimeByExt( ext );
+                if( mime != null ) {
+                    Uri content_uri = null;
+                    if( mime.startsWith( "image/" ) ) content_uri = Images.Media.EXTERNAL_CONTENT_URI;
+                    if( mime.startsWith( "audio/" ) ) content_uri = Audio.Media.EXTERNAL_CONTENT_URI;
+                    if( mime.startsWith( "video/" ) ) content_uri = Video.Media.EXTERNAL_CONTENT_URI;
+                    if( content_uri != null ) {
+                        ContentResolver cr = cab.ctx.getContentResolver();
+                        cr.delete( content_uri, MediaColumns.DATA + "=?", new String[]{ f.getAbsolutePath() });
+                    }
+                }                
             }
             return cnt;
         }

@@ -42,10 +42,6 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
     public  final static String SCHEME = "ms:";
     public  final static int FILES     = MediaStore.Files.class.hashCode(); 
     public  final static int AUDIO     = MediaStore.Audio.class.hashCode(); 
-    public  final static int ALBUMS    = MediaStore.Audio.Albums.class.hashCode(); 
-    public  final static int ARTISTS   = MediaStore.Audio.Artists.class.hashCode(); 
-    public  final static int GENRES    = MediaStore.Audio.Genres.class.hashCode(); 
-    public  final static int PLAYLISTS = MediaStore.Audio.Playlists.class.hashCode(); 
     public  final static int VIDEO     = MediaStore.Video.class.hashCode(); 
     public  final static int IMAGES    = MediaStore.Images.class.hashCode(); 
     
@@ -126,32 +122,18 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
             baseContentUri = MediaStore.Files.getContentUri( "external" );
     }
 
-    @Override
-    public void populateContextMenu( ContextMenu menu, AdapterView.AdapterContextMenuInfo acmi, int num ) {
-        if( num == -1 ) {   // for the Home adapter
-            final String vs = s( R.string.view_title ); 
-            menu.add( 0, FILES,     0, vs + " \"Files\"" );
-            menu.add( 0, AUDIO,     0, vs + " \"Audio\"" );
-            /*
-            menu.add( 0, ALBUMS,    0, vs + " \"Alboms\"" );
-            menu.add( 0, ARTISTS,   0, vs + " \"Artists\"" );
-            menu.add( 0, GENRES,    0, vs + " \"Genres\"" );
-            menu.add( 0, PLAYLISTS, 0, vs + " \"Playlists\"" );
-            */
-            menu.add( 0, VIDEO,     0, vs + " \"Video\"" );
-            menu.add( 0, IMAGES,    0, vs + " \"Images\"" );
-            return;
-        }
-        super.populateContextMenu( menu, acmi, num );
+    public final static void populateHomeContextMenu( Context ctx, ContextMenu menu ) {
+        final String vs = ctx.getString( R.string.view_title ); 
+        menu.add( 0, FILES,     0, vs + " \"Files\"" );
+        menu.add( 0, AUDIO,     0, vs + " \"Audio\"" );
+        menu.add( 0, VIDEO,     0, vs + " \"Video\"" );
+        menu.add( 0, IMAGES,    0, vs + " \"Images\"" );
+        return;
     }
     
     public final static String getFragment( int id ) {
         if( id == FILES )     return "Files";
         if( id == AUDIO )     return "Audio";
-        if( id == ALBUMS )    return "Alboms";
-        if( id == ARTISTS )   return "Artists";
-        if( id == GENRES )    return "Genres";
-        if( id == PLAYLISTS ) return "Playlists";
         if( id == VIDEO )     return "Video";
         if( id == IMAGES )    return "Images";
         return null;
@@ -460,7 +442,9 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
             String[] audio_projection = {
                 MediaStore.MediaColumns.DATA,
                 MediaStore.Audio.AudioColumns.ALBUM, 
-                MediaStore.Audio.AudioColumns.ARTIST 
+                MediaStore.Audio.AudioColumns.ALBUM_ID, 
+                MediaStore.Audio.AudioColumns.ARTIST, 
+                MediaStore.Audio.AudioColumns.ARTIST_ID 
             };
             projection = audio_projection;
         } else if( "Video".equalsIgnoreCase( fr ) ) {
@@ -660,7 +644,6 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
 
 	class DeleteEngine extends Engine {
 		private Item[] mList;
-        private ArrayList<String> to_scan;
         ContentResolver cr;
 
         DeleteEngine( Item[] list ) {
@@ -675,20 +658,19 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
                 String dirName = Utils.mbAddSl( MSAdapter.this.ms_uri.getPath() );
                 int cnt = deleteFiles( dirName, mList );
                 sendResult( Utils.getOpReport( ctx, cnt, R.string.deleted ) );
-                if( to_scan != null && to_scan.size() > 0 ) {
-                    String[] to_scan_a = new String[to_scan.size()];
-                    to_scan.toArray( to_scan_a );
-                }
             }
             catch( Exception e ) {
                 sendProgress( e.getMessage(), Commander.OPERATION_FAILED_REFRESH_REQUIRED );
             }
         }
+        
         private final int deleteFiles( String base_path, Item[] l ) throws Exception {
-    	    if( l == null ) return 0;
+            if( l == null ) return 0;
             int cnt = 0;
             int num = l.length;
-            double conv = 100./num; 
+            double conv = 100./num;
+            boolean db_only = Utils.str( ms_uri.getFragment() );
+
             ContentValues cv = new ContentValues();
             cv.put( MediaStore.Files.FileColumns.MEDIA_TYPE, MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE );
             for( int i = 0; i < num; i++ ) {
@@ -701,13 +683,15 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
                      final String selection = MediaStore.MediaColumns.DATA + " like ? ";
                      String[] selectionParams = new String[1];
                      selectionParams[0] = Utils.mbAddSl( base_path + l[i].name.replaceAll( "/", "" ) ) + "%";
-                     cr.update( baseContentUri, cv, selection, selectionParams );
+                     if( !db_only )
+                         cr.update( baseContentUri, cv, selection, selectionParams );
                      cnt += cr.delete( baseContentUri, selection, selectionParams );
                 }
                 {
                      Uri c_uri = (Uri)l[i].origin;
                      if( c_uri != null ) {
-                         cr.update( c_uri, cv, null, null );                          
+                         if( !db_only )
+                             cr.update( c_uri, cv, null, null );                          
                          cnt += cr.delete( c_uri, null, null );
                      }
                 }
