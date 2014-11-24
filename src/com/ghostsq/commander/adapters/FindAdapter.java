@@ -14,6 +14,7 @@ import com.ghostsq.commander.utils.Utils;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.Message;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -26,6 +27,13 @@ public class FindAdapter extends FSAdapter {
         super( ctx_ );
         parentLink = PLS;
     }
+
+    @Override
+    public void Init( Commander c ) {
+        super.Init( c );
+        if( c != null )
+            readerHandler = new SearchHandler();
+    }    
     
     @Override
     public String getScheme() {
@@ -48,6 +56,26 @@ public class FindAdapter extends FSAdapter {
         mode_ &= ~MODE_WIDTH;
         return super.setMode( mask, mode_ );
     }
+
+    protected class SearchHandler extends ReaderHandler {
+        private long lastTime = System.currentTimeMillis();;
+    
+        @Override
+        public void handleMessage( Message msg ) {
+            try {
+                if( msg.what == Commander.OPERATION_IN_PROGRESS ) {
+                    long cur_time = System.currentTimeMillis();
+                    if( cur_time - lastTime > 1000 ) {
+                        onFileFound();
+                        lastTime = cur_time;
+                    }
+                }
+                super.handleMessage( msg );
+            } catch( Exception e ) {
+                e.printStackTrace();
+            }
+        }
+    };
     
     @Override
     public boolean readSource( Uri uri_, String pass_back_on_done ) {
@@ -305,14 +333,17 @@ public class FindAdapter extends FSAdapter {
             return filesToItems( files_ );
         }       
     }
-    protected void onReadComplete() {  
+    protected void onReadComplete() {
+        onFileFound();
+        startThumbnailCreation();
+    }
+    protected void onFileFound() {  
         try {
             if( reader instanceof SearchEngine ) {
                 SearchEngine list_engine = (SearchEngine)reader;
                 items = list_engine.getItems( mode );
                 numItems = items != null ? items.length + 1 : 1;
                 notifyDataSetChanged();
-                startThumbnailCreation();
             }
         } catch( Exception e ) {
             e.printStackTrace();

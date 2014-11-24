@@ -125,12 +125,21 @@ public class HomeAdapter extends CommanderAdapterBase {
             if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
                 Map<String, String> env = System.getenv();
                 String sec_storage = env.get( "SECONDARY_STORAGE" );
+                String expt_ms_path = null;
                 if( Utils.str( sec_storage ) ) {
                     String[] ss = sec_storage.split( ":" );
                     ia.add( makeItem( EXTERNAL, ss[0] ) );
-                    ia.add( makeItem( MEDIA, MSAdapter.SCHEME + ss[0] ) );
+                    
+                    File ext_fd = new File( ss[0] );
+                    String[] dir_list = ext_fd.list();
+                    if( dir_list != null && dir_list.length > 0 )
+                        expt_ms_path = MSAdapter.SCHEME + ss[0];
+                    else
+                        expt_ms_path = MSAdapter.SCHEME + Environment.getExternalStorageDirectory().getAbsolutePath();
                 } else
-                    ia.add( makeItem( MEDIA, MSAdapter.SCHEME + Environment.getExternalStorageDirectory().getAbsolutePath() ) );
+                    expt_ms_path = MSAdapter.SCHEME + Environment.getExternalStorageDirectory().getAbsolutePath();
+                    
+                ia.add( makeItem( MEDIA, expt_ms_path ) );
             }
             
             ia.add( makeItem( FTP, "ftp" ) );

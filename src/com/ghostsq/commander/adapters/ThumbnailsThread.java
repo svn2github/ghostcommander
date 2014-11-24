@@ -201,6 +201,7 @@ class ThumbnailsThread extends Thread {
             if( h == apk_h )
                 return getApkIcon( fn, f );
             // let's try to take it from the mediastore
+            Cursor cursor = null;
             try {
                 final String[] th_proj = new String[] { 
                         BaseColumns._ID,    // 0
@@ -208,7 +209,6 @@ class ThumbnailsThread extends Thread {
                         Thumbnails.HEIGHT,  // 2
                         Thumbnails.IMAGE_ID // 3
                 };
-                Cursor cursor = null;
                 if( f.origin instanceof Uri ) {
                     cursor = Thumbnails.queryMiniThumbnails( cr, (Uri)f.origin, Thumbnails.MINI_KIND, th_proj );
                 } else {
@@ -230,7 +230,6 @@ class ThumbnailsThread extends Thread {
                     // Log.v( TAG, "th id: " + cursor.getLong(0) +
                     // ", org id: " + cursor.getLong(3) + ", w: " + tw +
                     // ", h: " + th );
-                    cursor.close();
                     InputStream in = cr.openInputStream( tcu );
 
                     if( tw > 0 && th > 0 ) {
@@ -257,6 +256,10 @@ class ThumbnailsThread extends Thread {
                 }
             } catch( Exception e ) {
                 // Log.e( TAG, fn, e );
+            }
+            finally {
+                if( cursor != null  )
+                    cursor.close();
             }
             options.inSampleSize = 1;
             options.inJustDecodeBounds = true;
