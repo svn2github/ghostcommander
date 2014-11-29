@@ -301,14 +301,15 @@ public interface CommanderAdapter {
     /**
      * @param fileURI - the location of the file  
      * @return        - the Item with all the information in it
+     * This method is not supposed to be called from the UI thread.
      */
     public Item getItem( Uri fileURI );
 
     /**
      * @param fileURI - the location of the file
      * @param skip    - tells the data provider to start from a middle point  
-     *   
      * @return        - the content of the file
+     * The caller has to call closeStream() after it's done working with the content
      */
     public InputStream getContent( Uri fileURI, long skip );
 
@@ -320,6 +321,7 @@ public interface CommanderAdapter {
     /**
      * @param fileURI - the location of the file
      * @return  stream to data be written 
+     * The caller has to call closeStream() after it's done working with the content
      */
     public OutputStream saveContent( Uri fileURI );
     
@@ -332,12 +334,12 @@ public interface CommanderAdapter {
     /**
      * @param path - the location of the file to create  
      */
-    public boolean createFile( String path );
+    public boolean createFile( String name );
 
     /**
      * @param path - the location of the folder (directory) to create  
      */
-	public void createFolder( String path );
+	public void createFolder( String name );
 
     /**
      * @param  cis selected item (files or directories)

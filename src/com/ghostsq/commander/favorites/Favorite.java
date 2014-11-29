@@ -188,8 +188,9 @@ public class Favorite {
         if( ui == null || ui.length() == 0 ) return u.toString();
         int pw_pos = ui.indexOf( ':' );
         if( pw_pos < 0 ) return u.toString();
-        ui = ui.substring( 0, pw_pos+1 ) + Credentials.pwScreen;
-        return Uri.decode( Utils.updateUserInfo( u, ui ).toString() );
+        ui = Uri.encode( ui.substring( 0, pw_pos ) ) + ":" + Credentials.pwScreen;
+//        return Uri.decode( Utils.updateUserInfo( u, ui ).toString() );
+        return Utils.updateUserInfo( u, ui ).toString();
     }
     public final static boolean isPwdScreened( Uri u ) {
         String user_info = u.getUserInfo();
