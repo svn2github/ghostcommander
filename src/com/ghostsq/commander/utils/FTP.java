@@ -611,7 +611,7 @@ public class FTP {
         try {
             String cmd = "LIST";
             if( force_hidden ) cmd += " -a";
-            if( path != null ) cmd += " " + path;
+//            if( path != null ) cmd += " " + path;
             dataSocket = executeDataCommand( cmd );
             if( dataSocket == null )
             	return null;
