@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -11,23 +12,33 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.Window;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.List;
 
 import com.example.touch.TouchImageView;
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
+import com.ghostsq.commander.adapters.Engine;
 import com.ghostsq.commander.utils.Credentials;
+import com.ghostsq.commander.utils.Utils;
 
-public class PictureViewer extends Activity {
+public class PictureViewer extends Activity implements View.OnTouchListener {
     private final static String TAG = "PictureViewerActivity";
     public  ImageView image_view;
     public  boolean   touch = false;
+    public  CommanderAdapter  ca;
+    public  int       ca_pos = -1;
+    public  Handler   h = new Handler();
+    private ProgressDialog pd; 
+    
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
@@ -39,6 +50,7 @@ public class PictureViewer extends Activity {
           else
               image_view = new ImageView( this );
           setContentView( image_view );
+          image_view.setOnTouchListener( this );
         }
         catch( Throwable e ) {
             e.printStackTrace();
@@ -54,46 +66,77 @@ public class PictureViewer extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        Uri u = getIntent().getData();
-        if( u == null ) return;
-        new LoaderThread( this, u ).start();
+        Intent intent = getIntent();
+        Uri uri = intent.getData();
+        if( uri == null ) return;
+        Log.d( TAG, "uri=" + uri );
+        ca_pos = intent.getIntExtra( "position", -1 );
+        Log.d( TAG, "orig pos=" + ca_pos );
+        
+        String scheme = uri.getScheme();
+        if( !ContentResolver.SCHEME_CONTENT.equals( scheme ) ) {
+            ca = CA.CreateAdapterInstance( scheme, this );            
+            if( ca == null ) return;
+            
+            ca.Init( new CommanderStub() );
+            
+            Credentials crd = null; 
+            try {
+                crd = (Credentials)intent.getParcelableExtra( Credentials.KEY );
+                ca.setCredentials( crd );
+            } catch( Exception e ) {
+                Log.e( TAG, "on taking credentials from parcel", e );
+            }
+
+            // get parent Uri            
+            Uri.Builder ub = uri.buildUpon();
+            ub.path( "/" );
+            List<String> ps = uri.getPathSegments();
+            int n = ps.size();
+            if( n > 0 ) n--;
+            for( int i = 0; i < n; i++ ) ub.appendPath( ps.get( i ) );
+            Log.d( TAG, "do read list" );
+            ca.readSource( ub.build(), null );
+            Log.d( TAG, "end reading" );
+        }        
+        new LoaderThread( uri ).start();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        if( ca != null ) {
+            ca.prepareToDestroy();
+            ca = null;
+        }
     }
-    
+
+    public void setBitmapToView( Bitmap bmp ) {
+        try {
+            Log.v( TAG, "Bitmap is ready" );
+            pd.cancel();
+            if( bmp != null ) {
+                image_view.setImageBitmap( bmp );
+                if( touch )
+                    ((TouchImageView)image_view).setMaxZoom( 4f );
+                return;
+            }
+        } catch( Throwable e ) {
+            e.printStackTrace();
+        }
+    }
+
     private class LoaderThread extends Thread {
         private Context ctx;
         private byte[] buf;
-        private String msgText;
-        private Uri u;
+        private Uri    u;
         private Bitmap bmp;
-        private DoneHandler h = new DoneHandler();
-        private ProgressDialog pd;
         
-        protected class DoneHandler extends Handler {
-            @Override
-            public void handleMessage( Message msg ) {
-                try {
-                    Bundle b = msg.getData();
-                    int p = b.getInt( "p" );
-                    if( p < 0 )
-                        postExecute();
-                    else
-                        progressUpdate( p );
-                } catch( Exception e ) {
-                    e.printStackTrace();
-                }
-            }
-        };    
         
-        LoaderThread( Context ctx_, Uri u_ ) {
-            ctx = ctx_;
+        LoaderThread( Uri u_ ) {
+            ctx = PictureViewer.this;
             u = u_;
             setName( "PictureLoader" );
-            //setPriority( Thread.MAX_PRIORITY );
             preExecute();
         }
         
@@ -133,23 +176,12 @@ public class PictureViewer extends Activity {
                     File f = null;
                     setPriority( Thread.MAX_PRIORITY );
                     boolean local = CA.isLocal( scheme );
-                    if( local ) {   // pre-cache in a file
+                    if( local ) {
                         f = new File( u.getPath() );
                     } else {
-                        CommanderAdapter  ca = null;
                         FileOutputStream fos = null;
                         InputStream is = null;
                         try {
-                            ca = CA.CreateAdapterInstance( scheme, ctx );            
-                            if( ca == null ) return;
-                            Credentials crd = null; 
-                            try {
-                                crd = (Credentials)getIntent().getParcelableExtra( Credentials.KEY );
-                            } catch( Exception e ) {
-                                Log.e( TAG, "on taking credentials from parcel", e );
-                            }
-                            ca.setCredentials( crd );
-                            
                             // output - temporary file
                             File pictvw_f = ctx.getDir( "pictvw", Context.MODE_PRIVATE );
                             if( pictvw_f == null ) return;
@@ -182,7 +214,6 @@ public class PictureViewer extends Activity {
                         } finally {
                             if( ca != null ) {
                                 if( is != null ) ca.closeStream( is );
-                                ca.prepareToDestroy();
                             }
                             if( fos != null ) fos.close();
                         }
@@ -198,6 +229,13 @@ public class PictureViewer extends Activity {
                             if( bmp != null ) {
                                 if( !local )
                                     f.delete();
+                                    
+                                PictureViewer.this.h.post(new Runnable() {
+                                      @Override
+                                      public void run() {
+                                        PictureViewer.this.setBitmapToView( bmp );
+                                      }
+                                  });                
                                 return;
                             }
                         }
@@ -205,42 +243,104 @@ public class PictureViewer extends Activity {
                 }
             } catch( Throwable e ) {
                 Log.e( TAG, u != null ? u.toString() : null, e );
-                msgText = e.getLocalizedMessage();
-            } finally {
-                sendProgress( -1 );
+                final String msgText = e.getLocalizedMessage();
+                PictureViewer.this.h.post(new Runnable() {
+                      @Override
+                      public void run() {
+                        pd.cancel();
+                        Toast.makeText( PictureViewer.this, msgText != null ? msgText : ctx.getString( R.string.error ), 
+                               Toast.LENGTH_LONG ).show();
+                      }
+                  });                
             }
-        }
-        
-        protected void sendProgress( int v ) {
-            Message msg = h.obtainMessage();
-            Bundle b = new Bundle();
-            b.putInt( "p", v );
-            msg.setData( b );
-            h.sendMessage( msg );
         }
         
         protected void progressUpdate( int v ) {
             Log.v( TAG, "progressUpdate" + v );
         }
         
-        protected void postExecute() {
-            try {
-                Log.v( TAG, "postExecute" );
-                pd.cancel();
-                if( bmp != null ) {
-                    image_view.setImageBitmap( bmp );
-                    if( touch )
-                        ((TouchImageView)image_view).setMaxZoom( 4f );
-                    return;
-                }
-            } catch( Throwable e ) {
-                e.printStackTrace();
-            }
-            Toast.makeText( ctx, msgText != null ? msgText : ctx.getString( R.string.error ), 
-                   Toast.LENGTH_LONG ).show();
-        }
- 
     }
 
+    @Override
+    public boolean onTouch( View v, MotionEvent event ) {
+        if( touch && ((TouchImageView)image_view).onTouch( v, event ) ) return true;
+        if( event.getAction() == MotionEvent.ACTION_UP ) {
+            boolean to_next = event.getX() > image_view.getWidth() / 2;
+            //Toast.makeText( this, to_next ? "Go next" : "Go prev", Toast.LENGTH_SHORT ).show();
+            LoadNext( to_next );
+            return true;
+        }
+        image_view.performClick();
+        return false;
+    }
 
+    private void LoadNext( boolean forward ) {
+        if( ca_pos < 0 || ca == null ) {
+            Log.e( TAG, "ca=" + ca + ", pos=" + ca_pos );
+            return;
+        }
+        int orig_pos = ca_pos; 
+        while( true ) {
+            if( forward ) ca_pos++; else ca_pos--;
+            if( ca_pos <= 0 ) {
+                ca_pos = orig_pos;
+                return;
+            } 
+            Uri pos_uri = ca.getItemUri( ca_pos );
+            if( pos_uri == null ) {
+                ca_pos = orig_pos;
+                return;
+            } 
+            String name = ca.getItemName( ca_pos, false );
+            String mime = Utils.getMimeByExt( Utils.getFileExt( name ) );
+            Log.d( TAG, "Next name: " + name + " mime: " + mime );
+            if( mime.startsWith( "image/" ) ) {
+                Log.d( TAG, "new pos=" + ca_pos );
+                new LoaderThread( pos_uri ).start();
+                return;
+            }
+        }
+    }
+
+    private class CommanderStub implements Commander {
+
+        @Override
+        public Context getContext() {
+            return PictureViewer.this;
+        }
+        @Override
+        public void issue( Intent in, int ret ) {
+        }
+        @Override
+        public void showError( String msg ) {
+        }
+        @Override
+        public void showInfo( String msg ) {
+        }
+        @Override
+        public void showDialog( int dialog_id ) {
+        }
+        @Override
+        public void Navigate( Uri uri, Credentials crd, String positionTo ) {
+        }
+        @Override
+        public void dispatchCommand( int id ) {
+        }
+        @Override
+        public void Open( Uri uri, Credentials crd ) {
+        }
+        @Override
+        public int getResolution() {
+            return 0;
+        }
+        @Override
+        public boolean notifyMe( Message m ) {
+            return false;
+        }
+        @Override
+        public boolean startEngine( Engine e ) {
+            return false;
+        }
+    }    
+    
 }

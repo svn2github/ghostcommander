@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.ghostsq.commander"
-      android:versionName="1.52.4b2"
-      android:versionCode="267"
+      android:versionName="1.52.5b1"
+      android:versionCode="268"
       android:label="@string/app_name"
       android:sharedUserId="com.ghostsq.commander.userId"
       android:installLocation="auto">
@@ -98,6 +98,7 @@
         <activity 
             android:name=".Editor"  
             android:label="@string/editor_label"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/FullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.EDIT" />

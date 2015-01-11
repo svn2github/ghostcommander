@@ -30,7 +30,7 @@ public class TouchImageView extends ImageView {
     int mode = NONE;
 
     // Remember some things for zooming
-    PointF last = new PointF();
+    PointF last  = new PointF();
     PointF start = new PointF();
     float minScale = 1f;
     float maxScale = 3f;
@@ -39,7 +39,7 @@ public class TouchImageView extends ImageView {
     float redundantXSpace, redundantYSpace;
     
     float width, height;
-    static final int CLICK = 3;
+    static final int CLICK = 10;
     float saveScale = 1f;
     float right, bottom, origWidth, origHeight, bmWidth, bmHeight;
     
@@ -56,78 +56,74 @@ public class TouchImageView extends ImageView {
         m = new float[9];
         setImageMatrix(matrix);
         setScaleType(ScaleType.MATRIX);
-
-        setOnTouchListener(new OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-            	mScaleDetector.onTouchEvent(event);
-
-            	matrix.getValues(m);
-            	float x = m[Matrix.MTRANS_X];
-            	float y = m[Matrix.MTRANS_Y];
-            	PointF curr = new PointF(event.getX(), event.getY());
-            	
-            	switch (event.getAction()) {
-	            	case MotionEvent.ACTION_DOWN:
-	                    last.set(event.getX(), event.getY());
-	                    start.set(last);
-	                    mode = DRAG;
-	                    break;
-	            	case MotionEvent.ACTION_MOVE:
-	            		if (mode == DRAG) {
-	            			float deltaX = curr.x - last.x;
-	            			float deltaY = curr.y - last.y;
-	            			float scaleWidth = Math.round(origWidth * saveScale);
-	            			float scaleHeight = Math.round(origHeight * saveScale);
-            				if (scaleWidth < width) {
-	            				deltaX = 0;
-	            				if (y + deltaY > 0)
-		            				deltaY = -y;
-	            				else if (y + deltaY < -bottom)
-		            				deltaY = -(y + bottom); 
-            				} else if (scaleHeight < height) {
-	            				deltaY = 0;
-	            				if (x + deltaX > 0)
-		            				deltaX = -x;
-		            			else if (x + deltaX < -right)
-		            				deltaX = -(x + right);
-            				} else {
-	            				if (x + deltaX > 0)
-		            				deltaX = -x;
-		            			else if (x + deltaX < -right)
-		            				deltaX = -(x + right);
-		            			
-	            				if (y + deltaY > 0)
-		            				deltaY = -y;
-		            			else if (y + deltaY < -bottom)
-		            				deltaY = -(y + bottom);
-	            			}
-                        	matrix.postTranslate(deltaX, deltaY);
-                        	last.set(curr.x, curr.y);
-	                    }
-	            		break;
-	            		
-	            	case MotionEvent.ACTION_UP:
-	            		mode = NONE;
-	            		int xDiff = (int) Math.abs(curr.x - start.x);
-	                    int yDiff = (int) Math.abs(curr.y - start.y);
-	                    if (xDiff < CLICK && yDiff < CLICK)
-	                        performClick();
-	            		break;
-	            		
-	            	case MotionEvent.ACTION_POINTER_UP:
-	            		mode = NONE;
-	            		break;
-            	}
-                setImageMatrix(matrix);
-                invalidate();
-                return true; // indicate event was handled
-            }
-
-        });
     }
+        
+    public boolean onTouch( View v, MotionEvent event ) {
+        mScaleDetector.onTouchEvent(event);
 
+        matrix.getValues(m);
+        float x = m[Matrix.MTRANS_X];
+        float y = m[Matrix.MTRANS_Y];
+        PointF curr = new PointF(event.getX(), event.getY());
+        
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                last.set(event.getX(), event.getY());
+                start.set(last);
+                mode = DRAG;
+                break;
+            case MotionEvent.ACTION_MOVE:
+                if (mode == DRAG) {
+                    float deltaX = curr.x - last.x;
+                    float deltaY = curr.y - last.y;
+                    float scaleWidth = Math.round(origWidth * saveScale);
+                    float scaleHeight = Math.round(origHeight * saveScale);
+                    if (scaleWidth < width) {
+                        deltaX = 0;
+                        if (y + deltaY > 0)
+                            deltaY = -y;
+                        else if (y + deltaY < -bottom)
+                            deltaY = -(y + bottom); 
+                    } else if (scaleHeight < height) {
+                        deltaY = 0;
+                        if (x + deltaX > 0)
+                            deltaX = -x;
+                        else if (x + deltaX < -right)
+                            deltaX = -(x + right);
+                    } else {
+                        if (x + deltaX > 0)
+                            deltaX = -x;
+                        else if (x + deltaX < -right)
+                            deltaX = -(x + right);
+                        
+                        if (y + deltaY > 0)
+                            deltaY = -y;
+                        else if (y + deltaY < -bottom)
+                            deltaY = -(y + bottom);
+                    }
+                    matrix.postTranslate(deltaX, deltaY);
+                    last.set(curr.x, curr.y);
+                }
+                break;
+                
+            case MotionEvent.ACTION_UP:
+                mode = NONE;
+                int xDiff = (int) Math.abs(curr.x - start.x);
+                int yDiff = (int) Math.abs(curr.y - start.y);
+                if (xDiff < CLICK && yDiff < CLICK)
+                    return false;
+                    //performClick();
+                //break;
+                
+            case MotionEvent.ACTION_POINTER_UP:
+                mode = NONE;
+                break;
+        }
+        setImageMatrix(matrix);
+        invalidate();
+        return true; // indicate event was handled
+    }
+        
     @Override
     public void setImageBitmap(Bitmap bm) { 
         super.setImageBitmap(bm);
@@ -203,7 +199,7 @@ public class TouchImageView extends ImageView {
 	}
     
     @Override
-    protected void onMeasure (int widthMeasureSpec, int heightMeasureSpec)
+    protected void onMeasure( int widthMeasureSpec, int heightMeasureSpec )
     {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         width = MeasureSpec.getSize(widthMeasureSpec);

@@ -260,6 +260,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     }
 
     protected void notify( String s, String cookie ) {
+        if( readerHandler == null ) return;
         Message msg = readerHandler.obtainMessage( s != null ? Commander.OPERATION_FAILED :
                                                                Commander.OPERATION_COMPLETED, s );
         if( msg != null ) {

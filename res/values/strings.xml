@@ -16,8 +16,8 @@
 <string name="F8">Del</string>
 <string name="F9">Prefs</string>
 <string name="F10">Exit</string>
-<string name="oth_sh_this">Synchronize panels</string>
-<string name="eq">Sync</string>
+<string name="oth_sh_this">Show same dir</string>
+<string name="eq">Same</string>
 <string name="change">Toggle</string>
 <string name="tgl">Toggle</string>
 <string name="sz">Info</string>

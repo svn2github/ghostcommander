@@ -411,6 +411,8 @@ public class ZipAdapter extends CommanderAdapterBase {
                     final int GINGERBREAD = 9;
                     if( android.os.Build.VERSION.SDK_INT >= GINGERBREAD )
                         ForwardCompat.setFullPermissions( dest_file );
+                    
+                    dest_file.setLastModified( entry.getTime() );
         			        			
                     if( stop || isInterrupted() ) {
                         error( ctx.getString( R.string.canceled ) );
@@ -818,7 +820,9 @@ public class ZipAdapter extends CommanderAdapterBase {
                            out.putNextEntry( new ZipEntry( rfn + SLS ) );
                        }
                        else {
-                           out.putNextEntry( new ZipEntry( rfn ) );
+                           ZipEntry ze = new ZipEntry( rfn );
+                           ze.setTime( f.lastModified() );
+                           out.putNextEntry( ze );
                            // Transfer bytes from the file to the ZIP file
                            int fnl = fn.length();
                            String pack_s = ctx.getString( R.string.packing, 

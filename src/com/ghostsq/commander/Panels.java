@@ -1,7 +1,6 @@
 package com.ghostsq.commander;
 
 import java.io.File;
-import java.security.acl.Owner;
 import java.util.ArrayList;
 
 import com.ghostsq.commander.R;
@@ -562,7 +561,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     }
 
     public final void makeOtherAsCurrent() {
-        NavigateInternal( opposite(), getListAdapter( true ).getUri(), null, null );
+        CommanderAdapter ca = getListAdapter( true );
+        NavigateInternal( opposite(), ca.getUri(), ca.getCredentials(), null );
     }
 
     public final void togglePanelsMode() {
@@ -947,6 +947,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 showSizes( touched );
                 return;
             }
+            
             String mime = Utils.getMimeByExt( Utils.getFileExt( item.name ) );
             if( mime == null )
                 mime = "application/octet-stream";
@@ -955,6 +956,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             Credentials crd = ca.getCredentials();
             if( crd != null )
                 i.putExtra( Credentials.KEY, crd );
+            i.putExtra( "position", pos );
             c.startActivity( i );
         } catch( Exception e ) {
             Log.e( TAG, "Can't view the file " + name, e );
