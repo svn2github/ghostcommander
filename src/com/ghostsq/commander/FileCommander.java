@@ -2,11 +2,15 @@ package com.ghostsq.commander;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
+import com.ghostsq.commander.adapters.CommanderAdapter.Item;
 import com.ghostsq.commander.adapters.Engine;
 import com.ghostsq.commander.adapters.FSAdapter;
 import com.ghostsq.commander.adapters.FindAdapter;
@@ -14,6 +18,7 @@ import com.ghostsq.commander.adapters.MediaScanEngine;
 import com.ghostsq.commander.root.MountAdapter;
 import com.ghostsq.commander.root.RootAdapter;
 import com.ghostsq.commander.utils.Credentials;
+import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.Utils;
 
 import android.app.Activity;
@@ -57,7 +62,7 @@ import android.widget.Toast;
 
 public class FileCommander extends Activity implements Commander, ServiceConnection, View.OnClickListener {
     private final static String TAG = "GhostCommanderActivity";
-    public final static int REQUEST_CODE_PREFERENCES = 1, REQUEST_CODE_SRV_FORM = 2;
+    public final static int REQUEST_CODE_PREFERENCES = 1, REQUEST_CODE_SRV_FORM = 2, REQUEST_CODE_OPEN = 3;
     public final static int FIND_ACT = 1017, SMB_ACT = 2751, FTP_ACT = 4501, SFTP_ACT = 2450;
 
     private ArrayList<Dialogs> dialogs;
@@ -439,6 +444,14 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                     panels.refreshLists( null );
             }
             break;
+        case REQUEST_CODE_OPEN:
+            try {
+                File temp_dir = new File( ForwardCompat.getExternalFilesDir( this ), "to_open" );
+                File[] temp_files = temp_dir.listFiles();
+                for( File f : temp_files ) 
+                    f.deleteOnExit();
+            } catch( Exception e ) {
+            }
         default:
             handleActivityResult( requestCode, resultCode, data );
         }
@@ -801,8 +814,9 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 i.setDataAndType( uri.buildUpon().scheme( "file" ).authority( "" ).build(), mime );
                 i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET );
                 // | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
-                startActivity( i );
-            } else if( mime != null && ( mime.startsWith( "audio" ) || mime.startsWith( "video" ) ) ) {
+                startActivityForResult( i, REQUEST_CODE_OPEN );
+            } 
+            else if( mime != null && ( mime.startsWith( "audio" ) || mime.startsWith( "video" ) ) ) {
                 startService( new Intent( this, StreamServer.class ) );
                 Intent i = new Intent( Intent.ACTION_VIEW );
 
@@ -818,6 +832,61 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET );
                 startActivity( i );
                 return;
+            }
+            else {
+                File temp_dir = new File( ForwardCompat.getExternalFilesDir( this ), "to_open" );
+                temp_dir.mkdir();
+                final CommanderAdapter ca = CA.CreateAdapterInstance( scheme, this );            
+                if( ca == null ) return;
+                ca.Init( this );
+                ca.setCredentials( crd );
+                final String       _fn = path.substring( path.lastIndexOf( '/' )+1 );
+                final Uri         _uri = uri;
+                final File   _out_file = new File( temp_dir, _fn );
+                final Handler _handler = new Handler(); 
+                final ProgressDialog _pd = ProgressDialog.show( this, "", getString( R.string.loading ), true, true );                
+                new Thread( new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Item item = ca.getItem( _uri );
+                            if( item.size > 5000000 ) {
+                                _handler.post( new Runnable() {
+                                      @Override
+                                      public void run() {
+                                          _pd.cancel();
+                                          FileCommander.this.showError( getString( R.string.too_big_file, _fn ) );
+                                      }
+                                  });                
+                                return;
+                            }
+                            FileOutputStream fos;
+                            fos = new FileOutputStream( _out_file );
+                            InputStream is = ca.getContent( _uri );
+                            Utils.copyBytes( is, fos );
+                            fos.close();
+                            ca.closeStream( is );
+                            ca.prepareToDestroy();
+                            _handler.post( new Runnable() {
+                                  @Override
+                                  public void run() {
+                                      _pd.cancel();
+                                      FileCommander.this.Open( Uri.parse( _out_file.toString() ), null );
+                                  }
+                              });  
+                            return;
+                        } catch( Exception e ) {
+                            Log.e( TAG, _uri.toString(), e );
+                        }
+                        _handler.post( new Runnable() {
+                              @Override
+                              public void run() {
+                                  _pd.cancel();
+                                  FileCommander.this.showError( getString( R.string.error, _fn ) );
+                              }
+                          });                
+                    }
+                }).start();
             }
 
         } catch( ActivityNotFoundException e ) {
