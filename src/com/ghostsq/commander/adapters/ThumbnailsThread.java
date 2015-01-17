@@ -30,6 +30,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.BaseColumns;
 import android.util.Log;
+import android.util.SparseArray;
 import android.provider.MediaStore.Images.Media;
 import android.provider.MediaStore.Images.Thumbnails;
 
@@ -45,10 +46,36 @@ class ThumbnailsThread extends Thread {
     private Resources res;
     private byte[] buf;
     private int thumb_sz;
-    private final int apk_h = ".apk".hashCode();
-    private final int[] ext_h = { ".jpg".hashCode(), ".JPG".hashCode(), ".jpeg".hashCode(), ".JPEG".hashCode(), ".png".hashCode(),
-            ".PNG".hashCode(), ".gif".hashCode(), ".GIF".hashCode(), apk_h };
-    public static final Map<Integer, SoftReference<Drawable>> thumbnailCache = new HashMap<Integer, SoftReference<Drawable>>();
+    private final static int apk_h = ".apk".hashCode();
+    private final static int[] ext_h = { 
+                ".jpg".hashCode(), 
+                ".JPG".hashCode(), 
+                ".jpeg".hashCode(), 
+                ".JPEG".hashCode(), 
+                ".png".hashCode(),
+                ".PNG".hashCode(), 
+                ".gif".hashCode(), 
+                ".GIF".hashCode(), 
+                apk_h 
+            };
+    
+    private class Thumbnail {
+        public SoftReference<Drawable> srd;
+        public int h, w;
+        Thumbnail( Drawable d ) {
+            this( d, 0, 0 );
+        }
+        Thumbnail( Drawable d, int w, int h ) {
+            srd = new SoftReference<Drawable>( d );
+            this.h = h;
+            this.w = w;
+        }
+        public final String getResInfo() {
+            return h == 0 ? null : "" + w + "x" + h;
+        }
+    }
+    
+    public static final SparseArray<Thumbnail> thumbnailCache = new SparseArray<Thumbnail>();
 
     ThumbnailsThread( CommanderAdapterBase owner, Handler thread_handler, String base_path, Item[] list ) {
         this.owner = owner;
@@ -128,15 +155,16 @@ class ThumbnailsThread extends Thread {
                         }
                     }
                     
-                    if( !(new File( fn ).exists() ) ) continue;
+                    if( !( new File( fn ).exists() ) ) continue;
                     
                     int fn_h = ( fn + " " + f.size ).hashCode();
-                    SoftReference<Drawable> cached_soft = null;
+                    Thumbnail cached = null;
                     synchronized( thumbnailCache ) {
-                        cached_soft = thumbnailCache.get( fn_h );
+                        cached = thumbnailCache.get( fn_h );
                     }
-                    if( cached_soft != null ) {
-                        f.setThumbNail( cached_soft.get() );
+                    if( cached != null ) {
+                        f.setThumbNail( cached.srd.get() );
+                        f.attr = cached.getResInfo();
                     }
 
                     String ext = Utils.getFileExt( fn );
@@ -158,11 +186,19 @@ class ThumbnailsThread extends Thread {
                             f.setThumbNail( null );
                             continue;
                         }
-                        // Log.v( TAG, "Creating a thumbnail for " + n + ", " +
-                        // fn );
-                        if( createThumbnail( fn, f, ext_hash ) ) {
+                        
+                        Thumbnail t = null;
+                        if( ext_hash == apk_h ) {
+                            t = getApkIcon( fn );
+                            f.thumb_is_icon = true;
+                        }
+                        else
+                            t = createThumbnail( fn, f, ext_hash );
+                        if( t != null ) {
+                            f.setThumbNail( t.srd.get() );
+                            f.attr = t.getResInfo();
                             synchronized( thumbnailCache ) {
-                                thumbnailCache.put( fn_h, new SoftReference<Drawable>( f.getThumbNail() ) );
+                                thumbnailCache.put( fn_h, t );
                             }
                         } else {
                             succeeded = false;
@@ -195,11 +231,10 @@ class ThumbnailsThread extends Thread {
         }
     }
 
-    private final boolean createThumbnail( String fn, Item f, int h ) {
+    private final Thumbnail createThumbnail( String fn, Item f, int h ) {
         final String func_name = "createThubnail()";
+        int img_w = 0, img_h = 0;
         try {
-            if( h == apk_h )
-                return getApkIcon( fn, f );
             // let's try to take it from the mediastore
             Cursor cursor = null;
             try {
@@ -212,12 +247,19 @@ class ThumbnailsThread extends Thread {
                 if( f.origin instanceof Uri ) {
                     cursor = Thumbnails.queryMiniThumbnails( cr, (Uri)f.origin, Thumbnails.MINI_KIND, th_proj );
                 } else {
-                    String[] proj = { BaseColumns._ID };
+                    boolean SDK16UP = android.os.Build.VERSION.SDK_INT >= 16;
+                    String[] proj_id = { BaseColumns._ID };
+                    String[] proj_wh = { BaseColumns._ID };
+                    String[] proj = SDK16UP ? proj_wh : proj_id;
                     String where = Media.DATA + " = '" + fn + "'";
                     cursor = cr.query( Media.EXTERNAL_CONTENT_URI, proj, where, null, null );
                     if( cursor != null && cursor.getCount() > 0 ) {
                         cursor.moveToPosition( 0 );
                         long id = cursor.getLong( 0 );
+                        if( SDK16UP ) {
+                            img_w = cursor.getInt( 1 );
+                            img_h = cursor.getInt( 2 );
+                        }
                         cursor.close();
                         cursor = Thumbnails.queryMiniThumbnail( cr, id, Thumbnails.MINI_KIND, th_proj );
                     }                    
@@ -247,11 +289,12 @@ class ThumbnailsThread extends Thread {
                     Bitmap bitmap = BitmapFactory.decodeStream( in, null, options );
                     if( bitmap != null ) {
                         BitmapDrawable drawable = new BitmapDrawable( res, bitmap );
+                        Thumbnail thb = new Thumbnail( drawable, img_w, img_h );
                         f.setThumbNail( drawable );
                         in.close();
                         // Log.v( TAG, "a thumbnail was stolen from " + tcu
                         // );
-                        return true;
+                        return thb;
                     }
                 }
             } catch( Exception e ) {
@@ -270,8 +313,9 @@ class ThumbnailsThread extends Thread {
             FileInputStream fis = new FileInputStream( fn );
             BitmapFactory.decodeStream( fis, null, options );
             // BitmapFactory.decodeFile( fn, options );
-            if( options.outWidth > 0 && options.outHeight > 0 ) {
-                f.attr = "" + options.outWidth + "x" + options.outHeight;
+            img_w = options.outWidth;
+            img_h = options.outHeight;
+            if( img_w > 0 && img_h > 0 ) {
                 int greatest = Math.max( options.outWidth, options.outHeight );
                 int factor = greatest / thumb_sz;
                 int b;
@@ -283,12 +327,13 @@ class ThumbnailsThread extends Thread {
                 Bitmap bitmap = BitmapFactory.decodeFile( fn, options );
                 if( bitmap != null ) {
                     BitmapDrawable drawable = new BitmapDrawable( res, bitmap );
+                    Thumbnail thb = new Thumbnail( drawable, img_w, img_h );
                     // drawable.setGravity( Gravity.CENTER );
                     // drawable.setBounds( 0, 0, 60, 60 );
                     f.setThumbNail( drawable );
                     fis.close();
                     //Log.v( TAG, fn + " - OK" );
-                    return true;
+                    return thb;
                 }
             } else
                 Log.w( TAG, "failed to get an image bounds" );
@@ -303,34 +348,30 @@ class ThumbnailsThread extends Thread {
         } catch( Error err ) {
             Log.e( TAG, func_name, err );
         }
-        return false;
+        return null;
     }
 
-    private final boolean getApkIcon( String fn, Item f ) {
+    private final Thumbnail getApkIcon( String fn ) {
         try {
-            f.thumb_is_icon = true;
+            Drawable icon = null;
             PackageManager pm = owner.ctx.getPackageManager();
             PackageInfo info = pm.getPackageArchiveInfo( fn, 0 );
-            Drawable icon = null;
             if( info != null ) {
                 try {
                     icon = pm.getApplicationIcon( info.packageName );
                 } catch( Exception e ) {
                 }
-                if( icon != null ) {
-                    f.setIcon( icon );
-                    return true;
-                }
+                if( icon != null )
+                    return new Thumbnail( icon );
             }
             try {
-                String filePath = Utils.mbAddSl( base_path ) + f.name;
-                PackageInfo packageInfo = owner.ctx.getPackageManager().getPackageArchiveInfo( filePath,
+                PackageInfo packageInfo = owner.ctx.getPackageManager().getPackageArchiveInfo( fn,
                         PackageManager.GET_ACTIVITIES );
                 if( packageInfo != null ) {
                     ApplicationInfo appInfo = packageInfo.applicationInfo;
                     if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO ) {
-                        appInfo.sourceDir = filePath;
-                        appInfo.publicSourceDir = filePath;
+                        appInfo.sourceDir = fn;
+                        appInfo.publicSourceDir = fn;
                     }
                     icon = appInfo.loadIcon( owner.ctx.getPackageManager() );
                     // bmpIcon = ((BitmapDrawable) icon).getBitmap();
@@ -338,23 +379,14 @@ class ThumbnailsThread extends Thread {
             } catch( Exception e ) {
                 Log.e( TAG, "File: " + fn, e );
             }
-            if( icon != null ) {
-                f.setIcon( icon );
-                return true;
-            }
+            if( icon != null )
+                return new Thumbnail( icon );
             MnfUtils mnfu = new MnfUtils( fn );
             icon = mnfu.extractIcon();
-            if( icon != null ) {
-                f.setIcon( icon );
-                return true;
-            }
-            /*
-            f.setIcon( pm.getDefaultActivityIcon() );
-            return true;
-            */
+            if( icon != null )
+                return new Thumbnail( icon );
         } catch( Exception e ) {
         }
-        return false;
-        
+        return null;
     }
 }

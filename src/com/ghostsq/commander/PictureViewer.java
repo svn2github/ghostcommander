@@ -252,13 +252,15 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
                                Toast.LENGTH_LONG ).show();
                       }
                   });                
+            } finally {
+                PictureViewer.this.h.post(new Runnable() {
+                      @Override
+                      public void run() {
+                        pd.cancel();
+                      }
+                  });                
             }
         }
-        
-        protected void progressUpdate( int v ) {
-            Log.v( TAG, "progressUpdate" + v );
-        }
-        
     }
 
     @Override
