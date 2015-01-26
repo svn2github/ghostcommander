@@ -57,6 +57,7 @@ public class ZipAdapter extends CommanderAdapterBase {
         case REAL:
             return true;
         case F4:
+        case SZ:
             return false;
         default: return super.hasFeature( feature );
         }
@@ -460,11 +461,15 @@ public class ZipAdapter extends CommanderAdapterBase {
     }
 
     class DelEngine extends Engine {
-        private ZipEntry[] mList = null;
+        private String[]   flat_names_to_delete = null;
         private File       zipFile;
         DelEngine( File zipFile_, ZipEntry[] list ) {
             zipFile = zipFile_;
-            mList = list;
+            flat_names_to_delete = new String[list.length];
+            for( int i=0; i < list.length; i++ ) {
+                ZipEntry z = list[i];
+                flat_names_to_delete[i] = z.getName().replace( "/", "" );
+            }
         }
         @Override
         public void run() {
@@ -476,13 +481,12 @@ public class ZipAdapter extends CommanderAdapterBase {
                 try {
                     ZipFile zf = new ZipFile( zipFile );
                     int removed = 0, processed = 0, num_entries = zf.size();
-                    long total_size = zipFile.length(), bytes_saved = 0;
                     final String del = ctx.getString( R.string.deleting_a );
 
                     if( !zipFile.renameTo( old_file ) ) {
                         error( "could not rename the file " + zipFile.getAbsolutePath() + " to " + old_file.getAbsolutePath() );
                     } else {
-                        ZipInputStream zin = new ZipInputStream( new FileInputStream( old_file ) );
+                        ZipInputStream  zin = new ZipInputStream(  new FileInputStream( old_file ) );
                         ZipOutputStream out = new ZipOutputStream( new FileOutputStream( zipFile ) );
 
                         byte[] buf = new byte[BLOCK_SIZE];
@@ -491,12 +495,13 @@ public class ZipAdapter extends CommanderAdapterBase {
                             if( isStopReq() )
                                 break;
                             String name = entry.getName();
+                            String flat_name = name.replace( "/", "" );
                             boolean spare_this = true;
-                            for( ZipEntry z : mList ) {
+                            
+                            for( int i=0; i < flat_names_to_delete.length; i++ ) {
                                 if( isStopReq() )
                                     break;
-                                String name_to_delete = z.getName();
-                                if( name.startsWith( name_to_delete ) ) {
+                                if( flat_name.equals( flat_names_to_delete[i] ) ) {
                                     spare_this = false;
                                     removed++;
                                     break;
@@ -504,6 +509,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                             }
                             if( spare_this ) {
                                 int pp = ++processed * 100 / num_entries;
+                                long total_size = entry.getSize(), bytes_saved = 0;
                                 // Add ZIP entry to output stream.
                                 out.putNextEntry( new ZipEntry( name ) );
                                 // Transfer bytes from the ZIP file to the output file
@@ -549,6 +555,7 @@ public class ZipAdapter extends CommanderAdapterBase {
     @Override
     public Uri getItemUri( int position ) {
         if( uri == null ) return null;
+        if( items == null || position > items.length ) return null;
         return uri.buildUpon().encodedFragment( fixName( items[position-1] ) ).build();
     }
     
@@ -570,25 +577,24 @@ public class ZipAdapter extends CommanderAdapterBase {
     @Override
     public void openItem( int position ) {
         if( position == 0 ) { // ..
-            if( uri != null ) {
-            	String cur = null; 
-            	try {
-                    cur = uri.getFragment();
-                } catch( Exception e ) {
-                }
-            	if( cur == null || cur.length() == 0 ||
-            	                 ( cur.length() == 1 && cur.charAt( 0 ) == SLC ) ) {
-            	    File zip_file = new File( uri.getPath() );
-            	    String parent_dir = Utils.escapePath( zip_file.getParent() );
-            	    commander.Navigate( Uri.parse( parent_dir != null ? parent_dir : Panels.DEFAULT_LOC ), null, 
-            	            zip_file.getName() );
-            	}
-            	else {
-            	    File cur_f = new File( cur );
-            	    String parent_dir = cur_f.getParent();
-            	    commander.Navigate( uri.buildUpon().fragment( parent_dir != null ? parent_dir : "" ).build(), null, cur_f.getName() );
-            	}
+            if( uri == null ) return;
+        	String cur = null; 
+        	try {
+                cur = uri.getFragment();
+            } catch( Exception e ) {
             }
+        	if( cur == null || cur.length() == 0 ||
+        	                 ( cur.length() == 1 && cur.charAt( 0 ) == SLC ) ) {
+        	    File zip_file = new File( uri.getPath() );
+        	    String parent_dir = Utils.escapePath( zip_file.getParent() );
+        	    commander.Navigate( Uri.parse( parent_dir != null ? parent_dir : Panels.DEFAULT_LOC ), null, 
+        	            zip_file.getName() );
+        	}
+        	else {
+        	    File cur_f = new File( cur );
+        	    String parent_dir = cur_f.getParent();
+        	    commander.Navigate( uri.buildUpon().fragment( parent_dir != null ? parent_dir : "" ).build(), null, cur_f.getName() );
+        	}
             return;
         }
         if( items == null || position < 0 || position > items.length )
@@ -869,11 +875,103 @@ public class ZipAdapter extends CommanderAdapterBase {
        }
     }
     @Override
-    public boolean renameItem( int position, String newName, boolean c ) {
-     // TODO
+    public boolean renameItem( int position, String new_name, boolean copy ) {
+        ZipEntry to_rename = items[position-1];
+        if( to_rename != null && zip != null && Utils.str( new_name ) ) {
+            notify( Commander.OPERATION_STARTED );
+            Engine eng = new RenameEngine( new File( uri.getPath() ), to_rename, new_name, copy );
+            commander.startEngine( eng );
+            return true;
+        }
         return false;
     }
 
+    class RenameEngine extends Engine {
+        private File       zipFile;
+        private ZipEntry   ren_entry;
+        private String     new_name;
+        private boolean    copy = false;
+        RenameEngine( File zipFile, ZipEntry ren_entry, String new_name, boolean copy ) {
+            this.zipFile = zipFile;
+            this.ren_entry = ren_entry;
+            this.new_name = new_name;
+            this.copy = copy;
+        }
+        @Override
+        public void run() {
+            if( zip == null ) return;
+            sendProgress( ZipAdapter.this.ctx.getString( R.string.wait ), 1, 1 );
+            synchronized( ZipAdapter.this ) {
+                Init( null );
+                File old_file = new File( zipFile.getAbsolutePath() + "_tmp_" + ( new Date() ).getSeconds() + ".zip" );
+                try {
+                    ZipFile zf = new ZipFile( zipFile );
+                    int processed = 0, num_entries = zf.size();
+                    String old_flat_name = ren_entry.getName().replace( "/", "" );
+                    final String report_str = ctx.getString( R.string.packing, zf.getName() );
+
+                    if( !zipFile.renameTo( old_file ) ) {
+                        error( "could not rename the file " + zipFile.getAbsolutePath() + " to " + old_file.getAbsolutePath() );
+                    } else {
+                        ZipInputStream  zin = new ZipInputStream(  new FileInputStream( old_file ) );
+                        ZipOutputStream out = new ZipOutputStream( new FileOutputStream( zipFile ) );
+
+                        byte[] buf = new byte[BLOCK_SIZE];
+                        ZipEntry entry = zin.getNextEntry();
+                        while( entry != null ) {
+                            if( isStopReq() )
+                                break;
+                            String name = entry.getName();
+                            String flat_name = name.replace( "/", "" );
+                            if( old_flat_name.equals( flat_name ) ) {
+                                int sl_pos = name.lastIndexOf( '/' );
+                                if( sl_pos >= 0 )
+                                    name = name.substring( 0, sl_pos+1 ) + this.new_name;
+                                else
+                                    name = this.new_name;
+                            }
+                            int pp = ++processed * 100 / num_entries;
+                            // Add ZIP entry to output stream.
+                            out.putNextEntry( new ZipEntry( name ) );
+                            // Transfer bytes from the ZIP file to the output file
+                            int len;
+                            long total_size = entry.getSize(), bytes_saved = 0;
+                            while( ( len = zin.read( buf ) ) > 0 ) {
+                                if( isStopReq() )
+                                    break;
+                                out.write( buf, 0, len );
+                                bytes_saved += len;
+                                sendProgress( report_str, pp, (int)( bytes_saved * 100 / total_size ) );
+                            }
+                            entry = zin.getNextEntry();
+                        }
+                        // Close the streams        
+                        zin.close();
+                        try {
+                            out.close();
+                        } catch( Exception e ) {
+                            Log.e( TAG, "", e );
+                        }
+                        if( isStopReq() ) {
+                            zipFile.delete();
+                            old_file.renameTo( zipFile );
+                            processed = 0;
+                            error( s( R.string.interrupted ) );
+                        } else {
+                            old_file.delete();
+                            zip = null;
+                        }
+                    }
+                } catch( Exception e ) {
+                    error( e.getMessage() );
+                }
+                sendResult( ctx.getString( R.string.done ) );
+                super.run();
+            }
+        }
+    }
+    
+    
 	@Override
 	public void prepareToDestroy() {
 	    super.prepareToDestroy();
@@ -1039,7 +1137,7 @@ public class ZipAdapter extends CommanderAdapterBase {
             String zip_path = u.getPath();
             if( zip_path == null ) return null;
             String opened_zip_path = uri != null ? uri.getPath() : null;
-            if( opened_zip_path == null )
+            if( opened_zip_path == null || zip == null )
                 zip = new ZipFile( zip_path );
             else if( !zip_path.equalsIgnoreCase( opened_zip_path ) )
                 return null;    // do not want to reopen the current zip to something else!
@@ -1060,13 +1158,12 @@ public class ZipAdapter extends CommanderAdapterBase {
     }
     @Override
     public void closeStream( Closeable is ) {
-        if( zip != null ) {
+        if( is != null ) {
             try {
-                zip.close();
+                is.close();
             } catch( IOException e ) {
                 e.printStackTrace();
             }
-            zip = null;
         }
     }
 }

@@ -21,7 +21,7 @@ import android.widget.ImageView;
 @TargetApi(Build.VERSION_CODES.FROYO)
 public class TouchImageView extends ImageView {
 
-    Matrix matrix = new Matrix();
+    Matrix matrix;
 
     // We can be in one of these 3 states
     static final int NONE = 0;
@@ -51,13 +51,18 @@ public class TouchImageView extends ImageView {
         super(context);
         super.setClickable(true);
         this.context = context;
-        mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
+        mScaleDetector = new ScaleGestureDetector( context, new ScaleListener() );
+        init();
+    }
+    
+    final public void init() {
+        matrix = new Matrix();
         matrix.setTranslate(1f, 1f);
         m = new float[9];
         setImageMatrix(matrix);
         setScaleType(ScaleType.MATRIX);
     }
-        
+    
     public boolean onTouch( View v, MotionEvent event ) {
         mScaleDetector.onTouchEvent(event);
 
@@ -127,11 +132,11 @@ public class TouchImageView extends ImageView {
     @Override
     public void setImageBitmap(Bitmap bm) { 
         super.setImageBitmap(bm);
-        bmWidth = bm.getWidth();
+        bmWidth  = bm.getWidth();
         bmHeight = bm.getHeight();
     }
     
-    public void setMaxZoom(float x)
+    final public void setMaxZoom(float x)
     {
     	maxScale = x;
     }
@@ -202,11 +207,11 @@ public class TouchImageView extends ImageView {
     protected void onMeasure( int widthMeasureSpec, int heightMeasureSpec )
     {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        width = MeasureSpec.getSize(widthMeasureSpec);
+        width  = MeasureSpec.getSize(widthMeasureSpec);
         height = MeasureSpec.getSize(heightMeasureSpec);
         //Fit to screen.
         float scale;
-        float scaleX =  (float)width / (float)bmWidth;
+        float scaleX = (float)width  / (float)bmWidth;
         float scaleY = (float)height / (float)bmHeight;
         scale = Math.min(scaleX, scaleY);
         matrix.setScale(scale, scale);
