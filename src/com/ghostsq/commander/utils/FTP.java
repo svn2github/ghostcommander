@@ -71,6 +71,7 @@ public class FTP {
     }
 
     public final void debugPrint( String message ) {
+        if( !Utils.str( message ) ) return;
         Log.v( TAG, message );
         if( PRINT_DEBUG_INFO ) {
             debugBuf.append( message );

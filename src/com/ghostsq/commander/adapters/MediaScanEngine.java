@@ -67,6 +67,7 @@ public class MediaScanEngine extends Engine implements MediaScannerConnection.Me
     private void collectFiles( File folder, List<FileItem> to_scan ) {
         if( folder == null ) return;
         File[] files = folder.listFiles();
+        if( files == null ) return;
         for( File f : files ) {
             if( f == null ) continue;
             try {

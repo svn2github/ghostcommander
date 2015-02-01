@@ -90,6 +90,7 @@ public class Editor extends Activity implements TextWatcher {
                     label_text += " (" + frgm + ")";
                 file_name_tv.setText( label_text );
             }
+            te.setHorizontallyScrolling( horScroll );
         }
         catch( Exception e ) {
             Log.e( TAG, "", e );
