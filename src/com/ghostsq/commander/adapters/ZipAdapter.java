@@ -408,12 +408,15 @@ public class ZipAdapter extends CommanderAdapterBase {
                                 break;
                             }
         	            }
+                        in.close();
+                        out.close();
         			}
                     final int GINGERBREAD = 9;
                     if( android.os.Build.VERSION.SDK_INT >= GINGERBREAD )
                         ForwardCompat.setFullPermissions( dest_file );
-                    
-                    dest_file.setLastModified( entry.getTime() );
+                    long entry_time = entry.getTime();
+                    if( entry_time > 0 )
+                        dest_file.setLastModified( entry_time );
         			        			
                     if( stop || isInterrupted() ) {
                         error( ctx.getString( R.string.canceled ) );
