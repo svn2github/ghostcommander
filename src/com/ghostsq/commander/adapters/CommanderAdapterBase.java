@@ -312,15 +312,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     }
 
     protected final String createTempDir() {
-        Date d = new Date();
-        File parent_dir = null;
-        if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO )
-             parent_dir = ForwardCompat.getExternalFilesDir( ctx );
-        else
-             parent_dir = new File( DEFAULT_DIR );
-        File temp_dir = new File( parent_dir, "/temp/gc_" + d.getHours() + d.getMinutes() + d.getSeconds() + "/" );
-        temp_dir.mkdirs();
-        return temp_dir.getAbsolutePath();
+        return Utils.createTempDir( ctx ).getAbsolutePath();
     }
 
     @Override

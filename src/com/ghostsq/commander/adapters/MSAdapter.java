@@ -98,7 +98,7 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
     public void setUri( Uri uri ) {
         ms_uri = uri;
         String fr = ms_uri.getFragment();
-        if( "Alboms".equalsIgnoreCase( fr ) )
+        if( "Albums".equalsIgnoreCase( fr ) )
             baseContentUri = MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI;
         else
         if( "Artists".equalsIgnoreCase( fr ) )

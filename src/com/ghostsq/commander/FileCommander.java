@@ -19,6 +19,7 @@ import com.ghostsq.commander.root.MountAdapter;
 import com.ghostsq.commander.root.RootAdapter;
 import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.ForwardCompat;
+import com.ghostsq.commander.utils.ForwardCompat.PubPathType;
 import com.ghostsq.commander.utils.Utils;
 
 import android.app.Activity;
@@ -36,6 +37,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.provider.OpenableColumns;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -44,6 +46,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.view.ContextMenu;
 import android.view.Display;
 import android.view.View;
@@ -944,8 +947,15 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
 
                 String file_name = null;
                 String type = intent.getType();
-                if( "application/x-zip-compressed".equals( type ) || "application/zip".equals( type ) )
-                    uri = uri.buildUpon().scheme( "zip" ).build();
+                if( "application/x-zip-compressed".equals( type ) || "application/zip".equals( type ) ) {
+                    String scheme = uri.getScheme();
+                    if( !Utils.str( scheme ) || "file".equals( scheme ) )
+                        uri = uri.buildUpon().scheme( "zip" ).build();
+                    else if( "content".equals( scheme ) ) {
+                        uri = fileUriFromcontentUri( uri );
+                        if( uri == null ) return;
+                    }
+                }
                 else if( ContentResolver.SCHEME_CONTENT.equals( uri.getScheme() ) ) {
                     // unknown content is being passed. Let's just save it
                     try {
@@ -980,9 +990,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                                 showError( getString( R.string.not_accs, fn ) );
                         }
                     } catch( Exception e ) {
-                        showError( getString( R.string.not_accs, "" ) ); // TODO
-                                                                         // more
-                                                                         // verbose
+                        showError( getString( R.string.not_accs, "" ) ); // TODO more verbose
                     }
                 }
                 panels.Navigate( panels.getCurrent(), uri, crd, file_name );
@@ -994,6 +1002,41 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         }
     }
 
+    private final Uri fileUriFromcontentUri( Uri uri ) {
+        try {
+            ContentResolver cr = getContentResolver();
+            Cursor c = cr.query( uri, null, null, null, null );
+            int nci = c.getColumnIndex( OpenableColumns.DISPLAY_NAME );
+            int sci = c.getColumnIndex( OpenableColumns.SIZE );
+            c.moveToFirst();
+            String fn = c.getString( nci );
+            Long   fs = c.getLong( sci );
+            if( !Utils.str( fn ) ) fn = "temp.zip";
+            if( uri.toString().contains( "downloads" ) ) {
+                if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO ) {
+                    String dn_dir = ForwardCompat.getPath( PubPathType.DOWNLOADS );
+                    File dn_file = new File( dn_dir, fn );
+                    if( dn_file.exists() && dn_file.length() == fs )
+                        return Uri.parse( "zip:" + dn_file.getAbsolutePath() );
+                }
+            }
+            InputStream is = cr.openInputStream( uri );
+            if( is == null ) throw new Exception("No input stream");
+            File temp_dir = Utils.createTempDir( this );
+            File dest = new File( temp_dir, fn );
+            if( dest.exists() ) dest.delete();
+            FileOutputStream fos = new FileOutputStream( dest ); 
+            if( !Utils.copyBytes( is, fos ) ) throw new Exception("Copy failed");
+            is.close();
+            fos.close();
+            return Uri.parse( "zip:" + dest.getAbsolutePath() );            
+        } catch( Throwable e ) {
+            Log.e( TAG, uri.toString(), e );
+            showError( getString( R.string.cant_open ) );
+            return null;
+        }
+    }
+    
     private final void handleActivityResult( int requestCode, int resultCode, Intent data ) {
         CommanderAdapter ca = panels.getListAdapter( true );
         if( ca != null && ca.handleActivityResult( requestCode, resultCode, data ) )

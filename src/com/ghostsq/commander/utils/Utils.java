@@ -27,6 +27,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.net.UrlQuerySanitizer;
 import android.os.Build;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -521,6 +522,18 @@ public final class Utils {
         return false;
     }
 
+    public final static File createTempDir( Context ctx ) {
+        Date d = new Date();
+        File parent_dir = null;
+        if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO )
+             parent_dir = ForwardCompat.getExternalFilesDir( ctx );
+        else
+             parent_dir = new File( Environment.getExternalStorageDirectory().getAbsolutePath() );
+        File temp_dir = new File( parent_dir, "/temp/gc_" + d.getHours() + d.getMinutes() + d.getSeconds() + "/" );
+        temp_dir.mkdirs();
+        return temp_dir;
+    }
+    
     public final static int ENC_DESC_MODE_NUMB  = 0;
     public final static int ENC_DESC_MODE_BRIEF = 1;
     public final static int ENC_DESC_MODE_FULL  = 2;

@@ -120,7 +120,7 @@ public class HomeAdapter extends CommanderAdapterBase {
             Utils.changeLanguage( ctx );
 
             ia.add( makeItem( FAVS, "favs" ) );
-            ia.add( makeItem( LOCAL, "fs" ) );
+            ia.add( makeItem( LOCAL,"fs" ) );
 
             if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
                 Map<String, String> env = System.getenv();

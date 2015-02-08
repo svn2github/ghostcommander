@@ -123,7 +123,7 @@ public class ContentAdapter extends CommanderAdapterBase implements Engines.IRec
 
     public final static void populateHomeContextMenu( Context ctx, ContextMenu menu ) {
         final String vs = ctx.getString( R.string.view_title ); 
-        menu.add( 0, ALBUMS,    0, vs + " \"Alboms\"" );
+        menu.add( 0, ALBUMS,    0, vs + " \"Albums\"" );
         menu.add( 0, ARTISTS,   0, vs + " \"Artists\"" );
         menu.add( 0, GENRES,    0, vs + " \"Genres\"" );
         menu.add( 0, PLAYLISTS, 0, vs + " \"Playlists\"" );
