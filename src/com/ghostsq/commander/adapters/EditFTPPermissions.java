@@ -36,7 +36,7 @@ public class EditFTPPermissions extends EditPermissions {
         String a = np.generateChmodStringOct( true );
         if( a != null && a.length() > 0 ) {
             cmd = "CHMOD " + a + " " + file_path;
-            FTPEngines.ChmodEngine ce = new FTPEngines.ChmodEngine( this, uri, cmd );
+            FTPEngines.ChmodEngine ce = new FTPEngines.ChmodEngine( this, uri, cmd, null );
             ce.setHandler( new EditPermissions.DoneHandler() );
             ce.start();
         }

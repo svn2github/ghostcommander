@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
@@ -299,10 +300,20 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
     }
 
     private final void  setFTPMode( Uri uri_ ) {
-            String active_s = uri_.getQueryParameter( "a" );
-            boolean a_set = Utils.str( active_s );
-            if( ( mode & MODE_CLONE ) == NORMAL_MODE || a_set )
-                ftp.setActiveMode( a_set && ( "1".equals( active_s ) || "true".equals( active_s ) || "yes".equals( active_s ) ) );
+        String active_s = uri_.getQueryParameter( "a" );
+        boolean a_set = Utils.str( active_s );
+        if( ( mode & MODE_CLONE ) == NORMAL_MODE || a_set )
+            ftp.setActiveMode( a_set && ( "1".equals( active_s ) || "true".equals( active_s ) || "yes".equals( active_s ) ) );
+
+        String charset_s = uri_.getQueryParameter( "e" );
+        boolean e_set = Utils.str( charset_s );
+        if( ( mode & MODE_CLONE ) == NORMAL_MODE || e_set ) {
+            Charset charset = null;
+            try {
+                charset = Charset.forName( charset_s );
+            } catch( Exception e ) {}
+            ftp.setCharset( charset );
+        }
     }
     
     @Override
@@ -310,10 +321,6 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
         uri = uri_;
         try {
             setFTPMode( uri );
-            String charset_ = uri.getQueryParameter( "e" );
-            boolean e_set = Utils.str( charset_ );
-            if( ( mode & MODE_CLONE ) == NORMAL_MODE || e_set )
-                ftp.setCharset( charset_ );
         } catch( Exception e ) {
             Log.e( TAG,  "Uri: " + uri_, e );
         }  
@@ -356,7 +363,7 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
         try {
             LsItem[] subItems = bitsToItems( cis );
             notify( Commander.OPERATION_STARTED );
-            CalcSizesEngine cse = new FTPEngines.CalcSizesEngine( commander, theUserPass, uri, subItems, ftp.getActiveMode() );
+            CalcSizesEngine cse = new FTPEngines.CalcSizesEngine( commander, theUserPass, uri, subItems, ftp.getActiveMode(), ftp.getCharset() );
             commander.startEngine( cse );
         }
         catch(Exception e) {
@@ -384,7 +391,7 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
                 recipient = to.getReceiver(); 
             }
             notify( Commander.OPERATION_STARTED );
-            CopyFromEngine cfe = new FTPEngines.CopyFromEngine( commander, theUserPass, uri, subItems, dest, move, recipient, ftp.getActiveMode() );
+            CopyFromEngine cfe = new FTPEngines.CopyFromEngine( commander, theUserPass, uri, subItems, dest, move, recipient, ftp.getActiveMode(), ftp.getCharset() );
             commander.startEngine( cfe );
             return true;
         }
@@ -436,7 +443,7 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
         	LsItem[] subItems = bitsToItems( cis );
         	if( subItems != null ) {
         	    notify( Commander.OPERATION_STARTED );
-                commander.startEngine( new FTPEngines.DelEngine( ctx, theUserPass, uri, subItems, ftp.getActiveMode() ) );
+                commander.startEngine( new FTPEngines.DelEngine( ctx, theUserPass, uri, subItems, ftp.getActiveMode(), ftp.getCharset() ) );
 	            return true;
         	}
         }
@@ -521,7 +528,7 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
             notify( Commander.OPERATION_STARTED );
             boolean move = ( move_mode & MODE_MOVE ) != 0;
             boolean del_src_dir = ( move_mode & CommanderAdapter.MODE_DEL_SRC_DIR ) != 0;
-            commander.startEngine( new FTPEngines.CopyToEngine( ctx, theUserPass, uri, list, move, del_src_dir, ftp.getActiveMode() ) );
+            commander.startEngine( new FTPEngines.CopyToEngine( ctx, theUserPass, uri, list, move, del_src_dir, ftp.getActiveMode(), ftp.getCharset() ) );
             return true;
 		} catch( Exception e ) {
 			notify( e.getLocalizedMessage(), Commander.OPERATION_FAILED );
@@ -540,7 +547,7 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
             String old_name = getItemName( position, false );
             if( old_name != null ) {
                 notify( Commander.OPERATION_STARTED );
-                commander.startEngine( new FTPEngines.RenEngine( ctx, theUserPass, uri, old_name, new_name, ftp.getActiveMode() ) );
+                commander.startEngine( new FTPEngines.RenEngine( ctx, theUserPass, uri, old_name, new_name, ftp.getActiveMode(), ftp.getCharset() ) );
             }
         } catch( Exception e ) {
             e.printStackTrace();
@@ -663,6 +670,7 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
     @Override
     public Item getItem( Uri u ) {
         try {
+            setFTPMode( u );
             if( theUserPass == null || theUserPass.isNotSet() )
                 theUserPass = new FTPCredentials( u.getUserInfo() );
             if( ftp.connectAndLogin( u, theUserPass.getUserName(), theUserPass.getPassword(), false ) > 0 ) {

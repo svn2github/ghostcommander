@@ -260,12 +260,11 @@ public class FTP {
     public final boolean getActiveMode() {
         return allowActive;
     }
-    public void setCharset( String charset_ ) {
-        try {
-            charset = charset_ == null ? null : Charset.forName( charset_ );
-        } catch( Exception e ) {
-            Log.e( TAG, "invalid charset: " + charset_, e );
-        }
+    public void setCharset( Charset charset_ ) {
+        this.charset = charset_; 
+    }
+    public Charset  getCharset() {
+        return this.charset; 
     }
     private final synchronized boolean executeCommand( String command ) throws InterruptedException {
         sendCommand( command );

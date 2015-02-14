@@ -6,6 +6,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -15,6 +16,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -219,8 +221,23 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
                                 return;
                             }
                             bmp = BitmapFactory.decodeStream( is, null, options );
-                            if( bmp != null )
+                            if( bmp != null ) {
+                                ContentResolver cr = getContentResolver();
+                                final String[] projection = {
+                                     OpenableColumns.DISPLAY_NAME
+                                };
+                                Cursor c = cr.query( u, projection, null, null, null );
+                                int nci = c.getColumnIndex( OpenableColumns.DISPLAY_NAME );
+                                c.moveToFirst();
+                                final String fn = c.getString( nci );
+                                PictureViewer.this.h.post(new Runnable() {
+                                      @Override
+                                      public void run() {
+                                        PictureViewer.this.setBitmapToView( bmp, fn );
+                                      }
+                                  });                
                                 return;
+                            }
                         } catch( Throwable e ) {
                         } finally {
                             if( is != null )

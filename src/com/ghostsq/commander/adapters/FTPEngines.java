@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Date;
 
 import com.ghostsq.commander.Commander;
@@ -29,7 +30,7 @@ public final class FTPEngines {
         protected FTPCredentials crd;
         protected FTP            ftp;
         protected Uri            uri;
-        FTPEngine( Context ctx_, FTPCredentials crd_, Uri uri_, boolean active ) {
+        FTPEngine( Context ctx_, FTPCredentials crd_, Uri uri_, boolean active, Charset cs ) {
             ctx = ctx_;
             crd = crd_;
             uri = uri_;
@@ -38,6 +39,7 @@ public final class FTPEngines {
             }
             ftp = new FTP();
             ftp.setActiveMode( active );
+            ftp.setCharset( cs );
         }
     }    
     
@@ -48,8 +50,8 @@ public final class FTPEngines {
         protected WifiLock  wifiLock;
         protected String    progressMessage = null;
 
-        CopyEngine( Context ctx_, FTPCredentials crd_, Uri uri_, boolean active ) {
-            super( ctx_, crd_, uri_, active );
+        CopyEngine( Context ctx_, FTPCredentials crd_, Uri uri_, boolean active, Charset cs ) {
+            super( ctx_, crd_, uri_, active, cs );
             startTime = System.currentTimeMillis();
             WifiManager manager = (WifiManager)ctx.getSystemService( Context.WIFI_SERVICE );
             wifiLock = manager.createWifiLock( android.os.Build.VERSION.SDK_INT >= 12 ? 3 : WifiManager.WIFI_MODE_FULL, TAG );
@@ -93,8 +95,8 @@ public final class FTPEngines {
         private boolean   move;
         private Commander commander;
 
-        CopyFromEngine( Commander c, FTPCredentials crd_, Uri uri_, LsItem[] list, File dest, boolean move_, Engines.IReciever recipient_, boolean active ) {
-            super( c.getContext(), crd_, uri_, active );
+        CopyFromEngine( Commander c, FTPCredentials crd_, Uri uri_, LsItem[] list, File dest, boolean move_, Engines.IReciever recipient_, boolean active, Charset cs ) {
+            super( c.getContext(), crd_, uri_, active, cs );
             commander = c;
             mList = list;
             dest_folder = dest;
@@ -226,8 +228,8 @@ public final class FTPEngines {
         private   boolean move = false;
         private   boolean del_src_dir = false;
         
-        CopyToEngine( Context ctx_, FTPCredentials crd_, Uri uri_, File[] list, boolean move_, boolean del_src_dir_, boolean active ) {
-            super( ctx_, crd_, uri_, active );
+        CopyToEngine( Context ctx_, FTPCredentials crd_, Uri uri_, File[] list, boolean move_, boolean del_src_dir_, boolean active, Charset cs ) {
+            super( ctx_, crd_, uri_, active, cs );
             mList = list;
             basePathLen = list[0].getParent().length();
             if( basePathLen > 1 ) basePathLen++;
@@ -321,8 +323,8 @@ public final class FTPEngines {
     static class DelEngine extends FTPEngine {
         LsItem[] mList;
         
-        DelEngine( Context ctx_, FTPCredentials crd_, Uri uri_, LsItem[] list, boolean active ) {
-            super( ctx_, crd_, uri_, active );
+        DelEngine( Context ctx_, FTPCredentials crd_, Uri uri_, LsItem[] list, boolean active, Charset cs ) {
+            super( ctx_, crd_, uri_, active, cs );
             mList = list;
         }
         @Override
@@ -386,8 +388,8 @@ public final class FTPEngines {
     static class RenEngine extends FTPEngine {
         private String oldName, newName;
         
-        RenEngine( Context ctx_, FTPCredentials crd_, Uri uri_, String oldName_, String newName_, boolean active ) {
-            super( ctx_, crd_, uri_, active );
+        RenEngine( Context ctx_, FTPCredentials crd_, Uri uri_, String oldName_, String newName_, boolean active, Charset cs ) {
+            super( ctx_, crd_, uri_, active, cs );
             oldName = oldName_; 
             newName = newName_;
         }
@@ -412,8 +414,8 @@ public final class FTPEngines {
     static class ChmodEngine extends FTPEngine {
         private String chmod;
         
-        ChmodEngine( Context ctx_, Uri uri_, String chmod_ ) {
-            super( ctx_, null, uri_, false );
+        ChmodEngine( Context ctx_, Uri uri_, String chmod_, Charset cs ) {
+            super( ctx_, null, uri_, false, cs );
             chmod = chmod_;
         }
         @Override
@@ -438,8 +440,8 @@ public final class FTPEngines {
         private int num = 0, dirs = 0, depth = 0;
         private LsItem[]  list;
     
-        CalcSizesEngine( Commander c, FTPCredentials crd_, Uri uri_, LsItem[] list_, boolean active ) {
-            super( c.getContext(), crd_, uri_, active );
+        CalcSizesEngine( Commander c, FTPCredentials crd_, Uri uri_, LsItem[] list_, boolean active, Charset cs ) {
+            super( c.getContext(), crd_, uri_, active, cs );
             list = list_;
         }
 

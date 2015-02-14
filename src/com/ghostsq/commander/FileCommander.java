@@ -853,6 +853,11 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                     public void run() {
                         try {
                             Item item = ca.getItem( _uri );
+                            if( item == null ) {
+                                _pd.cancel();
+                                Log.e( TAG, "No item for: " + _uri.toString() );
+                                return;
+                            }
                             if( item.size > 5000000 ) {
                                 _handler.post( new Runnable() {
                                       @Override
@@ -951,7 +956,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                     String scheme = uri.getScheme();
                     if( !Utils.str( scheme ) || "file".equals( scheme ) )
                         uri = uri.buildUpon().scheme( "zip" ).build();
-                    else if( "content".equals( scheme ) ) {
+                    else if( ContentResolver.SCHEME_CONTENT.equals( scheme ) ) {
                         uri = fileUriFromcontentUri( uri );
                         if( uri == null ) return;
                     }
@@ -1005,7 +1010,11 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
     private final Uri fileUriFromcontentUri( Uri uri ) {
         try {
             ContentResolver cr = getContentResolver();
-            Cursor c = cr.query( uri, null, null, null, null );
+            final String[] projection = {
+                 OpenableColumns.DISPLAY_NAME,
+                 OpenableColumns.SIZE
+            };
+            Cursor c = cr.query( uri, projection, null, null, null );
             int nci = c.getColumnIndex( OpenableColumns.DISPLAY_NAME );
             int sci = c.getColumnIndex( OpenableColumns.SIZE );
             c.moveToFirst();
