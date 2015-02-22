@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.Inet6Address;
@@ -130,6 +131,12 @@ public class FTP {
         }
     }
     private final String getReplyLine() {
+        return getLine( true );
+    }
+    private final String getLine() {
+        return getLine( false );
+    }
+    private final String getLine( boolean skip_to_code_line ) {
         try {
         	if( inputStream == null ) {
         		debugPrint( "No Connection" );
@@ -158,10 +165,13 @@ public class FTP {
                     }
                     buf[i] = (byte)b;
                 }
+                if( buf[0] == 0 ) continue;
+                if( !skip_to_code_line ) break;
 //Log.v( TAG, "\nfrom FTP:" + new String( buf, 0, i ) + "\n" );
             } while( !(Character.isDigit( buf[0] ) &&
                        Character.isDigit( buf[1] ) &&
-                       Character.isDigit( buf[2] ) && buf[3] == ' ' ) ); // read until a coded response be found
+                       Character.isDigit( buf[2] ) && 
+                       ( buf[3] == ' ' || buf[3] == '-' ) ) ); // read until a coded response be found
             String reply = charset != null ? new String( buf, 0, i, charset.name() ) : new String( buf, 0, i );
             
             debugPrint( "<<< " + reply );
@@ -235,6 +245,9 @@ public class FTP {
         if( connect( host, port ) ) {
             if( login( user, pass ) ) {
                 if( cwd ) {
+                    
+                    mbSwitchToUTF8();
+                    
                     String path = u.getPath();
                     if( !Utils.str( path ) ) path = File.separator;
                     if( !setCurrentDir( path ) && !"..".equals( path ) ) {
@@ -266,6 +279,29 @@ public class FTP {
     public Charset  getCharset() {
         return this.charset; 
     }
+    
+    private final void mbSwitchToUTF8() {
+        try {
+            if( charset != null && !charset.equals( Charset.defaultCharset() ) ) return;
+            if( !isFeature( "UTF8" ) ) return;
+            executeCommand( "OPTS UTF8 ON" );
+        } catch( InterruptedException e ) {}
+    }
+
+    private final boolean isFeature( String feat_name ) {
+        sendCommand( "FEAT" );
+        String pwd_answer = getReplyLine();
+        if( !isPositiveComplete( getReplyCode( pwd_answer ) ) ) return false;
+        boolean supported = false;
+        do {
+            String feat = getLine();
+            if( feat == null ) break;
+            if( getReplyCode( feat ) > 0 ) break;
+            if( feat_name.equalsIgnoreCase( feat.trim() ) ) supported = true;
+        } while( true );
+        return supported;
+    }
+    
     private final synchronized boolean executeCommand( String command ) throws InterruptedException {
         sendCommand( command );
         return waitForPositiveResponse();
@@ -607,6 +643,7 @@ public class FTP {
         		return null;
         	setCurrentDir( path );
     	}
+    	executeCommand( "TYPE A" );
     	ArrayList<LsItem> array = null;
         try {
             String cmd = "LIST";

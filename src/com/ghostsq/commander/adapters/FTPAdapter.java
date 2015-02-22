@@ -20,6 +20,7 @@ import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.adapters.Engines.IReciever;
 import com.ghostsq.commander.adapters.FTPEngines.CalcSizesEngine;
 import com.ghostsq.commander.adapters.FTPEngines.CopyFromEngine;
+import com.ghostsq.commander.adapters.FTPEngines.RenEngine;
 import com.ghostsq.commander.favorites.Favorite;
 import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.LsItem.LsItemPropComparator;
@@ -381,7 +382,18 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
             if( !checkReadyness() ) return false;
             Engines.IReciever recipient = null;
             File dest = null;
-            if( to instanceof FSAdapter  ) {
+            if( move && to instanceof FTPAdapter && subItems.length == 1 && !subItems[0].isDirectory() ) {
+                Uri to_uri = to.getUri();
+                if( to_uri.getHost().equalsIgnoreCase( uri.getHost() ) ) {
+                    notify( Commander.OPERATION_STARTED );
+                    String loc_name = subItems[0].getName();
+                    String old_name = Utils.mbAddSl( uri.getPath() ) + loc_name;  
+                    String new_name = Utils.mbAddSl( to_uri.getPath() ) + loc_name;
+                    RenEngine re = new RenEngine( ctx, theUserPass, uri, old_name, new_name, ftp.getActiveMode(), ftp.getCharset() );
+                    commander.startEngine( re );
+                    return true;
+                }
+            } else if( to instanceof FSAdapter  ) {
                 dest = new File( to.toString() );
                 if( !dest.exists() ) dest.mkdirs();
                 if( !dest.isDirectory() )
@@ -391,7 +403,7 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
                 recipient = to.getReceiver(); 
             }
             notify( Commander.OPERATION_STARTED );
-            CopyFromEngine cfe = new FTPEngines.CopyFromEngine( commander, theUserPass, uri, subItems, dest, move, recipient, ftp.getActiveMode(), ftp.getCharset() );
+            CopyFromEngine cfe = new CopyFromEngine( commander, theUserPass, uri, subItems, dest, move, recipient, ftp.getActiveMode(), ftp.getCharset() );
             commander.startEngine( cfe );
             return true;
         }
@@ -547,7 +559,8 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
             String old_name = getItemName( position, false );
             if( old_name != null ) {
                 notify( Commander.OPERATION_STARTED );
-                commander.startEngine( new FTPEngines.RenEngine( ctx, theUserPass, uri, old_name, new_name, ftp.getActiveMode(), ftp.getCharset() ) );
+                RenEngine re = new RenEngine( ctx, theUserPass, uri, old_name, new_name, ftp.getActiveMode(), ftp.getCharset() );
+                commander.startEngine( re );
             }
         } catch( Exception e ) {
             e.printStackTrace();

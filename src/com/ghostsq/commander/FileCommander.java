@@ -142,15 +142,6 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
 
         if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
             if( ( getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK ) >= Configuration.SCREENLAYOUT_SIZE_LARGE )
-
-                /*
-                 * Display display = getWindowManager().getDefaultDisplay();
-                 * DisplayMetrics displayMetrics = new DisplayMetrics();
-                 * display.getMetrics(displayMetrics);
-                 * 
-                 * if( displayMetrics.heightPixels / displayMetrics.densityDpi >
-                 * 1000 )
-                 */
                 ab = getWindow().requestFeature( Window.FEATURE_ACTION_BAR );
         }
         if( !ab )
