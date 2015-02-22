@@ -393,7 +393,8 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
                     commander.startEngine( re );
                     return true;
                 }
-            } else if( to instanceof FSAdapter  ) {
+            } 
+            if( to instanceof FSAdapter  ) {
                 dest = new File( to.toString() );
                 if( !dest.exists() ) dest.mkdirs();
                 if( !dest.isDirectory() )
