@@ -8,17 +8,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ClosedByInterruptException;
-import java.security.MessageDigest;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Locale;
 
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.adapters.CommanderAdapter.Item;
 import com.ghostsq.commander.adapters.Engine;
-import com.ghostsq.commander.adapters.Engines.IReciever;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.Utils;
@@ -28,7 +22,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
-import android.os.Message;
 import android.os.PowerManager;
 import android.os.StatFs;
 import android.provider.MediaStore.Audio;
@@ -37,47 +30,20 @@ import android.provider.MediaStore.MediaColumns;
 import android.provider.MediaStore.Video;
 import android.text.format.Formatter;
 import android.util.Log;
-import android.util.SparseBooleanArray;
-import android.view.ContextMenu;
-import android.widget.AdapterView;
 
 public final class FSEngines {
     private   final static String TAG = "FSEngines";
 
-    public static class FileItem extends Item {
-        public FileItem( String name ) {
-            this( new File( name ) );
-        }
-        public FileItem( File f ) {
-            origin = f;
-            
-            dir  = f.isDirectory();
-            if( dir ) {
-                /*
-                if( ( mode & ICON_MODE ) == ICON_MODE )  
-                    item.name = f.f.getName() + SLS;
-                else
-                */
-                name = File.separator + f.getName();
-            } else {
-                name = f.getName();
-                size = f.length();
-            }
-            long msFileDate = f.lastModified();
-            if( msFileDate != 0 )
-                date = new Date( msFileDate );
-        }
-        public final File f() {
-            return origin != null ? (File)origin : null;
-        }
+    public interface IFileItem {
+        public File f();
     }
     
 	public static class CalcSizesEngine extends Engine {
-		private FileItem[] mList;
+		private   IFileItem[] mList;
         protected CommanderAdapterBase cab;
         protected int  num = 0, dirs = 0, depth = 0;
 
-        CalcSizesEngine( CommanderAdapterBase cab, FileItem[] list ) {
+        CalcSizesEngine( CommanderAdapterBase cab, IFileItem[] list ) {
             this.cab = cab;
             mList = list;
             setName( ".CalcSizesEngine" );
@@ -98,7 +64,7 @@ public final class FSEngines {
     				if( ( cab.mode & CommanderAdapter.MODE_SORTING) == CommanderAdapter.SORT_SIZE )
       				    cab.reSort();
                     if( mList.length == 1 ) {
-                        Item item = mList[0];
+                        Item item = (Item)mList[0];
                         if( item.dir ) {
                             result.append( c.getString( R.string.sz_folder, item.name, num ) );
                             if( dirs > 0 )
@@ -109,16 +75,16 @@ public final class FSEngines {
                     } else
                         result.append( c.getString( R.string.sz_files, num ) );
                     if( sum > 0 )
-                        result.append( c.getString( R.string.sz_Nbytes, Formatter.formatFileSize( cab.ctx, sum ).trim() ) );
+                        result.append( c.getString( R.string.sz_Nbytes, Formatter.formatFileSize( c, sum ).trim() ) );
                     if( sum > 1024 )
                         result.append( c.getString( R.string.sz_bytes, sum ) );
                     if( mList.length == 1 ) {
-                        FileItem item = mList[0];
+                        Item item = (Item)mList[0];
                         result.append( c.getString( R.string.sz_lastmod ) );
                         result.append( "&#xA0;" );
-                        String date_s = Utils.formatDate( item.date, cab.ctx );
+                        String date_s = Utils.formatDate( item.date, c );
                         result.append( date_s );
-                        File f = item.f(); 
+                        File f = mList[0].f(); 
                         if( f.isFile() ) {
                             String ext  = Utils.getFileExt( item.name );
                             String mime = Utils.getMimeByExt( ext );
@@ -141,15 +107,17 @@ public final class FSEngines {
                 String str = result.toString();
 				sendReport( str );
 			} catch( Exception e ) {
+			    Log.e( TAG, "", e );
 				sendProgress( e.getMessage(), Commander.OPERATION_FAILED );
 			}
         }
-    	protected final long getSizes( FileItem[] list ) throws Exception {
+    	protected final long getSizes( IFileItem[] list ) throws Exception {
     	    long count = 0;
     		for( int i = 0; i < list.length; i++ ) {
                 if( isStopReq() ) return -1;
-    			FileItem f = list[i];
-    			if( f.dir ) {
+    			IFileItem f = list[i];
+    			Item item = (Item)f;
+    			if( item.dir ) {
     				dirs++;
     				if( depth++ > 20 )
     					throw new Exception( cab.s( R.string.too_deep_hierarchy ) );
@@ -161,14 +129,14 @@ public final class FSEngines {
         				    subfiles_ex[j] = new FileItem( subfiles[j] );
         				long sz = getSizes( subfiles_ex );
         				if( sz < 0 ) return -1;
-        				f.size = sz;
-        				count += f.size;
+        				item.size = sz;
+        				count += item.size;
     				}
     				depth--;
     			}
     			else {
     				num++;
-    				count += f.size;
+    				count += item.size;
     			}
     		}
     		return count;

@@ -57,6 +57,7 @@ import android.view.KeyEvent;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.support.v4.provider.DocumentFile;
 import android.text.Html;
 import android.util.Log;
 import android.widget.AdapterView;
@@ -446,6 +447,9 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                     f.deleteOnExit();
             } catch( Exception e ) {
             }
+        case REQUEST_OPEN_DOCUMENT_TREE:
+            if( data != null )
+                Navigate( data.getData(), null, null );
         default:
             handleActivityResult( requestCode, resultCode, data );
         }
@@ -529,6 +533,9 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             switch( id ) {
             case R.id.keys:
             case R.id.F1:
+                
+                issue( ForwardCompat.getDocTreeIntent(), 21 );
+                
                 showInfo( getString( R.string.keys_text ) );
                 break;
             case R.id.F3:
@@ -711,7 +718,8 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 break;
             case R.id.rescan:
                 if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO ) {
-                    MediaScanEngine mse = new MediaScanEngine( this, new File( Panels.DEFAULT_LOC ), false );
+                    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences( this );
+                    MediaScanEngine mse = new MediaScanEngine( this, new File( Panels.DEFAULT_LOC ), sp.getBoolean( "scan_all", false ) );
                     mse.setHandler( new SimpleHandler() );
                     startEngine( mse );
                 } else
@@ -783,7 +791,10 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             if( !Utils.str( ext ) )
                 ext = Utils.getFileExt( uri.getFragment() );
             String mime = Utils.getMimeByExt( ext );
-            if( !Utils.str( scheme ) ) {
+            if( ContentResolver.SCHEME_CONTENT.equals( scheme ) ) {
+                
+            }
+            else if( !Utils.str( scheme ) ) {
                 Intent i = new Intent( Intent.ACTION_VIEW );
                 Intent op_intent = getIntent();
                 if( op_intent != null ) {
@@ -809,6 +820,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET );
                 // | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
                 startActivityForResult( i, REQUEST_CODE_OPEN );
+                return;
             } 
             else if( mime != null && ( mime.startsWith( "audio" ) || mime.startsWith( "video" ) ) ) {
                 startService( new Intent( this, StreamServer.class ) );
@@ -828,9 +840,12 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 return;
             }
             else {
+                DocumentFile df;
+                
+                
                 File temp_dir = new File( ForwardCompat.getExternalFilesDir( this ), "to_open" );
                 temp_dir.mkdir();
-                final CommanderAdapter ca = CA.CreateAdapterInstance( scheme, this );            
+                final CommanderAdapter ca = CA.CreateAdapterInstance( uri, this );            
                 if( ca == null ) return;
                 ca.Init( this );
                 ca.setCredentials( crd );
@@ -887,7 +902,6 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                     }
                 }).start();
             }
-
         } catch( ActivityNotFoundException e ) {
             showMessage( "Application for open '" + uri.toString() + "' is not available, " );
         } catch( Exception e ) {

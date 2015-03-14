@@ -196,7 +196,7 @@ public class TextViewer extends Activity {
                 if( ContentResolver.SCHEME_CONTENT.equals( scheme ) ) {
                     is = getContentResolver().openInputStream( uri ); 
                 } else {
-                    ca = CA.CreateAdapterInstance( scheme, TextViewer.this );
+                    ca = CA.CreateAdapterInstance( uri, TextViewer.this );
                     if( ca != null ) {
                         Credentials crd = null; 
                         try {

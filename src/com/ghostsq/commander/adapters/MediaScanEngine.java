@@ -44,7 +44,7 @@ public class MediaScanEngine extends Engine implements MediaScannerConnection.Me
     public void run() {
         sendProgress( "", Commander.OPERATION_IN_PROGRESS, -1 );
         ArrayList<FileItem> to_scan = new ArrayList<FileItem>();
-        collectFiles( folder, to_scan );
+        collectFiles( folder, to_scan, 0 );
         num = to_scan.size();
         if( num > 0 ) {
             to_scan_a = new FileItem[num];
@@ -64,15 +64,18 @@ public class MediaScanEngine extends Engine implements MediaScannerConnection.Me
         }
     }
 
-    private void collectFiles( File folder, List<FileItem> to_scan ) {
+    private void collectFiles( File folder, List<FileItem> to_scan, int lvl ) {
         if( folder == null ) return;
         File[] files = folder.listFiles();
         if( files == null ) return;
-        for( File f : files ) {
+        int num = files.length;
+        for( int fi = 0; fi < num; fi++ ) {
+            File f = files[fi];
             if( f == null ) continue;
             try {
-                if( f.isDirectory() )
-                    collectFiles( f, to_scan );
+                if( f.isDirectory() ) {
+                    collectFiles( f, to_scan, lvl+1 );
+                }
                 else {
                     String fn = f.getName();
                     if( MediaStore.MEDIA_IGNORE_FILENAME.equals( fn ) ) continue;
@@ -81,6 +84,7 @@ public class MediaScanEngine extends Engine implements MediaScannerConnection.Me
                     if( all || ( mime != null && ( mime.startsWith( "image/" ) || mime.startsWith( "audio/" ) || mime.startsWith( "video/" ) ) ) )
                         to_scan.add( new FileItem( f.getAbsolutePath(), mime ) );
                 }
+                if( lvl == 0 ) sendProgress( f.getName(), fi * 100 / num );
             } catch( Exception e ) {}
         }
     }    
@@ -110,14 +114,18 @@ public class MediaScanEngine extends Engine implements MediaScannerConnection.Me
         }
         else
             rep_path = path;
-        Log.v( TAG, "Scan completed: " + path + " " + uri.toString() );
-        
-        sendProgress( rep_path, count * 100 / num );
-        File f = new File( path );
-        if( f.isFile() && f.length() == 0 ) {
-            if( ctx.getContentResolver().delete( uri, null, null ) > 0 ) {
-                Log.w( "scanMedia()", "Deleteing " + path );
-                f.delete();
+        if( uri == null )
+            Log.w( TAG, "Uri is null for " + path );
+        else {
+            //Log.v( TAG, "Scan completed: " + path + " " + uri.toString() );
+            
+            sendProgress( rep_path, count * 100 / num );
+            File f = new File( path );
+            if( f.isFile() && f.length() == 0 ) {
+                if( ctx.getContentResolver().delete( uri, null, null ) > 0 ) {
+                    Log.w( "scanMedia()", "Deleteing " + path );
+                    f.delete();
+                }
             }
         }
         if( stop || !scanNextFile() ) {

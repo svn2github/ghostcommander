@@ -1094,7 +1094,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             }
             if( create_new_adapter ) {
                 if( "..".equals( dest ) ) {
-                    oth_adapter = CA.CreateAdapter( cur_adapter.getScheme(), c );
+                    oth_adapter = CA.CreateAdapter( cur_adapter.getUri(), c );
                     Uri cur_uri = cur_adapter.getUri();
                     String p = cur_uri.getEncodedPath();
                     if( !Utils.str( p ) || "/".equals( p ) ) {
@@ -1114,8 +1114,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                         c.showError( c.getString( R.string.inv_dest ) );
                         return;
                     }
-                    String scheme = dest_uri.getScheme();
-                    oth_adapter = CA.CreateAdapter( scheme, c );
+                    oth_adapter = CA.CreateAdapter( dest_uri, c );
                     if( oth_adapter == null ) {
                         c.showError( c.getString( R.string.inv_dest ) );
                         return;

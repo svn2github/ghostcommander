@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.FileCommander;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.adapters.CommanderAdapter;
@@ -42,6 +43,7 @@ public class HomeAdapter extends CommanderAdapterBase {
     private final int[] LOCAL    = { R.string.local,   R.string.local_descr,   R.drawable.fs      }; 
     private final int[] EXTERNAL = { R.string.external,R.string.external_descr,R.drawable.usd     }; 
     private final int[] MEDIA    = { R.string.media,   R.string.media_descr,   R.drawable.ms      }; 
+    private final int[] SAF      = { R.string.saf  ,   R.string.saf_descr,     R.drawable.saf     }; 
     private final int[] FTP      = { R.string.ftp,     R.string.ftp_descr,     R.drawable.ftp     };
     private final int[] PLUGINS  = { R.string.plugins, R.string.plugins_descr, R.drawable.plugins };
     private final int[] ROOT     = { R.string.root,    R.string.root_descr,    R.drawable.root    }; 
@@ -141,6 +143,8 @@ public class HomeAdapter extends CommanderAdapterBase {
                     
                 ia.add( makeItem( MEDIA, expt_ms_path ) );
             }
+            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) 
+                ia.add( makeItem( SAF, "saf" ) );
             
             ia.add( makeItem( FTP, "ftp" ) );
             
@@ -274,6 +278,10 @@ public class HomeAdapter extends CommanderAdapterBase {
         if( "exit".equals( item.origin ) ) { 
             commander.dispatchCommand( R.id.exit ); 
             return; 
+        }
+        if( "saf".equals( item.origin ) ) { 
+            commander.issue( ForwardCompat.getDocTreeIntent(), Commander.REQUEST_OPEN_DOCUMENT_TREE );
+            return;
         }
         if( "fs".equals( item.origin ) ) 
             uri_s = Environment.getExternalStorageDirectory().getAbsolutePath(); 

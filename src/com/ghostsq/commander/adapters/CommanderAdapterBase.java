@@ -503,24 +503,25 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             }
             int fg_color = ck != null ? ( item.sel ? ck.sfgColor : ck.fgrColor ) : ctx.getResources().getColor( R.color.fgr_def );
             int fg_color_m = fg_color;
-            if( item.colorCache != 0 )
+            if( name == null || item.colorCache != 0 )
                 fg_color_m = item.colorCache; 
             else {
                 try {
                     for( int i = 0; i < typeColors.length; i++ ) {
                         for( int j = 0; j < filePatterns[i].length; j++ ) {
-                             Matcher m = filePatterns[i][j].matcher( name );
-                             if( m != null && m.matches() ) {
+                            Pattern fp = filePatterns[i][j];
+                            Matcher m = fp.matcher( name );
+                            if( m != null && m.matches() ) {
                                  fg_color_m = typeColors[i];
                                  item.colorCache = fg_color_m;
                                  break;
-                             }
+                            }
                         }
                         if( fg_color_m != fg_color )
                             break;
                     }
                 } catch( Exception e ) {
-                    Log.e( TAG, null, e );
+                    Log.e( TAG, "file: " + name, e );
                 }
             }
             if( nameView != null ) {
@@ -643,12 +644,12 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             for( int i = 0; i < cis.size(); i++ )
                 if( cis.valueAt( i ) )
                     counter++;
-            String[] uris = new String[counter];
+            String[] paths = new String[counter];
             int j = 0;
             for( int i = 0; i < cis.size(); i++ )
                 if( cis.valueAt( i ) )
-                    uris[j++] = getItemName( cis.keyAt( i ), true );
-            return uris;
+                    paths[j++] = getItemName( cis.keyAt( i ), true );
+            return paths;
         } catch( Exception e ) {
             Log.e( TAG, "bitsToNames()", e );
         }

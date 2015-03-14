@@ -15,15 +15,17 @@ import com.ghostsq.commander.adapters.FSEngines.AskEngine;
 import com.ghostsq.commander.adapters.FSEngines.CalcSizesEngine;
 import com.ghostsq.commander.adapters.FSEngines.CopyEngine;
 import com.ghostsq.commander.adapters.FSEngines.DeleteEngine;
-import com.ghostsq.commander.adapters.FSEngines.FileItem;
+import com.ghostsq.commander.adapters.FileItem;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ContextMenu;
@@ -191,7 +193,9 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
         if( R.id.rescan_dir == command_id ) {
             FileItem[] list = bitsToFilesEx( cis );
             if ( list == null || list.length == 0 ) return;
-            MediaScanEngine mse = new MediaScanEngine( ctx, list[0].f().getAbsoluteFile(), false );
+            
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences( ctx );
+            MediaScanEngine mse = new MediaScanEngine( ctx, list[0].f().getAbsoluteFile(), sp.getBoolean( "scan_all", false ) );
             mse.setHandler( new SimpleHandler() );
             commander.startEngine( mse );
         }

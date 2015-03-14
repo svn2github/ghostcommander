@@ -249,8 +249,7 @@ class ThumbnailsThread extends Thread {
                 } else {
                     boolean SDK16UP = android.os.Build.VERSION.SDK_INT >= 16;
                     String[] proj_id = { BaseColumns._ID };
-                    String[] proj_wh = { BaseColumns._ID };
-                    String[] proj = SDK16UP ? proj_wh : proj_id;
+                    String[] proj = SDK16UP ? th_proj : proj_id;
                     String where = Media.DATA + " = '" + fn + "'";
                     cursor = cr.query( Media.EXTERNAL_CONTENT_URI, proj, where, null, null );
                     if( cursor != null && cursor.getCount() > 0 ) {

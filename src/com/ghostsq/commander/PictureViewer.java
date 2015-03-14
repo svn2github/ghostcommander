@@ -10,7 +10,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,7 +22,6 @@ import android.view.MotionEvent;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.View;
-import android.widget.AnalogClock;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -34,12 +32,12 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.List;
 
-import com.example.touch.TouchImageView;
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.Engine;
 import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.Utils;
+import com.ortiz.touch.TouchImageView;
 
 public class PictureViewer extends Activity implements View.OnTouchListener {
     private final static String TAG = "PictureViewerActivity";
@@ -64,7 +62,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
           else
               image_view = new ImageView( this );
           fl.addView( image_view );
-
+          image_view.setVisibility( View.GONE );
           SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( this );          
             String fnt_sz_s = sharedPref.getString( "font_size", "12" );
             int fnt_sz = 12;
@@ -79,9 +77,9 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
           FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL );
           name_view.setLayoutParams( lp );
           fl.addView( name_view );
-
           setContentView( fl );
-          image_view.setOnTouchListener( this );
+//!!!          image_view.setOnTouchListener( this );
+ 
         }
         catch( Throwable e ) {
             e.printStackTrace();
@@ -107,7 +105,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
         String name_to_show = null; 
         String scheme = uri.getScheme();
         if( !ContentResolver.SCHEME_CONTENT.equals( scheme ) ) {
-            ca = CA.CreateAdapterInstance( scheme, this );            
+            ca = CA.CreateAdapterInstance( uri, this );            
             if( ca == null ) return;
             
             ca.Init( new CommanderStub() );
@@ -143,7 +141,8 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
                 ca.readSource( p_uri, null );
                 Log.d( TAG, "end reading" );
             }
-        }        
+        }
+        image_view.invalidate();
         new LoaderThread( uri, name_to_show ).start();
     }
 
@@ -161,14 +160,19 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
             Log.v( TAG, "Bitmap is ready" );
             hideWait();
             if( bmp != null ) {
+                image_view.setVisibility( View.VISIBLE );
+                /*
                 if( touch )
                     ((TouchImageView)image_view).init();
+                */
                 image_view.setImageBitmap( bmp );
                 image_view.requestLayout();
                 image_view.invalidate();
-                
-                if( touch )
-                    ((TouchImageView)image_view).setMaxZoom( 4f );
+                if( touch ) {
+                    TouchImageView tiv = ((TouchImageView)image_view);
+                    tiv.resetZoom();
+                    //.setMaxZoom( 4f );
+                }
                 name_view.setTextColor( Color.WHITE );
                 name_view.setText( name );
                 return;
@@ -273,7 +277,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
                             boolean available_supported = is.available() > 0;
                             while( ( n = is.read( buf ) ) != -1 ) {
                                 
-                                //Log.v( "readStreamToBuffer", "Read " + n + " bytes" );
+                                Log.v( "readStreamToBuffer", "Read " + n + " bytes" );
                                 //sendProgress( tot += n );
                                 Thread.sleep( 1 );
                                 fos.write( buf, 0, n );
@@ -284,7 +288,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
                                         Thread.sleep( 20 * i );
                                     }
                                     if( is.available() == 0 ) {
-                                        //Log.v( "readStreamToBuffer", "No more data!" );
+                                        Log.v( "readStreamToBuffer", "No more data!" );
                                         break;
                                     }
                                 }
@@ -345,7 +349,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
 
     @Override
     public boolean onTouch( View v, MotionEvent event ) {
-        if( touch && ((TouchImageView)image_view).onTouch( v, event ) ) return true;
+//!!!        if( touch && ((TouchImageView)image_view).onTouch( v, event ) ) return true;
         if( event.getAction() == MotionEvent.ACTION_UP ) {
             boolean to_next = event.getX() > image_view.getWidth() / 2;
             //Toast.makeText( this, to_next ? "Go next" : "Go prev", Toast.LENGTH_SHORT ).show();

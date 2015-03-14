@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="file">Файл</string>
+  <string name="file">Создать</string>
   <string name="location">Адрес</string>
   <string name="list">Список</string>
   <string name="app">Приложение</string>
@@ -351,6 +351,8 @@
   <string name="summary_busybox_location">В случае если он находится не в пути поиска.</string>
   <string name="su_location">Расположение \"su\" файла</string>
   <string name="summary_su_location">Расположение \"su\" файла</string>
+  <string name="scan_all">Сканировать все файлы</string>
+  <string name="summary_scan_all">Помимо мультимедиа файлов</string>
   <string name="execute_command">Исполнить команду</string>
   <string name="nothing_to_open">Не ясно что редактировать</string>
   <string name="remind_to_save">Не забудьте сохранить изменения!</string>

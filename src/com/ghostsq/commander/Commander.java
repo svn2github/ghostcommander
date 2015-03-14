@@ -59,6 +59,7 @@ public interface Commander {
     public final static String MESSAGE_EXTRA   = "com.ghostsq.commander.MESSAGE";
 
     public final static int  ACTIVITY_REQUEST_FOR_NOTIFY_RESULT = 695; 
+    public final static int  REQUEST_OPEN_DOCUMENT_TREE  = 935; 
     
     /**
      * @return current UI context

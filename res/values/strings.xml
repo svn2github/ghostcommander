@@ -38,6 +38,7 @@
 <string name="local">Local storage</string>
 <string name="external">External card</string>
 <string name="media">Media Store</string>
+<string name="saf">Storage Access Framework</string>
 <string name="ftp">FTP site</string>
 <string name="sftp">SFTP site</string>
 <string name="smb">Windows share</string>
@@ -52,6 +53,7 @@
 <string name="local_descr">Browse, organize and modify the contents of the primary file system</string>
 <string name="external_descr">Access files on the physically inserted SD card. It may be read-only on some devices.</string>
 <string name="media_descr">Make modifications on the external SD card via the MediaStore interface</string>
+<string name="saf_descr">Browse and open documents across all of their preferred document storage providers.</string>
 <string name="ftp_descr">Connect to an FTP server</string>
 <string name="sftp_descr">Connect to an SSH FTP (sftp) server</string>
 <string name="smb_descr">Connect to shared folders on a Windows machine</string>
@@ -357,7 +359,9 @@
 <string name="busybox_location">Path to BusyBox</string>
 <string name="summary_busybox_location">Specify the location of the BusyBox executable</string>
 <string name="su_location">Path to su</string>
-<string name="summary_su_location">Specify the location of the su executable</string> 
+<string name="summary_su_location">Specify the location of the su executable</string>
+<string name="scan_all">Scan all files</string>
+<string name="summary_scan_all">Uncheck to scan only media files</string>
 <string name="execute_command">Execute a command</string>
 <string name="nothing_to_open">Nothing to open</string>
 <string name="remind_to_save">Don\'t forget to save your changes</string>

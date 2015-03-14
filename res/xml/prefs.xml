@@ -244,11 +244,6 @@
                   android:summary="@string/summary_root_root"
                   android:defaultValue="false"/>
             <EditTextPreference 
-		        android:key="editor_activity" 
-		        android:title="@string/editor_activity" 
-		        android:summary="@string/summary_editor_activity" 
-		        android:defaultValue="@string/value_editor_activity"/>
-            <EditTextPreference 
                 android:key="su_path" 
                 android:title="@string/su_location" 
                 android:summary="@string/summary_su_location" 
@@ -258,11 +253,21 @@
 		        android:title="@string/busybox_location" 
 		        android:summary="@string/summary_busybox_location" 
 		        android:defaultValue="busybox"/>
-            <CheckBoxPreference
+            <EditTextPreference 
+		        android:key="editor_activity" 
+		        android:title="@string/editor_activity" 
+		        android:summary="@string/summary_editor_activity" 
+		        android:defaultValue="@string/value_editor_activity"/>
+		    <CheckBoxPreference
                 android:key="send_content"
                 android:title="@string/send_content"
                 android:summary="@string/summary_send_content"
                 android:defaultValue="true"/>
-		    </PreferenceScreen>
+            <CheckBoxPreference
+                android:key="scan_all"
+                android:title="@string/scan_all"
+                android:summary="@string/summary_scan_all"
+                android:defaultValue="false"/>
+            		    </PreferenceScreen>
     </PreferenceCategory>
 </PreferenceScreen>

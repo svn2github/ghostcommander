@@ -244,7 +244,7 @@ public class Editor extends Activity implements TextWatcher {
                 final String   scheme = uri.getScheme();
                 InputStream is = null;
                 if( Editor.this.ca == null ) {
-                    Editor.this.ca = CA.CreateAdapterInstance( scheme, Editor.this );
+                    Editor.this.ca = CA.CreateAdapterInstance( uri, Editor.this );
                 }
                 if( Editor.this.ca != null ) {
                     Credentials crd = null; 

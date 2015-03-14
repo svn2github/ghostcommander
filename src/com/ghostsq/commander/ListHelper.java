@@ -98,7 +98,7 @@ public class ListHelper {
             String scheme = uri.getScheme();
             if( scheme == null ) scheme = "";
             if( ca == null || !scheme.equals( ca.getScheme() ) ) {
-                ca_new = CA.CreateAdapter( scheme, p.c );
+                ca_new = CA.CreateAdapter( uri, p.c );
                 if( ca_new == null ) {
                     Log.e( TAG, "Can't create adapter of type '" + scheme + "'" );
                     if( ca != null )

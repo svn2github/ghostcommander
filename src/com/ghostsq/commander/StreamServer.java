@@ -323,7 +323,7 @@ public class StreamServer extends Service {
                 }
 
                 if( ca == null ) {
-                    ca = CA.CreateAdapterInstance( scheme, ctx );
+                    ca = CA.CreateAdapterInstance( uri, ctx );
                     if( ca == null ) {
                         Log.e( TAG, "Can't create the adapter for: " + scheme );
                         SendStatus( osw, 500 );

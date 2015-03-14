@@ -3,8 +3,10 @@ package com.ghostsq.commander.adapters;
 import java.io.File;
 import java.lang.reflect.Method;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 
@@ -46,18 +48,10 @@ final public class CA {
         return scheme == null || scheme.length() == 0 || "file".equals( scheme ) || "find".equals( scheme );
     }
     
-    public final static CommanderAdapter CreateAdapter( String scheme, Commander c ) {
-        CommanderAdapter ca = CreateAdapterInstance( scheme, c.getContext() );
+    public final static CommanderAdapter CreateAdapter( Uri uri, Commander c ) {
+        CommanderAdapter ca = CreateAdapterInstance( uri, c.getContext() );
         if( ca != null )
             ca.Init( c );
-        else {
-            /* TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            if( type_id == SMB  )
-                c.showDialog( Dialogs.SMB_PLG_DIALOG );
-            if( type_id == SFTP  )
-                c.showDialog( Dialogs.SFTP_PLG_DIALOG );
-                */
-        }
         return ca;
     }    
 
@@ -67,7 +61,8 @@ final public class CA {
      * @return an instance of the adapter. 
      *   ??? should it return FSAdapter or null on a failure???
      */
-    public final static CommanderAdapter CreateAdapterInstance( String scheme, Context c ) {
+    public final static CommanderAdapter CreateAdapterInstance( Uri uri, Context c ) {
+        String scheme = uri.getScheme();
         if( !Utils.str( scheme ) ) return new FSAdapter( c );
         final int scheme_h = scheme.hashCode();
         if(   file_schema_h == scheme_h ) return new FSAdapter( c );
@@ -80,7 +75,12 @@ final public class CA {
         if(   apps_schema_h == scheme_h ) return new AppsAdapter( c ); 
         if(   favs_schema_h == scheme_h ) return new FavsAdapter( c ); 
         if(     ms_schema_h == scheme_h ) return new MSAdapter( c ); 
-        if(content_schema_h == scheme_h ) return new ContentAdapter( c ); 
+        if(content_schema_h == scheme_h ) {
+            if( "com.android.externalstorage.documents".equals( uri.getAuthority() ) )
+                return new SAFAdapter( c );
+            else
+                return new ContentAdapter( c );
+        }
         CommanderAdapter ca = CreateExternalAdapter( c, scheme );
         return ca == null ? new FSAdapter( c ) : ca;
     }
@@ -91,6 +91,7 @@ final public class CA {
      * @return an instance of the adapter or null on failure
      */
 //    @SuppressLint("NewApi")     // all of the sudden, lint considers the DexClassLoader.loadClass() as from a higher API, but according to the docs, the method belongs to API level 1
+    @SuppressLint("NewApi")
     public static CommanderAdapter CreateExternalAdapter( Context ctx, String scheme ) {
         try {
             File dex_f = ctx.getDir( scheme, Context.MODE_PRIVATE );

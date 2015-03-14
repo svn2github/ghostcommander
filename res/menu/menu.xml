@@ -64,7 +64,7 @@
             android:title="@string/new_file"/>
         <item android:id="@+id/new_zip"
             android:title="@string/new_zip"/>
-      </menu>
+        </menu>
     </item>
     
     <item android:id="@+id/app"
@@ -76,7 +76,7 @@
         <item android:id="@+id/softkbd"
             android:title="@string/softkbd"/>
         <item android:id="@+id/rescan"
-         android:title="@string/rescan"/>
+            android:title="@string/rescan"/>
         <item android:id="@+id/prefs"
             android:title="@string/prefs"/>
         <item android:id="@+id/exit"
