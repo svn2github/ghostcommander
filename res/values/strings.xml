@@ -374,6 +374,10 @@
 <string name="go_up">Parent</string>
 <string name="go_top">Top</string>
 <string name="go_end">Bottom</string>
+<string name="go_next">Next</string>
+<string name="go_prev">Previous</string>
+<string name="rot_right">Rotate clockwise</string>
+<string name="rot_left">Rotate counterclockwise</string>
 <string name="encoding">Encoding</string>
 <string name="encoding_set">The encoding is set to \"%1$s\", select reload. If you save it, the original encoding will be changed to the new one.</string>
 <string name="no_such_file">No such file \"%1$s\"</string>

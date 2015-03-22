@@ -190,6 +190,11 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     }
 
     @Override
+    public int getMode() {
+        return mode;
+    }
+
+    @Override
     public int setMode( int mask, int val ) {
         /*
         if( ( mask & SET_MODE_COLORS ) != 0 ) {

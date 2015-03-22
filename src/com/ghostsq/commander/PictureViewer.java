@@ -1,15 +1,20 @@
 package com.ghostsq.commander;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.PointF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,7 +22,11 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.provider.OpenableColumns;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
@@ -48,7 +57,9 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
     public  int       ca_pos = -1;
     public  Handler   h = new Handler();
     public  ProgressDialog pd; 
-    
+    private PointF last = null;
+    private Bitmap currentBmp;
+
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
@@ -63,6 +74,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
               image_view = new ImageView( this );
           fl.addView( image_view );
           image_view.setVisibility( View.GONE );
+          image_view.setOnTouchListener( this );
           SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( this );          
             String fnt_sz_s = sharedPref.getString( "font_size", "12" );
             int fnt_sz = 12;
@@ -78,7 +90,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
           name_view.setLayoutParams( lp );
           fl.addView( name_view );
           setContentView( fl );
-//!!!          image_view.setOnTouchListener( this );
+          
  
         }
         catch( Throwable e ) {
@@ -100,6 +112,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
         if( uri == null ) return;
         Log.d( TAG, "uri=" + uri );
         ca_pos = intent.getIntExtra( "position", -1 );
+        int mode = intent.getIntExtra( "mode", 0 );
         Log.d( TAG, "orig pos=" + ca_pos );
         
         String name_to_show = null; 
@@ -107,8 +120,8 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
         if( !ContentResolver.SCHEME_CONTENT.equals( scheme ) ) {
             ca = CA.CreateAdapterInstance( uri, this );            
             if( ca == null ) return;
-            
             ca.Init( new CommanderStub() );
+            ca.setMode( CommanderAdapter.MODE_SORTING | CommanderAdapter.MODE_SORT_DIR, mode );
             
             Credentials crd = null; 
             try {
@@ -155,24 +168,65 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
         }
     }
 
-    public void setBitmapToView( Bitmap bmp, String name ) {
+    @Override
+    public boolean onCreateOptionsMenu( Menu menu ) {
+        try {
+            Utils.changeLanguage( this );
+            // Inflate the currently selected menu XML resource.
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate( R.menu.pict_vw, menu );
+            return true;
+        } catch( Throwable e ) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean onMenuItemSelected( int featureId, MenuItem item ) {
+        super.onMenuItemSelected( featureId, item );
+        try {
+            switch( item.getItemId() ) {
+            case R.id.rot_left:
+                rotate( false );
+                break;
+            case R.id.rot_right:
+                rotate( true );
+                break;
+            case R.id.go_next:
+                loadNext( true );
+                break;
+            case R.id.go_prev:
+                loadNext( false );
+                break;
+            case R.id.delete:
+                delete();
+                break;
+            case R.id.exit:
+                finish();
+                break;
+            }
+        } catch( Exception e ) {
+            e.printStackTrace();
+        }
+        return true; 
+    }
+    
+    public final void setBitmapToView( Bitmap bmp, String name ) {
         try {
             Log.v( TAG, "Bitmap is ready" );
             hideWait();
             if( bmp != null ) {
+                if( currentBmp != null ) 
+                    currentBmp.recycle();
+                currentBmp = bmp;
+                
                 image_view.setVisibility( View.VISIBLE );
                 /*
                 if( touch )
                     ((TouchImageView)image_view).init();
                 */
                 image_view.setImageBitmap( bmp );
-                image_view.requestLayout();
-                image_view.invalidate();
-                if( touch ) {
-                    TouchImageView tiv = ((TouchImageView)image_view);
-                    tiv.resetZoom();
-                    //.setMaxZoom( 4f );
-                }
                 name_view.setTextColor( Color.WHITE );
                 name_view.setText( name );
                 return;
@@ -182,6 +236,20 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
         }
     }
 
+    private final void rotate( boolean clockwise ) {
+        if( currentBmp == null ) return;
+            final Matrix m = new Matrix();
+            m.postRotate( clockwise ? 90 : 270 );
+
+            // Create new bitmap properly oriented.
+            final Bitmap bmp = Bitmap.createBitmap(
+                    currentBmp, 0, 0, currentBmp.getWidth(), currentBmp.getHeight(), m, false );
+            currentBmp.recycle();
+            currentBmp = null;
+            
+            setBitmapToView( bmp, name_view.getText().toString() );
+    }
+    
     final public void showWait() {
         if( pd == null )
             pd = ProgressDialog.show( this, "", getString( R.string.loading ), true, true );
@@ -296,13 +364,12 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
                         } catch( Throwable e ) {
                             throw e;
                         } finally {
-                            if( ca != null ) {
-                                if( is != null ) ca.closeStream( is );
-                            }
+                            if( ca != null && is != null ) 
+                                ca.closeStream( is );
                             if( fos != null ) fos.close();
                         }
                     }
-                    if( f != null ) {
+                    if( f != null && f.exists() && f.isFile() ) {
                         BitmapFactory.Options options = new BitmapFactory.Options();
                         options.inTempStorage = buf;
                         for( int b = 1; b < 0x80000; b <<= 1 ) {
@@ -349,18 +416,44 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
 
     @Override
     public boolean onTouch( View v, MotionEvent event ) {
-//!!!        if( touch && ((TouchImageView)image_view).onTouch( v, event ) ) return true;
-        if( event.getAction() == MotionEvent.ACTION_UP ) {
-            boolean to_next = event.getX() > image_view.getWidth() / 2;
-            //Toast.makeText( this, to_next ? "Go next" : "Go prev", Toast.LENGTH_SHORT ).show();
-            LoadNext( to_next );
+        if( touch && ((TouchImageView)image_view).isZoomed() ) return false;
+        if( event.getAction() == MotionEvent.ACTION_DOWN ) {
+            last = new PointF( event.getX(), event.getY() );
             return true;
         }
-        image_view.performClick();
+        if( event.getAction() == MotionEvent.ACTION_UP ) {
+            if( last == null ) return false;
+            if( Math.abs( event.getY() - last.y ) < 50 ) {
+                float d = event.getX() - last.x;
+                if( Math.abs( d ) > 20 )
+                    loadNext( d < 0 );
+            }
+            last = null;
+            return true;
+        }
+//        image_view.performClick();
         return false;
     }
 
-    private void LoadNext( boolean forward ) {
+    private final void delete() {
+        if( ca_pos < 0 || ca == null ) return;
+        String name = ca.getItemName( ca_pos, false );
+        new AlertDialog.Builder( this )
+            .setTitle( R.string.delete_title )
+            .setMessage( getString( R.string.delete_q, name ) )
+            .setPositiveButton( R.string.dialog_ok, new OnClickListener() {
+                @Override
+                public void onClick( DialogInterface dialog, int which ) {
+                    SparseBooleanArray sba = new SparseBooleanArray();
+                    sba.append( ca_pos, true );
+                    ca.deleteItems( sba );
+                }
+            } )
+            .setNegativeButton( R.string.dialog_cancel, null )
+            .show();
+    }
+
+    private void loadNext( boolean forward ) {
         if( ca_pos < 0 || ca == null ) {
             Log.e( TAG, "ca=" + ca + ", pos=" + ca_pos );
             return;
@@ -427,7 +520,18 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
         }
         @Override
         public boolean startEngine( Engine e ) {
-            return false;
+            e.setHandler( new Handler() {
+                @Override
+                public void handleMessage( Message msg ) {
+                    if( msg.what == OPERATION_COMPLETED_REFRESH_REQUIRED ||
+                        msg.what == OPERATION_COMPLETED ) {
+                        ca.readSource( null, null );
+                        loadNext( true );
+                    }
+                }
+            });
+            e.start();
+            return true;
         }
-    }    
+    }
 }

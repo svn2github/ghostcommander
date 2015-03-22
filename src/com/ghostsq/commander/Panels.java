@@ -957,6 +957,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             if( crd != null )
                 i.putExtra( Credentials.KEY, crd );
             i.putExtra( "position", pos );
+            i.putExtra( "mode", ca.getMode() );
             c.startActivity( i );
         } catch( Exception e ) {
             Log.e( TAG, "Can't view the file " + name, e );

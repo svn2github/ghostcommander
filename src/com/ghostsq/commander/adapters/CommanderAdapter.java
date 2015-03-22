@@ -136,6 +136,13 @@ public interface CommanderAdapter {
      * @return the current mode 
      */
     public int setMode( int mask, int mode );
+    
+    /**
+     * @return current adapter's mode bits
+     */
+    public int getMode();
+    
+    
     /**
      *   Called when the user taps and holds on an item
      *   
