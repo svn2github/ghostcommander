@@ -748,8 +748,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 if( hasFeature( Feature.LOCAL ) )
                     menu.add( 0, Commander.SHRCT_CMD, 0, R.string.shortcut );
             }
-            if( item.dir && acmi.position != 0 )
+            if( acmi.position != 0 && item.dir && num == 1 ) {
                 menu.add( 0, Commander.FAV_FLD, 0, ctx.getString( R.string.fav_fld, item.name ) );
+                menu.add( 0, R.id.eq_dir, 0, ctx.getString( R.string.oth_sh_dir, item.name ) );
+            }
 
         } catch( Exception e ) {
             Log.e( TAG, "populateContextMenu() " + e.getMessage(), e );

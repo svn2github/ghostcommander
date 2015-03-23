@@ -36,6 +36,7 @@ import android.widget.AdapterView;
 @SuppressLint("NewApi")
 public class SAFAdapter extends CommanderAdapterBase implements Engines.IReciever {
     private final static String TAG = "SAFAdapter";
+    public  final static String ORG_SCHEME = "saf";
 
     static class SAFItem extends CommanderAdapter.Item  implements FSEngines.IFileItem {
         @Override
@@ -239,37 +240,9 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                 uri_to_go = Uri.parse( HomeAdapter.DEFAULT_LOC );
             else {
                 //0000-0000:folder%2Fsubfolder
-                final List<String> paths = uri.getPathSegments();
-                final int n = paths.size();
-                if( n < 4 ) {
+                uri_to_go = getParent( uri );
+                if( uri_to_go == null )
                     uri_to_go = Uri.parse( HomeAdapter.DEFAULT_LOC );
-                }
-                else {
-                    StringBuffer sb = new StringBuffer();
-                    for( int i = 0; i < n-1; i++ ) {
-                        sb.append( "/" );
-                        sb.append( paths.get( i ) );
-                    }
-                    if( n == 4 ) {
-                        String last = paths.get( n-1 ); 
-                        int col_pos = last.lastIndexOf( ':' );
-                        if( col_pos <= 0 || col_pos == last.length()-1 )
-                            uri_to_go = Uri.parse( HomeAdapter.DEFAULT_LOC );
-                        else {
-                            sb.append( "/" );
-                            sb.append( last.substring( 0, col_pos+1 ) );
-                            String subpath = last.substring( col_pos+1 );
-                            subpath = Uri.decode( subpath );
-                            int sl_pos = subpath.lastIndexOf( SLC );
-                            if( sl_pos > 0 ) {
-                                subpath = subpath.substring( 0, sl_pos );
-                                sb.append( Uri.encode( subpath ) );
-                            }
-                        }
-                    }
-                    if( uri_to_go == null )
-                        uri_to_go = uri.buildUpon().encodedPath( sb.toString() ).build();
-                }
             }
             commander.Navigate( uri_to_go, null, null );
         }
@@ -317,6 +290,35 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
         int col_pos = path_part.lastIndexOf( ':' );
         return "/sdcard/" + path_part.substring( col_pos+1 ); // FIXME: apparently, not a very correct way
     }
+
+    public static Uri getParent( Uri u ) {
+        if( u == null ) return null;
+        final List<String> paths = u.getPathSegments();
+        final int n = paths.size();
+        if( n < 4 ) return null;
+        StringBuffer sb = new StringBuffer();
+        for( int i = 0; i < n-1; i++ ) {
+            sb.append( "/" );
+            sb.append( paths.get( i ) );
+        }
+        if( n == 4 ) {
+            String last = paths.get( n-1 ); 
+            int col_pos = last.lastIndexOf( ':' );
+            if( !(col_pos <= 0 || col_pos == last.length()-1) ) {
+                sb.append( "/" );
+                sb.append( last.substring( 0, col_pos+1 ) );
+                String subpath = last.substring( col_pos+1 );
+                subpath = Uri.decode( subpath );
+                int sl_pos = subpath.lastIndexOf( SLC );
+                if( sl_pos > 0 ) {
+                    subpath = subpath.substring( 0, sl_pos );
+                    sb.append( Uri.encode( subpath ) );
+                }
+            }
+            return u.buildUpon().encodedPath( sb.toString() ).build();
+        }
+        return null;
+    }    
     
     @Override
 	public void reqItemsSize( SparseBooleanArray cis ) {

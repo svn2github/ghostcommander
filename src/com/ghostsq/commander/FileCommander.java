@@ -15,6 +15,7 @@ import com.ghostsq.commander.adapters.Engine;
 import com.ghostsq.commander.adapters.FSAdapter;
 import com.ghostsq.commander.adapters.FindAdapter;
 import com.ghostsq.commander.adapters.MediaScanEngine;
+import com.ghostsq.commander.adapters.SAFAdapter;
 import com.ghostsq.commander.root.MountAdapter;
 import com.ghostsq.commander.root.RootAdapter;
 import com.ghostsq.commander.utils.Credentials;
@@ -448,8 +449,14 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             } catch( Exception e ) {
             }
         case REQUEST_OPEN_DOCUMENT_TREE:
-            if( data != null )
-                Navigate( data.getData(), null, null );
+            if( data != null ) {
+                Uri uri = data.getData();
+                SharedPreferences saf_sp = getSharedPreferences( SAFAdapter.ORG_SCHEME, Activity.MODE_PRIVATE );
+                SharedPreferences.Editor editor = saf_sp.edit();
+                editor.putString( "tree_root_uri", uri.toString() );
+                editor.commit();
+                Navigate( uri, null, null );
+            }
         default:
             handleActivityResult( requestCode, resultCode, data );
         }
@@ -584,6 +591,9 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             case R.id.oth_sh_this:
             case R.id.eq:
                 panels.makeOtherAsCurrent();
+                break;
+            case R.id.eq_dir:
+                panels.makeOtherAsCurDirItem();
                 break;
             case R.id.swap:
                 panels.swapPanels();

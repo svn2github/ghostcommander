@@ -400,6 +400,14 @@ public class ContentAdapter extends CommanderAdapterBase implements Engines.IRec
 	
     @Override
     public InputStream getContent( Uri u, long skip ) {
+        try {
+            ContentResolver cr = ctx.getContentResolver();
+            InputStream is = cr.openInputStream( u );
+            is.skip( skip );
+            return is;
+        } catch( Exception e ) {
+            Log.e( TAG, u.toString(), e );
+        }
         return null;
     }
     

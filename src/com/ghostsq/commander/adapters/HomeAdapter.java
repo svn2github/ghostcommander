@@ -15,9 +15,11 @@ import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.Utils;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -143,8 +145,11 @@ public class HomeAdapter extends CommanderAdapterBase {
                     
                 ia.add( makeItem( MEDIA, expt_ms_path ) );
             }
-            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) 
-                ia.add( makeItem( SAF, "saf" ) );
+            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
+                Item item = makeItem( SAF, SAFAdapter.ORG_SCHEME );
+                item.dir = true;
+                ia.add( item );
+            }
             
             ia.add( makeItem( FTP, "ftp" ) );
             
@@ -279,11 +284,15 @@ public class HomeAdapter extends CommanderAdapterBase {
             commander.dispatchCommand( R.id.exit ); 
             return; 
         }
-        if( "saf".equals( item.origin ) ) { 
-            commander.issue( ForwardCompat.getDocTreeIntent(), Commander.REQUEST_OPEN_DOCUMENT_TREE );
-            return;
-        }
-        if( "fs".equals( item.origin ) ) 
+        if( "saf".equals( item.origin ) ) {
+            SharedPreferences saf_sp = ctx.getSharedPreferences( SAFAdapter.ORG_SCHEME, Activity.MODE_PRIVATE );
+            if( saf_sp != null )
+                uri_s = saf_sp.getString( "tree_root_uri", null );
+            if( uri_s == null ) {
+                commander.issue( ForwardCompat.getDocTreeIntent(), Commander.REQUEST_OPEN_DOCUMENT_TREE );
+                return;
+            }
+        } else if( "fs".equals( item.origin ) ) 
             uri_s = Environment.getExternalStorageDirectory().getAbsolutePath(); 
         else {
             String scheme = (String)item.origin;

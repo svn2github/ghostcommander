@@ -19,6 +19,7 @@
   <item type="id" name="F9" />
   <item type="id" name="F10"/>
   <item type="id" name="eq" />
+  <item type="id" name="eq_dir" />
   <item type="id" name="tgl"/>
   <item type="id" name="sz" />
   <item type="id" name="szt" />

@@ -9,18 +9,19 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.PointF;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
-import android.provider.OpenableColumns;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.Gravity;
@@ -39,11 +40,13 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.Engine;
+import com.ghostsq.commander.adapters.SAFAdapter;
 import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.Utils;
 import com.ortiz.touch.TouchImageView;
@@ -57,8 +60,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
     public  int       ca_pos = -1;
     public  Handler   h = new Handler();
     public  ProgressDialog pd; 
-    private PointF last = null;
-    private Bitmap currentBmp;
+    private PointF    last;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -90,8 +92,6 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
           name_view.setLayoutParams( lp );
           fl.addView( name_view );
           setContentView( fl );
-          
- 
         }
         catch( Throwable e ) {
             e.printStackTrace();
@@ -117,43 +117,46 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
         
         String name_to_show = null; 
         String scheme = uri.getScheme();
-        if( !ContentResolver.SCHEME_CONTENT.equals( scheme ) ) {
-            ca = CA.CreateAdapterInstance( uri, this );            
-            if( ca == null ) return;
-            ca.Init( new CommanderStub() );
-            ca.setMode( CommanderAdapter.MODE_SORTING | CommanderAdapter.MODE_SORT_DIR, mode );
-            
-            Credentials crd = null; 
-            try {
-                crd = (Credentials)intent.getParcelableExtra( Credentials.KEY );
-                ca.setCredentials( crd );
-            } catch( Exception e ) {
-                Log.e( TAG, "on taking credentials from parcel", e );
-            }
 
-            Uri.Builder ub = uri.buildUpon();
-            Uri p_uri = null;
-            if( "zip".equals( scheme ) ) {
-                String cur = uri.getFragment();
-                File cur_f = new File( cur );
-                name_to_show = cur_f.getName();
-                String parent_dir = cur_f.getParent();
-                p_uri = uri.buildUpon().fragment( parent_dir != null ? parent_dir : "" ).build();
-            }
-            else {
-                ub.path( "/" );
-                List<String> ps = uri.getPathSegments();
-                int n = ps.size();
-                if( n > 0 ) n--;
-                for( int i = 0; i < n; i++ ) ub.appendPath( ps.get( i ) );
-                p_uri = ub.build();
-                name_to_show = ps.get( ps.size()-1 );
-            }
-            if( p_uri != null ) {
-                Log.d( TAG, "do read list" );
-                ca.readSource( p_uri, null );
-                Log.d( TAG, "end reading" );
-            }
+        ca = CA.CreateAdapterInstance( uri, this );            
+        if( ca == null ) return;
+        ca.Init( new CommanderStub() );
+        ca.setMode( CommanderAdapter.MODE_SORTING | CommanderAdapter.MODE_SORT_DIR, mode );
+        
+        Credentials crd = null; 
+        try {
+            crd = (Credentials)intent.getParcelableExtra( Credentials.KEY );
+            ca.setCredentials( crd );
+        } catch( Exception e ) {
+            Log.e( TAG, "on taking credentials from parcel", e );
+        }
+
+        Uri.Builder ub = uri.buildUpon();
+        Uri p_uri = null;
+        if( "zip".equals( scheme ) ) {
+            String cur = uri.getFragment();
+            File cur_f = new File( cur );
+            name_to_show = cur_f.getName();
+            String parent_dir = cur_f.getParent();
+            p_uri = uri.buildUpon().fragment( parent_dir != null ? parent_dir : "" ).build();
+        }
+        else if( ca instanceof SAFAdapter ) {
+            SAFAdapter safa = (SAFAdapter)ca;
+            p_uri = SAFAdapter.getParent( uri );
+        }
+        else {
+            ub.path( "/" );
+            List<String> ps = uri.getPathSegments();
+            int n = ps.size();
+            if( n > 0 ) n--;
+            for( int i = 0; i < n; i++ ) ub.appendPath( ps.get( i ) );
+            p_uri = ub.build();
+            name_to_show = ps.get( ps.size()-1 );
+        }
+        if( p_uri != null ) {
+            Log.d( TAG, "do read list" );
+            ca.readSource( p_uri, null );
+            Log.d( TAG, "end reading" );
         }
         image_view.invalidate();
         new LoaderThread( uri, name_to_show ).start();
@@ -217,16 +220,10 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
             Log.v( TAG, "Bitmap is ready" );
             hideWait();
             if( bmp != null ) {
-                if( currentBmp != null ) 
-                    currentBmp.recycle();
-                currentBmp = bmp;
-                
                 image_view.setVisibility( View.VISIBLE );
-                /*
-                if( touch )
-                    ((TouchImageView)image_view).init();
-                */
                 image_view.setImageBitmap( bmp );
+                
+                
                 name_view.setTextColor( Color.WHITE );
                 name_view.setText( name );
                 return;
@@ -237,18 +234,67 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
     }
 
     private final void rotate( boolean clockwise ) {
-        if( currentBmp == null ) return;
-            final Matrix m = new Matrix();
-            m.postRotate( clockwise ? 90 : 270 );
-
-            // Create new bitmap properly oriented.
-            final Bitmap bmp = Bitmap.createBitmap(
-                    currentBmp, 0, 0, currentBmp.getWidth(), currentBmp.getHeight(), m, false );
-            currentBmp.recycle();
-            currentBmp = null;
-            
-            setBitmapToView( bmp, name_view.getText().toString() );
+        new RotateTask( clockwise ).execute();
     }
+
+    public class RotateTask extends AsyncTask<Void, Void, Void> {
+        private WeakReference<Bitmap> wrRotatedBitmap;
+        private boolean clockwise;
+    
+        public RotateTask( boolean clockwise ) {
+            this.clockwise = clockwise;
+        }
+    
+        @Override
+        protected void onPreExecute() {
+        }
+    
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                Drawable from_view = image_view.getDrawable();
+                if( from_view == null ) {
+                    Log.e( TAG, "No drawable" );
+                    return null;
+                }
+                
+                if( !( from_view instanceof BitmapDrawable ) ) {
+                    Log.e( TAG, "drawable is not a bitmap" );
+                    return null;
+                }
+                BitmapDrawable bd = (BitmapDrawable)from_view;
+                Bitmap old_bmp = bd.getBitmap();
+                
+                final Matrix m = new Matrix();
+                m.postRotate( clockwise ? 90 : 270 );
+                final int old_w = old_bmp.getWidth(); 
+                final int old_h = old_bmp.getHeight();
+                for( int i = 1; i <= 8; i <<= 1 ) {
+                    try {
+                        if( i > 1 ) {
+                            float scale = 1.f / i;
+                            m.postScale( scale, scale );
+                        }
+                        wrRotatedBitmap = new WeakReference<Bitmap>( Bitmap.createBitmap(
+                                 old_bmp, 0, 0, old_w, old_h, m, false ) );
+                        old_bmp.recycle();
+                        break;
+                    } catch( OutOfMemoryError e ) {}
+                }
+            } catch( Throwable e ) {
+                Log.e( TAG, "", e );
+            }
+            return null;
+        }
+    
+        @Override
+        protected void onPostExecute(Void param) {
+            if( wrRotatedBitmap == null ) return;
+            Bitmap bmp = wrRotatedBitmap.get();
+            if( bmp != null )
+                setBitmapToView( bmp, name_view.getText().toString() );
+        }
+    }    
     
     final public void showWait() {
         if( pd == null )
@@ -284,17 +330,21 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inTempStorage = buf;
                     InputStream is = null;
+                    ContentResolver cr = getContentResolver();
                     for( int b = 1; b < 0x80000; b <<= 1 ) {
                         try {
                             options.inSampleSize = b;
-                            is = getContentResolver().openInputStream( u );
+                            if( ca != null )
+                                is = PictureViewer.this.ca.getContent( u );
+                            else
+                                is = cr.openInputStream( u );
                             if( is == null ) {
                                 Log.e( TAG, "Failed to get the content stream for: " + u );
                                 return;
                             }
                             bmp = BitmapFactory.decodeStream( is, null, options );
                             if( bmp != null ) {
-                                ContentResolver cr = getContentResolver();
+                                /*
                                 final String[] projection = {
                                      OpenableColumns.DISPLAY_NAME
                                 };
@@ -302,10 +352,11 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
                                 int nci = c.getColumnIndex( OpenableColumns.DISPLAY_NAME );
                                 c.moveToFirst();
                                 final String fn = c.getString( nci );
+                                */
                                 PictureViewer.this.h.post(new Runnable() {
                                       @Override
                                       public void run() {
-                                        PictureViewer.this.setBitmapToView( bmp, fn );
+                                        PictureViewer.this.setBitmapToView( bmp, name_to_show );
                                       }
                                   });                
                                 return;
@@ -339,7 +390,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
                             f = new File( pictvw_f, "file.tmp" );
                             fos = new FileOutputStream( f );
                             // input - the content from adapter
-                            is = ca.getContent( u );
+                            is = PictureViewer.this.ca.getContent( u );
                             if( is == null ) return;
                             int n;
                             boolean available_supported = is.available() > 0;
@@ -379,8 +430,8 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
                             } catch( Throwable e ) {}
                             if( bmp != null ) {
                                 if( !local )
-                                    f.delete();
-                                final String name = name_to_show;    
+                                    f.deleteOnExit();
+                                final String name = name_to_show;
                                 PictureViewer.this.h.post(new Runnable() {
                                       @Override
                                       public void run() {

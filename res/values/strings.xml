@@ -17,6 +17,7 @@
 <string name="F9">Prefs</string>
 <string name="F10">Exit</string>
 <string name="oth_sh_this">Show same dir</string>
+<string name="oth_sh_dir">Open \"%s\" in other panel</string>
 <string name="eq">Same</string>
 <string name="change">Toggle</string>
 <string name="tgl">Toggle</string>
@@ -51,9 +52,9 @@
 <string name="forget">Forget account (app exits)</string>
 <string name="favs_descr">View and manage your list of favorite folders and sites</string>
 <string name="local_descr">Browse, organize and modify the contents of the primary file system</string>
-<string name="external_descr">Access files on the physically inserted SD card. It may be read-only on some devices.</string>
+<string name="external_descr">Access files on the physically inserted SD card. It may be read-only on some devices</string>
 <string name="media_descr">Make modifications on the external SD card via the MediaStore interface</string>
-<string name="saf_descr">Browse and open documents across all of their preferred document storage providers.</string>
+<string name="saf_descr">Modify the external SD card via the Storage Access Framework interface</string>
 <string name="ftp_descr">Connect to an FTP server</string>
 <string name="sftp_descr">Connect to an SSH FTP (sftp) server</string>
 <string name="smb_descr">Connect to shared folders on a Windows machine</string>

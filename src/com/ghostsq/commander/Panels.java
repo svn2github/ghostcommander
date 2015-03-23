@@ -565,6 +565,14 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         NavigateInternal( opposite(), ca.getUri(), ca.getCredentials(), null );
     }
 
+    public final void makeOtherAsCurDirItem() {
+        CommanderAdapter ca = getListAdapter( true );
+        int pos = list[current].getCurPos();
+        Uri u = ca.getItemUri( pos );
+        if( u != null )
+            NavigateInternal( opposite(), u, ca.getCredentials(), null );
+    }
+
     public final void togglePanelsMode() {
         setLayoutMode( !sxs );
     }
