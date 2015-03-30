@@ -32,6 +32,7 @@ import android.view.MotionEvent;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.View;
+import android.view.GestureDetector;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -51,7 +52,8 @@ import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.Utils;
 import com.ortiz.touch.TouchImageView;
 
-public class PictureViewer extends Activity implements View.OnTouchListener {
+public class PictureViewer extends Activity implements View.OnTouchListener,
+                                        GestureDetector.OnDoubleTapListener {
     private final static String TAG = "PictureViewerActivity";
     public  ImageView image_view;
     public  TextView  name_view;
@@ -70,13 +72,15 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
           touch = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.FROYO;
           FrameLayout fl = new FrameLayout( this );
 
-          if( touch )
+          if( touch ) {
               image_view = new TouchImageView( this );
-          else
+              ((TouchImageView)image_view).setOnDoubleTapListener( this );
+          } else
               image_view = new ImageView( this );
           fl.addView( image_view );
           image_view.setVisibility( View.GONE );
           image_view.setOnTouchListener( this );
+          
           SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( this );          
             String fnt_sz_s = sharedPref.getString( "font_size", "12" );
             int fnt_sz = 12;
@@ -141,7 +145,6 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
             p_uri = uri.buildUpon().fragment( parent_dir != null ? parent_dir : "" ).build();
         }
         else if( ca instanceof SAFAdapter ) {
-            SAFAdapter safa = (SAFAdapter)ca;
             p_uri = SAFAdapter.getParent( uri );
         }
         else {
@@ -465,6 +468,8 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
         }
     }
 
+    // --- View.OnTouchListener ---
+    
     @Override
     public boolean onTouch( View v, MotionEvent event ) {
         if( touch && ((TouchImageView)image_view).isZoomed() ) return false;
@@ -474,16 +479,39 @@ public class PictureViewer extends Activity implements View.OnTouchListener {
         }
         if( event.getAction() == MotionEvent.ACTION_UP ) {
             if( last == null ) return false;
-            if( Math.abs( event.getY() - last.y ) < 50 ) {
-                float d = event.getX() - last.x;
-                if( Math.abs( d ) > 20 )
-                    loadNext( d < 0 );
+            float ady = Math.abs( event.getY() - last.y );
+            if( ady < 50 ) {
+                float x = event.getX();
+                float dx = x - last.x;
+                float adx = Math.abs( dx );
+                if( adx > 20 )
+                    loadNext( dx < 0 );
             }
             last = null;
             return true;
         }
 //        image_view.performClick();
         return false;
+    }
+
+    // --- GestureDetector.OnDoubleTapListener ---
+    
+    @Override
+    public boolean onDoubleTap( MotionEvent arg0 ) {
+        return false;
+    }
+
+    @Override
+    public boolean onDoubleTapEvent( MotionEvent arg0 ) {
+        return false;
+    }
+
+    @Override
+    public boolean onSingleTapConfirmed( MotionEvent event ) {
+        if( touch && ((TouchImageView)image_view).isZoomed() ) return false;
+        float x = event.getX();
+        loadNext( x > image_view.getWidth() / 2 );
+        return true;
     }
 
     private final void delete() {

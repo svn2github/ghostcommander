@@ -76,7 +76,7 @@ final public class CA {
         if(   favs_schema_h == scheme_h ) return new FavsAdapter( c ); 
         if(     ms_schema_h == scheme_h ) return new MSAdapter( c ); 
         if(content_schema_h == scheme_h ) {
-            if( "com.android.externalstorage.documents".equals( uri.getAuthority() ) )
+            if( SAFAdapter.isExternalStorageDocument( uri ) )
                 return new SAFAdapter( c );
             else
                 return new ContentAdapter( c );
@@ -125,21 +125,6 @@ final public class CA {
             Method cim = creatorClass.getMethod( "createInstance", Context.class );
             if( cim != null )
                 return (CommanderAdapter)cim.invoke( null, ctx ); 
-            
-            /*
-            if( adapterClass != null ) {
-                Constructor<?> constr = null;
-                try {
-                    constr = adapterClass.getConstructor( Context.class );
-                } catch( Exception e ) {
-                    e.printStackTrace();
-                }
-                if( constr != null )
-                    return (CommanderAdapter)constr.newInstance( ctx );
-                else
-                    return (CommanderAdapter)adapterClass.newInstance();
-            }
-            */
         }
         catch( Throwable e ) {
             Log.e( TAG, "This class can't be created: " + scheme, e );

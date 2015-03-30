@@ -23,11 +23,13 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
 import android.provider.DocumentsContract;
 import android.provider.DocumentsContract.Document;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ContextMenu;
@@ -91,6 +93,48 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
         String last = paths.get(paths.size()-1); 
         return last.lastIndexOf( ':' ) == last.length()-1;
     }
+
+    public static boolean isExternalStorageDocument( Uri uri ) {
+        return "com.android.externalstorage.documents".equals( uri.getAuthority() );
+    }
+
+    private static String getPath( Uri u ) {
+        final List<String> paths = u.getPathSegments();
+        if( paths.size() < 4 ) return null;
+        String path_part = paths.get( 3 );
+        int col_pos = path_part.lastIndexOf( ':' );
+        return Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + 
+                path_part.substring( col_pos+1 ); // FIXME: apparently, not a very correct way
+    }
+
+    public static Uri getParent( Uri u ) {
+        if( u == null ) return null;
+        final List<String> paths = u.getPathSegments();
+        final int n = paths.size();
+        if( n < 4 ) return null;
+        StringBuffer sb = new StringBuffer();
+        for( int i = 0; i < n-1; i++ ) {
+            sb.append( "/" );
+            sb.append( paths.get( i ) );
+        }
+        if( n == 4 ) {
+            String last = paths.get( n-1 ); 
+            int col_pos = last.lastIndexOf( ':' );
+            if( !(col_pos <= 0 || col_pos == last.length()-1) ) {
+                sb.append( "/" );
+                sb.append( last.substring( 0, col_pos+1 ) );
+                String subpath = last.substring( col_pos+1 );
+                subpath = Uri.decode( subpath );
+                int sl_pos = subpath.lastIndexOf( SLC );
+                if( sl_pos > 0 ) {
+                    subpath = subpath.substring( 0, sl_pos );
+                    sb.append( Uri.encode( subpath ) );
+                }
+            }
+            return u.buildUpon().encodedPath( sb.toString() ).build();
+        }
+        return null;
+    }    
     
     @Override
     public Uri getUri() {
@@ -139,7 +183,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                          Document.COLUMN_LAST_MODIFIED,
                          Document.COLUMN_MIME_TYPE,
                          Document.COLUMN_SIZE,
-                         Document.COLUMN_SUMMARY 
+                         Document.COLUMN_SUMMARY
                     };
                   c = cr.query( children_uri, projection, null, null, null);
                 } catch( SecurityException e ) {
@@ -155,6 +199,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                   int sci = c.getColumnIndex( Document.COLUMN_SIZE );
                   int mci = c.getColumnIndex( Document.COLUMN_MIME_TYPE );
                   int dci = c.getColumnIndex( Document.COLUMN_LAST_MODIFIED );
+                  int pci = c.getColumnIndex( Document.COLUMN_SUMMARY );
                   c.moveToFirst();
                   do {
                       SAFItem item = new SAFItem();
@@ -167,6 +212,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                       item.date = new Date( c.getLong( dci ) );
                       if( item.dir ) item.size = -1;
                       tmp_list.add( item );
+                      Log.d( TAG, "summary: " + c.getString( pci ) );
                   } while( c.moveToNext() );
                   items = new SAFItem[tmp_list.size()];
                   tmp_list.toArray( items );
@@ -283,43 +329,6 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
             return items[position - 1].name;
     }
 
-    private static String getPath( Uri u ) {
-        final List<String> paths = u.getPathSegments();
-        if( paths.size() < 4 ) return null;
-        String path_part = paths.get( 3 );
-        int col_pos = path_part.lastIndexOf( ':' );
-        return "/sdcard/" + path_part.substring( col_pos+1 ); // FIXME: apparently, not a very correct way
-    }
-
-    public static Uri getParent( Uri u ) {
-        if( u == null ) return null;
-        final List<String> paths = u.getPathSegments();
-        final int n = paths.size();
-        if( n < 4 ) return null;
-        StringBuffer sb = new StringBuffer();
-        for( int i = 0; i < n-1; i++ ) {
-            sb.append( "/" );
-            sb.append( paths.get( i ) );
-        }
-        if( n == 4 ) {
-            String last = paths.get( n-1 ); 
-            int col_pos = last.lastIndexOf( ':' );
-            if( !(col_pos <= 0 || col_pos == last.length()-1) ) {
-                sb.append( "/" );
-                sb.append( last.substring( 0, col_pos+1 ) );
-                String subpath = last.substring( col_pos+1 );
-                subpath = Uri.decode( subpath );
-                int sl_pos = subpath.lastIndexOf( SLC );
-                if( sl_pos > 0 ) {
-                    subpath = subpath.substring( 0, sl_pos );
-                    sb.append( Uri.encode( subpath ) );
-                }
-            }
-            return u.buildUpon().encodedPath( sb.toString() ).build();
-        }
-        return null;
-    }    
-    
     @Override
 	public void reqItemsSize( SparseBooleanArray cis ) {
         try {
