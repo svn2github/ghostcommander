@@ -58,7 +58,6 @@ import android.view.KeyEvent;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.support.v4.provider.DocumentFile;
 import android.text.Html;
 import android.util.Log;
 import android.widget.AdapterView;
@@ -850,9 +849,6 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 return;
             }
             else {
-                DocumentFile df;
-                
-                
                 File temp_dir = new File( ForwardCompat.getExternalFilesDir( this ), "to_open" );
                 temp_dir.mkdir();
                 final CommanderAdapter ca = CA.CreateAdapterInstance( uri, this );            
@@ -1108,8 +1104,8 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 return CONTINUE;
             }
             long task_id = b.getLong( Commander.NOTIFY_TASK );
-            // Log.v( TAG, "got message " + progress.what + " from task " +
-            // task_id + " " + string );
+            Log.v( TAG, "Msg: " + progress.what + " from " + task_id + " txt:" + string + 
+                    " p1:" + progress.arg1 + " p2:" + progress.arg2 );
             Dialogs dh = null;
             if( progress.what == OPERATION_IN_PROGRESS ) {
                 if( progress.arg1 >= 0 ) {

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.adapters.Engines.IReciever;
@@ -87,6 +88,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
         return paths.size() == 2 && PATH_TREE.equals(paths.get(0));
     }
     
+    
     private static boolean isRootDoc( Uri uri ) {
         final List<String> paths = uri.getPathSegments();
         if( paths.size() < 4 ) return true;
@@ -103,8 +105,13 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
         if( paths.size() < 4 ) return null;
         String path_part = paths.get( 3 );
         int col_pos = path_part.lastIndexOf( ':' );
-        return Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + 
-                path_part.substring( col_pos+1 ); // FIXME: apparently, not a very correct way
+        String path_root;
+        if( paths.get( 1 ).startsWith( "primary" ) )
+            path_root = Environment.getExternalStorageDirectory().getAbsolutePath();
+        else
+            path_root = Utils.getSecondaryStorage();// FIXME: apparently, not a very correct way
+        if( path_root == null ) path_root = "";
+        return path_root + "/" + path_part.substring( col_pos+1 );
     }
 
     public static Uri getParent( Uri u ) {

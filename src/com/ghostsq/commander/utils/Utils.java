@@ -12,6 +12,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 import java.io.OutputStream;
 
 import com.ghostsq.commander.R;
@@ -260,6 +261,18 @@ public final class Utils {
         return list;
     }
 
+    public final static String getSecondaryStorage() {
+        Map<String, String> env = System.getenv();
+        String sec_storage = env.get( "SECONDARY_STORAGE" );
+        if( !Utils.str( sec_storage ) ) return null;
+        String[] ss = sec_storage.split( ":" );
+        for( int i = 0; i < ss.length; i++ )
+            if( ss[i].indexOf( "sdcard" ) > 0 )
+                return ss[i];
+        return null;
+    }
+    
+    
     public final static String getOpReport_( Context ctx, int total, int verb_id ) {
         String items = null;
         if( total > 1 ) {

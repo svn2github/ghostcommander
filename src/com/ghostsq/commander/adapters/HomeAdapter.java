@@ -127,17 +127,14 @@ public class HomeAdapter extends CommanderAdapterBase {
             ia.add( makeItem( LOCAL,"fs" ) );
 
             if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
-                Map<String, String> env = System.getenv();
-                String sec_storage = env.get( "SECONDARY_STORAGE" );
+                String sec_st = Utils.getSecondaryStorage();
                 String expt_ms_path = null;
-                if( Utils.str( sec_storage ) ) {
-                    String[] ss = sec_storage.split( ":" );
-                    ia.add( makeItem( EXTERNAL, ss[0] ) );
-                    
-                    File ext_fd = new File( ss[0] );
+                if( Utils.str( sec_st ) ) {
+                    ia.add( makeItem( EXTERNAL, sec_st ) );
+                    File ext_fd = new File( sec_st );
                     String[] dir_list = ext_fd.list();
                     if( dir_list != null && dir_list.length > 0 )
-                        expt_ms_path = MSAdapter.SCHEME + ss[0];
+                        expt_ms_path = MSAdapter.SCHEME + sec_st;
                     else
                         expt_ms_path = MSAdapter.SCHEME + Environment.getExternalStorageDirectory().getAbsolutePath();
                 } else
