@@ -241,36 +241,43 @@ class ThumbnailsThread extends Thread {
                 final String[] th_proj = new String[] { 
                         BaseColumns._ID,    // 0
                         Thumbnails.WIDTH,   // 1
-                        Thumbnails.HEIGHT,  // 2
-                        Thumbnails.IMAGE_ID // 3
+                        Thumbnails.HEIGHT   // 2
                 };
+                long orig_id = -1;
                 if( f.origin instanceof Uri ) {
-                    cursor = Thumbnails.queryMiniThumbnails( cr, (Uri)f.origin, Thumbnails.MINI_KIND, th_proj );
+                    orig_id = ContentUris.parseId( (Uri)f.origin );
                 } else {
                     boolean SDK16UP = android.os.Build.VERSION.SDK_INT >= 16;
-                    String[] proj_id = { BaseColumns._ID };
-                    String[] proj = SDK16UP ? th_proj : proj_id;
+                    String[] id_proj = { BaseColumns._ID };
+                    String[]    proj = SDK16UP ? th_proj : id_proj;
                     String where = Media.DATA + " = '" + fn + "'";
                     cursor = cr.query( Media.EXTERNAL_CONTENT_URI, proj, where, null, null );
                     if( cursor != null && cursor.getCount() > 0 ) {
                         cursor.moveToPosition( 0 );
-                        long id = cursor.getLong( 0 );
+                        orig_id = cursor.getLong( 0 );
                         if( SDK16UP ) {
                             img_w = cursor.getInt( 1 );
                             img_h = cursor.getInt( 2 );
                         }
                         cursor.close();
-                        cursor = Thumbnails.queryMiniThumbnail( cr, id, Thumbnails.MINI_KIND, th_proj );
                     }                    
+                }
+                if( orig_id >= 0 ) {
+                    cursor = Thumbnails.queryMiniThumbnail( cr, orig_id, Thumbnails.MICRO_KIND, th_proj );
+                    if( cursor == null || cursor.getCount() == 0 ) {
+                        Log.d( TAG, "Micro failed for " + f.name );
+                        cursor = Thumbnails.queryMiniThumbnail( cr, orig_id, Thumbnails.MINI_KIND, th_proj );
+                        if( cursor == null || cursor.getCount() == 0 )
+                            Log.d( TAG, "Mini failed for " + f.name );
+                    }
                 }
                 if( cursor != null && cursor.getCount() > 0 ) {
                     cursor.moveToPosition( 0 );
-                    Uri tcu = ContentUris.withAppendedId( Thumbnails.EXTERNAL_CONTENT_URI, cursor.getLong( 0 ) );
+                    long th_id = cursor.getLong( 0 );
+                    Uri tcu = ContentUris.withAppendedId( Thumbnails.EXTERNAL_CONTENT_URI, th_id );
                     int tw = cursor.getInt( 1 );
                     int th = cursor.getInt( 2 );
-                    // Log.v( TAG, "th id: " + cursor.getLong(0) +
-                    // ", org id: " + cursor.getLong(3) + ", w: " + tw +
-                    // ", h: " + th );
+                    Log.d( TAG, "th id: " + cursor.getLong(0) + ", w: " + tw + ", h: " + th );
                     InputStream in = cr.openInputStream( tcu );
 
                     if( tw > 0 && th > 0 ) {

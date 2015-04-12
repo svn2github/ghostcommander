@@ -3,6 +3,7 @@ package com.ghostsq.commander.adapters;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -109,8 +110,8 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
         if( paths.get( 1 ).startsWith( "primary" ) )
             path_root = Environment.getExternalStorageDirectory().getAbsolutePath();
         else
-            path_root = Utils.getSecondaryStorage();// FIXME: apparently, not a very correct way
-        if( path_root == null ) path_root = "";
+            path_root = Utils.getSecondaryStorage();
+        if( path_root == null ) path_root = Environment.getExternalStorageDirectory().getAbsolutePath();
         return path_root + "/" + path_part.substring( col_pos+1 );
     }
 
@@ -164,76 +165,82 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
         else
             this.uri = uri_;
     }
+ 
+    public final ArrayList<SAFItem> getChildren( Uri u ) {
+        Cursor c = null;
+        try {
+            try {
+                ContentResolver cr = ctx.getContentResolver();
+                Uri children_uri = DocumentsContract.buildChildDocumentsUriUsingTree( u,
+                                   DocumentsContract.getDocumentId( u ) );
+                //Log.d( TAG, "Children URI:" + children_uri );
+                final String[] projection = {
+                     Document.COLUMN_DOCUMENT_ID,
+                     Document.COLUMN_DISPLAY_NAME,
+                     Document.COLUMN_LAST_MODIFIED,
+                     Document.COLUMN_MIME_TYPE,
+                     Document.COLUMN_SIZE
+                };
+              c = cr.query( children_uri, projection, null, null, null);
+            } catch( SecurityException e ) {
+                Log.w( TAG, "Security error on " + u.toString(), e );
+                return null;
+            } catch( Exception e ) {
+                Log.e( TAG, u.toString(), e);
+            }
+            if( c != null ) {
+              ArrayList<SAFItem>  tmp_list = new ArrayList<SAFItem>();
+              if( c.getCount() == 0 ) return tmp_list; 
+              int ici = c.getColumnIndex( Document.COLUMN_DOCUMENT_ID );
+              int nci = c.getColumnIndex( Document.COLUMN_DISPLAY_NAME );
+              int sci = c.getColumnIndex( Document.COLUMN_SIZE );
+              int mci = c.getColumnIndex( Document.COLUMN_MIME_TYPE );
+              int dci = c.getColumnIndex( Document.COLUMN_LAST_MODIFIED );
+              c.moveToFirst();
+              do {
+                  SAFItem item = new SAFItem();
+                  String id = c.getString( ici );
+                  item.origin = DocumentsContract.buildDocumentUriUsingTree( u, id );
+                  item.attr = c.getString( mci );
+                  item.dir = Document.MIME_TYPE_DIR.equals( item.attr ); 
+                  item.name = ( item.dir ? "/" : "" ) + c.getString( nci );
+                  item.size = c.getLong( sci );
+                  item.date = new Date( c.getLong( dci ) );
+                  if( item.dir ) item.size = -1;
+                  tmp_list.add( item );
+              } while( c.moveToNext() );
+              return tmp_list;
+            }
+        } catch(Exception e) {
+            Log.e( TAG, "Failed cursor processing for " + u.toString(), e );
+        } finally {
+            if( c != null ) c.close();
+        }
+        return null;
+    }
     
     @Override
     public boolean readSource( Uri tmp_uri, String pass_back_on_done ) {
     	try {
     	    //if( worker != null ) worker.reqStop();
             if( tmp_uri != null ) {
-                Log.d( TAG, "New URI: " + tmp_uri.toString() );
+                //Log.d( TAG, "New URI: " + tmp_uri.toString() );
                 setUri( tmp_uri );
             }
             if( uri == null ) {
                 Log.e( TAG, "No URI" );
                 return false;
             }
-            Cursor c = null;
-            try {
-                try {
-                    ContentResolver cr = ctx.getContentResolver();
-                    Uri children_uri = DocumentsContract.buildChildDocumentsUriUsingTree( uri,
-                                       DocumentsContract.getDocumentId( uri ) );
-                    Log.d( TAG, "Children URI:" + children_uri );
-                    final String[] projection = {
-                         Document.COLUMN_DOCUMENT_ID,
-                         Document.COLUMN_DISPLAY_NAME,
-                         Document.COLUMN_LAST_MODIFIED,
-                         Document.COLUMN_MIME_TYPE,
-                         Document.COLUMN_SIZE,
-                         Document.COLUMN_SUMMARY
-                    };
-                  c = cr.query( children_uri, projection, null, null, null);
-                } catch( SecurityException e ) {
-                    commander.Navigate( Uri.parse( HomeAdapter.DEFAULT_LOC ), null, null );
-                    return false;
-                } catch( Exception e ) {
-                    Log.e( TAG, "Failed children query for " + uri.toString(), e);
-                }
-                if( c != null && c.getCount() > 0 ) {
-                  ArrayList<SAFItem>   tmp_list = new ArrayList<SAFItem>();
-                  int ici = c.getColumnIndex( Document.COLUMN_DOCUMENT_ID );
-                  int nci = c.getColumnIndex( Document.COLUMN_DISPLAY_NAME );
-                  int sci = c.getColumnIndex( Document.COLUMN_SIZE );
-                  int mci = c.getColumnIndex( Document.COLUMN_MIME_TYPE );
-                  int dci = c.getColumnIndex( Document.COLUMN_LAST_MODIFIED );
-                  int pci = c.getColumnIndex( Document.COLUMN_SUMMARY );
-                  c.moveToFirst();
-                  do {
-                      SAFItem item = new SAFItem();
-                      String id = c.getString( ici );
-                      item.origin = DocumentsContract.buildDocumentUriUsingTree( uri, id );
-                      item.attr = c.getString( mci );
-                      item.dir = Document.MIME_TYPE_DIR.equals( item.attr ); 
-                      item.name = ( item.dir ? "/" : "" ) + c.getString( nci );
-                      item.size = c.getLong( sci );
-                      item.date = new Date( c.getLong( dci ) );
-                      if( item.dir ) item.size = -1;
-                      tmp_list.add( item );
-                      Log.d( TAG, "summary: " + c.getString( pci ) );
-                  } while( c.moveToNext() );
-                  items = new SAFItem[tmp_list.size()];
-                  tmp_list.toArray( items );
-                  reSort( items );
-               }
-               else
-                   items = new SAFItem[0];
-               super.setCount( items.length );
             
-            } catch(Exception e) {
-                Log.e( TAG, "Failed cursor processing for " + uri.toString(), e );
-            } finally {
-                if( c != null ) c.close();
+            ArrayList<SAFItem> tmp_list = getChildren( uri );
+            if( tmp_list == null ) {
+                commander.Navigate( Uri.parse( HomeAdapter.DEFAULT_LOC ), null, null );
+                return false;
             }
+            items = new SAFItem[tmp_list.size()];
+            tmp_list.toArray( items );
+            reSort( items );
+            super.setCount( items.length );
             parentLink = isRootDoc( uri ) ? SLS : PLS;
             startThumbnailCreation();
             notifyDataSetChanged();
@@ -297,17 +304,18 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                 if( uri_to_go == null )
                     uri_to_go = Uri.parse( HomeAdapter.DEFAULT_LOC );
             }
-            commander.Navigate( uri_to_go, null, null );
+            String pos_to = null;
+            String cur_path = getPath( uri );
+            if( cur_path != null )
+                pos_to = cur_path.substring( cur_path.lastIndexOf( '/' ) ); 
+            commander.Navigate( uri_to_go, null, pos_to );
         }
         else {
             Item item = items[position - 1];
             if( item.dir )
                 commander.Navigate( (Uri)item.origin, null, null );
-            else {
-                Intent i = new Intent( Intent.ACTION_VIEW );
-                i.setDataAndType( Uri.parse( "file:///" + Utils.escapePath( getItemName( position, true ) ) ), item.attr );
-                commander.issue( i, 0 );
-            }
+            else
+                commander.Open( Uri.parse( Utils.escapePath( getItemName( position, true ) ) ), null );
         }
     }
 
@@ -315,10 +323,6 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
     public Uri getItemUri( int position ) {
         try {
             return (Uri)items[position - 1].origin;
-            /*
-            String item_name = getItemName( position, true );
-            return Uri.parse( Utils.escapePath( item_name ) );
-            */
         } catch( Exception e ) {
             Log.e( TAG, "No item in the position " + position );
         }
@@ -351,12 +355,20 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
 	
 	@Override
     public boolean renameItem( int position, String newName, boolean copy ) {
-            return false;
+	    //FIXME: in what cases the copy==true?
+	    ContentResolver cr = ctx.getContentResolver();
+	    Item item = items[position - 1];
+	    Uri new_uri = DocumentsContract.renameDocument( cr, (Uri)item.origin, newName );
+	    if( new_uri == null ) return false;
+	    item.origin = new_uri;
+	    return true;
     }
 	
     @Override
     public Item getItem( Uri u ) {
         try {
+            // FIXME: found the cases where this method is called from
+            // should it return a real path on the content path?
             File f = new File( u.getPath() );
             if( f.exists() ) {
                 Item item = new Item( f.getName() );
@@ -479,14 +491,146 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
             return cnt;
         }
     }
-
+    
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
-        boolean ok = to.receiveItems( bitsToNames( cis ), move ? MODE_MOVE : MODE_COPY );
-        if( !ok ) notify( Commander.OPERATION_FAILED );
-        return ok;
+        if( !move ) {
+            boolean ok = to.receiveItems( bitsToNames( cis ), move ? MODE_MOVE : MODE_COPY );
+            if( !ok ) notify( Commander.OPERATION_FAILED );
+            return ok;
+        }
+        String err_msg = null;
+        try {
+            SAFItem[] to_copy = bitsToItems( cis );
+            if( to_copy == null )
+                return false;
+            java.io.File dest = null;
+            Engines.IReciever recipient = null;
+            if( to instanceof FSAdapter ) {
+                String dest_fn = to.toString();
+                dest = new java.io.File( dest_fn );
+                if( !dest.exists() ) dest.mkdirs();
+                if( !dest.isDirectory() )
+                    throw new RuntimeException( ctx.getString( Utils.RR.file_exist.r(), dest_fn ) );
+            } else {
+                dest = new File( createTempDir() );
+                recipient = to.getReceiver();
+            }
+            notify( Commander.OPERATION_STARTED );
+            MoveFromEngine mfe = new MoveFromEngine( to_copy, dest, recipient );
+            commander.startEngine( mfe );
+            return true;
+        }
+        catch( Exception e ) {
+            err_msg = "Exception: " + e.getMessage();
+        }
+        notify( err_msg, Commander.OPERATION_FAILED );
+        return false;
     }
+    
+    class MoveFromEngine extends Engine {  
+        private SAFItem[] mList;
+        private SAFAdapter owner;
+        private ContentResolver cr;
+        private File destFolder;
+        private byte[] buf = new byte[65536];
 
+        MoveFromEngine( SAFItem[] list, File dest, Engines.IReciever recipient_ ) {
+            super( recipient_ );
+            setName( ".CopyFromEngine" );
+            owner = SAFAdapter.this;
+            mList = list;
+            destFolder = dest;
+        }
+        @Override
+        public void run() {
+            try {
+                Init( null );
+                cr = ctx.getContentResolver();
+                int cnt = moveFiles( mList, destFolder );
+                if( recipient != null ) {
+                      sendReceiveReq( destFolder );
+                      return;
+                }
+                sendResult( Utils.getOpReport( owner.ctx, cnt, R.string.moved ) );
+            }
+            catch( Exception e ) {
+                sendProgress( e.getMessage(), Commander.OPERATION_FAILED_REFRESH_REQUIRED );
+            }
+        }
+        
+        private final int moveFiles( Item[] l, File dest ) throws Exception {
+            if( l == null ) return 0;
+            int cnt = 0;
+            int num = l.length;
+            for( int i = 0; i < num; i++ ) {
+                sleep( 1 );
+                if( isStopReq() )
+                    throw new Exception( s( R.string.canceled ) );
+                Item item = l[i];
+                String fn = item.name;
+                sendProgress( ctx.getString( R.string.copying, fn ), 0 );
+                File dest_file = new File( dest, fn );
+                Uri u = (Uri)item.origin;
+                boolean ok = false;
+                if( item.dir ) {
+                    ArrayList<SAFItem> tmp_list = getChildren( u );
+                    SAFItem[] sub_items = new SAFItem[tmp_list.size()];
+                    tmp_list.toArray( sub_items );
+                    cnt += moveFiles( sub_items, dest_file );
+                    if( errMsg != null ) break;
+                    ok = true; 
+                } else {
+                    if( dest_file.exists()  ) {
+                        int res = askOnFileExist( owner.ctx.getString( R.string.file_exist, dest_file.getAbsolutePath() ), owner.commander );
+                        if( res == Commander.ABORT ) {
+                            error( owner.ctx.getString( R.string.interrupted ) );
+                            break;
+                        }
+                        if( res == Commander.SKIP )  continue;
+                        if( res == Commander.REPLACE ) {
+                            if( !dest_file.delete() ) {
+                                error( owner.ctx.getString( R.string.cant_del, dest_file.getAbsoluteFile() ) );
+                                break;
+                            }
+                        }
+                    }
+                    int fnl = fn.length();
+                    String rep_s = owner.ctx.getString( R.string.copying, 
+                           fnl > CUT_LEN ? "\u2026" + fn.substring( fnl - CUT_LEN ) : fn );
+
+                    long copied = 0, size = item.size;
+                    String sz_s = Utils.getHumanSize( size, false );
+                    double conv = 100./size;
+                    int n;
+                    OutputStream os = null;
+                    InputStream  is = null;
+                    try {
+                        os = new FileOutputStream( dest_file );
+                        is = cr.openInputStream( u );
+                        while( ( n = is.read( buf ) ) != -1 ) {
+                            os.write( buf, 0, n );
+                            copied += n;
+                            sendProgress( rep_s + sizeOfsize( copied, sz_s ), (int)(copied * conv) );
+                            Thread.sleep( 1 );
+                        }
+                        ok = true;
+                    } catch( Exception e ) {
+                        e.printStackTrace();
+                    }
+                    finally {
+                        if( is != null ) is.close();
+                        if( os != null ) os.close();
+                    }
+                }
+                if( ok )
+                    DocumentsContract.deleteDocument( cr, u );
+                cnt++;
+            }
+            return cnt;
+        }
+    }
+    
     @Override
     public boolean receiveItems( String[] uris, int move_mode ) {
         try {
@@ -495,7 +639,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
             File[] list = Utils.getListOfFiles( uris );
             if( list != null ) {
                 notify( Commander.OPERATION_STARTED );
-                commander.startEngine( new CopyEngine( list, move_mode ) );
+                commander.startEngine( new CopyToEngine( list, move_mode ) );
                 return true;
             }
         } catch( Exception e ) {
@@ -504,7 +648,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
         return false;
     }
 
-    class CopyEngine extends Engine {
+    class CopyToEngine extends Engine {
         private Uri     mDest;
         private ContentResolver cr;
         private int     counter = 0, delerr_counter = 0, depth = 0;
@@ -516,7 +660,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
         private static final int BUFSZ = 524288;
         private PowerManager.WakeLock wakeLock;
 
-        CopyEngine( File[] list, int move_mode ) {
+        CopyToEngine( File[] list, int move_mode ) {
             super( null );
             setName( ".CopyEngine" );
             fList = list;

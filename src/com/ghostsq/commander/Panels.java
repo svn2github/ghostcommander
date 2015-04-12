@@ -1135,8 +1135,11 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                     oth_adapter.setUri( dest_uri );
                 }
             }
-            // c.showDialog( Dialogs.PROGRESS_DIALOG );
             destAdapter = oth_adapter;
+            if( destAdapter == null || !destAdapter.hasFeature( Feature.REAL ) ) {
+                c.showError( c.getString( R.string.canceled ) );
+                return;
+            }
             cur_adapter.copyItems( items, destAdapter, move );
             // TODO: getCheckedItemPositions() returns an empty array after a
             // failed operation. why?

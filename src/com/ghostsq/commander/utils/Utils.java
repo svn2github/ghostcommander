@@ -267,7 +267,7 @@ public final class Utils {
         if( !Utils.str( sec_storage ) ) return null;
         String[] ss = sec_storage.split( ":" );
         for( int i = 0; i < ss.length; i++ )
-            if( ss[i].indexOf( "sdcard" ) > 0 )
+            if( ss[i].indexOf( "sdcard" ) > 0 ) // FIXME: apparently, not a very correct way
                 return ss[i];
         return null;
     }
@@ -315,6 +315,10 @@ public final class Utils {
     static final char[] spaces = { '\u00A0', '\u00A0', '\u00A0', '\u00A0', '\u00A0', '\u00A0', '\u00A0', '\u00A0' }; 
     
     public final static String getHumanSize( long sz ) {
+        return getHumanSize( sz, true );
+    }
+
+    public final static String getHumanSize( long sz, boolean prepend_nbsp ) {
         try {
             String s;
             if( sz > 1073741824 )
@@ -325,7 +329,10 @@ public final class Utils {
                 s = Math.round( sz * 10 / 1024. ) / 10. + "K";
             else
                 s = "" + sz + " ";
-            return new String( spaces, 0, 8 - s.length() ) + s;
+            if( prepend_nbsp )
+                return new String( spaces, 0, 8 - s.length() ) + s;
+            else
+                return s;
         } catch( Exception e ) {
             e.printStackTrace();
         }

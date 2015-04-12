@@ -377,7 +377,7 @@ public final class FSEngines {
                         int  speed = 0;
                         int  so_far = (int)(totalBytes * conv);
                         
-                        String sz_s = Utils.getHumanSize( size );
+                        String sz_s = Utils.getHumanSize( size, false );
                         int fnl = fn.length();
                         String rep_s = cab.ctx.getString( R.string.copying, 
                                fnl > CUT_LEN ? "\u2026" + fn.substring( fnl - CUT_LEN ) : fn );

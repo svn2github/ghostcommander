@@ -539,9 +539,6 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             switch( id ) {
             case R.id.keys:
             case R.id.F1:
-                
-                issue( ForwardCompat.getDocTreeIntent(), 21 );
-                
                 showInfo( getString( R.string.keys_text ) );
                 break;
             case R.id.F3:
@@ -1104,8 +1101,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 return CONTINUE;
             }
             long task_id = b.getLong( Commander.NOTIFY_TASK );
-            Log.v( TAG, "Msg: " + progress.what + " from " + task_id + " txt:" + string + 
-                    " p1:" + progress.arg1 + " p2:" + progress.arg2 );
+            //Log.v( TAG, "Msg: " + progress.what + " from " + task_id + " txt:" + string + " p1:" + progress.arg1 + " p2:" + progress.arg2 );
             Dialogs dh = null;
             if( progress.what == OPERATION_IN_PROGRESS ) {
                 if( progress.arg1 >= 0 ) {
