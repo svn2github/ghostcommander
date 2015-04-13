@@ -20,6 +20,7 @@ import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.adapters.Engines.IReciever;
 import com.ghostsq.commander.adapters.FTPEngines.CalcSizesEngine;
 import com.ghostsq.commander.adapters.FTPEngines.CopyFromEngine;
+import com.ghostsq.commander.adapters.FTPEngines.ListEngine;
 import com.ghostsq.commander.adapters.FTPEngines.RenEngine;
 import com.ghostsq.commander.favorites.Favorite;
 import com.ghostsq.commander.utils.Credentials;
@@ -39,14 +40,12 @@ import android.widget.AdapterView;
 
 public class FTPAdapter extends CommanderAdapterBase implements Engines.IReciever {
     private final static String TAG = "FTPAdapter";
-    // Java compiler creates a thunk function to access to the private owner class member from a subclass
-    // to avoid that all the member accessible from the subclasses are public
-    public  FTP      ftp;
-    public  Uri      uri = null;
-    public  LsItem[] items = null;
+    private FTP      ftp;
+    private Uri      uri = null;
+    private LsItem[] items = null;
     private Timer    heartBeat;
-    public  boolean  noHeartBeats = false;
-    public  FTPCredentials theUserPass = null;
+    private boolean  noHeartBeats = false;
+    private FTPCredentials theUserPass = null;
     private final static int CHMOD_CMD = 36793;
 
     public FTPAdapter( Context ctx_ ) {
@@ -143,7 +142,7 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
                 numItems = 1;
             notify( Commander.OPERATION_STARTED );
             Log.v( TAG, "Creating and starting the reader..." );
-            reader = new ListEngine( readerHandler, need_reconnect, pass_back_on_done );
+            reader = new ListEngine( this, readerHandler, ftp, need_reconnect, pass_back_on_done );
             reader.start();
             
             if( heartBeat == null ) {
@@ -160,104 +159,13 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
         return false;
     }
  
-    class ListEngine extends Engine {
-        private boolean needReconnect;
-        private LsItem[] items_tmp;
-        public  String pass_back_on_done;
-        ListEngine( Handler h, boolean need_reconnect_, String pass_back_on_done_ ) {
-        	setHandler( h );
-        	needReconnect = need_reconnect_;
-        	pass_back_on_done = pass_back_on_done_;
-        }
-        public LsItem[] getItems() {
-            return items_tmp;
-        }       
-        @Override
-        public void run() {
-            try {
-            	if( uri == null ) {
-            		sendProgress( "Wrong URI", Commander.OPERATION_FAILED );
-            		return;
-            	}
-            	Log.i( TAG, "ListEngine started" );
-                threadStartedAt = System.currentTimeMillis();
-                ftp.clearLog();
-                if( needReconnect  && ftp.isLoggedIn() ) {
-                    ftp.disconnect( false );
-                }
-                if( theUserPass == null || theUserPass.isNotSet() )
-                    theUserPass = new FTPCredentials( uri.getUserInfo() );
-                int cl_res = ftp.connectAndLogin( uri, theUserPass.getUserName(), theUserPass.getPassword(), true );
-                if( cl_res < 0 ) {
-                    if( cl_res == FTP.NO_LOGIN ) 
-                        sendLoginReq( uri.toString(), theUserPass, pass_back_on_done );
-                    return;
-                }
-                if( cl_res == FTP.LOGGED_IN )
-                    sendProgress( ctx.getString( R.string.ftp_connected,  
-                            uri.getHost(), theUserPass.getUserName() ), Commander.OPERATION_STARTED );
-
-                if( ftp.isLoggedIn() ) {
-                    //Log.v( TAG, "ftp is logged in" );
-                	items_tmp = ftp.getDirList( null, ( mode & MODE_HIDDEN ) == SHOW_MODE );
-                    String path = ftp.getCurrentDir();
-                    if( path != null ) 
-                        for( LsItem lsi : items_tmp ) {
-                            String name = lsi.getName();
-                            if( name == null ) continue;
-                            String lt = lsi.getLinkTarget();
-                            if( !Utils.str( lt ) ) continue;
-                            if( lt.charAt( 0 ) != '/' )
-                                lt = Utils.mbAddSl( path ) + lt;
-                            if( ftp.setCurrentDir( lt ) )
-                                lsi.setDirectory();
-                        }
-                        ftp.setCurrentDir( path );
-                    	synchronized( uri ) {
-                    		uri = uri.buildUpon().encodedPath( path ).build();
-						}
-                    if( items_tmp != null  ) {
-                        //Log.v( TAG, "Got the items list" );
-                        if( items_tmp.length > 0 ) {
-	                        LsItem.LsItemPropComparator comp = 
-	                            items_tmp[0].new LsItemPropComparator( mode & MODE_SORTING, (mode & MODE_CASE) != 0, ascending );
-                            Arrays.sort( items_tmp, comp );
-                        }
-                        parentLink = path == null || path.length() == 0 || path.equals( SLS ) ? SLS : PLS;
-                        //Log.v( TAG, "items list sorted" );
-                        sendProgress( tooLong( 8 ) ? ftp.getLog() : null, Commander.OPERATION_COMPLETED, pass_back_on_done );
-                        return;
-                    }
-                    else
-                        Log.e( TAG, "Can't get the items list" );
-                }
-                else
-                    Log.e( TAG, "Did not log in." );
-            }
-            catch( UnknownHostException e ) {
-                ftp.debugPrint( "Unknown host:\n" + e.getLocalizedMessage() );
-            }
-            catch( IOException e ) {
-                ftp.debugPrint( "IO exception:\n" + e.getLocalizedMessage() );
-                Log.e( TAG, "", e );
-            }
-            catch( Exception e ) {
-                ftp.debugPrint( e.getLocalizedMessage() );
-                Log.e( TAG, "", e );
-            }
-            finally {
-            	super.run();
-            }
-            ftp.disconnect( true );
-            sendProgress( ftp.getLog(), Commander.OPERATION_FAILED, pass_back_on_done );
-        }
-    }
     @Override
     protected void onReadComplete() {
         Log.v( TAG, "UI thread finishes the items obtaining. reader=" + reader );
         if( reader instanceof ListEngine ) {
             ListEngine list_engine = (ListEngine)reader;
             items = null;
+            parentLink = !Utils.str( list_engine.path ) || list_engine.path.equals( SLS ) ? SLS : PLS;
             if( ( mode & MODE_HIDDEN ) == HIDE_MODE ) {
                 LsItem[] tmp_items = list_engine.getItems();
                 if( tmp_items != null ) {

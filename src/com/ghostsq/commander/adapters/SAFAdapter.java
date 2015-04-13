@@ -494,6 +494,14 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
     
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
+        if( to instanceof SAFAdapter ) {
+            notify( Commander.OPERATION_STARTED );
+            SAFItem[] to_copy = bitsToItems( cis );
+            if( to_copy == null ) return false;
+            CopyBetweenEngine cbe = new CopyBetweenEngine( to_copy, to.getUri(), move );
+            commander.startEngine( cbe );
+            return true;
+        }
         if( !move ) {
             boolean ok = to.receiveItems( bitsToNames( cis ), move ? MODE_MOVE : MODE_COPY );
             if( !ok ) notify( Commander.OPERATION_FAILED );
@@ -502,8 +510,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
         String err_msg = null;
         try {
             SAFItem[] to_copy = bitsToItems( cis );
-            if( to_copy == null )
-                return false;
+            if( to_copy == null ) return false;
             java.io.File dest = null;
             Engines.IReciever recipient = null;
             if( to instanceof FSAdapter ) {
@@ -527,6 +534,194 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
         notify( err_msg, Commander.OPERATION_FAILED );
         return false;
     }
+
+    class CopyBetweenEngine extends Engine {  
+        private Uri     mDest;
+        private ContentResolver cr;
+        private int     counter = 0, delerr_counter = 0, depth = 0;
+        private long    totalBytes = 0;
+        private double  conv;
+        private SAFItem[] iList = null;
+        private boolean move;
+        private byte[]  buf;
+        private static final int BUFSZ = 524288;
+        private PowerManager.WakeLock wakeLock;
+
+        CopyBetweenEngine( SAFItem[] to_copy, Uri dest, boolean move ) {
+            setName( ".CopyBetweenEngine" );
+            iList = to_copy;
+            mDest = dest;
+            cr = SAFAdapter.this.ctx.getContentResolver();
+            this.move = move;
+            buf = new byte[BUFSZ];
+            PowerManager pm = (PowerManager)ctx.getSystemService( Context.POWER_SERVICE );
+            wakeLock = pm.newWakeLock( PowerManager.PARTIAL_WAKE_LOCK, TAG );
+        }
+        @Override
+        public void run() {
+            sendProgress( ctx.getString( R.string.preparing ), 0, 0 );
+            try {
+                int l = iList.length;
+                wakeLock.acquire();
+                int num = copyFiles( iList, mDest );
+
+                wakeLock.release();
+                String report = Utils.getOpReport( ctx, num, move ? R.string.moved : R.string.copied );
+                sendResult( report );
+            } catch( Exception e ) {
+                sendProgress( e.getMessage(), Commander.OPERATION_FAILED_REFRESH_REQUIRED );
+                return;
+            }
+        }
+        
+        private final String getMime( Uri u ) {
+            Cursor c = null;
+            try {
+                final String[] projection = { Document.COLUMN_MIME_TYPE };
+                
+                c = cr.query( u, projection, null, null, null );
+                if( c.getCount() > 0 ) {
+                    c.moveToFirst();
+                    return c.getString( 0 );
+                }
+            } catch( Exception e ) {
+            } finally {
+                if( c != null ) c.close();
+            }
+            return null;
+        }
+        
+        private final int copyFiles( SAFItem[] list, Uri dest ) throws InterruptedException {
+            SAFItem item = null;
+            for( int i = 0; i < list.length; i++ ) {
+                InputStream  is = null;
+                OutputStream os = null;
+                item = list[i];
+                if( item == null ) {
+                    error( ctx.getString( R.string.unkn_err ) );
+                    break;
+                }
+                Uri dest_uri = null;
+                try {
+                    if( isStopReq() ) {
+                        error( ctx.getString( R.string.canceled ) );
+                        break;
+                    }
+                    String fn = item.name;
+                    String to_append = "%2f" + Utils.escapePath( fn );
+                    dest_uri = dest.buildUpon().encodedPath( dest.getEncodedPath() + to_append ).build();
+                    String mime = getMime( dest_uri );
+                    Uri item_uri = (Uri)item.origin;
+                    if( item.dir ) {
+                        if( depth++ > 40 ) {
+                            error( ctx.getString( R.string.too_deep_hierarchy ) );
+                            break;
+                        }
+                        if( mime != null ) {
+                          if( !Document.MIME_TYPE_DIR.equals( mime ) ) {
+                            error( ctx.getString( R.string.cant_md ) );
+                            break;
+                          }
+                        } else {
+                            DocumentsContract.createDocument( cr, dest, Document.MIME_TYPE_DIR, fn );                            
+                        }
+                        ArrayList<SAFItem> tmp_list = getChildren( item_uri );
+                        SAFItem[] sub_items = new SAFItem[tmp_list.size()];
+                        tmp_list.toArray( sub_items );
+                        copyFiles( sub_items, dest_uri );
+                        if( errMsg != null )
+                            break;
+                        depth--;
+                        counter++;
+                    }
+                    else {
+                        if( mime != null ) {
+                            int res = askOnFileExist( ctx.getString( R.string.file_exist, fn ), commander );
+                            if( res == Commander.SKIP )  continue;
+                            if( res == Commander.ABORT ) break;
+                            if( res == Commander.REPLACE ) Log.v( TAG, "Overwritting file " + fn );
+                        } else
+                            mime = Utils.getMimeByExt( Utils.getFileExt( fn ) );
+                        dest_uri = DocumentsContract.createDocument( cr, dest, mime, fn );
+                        is = cr.openInputStream( item_uri );
+                        os = cr.openOutputStream( dest_uri );
+                        long copied = 0, size = item.size;
+                        
+                        long start_time = 0;
+                        int  speed = 0;
+                        int  so_far = (int)(totalBytes * conv);
+                        
+                        String sz_s = Utils.getHumanSize( size );
+                        int fnl = fn.length();
+                        String rep_s = ctx.getString( R.string.copying, 
+                               fnl > CUT_LEN ? "\u2026" + fn.substring( fnl - CUT_LEN ) : fn );
+                        int  n  = 0; 
+                        long nn = 0;
+                        
+                        while( true ) {
+                            if( nn == 0 ) {
+                                start_time = System.currentTimeMillis();
+                                sendProgress( rep_s + sizeOfsize( copied, sz_s ), so_far, (int)(totalBytes * conv), speed );
+                            }
+                            n = is.read( buf );
+                            if( n < 0 ) {
+                                long time_delta = System.currentTimeMillis() - start_time;
+                                if( time_delta > 0 ) {
+                                    speed = (int)(MILLI * nn / time_delta );
+                                    sendProgress( rep_s + sizeOfsize( copied, sz_s ), so_far, (int)(totalBytes * conv), speed );
+                                }
+                                break;
+                            }
+                            os.write( buf, 0, n );
+                            nn += n;
+                            copied += n;
+                            totalBytes += n;
+                            if( isStopReq() ) {
+                                Log.d( TAG, "Interrupted!" );
+                                error( ctx.getString( R.string.canceled ) );
+                                return counter;
+                            }
+                            long time_delta = System.currentTimeMillis() - start_time;
+                            if( time_delta > DELAY ) {
+                                speed = (int)(MILLI * nn / time_delta);
+                                //Log.v( TAG, "bytes: " + nn + " time: " + time_delta + " speed: " + speed );
+                                nn = 0;
+                            }
+                        }
+                        is.close();
+                        os.close();
+                        is = null;
+                        os = null;
+                        if( i >= list.length-1 )
+                            sendProgress( ctx.getString( R.string.copied_f, fn ) + sizeOfsize( copied, sz_s ), (int)(totalBytes * conv) );
+                        counter++;
+                    }
+                    if( move ) {
+                        if( !DocumentsContract.deleteDocument( cr, item_uri ) ) {
+                            sendProgress( ctx.getString( R.string.cant_del, fn ), -1 );
+                            delerr_counter++;
+                        }
+                    }
+                }
+                catch( Exception e ) {
+                    Log.e( TAG, "", e );
+                    error( ctx.getString( R.string.rtexcept, item.name, e.getMessage() ) );
+                }
+                finally {
+                    try {
+                        if( is != null )
+                            is.close();
+                        if( os != null )
+                            os.close();
+                    }
+                    catch( IOException e ) {
+                        error( ctx.getString( R.string.acc_err, item.name, e.getMessage() ) );
+                    }
+                }
+            }
+            return counter;
+        }
+    }
     
     class MoveFromEngine extends Engine {  
         private SAFItem[] mList;
@@ -537,7 +732,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
 
         MoveFromEngine( SAFItem[] list, File dest, Engines.IReciever recipient_ ) {
             super( recipient_ );
-            setName( ".CopyFromEngine" );
+            setName( ".MoveFromEngine" );
             owner = SAFAdapter.this;
             mList = list;
             destFolder = dest;
@@ -662,7 +857,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
 
         CopyToEngine( File[] list, int move_mode ) {
             super( null );
-            setName( ".CopyEngine" );
+            setName( ".CopyToEngine" );
             fList = list;
             mDest = SAFAdapter.this.getUri();
             cr = SAFAdapter.this.ctx.getContentResolver();
@@ -677,10 +872,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
             sendProgress( ctx.getString( R.string.preparing ), 0, 0 );
             try {
                 int l = fList.length;
-                Item[] x_list = new Item[l];
                 wakeLock.acquire();
-//                long sum = getSizes( x_list );
-//                conv = 100 / (double)sum;
                 int num = copyFiles( fList, mDest );
 
                 if( del_src_dir ) {

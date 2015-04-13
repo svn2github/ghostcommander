@@ -38,6 +38,43 @@ public final class FSEngines {
         public File f();
     }
     
+    public static class ListEngine extends Engine {
+        private String      pass_back_on_done;
+        private FSAdapter   a;
+        private File[]      files_ = null;
+        private File        dir = null;
+        
+        ListEngine( FSAdapter a, Handler h, String pass_back_on_done_ ) {
+            setHandler( h );
+            this.a = a;
+            pass_back_on_done = pass_back_on_done_;
+        }
+        public File getDirFile() {
+            return dir;
+        }       
+        public File[] getFiles() {
+            return files_;
+        }       
+        @Override
+        public void run() {
+            String err_msg = null;
+            String dir_name = a.getDir();
+            while( true ) {
+                dir = new File( dir_name );
+                files_ = dir.listFiles();
+                if( files_ != null ) break;
+                if( err_msg == null )
+                    err_msg = a.ctx.getString( R.string.no_such_folder, dir_name );
+                if( dir == null || ( dir_name = dir.getParent() ) == null ) {
+                    Log.e( TAG, "Wrong folder '" + dir_name + "'" );
+                    sendProgress( a.s( R.string.inv_path ), Commander.OPERATION_FAILED, pass_back_on_done );
+                    return;
+                }
+            }
+            sendProgress( null, Commander.OPERATION_COMPLETED, pass_back_on_done );
+        }
+    }
+    
 	public static class CalcSizesEngine extends Engine {
 		private   IFileItem[] mList;
         protected CommanderAdapterBase cab;

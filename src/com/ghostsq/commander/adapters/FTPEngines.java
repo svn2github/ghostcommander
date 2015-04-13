@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Date;
 
 import com.ghostsq.commander.Commander;
@@ -19,6 +21,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
+import android.os.Handler;
 import android.text.format.Formatter;
 import android.util.Log;
 
@@ -30,18 +33,121 @@ public final class FTPEngines {
         protected FTPCredentials crd;
         protected FTP            ftp;
         protected Uri            uri;
+        FTPEngine( Context ctx_, FTPCredentials crd_, Uri uri_, FTP ftp_ ) {
+            if( crd_ == null )
+                crd_ = new FTPCredentials( uri_.getUserInfo() ); 
+            this.ctx = ctx_;
+            this.crd = crd_;
+            this.uri = uri_;
+            this.ftp = ftp_;
+        }
         FTPEngine( Context ctx_, FTPCredentials crd_, Uri uri_, boolean active, Charset cs ) {
-            ctx = ctx_;
-            crd = crd_;
-            uri = uri_;
-            if( crd == null ) {
-                crd = new FTPCredentials( uri.getUserInfo() ); 
-            }
-            ftp = new FTP();
+            this( ctx_, crd_, uri_, new FTP() );
             ftp.setActiveMode( active );
             ftp.setCharset( cs );
         }
     }    
+
+    public static class ListEngine extends FTPEngine {
+        private int mode = 0;
+        private boolean ascending;
+        private boolean needReconnect;
+        private LsItem[] items_tmp;
+        public  String pass_back_on_done;
+        public  String path;
+        
+        ListEngine( FTPAdapter a, Handler h, FTP ftp_, boolean need_reconnect_, String pass_back_on_done_ ) {
+            super( a.ctx, (FTPCredentials)a.getCredentials(), a.getUri(), ftp_ );
+            setHandler( h );
+            needReconnect = need_reconnect_;
+            pass_back_on_done = pass_back_on_done_;
+            this.mode = a.getMode();
+            this.ascending = ( this.mode & CommanderAdapter.MODE_SORT_DIR ) == CommanderAdapter.SORT_ASC;
+        }
+        public LsItem[] getItems() {
+            return items_tmp;
+        }       
+        @Override
+        public void run() {
+            try {
+                if( uri == null ) {
+                    sendProgress( "Wrong URI", Commander.OPERATION_FAILED );
+                    return;
+                }
+                Log.i( TAG, "ListEngine started" );
+                threadStartedAt = System.currentTimeMillis();
+                ftp.clearLog();
+                if( needReconnect  && ftp.isLoggedIn() ) {
+                    ftp.disconnect( false );
+                }
+                if( crd == null || crd.isNotSet() )
+                    crd = new FTPCredentials( uri.getUserInfo() );
+                int cl_res = ftp.connectAndLogin( uri, crd.getUserName(), crd.getPassword(), true );
+                if( cl_res < 0 ) {
+                    if( cl_res == FTP.NO_LOGIN ) 
+                        sendLoginReq( uri.toString(), crd, pass_back_on_done );
+                    return;
+                }
+                if( cl_res == FTP.LOGGED_IN )
+                    sendProgress( ctx.getString( R.string.ftp_connected,  
+                            uri.getHost(), crd.getUserName() ), Commander.OPERATION_STARTED );
+
+                if( ftp.isLoggedIn() ) {
+                    //Log.v( TAG, "ftp is logged in" );
+                    items_tmp = ftp.getDirList( null, ( mode & CommanderAdapter.MODE_HIDDEN ) == CommanderAdapter.SHOW_MODE );
+                    path = ftp.getCurrentDir();
+                    if( path != null ) 
+                        for( LsItem lsi : items_tmp ) {
+                            String name = lsi.getName();
+                            if( name == null ) continue;
+                            String lt = lsi.getLinkTarget();
+                            if( !Utils.str( lt ) ) continue;
+                            if( lt.charAt( 0 ) != '/' )
+                                lt = Utils.mbAddSl( path ) + lt;
+                            if( ftp.setCurrentDir( lt ) )
+                                lsi.setDirectory();
+                        }
+                        ftp.setCurrentDir( path );
+                        synchronized( uri ) {
+                            uri = uri.buildUpon().encodedPath( path ).build();
+                        }
+                    if( items_tmp != null  ) {
+                        //Log.v( TAG, "Got the items list" );
+                        if( items_tmp.length > 0 ) {
+                            LsItem.LsItemPropComparator comp = 
+                                items_tmp[0].new LsItemPropComparator( mode & CommanderAdapter.MODE_SORTING, (mode & CommanderAdapter.MODE_CASE) != 0, ascending );
+                            Arrays.sort( items_tmp, comp );
+                        }
+                        
+                        //Log.v( TAG, "items list sorted" );
+                        sendProgress( tooLong( 8 ) ? ftp.getLog() : null, Commander.OPERATION_COMPLETED, pass_back_on_done );
+                        return;
+                    }
+                    else
+                        Log.e( TAG, "Can't get the items list" );
+                }
+                else
+                    Log.e( TAG, "Did not log in." );
+            }
+            catch( UnknownHostException e ) {
+                ftp.debugPrint( "Unknown host:\n" + e.getLocalizedMessage() );
+            }
+            catch( IOException e ) {
+                ftp.debugPrint( "IO exception:\n" + e.getLocalizedMessage() );
+                Log.e( TAG, "", e );
+            }
+            catch( Exception e ) {
+                ftp.debugPrint( e.getLocalizedMessage() );
+                Log.e( TAG, "", e );
+            }
+            finally {
+                super.run();
+            }
+            ftp.disconnect( true );
+            sendProgress( ftp.getLog(), Commander.OPERATION_FAILED, pass_back_on_done );
+        }
+    }
+        
     
     private static abstract class CopyEngine extends FTPEngine implements FTP.ProgressSink 
     {

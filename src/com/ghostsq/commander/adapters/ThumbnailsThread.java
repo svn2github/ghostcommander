@@ -13,6 +13,8 @@ import com.ghostsq.commander.adapters.CommanderAdapter.Item;
 import com.ghostsq.commander.utils.MnfUtils;
 import com.ghostsq.commander.utils.Utils;
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.pm.ApplicationInfo;
@@ -30,6 +32,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.BaseColumns;
 import android.util.Log;
+import android.util.LruCache;
 import android.util.SparseArray;
 import android.provider.MediaStore.Images.Media;
 import android.provider.MediaStore.Images.Thumbnails;
@@ -60,8 +63,8 @@ class ThumbnailsThread extends Thread {
             };
     
     private class Thumbnail {
-        public SoftReference<Drawable> srd;
-        public int h, w;
+        private SoftReference<Drawable> srd;
+        private int h, w;
         Thumbnail( Drawable d ) {
             this( d, 0, 0 );
         }
@@ -73,9 +76,25 @@ class ThumbnailsThread extends Thread {
         public final String getResInfo() {
             return h == 0 ? null : "" + w + "x" + h;
         }
+        
+        public Drawable getDrawable() {
+            Drawable d = srd.get();
+            /*
+            if( d instanceof BitmapDrawable ) {
+                BitmapDrawable bd = (BitmapDrawable)d;
+                Bitmap b = bd.getBitmap();
+                if( b == null || b.isRecycled() ) 
+                    return null;
+            }
+            */
+            return d;
+        }
     }
     
-    public static final SparseArray<Thumbnail> thumbnailCache = new SparseArray<Thumbnail>();
+    @SuppressLint("NewApi")
+    public static final LruCache<Integer, Thumbnail> thumbnailCache = new LruCache(100); 
+    
+    //public static final SparseArray<Thumbnail> thumbnailCache = new SparseArray<Thumbnail>();
 
     ThumbnailsThread( CommanderAdapterBase owner, Handler thread_handler, String base_path, Item[] list ) {
         this.owner = owner;
@@ -87,6 +106,7 @@ class ThumbnailsThread extends Thread {
         cr = owner.ctx.getContentResolver();
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
     @Override
     public void run() {
         try {
@@ -97,7 +117,7 @@ class ThumbnailsThread extends Thread {
             options = new BitmapFactory.Options();
             res = owner.ctx.getResources();
             int fails_count = 0;
-            boolean visible_only = list.length > 100; // too many icons
+            boolean visible_only = list.length > 20; // too many icons
             for( int a = 0; a < 2; a++ ) {
                 boolean succeeded = true;
                 boolean need_update = false, proc_visible = false, proc_invisible = false;
@@ -163,7 +183,7 @@ class ThumbnailsThread extends Thread {
                         cached = thumbnailCache.get( fn_h );
                     }
                     if( cached != null ) {
-                        f.setThumbNail( cached.srd.get() );
+                        f.setThumbNail( cached.getDrawable() );
                         f.attr = cached.getResInfo();
                     }
 
@@ -234,6 +254,7 @@ class ThumbnailsThread extends Thread {
     private final Thumbnail createThumbnail( String fn, Item f, int h ) {
         final String func_name = "createThubnail()";
         int img_w = 0, img_h = 0;
+        FileInputStream fis = null;
         try {
             // let's try to take it from the mediastore
             Cursor cursor = null;
@@ -316,7 +337,7 @@ class ThumbnailsThread extends Thread {
             options.outHeight = 0;
             options.inTempStorage = buf;
 
-            FileInputStream fis = new FileInputStream( fn );
+            fis = new FileInputStream( fn );
             BitmapFactory.decodeStream( fis, null, options );
             // BitmapFactory.decodeFile( fn, options );
             img_w = options.outWidth;
@@ -337,7 +358,6 @@ class ThumbnailsThread extends Thread {
                     // drawable.setGravity( Gravity.CENTER );
                     // drawable.setBounds( 0, 0, 60, 60 );
                     f.setThumbNail( drawable );
-                    fis.close();
                     //Log.v( TAG, fn + " - OK" );
                     return thb;
                 }
@@ -353,6 +373,13 @@ class ThumbnailsThread extends Thread {
             Log.e( TAG, func_name, ioe );
         } catch( Error err ) {
             Log.e( TAG, func_name, err );
+        }
+        finally {
+            try {
+                if( fis != null )
+                    fis.close();
+            } catch( IOException e ) {
+            }
         }
         return null;
     }
