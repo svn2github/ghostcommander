@@ -96,6 +96,7 @@ public final class FTPEngines {
                     //Log.v( TAG, "ftp is logged in" );
                     items_tmp = ftp.getDirList( null, ( mode & CommanderAdapter.MODE_HIDDEN ) == CommanderAdapter.SHOW_MODE );
                     path = ftp.getCurrentDir();
+                    boolean need_restore_wd = false;
                     if( path != null ) 
                         for( LsItem lsi : items_tmp ) {
                             String name = lsi.getName();
@@ -104,10 +105,12 @@ public final class FTPEngines {
                             if( !Utils.str( lt ) ) continue;
                             if( lt.charAt( 0 ) != '/' )
                                 lt = Utils.mbAddSl( path ) + lt;
+                            need_restore_wd = true;
                             if( ftp.setCurrentDir( lt ) )
                                 lsi.setDirectory();
                         }
-                        ftp.setCurrentDir( path );
+                        if( need_restore_wd )
+                            ftp.setCurrentDir( path );
                         synchronized( uri ) {
                             uri = uri.buildUpon().encodedPath( path ).build();
                         }

@@ -6,14 +6,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.SoftReference;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.ghostsq.commander.adapters.CommanderAdapter.Item;
 import com.ghostsq.commander.utils.MnfUtils;
 import com.ghostsq.commander.utils.Utils;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -90,11 +87,11 @@ class ThumbnailsThread extends Thread {
             return d;
         }
     }
-    
+    /*
     @SuppressLint("NewApi")
     public static final LruCache<Integer, Thumbnail> thumbnailCache = new LruCache(100); 
-    
-    //public static final SparseArray<Thumbnail> thumbnailCache = new SparseArray<Thumbnail>();
+    */
+    public static final SparseArray<Thumbnail> thumbnailCache = new SparseArray<Thumbnail>();
 
     ThumbnailsThread( CommanderAdapterBase owner, Handler thread_handler, String base_path, Item[] list ) {
         this.owner = owner;
@@ -141,10 +138,11 @@ class ThumbnailsThread extends Thread {
                         }
                         if( !visible_only || proc_visible )
                             break;
-                        // Log.v( TAG, "Tired. Waiting for a request to proceed" );
+                        //Log.v( TAG, "Tired. Waiting for a request to proceed" );
                         synchronized( owner ) {
                             owner.wait();
                         }
+                        //Log.v( TAG, "Woke up" );
                     }
                     proc_invisible = n < 0;
                     if( proc_invisible )
@@ -155,10 +153,14 @@ class ThumbnailsThread extends Thread {
                         yield();
                         sleep( 10 );
                     }
+
                     Item f = list[n];
                     //Log.v( TAG,  " " + f.name );
                     f.need_thumb = false;
-
+                    if( f.dir ) {
+                        f.no_thumb = true;
+                        continue;
+                    }
                     if( f.isThumbNail() )
                         continue; // already exist
                     String fn;
@@ -206,7 +208,7 @@ class ThumbnailsThread extends Thread {
                             f.setThumbNail( null );
                             continue;
                         }
-                        
+                       
                         Thumbnail t = null;
                         if( ext_hash == apk_h ) {
                             t = getApkIcon( fn );
@@ -223,7 +225,7 @@ class ThumbnailsThread extends Thread {
                         } else {
                             succeeded = false;
                             if( fails_count++ > 10 ) {
-                                Log.e( TAG, "To many fails, give up" );
+                                Log.w( TAG, "To many fails, giving up" );
                                 return;
                             }
                         }
@@ -273,23 +275,30 @@ class ThumbnailsThread extends Thread {
                     String[]    proj = SDK16UP ? th_proj : id_proj;
                     String where = Media.DATA + " = '" + fn + "'";
                     cursor = cr.query( Media.EXTERNAL_CONTENT_URI, proj, where, null, null );
-                    if( cursor != null && cursor.getCount() > 0 ) {
-                        cursor.moveToPosition( 0 );
-                        orig_id = cursor.getLong( 0 );
-                        if( SDK16UP ) {
-                            img_w = cursor.getInt( 1 );
-                            img_h = cursor.getInt( 2 );
+                    if( cursor != null ) {
+                        if( cursor.getCount() > 0 ) {
+                            cursor.moveToPosition( 0 );
+                            orig_id = cursor.getLong( 0 );
+                            if( SDK16UP ) {
+                                img_w = cursor.getInt( 1 );
+                                img_h = cursor.getInt( 2 );
+                            }
                         }
                         cursor.close();
+                        cursor = null;
                     }                    
                 }
                 if( orig_id >= 0 ) {
                     cursor = Thumbnails.queryMiniThumbnail( cr, orig_id, Thumbnails.MICRO_KIND, th_proj );
-                    if( cursor == null || cursor.getCount() == 0 ) {
-                        Log.d( TAG, "Micro failed for " + f.name );
+                    if( cursor != null && cursor.getCount() == 0 ) {
+                        cursor.close();
+                        cursor = null;
+                    }
+                    if( cursor == null ) {
+                        //Log.d( TAG, "Micro failed for " + f.name );
                         cursor = Thumbnails.queryMiniThumbnail( cr, orig_id, Thumbnails.MINI_KIND, th_proj );
-                        if( cursor == null || cursor.getCount() == 0 )
-                            Log.d( TAG, "Mini failed for " + f.name );
+                        //if( cursor == null || cursor.getCount() == 0 )
+                        //    Log.d( TAG, "Mini failed for " + f.name );
                     }
                 }
                 if( cursor != null && cursor.getCount() > 0 ) {
@@ -298,7 +307,7 @@ class ThumbnailsThread extends Thread {
                     Uri tcu = ContentUris.withAppendedId( Thumbnails.EXTERNAL_CONTENT_URI, th_id );
                     int tw = cursor.getInt( 1 );
                     int th = cursor.getInt( 2 );
-                    Log.d( TAG, "th id: " + cursor.getLong(0) + ", w: " + tw + ", h: " + th );
+                    //Log.d( TAG, "th id: " + cursor.getLong(0) + ", w: " + tw + ", h: " + th );
                     InputStream in = cr.openInputStream( tcu );
 
                     if( tw > 0 && th > 0 ) {
@@ -323,12 +332,14 @@ class ThumbnailsThread extends Thread {
                         // );
                         return thb;
                     }
+                    cursor.close();
+                    cursor = null;
                 }
             } catch( Exception e ) {
-                // Log.e( TAG, fn, e );
+                Log.e( TAG, fn, e );
             }
             finally {
-                if( cursor != null  )
+                if( cursor != null )
                     cursor.close();
             }
             options.inSampleSize = 1;

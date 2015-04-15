@@ -96,7 +96,7 @@ public class FTP {
         try {
         	int code;
             do {
-                Thread.sleep( 100 );
+                Thread.sleep( 10 );
             	response = getReplyLine();
             	if( response == null ) return false;
                 code = getReplyCode( response );
@@ -131,12 +131,12 @@ public class FTP {
         }
     }
     private final String getReplyLine() {
-        return getLine( true );
+        return getLine( true, true );
     }
     private final String getLine() {
-        return getLine( false );
+        return getLine( false, true );
     }
-    private final String getLine( boolean skip_to_code_line ) {
+    private final String getLine( boolean skip_to_code_line, boolean wait ) {
         try {
         	if( inputStream == null ) {
         		debugPrint( "No Connection" );
@@ -147,14 +147,17 @@ public class FTP {
             byte[] buf = new byte[buf_sz];
             do {
             	int cnt = 0;
-            	do
+            	do {
             		if( cnt++ < 200 ) 
-            		    Thread.sleep( 100 ); 
+            		    Thread.sleep( 50 ); 
             		else {
             		    Log.e( TAG, "The server did not respond. " + inputStream.toString() );
             		    return null;
             		}
-            	while( inputStream != null && inputStream.available() == 0 );
+            		if( inputStream == null ) return null;    // termination in progress  
+            		if( inputStream.available() > 0 ) break; 
+            		if( !wait ) return null;
+            	} while( true );
                 for( i = 0; i < buf_sz; i++ ) {
                     int b = inputStream.read();
                     if( b < 0 )
@@ -441,7 +444,7 @@ public class FTP {
 		}
 		return null;
     }
-    private final boolean cleanUpDataCommand( boolean wait_reps ) throws InterruptedException {
+    private final void cleanUpDataCommand( boolean wait_reps ) throws InterruptedException {
     	
         // Clean up the data structures
         try {
@@ -454,7 +457,8 @@ public class FTP {
 		} catch( IOException e ) {
 		    Log.e( TAG, "", e );
 		}
-        return wait_reps ? waitForPositiveResponse() : true;
+        if( wait_reps )
+            getLine( true, false );
     }
     
     /*
@@ -617,6 +621,10 @@ public class FTP {
     	String pwd_answer = getReplyLine();
     	if( !isPositiveComplete( getReplyCode( pwd_answer ) ) )
     		return null;
+    	if( pwd_answer == null || pwd_answer.indexOf( '/' ) < 0 )
+    	    pwd_answer = getReplyLine();
+        if( pwd_answer == null || pwd_answer.indexOf( '/' ) < 0 )
+            return null;
     	String[] parts = pwd_answer.split( "\"" );
     	if( parts.length < 2 )
     		return null;
