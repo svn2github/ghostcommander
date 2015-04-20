@@ -201,6 +201,7 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
             case R.id.rest_prefs:
                 restPrefs( f, sp_dir );
                 ck.restore();
+                setResult( RESULT_OK, new Intent( FileCommander.PREF_RESTORE_ACTION ) );
                 finish();
                 break;
             case R.id.save_log:

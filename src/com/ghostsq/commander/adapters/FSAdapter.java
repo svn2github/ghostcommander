@@ -235,12 +235,14 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
         if( full )
             return position == 0 ? ( new File( dirName ) ).getParent() : items[position - 1].f().getAbsolutePath();
         else {
-            if( position == 0 ) return parentLink; 
-            String name = items[position - 1].name;
-            if( name != null )
+            if( position == 0 ) return parentLink;
+            FileItem item = items[position - 1];
+            String name = item.name;
+            if( name != null && item.dir && !(this instanceof FindAdapter) ) {
                 return name.replace( "/", "" );
+            } else
+                return name;
         }
-        return null;
     }
 	@Override
 	public void reqItemsSize( SparseBooleanArray cis ) {

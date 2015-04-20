@@ -80,7 +80,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
     
     @Override
     public String toString() {
-        return SAFAdapter.getPath( uri );
+        return "saf:" + SAFAdapter.getPath( uri );
     }
 
     private static boolean isTreeUri( Uri uri ) {
@@ -111,7 +111,8 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
             path_root = Environment.getExternalStorageDirectory().getAbsolutePath();
         else
             path_root = Utils.getSecondaryStorage();
-        if( path_root == null ) path_root = Environment.getExternalStorageDirectory().getAbsolutePath();
+        if( path_root == null ) 
+            path_root = Environment.getExternalStorageDirectory().getAbsolutePath();
         return path_root + "/" + path_part.substring( col_pos+1 );
     }
 
@@ -361,6 +362,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
 	    Uri new_uri = DocumentsContract.renameDocument( cr, (Uri)item.origin, newName );
 	    if( new_uri == null ) return false;
 	    item.origin = new_uri;
+	    notifyRefr( newName );
 	    return true;
     }
 	
@@ -639,10 +641,22 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                             int res = askOnFileExist( ctx.getString( R.string.file_exist, fn ), commander );
                             if( res == Commander.SKIP )  continue;
                             if( res == Commander.ABORT ) break;
-                            if( res == Commander.REPLACE ) Log.v( TAG, "Overwritting file " + fn );
+                            if( res == Commander.REPLACE ) {
+                                File item_file = new File( getPath( item_uri ) );
+                                File dest_file = new File( getPath( dest_uri ) );
+                                if( dest_file.equals( item_file ) ) {
+                                    Log.w( TAG, "Not going to copy file to itself" );
+                                    continue;
+                                }
+                                Log.v( TAG, "Overwritting file " + fn );
+                                DocumentsContract.deleteDocument( cr, dest_uri );
+                            }
                         } else
                             mime = Utils.getMimeByExt( Utils.getFileExt( fn ) );
                         dest_uri = DocumentsContract.createDocument( cr, dest, mime, fn );
+                        String dest_path = dest_uri.getPath();
+                        if( dest_path.indexOf( fn, dest_path.length() - fn.length() - 1 ) < 0 )  // SAF suxx
+                            dest_uri = DocumentsContract.renameDocument( cr, dest_uri, fn );
                         is = cr.openInputStream( item_uri );
                         os = cr.openOutputStream( dest_uri );
                         long copied = 0, size = item.size;
@@ -952,10 +966,26 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                             int res = askOnFileExist( ctx.getString( R.string.file_exist, fn ), commander );
                             if( res == Commander.SKIP )  continue;
                             if( res == Commander.ABORT ) break;
-                            if( res == Commander.REPLACE ) Log.v( TAG, "Overwritting file " + fn );
+                            if( res == Commander.REPLACE ) {
+                                File dest_file = new File( getPath( dest_uri ) );
+                                if( dest_file.equals( file ) ) {
+                                    Log.w( TAG, "Not going to copy file to itself" );
+                                    continue;
+                                }
+                                Log.v( TAG, "Overwritting file " + fn );
+                                DocumentsContract.deleteDocument( cr, dest_uri );
+                            }
                         } else
                             mime = Utils.getMimeByExt( Utils.getFileExt( fn ) );
                         dest_uri = DocumentsContract.createDocument( cr, dest, mime, fn );
+                        if( dest_uri == null ) {
+                            error( ctx.getString( R.string.cant_create, fn, "" ) );
+                            break;
+                        }
+                        String dest_path = dest_uri.getPath();
+                        if( dest_path.indexOf( fn, dest_path.length() - fn.length() - 1 ) < 0 )  // SAF suxx
+                            dest_uri = DocumentsContract.renameDocument( cr, dest_uri, fn );
+                        
                         is = new FileInputStream( file );
                         os = cr.openOutputStream( dest_uri );
                         long copied = 0, size  = file.length();

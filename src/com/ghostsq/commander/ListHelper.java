@@ -16,6 +16,7 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.Display;
@@ -163,14 +164,20 @@ public class ListHelper {
             CommanderAdapter ca = (CommanderAdapter)flv.getAdapter();
             if( ca == null )
                 return;
+
+            DisplayMetrics dm = new DisplayMetrics();
+            p.c.getWindowManager().getDefaultDisplay().getMetrics( dm );
+            float density = dm.density;            
+            
             Display disp = p.c.getWindowManager().getDefaultDisplay();
-            int w = disp.getWidth();
-            int h = disp.getHeight();
+            int w = (int)( disp.getWidth()  / density );
+            int h = (int)( disp.getHeight() / density );
             final int WIDTH_THRESHOLD = 480;
+            
             int m = ca.setMode( CommanderAdapter.MODE_WIDTH,
                     ( p.sxs && w/2 < WIDTH_THRESHOLD ) || sharedPref.getBoolean( "two_lines", false ) ? CommanderAdapter.NARROW_MODE
                             : CommanderAdapter.WIDE_MODE );
-
+            flv.getWidth();
             ca.setMode( CommanderAdapter.SET_FONT_SIZE, p.fnt_sz );
             status.setTextSize( p.fnt_sz - 1 );
 

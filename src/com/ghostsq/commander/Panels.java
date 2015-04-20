@@ -1535,7 +1535,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         list[current].reStoreChoosedItems();
     }
 
-    final class State {
+    final static class State {
         private final static String LU = "LEFT_URI", RU = "RIGHT_URI";
         private final static String LC = "LEFT_CRD", RC = "RIGHT_CRD";
         private final static String LI = "LEFT_ITEM", RI = "RIGHT_ITEM";
@@ -1608,11 +1608,21 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             if( favs == null || favs.length() == 0 )
                 fav_uris = p.getString( FU, "" );
         }
+        public final static void storeFaves( SharedPreferences.Editor e, String fas ) {
+            e.putString( FV, fas );        
+        }
+        public final static String restoreFaves( SharedPreferences p ) {
+            return p.getString( FV, "" );        
+        }
+    }
+
+    public final State createEmptyStateObject() {
+        return new State();
     }
 
     public final State getState() {
         //Log.v( TAG, "getState()" );
-        State s = new State();
+        State s = createEmptyStateObject();
         s.current = current;
         try {
             CommanderAdapter left_adapter = (CommanderAdapter)list[LEFT].getListAdapter();
@@ -1666,5 +1676,10 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                     list_h.refreshList( s.current == RIGHT, s.rightItem );
         }
         applyColors();
+    }
+    
+    final void restoreFaves() {
+        SharedPreferences prefs = c.getPreferences( Context.MODE_MULTI_PROCESS );
+        favorites.setFromString( State.restoreFaves( prefs ) );
     }
 }

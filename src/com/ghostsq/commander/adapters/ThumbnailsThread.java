@@ -268,7 +268,12 @@ class ThumbnailsThread extends Thread {
                 };
                 long orig_id = -1;
                 if( f.origin instanceof Uri ) {
-                    orig_id = ContentUris.parseId( (Uri)f.origin );
+                    try {
+                        Uri u = (Uri)f.origin;
+                        if( !SAFAdapter.isExternalStorageDocument( u ) )
+                            orig_id = ContentUris.parseId( u );
+                    } catch( Exception e ) {
+                    }
                 } else {
                     boolean SDK16UP = android.os.Build.VERSION.SDK_INT >= 16;
                     String[] id_proj = { BaseColumns._ID };

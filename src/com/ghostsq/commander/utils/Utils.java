@@ -262,16 +262,19 @@ public final class Utils {
     }
 
     public final static String getSecondaryStorage() {
-        Map<String, String> env = System.getenv();
-        String sec_storage = env.get( "SECONDARY_STORAGE" );
-        if( !Utils.str( sec_storage ) ) return null;
-        String[] ss = sec_storage.split( ":" );
-        for( int i = 0; i < ss.length; i++ )
-            if( ss[i].indexOf( "sdcard" ) > 0 ) // FIXME: apparently, not a very correct way
-                return ss[i];
+        try {
+            Map<String, String> env = System.getenv();
+            String sec_storage = env.get( "SECONDARY_STORAGE" );
+            if( !Utils.str( sec_storage ) ) return null;
+            String[] ss = sec_storage.split( ":" );
+            for( int i = 0; i < ss.length; i++ )
+                if( ss[i].toLowerCase().indexOf( "sd" ) > 0 )
+                    return ss[i];
+            return "";
+        } catch( Exception e ) {
+        }
         return null;
     }
-    
     
     public final static String getOpReport_( Context ctx, int total, int verb_id ) {
         String items = null;

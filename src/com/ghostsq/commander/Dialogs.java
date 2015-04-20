@@ -1,5 +1,6 @@
 package com.ghostsq.commander;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -492,8 +493,15 @@ public class Dialogs implements DialogInterface.OnClickListener {
         try {
             if( string != null ) {
                 TextView t = (TextView)dialogObj.findViewById( R.id.text );
-                if( t != null )
+                if( t != null ) {
+                    final int fil_len = 300, s_len = string.length();
+                    if( s_len < fil_len ) {
+                        char[] chars = new char[fil_len - s_len];
+                        Arrays.fill( chars, '\u00A0' );
+                        string += new String( chars );
+                    }
                     t.setText( string );
+                }
             }
             ProgressBar p_bar = (ProgressBar)dialogObj.findViewById( R.id.progress_bar );
             TextView perc_t = (TextView)dialogObj.findViewById( R.id.percent );

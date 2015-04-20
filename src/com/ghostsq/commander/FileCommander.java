@@ -2,9 +2,7 @@ package com.ghostsq.commander;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
@@ -68,6 +66,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
     private final static String TAG = "GhostCommanderActivity";
     public final static int REQUEST_CODE_PREFERENCES = 1, REQUEST_CODE_SRV_FORM = 2, REQUEST_CODE_OPEN = 3;
     public final static int FIND_ACT = 1017, SMB_ACT = 2751, FTP_ACT = 4501, SFTP_ACT = 2450;
+    public final static String PREF_RESTORE_ACTION = "com.ghostsq.commander.PREF_RESTORE";
 
     private ArrayList<Dialogs> dialogs;
     private ProgressDialog waitPopup;
@@ -177,7 +176,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             Intent intent = getIntent();
 
             SharedPreferences prefs = getPreferences( MODE_PRIVATE );
-            Panels.State s = panels.new State();
+            Panels.State s = panels.createEmptyStateObject();
             s.restore( prefs );
 
             String action = intent.getAction();
@@ -261,7 +260,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
     protected void onRestoreInstanceState( Bundle savedInstanceState ) {
         Log.i( TAG, "Restoring Instance State" );
         if( savedInstanceState != null ) {
-            Panels.State s = panels.new State();
+            Panels.State s = panels.createEmptyStateObject();
             s.restore( savedInstanceState );
             panels.setState( s, -1 );
         }
@@ -384,24 +383,29 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         super.onActivityResult( requestCode, resultCode, data );
         Log.d( TAG, "onActivityResult( " + requestCode + ", " + data + " )" );
         switch( requestCode ) {
-        case REQUEST_CODE_PREFERENCES: {
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( this );
-            back_exits = sharedPref.getBoolean( "exit_on_back", false );
-            String lang_ = sharedPref.getString( "language", "" );
-            if( !lang.equalsIgnoreCase( lang_ ) ) {
-                lang = lang_;
-                Utils.changeLanguage( this );
-                showMessage( getString( R.string.restart_to_apply_lang ) );
-                exit = true;
+        case REQUEST_CODE_PREFERENCES: 
+            // if( resultCode == RESULT_OK ) // FIXME How to know there were changes in the prefs? 
+            {
+                SharedPreferences sharedPref = ForwardCompat.getDefaultSharedPreferences( this );
+    //            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( this );
+                back_exits = sharedPref.getBoolean( "exit_on_back", false );
+                String lang_ = sharedPref.getString( "language", "" );
+                if( !lang.equalsIgnoreCase( lang_ ) ) {
+                    lang = lang_;
+                    Utils.changeLanguage( this );
+                    showMessage( getString( R.string.restart_to_apply_lang ) );
+                    exit = true;
+                }
+                panels.applySettings( sharedPref, false );
+                String panels_mode = sharedPref.getString( "panels_sxs_mode", "a" );
+                sxs_auto = panels_mode.equals( "a" );
+                boolean sxs = sxs_auto ? getRotMode() : panels_mode.equals( "y" );
+                panels.setLayoutMode( sxs );
+                panels.showToolbar( sharedPref.getBoolean( "show_toolbar", true ) );
+                setConfirmMode( sharedPref );
+                if( data != null && PREF_RESTORE_ACTION.equals( data.getAction() ) )
+                    panels.restoreFaves();
             }
-            panels.applySettings( sharedPref, false );
-            String panels_mode = sharedPref.getString( "panels_sxs_mode", "a" );
-            sxs_auto = panels_mode.equals( "a" );
-            boolean sxs = sxs_auto ? getRotMode() : panels_mode.equals( "y" );
-            panels.setLayoutMode( sxs );
-            panels.showToolbar( sharedPref.getBoolean( "show_toolbar", true ) );
-            setConfirmMode( sharedPref );
-        }
             break;
         case REQUEST_CODE_SRV_FORM: {
             if( resultCode == RESULT_OK ) {

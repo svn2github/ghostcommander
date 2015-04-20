@@ -137,10 +137,15 @@ public final class FSEngines {
                     }
                     result.append( "\n\n<hr/>" );
         	    }
-                StatFs stat = new StatFs( cab.toString() );
-                long block_size = stat.getBlockSize( );
-                result.append( c.getString( R.string.sz_total, Formatter.formatFileSize( cab.ctx, stat.getBlockCount() * block_size ), 
-                                                               Formatter.formatFileSize( cab.ctx, stat.getAvailableBlocks() * block_size ) ) );
+                try {
+                    if( cab instanceof FSAdapter ) {
+                        StatFs stat = new StatFs( cab.toString() );
+                        long block_size = stat.getBlockSize( );
+                        result.append( c.getString( R.string.sz_total, Formatter.formatFileSize( cab.ctx, stat.getBlockCount() * block_size ), 
+                                                                       Formatter.formatFileSize( cab.ctx, stat.getAvailableBlocks() * block_size ) ) );
+                    }
+                } catch( Exception e ) {
+                }
                 String str = result.toString();
 				sendReport( str );
 			} catch( Exception e ) {

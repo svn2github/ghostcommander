@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -13,6 +14,7 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -94,6 +96,17 @@ public class ForwardCompat
         
         return Environment.getExternalStoragePublicDirectory( pps ).getAbsolutePath();
     }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public static SharedPreferences getDefaultSharedPreferences( Context ctx ) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) { // api 11
+            return ctx.getSharedPreferences( ctx.getPackageName() + "_preferences",
+                Context.MODE_MULTI_PROCESS );
+        }
+        else {
+            return PreferenceManager.getDefaultSharedPreferences( ctx );
+        }
+    }    
     
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static Intent getDocTreeIntent() {
