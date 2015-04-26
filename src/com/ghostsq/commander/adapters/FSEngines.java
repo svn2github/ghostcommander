@@ -265,7 +265,9 @@ public final class FSEngines {
                     if( mime.startsWith( "video/" ) ) content_uri = Video.Media.EXTERNAL_CONTENT_URI;
                     if( content_uri != null ) {
                         ContentResolver cr = cab.ctx.getContentResolver();
-                        cr.delete( content_uri, MediaColumns.DATA + "=?", new String[]{ f.getAbsolutePath() });
+                        try {
+                            cr.delete( content_uri, MediaColumns.DATA + "=?", new String[]{ f.getAbsolutePath() });
+                        } catch( Exception e ) {}
                     }
                 }                
             }

@@ -31,6 +31,7 @@ public class ListHelper {
     public  ListView   flv = null;
     private TextView   status = null;
     private int        currentPosition = -1;
+    public  int        adapterMode = 0;
     private String[]   listOfItemsChecked = null;
     private Panels     p;
     private boolean    needRefresh, was_current;
@@ -123,6 +124,7 @@ public class ListHelper {
           //p.setToolbarButtons( ca );
             if( crd != null )
                 ca.setCredentials( crd );
+            ca.setMode( CommanderAdapter.MODE_SORTING | CommanderAdapter.MODE_SORT_DIR, adapterMode );
             ca.readSource( uri, "" + which + ( posTo == null ? "" : posTo ) );
         } catch( Exception e ) {
             Log.e( TAG, "NavigateInternal()", e );

@@ -20,6 +20,7 @@ import com.ghostsq.commander.utils.Utils;
 
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -1035,6 +1036,11 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                         os.close();
                         is = null;
                         os = null;
+                        /*
+                        ContentValues cv = new ContentValues();
+                        cv.put( Document.COLUMN_LAST_MODIFIED, file.lastModified() );
+                        cr.update( dest_uri, cv, null, null ); //throws..
+                        */
                         if( i >= list.length-1 )
                             sendProgress( ctx.getString( R.string.copied_f, fn ) + sizeOfsize( copied, sz_s ), (int)(totalBytes * conv) );
                         counter++;

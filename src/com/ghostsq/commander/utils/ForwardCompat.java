@@ -99,13 +99,7 @@ public class ForwardCompat
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static SharedPreferences getDefaultSharedPreferences( Context ctx ) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) { // api 11
-            return ctx.getSharedPreferences( ctx.getPackageName() + "_preferences",
-                Context.MODE_MULTI_PROCESS );
-        }
-        else {
-            return PreferenceManager.getDefaultSharedPreferences( ctx );
-        }
+        return ctx.getSharedPreferences( ctx.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS );
     }    
     
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)

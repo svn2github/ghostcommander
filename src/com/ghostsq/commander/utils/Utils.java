@@ -545,6 +545,17 @@ public final class Utils {
         return false;
     }
 
+    public final static File getTempDir( Context ctx ) {
+        File parent_dir = null;
+        if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO )
+             parent_dir = ForwardCompat.getExternalFilesDir( ctx );
+        else
+             parent_dir = new File( Environment.getExternalStorageDirectory().getAbsolutePath() );
+        File temp_dir = new File( parent_dir, "/temp/" );
+        temp_dir.mkdirs();
+        return temp_dir;
+    }
+    
     public final static File createTempDir( Context ctx ) {
         Date d = new Date();
         File parent_dir = null;

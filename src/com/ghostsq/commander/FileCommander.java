@@ -384,10 +384,14 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         Log.d( TAG, "onActivityResult( " + requestCode + ", " + data + " )" );
         switch( requestCode ) {
         case REQUEST_CODE_PREFERENCES: 
-            // if( resultCode == RESULT_OK ) // FIXME How to know there were changes in the prefs? 
+            // if( resultCode == RESULT_OK ) // FIXME How to know there were changes made in the prefs? 
             {
-                SharedPreferences sharedPref = ForwardCompat.getDefaultSharedPreferences( this );
-    //            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( this );
+                SharedPreferences sharedPref = null;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) 
+                    sharedPref = ForwardCompat.getDefaultSharedPreferences( this );
+                else
+                    sharedPref = PreferenceManager.getDefaultSharedPreferences( this );
+                if( sharedPref == null ) return;
                 back_exits = sharedPref.getBoolean( "exit_on_back", false );
                 String lang_ = sharedPref.getString( "language", "" );
                 if( !lang.equalsIgnoreCase( lang_ ) ) {
@@ -445,7 +449,8 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             break;
         case REQUEST_CODE_OPEN:
             try {
-                File temp_dir = new File( ForwardCompat.getExternalFilesDir( this ), "to_open" );
+                File temp_file_dir = Utils.getTempDir( this );
+                File temp_dir = new File( temp_file_dir, "to_open" );
                 File[] temp_files = temp_dir.listFiles();
                 for( File f : temp_files ) 
                     f.deleteOnExit();
@@ -850,8 +855,14 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 return;
             }
             else {
-                File temp_dir = new File( ForwardCompat.getExternalFilesDir( this ), "to_open" );
-                temp_dir.mkdir();
+                File temp_file_dir = Utils.getTempDir( this );
+                if( temp_file_dir == null ) return;
+                File temp_dir = new File( temp_file_dir, "to_open" );
+                if( !temp_dir.exists() ) {
+                    if( !temp_dir.mkdirs() )
+                        return;
+                } else if( !temp_dir.isDirectory() )
+                    return;
                 final CommanderAdapter ca = CA.CreateAdapterInstance( uri, this );            
                 if( ca == null ) return;
                 ca.Init( this );

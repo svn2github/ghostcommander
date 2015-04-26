@@ -496,6 +496,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         else
             ca.setMode( CommanderAdapter.MODE_SORTING | CommanderAdapter.MODE_SORT_DIR, sort_mode | CommanderAdapter.SORT_ASC );
         reStoreChoosedItems();
+        list[current].adapterMode = ca.getMode() & ( CommanderAdapter.MODE_SORTING | CommanderAdapter.MODE_SORT_DIR );
     }
 
     public void toggleHidden() {
@@ -1536,16 +1537,18 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     }
 
     final static class State {
-        private final static String LU = "LEFT_URI", RU = "RIGHT_URI";
-        private final static String LC = "LEFT_CRD", RC = "RIGHT_CRD";
+        private final static String LU = "LEFT_URI",  RU = "RIGHT_URI";
+        private final static String LC = "LEFT_CRD",  RC = "RIGHT_CRD";
         private final static String LI = "LEFT_ITEM", RI = "RIGHT_ITEM";
+        private final static String LM = "LEFT_MODE", RM = "RIGHT_MODE";
         private final static String CP = "LAST_PANEL";
         private final static String FU = "FAV_URIS";
         private final static String FV = "FAVS";
         private int current = -1;
         private Credentials leftCrd, rightCrd;
-        private Uri leftUri, rightUri;
-        private String leftItem, rightItem;
+        private Uri         leftUri, rightUri;
+        private String      leftItem,rightItem;
+        private int         leftMode,rightMode;
         private String favs, fav_uris;
         
         public final int getCurrent() {
@@ -1560,17 +1563,21 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             b.putParcelable( RU, rightUri );
             b.putString( LI, leftItem );
             b.putString( RI, rightItem );
+            b.putInt( LM, leftMode );
+            b.putInt( RM, rightMode );
             b.putString( FV, favs );
         }
 
         public final void restore( Bundle b ) {
-            current = b.getInt( CP );
-            leftCrd = b.getParcelable( LC );
-            rightCrd = b.getParcelable( RC );
-            leftUri = b.getParcelable( LU );
-            rightUri = b.getParcelable( RU );
-            leftItem = b.getString( LI );
+            current   = b.getInt( CP );
+            leftCrd   = b.getParcelable( LC );
+            rightCrd  = b.getParcelable( RC );
+            leftUri   = b.getParcelable( LU );
+            rightUri  = b.getParcelable( RU );
+            leftItem  = b.getString( LI );
             rightItem = b.getString( RI );
+            leftMode  = b.getInt( LM );
+            rightMode = b.getInt( RM );
             favs = b.getString( FV );
             if( favs == null || favs.length() == 0 )
                 fav_uris = b.getString( FU );
@@ -1584,6 +1591,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             e.putString( RC, rightCrd != null ? rightCrd.exportToEncriptedString() : "" );
             e.putString( LI,  leftItem );
             e.putString( RI, rightItem );
+            e.putInt( LM,     leftMode );
+            e.putInt( RM,    rightMode );
             e.putString( FV, favs );
         }
 
@@ -1601,8 +1610,10 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             String right_crd_s = p.getString( RC, null );
             if( Utils.str( right_crd_s ) )
                 rightCrd = Credentials.createFromEncriptedString( right_crd_s );
-            leftItem = p.getString( LI, null );
+            leftItem  = p.getString( LI, null );
             rightItem = p.getString( RI, null );
+            leftMode  = p.getInt( LM, 0 );
+            rightMode = p.getInt( RM, 0 );
             current = p.getInt( CP, LEFT );
             favs = p.getString( FV, "" );
             if( favs == null || favs.length() == 0 )
@@ -1626,14 +1637,16 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         s.current = current;
         try {
             CommanderAdapter left_adapter = (CommanderAdapter)list[LEFT].getListAdapter();
-            s.leftUri = left_adapter.getUri();
-            s.leftCrd = left_adapter.getCredentials();
+            s.leftUri  = left_adapter.getUri();
+            s.leftCrd  = left_adapter.getCredentials();
+            s.leftMode = left_adapter.getMode() & ( CommanderAdapter.MODE_SORTING | CommanderAdapter.MODE_SORT_DIR );
             int pos = list[LEFT].getCurPos();
             s.leftItem = pos >= 0 ? left_adapter.getItemName( pos, false ) : "";
 
             CommanderAdapter right_adapter = (CommanderAdapter)list[RIGHT].getListAdapter();
-            s.rightUri = right_adapter.getUri();
-            s.rightCrd = right_adapter.getCredentials();
+            s.rightUri  = right_adapter.getUri();
+            s.rightCrd  = right_adapter.getCredentials();
+            s.rightMode = right_adapter.getMode() & ( CommanderAdapter.MODE_SORTING | CommanderAdapter.MODE_SORT_DIR );
             pos = list[RIGHT].getCurPos();
             s.rightItem = pos >= 0 ? right_adapter.getItemName( pos, false ) : "";
 
@@ -1659,6 +1672,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             CommanderAdapter ca = list_h.getListAdapter(); 
             if( ca == null ) {
                 Uri lu = s.leftUri != null ? s.leftUri : Uri.parse( "home:" );
+                list_h.adapterMode = s.leftMode;
                 list_h.mbNavigate( lu, s.leftCrd, s.leftItem, s.current == LEFT );
             } else {
                 if( !"find".equals( ca.getScheme() ) )
@@ -1670,6 +1684,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             CommanderAdapter ca = list_h.getListAdapter(); 
             if( ca == null ) {
                 Uri ru = s.rightUri != null ? s.rightUri : Uri.parse( "home:" );
+                list_h.adapterMode = s.rightMode;
                 list_h.mbNavigate( ru, s.rightCrd, s.rightItem, s.current == RIGHT );
             } else
                 if( !"find".equals( ca.getScheme() ) )

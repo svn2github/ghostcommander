@@ -306,36 +306,42 @@ class ThumbnailsThread extends Thread {
                         //    Log.d( TAG, "Mini failed for " + f.name );
                     }
                 }
-                if( cursor != null && cursor.getCount() > 0 ) {
-                    cursor.moveToPosition( 0 );
-                    long th_id = cursor.getLong( 0 );
-                    Uri tcu = ContentUris.withAppendedId( Thumbnails.EXTERNAL_CONTENT_URI, th_id );
-                    int tw = cursor.getInt( 1 );
-                    int th = cursor.getInt( 2 );
-                    //Log.d( TAG, "th id: " + cursor.getLong(0) + ", w: " + tw + ", h: " + th );
-                    InputStream in = cr.openInputStream( tcu );
-
-                    if( tw > 0 && th > 0 ) {
-                        int greatest = Math.max( tw, th );
-                        int factor = greatest / thumb_sz;
-                        int b;
-                        for( b = 0x8000000; b > 0; b >>= 1 )
-                            if( b <= factor )
-                                break;
-                        options.inSampleSize = b;
-                    } else
-                        options.inSampleSize = 4;
-                    options.inJustDecodeBounds = false;
-                    options.inTempStorage = buf;
-                    Bitmap bitmap = BitmapFactory.decodeStream( in, null, options );
-                    if( bitmap != null ) {
-                        BitmapDrawable drawable = new BitmapDrawable( res, bitmap );
-                        Thumbnail thb = new Thumbnail( drawable, img_w, img_h );
-                        f.setThumbNail( drawable );
-                        in.close();
-                        // Log.v( TAG, "a thumbnail was stolen from " + tcu
-                        // );
-                        return thb;
+                if( cursor != null ) {
+                    if( cursor.getCount() > 0 ) {
+                        cursor.moveToPosition( 0 );
+                        long th_id = cursor.getLong( 0 );
+                        Uri tcu = ContentUris.withAppendedId( Thumbnails.EXTERNAL_CONTENT_URI, th_id );
+                        int tw = cursor.getInt( 1 );
+                        int th = cursor.getInt( 2 );
+                        //Log.d( TAG, "th id: " + cursor.getLong(0) + ", w: " + tw + ", h: " + th );
+                        
+                        InputStream in = null;
+                        try {
+                            in = cr.openInputStream( tcu );
+                        } catch( Exception e ) {}
+                        if( in != null ) {
+                            if( tw > 0 && th > 0 ) {
+                                int greatest = Math.max( tw, th );
+                                int factor = greatest / thumb_sz;
+                                int b;
+                                for( b = 0x8000000; b > 0; b >>= 1 )
+                                    if( b <= factor )
+                                        break;
+                                options.inSampleSize = b;
+                            } else
+                                options.inSampleSize = 4;
+                            options.inJustDecodeBounds = false;
+                            options.inTempStorage = buf;
+                            Bitmap bitmap = BitmapFactory.decodeStream( in, null, options );
+                            if( bitmap != null ) {
+                                BitmapDrawable drawable = new BitmapDrawable( res, bitmap );
+                                Thumbnail thb = new Thumbnail( drawable, img_w, img_h );
+                                f.setThumbNail( drawable );
+                                in.close();
+                                // Log.v( TAG, "a thumbnail was stolen from " + tcu );
+                                return thb;
+                            }
+                        }
                     }
                     cursor.close();
                     cursor = null;
