@@ -31,7 +31,7 @@
   <string name="hidden">Ausgeblendet</string>
   <string name="favs">Favoriten</string>
   <string name="ftp">FTP-Site</string>
-  <string name="sftp">STP-Site</string>
+  <string name="sftp">SFTP-Site</string>
   <string name="exit">Beenden</string>
   <string name="shortcut">Verknüpfung erstellen</string>
   <string name="enter_ftp">FTP verbinden</string>
