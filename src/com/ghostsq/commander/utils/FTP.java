@@ -31,13 +31,11 @@ public class FTP {
     private final static int BLOCK_SIZE = 100000;
     private final static boolean PRINT_DEBUG_INFO = true;
     private StringBuffer debugBuf = new StringBuffer();
-    private String host = null;
-    private Socket cmndSocket = null;
-    private OutputStream outputStream = null;
+    private String               host = null;
+    private Socket         cmndSocket = null;
+    private Socket         dataSocket = null;
+    private OutputStream       outputStream = null;
     private BufferedInputStream inputStream = null;
-    private ServerSocket serverSocket = null;
-    private Socket dataSocket = null;
-    private InputStream inDataStream = null;
     private boolean loggedIn = false;
     private boolean allowActive = false;
     private boolean ipv6 = false;
@@ -210,9 +208,7 @@ public class FTP {
                 if( outputStream != null ) outputStream.close();
                 if(  inputStream != null )  inputStream.close();
                 if(   cmndSocket != null )   cmndSocket.close();
-                if( serverSocket != null ) serverSocket.close();
                 if(   dataSocket != null )   dataSocket.close();
-                if( inDataStream != null ) inDataStream.close();
             }
             catch( Exception e ) {
             	Log.e( TAG, "", e );
@@ -220,9 +216,7 @@ public class FTP {
             outputStream = null;
              inputStream = null;
               cmndSocket = null;
-            serverSocket = null;
               dataSocket = null;
-            inDataStream = null;
         }
     }
 
@@ -310,9 +304,9 @@ public class FTP {
         return waitForPositiveResponse();
     }
 
-    private boolean announcePort( ServerSocket serverSocket )
+    private boolean announcePort( ServerSocket server_socket )
             throws IOException, InterruptedException {
-        int localport = serverSocket.getLocalPort();
+        int localport = server_socket.getLocalPort();
         String port_command = null;
         if( ipv6 ) {
             InetAddress la = cmndSocket.getLocalAddress();
@@ -388,19 +382,20 @@ public class FTP {
     }
 
     private final synchronized Socket executeDataCommand( String commands ) {
+        Socket         data_socket = null;
+        ServerSocket server_socket = null;
     	try {
     	    if( commands == null || commands.length() == 0 ) return null;
-    	    Socket data_socket = null;
     	    if( allowActive ) {
-    	        serverSocket = new ServerSocket( 0 );
-    	        if( !announcePort( serverSocket ) ) {
+    	        server_socket = new ServerSocket( 0 );
+    	        if( !announcePort( server_socket ) ) {
     	            allowActive = false;
     	            executeCommand( "ABOR" );
     	        }
     	    }
             if( !allowActive ) {
                 flushReply();   // emulator has a bug, it adds \n\r in the end of translated PORT
-                serverSocket = null;
+                server_socket = null;
                 // active mode failed. let's try passive
                 final String pasv_command = ipv6 ? "EPSV" : "PASV" ;
                 sendCommand( pasv_command );
@@ -429,12 +424,13 @@ public class FTP {
                 }
             }            
 
-            if( data_socket == null && serverSocket != null ) {// active mode
+            if( data_socket == null && server_socket != null ) { // active mode
                 Log.i( TAG, "Awaiting the data connection to PORT" );
-            	data_socket = serverSocket.accept(); // will block
+            	data_socket = server_socket.accept(); // will block
+            	server_socket.close();
+            	server_socket = null;
             }
-
-            if( data_socket == null || !data_socket.isConnected() ) {
+            if( data_socket == null || !data_socket.isConnected() || data_socket.isClosed() ) {
                 debugPrint( "Can't establish data connection for " + commands );
                 return null;
             }
@@ -442,19 +438,16 @@ public class FTP {
 		} catch( Exception e ) {
 		    Log.e( TAG, "Exception on executing data command '" + commands + "'", e );
 		}
+        cleanUpDataCommand( data_socket, false );
 		return null;
     }
-    private final void cleanUpDataCommand( boolean wait_reps ) throws InterruptedException {
+    private final void cleanUpDataCommand( Socket ds, boolean wait_reps ) {
     	
         // Clean up the data structures
         try {
-	        if( dataSocket != null )
-	        	dataSocket.close();
-	        dataSocket = null;
-	        if( serverSocket != null )
-	            serverSocket.close();
-		    serverSocket = null;
-		} catch( IOException e ) {
+	        if( ds != null )
+	        	ds.close();
+		} catch( Exception e ) {
 		    Log.e( TAG, "", e );
 		}
         if( wait_reps )
@@ -464,6 +457,10 @@ public class FTP {
     /*
      *    public methods
      */
+    
+    public final void doneWithData() {
+        cleanUpDataCommand( dataSocket, false );
+    }
     
     public final synchronized void clearLog() {
         debugBuf.setLength( 0 );
@@ -502,7 +499,8 @@ public class FTP {
         return executeCommand( "SITE " + cmd );
     }
     public final synchronized OutputStream prepStore( String fn ) {
-    	
+        if( dataSocket != null )
+            Log.w( TAG, "Old data socket exists when we need to create a new one!" );
     	dataSocket = null;
         try {
         	if( !isLoggedIn() )
@@ -550,11 +548,13 @@ public class FTP {
         	Log.e( TAG, "", e );
         }
         finally {
-        	cleanUpDataCommand( dataSocket != null );
+        	cleanUpDataCommand( dataSocket, dataSocket != null );
         }
         return false;
     }
     public final synchronized InputStream prepRetr( String fn, long skip ) throws InterruptedException {
+        if( dataSocket != null )
+            Log.w( TAG, "Old data socket exists when we need to create a new one!" );
     	dataSocket = null;
         try {
         	if( !isLoggedIn() )
@@ -569,7 +569,7 @@ public class FTP {
             debugPrint( e.getLocalizedMessage() );
             Log.e( TAG, "", e );
         }
-        cleanUpDataCommand( dataSocket != null );
+        cleanUpDataCommand( dataSocket, dataSocket != null );
         return null;
     }
     public final boolean retrieve( String fn, OutputStream out, FTP.ProgressSink report_to ) throws InterruptedException {
@@ -606,7 +606,7 @@ public class FTP {
 			} catch( IOException e ) {
 			    Log.e( TAG, "Exception on streams closing (finnaly section)", e );
 			}
-        	cleanUpDataCommand( dataSocket != null );
+        	cleanUpDataCommand( dataSocket, dataSocket != null );
         }
         return false;
     }
@@ -653,24 +653,23 @@ public class FTP {
     	}
     	executeCommand( "TYPE A" );
     	ArrayList<LsItem> array = null;
+    	Socket data_socket = null;
         try {
             String cmd = "LIST";
             if( force_hidden ) cmd += " -a";
 //            if( path != null ) cmd += " " + path;
-            dataSocket = executeDataCommand( cmd );
-            if( dataSocket == null )
-            	return null;
-            inDataStream = dataSocket.getInputStream();
-            if( inDataStream == null ) {
+            data_socket = executeDataCommand( cmd );
+            if( data_socket == null ) return null;
+            InputStream in_data_stream = data_socket.getInputStream();
+            if( in_data_stream == null ) {
                 debugPrint( "data socket does not give up the input stream" );
                 return null;
             }
-            
             InputStreamReader isr = null; 
             if( charset != null )
-                isr = new InputStreamReader( inDataStream, charset );
+                isr = new InputStreamReader( in_data_stream, charset );
             if( isr == null )
-                isr = new InputStreamReader( inDataStream );
+                isr = new InputStreamReader( in_data_stream );
             BufferedReader dataReader = new BufferedReader( isr, 4096 );
         	array = new ArrayList<LsItem>(); 
         	
@@ -684,7 +683,7 @@ public class FTP {
         		if( item.isValid() && !dotdot.equals( name ) && !dot.equals( name ) )
         			array.add( item );
         	}
-        	inDataStream.close();
+        	in_data_stream.close();
         	if( cur_dir != null )
         		setCurrentDir( cur_dir );
         }
@@ -692,7 +691,7 @@ public class FTP {
         	debugPrint( e.getLocalizedMessage() );
         }
         finally {
-        	cleanUpDataCommand( dataSocket != null );
+        	cleanUpDataCommand( data_socket, data_socket != null );
         }
         if( array != null ) {
             LsItem[] result = new LsItem[array.size()]; 

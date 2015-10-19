@@ -463,15 +463,21 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             if( imgView != null ) {
                 if( icoWidth > 0 ) {
                     imgView.setVisibility( View.VISIBLE );
-                    imgView.setAdjustViewBounds( true );
                     boolean th_ok = false;
                     if( item.isThumbNail() && thumbnail_size_perc > 0 ) {
                         Drawable th = item.getThumbNail();
                         if( th != null ) {
                             if( !item.thumb_is_icon )
                                 img_width = imgWidth;
-                            imgView.setMaxWidth( img_width );
+                            //imgView.setMaxWidth( img_width );
+                            RelativeLayout.LayoutParams rllp = (RelativeLayout.LayoutParams)imgView.getLayoutParams();
+                            rllp.width = img_width;
+                            rllp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                            //RelativeLayout.LayoutParams rllp = new RelativeLayout.LayoutParams(img_width,img_width); 
+                            //imgView.setLayoutParams( rllp );
                             imgView.setImageDrawable( th );
+                            imgView.requestLayout();
+                            imgView.invalidate();
                             th_ok = true;
                         }
                     }
@@ -484,7 +490,10 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                             }
                         }
                         try {
-                            imgView.setMaxWidth( img_width );
+                            //imgView.setMaxWidth( img_width );
+                            RelativeLayout.LayoutParams rllp = (RelativeLayout.LayoutParams)imgView.getLayoutParams();
+                            rllp.width = img_width;
+                            rllp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
                             int ico_id;
                             if( item.icon_id != -1 )
                                 ico_id = item.icon_id;

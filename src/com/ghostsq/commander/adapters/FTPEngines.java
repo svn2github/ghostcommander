@@ -33,7 +33,7 @@ public final class FTPEngines {
         protected FTPCredentials crd;
         protected FTP            ftp;
         protected Uri            uri;
-        FTPEngine( Context ctx_, FTPCredentials crd_, Uri uri_, FTP ftp_ ) {
+        FTPEngine( Context ctx_, FTPCredentials crd_, Uri uri_, FTP ftp_ ) {    // borrows FTP object
             if( crd_ == null )
                 crd_ = new FTPCredentials( uri_.getUserInfo() ); 
             this.ctx = ctx_;

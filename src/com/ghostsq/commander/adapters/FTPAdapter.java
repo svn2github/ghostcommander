@@ -1,12 +1,10 @@
 package com.ghostsq.commander.adapters;
 
-import java.lang.System;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
@@ -32,7 +30,6 @@ import com.ghostsq.commander.utils.Utils;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Handler;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ContextMenu;
@@ -627,13 +624,12 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
         }
         return null;
     }
-    
+
     @Override
     public InputStream getContent( Uri u, long skip ) {
         try {
             if( uri != null && !uri.getHost().equals( u.getHost() ) )
                 return null;
-
             if( theUserPass == null || theUserPass.isNotSet() )
                 theUserPass = new FTPCredentials( u.getUserInfo() );
             setFTPMode( u );
@@ -669,6 +665,7 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
             noHeartBeats = false;
             if( s != null )
                 s.close();
+            ftp.doneWithData();
         } catch( IOException e ) {
             e.printStackTrace();
         }

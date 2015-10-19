@@ -157,14 +157,15 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
             name_to_show = ps.get( ps.size()-1 );
         }
         if( p_uri != null ) {
+            ca.setUri( p_uri );
             Log.d( TAG, "do read list" );
-            ca.readSource( p_uri, null );
-            Log.d( TAG, "end reading" );
+            ca.readSource( null, null );
         }
         image_view.invalidate();
         new LoaderThread( uri, name_to_show ).start();
     }
 
+    
     @Override
     protected void onStop() {
         super.onStop();
@@ -397,8 +398,8 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                             if( is == null ) return;
                             int n;
                             boolean available_supported = is.available() > 0;
+                            Log.d( TAG, "available_supported=" + available_supported );
                             while( ( n = is.read( buf ) ) != -1 ) {
-                                
                                 Log.v( "readStreamToBuffer", "Read " + n + " bytes" );
                                 //sendProgress( tot += n );
                                 Thread.sleep( 1 );
@@ -406,7 +407,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                                 if( available_supported ) {
                                     for( int i = 1; i <= 10; i++ ) {
                                         if( is.available() > 0 ) break;
-                                        //Log.v( "readStreamToBuffer", "Waiting the rest " + i );
+                                        Log.v( "readStreamToBuffer", "Waiting the rest " + i );
                                         Thread.sleep( 20 * i );
                                     }
                                     if( is.available() == 0 ) {
@@ -414,6 +415,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                                         break;
                                     }
                                 }
+                                Log.d( TAG, "going to read again" );
                             }
                         } catch( Throwable e ) {
                             throw e;
