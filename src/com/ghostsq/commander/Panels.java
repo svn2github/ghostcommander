@@ -1336,8 +1336,11 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 int deltaY = (int)( event.getY() - downY );
                 int absDeltaX = Math.abs( deltaX );
                 int absDeltaY = Math.abs( deltaY );
-
-                if( absDeltaY > 10 || absDeltaX > 10 )
+                int thldX = v.getWidth() / 50;
+                int thldY = v.getHeight() / 50;
+                if( thldX < 10 ) thldX = 10;
+                if( thldY < 10 ) thldY = 10;
+                if( absDeltaY > thldY || absDeltaX > thldX )
                     disableOpenSelectOnly = false;
                 list[current].focus();
                 break;
