@@ -18,6 +18,7 @@
   <string name="F9">设置</string>
   <string name="F10">退出</string>
   <string name="oth_sh_this">同步面板</string>
+  <string name="oth_sh_dir">在对面打开 \"%s\"</string>
   <string name="eq">同步面板</string>
   <string name="change">切换面板</string>
   <string name="tgl">切换面板</string>
@@ -39,6 +40,7 @@
   <string name="local">本地储存</string>
   <string name="external">外部储存卡</string>
   <string name="media">媒体商店</string>
+  <string name="saf">储存管理框架</string>
   <string name="ftp">FTP站点</string>
   <string name="sftp">SFTP站点</string>
   <string name="plugins">插件</string>
@@ -47,16 +49,16 @@
   <string name="mount_b">挂载</string>
   <string name="apps">应用管理</string>
   <string name="exit">退出</string>
-  <string name="forget">注销账户(应用退出)</string>
+  <string name="forget">注销账户(退出应用)</string>
   <string name="favs_descr">查看、管理书签和站点</string>
   <string name="local_descr">浏览、整理和修改本地储存的内容</string>
   <string name="external_descr">使用外部储存代替sd卡，但它可能是只读的</string>
-  <string name="media_descr">查看sd卡媒体文件(长按可按类型)</string>
+  <string name="media_descr">分类查看sd卡媒体文件(长按可指定类型)</string>
   <string name="ftp_descr">连接FTP</string>
   <string name="sftp_descr">连接SSH FTP (sftp)</string>
   <string name="smb_descr">连接到Windows PC共享文件</string>
   <string name="plugins_descr">发现更多Ghost Commander的插件</string>
-  <string name="root_descr">仅对于已root的设备:管理危险的系统文件，确保你知道自己正在做什么</string>
+  <string name="root_descr">仅对于已root的设备：管理危险的系统文件，确保你知道自己正在做什么</string>
   <string name="mount_descr">显示挂载点列表，并切换至读写\"rw\"，然后在操作后返回只读\"ro\"模式，开始请小心</string>
   <string name="apps_descr">查看和管理已安装的应用程序</string>
   <string name="exit_descr">关闭此应用</string>
@@ -79,10 +81,11 @@
   <string name="unselect_b">取消选择</string>
   <string name="toggle_panels_mode">切换面板模式</string>
   <string name="prefs">设置</string>
-  <string name="save_prefs">备份设置</string>
-  <string name="rest_prefs">恢复设置</string>
-  <string name="prefs_saved">设置已保存</string>
-  <string name="prefs_restr">设置已恢复</string>
+  <string name="save_prefs">导出设置</string>
+  <string name="rest_prefs">导入设置</string>
+  <string name="save_log">导出日志</string>
+  <string name="prefs_saved">设置已导出</string>
+  <string name="prefs_restr">设置已导入</string>
   <string name="about">关于</string>
   <string name="keys">信息</string>
   <string name="new_file">新建文件</string>
@@ -97,15 +100,16 @@
   <string name="fav_fld">添加 \"%s\" 到书签</string>
   <string name="create_zip">新建ZIP文件</string>
   <string name="create_zip_title">新建ZIP文件</string>
+  <string name="extract_zip">解压ZIP</string>
   <string name="fail">操作失败</string>
-  <string name="failed">错误:\n</string>
+  <string name="failed">出错：\n</string>
   <string name="default_uri_cmnt">默认位置</string>
   <string name="default_color">默认</string>
   <string name="base_color">基础颜色</string>
   <string name="typemasks">文件类型</string>
   <string name="color_sample">示例Abc</string>
   <string name="add_new_type">添加</string>
-  <string name="fav_comment">备注:</string>
+  <string name="fav_comment">备注：</string>
   <string name="fav_dialog">编辑书签</string>
   <string name="dialog_yes">是</string>
   <string name="dialog_no">否</string>
@@ -121,13 +125,13 @@
   <string name="dialog_skip_all">跳过全部</string>
   <string name="dialog_select">选择</string>
   <string name="dialog_unselect">取消选择</string>
-  <string name="filemask">文件类型:</string>
+  <string name="filemask">文件类型：</string>
   <string name="for_files">文件</string>
   <string name="for_dirs">文件夹</string>
   <string name="in_subf">子目录</string>
-  <string name="content">目录:</string>
-  <string name="bigger_than">大于:</string>
-  <string name="smaller_than">小于:</string>
+  <string name="content">目录：</string>
+  <string name="bigger_than">大于：</string>
+  <string name="smaller_than">小于：</string>
   <string name="mod_after">晚于</string>
   <string name="mod_before">早于</string>
   <string name="launch">启动</string>
@@ -135,11 +139,11 @@
   <string name="view_title">查看</string>
   <string name="edit_title">编辑</string>
   <string name="newf_title">新建文件</string>
-  <string name="newf_prompt">文件名称:</string>
+  <string name="newf_prompt">文件名称：</string>
   <string name="mkdir_title">新建文件夹</string>
-  <string name="mkdir_prompt">文件夹名称:</string>
+  <string name="mkdir_prompt">文件夹名称：</string>
   <string name="search_title">搜索</string>
-  <string name="search_prompt">关键字:</string>
+  <string name="search_prompt">关键字：</string>
   <string name="rename_title">重命名</string>
   <string name="copy_title">复制</string>
   <string name="move_title">移动</string>
@@ -151,29 +155,29 @@
   <string name="no_items">没有有效的文件来完成此操作</string>
   <string name="inv_dest">无效的目的地</string>
   <string name="inv_path">无效的路径</string>
-  <string name="find_on_fs_only">只能在本地文件系统搜索</string>
-  <string name="on_fs_only">此特性仅在本地文件系统工作</string>
+  <string name="find_on_fs_only">只能在本地储存使用搜索</string>
+  <string name="on_fs_only">此特性仅在本地储存工作</string>
   <string name="op_not_alwd">操作不被允许，先选择一些吧</string>
   <string name="oper_item_to">%1$s %2$s 到：</string>
   <string name="login_title">登录</string>
   <string name="delete_title">删除</string>
   <string name="delete_err">什么都没删除</string>
-  <string name="delete_q">删除 \"%1$s\"?</string>
-  <string name="rescan_q">再次搜索?</string>
+  <string name="delete_q">删除 \"%1$s\"？</string>
+  <string name="rescan_q">再次搜索？</string>
   <string name="search_done">搜索完成</string>
   <string name="done">完成</string>
   <string name="interrupted">被中断</string>
   <string name="cant_copy_to_itself">不能复制文件夹 \"%s\" 到他自身或其下目录</string>
   <string name="too_deep_hierarchy">此文件层级太深</string>
   <string name="nothing_found">没有找到任何文件</string>
-  <string name="preparing">准备中...</string>
+  <string name="preparing">准备中&#8230;</string>
   <string name="copying">正在复制\n\"%s\"&#8230;</string>
-  <string name="copied_f">完成复制\n\"%s\"   </string>
+  <string name="copied_f">完成复制\n\"%s\"</string>
   <string name="deleting">正在删除\n\"%s\"&#8230;</string>
   <string name="deleting_a">正在删除&#8230;</string>
-  <string name="fail_del">文件 \"%1$s\" 不完整，正在删除&#8230;</string>
+  <string name="fail_del">文件 \"%1$s\" 操作未完成，正在删除&#8230;</string>
   <string name="unpacking">正在解压 \n\"%s\"&#8230;</string>
-  <string name="unpacked_p">完成解压 \n\"%s\"    </string>
+  <string name="unpacked_p">完成解压 \n\"%s\"</string>
   <string name="packing">正在压缩 \n\"%s\"&#8230;</string>
   <string name="retrieving">恢复中&#8230;\n\"%s\"</string>
   <string name="uploading">正在上传&#8230;\n\"%s\"</string>
@@ -206,20 +210,18 @@
   <string name="were"> </string>
   <string name="was"> </string>
   <string name="nothing">无内容</string>
-  <string name="save_log">导出日志</string>
-  <string name="extract_zip">解压ZIP</string>
   <string name="report_0">什么都没</string>
   <string name="report_1">一个项目</string>
   <string name="report_m">%1$d个项目</string>
-  <string name="sz_folder"><![CDATA[文件夹 "%1$s"\n%2$d 个文件，]]></string>
+  <string name="sz_folder"><![CDATA[文件夹： \"%1$s\"\n%2$d 个文件，]]></string>
   <string name="sz_dirnum"><![CDATA[共 %1$d 个子目录]]></string>
   <string name="sz_dirsfx_s"> </string>
   <string name="sz_dirsfx_p"> </string>
-  <string name="sz_file"><![CDATA[文件: "%s"]]></string>
-  <string name="sz_files"><![CDATA[数量: %d ]]></string>
-  <string name="sz_Nbytes"><![CDATA[\n大小: %1$s]]></string>
-  <string name="sz_lastmod"><![CDATA[\n\n修改时间:\n ]]></string>
-  <string name="sz_total"><![CDATA[总计: %1$s\n空闲: %2$s]]></string>
+  <string name="sz_file"><![CDATA[文件： \"%s\"]]></string>
+  <string name="sz_files"><![CDATA[数量： %d ]]></string>
+  <string name="sz_Nbytes"><![CDATA[\n大小： %1$s]]></string>
+  <string name="sz_lastmod"><![CDATA[\n\n修改时间：\n ]]></string>
+  <string name="sz_total"><![CDATA[总计： %1$s\n空闲： %2$s]]></string>
   <string name="cd_title">转到</string>
   <string name="cd_prompt">更改目录至：</string>
   <string name="not_supported">此操作不被允许</string>
@@ -231,13 +233,13 @@
   <string name="alert">消息</string>
   <string name="progress">进程</string>
   <string name="inprogress">一个文件操作正在进行</string>
-  <string name="server">服务器:</string>
+  <string name="server">服务器：</string>
   <string name="path">路径：</string>
   <string name="active">激活</string>
-  <string name="domain">端口:</string>
+  <string name="domain">端口：</string>
   <string name="username">用户名：</string>
   <string name="password">密码：</string>
-  <string name="command">控制:</string>
+  <string name="command">命令：</string>
   <string name="user">所有者</string>
   <string name="group">用户组</string>
   <string name="other">其他</string>
@@ -246,7 +248,7 @@
   <string name="ftp_connected">连接到 \"%1$s\",\n 登录为 \"%2$s\"</string>
   <string name="ftp_upload_failed">上传 \"%1$s\" 失败.\n FTP log:\n\n%2$s</string>
   <string name="ftp_mkdir_failed">新建文件夹 \"%1$s\"失败.\n FTP log:\n\n\"%2$s\</string>
-  <string name="ftp_nologin">没有登录!</string>
+  <string name="ftp_nologin">没有登录！</string>
   <string name="data_settings">文件列表</string>
   <string name="layout_settings">配置布局</string>
   <string name="input_settings">操作</string>
@@ -264,7 +266,7 @@
   <string name="send_content">使用内容提供者发送</string>
   <string name="summary_send_content">如果发送文件至应用没有进行内容解析，请尝试取消该选择</string>
   <string name="panels_mode">并排面板模式</string>
-  <string name="summary_panels_mode">分割屏幕以同时显示两个面板</string>
+  <string name="summary_panels_mode">双面板同时显示</string>
   <string name="two_lines">分行显示</string>
   <string name="summary_two_lines">另起一行显示文件属性</string>
   <string name="show_icons">启用图标</string>
@@ -336,14 +338,16 @@
   <string name="summary_language">无视系统语言</string>
   <string name="restart_to_apply_lang">重启应用程序以应用新的语言</string>
   <string name="editor_activity">自定义文本编辑器</string>
-  <string name="summary_editor_activity">键入外部文本编辑器的活动名</string>
+  <string name="summary_editor_activity">键入外部文本编辑器的Activity</string>
   <string name="summary_busybox_location">指定BusyBox可执行的位置</string>
   <string name="summary_su_location">指定su可执行的位置</string>
+  <string name="scan_all">扫描所有文件</string>
+  <string name="summary_scan_all">取消勾选：仅扫描媒体文件</string>
   <string name="execute_command">命令行模式</string>
   <string name="nothing_to_open">什么都没打开</string>
   <string name="remind_to_save">不要忘记保存你的更改</string>
   <string name="saved">\"%1$s\" 已保存。</string>
-  <string name="not_saved">保存更改?</string>
+  <string name="not_saved">保存更改？</string>
   <string name="save">保存</string>
   <string name="save_as">另存为&#8230;</string>
   <string name="revert">撤销</string>
@@ -351,20 +355,24 @@
   <string name="go_up">父目录</string>
   <string name="go_top">页首</string>
   <string name="go_end">页尾</string>
+  <string name="go_next">下一张</string>
+  <string name="go_prev">上一张</string>
+  <string name="rot_right">顺时针旋转</string>
+  <string name="rot_left">逆时针旋转</string>
   <string name="encoding">编码</string>
-  <string name="encoding_set">编码已更改为 \"%1$s\", 重新加载以编辑. 如果此时保存它,新的编码将被应用.</string>
-  <string name="no_such_file">没有文件 \"%1$s\"</string>
+  <string name="encoding_set">编码已更改为 \"%1$s\"，重新加载以编辑。如果此时保存它，新的编码将被应用。</string>
+  <string name="no_such_file">不存在文件 \"%1$s\"</string>
   <string name="too_big_file">文件 \"%1$s\" 太大。</string>
   <string name="binary_file">文件 \"%1$s\" 是二进制的。编辑可能会损坏它。请自担风险。</string>
-  <string name="cant_open_dir">\"%1$s\" 是一个目录</string>
+  <string name="cant_open_dir">\"%1$s\" 是一个文件夹</string>
   <string name="cant_view_empt">文件 \"%1$s\" 是空的</string>
   <string name="cant_open">无法打开此文件</string>
   <string name="cant_save">无法保存此文件</string>
-  <string name="nav_warn">将前往的是系统目录，擅自更改它可能会导致损失。继续?</string>
+  <string name="nav_warn">将前往的是系统目录，擅自更改它可能会导致损失。继续？</string>
   <string name="nav_warn_cmt">点击“取消”进入安全的/sdcard ,或点击“退出”关闭应用程序.</string>
-  <string name="no_such_folder">\"%1$s\" 不是一个有效的文件夹!</string>
+  <string name="no_such_folder">\"%1$s\" 不是一个有效的文件夹！</string>
   <string name="fav_added">\"%1$s\" 已添加到书签</string>
-  <string name="no_root">没有root?</string>
+  <string name="no_root">尚未root？</string>
   <string name="manage">管理</string>
   <string name="shortcuts">快捷方式</string>
   <string name="pkg_name">包名</string>
@@ -374,10 +382,10 @@
   <string name="inst_date">安装日期</string>
   <string name="pkg_size">大小</string>
   <string name="process">进程名</string>
-  <string name="app_class">应用系列</string>
+  <string name="app_class">App. class</string>
   <string name="affinity">任务关联</string>
   <string name="permissions">许可</string>
-  <string name="flags">标记</string>
+  <string name="flags">Flags</string>
   <string name="not_exported">活动未输出</string>
   <string name="smb_missed">无法加载Samba适配器，确认Ghost Commander SMB插件已安装</string>
   <string name="sftp_missed">无法加载SFTP适配器，确认Ghost Commander SFTP插件已安装</string>
@@ -385,18 +393,18 @@
   <string name="online_help">在线帮助</string>
   <string name="donation">一个小捐赠将支持进一步发展。\n
 点击 \"OK\" 跳转到 PayPal 网站.\n
-\"Cancel\" 继续享受免费 «Ghost Commander» \n
+\"Cancel\" 继续享受免费的 «Ghost Commander» \n
     </string>
   <string name="about_text"><![CDATA[
 <h1>Ghost Commander v%1$s</h1>
 <h4>一款文件管理器 by Ghost Squared</h4>
 <p>On the Web:<br/>
 <a href="https://sites.google.com/site/ghostcommander1/">Web site</a><br/>
-<a href="http://sourceforge.net/projects/ghostcommander/">At SourceForge</a> 
+<a href="http://sourceforge.net/projects/ghostcommander/">At SourceForge</a>
+<a href="https://crowdin.com/project/ghost-commander">Translations</a>
 </p>
 <p>请发送 BUG/建议到:<br/><a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a></p>
 <p>喜欢这个软件? <a href="%2$s">在 PayPal 上捐赠我</a> 以便支持未来的开发.</p>
-<p>Gearkey译 (<a href="mailto:gearkey@163.com">gearkey@163.com</a>);</p>
 <h3>免责声明：</h3>
 <p>欲使用本软件，您需要同意以下条例:
 本软件作者不会为任何损坏、丢失信息、间接损坏以及任何可能由于使用本软件而引起的问题承担责任。
@@ -405,58 +413,46 @@
   <string name="keys_text"><![CDATA[
 <h3>选择文件</h3>
 <p>
-若想要选择文件和文件夹，
-仅需点击目标右侧即可，
-点击左侧可以打开它们。
-你可以在设置-选择面积里自定此设置。
+若想要选择文件或文件夹，仅需点击目标右侧即可标记。点击左侧以打开项目，你可以在设置-选择面积里自定此设置。
 </p>
 <h3>复制和移动</h3>
 <p>
-若想要复制或移动文件和文件夹，
-首先请在另一面板选择目的地，
-然后在当前面板复制，文件就飞过去了。
+若想要复制或移动文件和文件夹。首先请在对面(另一面板)选择目的地，然后在当前面板标记货物，长按-复制，文件们就飞过去了。
 </p>
 <h3>ZIP文件</h3>
 <p>
-Ghost Commander可以像打开文件夹一样打开标准的ZIP文件，支持打开加密的ZIP文件。
-但不支持使用其他压缩算法。
+Ghost Commander可以像打开文件夹一样打开标准的ZIP文件。但不支持打开加密的ZIP文件，亦不支持其他压缩算法。
 </p>
 <h3>插件</h3>
 <p>
-一些扩展功能需要安装插件实现。
-例如访问Windows的共享文件夹，SSH文件传输协议和访问权。
+安装插件可以实现一些扩展功能。例如访问Windows的共享文件夹、SSH文件传输协议。
 以及云储存:Box, Dropbox and Google Drive.
 </p>
 <h3>ROOT模式</h3>
 <p>
-请谨慎使用带root模式(超级用户)和挂载点特性的Ghost Commander、已root的设备以及BusyBox安装
-其路径中定义的设置。
+请谨慎使用带root模式(超级用户)和挂载点特性的Ghost Commander。BusyBox的安装路径可在设置中定义。
 </p>
 <h3>位置编辑</h3>
 <p>
-使用位置，
-会展示一个书签列表和地址栏。
-长按面板标题也可以打开位置。
-你可以手动输入资源URL位置并编辑，
-就像这样:<br/>
-<br/>
-ftp://host.com/folder<br/>
-- Anonymous FTP<br/>
-<br/>
-ftp://user:pass@ftp_host/folder<br/>
-- Authenticated FTP<br/>
-<br/>
-sftp://user:pass@sftp_host/folder<br/>
-- SSH FTP<br/>
-如果你有一个密钥文件可以进行身份验证，就把它放进这个文件里
-/sdcard/.GhostCommander/keys/&lt;host name&gt;
-在这种情况下,密码是你的密钥文件的密码。<br/>
-<br/>
-smb://domain;user:pass@server/share<br/>
-- Windows share<br/>
-<br/>
-root:/path/to/folder<br/>
-- Root mode
+按下「位置」键，软件会展示一个书签列表和地址栏。长按面板标题也可以打开位置。你可以在地址栏手动输入URL，就像这样：
+</p><p>
+<b>ftp://</b><i>host.com</i><b>/</b><i>folder</i><br/>
+    - Anonymous FTP
+</p><p>
+<b>ftp://</b><i>user</i><b>:</b><i>pass</i><b>@</b><i>ftp_host</i><b>/</b><i>folder</i><br/>
+    - Authenticated FTP
+</p><p>
+<b>sftp://</b><i>user</i><b>:</b><i>pass</i><b>@</b><i>sftp_host</i><b>/</b><i>folder</i><br/>
+    - SSH FTP<br/>
+如果你有一个密钥文件可以身份验证，就把它放进这个文件里
+    <b>/sdcard/.GhostCommander/keys/</b><i>exact_host_name</i><br/>
+在这种情况下,密码就是你的密钥文件的密码。
+</p><p>
+<b>smb://</b><i>domain</i><b>;</b><i>user</i><b>:</b><i>pass</i><b>@</b><i>server</i><b>/</b><i>share</i><br/>
+    - Windows share
+</p><p>
+<b>root:/</b><i>path/to/folder</i><br/>
+    - Root mode
 </p>
 <h3>热键</h3>
 <p>
@@ -481,5 +477,14 @@ root:/path/to/folder<br/>
 <p>
 <a href="https://sites.google.com/site/ghostcommander1/info">在线帮助…</a>
 </p>
+]]></string>
+<string name="license_text"><![CDATA[
+<h3>Ghost Manager</h3>
+<p>一个文件管理器</p>
+<p>Copyright © 2009-2014 Ghost Squared</p>
+<p>这是一个自由软件：你可以分享它，或者根据自由软件基金会的「GNU通用公共许可证」(高于3的版本)修改它。</p>
+<p>此程序是分布式的，希望它有用，但没有任何担保；甚至没有隐含商业性或任何特定的目的。详情请参阅GNU通用公共许可证。</p>
+<p>你应该已经随程序收到了GNU通用公共许可证的副本。如果没有，参见 <http://www.gnu.org/licenses/></p>
+<p>(此处应以英文版为准)</p>
 ]]></string>
 </resources>
