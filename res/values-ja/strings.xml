@@ -18,6 +18,7 @@
   <string name="F9">設定</string>
   <string name="F10">終了</string>
   <string name="oth_sh_this">パネルの同期</string>
+  <string name="oth_sh_dir">他のパネルで \"%s\" を開く</string>
   <string name="eq">同期</string>
   <string name="change">切り替え</string>
   <string name="tgl">切り替え</string>
@@ -51,7 +52,8 @@
   <string name="favs_descr">お気に入りフォルダとサイトのリストを表示、管理します</string>
   <string name="local_descr">プライマリファイルシステムの内容を表示、編集、更新します</string>
   <string name="external_descr">挿入された SD カードのファイルにアクセスします. デバイスによっては読み取り専用です.</string>
-  <string name="media_descr">メディアストア・インターフェースを使用して、外部 SD カードの変更を行いますを</string>
+  <string name="media_descr">メディアストア・インターフェースを使用して、外部 SD カードの更新を行います</string>
+  <string name="saf_descr">ストレージ アクセス フレームワーク インターフェースを使用して、外部 SD カードを更新します</string>
   <string name="ftp_descr">FTP サーバーに接続します</string>
   <string name="sftp_descr">SSH FTP (sftp) サーバーに接続します</string>
   <string name="smb_descr">Windows 機器の共有フォルダーに接続します</string>
@@ -352,6 +354,8 @@
   <string name="summary_busybox_location">実行する BusyBox のロケーションを指定してください</string>
   <string name="su_location">su のパス</string>
   <string name="summary_su_location">実行する su のロケーションを指定してください</string>
+  <string name="scan_all">すべてのファイルをスキャン</string>
+  <string name="summary_scan_all">メディア ファイルのみをスキャンするには、チェック ボックスをオフにします</string>
   <string name="execute_command">コマンドを実行</string>
   <string name="nothing_to_open">開く対象がありません</string>
   <string name="remind_to_save">あなたが行った変更を保存するのを忘れないでください</string>
@@ -364,6 +368,10 @@
   <string name="go_up">上位</string>
   <string name="go_top">先頭</string>
   <string name="go_end">最後</string>
+  <string name="go_next">次へ</string>
+  <string name="go_prev">前へ</string>
+  <string name="rot_right">時計回りに回転</string>
+  <string name="rot_left">反時計回りに回転</string>
   <string name="encoding">エンコード</string>
   <string name="encoding_set">エンコードを \"%1$s\" に設定しました, リロードしてください. 保存すると, 元のエンコードは新しく変更されます.</string>
   <string name="no_such_file">ファイル \"%1$s\" はありません</string>

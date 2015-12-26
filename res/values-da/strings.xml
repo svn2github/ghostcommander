@@ -330,6 +330,8 @@
   <string name="go_up">Overordnet</string>
   <string name="go_top">Top</string>
   <string name="go_end">Slut</string>
+  <string name="go_next">Næste</string>
+  <string name="go_prev">Forrige</string>
   <string name="encoding">Encoding</string>
   <string name="encoding_set">Encoding er sat til \"%1$s\", reload venligst. Hvis du gemmer såvil den originale encoding blve ændret til nu valgte.</string>
   <string name="no_such_file">Filen \"%1$s\" finde ikke.</string>

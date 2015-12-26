@@ -121,6 +121,7 @@ public class RootAdapter extends CommanderAdapterBase {
                 if( !getList( false ) )
                     error( commander.getContext().getString( R.string.cant_cd, src.getPath() ) );
             }
+            if( errMsg != null && errMsg.indexOf( ".android_secure" ) > 0 ) errMsg = null;
             doneReading( msg, pass_back_on_done );
         }
         private boolean getList( boolean su ) {
@@ -154,7 +155,7 @@ public class RootAdapter extends CommanderAdapterBase {
             return false;
         }
         @Override
-        protected void procInput( BufferedReader br ) throws IOException, Exception {
+        protected boolean procInput( BufferedReader br ) throws IOException, Exception {
             while( br.ready() ) {
                 if( isStopReq() ) break; 
                 String ln = br.readLine();
@@ -173,6 +174,7 @@ public class RootAdapter extends CommanderAdapterBase {
                     array.add( item ); // a problem - if the item is a symlink - how to know is it a dir or a file???
                 }
             }
+            return array.size() > 0;
        }
     }
     @Override

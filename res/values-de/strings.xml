@@ -32,7 +32,10 @@
   <string name="favs">Favoriten</string>
   <string name="ftp">FTP-Site</string>
   <string name="sftp">SFTP-Site</string>
+  <string name="mount">Einhängepunkt</string>
   <string name="exit">Beenden</string>
+  <string name="ftp_descr">Mit FTP Server verbinden</string>
+  <string name="exit_descr">Schließe die Anwendung</string>
   <string name="shortcut">Verknüpfung erstellen</string>
   <string name="enter_ftp">FTP verbinden</string>
   <string name="enter_smb">Windows-Freigabe öffnen</string>
@@ -48,7 +51,14 @@
   <string name="sort_by_date_b">Nach Datum</string>
   <string name="select_all">Markieren</string>
   <string name="unselect_all">Markierung aufheben</string>
+  <string name="select_b">Auswählen</string>
+  <string name="unselect_b">Auswahl aufheben</string>
   <string name="prefs">Einstellungen</string>
+  <string name="save_prefs">Einstellungen sichern</string>
+  <string name="rest_prefs">Einstellungen wiederherstellen</string>
+  <string name="save_log">Speichere Log in Datei</string>
+  <string name="prefs_saved">Einstellungen wurden gespeichert</string>
+  <string name="prefs_restr">Einstellungen wurden wieder hergestellt</string>
   <string name="about">Über</string>
   <string name="keys">Hilfe</string>
   <string name="new_file">Neue Datei anlegen</string>

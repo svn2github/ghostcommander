@@ -285,6 +285,8 @@
   <string name="save_as">Guardar como&#8230;</string>
   <string name="revert">Deshacer</string>
   <string name="wrap">Romper líneas largas</string>
+  <string name="go_next">Siguiente</string>
+  <string name="go_prev">Anterior</string>
   <string name="encoding">Codificación</string>
   <string name="no_such_file">No existe el archivo \"%1$s\"</string>
   <string name="too_big_file">El archivo \"%1$s\" es demasiado grande.</string>

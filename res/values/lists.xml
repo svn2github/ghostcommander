@@ -49,6 +49,9 @@
         <item>Italiano</item>
         <item>Magyar</item>
         <item>Polski</item>
+        <item>Português</item>
+        <item>Slovenščina</item>
+        <item>Türkçe</item>
         <item>Български</item>
         <item>Русский</item>
         <item>한국어</item>
@@ -67,6 +70,9 @@
         <item>it</item>
         <item>hu</item>
         <item>pl</item>
+        <item>pt_PT</item>
+        <item>sl</item>
+        <item>tr</item>
         <item>bg</item>
         <item>ru</item>
         <item>ko_KR</item>

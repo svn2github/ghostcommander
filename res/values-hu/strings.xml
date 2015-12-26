@@ -18,6 +18,7 @@
   <string name="F9">Beállít</string>
   <string name="F10">Kilépés</string>
   <string name="oth_sh_this">Másik panel ugyanaz</string>
+  <string name="oth_sh_dir">\"%s\" megnyitása a másik panelben</string>
   <string name="eq">Ugyanaz</string>
   <string name="change">Váltás</string>
   <string name="tgl">Váltás</string>
@@ -52,6 +53,7 @@
   <string name="local_descr">A belső SD-kártya és flash memória tartalmának böngészése, rendezése és módosítása</string>
   <string name="external_descr">A behelyezett SD-kártyán lévő fájlok. Egyes eszközökön lehet, hogy csak olvashatók.</string>
   <string name="media_descr">Változtatások végzése a külső SD-kártyán a MediaStore interfészen keresztül</string>
+  <string name="saf_descr">A külső SD-kártya tartalmának módosítása a Storage Access Framework csatolón keresztül</string>
   <string name="ftp_descr">Csatlakozás FTP-kiszolgálóhoz</string>
   <string name="sftp_descr">Csatlakozás SSH FTP (sftp) -kiszolgálóhoz</string>
   <string name="smb_descr">Csatlakozás Windows-on megosztott mappákhoz</string>
@@ -352,6 +354,8 @@
   <string name="summary_busybox_location">Adja meg a BusyBox elérési útját</string>
   <string name="su_location">A su elérési útja</string>
   <string name="summary_su_location">Adja meg a su elérési útját</string>
+  <string name="scan_all">Minden fájl beolvasása</string>
+  <string name="summary_scan_all">Ne legyen aktív, ha csak a médiafájlokat akarja beolvastatni</string>
   <string name="execute_command">Parancs végrehajtása</string>
   <string name="nothing_to_open">Nincs mit megnyitni</string>
   <string name="remind_to_save">Ne felejtse elmenteni a változásokat</string>
@@ -364,6 +368,10 @@
   <string name="go_up">Szülőkönyvtár</string>
   <string name="go_top">Eleje</string>
   <string name="go_end">Vége</string>
+  <string name="go_next">Következő</string>
+  <string name="go_prev">Előző</string>
+  <string name="rot_right">Forgatás jobbra</string>
+  <string name="rot_left">Forgatás balra</string>
   <string name="encoding">Kódolás</string>
   <string name="encoding_set">A kódolás beállítva: „%1$s”, töltse újra. Ha menti, az eredeti helyett az új kódolás lesz használva.</string>
   <string name="no_such_file">Nincs ilyen fájl: „%1$s”</string>

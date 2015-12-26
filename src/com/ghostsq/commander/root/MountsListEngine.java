@@ -119,7 +119,7 @@ class MountsListEngine extends ExecEngine {
     }        
 
     @Override
-    protected void procInput( BufferedReader br ) throws IOException, Exception {
+    protected boolean procInput( BufferedReader br ) throws IOException, Exception {
         while( br.ready() ) {
             if( isStopReq() ) 
                 throw new Exception();
@@ -131,5 +131,6 @@ class MountsListEngine extends ExecEngine {
             if( item.isValid() )
                 array.add( item );
         }
+        return array.size() > 0;
    }
 }

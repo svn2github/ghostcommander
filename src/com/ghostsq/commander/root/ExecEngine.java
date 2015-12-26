@@ -157,8 +157,7 @@ public class ExecEngine extends Engine {
             boolean err = procError( es );
             if( !is.ready() ) // may be an error may be not
                 Log.w( TAG, "No output from the executed command " + command );
-            procInput( is );
-            return !err;
+            return procInput( is ) || !err;
         } catch( Exception e ) {
             error( e.getMessage() );
             if( command != null ) 
@@ -168,7 +167,7 @@ public class ExecEngine extends Engine {
     }    
     
     // to override by derived classes
-    protected void procInput( BufferedReader br ) 
+    protected boolean procInput( BufferedReader br ) 
               throws IOException, Exception { 
         if( br != null && result != null )
             while( br.ready() ) {
@@ -179,6 +178,7 @@ public class ExecEngine extends Engine {
                 if( ln == null ) break;
                 result.append( ln ).append( "\n" );
             }
+        return result.length() > 0;
     }
 
     protected boolean procError( BufferedReader es ) throws IOException {
