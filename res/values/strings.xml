@@ -212,7 +212,7 @@
 <string name="unpacked">unpacked</string>
 <string name="remounted">Remounted \"%1$s\" to \"%2$s\"</string>
 <string name="tried_to_exec">Tried to execute \"%s\"</string>
-<string name="verb_plural_sfx"/>
+<string name="verb_plural_sfx"> </string>
 <string name="item">item</string>
 <string name="items">items</string>
 <string name="items24">&#xA0;</string>
