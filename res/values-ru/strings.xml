@@ -206,6 +206,7 @@
   <string name="uploaded">закачан</string>
   <string name="packed">упакован</string>
   <string name="unpacked">распакован</string>
+  <string name="verb_plural_sfx">ы</string>
   <string name="remounted">Перемонтирован \"%1$s\" в \"%2$s\".</string>
   <string name="tried_to_exec">Пробовали выпонить: \"%s\"</string>
   <string name="item">файл</string>
