@@ -260,7 +260,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
             {
                 final String op_title = owner.getString( R.string.rename_title );
                 String op = owner.getString( R.string.to_rename );
-                if( op == null || op.length() == 0 )
+                if( op == null || op.length() <= 1 )
                     op = op_title;
                 dialog.setTitle( op_title );
                 String item_name = owner.panels.getSelectedItemName( R.id.F2t == id );
@@ -295,7 +295,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
             {
                 final String op_title = owner.getString( move ? R.string.move_title : R.string.copy_title );
                 String op = owner.getString( move ? R.string.to_move : R.string.to_copy );
-                if( op == null || op.length() == 0 )
+                if( op == null || op.length() <= 1 )
                     op = op_title;
                 dialog.setTitle( op_title );
                 boolean touch = dialogId == R.id.F5t || dialogId == R.id.F6t;

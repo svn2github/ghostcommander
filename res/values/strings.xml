@@ -151,9 +151,9 @@
 <string name="move_title">Move</string>
 <string name="send_title">Send to…</string>
 <string name="open_title">Open with…</string>
-<string name="to_copy"/>
-<string name="to_move"/>
-<string name="to_rename"/>
+<string name="to_copy">&#xA0;</string>
+<string name="to_move">&#xA0;</string>
+<string name="to_rename">&#xA0;</string>
 <string name="copy_err">Nothing to copy</string>
 <string name="rename_err">Cannot rename</string>
 <string name="edit_err">Not editable</string>
@@ -212,7 +212,7 @@
 <string name="unpacked">unpacked</string>
 <string name="remounted">Remounted \"%1$s\" to \"%2$s\"</string>
 <string name="tried_to_exec">Tried to execute \"%s\"</string>
-<string name="verb_plural_sfx"> </string>
+<string name="verb_plural_sfx">&#xA0;</string>
 <string name="item">item</string>
 <string name="items">items</string>
 <string name="items24">&#xA0;</string>
@@ -420,7 +420,7 @@ Tap \"OK\" to be redirected to the PayPal site.\n
 <h4>A file manager by Ghost Squared.</h4>
 <p>On the Web:<br/>
 <a href="https://sites.google.com/site/ghostcommander1/">Web site</a><br/>
-<a href="http://sourceforge.net/projects/ghostcommander/">At SourceForge</a><br/>
+<a href="http://sourceforge.net/projects/ghostcommander/">At SourceForge</a>
 <a href="https://crowdin.com/project/ghost-commander">Translations</a>
 </p>
 <p>Please email bugs/suggestions to:<br/><a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a></p>
