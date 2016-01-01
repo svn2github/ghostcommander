@@ -955,23 +955,28 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 showSizes( touched );
                 return;
             }
-            
             String mime = Utils.getMimeByExt( Utils.getFileExt( item.name ) );
             if( mime == null )
                 mime = "application/octet-stream";
-            Intent i = new Intent( c, mime.startsWith( "image/" ) ? PictureViewer.class : TextViewer.class );
-            i.setDataAndType( uri, mime );
-            Credentials crd = ca.getCredentials();
-            if( crd != null )
-                i.putExtra( Credentials.KEY, crd );
-            i.putExtra( "position", pos );
-            i.putExtra( "mode", ca.getMode() );
+            Intent i = createImageViewIntent( uri, mime, ca, pos );
+            i.setClass( c, mime.startsWith( "image/" ) ? PictureViewer.class : TextViewer.class );
             c.startActivity( i );
         } catch( Exception e ) {
             Log.e( TAG, "Can't view the file " + name, e );
         }
     }
 
+    public final Intent createImageViewIntent( Uri uri, String mime, CommanderAdapter ca, int pos ) {
+        Intent i = new Intent( Intent.ACTION_VIEW );
+        i.setDataAndType( uri, mime );
+        Credentials crd = ca.getCredentials();
+        if( crd != null )
+            i.putExtra( Credentials.KEY, crd );
+        i.putExtra( "position", pos );
+        i.putExtra( "mode", ca.getMode() );
+        return i;
+    }    
+    
     public final String getActiveItemsSummary( boolean touched ) {
         return list[current].getActiveItemsSummary( touched );
     }
@@ -1274,7 +1279,21 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     public void openItem( int position ) {
         ListHelper l = list[current];
         l.setCurPos( position );
-        ( (CommanderAdapter)l.flv.getAdapter() ).openItem( position );
+        CommanderAdapter ca = (CommanderAdapter)l.flv.getAdapter();
+        // hack to let the PictureViewer (if being chosen to handle the intent) be able to traverse other pictures in the dir
+        if( ca.hasFeature( Feature.LOCAL ) ) {    
+            Uri uri = ca.getItemUri( position );
+            if( uri != null ) {
+                String mime = Utils.getMimeByExt( Utils.getFileExt( uri.getPath() ) );
+                if( mime != null && mime.startsWith( "image" ) ) {
+                    uri = uri.buildUpon().scheme( "file" ).authority( "" ).build();
+                    Intent i = createImageViewIntent( uri, mime, ca, position );
+                    c.startActivity( i );
+                    return;
+                }
+            }
+        }
+        ca.openItem( position );
     }
 
     public void goUp() {

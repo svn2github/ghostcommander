@@ -23,7 +23,7 @@ import dalvik.system.DexClassLoader;
  * @author Ghost Squared (ghost.sq2@gmail.com)
  * 
  * This class is a "database" of all implemented adapters.
- * It keeps all the properties, hashes etc, to let the right adapter be instatiated
+ * It keeps all the properties, hashes etc, to let the right adapter be instantiated
  * 
  */
 final public class CA {

@@ -90,7 +90,9 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
 
     @Override
     public void setUri( Uri uri ) {
-        dirName = Utils.mbAddSl( uri.toString() );
+        String schm = uri.getScheme();
+        if( Utils.str( schm ) && !"file".equals( schm ) ) return;
+        dirName = Utils.mbAddSl( uri.getPath() );
     }
     
     @Override
