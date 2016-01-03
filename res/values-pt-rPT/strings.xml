@@ -209,6 +209,7 @@ desempacotado</string>
   <string name="unpacked">desempacotado</string>
   <string name="remounted">\"%1$s\" montado como \"%2$s\"</string>
   <string name="tried_to_exec">Tentada execução de \"%s\"</string>
+  <string name="verb_plural_sfx">s</string>
   <string name="item">item</string>
   <string name="items">itens</string>
   <string name="items24">&#160;</string>

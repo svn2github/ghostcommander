@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.text.Html;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.Gravity;
@@ -534,21 +535,29 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
             .show();
     }
 
-    private void loadNext( boolean forward ) {
+    private final void loadNext( boolean forward ) {
+        loadNext( forward ? 1 : -1, false );
+    }
+
+    public final void loadNext( int dir, boolean exit_at_end ) {
+        Log.d( TAG, "pos=" + ca_pos + " forward=" + dir );
         if( ca_pos < 0 || ca == null ) {
             Log.e( TAG, "ca=" + ca + ", pos=" + ca_pos );
+            if( exit_at_end ) this.finish();
             return;
         }
         int orig_pos = ca_pos; 
         while( true ) {
-            if( forward ) ca_pos++; else ca_pos--;
+            ca_pos += dir;
             if( ca_pos <= 0 ) {
                 ca_pos = orig_pos;
+                if( exit_at_end ) this.finish();
                 return;
             } 
             Uri pos_uri = ca.getItemUri( ca_pos );
             if( pos_uri == null ) {
                 ca_pos = orig_pos;
+                if( exit_at_end ) this.finish();
                 return;
             } 
             String name = ca.getItemName( ca_pos, false );
@@ -597,6 +606,22 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
         }
         @Override
         public boolean notifyMe( Message m ) {
+            if( m.what == OPERATION_COMPLETED ) {
+                Log.d( TAG, "Completed" );
+                loadNext( 0, true );
+            }
+            if( m.obj != null ) {
+                String s = null;
+                if( m.obj instanceof Bundle )
+                    s = ( (Bundle)m.obj ).getString( MESSAGE_STRING );
+                else if( m.obj instanceof String ) {
+                    s = (String)m.obj;
+                }
+                if( Utils.str( s ) ) {
+                    boolean html = Utils.isHTML( s );
+                    Toast.makeText( PictureViewer.this, html ? Html.fromHtml( s ) : s, Toast.LENGTH_LONG ).show();
+                }
+            }
             return false;
         }
         @Override
@@ -604,10 +629,11 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
             e.setHandler( new Handler() {
                 @Override
                 public void handleMessage( Message msg ) {
-                    if( msg.what == OPERATION_COMPLETED_REFRESH_REQUIRED ||
-                        msg.what == OPERATION_COMPLETED ) {
+                    if( msg.what == OPERATION_COMPLETED_REFRESH_REQUIRED ) {
+                        Log.d( TAG, "Completed, need refresh" );
                         ca.readSource( null, null );
-                        loadNext( true );
+                        notifyMe( msg );
+                        return;
                     }
                 }
             });

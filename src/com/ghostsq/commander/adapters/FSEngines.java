@@ -230,6 +230,11 @@ public final class FSEngines {
             try {
                 cab.Init( null );
                 int cnt = deleteFiles( mList );
+                if( mList.length == cnt && cnt == 1 ) {
+                    String msg = mList[0].getName() + " " + cab.ctx.getString( R.string.was ) + " " + cab.ctx.getString( R.string.deleted );
+                            sendResult( msg );
+                    return;
+                }
                 sendResult( Utils.getOpReport( cab.ctx, cnt, R.string.deleted ) );
             }
             catch( Exception e ) {
