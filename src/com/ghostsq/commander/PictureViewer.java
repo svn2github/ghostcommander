@@ -222,7 +222,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
     
     public final void setBitmapToView( Bitmap bmp, String name ) {
         try {
-            Log.v( TAG, "Bitmap is ready" );
+            //Log.v( TAG, "Bitmap is ready" );
             hideWait();
             if( bmp != null ) {
                 image_view.setVisibility( View.VISIBLE );
@@ -416,7 +416,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                                         break;
                                     }
                                 }
-                                Log.d( TAG, "going to read again" );
+                                //Log.v( TAG, "going to read again" );
                             }
                         } catch( Throwable e ) {
                             throw e;

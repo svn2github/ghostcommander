@@ -493,15 +493,8 @@ public class Dialogs implements DialogInterface.OnClickListener {
         try {
             if( string != null ) {
                 TextView t = (TextView)dialogObj.findViewById( R.id.text );
-                if( t != null ) {
-                    final int fil_len = 300, s_len = string.length();
-                    if( s_len < fil_len ) {
-                        char[] chars = new char[fil_len - s_len];
-                        Arrays.fill( chars, '\u00A0' );
-                        string += new String( chars );
-                    }
-                    t.setText( string );
-                }
+                if( t != null )
+                    t.setText( string.replace( ' ', '\u00A0' ) );
             }
             ProgressBar p_bar = (ProgressBar)dialogObj.findViewById( R.id.progress_bar );
             TextView perc_t = (TextView)dialogObj.findViewById( R.id.percent );
