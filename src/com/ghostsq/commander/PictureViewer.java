@@ -157,7 +157,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
             p_uri = ub.build();
             name_to_show = ps.get( ps.size()-1 );
         }
-        if( p_uri != null ) {
+        if( p_uri != null && ca_pos > 0 ) {
             ca.setUri( p_uri );
             Log.d( TAG, "do read list" );
             ca.readSource( null, null );
@@ -331,17 +331,18 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                 final int BUF_SIZE = 100*1024; 
                 buf = new byte[BUF_SIZE];
                 String scheme = u.getScheme();
-                if( ContentResolver.SCHEME_CONTENT.equals( scheme ) ) {
+                if( ca.hasFeature( CommanderAdapter.Feature.LOCAL ) ) {
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inTempStorage = buf;
                     InputStream is = null;
-                    ContentResolver cr = getContentResolver();
+                    ContentResolver cr = ( ca == null && ContentResolver.SCHEME_CONTENT.equals( scheme ) )
+                            ? getContentResolver() : null;
                     for( int b = 1; b < 0x80000; b <<= 1 ) {
                         try {
                             options.inSampleSize = b;
                             if( ca != null )
                                 is = PictureViewer.this.ca.getContent( u );
-                            else
+                            else if( cr != null )
                                 is = cr.openInputStream( u );
                             if( is == null ) {
                                 Log.e( TAG, "Failed to get the content stream for: " + u );
@@ -349,15 +350,6 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                             }
                             bmp = BitmapFactory.decodeStream( is, null, options );
                             if( bmp != null ) {
-                                /*
-                                final String[] projection = {
-                                     OpenableColumns.DISPLAY_NAME
-                                };
-                                Cursor c = cr.query( u, projection, null, null, null );
-                                int nci = c.getColumnIndex( OpenableColumns.DISPLAY_NAME );
-                                c.moveToFirst();
-                                final String fn = c.getString( nci );
-                                */
                                 PictureViewer.this.h.post(new Runnable() {
                                       @Override
                                       public void run() {
@@ -401,18 +393,18 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                             boolean available_supported = is.available() > 0;
                             Log.d( TAG, "available_supported=" + available_supported );
                             while( ( n = is.read( buf ) ) != -1 ) {
-                                Log.v( "readStreamToBuffer", "Read " + n + " bytes" );
+                                //Log.v( "readStreamToBuffer", "Read " + n + " bytes" );
                                 //sendProgress( tot += n );
                                 Thread.sleep( 1 );
                                 fos.write( buf, 0, n );
                                 if( available_supported ) {
                                     for( int i = 1; i <= 10; i++ ) {
                                         if( is.available() > 0 ) break;
-                                        Log.v( "readStreamToBuffer", "Waiting the rest " + i );
+                                        //Log.v( "readStreamToBuffer", "Waiting the rest " + i );
                                         Thread.sleep( 20 * i );
                                     }
                                     if( is.available() == 0 ) {
-                                        Log.v( "readStreamToBuffer", "No more data!" );
+                                        //Log.v( "readStreamToBuffer", "No more data!" );
                                         break;
                                     }
                                 }
@@ -542,7 +534,6 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
     public final void loadNext( int dir, boolean exit_at_end ) {
         Log.d( TAG, "pos=" + ca_pos + " forward=" + dir );
         if( ca_pos < 0 || ca == null ) {
-            Log.e( TAG, "ca=" + ca + ", pos=" + ca_pos );
             if( exit_at_end ) this.finish();
             return;
         }
@@ -574,6 +565,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
     }
 
     private class CommanderStub implements Commander {
+        boolean reload_after_dir_read_done = false;
 
         @Override
         public Context getContext() {
@@ -608,7 +600,9 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
         public boolean notifyMe( Message m ) {
             if( m.what == OPERATION_COMPLETED ) {
                 Log.d( TAG, "Completed" );
-                loadNext( 0, true );
+                if( reload_after_dir_read_done )
+                    loadNext( 0, true );
+                reload_after_dir_read_done = false;
             }
             if( m.obj != null ) {
                 String s = null;
@@ -631,6 +625,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                 public void handleMessage( Message msg ) {
                     if( msg.what == OPERATION_COMPLETED_REFRESH_REQUIRED ) {
                         Log.d( TAG, "Completed, need refresh" );
+                        reload_after_dir_read_done = true;
                         ca.readSource( null, null );
                         notifyMe( msg );
                         return;

@@ -499,8 +499,7 @@ public final class Utils {
                 boolean available_supported = is.available() > 0;
                 while( true ) {
                     n = isr.read( chars, 0, bytes );
-                    // Log.v( "readStreamToBuffer", "Have read " + n + " chars"
-                    // );
+                    // Log.v( "readStreamToBuffer", "Have read " + n + " chars" );
                     if( n < 0 )
                         break;
                     for( int i = 0; i < n; i++ ) {
@@ -512,8 +511,7 @@ public final class Utils {
                         for( int i = 0; i < 10; i++ ) {
                             if( is.available() > 0 )
                                 break;
-                            // Log.v( "readStreamToBuffer", "Waiting the rest "
-                            // + i );
+                            // Log.v( "readStreamToBuffer", "Waiting the rest " + i );
                             Thread.sleep( 20 );
                         }
                         if( is.available() == 0 ) {

@@ -2,7 +2,6 @@ package com.ghostsq.commander.adapters;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.sql.Date;
@@ -65,9 +64,7 @@ public class AppsAdapter extends CommanderAdapterBase {
         super( ctx_, DETAILED_MODE | NARROW_MODE | SHOW_ATTR );
         parentLink = PLS;
         MANAGE    = s( R.string.manage );
-        SHORTCUTS = s( R.string.shortcuts );
-        
-        
+        SHORTCUTS = "Shortcuts"; //s( R.string.shortcuts );
     }
 
     @Override

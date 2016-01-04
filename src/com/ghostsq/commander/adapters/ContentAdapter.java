@@ -98,7 +98,8 @@ public class ContentAdapter extends CommanderAdapterBase implements Engines.IRec
     
     @Override
     public String toString() {
-        return getUri().toString();
+        Uri u = getUri();
+        return u != null ? u.toString() : null;
     }
 
     @Override
@@ -242,7 +243,7 @@ public class ContentAdapter extends CommanderAdapterBase implements Engines.IRec
                           item.origin = item_uri; 
                           item.name = cursor.getString( 1 );
                           if( item.name == null ) {
-                              Log.e( TAG, "Item " + item_uri + " has no name" );
+                              //Log.e( TAG, "Item " + item_uri + " has no name" );
                               item.name = "(?)";
                           }
                           item.dir = content_type == ALBUMS || content_type == ARTISTS || content_type == GENRES;
