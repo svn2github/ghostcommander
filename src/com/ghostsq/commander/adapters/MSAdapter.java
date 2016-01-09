@@ -414,7 +414,7 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
             return position == 0 ? parentLink : null;
         if( full ) {
             String dirName = Utils.mbAddSl( ms_uri.getPath() );
-            return position == 0 ? (new File( dirName )).getParent() : dirName + items[position - 1].name;
+            return position == 0 ? (new File( dirName )).getParent() : dirName + items[position - 1].name.replace( "/", "" );
         }
         else {
             if( position == 0 ) return parentLink; 

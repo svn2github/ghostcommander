@@ -8,7 +8,7 @@
   <string name="help">Pomoč</string>
   <string name="F1">Pomoč</string>
   <string name="F2">Preimenuj</string>
-  <string name="F3">Pogled</string>
+  <string name="F3">Pokaži</string>
   <string name="F4">Uredi</string>
   <string name="SF4">Datoteka</string>
   <string name="F5">Kopiraj</string>
@@ -17,9 +17,9 @@
   <string name="F8">Izb.</string>
   <string name="F9">Nastavitve</string>
   <string name="F10">Izhod</string>
-  <string name="oth_sh_this">Prikaži isto mapo</string>
+  <string name="oth_sh_this">Prikaži enako mapo</string>
   <string name="oth_sh_dir">Odpri \"%s\" v drugem podoknu</string>
-  <string name="eq">Ista</string>
+  <string name="eq">Enaka</string>
   <string name="change">Preklopi</string>
   <string name="tgl">Preklopi</string>
   <string name="sz">Podatki</string>
@@ -34,7 +34,7 @@
   <string name="remount_b">Ponovno priklopi /system</string>
   <string name="remount">Ponovno priklopi</string>
   <string name="hidden">Skrito</string>
-  <string name="rescan">Ponovno preišči nosilec</string>
+  <string name="rescan">Ponovno preglej nosilec</string>
   <string name="favs">Priljubljene</string>
   <string name="local">Krajevna pom. naprava</string>
   <string name="external">Zunanja kartica</string>
@@ -199,15 +199,16 @@
   <string name="cant_create">Datoteke \"%1$s\"ni mogoče ustvariti\n%2$s</string>
   <string name="cant_del">\"%1$s\" ni mogoče izbrisati</string>
   <string name="dest_wrtble">Prepričajte se, da je \"%s\" zapisljiva</string>
-  <string name="copied">kopiran(ih)</string>
-  <string name="moved">premaknjen(ih)</string>
-  <string name="deleted">izbrisan(ih)</string>
-  <string name="downloaded">prejet(ih)</string>
-  <string name="uploaded">poslan(ih)</string>
-  <string name="packed">zapakiran(ih)</string>
-  <string name="unpacked">odpakiran(ih)</string>
+  <string name="copied">kopiran</string>
+  <string name="moved">premaknjen</string>
+  <string name="deleted">izbrisan</string>
+  <string name="downloaded">prejet</string>
+  <string name="uploaded">poslan</string>
+  <string name="packed">zapakiran</string>
+  <string name="unpacked">odpakiran</string>
   <string name="remounted">\"%1$s\" ponovno priklopljena v \"%2$s\"</string>
   <string name="tried_to_exec">Poizkušeno izvajanje \"%s\"</string>
+  <string name="verb_plural_sfx">ih</string>
   <string name="item">predmet</string>
   <string name="items">predmetov</string>
   <string name="items24">&#160;</string>
@@ -276,9 +277,9 @@
   <string name="summary_advanced_settings">Dodatne nastavitve za napredne uporabnike</string>
   <string name="send_content">Pošlji z uporabo ponudnika vsebine</string>
   <string name="summary_send_content">Poizkusite odznačiti, če vaš program za pošiljanje nima vdelanega razreševalnika vsebine</string>
-  <string name="panels_mode">Podokna \"eno ob drugem\"</string>
+  <string name="panels_mode">Podokni \"eno ob drugem\"</string>
   <string name="summary_panels_mode">Prikaži obe podokni eno ob drugem v pogledu razdeljenega zaslona</string>
-  <string name="two_lines">Dve črti na vrstico</string>
+  <string name="two_lines">Dve vrstici na predmet</string>
   <string name="summary_two_lines">Prikaži atribute datoteke pod imeni</string>
   <string name="show_icons">Omogoči ikone</string>
   <string name="summary_show_icons">Prikaži ikone datotek in map namesto samo besedila</string>
@@ -293,9 +294,9 @@
   <string name="tblist_label">Prilagodi orodno vrstico</string>
   <string name="finger_friendly">Prijazno prstom</string>
   <string name="summary_finger_friendly">Povečaj predmete uporabniškega vmesnika</string>
-  <string name="prevent_root">Opozori on izhodu iz mape /sdcard</string>
+  <string name="prevent_root">Opozori ob izhodu iz mape /sdcard</string>
   <string name="summary_prevent_root">Izdaj opozorilo ob vhodu v korensko mapo naprave</string>
-  <string name="show_root">Prikaži korensko mapo in priklope</string>
+  <string name="show_root">Prikaži skrbn. in prikl.</string>
   <string name="summary_show_root">Domači pogled bo prikazal \"Skrbniški način\" in \"Priklopne točke\"</string>
   <string name="root_root">Samodejni skrbniški način</string>
   <string name="summary_root_root">Preklopi na skrbniški način ob vstopu v korensko mapo naprave</string>
@@ -313,7 +314,7 @@
   <string name="summary_detailed_view_Ovr">Prikaži velikost in datum datotek v prekrivnem načinu</string>
   <string name="sorting">Način razvrščanja</string>
   <string name="summary_sorting">Izberite način razvrščanja datotek in map</string>
-  <string name="sort_case">Prezri velikost črk v razvrščanju</string>
+  <string name="sort_case">Prezri velikost črk v razvr.</string>
   <string name="summary_sort_case">Označite to, da prezrete velikost črk v razvrščanju datotek in map</string>
   <string name="show_hidden">Prikaži skrite datoteke</string>
   <string name="summary_show_hidden">Prikaži datoteke in mape s piko na začetku imen</string>
@@ -323,7 +324,7 @@
   <string name="summary_panels_sliding">Preklopi podokna z vodoravno drsno potezo</string>
   <string name="arrow_mode">Preglasi smerna gumba</string>
   <string name="summary_arrow_mode">Levi/desni gumb opravi preklop/izbiro</string>
-  <string name="volume_mode">Preglasi gumba za glasnost</string>
+  <string name="volume_mode">Preglasi gumba za glas.</string>
   <string name="summary_volume_mode">Gumba za glasnost opravita preklop/izbiro</string>
   <string name="exit_on_back">Gumb Nazaj za izhod</string>
   <string name="summary_exit_on_back">Gumb Nazaj konča program</string>
@@ -354,8 +355,8 @@
   <string name="summary_busybox_location">Določi mesto izvedljive datoteke BusyBoxa</string>
   <string name="su_location">Pot do su-ja</string>
   <string name="summary_su_location">Določi mesto do izvedljive datoteke su</string>
-  <string name="scan_all">Preišči vse datoteke</string>
-  <string name="summary_scan_all">Odznačite za preiskovanje samo datotek predstavnosti</string>
+  <string name="scan_all">Preglej vse datoteke</string>
+  <string name="summary_scan_all">Odznačite za pregled samo datotek predstavnosti</string>
   <string name="execute_command">Izvedi ukaz</string>
   <string name="nothing_to_open">Ničesar ni za odpreti</string>
   <string name="remind_to_save">Ne pozabite shraniti sprememb</string>
@@ -435,11 +436,11 @@ Kopirajte in premikajte datoteke tako, da najprej izberete cilj v enem podoknu, 
 </p>
 <h3>DATOTEKE ZIP</h3>
 <p>
-Ghost Commander lahko deluje s klasičnimi datotekami ZIP, kot da bi bile mape.  Datoteke ZIP zaščitene (šifrirane) z geslom in datoteke ZIP, ki uporabljajo algoritme za stiskanje, niso podprte.
+Ghost Commander lahko deluje s klasičnimi datotekami ZIP, kot da bi bile mape.  Datoteke ZIP, ko so zaščitene (šifrirane) z geslom in uporabljajo algoritme za stiskanje, niso podprte.
 </p>
 <h3>VSTAVKI</h3>
 <p>
-Vstavki, ki jih je treba namestiti ločeno, omogočjo dostop do datotek v souporabi Windows, protokola za prenos datotek SSH in storitev za shranjevanje v oblaku: Box, Dropbox in Google Drive.
+Vstavki, ki jih je treba namestiti ločeno, omogočajo dostop do datotek v souporabi Windows, protokola za prenos datotek SSH in storitev za shranjevanje v oblaku: Box, Dropbox in Google Drive.
 </p>
 <h3>SKRBNIŠKI NAČIN</h3>
 <p>
@@ -467,13 +468,13 @@ V urejevalnik mest lahko ročno vnesete URI-je virov na naslednji način:
 </p>
 <h3>HITRE TIPKE</h3>
 <p>
-<b><i>Glasnost gor</i></b> - Izberi datotek in mape<br/>
+<b><i>Glasnost gor</i></b> - Izberi datoteke in mape<br/>
 <b><i>Glasnost dol</i></b> - Preklopi med podoknoma<br/>
 <b>+</b>, <b>-</b> - Izberi ali odstrani izbiro predmetov v trenutni mapi<br/>
 <b>(</b>, <b>)</b> - Ročno vnesi mesto in pokaži priljubljene<br/>
 <b>*</b> - Dodaj trenutno mapo k priljubljenim<br/>
 <b>\"</b> - Prikaži podrobne podatke izbranih predmetov <br/>
-<b>=</b> - Prikaži isto mesto v drugem podoknu (uskladi)<br/>
+<b>=</b> - Prikaži enako mesto v drugem podoknu (uskladi)<br/>
 <b>1</b> - Pomoč<br/>
 <b>2</b> - Preimenuj izbrani predmet<br/>
 <b>4</b> - Uredi izbrani predmet<br/>
