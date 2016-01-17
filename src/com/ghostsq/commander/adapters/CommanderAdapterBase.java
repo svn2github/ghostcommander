@@ -469,12 +469,9 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                         if( th != null ) {
                             if( !item.thumb_is_icon )
                                 img_width = imgWidth;
-                            //imgView.setMaxWidth( img_width );
                             RelativeLayout.LayoutParams rllp = (RelativeLayout.LayoutParams)imgView.getLayoutParams();
                             rllp.width = img_width;
                             rllp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                            //RelativeLayout.LayoutParams rllp = new RelativeLayout.LayoutParams(img_width,img_width); 
-                            //imgView.setLayoutParams( rllp );
                             imgView.setImageDrawable( th );
                             imgView.requestLayout();
                             imgView.invalidate();

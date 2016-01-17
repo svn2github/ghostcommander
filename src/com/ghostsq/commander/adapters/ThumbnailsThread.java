@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.SoftReference;
 
+import com.ghostsq.commander.PictureViewer;
 import com.ghostsq.commander.adapters.CommanderAdapter.Item;
+import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.MnfUtils;
 import com.ghostsq.commander.utils.Utils;
 
@@ -327,6 +329,7 @@ class ThumbnailsThread extends Thread {
                                 for( b = 0x8000000; b > 0; b >>= 1 )
                                     if( b <= factor )
                                         break;
+                                b <<= 1;
                                 options.inSampleSize = b;
                             } else
                                 options.inSampleSize = 4;
@@ -334,6 +337,15 @@ class ThumbnailsThread extends Thread {
                             options.inTempStorage = buf;
                             Bitmap bitmap = BitmapFactory.decodeStream( in, null, options );
                             if( bitmap != null ) {
+                                if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR ) {
+                                    float degrees = ForwardCompat.getImageFileOrientationDegree( fn );
+                                    Log.d( TAG, "Rotating " + degrees );
+                                    if( degrees > 0 ) {
+                                        Bitmap rbmp = PictureViewer.rotateBitmap( bitmap, degrees );
+                                        if( rbmp != null )
+                                            bitmap = rbmp;
+                                    }
+                                }
                                 BitmapDrawable drawable = new BitmapDrawable( res, bitmap );
                                 Thumbnail thb = new Thumbnail( drawable, img_w, img_h );
                                 f.setThumbNail( drawable );
@@ -371,16 +383,24 @@ class ThumbnailsThread extends Thread {
                 for( b = 0x8000000; b > 0; b >>= 1 )
                     if( b < factor )
                         break;
+                b <<= 1;
                 options.inSampleSize = b;
                 options.inJustDecodeBounds = false;
                 Bitmap bitmap = BitmapFactory.decodeFile( fn, options );
                 if( bitmap != null ) {
+                    //Log.d( TAG, "Height: " + bitmap.getHeight() + " Width: " + bitmap.getWidth() );
+                    if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR ) {
+                        float degrees = ForwardCompat.getImageFileOrientationDegree( fn );
+                        if( degrees > 0 ) {
+                            //Log.d( TAG, "Rotating " + degrees );
+                            Bitmap rbmp = PictureViewer.rotateBitmap( bitmap, degrees );
+                            if( rbmp != null )
+                                bitmap = rbmp;
+                        }
+                    }
                     BitmapDrawable drawable = new BitmapDrawable( res, bitmap );
                     Thumbnail thb = new Thumbnail( drawable, img_w, img_h );
-                    // drawable.setGravity( Gravity.CENTER );
-                    // drawable.setBounds( 0, 0, 60, 60 );
                     f.setThumbNail( drawable );
-                    //Log.v( TAG, fn + " - OK" );
                     return thb;
                 }
             } else

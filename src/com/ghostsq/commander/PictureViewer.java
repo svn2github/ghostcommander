@@ -1,5 +1,6 @@
 package com.ghostsq.commander;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -18,14 +19,17 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -50,6 +54,7 @@ import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.Engine;
 import com.ghostsq.commander.adapters.SAFAdapter;
 import com.ghostsq.commander.utils.Credentials;
+import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.Utils;
 import com.ortiz.touch.TouchImageView;
 
@@ -64,6 +69,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
     public  Handler   h = new Handler();
     public  ProgressDialog pd; 
     private PointF    last;
+    private String    file_path;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -122,7 +128,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
         
         String name_to_show = null; 
         String scheme = uri.getScheme();
-
+        
         ca = CA.CreateAdapterInstance( uri, this );            
         if( ca == null ) return;
         ca.Init( new CommanderStub() );
@@ -210,6 +216,9 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
             case R.id.delete:
                 delete();
                 break;
+            case R.id.info:
+                showInfo();
+                break;
             case R.id.exit:
                 finish();
                 break;
@@ -228,9 +237,10 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                 image_view.setVisibility( View.VISIBLE );
                 image_view.setImageBitmap( bmp );
                 
-                
-                name_view.setTextColor( Color.WHITE );
-                name_view.setText( name );
+                if( name != null ) {
+                    name_view.setTextColor( Color.WHITE );
+                    name_view.setText( name );
+                }
                 return;
             }
         } catch( Throwable e ) {
@@ -239,14 +249,16 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
     }
 
     private final void rotate( boolean clockwise ) {
-        new RotateTask( clockwise ).execute();
+        new RotateTask( image_view.getDrawable(), clockwise ).execute();
     }
 
     public class RotateTask extends AsyncTask<Void, Void, Void> {
+        private Drawable from_view;
         private WeakReference<Bitmap> wrRotatedBitmap;
         private boolean clockwise;
     
-        public RotateTask( boolean clockwise ) {
+        public RotateTask( Drawable from_view, boolean clockwise ) {
+            this.from_view = from_view;
             this.clockwise = clockwise;
         }
     
@@ -257,7 +269,6 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                Drawable from_view = image_view.getDrawable();
                 if( from_view == null ) {
                     Log.e( TAG, "No drawable" );
                     return null;
@@ -269,23 +280,8 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                 }
                 BitmapDrawable bd = (BitmapDrawable)from_view;
                 Bitmap old_bmp = bd.getBitmap();
-                
-                final Matrix m = new Matrix();
-                m.postRotate( clockwise ? 90 : 270 );
-                final int old_w = old_bmp.getWidth(); 
-                final int old_h = old_bmp.getHeight();
-                for( int i = 1; i <= 8; i <<= 1 ) {
-                    try {
-                        if( i > 1 ) {
-                            float scale = 1.f / i;
-                            m.postScale( scale, scale );
-                        }
-                        wrRotatedBitmap = new WeakReference<Bitmap>( Bitmap.createBitmap(
-                                 old_bmp, 0, 0, old_w, old_h, m, false ) );
-                        old_bmp.recycle();
-                        break;
-                    } catch( OutOfMemoryError e ) {}
-                }
+                float degrees = clockwise ? 90 : 270;
+                wrRotatedBitmap = new WeakReference<Bitmap>( PictureViewer.rotateBitmap( old_bmp, degrees ) );
             } catch( Throwable e ) {
                 Log.e( TAG, "", e );
             }
@@ -297,9 +293,30 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
             if( wrRotatedBitmap == null ) return;
             Bitmap bmp = wrRotatedBitmap.get();
             if( bmp != null )
-                setBitmapToView( bmp, name_view.getText().toString() );
+                PictureViewer.this.setBitmapToView( bmp, null );
         }
     }    
+
+    public static Bitmap rotateBitmap( Bitmap old_bmp, float degrees ) {
+        final Matrix m = new Matrix();
+        m.postRotate( degrees );
+        final int old_w = old_bmp.getWidth(); 
+        final int old_h = old_bmp.getHeight();
+        for( int i = 1; i <= 8; i <<= 1 ) {
+            try {
+                if( i > 1 ) {
+                    float scale = 1.f / i;
+                    m.postScale( scale, scale );
+                }
+                Bitmap new_bmp = Bitmap.createBitmap( old_bmp, 0, 0, old_w, old_h, m, false );
+                if( new_bmp != null ) {
+                    old_bmp.recycle();
+                    return new_bmp;
+                }
+            } catch( OutOfMemoryError e ) {}
+        }
+        return null;
+    }
     
     final public void showWait() {
         if( pd == null )
@@ -322,6 +339,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
             ctx = PictureViewer.this;
             u = u_;
             name_to_show = name_;
+            file_path = null;
             setName( "PictureLoader" );
         }
         
@@ -349,19 +367,28 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                                 return;
                             }
                             bmp = BitmapFactory.decodeStream( is, null, options );
-                            if( bmp != null ) {
-                                PictureViewer.this.h.post(new Runnable() {
-                                      @Override
-                                      public void run() {
-                                        PictureViewer.this.setBitmapToView( bmp, name_to_show );
-                                      }
-                                  });                
-                                return;
+                            if( bmp == null ) continue;
+                            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR && !Utils.str( scheme ) ) {
+                                file_path = u.getPath();
+                                float degrees = ForwardCompat.getImageFileOrientationDegree( file_path );
+                                if( degrees > 0 ) {
+                                    Log.d( TAG, "Rotating " + degrees );
+                                    Bitmap rbmp = PictureViewer.rotateBitmap( bmp, degrees );
+                                    if( rbmp != null )
+                                        bmp = rbmp;
+                                }
                             }
+                            PictureViewer.this.h.post( new Runnable() {
+                                  @Override
+                                  public void run() {
+                                    PictureViewer.this.setBitmapToView( bmp, name_to_show );
+                                  }
+                              });                
+                            return;
                         } catch( Throwable e ) {
                         } finally {
                             if( is != null )
-                                is.close();
+                                PictureViewer.this.ca.closeStream( is );
                         }
                         Log.w( TAG, "Cant decode stream to bitmap. b=" + b );
                     }
@@ -391,30 +418,24 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                             if( is == null ) return;
                             int n;
                             boolean available_supported = is.available() > 0;
-                            Log.d( TAG, "available_supported=" + available_supported );
                             while( ( n = is.read( buf ) ) != -1 ) {
-                                //Log.v( "readStreamToBuffer", "Read " + n + " bytes" );
-                                //sendProgress( tot += n );
                                 Thread.sleep( 1 );
                                 fos.write( buf, 0, n );
                                 if( available_supported ) {
                                     for( int i = 1; i <= 10; i++ ) {
                                         if( is.available() > 0 ) break;
-                                        //Log.v( "readStreamToBuffer", "Waiting the rest " + i );
                                         Thread.sleep( 20 * i );
                                     }
                                     if( is.available() == 0 ) {
-                                        //Log.v( "readStreamToBuffer", "No more data!" );
                                         break;
                                     }
                                 }
-                                //Log.v( TAG, "going to read again" );
                             }
                         } catch( Throwable e ) {
                             throw e;
                         } finally {
-                            if( ca != null && is != null ) 
-                                ca.closeStream( is );
+                            if( PictureViewer.this.ca != null && is != null ) 
+                                PictureViewer.this.ca.closeStream( is );
                             if( fos != null ) fos.close();
                         }
                     }
@@ -426,18 +447,27 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                                 options.inSampleSize = b;
                                 bmp = BitmapFactory.decodeFile( f.getAbsolutePath(), options );
                             } catch( Throwable e ) {}
-                            if( bmp != null ) {
-                                if( !local )
-                                    f.deleteOnExit();
-                                final String name = name_to_show;
-                                PictureViewer.this.h.post(new Runnable() {
-                                      @Override
-                                      public void run() {
-                                        PictureViewer.this.setBitmapToView( bmp, name );
-                                      }
-                                  });                
-                                return;
+                            if( bmp == null ) continue;
+                            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR ) {
+                                file_path = u.getPath();
+                                float degrees = ForwardCompat.getImageFileOrientationDegree( file_path );
+                                Log.d( TAG, "Rotating " + degrees );
+                                if( degrees > 0 ) {
+                                    Bitmap rbmp = PictureViewer.rotateBitmap( bmp, degrees );
+                                    if( rbmp != null )
+                                        bmp = rbmp;
+                                }
                             }
+                            if( !local )
+                                f.deleteOnExit();
+                            final String name = name_to_show;
+                            PictureViewer.this.h.post(new Runnable() {
+                                  @Override
+                                  public void run() {
+                                    PictureViewer.this.setBitmapToView( bmp, name );
+                                  }
+                              });                
+                            return;
                         }
                     }
                 }
@@ -514,6 +544,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
         String name = ca.getItemName( ca_pos, false );
         new AlertDialog.Builder( this )
             .setTitle( R.string.delete_title )
+            .setIcon( android.R.drawable.ic_dialog_alert )
             .setMessage( getString( R.string.delete_q, name ) )
             .setPositiveButton( R.string.dialog_ok, new OnClickListener() {
                 @Override
@@ -532,7 +563,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
     }
 
     public final void loadNext( int dir, boolean exit_at_end ) {
-        Log.d( TAG, "pos=" + ca_pos + " forward=" + dir );
+        //Log.d( TAG, "pos=" + ca_pos + " forward=" + dir );
         if( ca_pos < 0 || ca == null ) {
             if( exit_at_end ) this.finish();
             return;
@@ -564,6 +595,27 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
         }
     }
 
+    @SuppressLint("InflateParams")
+    private final void showInfo() {
+        AlertDialog.Builder builder = new AlertDialog.Builder( this );
+        builder.setTitle( getString( R.string.info ) );
+        builder.setIcon( android.R.drawable.ic_dialog_info );
+        
+        LayoutInflater inflater = (LayoutInflater)this.getSystemService( LAYOUT_INFLATER_SERVICE );
+        View layout = inflater.inflate( R.layout.textvw, null );
+        TextView text_view = (TextView)layout.findViewById( R.id.text_view );
+        
+        String info_text = null;
+        if( file_path != null && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR )
+            info_text = ForwardCompat.getImageFileInfoHTML( file_path );
+        if( info_text == null )
+            info_text = name_view.getText().toString(); 
+        
+        text_view.setText( Html.fromHtml( info_text ));
+        builder.setView(layout);        
+        builder.show();
+    }
+    
     private class CommanderStub implements Commander {
         boolean reload_after_dir_read_done = false;
 
