@@ -23,6 +23,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -31,10 +32,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.BaseColumns;
 import android.util.Log;
-import android.util.LruCache;
 import android.util.SparseArray;
+import android.provider.MediaStore.Images;
 import android.provider.MediaStore.Images.Media;
-import android.provider.MediaStore.Images.Thumbnails;
+import android.provider.MediaStore.Video;
 
 class ThumbnailsThread extends Thread {
     private final static String TAG = "ThumbnailsThread";
@@ -49,18 +50,7 @@ class ThumbnailsThread extends Thread {
     private byte[] buf;
     private int thumb_sz;
     private final static int apk_h = ".apk".hashCode();
-    private final static int[] ext_h = { 
-                ".jpg".hashCode(), 
-                ".JPG".hashCode(), 
-                ".jpeg".hashCode(), 
-                ".JPEG".hashCode(), 
-                ".png".hashCode(),
-                ".PNG".hashCode(), 
-                ".gif".hashCode(), 
-                ".GIF".hashCode(), 
-                apk_h 
-            };
-    
+
     private class Thumbnail {
         private SoftReference<Drawable> srd;
         private int h, w;
@@ -194,30 +184,26 @@ class ThumbnailsThread extends Thread {
                     String ext = Utils.getFileExt( fn );
                     if( ext == null )
                         continue;
-                    if( ext.equals( ".apk" ) )
-                        f.thumb_is_icon = true;
+                        
                     if( !f.isThumbNail() ) {
-                        int ext_hash = ext.hashCode(), ht_sz = ext_h.length;
-                        boolean not_img = true;
-                        for( int j = 0; j < ht_sz; j++ ) {
-                            if( ext_hash == ext_h[j] ) {
-                                not_img = false;
-                                break;
-                            }
-                        }
-                        if( not_img ) {
-                            f.no_thumb = true;
-                            f.setThumbNail( null );
-                            continue;
-                        }
-                       
                         Thumbnail t = null;
-                        if( ext_hash == apk_h ) {
+                        if( ext.equals( ".apk" ) ) {
                             t = getApkIcon( fn );
                             f.thumb_is_icon = true;
+                        } else {
+                            String type_cat = Utils.getCategoryByExt( ext );
+                            if( Utils.C_IMAGE.equals( type_cat ) ) 
+                                t = createImageThumbnail( fn, f );
+                            else
+                            if( Utils.C_VIDEO.equals( type_cat ) ) { 
+                                t = createVideoThumbnail( fn, f );
+                                if( t == null ) f.no_thumb = true;
+                            } else {
+                                f.no_thumb = true;
+                                f.setThumbNail( null );
+                                continue;
+                            }
                         }
-                        else
-                            t = createThumbnail( fn, f, ext_hash );
                         if( t != null ) {
                             f.setThumbNail( t.srd.get() );
                             f.attr = t.getResInfo();
@@ -255,20 +241,20 @@ class ThumbnailsThread extends Thread {
         }
     }
 
-    private final Thumbnail createThumbnail( String fn, Item f, int h ) {
-        final String func_name = "createThubnail()";
+    private final Thumbnail createImageThumbnail( String fn, Item f ) {
+        final String func_name = "createImageThubnail()";
         int img_w = 0, img_h = 0;
         FileInputStream fis = null;
         try {
             // let's try to take it from the mediastore
             Cursor cursor = null;
             try {
+                long orig_id = -1;
                 final String[] th_proj = new String[] { 
                         BaseColumns._ID,    // 0
-                        Thumbnails.WIDTH,   // 1
-                        Thumbnails.HEIGHT   // 2
+                        Images.Thumbnails.WIDTH,   // 1
+                        Images.Thumbnails.HEIGHT   // 2
                 };
-                long orig_id = -1;
                 if( f.origin instanceof Uri ) {
                     try {
                         Uri u = (Uri)f.origin;
@@ -277,11 +263,11 @@ class ThumbnailsThread extends Thread {
                     } catch( Exception e ) {
                     }
                 } else {
-                    boolean SDK16UP = android.os.Build.VERSION.SDK_INT >= 16;
+                    final boolean SDK16UP = android.os.Build.VERSION.SDK_INT >= 16;
                     String[] id_proj = { BaseColumns._ID };
                     String[]    proj = SDK16UP ? th_proj : id_proj;
                     String where = Media.DATA + " = '" + fn + "'";
-                    cursor = cr.query( Media.EXTERNAL_CONTENT_URI, proj, where, null, null );
+                    cursor = cr.query( Images.Media.EXTERNAL_CONTENT_URI, proj, where, null, null );
                     if( cursor != null ) {
                         if( cursor.getCount() > 0 ) {
                             cursor.moveToPosition( 0 );
@@ -296,14 +282,14 @@ class ThumbnailsThread extends Thread {
                     }                    
                 }
                 if( orig_id >= 0 ) {
-                    cursor = Thumbnails.queryMiniThumbnail( cr, orig_id, Thumbnails.MICRO_KIND, th_proj );
+                    cursor = Images.Thumbnails.queryMiniThumbnail( cr, orig_id, Images.Thumbnails.MICRO_KIND, th_proj );
                     if( cursor != null && cursor.getCount() == 0 ) {
                         cursor.close();
                         cursor = null;
                     }
                     if( cursor == null ) {
                         //Log.d( TAG, "Micro failed for " + f.name );
-                        cursor = Thumbnails.queryMiniThumbnail( cr, orig_id, Thumbnails.MINI_KIND, th_proj );
+                        cursor = Images.Thumbnails.queryMiniThumbnail( cr, orig_id, Images.Thumbnails.MINI_KIND, th_proj );
                         //if( cursor == null || cursor.getCount() == 0 )
                         //    Log.d( TAG, "Mini failed for " + f.name );
                     }
@@ -312,7 +298,7 @@ class ThumbnailsThread extends Thread {
                     if( cursor.getCount() > 0 ) {
                         cursor.moveToPosition( 0 );
                         long th_id = cursor.getLong( 0 );
-                        Uri tcu = ContentUris.withAppendedId( Thumbnails.EXTERNAL_CONTENT_URI, th_id );
+                        Uri tcu = ContentUris.withAppendedId( Images.Thumbnails.EXTERNAL_CONTENT_URI, th_id );
                         int tw = cursor.getInt( 1 );
                         int th = cursor.getInt( 2 );
                         //Log.d( TAG, "th id: " + cursor.getLong(0) + ", w: " + tw + ", h: " + th );
@@ -323,14 +309,7 @@ class ThumbnailsThread extends Thread {
                         } catch( Exception e ) {}
                         if( in != null ) {
                             if( tw > 0 && th > 0 ) {
-                                int greatest = Math.max( tw, th );
-                                int factor = greatest / thumb_sz;
-                                int b;
-                                for( b = 0x8000000; b > 0; b >>= 1 )
-                                    if( b <= factor )
-                                        break;
-                                b <<= 1;
-                                options.inSampleSize = b;
+                                options.inSampleSize = getSampleSize( Math.max( tw, th ) );
                             } else
                                 options.inSampleSize = 4;
                             options.inJustDecodeBounds = false;
@@ -377,14 +356,7 @@ class ThumbnailsThread extends Thread {
             img_w = options.outWidth;
             img_h = options.outHeight;
             if( img_w > 0 && img_h > 0 ) {
-                int greatest = Math.max( options.outWidth, options.outHeight );
-                int factor = greatest / thumb_sz;
-                int b;
-                for( b = 0x8000000; b > 0; b >>= 1 )
-                    if( b < factor )
-                        break;
-                b <<= 1;
-                options.inSampleSize = b;
+                options.inSampleSize = getSampleSize( Math.max( options.outWidth, options.outHeight ) );
                 options.inJustDecodeBounds = false;
                 Bitmap bitmap = BitmapFactory.decodeFile( fn, options );
                 if( bitmap != null ) {
@@ -426,6 +398,62 @@ class ThumbnailsThread extends Thread {
         return null;
     }
 
+    private final Thumbnail createVideoThumbnail( String fn, Item f ) {
+        if( Build.VERSION.SDK_INT < Build.VERSION_CODES.ECLAIR ) return null;
+        Cursor cursor = null;
+        try {
+            long orig_id = -1;
+            if( f.origin instanceof Uri ) {
+                try {
+                    Uri u = (Uri)f.origin;
+                    if( !SAFAdapter.isExternalStorageDocument( u ) )
+                        orig_id = ContentUris.parseId( u );
+                } catch( Exception e ) {
+                }
+            } else {
+                String[] id_proj = { BaseColumns._ID };
+                String where = Media.DATA + " = '" + fn + "'";
+                cursor = cr.query( Video.Media.EXTERNAL_CONTENT_URI, id_proj, where, null, null );
+                if( cursor != null ) {
+                    if( cursor.getCount() > 0 ) {
+                        cursor.moveToPosition( 0 );
+                        orig_id = cursor.getLong( 0 );
+                    }
+                    cursor.close();
+                    cursor = null;
+                }                    
+            }
+            if( orig_id >= 0 ) {
+                int ss = getSampleSize( 512 );  // is this width of Thumbnails.MINI_KIND ?
+                Bitmap vtb = ForwardCompat.getVideoThumbnail( this.cr, orig_id, ss );
+                BitmapDrawable drawable = new BitmapDrawable( res, vtb );
+                Thumbnail thb = new Thumbnail( drawable, 0, 0 );
+                f.setThumbNail( drawable );
+                return thb;
+            }
+        } catch( Exception e ) {
+            Log.e( TAG, "", e );
+        }
+        finally {
+            if( cursor != null )
+                cursor.close();
+        }
+        if( Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO ) return null;
+        try {
+            Bitmap vtb = ForwardCompat.createVideoThumbnail( fn );
+            int scale = getSampleSize( 512 );
+            if( scale > 1 )
+                vtb = scaleBitmap( vtb, 1f/scale );
+            BitmapDrawable drawable = new BitmapDrawable( res, vtb );
+            Thumbnail thb = new Thumbnail( drawable, 0, 0 );
+            f.setThumbNail( drawable );
+            return thb;
+        } catch( Exception e ) {
+            Log.e( TAG, "", e );
+        }
+        return null;
+    }    
+    
     private final Thumbnail getApkIcon( String fn ) {
         try {
             Drawable icon = null;
@@ -464,4 +492,28 @@ class ThumbnailsThread extends Thread {
         }
         return null;
     }
+    
+    private final int getSampleSize( int greatest ) {
+        int factor = greatest / thumb_sz;
+        int b;
+        for( b = 0x8000000; b > 0; b >>= 1 )
+            if( b < factor )
+                break;
+        b <<= 1;
+        return b;
+    }
+
+    private static Bitmap scaleBitmap( Bitmap old_bmp, float scale ) {
+        Matrix m = new Matrix();
+        m.postScale( scale, scale );
+        try {
+            Bitmap new_bmp = Bitmap.createBitmap( old_bmp, 0, 0, old_bmp.getWidth(), old_bmp.getHeight(), m, false );
+            if( new_bmp != null ) {
+                old_bmp.recycle();
+                return new_bmp;
+            }
+        } catch( OutOfMemoryError e ) {}
+        return null;
+    }
+
 }

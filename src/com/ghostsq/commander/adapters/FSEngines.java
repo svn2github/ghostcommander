@@ -133,14 +133,19 @@ public final class FSEngines {
                                 result.append( "\n<b>MD5:</b>\n&#xA0;<small>"   + hashes[0] + "</small>" );
                                 result.append( "\n<b>SHA-1:</b>\n&#xA0;<small>" + hashes[1] + "</small>" );
                             }
+                            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR &&
+                                Utils.getCategoryByExt( Utils.getFileExt( item.name ) ) == Utils.C_IMAGE ) { 
+                                    result.append( "\n\n<hr/>" );
+                                    result.append( ForwardCompat.getImageFileInfoHTML( f.getAbsolutePath() ) );
+                            }
                         }
                     }
-                    result.append( "\n\n<hr/>" );
         	    }
                 try {
                     if( cab instanceof FSAdapter ) {
+                        result.append( "\n\n<hr/>" );
                         StatFs stat = new StatFs( cab.toString() );
-                        long block_size = stat.getBlockSize( );
+                        long block_size = stat.getBlockSize();
                         result.append( c.getString( R.string.sz_total, Formatter.formatFileSize( cab.ctx, stat.getBlockCount() * block_size ), 
                                                                        Formatter.formatFileSize( cab.ctx, stat.getAvailableBlocks() * block_size ) ) );
                     }

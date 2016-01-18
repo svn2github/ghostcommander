@@ -5,18 +5,24 @@ import java.io.IOException;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.media.MediaScannerConnection;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
+import android.provider.MediaStore.Video;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -131,7 +137,6 @@ public class ForwardCompat
     public static String getImageFileInfoHTML( String path ) { 
         try {
             StringBuilder sb = new StringBuilder( 100 );
-            sb.append( "<br/><b>File:</b> <small>" ).append( path ).append( "</small>" );
             ExifInterface exif = new ExifInterface( path );
             int ov = exif.getAttributeInt( ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED );
             String os = null;
@@ -146,7 +151,7 @@ public class ForwardCompat
             case ExifInterface.ORIENTATION_TRANSVERSE:      os = "Transversed"; break;
             }
             final int INV = -1;
-            if( os != null ) sb.append( "<br/><b>Orientation:</b> " ).append( os );
+            if( os != null ) sb.append( "<b>Orientation:</b> " ).append( os );
             int wi = exif.getAttributeInt( ExifInterface.TAG_IMAGE_WIDTH, INV );
             if( wi > 0 ) sb.append( "<br/><b>Width:</b> " ).append( wi );
             int li = exif.getAttributeInt( ExifInterface.TAG_IMAGE_LENGTH, INV );
@@ -189,5 +194,16 @@ public class ForwardCompat
         String is = exif.getAttribute( ExifInterface.TAG_ISO );
         if( is != null ) sb.append( "<br/><b>ISO level:</b> " ).append( is );
     }
-    
+
+    @TargetApi(Build.VERSION_CODES.FROYO)
+    public static Bitmap createVideoThumbnail( String path ) {
+        return ThumbnailUtils.createVideoThumbnail( path, MediaStore.Images.Thumbnails.MINI_KIND );        
+    }
+
+    @TargetApi(Build.VERSION_CODES.ECLAIR)
+    public static Bitmap getVideoThumbnail( ContentResolver cr, long id, int sample_size ) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = sample_size;
+        return Video.Thumbnails.getThumbnail( cr, id, Video.Thumbnails.MINI_KIND, options );        
+    }
 }

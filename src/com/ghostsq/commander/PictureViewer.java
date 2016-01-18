@@ -25,7 +25,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.Gravity;
@@ -368,7 +367,8 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                             }
                             bmp = BitmapFactory.decodeStream( is, null, options );
                             if( bmp == null ) continue;
-                            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR && !Utils.str( scheme ) ) {
+                            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR && 
+                                    ( !Utils.str( scheme ) || "file".equals( scheme ) ) ) {
                                 file_path = u.getPath();
                                 float degrees = ForwardCompat.getImageFileOrientationDegree( file_path );
                                 if( degrees > 0 ) {
@@ -412,6 +412,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                             File pictvw_f = ctx.getDir( "pictvw", Context.MODE_PRIVATE );
                             if( pictvw_f == null ) return;
                             f = new File( pictvw_f, "file.tmp" );
+                            file_path = f.getAbsolutePath();
                             fos = new FileOutputStream( f );
                             // input - the content from adapter
                             is = PictureViewer.this.ca.getContent( u );
@@ -606,11 +607,15 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
         TextView text_view = (TextView)layout.findViewById( R.id.text_view );
         
         String info_text = null;
-        if( file_path != null && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR )
-            info_text = ForwardCompat.getImageFileInfoHTML( file_path );
-        if( info_text == null )
-            info_text = name_view.getText().toString(); 
-        
+        if( file_path != null ) {
+            info_text = "<b>File:</b> <small>" + file_path + "</small><br/>";
+            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR ) {
+                String exif_text = ForwardCompat.getImageFileInfoHTML( file_path );
+                if( exif_text != null )
+                    info_text += exif_text;
+            }
+        } else
+            info_text = "No data";
         text_view.setText( Html.fromHtml( info_text ));
         builder.setView(layout);        
         builder.show();

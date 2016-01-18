@@ -1286,7 +1286,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             if( uri != null ) {
                 String mime = Utils.getMimeByExt( Utils.getFileExt( uri.getPath() ) );
                 if( mime != null && mime.startsWith( "image" ) ) {
-                    uri = uri.buildUpon().scheme( "file" ).authority( "" ).build();
+                    if( !Utils.str( uri.getScheme() ) )
+                        uri = uri.buildUpon().scheme( "file" ).authority( "" ).build();
                     Intent i = createImageViewIntent( uri, mime, ca, position );
                     c.startActivity( i );
                     return;
