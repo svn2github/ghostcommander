@@ -54,6 +54,7 @@
         <item>Türkçe</item>
         <item>Български</item>
         <item>Русский</item>
+        <item>Српски</item>
         <item>한국어</item>
         <item>中文 (简体)</item>
         <item>文言</item>
@@ -75,6 +76,7 @@
         <item>tr</item>
         <item>bg</item>
         <item>ru</item>
+        <item>sr_RS</item>
         <item>ko_KR</item>
         <item>zh_CN</item>
         <item>zh_TW</item>

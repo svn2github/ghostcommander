@@ -506,11 +506,14 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
         if( event.getAction() == MotionEvent.ACTION_UP ) {
             if( last == null ) return false;
             float ady = Math.abs( event.getY() - last.y );
-            if( ady < 50 ) {
+            int thldX = v.getWidth() / 50;
+            int thldY = v.getHeight() / 50;
+
+            if( thldY < 50 ) {
                 float x = event.getX();
                 float dx = x - last.x;
                 float adx = Math.abs( dx );
-                if( adx > 20 )
+                if( adx > thldX )
                     loadNext( dx < 0 );
             }
             last = null;

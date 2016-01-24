@@ -641,7 +641,7 @@ public final class Utils {
 
     private final static String HEX = "0123456789abcdef";
 
-    public static String toHexString( byte[] buf, String delim ) {
+    public final static String toHexString( byte[] buf, String delim ) {
         if( buf == null )
             return "";
         StringBuffer result = new StringBuffer( 2 * buf.length );
@@ -653,12 +653,12 @@ public final class Utils {
         return result.toString();
     }
 
-    public static String getHash( File f, String algorithm ) {
+    public final static String getHash( File f, String algorithm ) {
         String[] hashes = getHash( f, new String[] { algorithm } );
         return hashes != null ? hashes[0] : null;
     }
 
-    public static String[] getHash( File f, String[] algorithms ) {
+    public final static String[] getHash( File f, String[] algorithms ) {
         try {
             FileInputStream in  = new FileInputStream( f );
             MessageDigest[] digesters = new MessageDigest[algorithms.length];
