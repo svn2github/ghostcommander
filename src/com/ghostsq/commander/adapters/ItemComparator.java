@@ -32,7 +32,8 @@ public class ItemComparator implements Comparator<Item> {
             ext_cmp = f1.size - f2.size < 0 ? -1 : 1;
             break;
         case CommanderAdapter.SORT_DATE:
-            ext_cmp = f1.date.compareTo( f2.date );
+        	if( f1.date != null )
+	            ext_cmp = f1.date.compareTo( f2.date );
             break;
         }
         if( ext_cmp == 0 )
