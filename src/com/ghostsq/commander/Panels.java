@@ -788,8 +788,9 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         File f = getCurrentFile();
         if( f != null ) {
             Intent intent = new Intent( Intent.ACTION_VIEW );
-            intent.setDataAndType( Uri.fromFile( f ), "*/*" );
-            
+            Uri u = Uri.fromFile( f );
+            intent.setDataAndType( u, "*/*" );
+            Log.d( TAG, "Open uri " + u.toString() + " intent: " + intent.toString() );
             if (Build.VERSION.SDK_INT == 19) {
                 // This will open the "Complete action with" dialog if the user doesn't have a default app set.
                 c.startActivity( intent );
@@ -894,6 +895,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         }
         try {
             Uri u;
+            long size = 0;
             if( file_name == null || file_name.length() == 0 ) {
                 int pos = getSingle( touched );
                 CommanderAdapter.Item item = (CommanderAdapter.Item)( (ListAdapter)ca ).getItem( pos );
@@ -905,11 +907,14 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                     c.showError( c.getString( R.string.cant_open_dir, item.name ) );
                     return;
                 }
+                size = item.size;
+                file_name = item.name;
                 u = ca.getItemUri( pos );
             } else
                 u = Uri.parse( file_name );
             if( u == null )
                 return;
+            u = u.buildUpon().encodedPath( u.getEncodedPath().replace( " ", "%20" ) ).build();
             final String GC_EDITOR = Editor.class.getName();
             String full_class_name = GC_EDITOR;
             if( ca instanceof FSAdapter ) {
@@ -927,11 +932,18 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 full_class_name = GC_EDITOR;
                 last_dot_pos = full_class_name.lastIndexOf( '.' );
             }
+            
+            if( GC_EDITOR.equals( full_class_name ) && size > 1000000 ) {
+                c.showError( c.getString( R.string.too_big_file, file_name ) );
+                return;
+            }
+            
             i.setClassName( full_class_name.substring( 0, last_dot_pos ), full_class_name );
             i.setDataAndType( u, "text/plain" );
             Credentials crd = ca.getCredentials();
             if( crd != null )
                 i.putExtra( Credentials.KEY, crd );
+            Log.d( TAG, "Open uri " + u.toString() + " intent: " + i.toString() );
             c.startActivity( i );
         } catch( ActivityNotFoundException e ) {
             c.showMessage( "Activity Not Found: " + e );
