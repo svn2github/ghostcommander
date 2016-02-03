@@ -141,7 +141,8 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         super.onCreate( savedInstanceState );
 
         if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
-            if( ( getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK ) >= Configuration.SCREENLAYOUT_SIZE_LARGE )
+            if( !ForwardCompat.hasPermanentMenuKey( this ) ||
+                ( getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK ) >= Configuration.SCREENLAYOUT_SIZE_LARGE )
                 ab = getWindow().requestFeature( Window.FEATURE_ACTION_BAR );
         }
         if( !ab )
@@ -369,6 +370,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         if( in == null )
             return;
         try {
+            Log.d( TAG, "Issuing an intent: " + in.toString() );
             if( ret == 0 )
                 startActivity( in );
             else
@@ -831,9 +833,12 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                     Navigate( uri.buildUpon().scheme( "zip" ).build(), null, null );
                     return;
                 }
-                i.setDataAndType( uri.buildUpon().scheme( "file" ).authority( "" ).build(), mime );
+                Uri u = uri.buildUpon().scheme( "file" ).authority( "" )
+                        .encodedPath( uri.getEncodedPath().replace( " ", "%20" ) ).build();
+                i.setDataAndType( u, mime );
                 i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET );
                 // | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
+                Log.d( TAG, "Open uri " + u.toString() + " intent: " + i.toString() );
                 startActivityForResult( i, REQUEST_CODE_OPEN );
                 return;
             } 
@@ -846,11 +851,11 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                     StreamServer.storeCredentials( this, crd, uri );
                     uri = Utils.updateUserInfo( uri, username );
                 }
-
-                String http_url = "http://127.0.0.1:5322/" + Uri.encode( uri.toString() );
+                String http_url = "http://127.0.0.1:" + StreamServer.server_port + "/" + Uri.encode( uri.toString() );
                 // Log.d( TAG, "Stream " + mime + " from: " + http_url );
                 i.setDataAndType( Uri.parse( http_url ), mime );
                 i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET );
+                Log.d( TAG, "Issuing an intent: " + i.toString() );
                 startActivity( i );
                 return;
             }
@@ -1361,6 +1366,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
     public final void startViewURIActivity( int res_id ) {
         Intent i = new Intent( Intent.ACTION_VIEW );
         i.setData( Uri.parse( getString( res_id ) ) );
+        Log.d( TAG, "Issuing an intent: " + i.toString() );
         startActivity( i );
     }
 
