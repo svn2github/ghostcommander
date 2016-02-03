@@ -26,6 +26,7 @@ import android.provider.MediaStore.Video;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.widget.ListView;
 
 public class ForwardCompat
@@ -205,5 +206,10 @@ public class ForwardCompat
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = sample_size;
         return Video.Thumbnails.getThumbnail( cr, id, Video.Thumbnails.MINI_KIND, options );        
+    }
+    
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+    public static boolean hasPermanentMenuKey( Context ctx ) {
+        return ViewConfiguration.get( ctx ).hasPermanentMenuKey();
     }
 }
