@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -212,4 +213,9 @@ public class ForwardCompat
     public static boolean hasPermanentMenuKey( Context ctx ) {
         return ViewConfiguration.get( ctx ).hasPermanentMenuKey();
     }
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public static void setupActionBar( Activity a ) {
+        a.getActionBar().setDisplayShowTitleEnabled( false );
+    }
+    
 }

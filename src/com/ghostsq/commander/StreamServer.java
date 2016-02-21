@@ -10,7 +10,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.SecureRandom;
 import java.util.Date;
-import java.util.Random;
 
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
@@ -32,6 +31,8 @@ public class StreamServer extends Service {
     private final static String TAG = "StreamServer";
     private final static String CRLF = "\r\n";
     private final static String SALT = "GCSS";
+    public  final static int server_port = 5322; 
+    public  final static boolean verbose_log = false;
     private Context ctx;
     public  ListenThread  thread = null;
     public  WifiLock wifiLock = null;
@@ -53,9 +54,9 @@ public class StreamServer extends Service {
     @Override
     public void onStart( Intent intent, int start_id ) {
         super.onStart( intent, start_id );
-        //Log.d( TAG, "onStart" );
+        Log.d( TAG, "onStart" );
         if( thread == null ) {
-            //Log.d( TAG, "Starting the server thread" );
+            Log.d( TAG, "Starting the server thread" );
             thread = new ListenThread();
             thread.start();
             getBaseContext();
@@ -65,7 +66,7 @@ public class StreamServer extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //Log.d( TAG, "onDestroy" );
+        Log.d( TAG, "onDestroy" );
         if( thread != null && thread.isAlive() ) {
             thread.close();
             thread.interrupt();
@@ -124,7 +125,7 @@ public class StreamServer extends Service {
 
         public void run() {
             try {
-                //Log.d( TAG, "started" );
+                Log.d( TAG, "started" );
                 setName( TAG );
                 setPriority( Thread.MIN_PRIORITY );
                 new Thread( new Runnable() {
@@ -135,9 +136,9 @@ public class StreamServer extends Service {
                                 synchronized( ListenThread.this ) {
                                     final int max_idle = 100000;
                                     ListenThread.this.wait( max_idle );
-                                    //Log.d( TAG, "Checking the idle time... last used: " + (System.currentTimeMillis()-lastUsed) + "ms ago " );
+                                    Log.d( TAG, "Checking the idle time... last used: " + (System.currentTimeMillis()-lastUsed) + "ms ago " );
                                     if( System.currentTimeMillis() - max_idle > lastUsed ) {
-                                        //Log.d( TAG, "Time to closer the listen thread" );
+                                        Log.d( TAG, "Time to closer the listen thread" );
                                         ListenThread.this.close();
                                         break;
                                     }
@@ -146,22 +147,22 @@ public class StreamServer extends Service {
                                 e.printStackTrace();
                             }
                         }
-                        //Log.d( TAG, "Closer thread stopped" );
+                        Log.d( TAG, "Closer thread stopped" );
                     }
                 }, "Closer" ).start();
                 
                 StreamServer.this.wifiLock.acquire();
-                //Log.d( TAG, "WiFi lock" );
+                Log.d( TAG, "WiFi lock" );
                 synchronized( this ) {
-                    ss = new ServerSocket( 5322 );
+                    ss = new ServerSocket( StreamServer.server_port );
                 }
                 int count = 0;
                 while( !isInterrupted() ) {
-                    //Log.d( TAG, "Listening for a new connection..." );
+                    Log.d( TAG, "Listening for a new connection..." );
                     Socket data_socket = ss.accept();
-                    //Log.d( TAG, "Connection accepted" );
+                    Log.d( TAG, "Connection accepted" );
                     if( data_socket != null && data_socket.isConnected() ) {
-                        int tn = -1;//count++;//
+                        int tn = count++;//
                         stream_thread = new StreamingThread( data_socket, tn );
                         stream_thread.start();
                     }
@@ -173,7 +174,7 @@ public class StreamServer extends Service {
             }
             finally {
                 StreamServer.this.wifiLock.release();
-                //Log.d( TAG, "WiFi lock release" );
+                Log.d( TAG, "WiFi lock release" );
                 this.close();
             }
             StreamServer.this.stopSelf();
@@ -208,12 +209,11 @@ public class StreamServer extends Service {
         private final static String TAG = "GCSS.WT";
         private Socket data_socket;
         private int num_id;
-        private boolean  l = true;
+        private boolean  l = StreamServer.verbose_log;
 
         public StreamingThread( Socket data_socket_, int num_id_ ) {
             data_socket = data_socket_;
             num_id = num_id_;
-            l = num_id >= 0; 
         }
         
         private final void Log( String s ) {
@@ -285,6 +285,7 @@ public class StreamServer extends Service {
                     return;
                 }
                 String passed_uri_s = parts[1].substring( 1 );
+//passed_uri_s="/sdcard/Movies/FMA49_.avi";
                 if( !Utils.str( passed_uri_s ) ) {
                     Log.w( TAG, "No URI passed in the request" );
                     SendStatus( osw, 404 );
@@ -316,9 +317,12 @@ public class StreamServer extends Service {
                 if( scheme == null ) scheme = "";
                 String host = uri.getHost();
                 if( ca != null ) {
-                    if( !scheme.equals( ca.getScheme() ) ) ca = null; else {
+                    if( !scheme.equals( ca.getScheme() ) ) 
+                        ca = null; 
+                    else {
                         Uri prev_uri = ca.getUri();
-                        if( !host.equals( prev_uri.getHost() ) ) ca = null;
+                        if( host != null && !host.equals( prev_uri.getHost() ) ) 
+                            ca = null;
                     }
                 }
 
@@ -383,8 +387,8 @@ public class StreamServer extends Service {
                 osw.write( content_range + CRLF );
                 if( l ) Log( content_length );
                 if( l ) Log( content_range );
-
-                osw.write( "Connection: close" + CRLF );
+                // VLC fails when this is returned?
+                //osw.write( "Connection: close" + CRLF );
                 osw.write( CRLF );
                 osw.flush();                
                 ReaderThread rt = new ReaderThread( cs, num_id );
@@ -396,7 +400,7 @@ public class StreamServer extends Service {
                         if( isr.ready() ) {
                             char[] isb = new char[32]; 
                             if( isr.read( isb ) > 0 ) {
-                                Log.d( TAG, "" + isb );
+                                Log.d( TAG, "" + isb.toString() );
                                 if( l ) Log( "Some additional HTTP line has arrived!!! " /*+ BLOCKS!br.readLine()*/ );
                             }
                         }
@@ -442,19 +446,19 @@ public class StreamServer extends Service {
         private final static String TAG = "GCSS.RT";
         private InputStream is;
         private long roller = 0;
-        private final int chunk = 16384, MAX = 16384;
+        private final int MAX = 163840;
+        private int chunk = 4340;
         private byte[][] bufs = null;
         private byte[]   out_buf = null;
         private int      data_size = 0;
         private int      num_id;
         private boolean  stop = false;
-        private boolean  l = true;//false;
+        private boolean  l = StreamServer.verbose_log;
         
         public ReaderThread( InputStream is_, int num_id_ ) {
             is = is_;
             setName( TAG );
             num_id = num_id_;
-            l = num_id >= 0;
             bufs = new byte[][] { new byte[MAX], new byte[MAX] };
             Log.d( TAG, "Buffers size: " + MAX );
         }
@@ -475,12 +479,14 @@ public class StreamServer extends Service {
                     has_read = is.read( inp_buf, 0, chunk );
                     if( stop || has_read < 0 )
                         break;
-/*
-                    if( has_read == chunk && chunk < MAX )
+
+                    if( has_read == chunk && chunk < MAX ) {
                         chunk <<= 1;
+                        Log.d( TAG, "chunk size: " + chunk );
+                    }
                     if( chunk > MAX )
                         chunk = MAX;
-*/
+
                     if( l ) Log( "...R " + has_read + "/" + ( count += has_read ) );
                     synchronized( this ) {
                         int wcount = 0; 
@@ -509,11 +515,11 @@ public class StreamServer extends Service {
                 wcount += 10;
             }
             
-            if( out_buf != null ) 
+            if( out_buf != null ) {
                 if( l ) Log( "      ..! (" + wcount + "ms)" );
-            else
+            } else {
                 if( l ) Log( "X" );
-            
+            }
             return out_buf;
         }
         public int GetDataSize() {
@@ -524,7 +530,7 @@ public class StreamServer extends Service {
         public synchronized void doneOutput( boolean stop_ ) {
             stop = stop_;
             out_buf = null;
-            if( l ) Log( "    <- O done" );
+            if( l ) Log( "    <- O done" + ( stop ? ". stop" : "" ) );
             notify();
         }
     };

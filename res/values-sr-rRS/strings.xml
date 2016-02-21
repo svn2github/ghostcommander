@@ -59,7 +59,7 @@
   <string name="smb_descr">Повежи се са дељеним мапама на Винфоузовом строју</string>
   <string name="plugins_descr">Потражи још прикључака Здушног наредника</string>
   <string name="root_descr">Само за уређаје са кореним приступом: управљајте кључним деловима система. Продужите само ако знате шта радите.</string>
-  <string name="mount_descr">Приказуј списак тачака качења. Прекачите их за читање/писање - rw, затим назад само за читање -ro после измена. Пажљиво.</string>
+  <string name="mount_descr">Приказуј списак тачака качења. Прикачите их за читање/писање - rw, затим назад само за читање -ro после измена. Пажљиво.</string>
   <string name="apps_descr">Прегледај и управљај уграђеним програмима</string>
   <string name="exit_descr">Затвори програм</string>
   <string name="shortcut">Додај пречицу</string>
@@ -82,7 +82,7 @@
   <string name="toggle_panels_mode">Измени приказ површи</string>
   <string name="prefs">Поставке</string>
   <string name="save_prefs">Направи оставу поставки</string>
-  <string name="rest_prefs">Врати из оставе</string>
+  <string name="rest_prefs">Врати поставке из оставе</string>
   <string name="save_log">Сачувај дневник у датотеку</string>
   <string name="prefs_saved">Поставке су сачуване</string>
   <string name="prefs_restr">Поставке су повраћене</string>

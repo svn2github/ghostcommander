@@ -89,7 +89,7 @@
 <string name="prefs_restr">Your preferences have been restored</string>
 <string name="about">About</string>
 <string name="keys">Help</string>
-<string name="new_file">Create a new file</string>
+<string name="new_file">Create a new text file</string>
 <string name="new_folder">Create a new folder</string>
 <string name="new_zip">Create a new ZIP file</string>
 <string name="go_button">Go</string>

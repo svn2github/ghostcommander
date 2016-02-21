@@ -141,9 +141,12 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         super.onCreate( savedInstanceState );
 
         if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
-            if( !ForwardCompat.hasPermanentMenuKey( this ) ||
-                ( getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK ) >= Configuration.SCREENLAYOUT_SIZE_LARGE )
+            final int size_class = ( getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK );
+            if( size_class >= Configuration.SCREENLAYOUT_SIZE_LARGE ) {
                 ab = getWindow().requestFeature( Window.FEATURE_ACTION_BAR );
+                if( size_class <= Configuration.SCREENLAYOUT_SIZE_LARGE )
+                    ForwardCompat.setupActionBar( this );
+            }
         }
         if( !ab )
             requestWindowFeature( Window.FEATURE_NO_TITLE );
@@ -211,7 +214,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
 
     @Override
     protected void onPause() {
-        Log.v( TAG, "Pausing\n" );
+        Log.d( TAG, "Pausing\n" );
         super.onPause();
         on = false;
         SharedPreferences.Editor editor = getPreferences( MODE_PRIVATE ).edit();
@@ -222,21 +225,21 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
 
     @Override
     protected void onResume() {
-        Log.v( TAG, "Resuming\n" );
+        Log.d( TAG, "Resuming\n" );
         super.onResume();
         on = true;
     }
 
     @Override
     protected void onStop() {
-        Log.v( TAG, "Stopping\n" );
+        Log.d( TAG, "Stopping\n" );
         super.onStop();
         on = false;
     }
 
     @Override
     protected void onDestroy() {
-        Log.v( TAG, "Destroying\n" );
+        Log.d( TAG, "Destroying\n" );
         on = false;
         super.onDestroy();
         if( notMan != null )
@@ -970,7 +973,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             if( uri != null && Intent.ACTION_VIEW.equals( action ) ) {
                 // || "org.openintents.action.VIEW_DIRECTORY".equals( action ) )
                 // { // DiskUsage support
-                Log.v( TAG, "Intent URI: " + uri );
+                Log.d( TAG, "Intent URI: " + uri );
                 Credentials crd = null;
                 try {
                     crd = (Credentials)intent.getParcelableExtra( Credentials.KEY );

@@ -9,6 +9,7 @@ import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.favorites.Favorite;
 import com.ghostsq.commander.utils.Credentials;
+import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.Utils;
 
 import android.app.Activity;
@@ -16,8 +17,10 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
@@ -56,7 +59,18 @@ public class Editor extends Activity implements TextWatcher {
             SharedPreferences prefs = getPreferences( MODE_PRIVATE );
             if( prefs != null )
                 encoding = prefs.getString( SP_ENC, "" );
-            boolean ct_enabled = requestWindowFeature( Window.FEATURE_CUSTOM_TITLE );
+            boolean ct_enabled = false, ab_enabled = false;
+            //     !ForwardCompat.hasPermanentMenuKey( this )
+            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
+                final int size_class = ( getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK );
+                if( size_class >= Configuration.SCREENLAYOUT_SIZE_LARGE ) {
+                    ab_enabled = getWindow().requestFeature( Window.FEATURE_ACTION_BAR );
+                    if( size_class <= Configuration.SCREENLAYOUT_SIZE_LARGE )
+                        ForwardCompat.setupActionBar( this );
+                }
+            }
+            if( !ab_enabled )
+                ct_enabled = requestWindowFeature( Window.FEATURE_CUSTOM_TITLE );
             setContentView(R.layout.editor);
             te = (EditText)findViewById( R.id.editor );
             te.addTextChangedListener( this );
@@ -108,18 +122,21 @@ public class Editor extends Activity implements TextWatcher {
 
     @Override
     protected void onStop() {
-        Log.d( TAG, "onStop" );
+        //Log.d( TAG, "onStop" );
         super.onStop();
-        if( ca != null )
-            ca.prepareToDestroy();
-        ca = null;
     }
 
     @Override
     protected void onDestroy() {
+        //Log.d( TAG, "onDestroy" );
         super.onDestroy();
         if( loader != null )
             loader.cancel( true );
+        if( ca != null ) {
+            //Log.d( TAG, "Prep destroy the CA" );
+            ca.prepareToDestroy();
+            ca = null;
+        }
     }
     
     @Override
@@ -127,23 +144,7 @@ public class Editor extends Activity implements TextWatcher {
         switch( keyCode ) {
         case KeyEvent.KEYCODE_BACK:
             if( dirty ) {
-                DialogInterface.OnClickListener ocl = new DialogInterface.OnClickListener() {
-                        public void onClick( DialogInterface dialog, int which_button ) {
-                            if( which_button == DialogInterface.BUTTON_POSITIVE ) {
-                                new DataSaveTask( true ).execute( uri );
-                            }
-                            else if( which_button == DialogInterface.BUTTON_NEGATIVE ) {
-                                Editor.this.finish();
-                            }
-                        }
-                    };
-                new AlertDialog.Builder( this )
-                        .setIcon( android.R.drawable.ic_dialog_alert )
-                        .setTitle( R.string.save )
-                        .setMessage( R.string.not_saved )
-                        .setPositiveButton( R.string.save, ocl )
-                        .setNegativeButton( R.string.dialog_cancel, ocl )
-                        .show();
+                askToSave();
                 return true;
             }
         }
@@ -176,13 +177,19 @@ public class Editor extends Activity implements TextWatcher {
                     TextView prompt = (TextView)iv.findViewById( R.id.prompt );
                     final EditText edit   = (EditText)iv.findViewById( R.id.edit_field );
                     prompt.setText( R.string.newf_prompt );
-                    edit.setText( uri.toString() );
+                    String path = uri.getPath();
+                    if( path == null ) return false;
+                    final int _alsp = path.lastIndexOf( '/' ) + 1;
+                    edit.setText( path.substring( _alsp ) );
                     new AlertDialog.Builder( this )
                         .setTitle( R.string.save_as )
                         .setView( iv )
                         .setPositiveButton( R.string.save, new DialogInterface.OnClickListener() {
                             public void onClick( DialogInterface dialog, int i ) {
-                                new DataSaveTask( false ).execute( Uri.parse( edit.getText().toString() ) );
+                                String fn = edit.getText().toString();
+                                if( !Utils.str( fn ) ) return;
+                                uri = Editor.this.uri.buildUpon().path( uri.getPath().substring( 0, _alsp ) + fn ).build();
+                                new DataSaveTask( false ).execute( uri );
                             }
                         } ).setNegativeButton( R.string.dialog_cancel, null ).show();
                 }
@@ -215,16 +222,42 @@ public class Editor extends Activity implements TextWatcher {
                 te.setHorizontallyScrolling( horScroll ); 
             }
             catch( Exception e ) {
-                System.err.println("Exception: " + e );
+                Log.e( TAG, "", e );
             }
             return true;
         case MENU_EXIT:
-            // TODO: warn if text was changed, but not saved!
-            finish();
+            if( dirty )
+                askToSave();
+            else {
+                //Log.d( TAG, "finishing" );
+                finish();
+            }
         }
         return super.onMenuItemSelected(featureId, item);
     }
 
+    private final void askToSave() { 
+        DialogInterface.OnClickListener ocl = new DialogInterface.OnClickListener() {
+                public void onClick( DialogInterface dialog, int which_button ) {
+                    if( which_button == DialogInterface.BUTTON_POSITIVE ) {
+                        new DataSaveTask( true ).execute( uri );
+                    }
+                    else if( which_button == DialogInterface.BUTTON_NEGATIVE ) {
+                        //Log.d( TAG, "finishing" );
+                        Editor.this.finish();
+                    }
+                }
+            };
+        new AlertDialog.Builder( this )
+                .setIcon( android.R.drawable.ic_dialog_alert )
+                .setTitle( R.string.save )
+                .setMessage( R.string.not_saved )
+                .setPositiveButton( R.string.save, ocl )
+                .setNegativeButton( R.string.dialog_cancel, ocl )
+                .show();
+    }
+    
+    
     public final void showMessage( String s ) {
     	Toast.makeText(this, s, Toast.LENGTH_LONG).show();
     }
@@ -241,6 +274,7 @@ public class Editor extends Activity implements TextWatcher {
         protected CharSequence doInBackground( Void... v ) {
             Uri uri = Editor.this.uri;
             try {
+                //Log.d( TAG, "loading file from " + uri.toString() );
                 final String   scheme = uri.getScheme();
                 InputStream is = null;
                 if( Editor.this.ca == null ) {
@@ -304,7 +338,15 @@ public class Editor extends Activity implements TextWatcher {
         @Override
         protected Boolean doInBackground( Uri... save_uri_ ) {
             Uri save_uri = save_uri_.length > 0 ? save_uri_[0] : null;
-            if( save_uri == null || Editor.this.ca == null ) return false;
+            if( Editor.this.ca == null ) {
+                Log.e( TAG, "Adapter is null " );
+                return false;
+            }
+            if( save_uri == null ) {
+                Log.e( TAG, "No URI to save" );
+                return false;
+            }
+            //Log.d( TAG, "saving file to " + save_uri.toString() );
             Credentials crd = null; 
             try {
                 crd = (Credentials)Editor.this.getIntent().getParcelableExtra( Credentials.KEY );
@@ -313,36 +355,43 @@ public class Editor extends Activity implements TextWatcher {
             }
             Editor.this.ca.setCredentials( crd );
             OutputStream os = Editor.this.ca.saveContent( save_uri );
-            if( os == null ) return false;
+            if( os == null ) {
+                Log.e( TAG, "No output stream" );
+                return false;
+            }
             try {
-                final int BUF_SIZE = 16*1024;
+                final int BUF_SIZE = 1024*16;
                 OutputStreamWriter osw = Editor.this.encoding != null && Editor.this.encoding.length() != 0 ?
                         new OutputStreamWriter( os, Editor.this.encoding ) :
                         new OutputStreamWriter( os );
                         
                 Editable e = Editor.this.te.getText();
                 int len = e.length();
+                //Log.d( TAG, "length (chars): " + len );
                 if( len < BUF_SIZE ) {
                     osw.write( e.toString() );
                     osw.flush();
                 } else {
                     char[] chars = new char[BUF_SIZE];
-                    int start = 0, end = BUF_SIZE;
+                    int start = 0, end = BUF_SIZE, cnt = 0;
                     while( start < len-1 ) {
                         e.getChars( start, end, chars, 0 );
                         osw.write( chars, 0, end - start );
+                        //Log.d( TAG, "end - start=" + (end - start) + " chars.length=" + chars.length );
                         start = end;
                         end += BUF_SIZE;
                         if( end > len )
-                            end = len-1;
+                            end = len;
+                        cnt++;
                     }
                     osw.flush();
+                    //Log.d( TAG, "IO iterations: " + cnt );
                 }
-                //Log.v( TAG, "Data is sent to the stream" );            
                 Editor.this.ca.closeStream( os );
-                 
                 File f = new File( save_uri.getPath() );
-                publishProgress( getString( R.string.saved, f.getName() ) );
+                publishProgress( getString( R.string.saved, f != null ? f.getName() : "file" ) );
+                if( f != null )
+                    //Log.d( TAG, "Saved size (bytes): " + f.length() );
                 return true;
             } catch( Throwable e ) {
                 Log.e( TAG, Favorite.screenPwd( save_uri ), e );
@@ -360,8 +409,10 @@ public class Editor extends Activity implements TextWatcher {
                 Editor.this.dirty = false;
             else
                 Editor.this.showMessage( Editor.this.getString( R.string.cant_save ) );
-            if( close_on_finish )
+            if( close_on_finish ) {
+                //Log.d( TAG, "finishing" );
                 Editor.this.finish();
+            }
         }
      }
      
