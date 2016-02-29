@@ -64,6 +64,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
     public  TextView  name_view;
     public  boolean   touch = false;
     public  CommanderAdapter  ca;
+    private CommanderStub     stub;
     public  int       ca_pos = -1;
     public  Handler   h = new Handler();
     public  ProgressDialog pd; 
@@ -102,6 +103,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
           name_view.setLayoutParams( lp );
           fl.addView( name_view );
           setContentView( fl );
+          stub = new CommanderStub();
         }
         catch( Throwable e ) {
             e.printStackTrace();
@@ -127,19 +129,6 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
         
         String name_to_show = null; 
         String scheme = uri.getScheme();
-        
-        ca = CA.CreateAdapterInstance( uri, this );            
-        if( ca == null ) return;
-        ca.Init( new CommanderStub() );
-        ca.setMode( CommanderAdapter.MODE_SORTING | CommanderAdapter.MODE_SORT_DIR, mode );
-        
-        Credentials crd = null; 
-        try {
-            crd = (Credentials)intent.getParcelableExtra( Credentials.KEY );
-            ca.setCredentials( crd );
-        } catch( Exception e ) {
-            Log.e( TAG, "on taking credentials from parcel", e );
-        }
 
         Uri.Builder ub = uri.buildUpon();
         Uri p_uri = null;
@@ -162,15 +151,30 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
             p_uri = ub.build();
             name_to_show = ps.get( ps.size()-1 );
         }
+        Log.d( TAG, "Parent dir: " + p_uri );
+        ca = CA.CreateAdapterInstance( p_uri, this );            
+        if( ca == null ) return;
+        ca.Init( stub );
+        ca.setMode( CommanderAdapter.MODE_SORTING | CommanderAdapter.MODE_SORT_DIR, mode );
+        
+        Credentials crd = null; 
+        try {
+            crd = (Credentials)intent.getParcelableExtra( Credentials.KEY );
+            ca.setCredentials( crd );
+        } catch( Exception e ) {
+            Log.e( TAG, "on taking credentials from parcel", e );
+        }
+
+        image_view.invalidate();
         if( p_uri != null && ca_pos > 0 ) {
             ca.setUri( p_uri );
             Log.d( TAG, "do read list" );
+            stub.reload_after_dir_read_done = true;
             ca.readSource( null, null );
         }
-        image_view.invalidate();
-        new LoaderThread( uri, name_to_show ).start();
+        else
+            new LoaderThread( uri, name_to_show ).start();
     }
-
     
     @Override
     protected void onStop() {
@@ -586,7 +590,12 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                 if( exit_at_end ) this.finish();
                 return;
             } 
+            Log.d( TAG, "Next uri: " + pos_uri ); 
             String name = ca.getItemName( ca_pos, false );
+            if( name == null ) {
+                Log.e( TAG, "Something is wrong, exiting" );
+                return;
+            }
             String mime = Utils.getMimeByExt( Utils.getFileExt( name ) );
             Log.d( TAG, "Next name: " + name + " mime: " + mime );
             if( mime.startsWith( "image/" ) ) {

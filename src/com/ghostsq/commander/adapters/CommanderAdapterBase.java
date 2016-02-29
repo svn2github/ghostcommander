@@ -357,7 +357,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         return "(ERR)";
     }
 
-    //Virtual
+    //Virtual, override to show attributes
     protected int getPredictedAttributesLength() {
         return 0;
     }
