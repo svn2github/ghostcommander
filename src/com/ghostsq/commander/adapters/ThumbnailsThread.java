@@ -184,12 +184,12 @@ class ThumbnailsThread extends Thread {
                     String ext = Utils.getFileExt( fn );
                     if( ext == null )
                         continue;
-                        
+                    if( ext.equals( ".apk" ) )
+                        f.thumb_is_icon = true;
                     if( !f.isThumbNail() ) {
                         Thumbnail t = null;
                         if( ext.equals( ".apk" ) ) {
                             t = getApkIcon( fn );
-                            f.thumb_is_icon = true;
                         } else {
                             String type_cat = Utils.getCategoryByExt( ext );
                             if( Utils.C_IMAGE.equals( type_cat ) ) 
