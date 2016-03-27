@@ -499,7 +499,7 @@ class ThumbnailsThread extends Thread {
         for( b = 0x8000000; b > 0; b >>= 1 )
             if( b < factor )
                 break;
-        b <<= 1;
+ //       b <<= 1;
         return b;
     }
 
