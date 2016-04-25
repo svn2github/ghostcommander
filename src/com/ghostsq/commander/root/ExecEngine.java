@@ -178,7 +178,7 @@ public class ExecEngine extends Engine {
                 if( ln == null ) break;
                 result.append( ln ).append( "\n" );
             }
-        return result.length() > 0;
+        return result != null && result.length() > 0;
     }
 
     protected boolean procError( BufferedReader es ) throws IOException {
