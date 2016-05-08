@@ -1,5 +1,6 @@
 package com.ghostsq.commander.root;
 import android.content.Context;
+import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 
@@ -37,7 +38,12 @@ public class RemountEngine extends ExecEngine {
                 error( "No ro/rw options found" );
                 return;
             }
-            cmd = "mount -o remount," + mode + " " + mount.getName();
+            String to_remount;
+            if( Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1 )
+                to_remount = mount.getMountPoint();
+            else
+                to_remount = mount.getName();
+            cmd = "mount -o remount," + mode + " " + to_remount; 
             execute( cmd, false, 500 );
             
         }

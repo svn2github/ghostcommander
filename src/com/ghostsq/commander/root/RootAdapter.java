@@ -56,7 +56,7 @@ public class RootAdapter extends CommanderAdapterBase {
     // to avoid that all the member accessible from the subclasses are public
     private final static String TAG = "RootAdapter";
     public static final String DEFAULT_LOC = "root:";
-    private final static int CHMOD_CMD = 36793, CMD_CMD = 39716;
+    private final static int CHMOD_CMD = 36793, CMD_CMD = 39716, REBOOT = 43599, RECOVERY = 43394;
     private Uri uri = null;
     private LsItem[] items = null;
     private int attempts = 0;
@@ -791,6 +791,12 @@ public class RootAdapter extends CommanderAdapterBase {
         }
     }    
 
+    public final static void populateHomeContextMenu( Context ctx, ContextMenu menu ) {
+        menu.add( 0, REBOOT,    0, "Reboot" );
+        menu.add( 0, RECOVERY,  0, "Recovery" );
+        return;
+    }
+    
     @Override
     public void doIt( int command_id, SparseBooleanArray cis ) {
         try {
@@ -816,6 +822,10 @@ public class RootAdapter extends CommanderAdapterBase {
                 }
                 systemMountReader = new MountsListEngine( commander.getContext(), readerHandler, true );
                 systemMountReader.start();
+            } else if( REBOOT == command_id ) {
+                execute( "reboot", false );
+            } else if( RECOVERY == command_id ) {
+                execute( "reboot recovery", false );
             }
         } catch( Exception e ) {
             Log.e( TAG, "Can't do the command " + command_id, e );
@@ -823,7 +833,9 @@ public class RootAdapter extends CommanderAdapterBase {
     }
     
     public void execute( String command, boolean bb ) {
-        commander.startEngine( new ExecEngine( commander.getContext(), uri.getPath(), command, bb, 500 ) );
+        String where = uri != null ? uri.getPath() : null;
+        ExecEngine ee = new ExecEngine( commander.getContext(), where, command, bb, 500 );
+        commander.startEngine( ee );
     }
 
     public final String getBusyBoxPath() {

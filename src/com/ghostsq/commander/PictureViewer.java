@@ -216,11 +216,17 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
             case R.id.go_prev:
                 loadNext( false );
                 break;
-            case R.id.delete:
-                delete();
-                break;
             case R.id.info:
                 showInfo();
+                break;
+            case R.id.send_to:
+                sendTo();
+                break;
+            case R.id.open_with:
+                openWith();
+                break;
+            case R.id.delete:
+                delete();
                 break;
             case R.id.exit:
                 finish();
@@ -632,6 +638,41 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
         builder.setView(layout);        
         builder.show();
     }
+    
+    private final void sendTo() {
+        SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
+        boolean use_content = shared_pref.getBoolean( "send_content", true );
+        if( file_path == null ) {
+            Log.e( TAG, "No file path" );
+            return;
+        }
+        Intent in = new Intent( Intent.ACTION_SEND );
+        in.setType( "*/*" );
+        in.putExtra( Intent.EXTRA_SUBJECT, new File( file_path ).getName() );
+
+        String esc_fn = Utils.escapePath( file_path );
+        Uri uri = Uri.parse( use_content ? FileProvider.URI_PREFIX + esc_fn : "file://" + esc_fn );
+        in.putExtra( Intent.EXTRA_STREAM, uri );
+        this.startActivity( Intent.createChooser( in, this.getString( R.string.send_title ) ) );
+    }
+
+    public final void openWith() {
+        if( file_path == null ) {
+            Log.e( TAG, "No file path" );
+            return;
+        }
+        Intent intent = new Intent( Intent.ACTION_VIEW );
+        Uri u = Uri.fromFile( new File( file_path ) );
+        intent.setDataAndType( u, "image/*" );
+        Log.d( TAG, "Open uri " + u.toString() + " intent: " + intent.toString() );
+        if (Build.VERSION.SDK_INT == 19) {
+            // This will open the "Complete action with" dialog if the user doesn't have a default app set.
+            this.startActivity( intent );
+        } else {
+            this.startActivity( Intent.createChooser( intent, this.getString( R.string.open_title ) ) );
+        }
+    }
+    
     
     private class CommanderStub implements Commander {
         boolean reload_after_dir_read_done = false;

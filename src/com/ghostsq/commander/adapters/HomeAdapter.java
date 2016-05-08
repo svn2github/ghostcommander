@@ -12,6 +12,7 @@ import com.ghostsq.commander.FileCommander;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
+import com.ghostsq.commander.root.RootAdapter;
 import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.Utils;
 
@@ -343,8 +344,9 @@ public class HomeAdapter extends CommanderAdapterBase {
         if( !Utils.str( schema ) ) return;
         if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB &&
                 schema.startsWith( MSAdapter.SCHEME ) ) {
-            MSAdapter.populateHomeContextMenu( ctx, menu );
+                 MSAdapter.populateHomeContextMenu( ctx, menu );
             ContentAdapter.populateHomeContextMenu( ctx, menu );
+            return;
         }
         if( item.dir ) {
             File plugin_prefs_f = getPluginPrefsFile( (String)item.origin ); 
@@ -355,6 +357,10 @@ public class HomeAdapter extends CommanderAdapterBase {
             List<ResolveInfo> list = packageManager.queryIntentActivities( intent, PackageManager.MATCH_DEFAULT_ONLY );
             if( list.size() > 0 )
                 menu.add( 0, PREFS_CMD, 0, R.string.prefs );
+            return;
+        }
+        if( RootAdapter.DEFAULT_LOC.startsWith( schema ) ) {
+            RootAdapter.populateHomeContextMenu( ctx, menu );
         }
     }
 
@@ -407,6 +413,11 @@ public class HomeAdapter extends CommanderAdapterBase {
                     commander.issue( intent, 0 );
                     return;
                 }
+            }
+            if( RootAdapter.DEFAULT_LOC.startsWith( schema ) ) {
+                RootAdapter ra = new RootAdapter( ctx );
+                ra.Init( commander );
+                ra.doIt( command_id, cis );
             }
         } catch( Exception e ) {
             Log.e( TAG, "" + command_id, e );
