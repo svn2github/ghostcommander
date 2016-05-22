@@ -107,13 +107,14 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
         if( paths.size() < 4 ) return null;
         String path_part = paths.get( 3 );
         int col_pos = path_part.lastIndexOf( ':' );
-        String path_root;
-        if( paths.get( 1 ).startsWith( "primary" ) )
+        String volume, path_root;
+        volume = paths.get( 1 );
+        if( volume.startsWith( "primary" ) )
             path_root = Environment.getExternalStorageDirectory().getAbsolutePath();
         else
             path_root = Utils.getSecondaryStorage();
-        if( path_root == null ) 
-            path_root = Environment.getExternalStorageDirectory().getAbsolutePath();
+        if( path_root == null )         
+            path_root = "/mnt/media_rw/" + volume.substring( 0, volume.length()-1 );
         return path_root + "/" + path_part.substring( col_pos+1 );
     }
 
