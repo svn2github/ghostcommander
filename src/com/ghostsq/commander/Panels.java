@@ -820,6 +820,23 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         }
     }
 
+    public final Uri getFolderUriWithAuth( boolean active ) {
+        CommanderAdapter ca = getListAdapter( active );
+        if( ca == null ) return null;
+        Uri u = ca.getUri();
+        if( u != null ) {
+            Credentials crd = ca.getCredentials();
+            if( crd != null )
+                return Utils.getUriWithAuth( u, crd );
+        }
+        return u;
+    }
+    public final Credentials getCredentials( boolean active ) {
+        CommanderAdapter ca = getListAdapter( active );
+        if( ca == null ) return null;
+        return ca.getCredentials();
+    }
+    
     public final void createDesktopShortcut() {
         File f = getCurrentFile();
         if( f == null )
@@ -1002,18 +1019,6 @@ public class Panels implements AdapterView.OnItemSelectedListener,
      *         number public final int getNumItemsSelectedOrChecked() { int
      *         checked = getNumItemsChecked(); return checked; }
      */
-    public final Uri getFolderUriWithAuth( boolean active ) {
-        CommanderAdapter ca = getListAdapter( active );
-        if( ca == null ) return null;
-        Uri u = ca.getUri();
-        if( u != null ) {
-            Credentials crd = ca.getCredentials();
-            if( crd != null )
-                return Utils.getUriWithAuth( u, crd );
-        }
-        return u;
-    }
-
     public final String getSelectedItemName( boolean touched ) {
         return getSelectedItemName( false, touched );
     }

@@ -63,9 +63,10 @@ public class Editor extends Activity implements TextWatcher {
             //     !ForwardCompat.hasPermanentMenuKey( this )
             if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
                 final int size_class = ( getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK );
-                if( size_class >= Configuration.SCREENLAYOUT_SIZE_LARGE ) {
+                if( size_class >= Configuration.SCREENLAYOUT_SIZE_LARGE ||
+                    !ForwardCompat.hasPermanentMenuKey( this ) ) {
                     ab_enabled = getWindow().requestFeature( Window.FEATURE_ACTION_BAR );
-                    if( size_class <= Configuration.SCREENLAYOUT_SIZE_LARGE )
+                    if( ab_enabled && size_class <= Configuration.SCREENLAYOUT_SIZE_LARGE )
                         ForwardCompat.setupActionBar( this );
                 }
             }

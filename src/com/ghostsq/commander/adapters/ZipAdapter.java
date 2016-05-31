@@ -17,8 +17,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.http.util.EncodingUtils;
-
 import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
@@ -1020,12 +1018,7 @@ public class ZipAdapter extends CommanderAdapterBase {
             byte[] ex = entry.getExtra();
             if( ex != null && ex.length == 2 && ex[0] == 1 && ex[1] == 2 ) 
                 return entry_name;
-            byte bytes[];
-/*            
-            bytes = EncodingUtils.getAsciiBytes( entry_name );
-            bytes = EncodingUtils.getBytes( entry_name, "windows-1250" );
-*/            
-            bytes = EncodingUtils.getBytes( entry_name, "iso-8859-1" );
+            byte bytes[] = entry_name.getBytes( "iso-8859-1" );
             return new String( bytes );
         } catch( Exception e ) {
             e.printStackTrace();

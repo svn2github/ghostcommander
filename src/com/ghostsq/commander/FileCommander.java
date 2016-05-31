@@ -21,6 +21,8 @@ import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.ForwardCompat.PubPathType;
 import com.ghostsq.commander.utils.Utils;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Dialog;
@@ -44,6 +46,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.view.ContextMenu;
@@ -142,11 +145,12 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
 
         if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
             final int size_class = ( getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK );
-            if( size_class >= Configuration.SCREENLAYOUT_SIZE_LARGE ) {
+            if( size_class >= Configuration.SCREENLAYOUT_SIZE_LARGE ||
+                ( !ForwardCompat.hasPermanentMenuKey( this ) &&
+                  !ForwardCompat.hasSoftKeys( this ) ) )
                 ab = getWindow().requestFeature( Window.FEATURE_ACTION_BAR );
-                if( size_class <= Configuration.SCREENLAYOUT_SIZE_LARGE )
-                    ForwardCompat.setupActionBar( this );
-            }
+            if( ab && size_class <= Configuration.SCREENLAYOUT_SIZE_LARGE )
+                ForwardCompat.setupActionBar( this );
         }
         if( !ab )
             requestWindowFeature( Window.FEATURE_NO_TITLE );
@@ -166,6 +170,9 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
 
         notMan = (NotificationManager)getSystemService( Context.NOTIFICATION_SERVICE );
         bindService( new Intent( this /* ? */, BackgroundWork.class ), this, Context.BIND_AUTO_CREATE );
+
+        ForwardCompat.requestPermission( this, Manifest.permission.READ_EXTERNAL_STORAGE, 111 );
+        ForwardCompat.requestPermission( this, Manifest.permission.WRITE_EXTERNAL_STORAGE, 112 );
     }
 
     @Override
@@ -1310,9 +1317,15 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         } catch( Exception e ) {
             Log.e( TAG, "", e );
         }
-        Notification notification = new Notification( R.drawable.icon, str, System.currentTimeMillis() );
-        notification.setLatestEventInfo( this, getString( R.string.app_name ), str, getPendingIntent( id, msg ) );
-        notification.flags |= Notification.FLAG_ONLY_ALERT_ONCE | Notification.FLAG_AUTO_CANCEL;
+        
+        Notification notification = null;
+        if( Build.VERSION.SDK_INT >=  Build.VERSION_CODES.JELLY_BEAN )
+            notification = ForwardCompat.buildNotification( this, str, getPendingIntent( id, msg ) );
+        else {
+            notification = new Notification( R.drawable.icon, str, System.currentTimeMillis() );
+    //        notification.setLatestEventInfo( this, getString( R.string.app_name ), str, getPendingIntent( id, msg ) );
+            notification.flags |= Notification.FLAG_ONLY_ALERT_ONCE | Notification.FLAG_AUTO_CANCEL;
+        }
 
         if( msg.what == OPERATION_SUSPENDED_FILE_EXIST ) {
             notification.flags |= Notification.FLAG_SHOW_LIGHTS;

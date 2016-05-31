@@ -1,7 +1,6 @@
 package com.ghostsq.commander.favorites;
 
 import java.util.regex.Pattern;
-import org.apache.http.auth.UsernamePasswordCredentials;
 
 import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.Utils;
@@ -195,7 +194,7 @@ public class Favorite {
     public final static boolean isPwdScreened( Uri u ) {
         String user_info = u.getUserInfo();
         if( user_info != null && user_info.length() > 0 ) {
-            UsernamePasswordCredentials crd = new UsernamePasswordCredentials( user_info );
+            Credentials crd = new Credentials( user_info );
             if( Credentials.pwScreen.equals( crd.getPassword() ) ) return true;
         }
         return false;

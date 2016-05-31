@@ -243,15 +243,9 @@ public class LocationBar extends BaseAdapter implements Filterable, OnKeyListene
 	            favorites.removeFromFavorites( u );
 				if( star_cb.isChecked() ) {
                     if( Favorite.isPwdScreened( u ) ) {
-                        Credentials crd = favorites.searchForPassword( u );
-                        if( crd == null ) {
-                            Uri au = Favorite.borrowPassword( u, p.getFolderUriWithAuth( true ) );
-                            if( au == null )
-                                Log.e( TAG, "Can't find the replacement for screened password!" );
-                            else
-                                u = au;
-                            
-                        }
+                        Credentials crd = p.getCredentials( true ); 
+                        if( crd == null )
+                            crd = favorites.searchForPassword( u );
                         favorites.add( new Favorite( u, crd ) );
                     }
                     else

@@ -126,10 +126,9 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
         ca_pos = intent.getIntExtra( "position", -1 );
         int mode = intent.getIntExtra( "mode", 0 );
         Log.d( TAG, "orig pos=" + ca_pos );
-        
+        ca = CA.CreateAdapterInstance( uri, this );            
         String name_to_show = null; 
         String scheme = uri.getScheme();
-
         Uri.Builder ub = uri.buildUpon();
         Uri p_uri = null;
         if( "zip".equals( scheme ) ) {
@@ -152,7 +151,6 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
             name_to_show = ps.get( ps.size()-1 );
         }
         Log.d( TAG, "Parent dir: " + p_uri );
-        ca = CA.CreateAdapterInstance( p_uri, this );            
         if( ca == null ) return;
         ca.Init( stub );
         ca.setMode( CommanderAdapter.MODE_SORTING | CommanderAdapter.MODE_SORT_DIR, mode );

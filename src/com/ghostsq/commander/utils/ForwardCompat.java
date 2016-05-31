@@ -3,9 +3,14 @@ package com.ghostsq.commander.utils;
 import java.io.File;
 import java.io.IOException;
 
+import com.ghostsq.commander.R;
+
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -25,7 +30,11 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Video;
 import android.util.Base64;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.widget.ListView;
@@ -208,7 +217,36 @@ public class ForwardCompat
         options.inSampleSize = sample_size;
         return Video.Thumbnails.getThumbnail( cr, id, Video.Thumbnails.MINI_KIND, options );        
     }
+
+    // http://stackoverflow.com/questions/14853039/how-to-tell-whether-an-android-device-has-hard-keys
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    public static boolean hasSoftKeys( Activity c ) {
+        boolean hasSoftwareKeys = true;
     
+        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 ){
+            Display d = c.getWindowManager().getDefaultDisplay();
+    
+            DisplayMetrics realDisplayMetrics = new DisplayMetrics();
+            d.getRealMetrics( realDisplayMetrics );
+    
+            int realHeight = realDisplayMetrics.heightPixels;
+            int realWidth = realDisplayMetrics.widthPixels;
+    
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            d.getMetrics(displayMetrics);
+    
+            int displayHeight = displayMetrics.heightPixels;
+            int displayWidth  = displayMetrics.widthPixels;
+    
+            hasSoftwareKeys = (realWidth - displayWidth) > 0 || (realHeight - displayHeight) > 0;
+        } else {
+            boolean hasMenuKey = ViewConfiguration.get(c).hasPermanentMenuKey();
+            boolean hasBackKey = KeyCharacterMap.deviceHasKey( KeyEvent.KEYCODE_BACK );
+            hasSoftwareKeys = !hasMenuKey && !hasBackKey;
+        }
+        return hasSoftwareKeys;
+    }    
+
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     public static boolean hasPermanentMenuKey( Context ctx ) {
         return ViewConfiguration.get( ctx ).hasPermanentMenuKey();
@@ -217,5 +255,21 @@ public class ForwardCompat
     public static void setupActionBar( Activity a ) {
         a.getActionBar().setDisplayShowTitleEnabled( false );
     }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    public static Notification buildNotification( Context ctx, String str, PendingIntent pi ) {
+         return new Notification.Builder( ctx )
+                 .setContentTitle( str )
+                 .setContentText( str )
+                 .setSmallIcon( R.drawable.icon )
+                 .setContentIntent( pi )
+                 .build();
+    }
     
+    @TargetApi(Build.VERSION_CODES.M)
+    public static void requestPermission( Activity act, String perm, int rpc ) {
+        int cp = act.checkPermission( perm, android.os.Process.myPid(), android.os.Process.myUid() );
+        if( cp != PackageManager.PERMISSION_GRANTED )
+            act.requestPermissions( new String[]{ perm }, rpc );
+    }
 }

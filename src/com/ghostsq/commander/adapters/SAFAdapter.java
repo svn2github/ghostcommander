@@ -42,12 +42,13 @@ import android.widget.AdapterView;
 public class SAFAdapter extends CommanderAdapterBase implements Engines.IReciever {
     private final static String TAG = "SAFAdapter";
     public  final static String ORG_SCHEME = "saf";
+    private boolean primary = false;
 
-    static class SAFItem extends CommanderAdapter.Item  implements FSEngines.IFileItem {
+    class SAFItem extends CommanderAdapter.Item  implements FSEngines.IFileItem {
         @Override
         public File f() {
             Uri u = (Uri)origin;
-            String path = SAFAdapter.getPath( u );
+            String path = SAFAdapter.this.getPath( u );
             return new File( path );
         }
     }
@@ -81,7 +82,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
     
     @Override
     public String toString() {
-        return "saf:" + SAFAdapter.getPath( uri );
+        return "saf:" + getPath( uri );
     }
 
     private static boolean isTreeUri( Uri uri ) {
@@ -102,20 +103,65 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
         return "com.android.externalstorage.documents".equals( uri.getAuthority() );
     }
 
-    private static String getPath( Uri u ) {
+    private static boolean isPrimary( Uri u ) {
         final List<String> paths = u.getPathSegments();
-        if( paths.size() < 4 ) return null;
+        if( paths.size() < 4 ) return false;
         String path_part = paths.get( 3 );
         int col_pos = path_part.lastIndexOf( ':' );
-        String volume, path_root;
-        volume = paths.get( 1 );
-        if( volume.startsWith( "primary" ) )
-            path_root = Environment.getExternalStorageDirectory().getAbsolutePath();
-        else
-            path_root = Utils.getSecondaryStorage();
-        if( path_root == null )         
-            path_root = "/mnt/media_rw/" + volume.substring( 0, volume.length()-1 );
-        return path_root + "/" + path_part.substring( col_pos+1 );
+        String volume = paths.get( 1 );
+        return volume != null && volume.startsWith( "primary" );
+    }
+
+    public final String getPath( Uri u ) {
+        try {
+            final List<String> paths = u.getPathSegments();
+            if( paths.size() < 4 ) return null;
+            String path_part = paths.get( 3 );
+            int col_pos = path_part.lastIndexOf( ':' );
+            String volume, path_root = "";
+            volume = paths.get( 1 );
+            if( volume.startsWith( "primary" ) )
+                path_root = Environment.getExternalStorageDirectory().getAbsolutePath();
+            else {
+                volume = volume.substring( 0, volume.length()-1 );
+                if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ) {
+                    path_root = "/mnt/media_rw/" + volume;
+                    File probe = new File( path_root );
+                    if( !probe.isDirectory() ) {
+                        path_root = "/storage/" + volume;
+                        probe = new File( path_root );
+                        if( !probe.isDirectory() ) {
+                            path_root = Utils.getSecondaryStorage();
+                            if( path_root != null ) {
+                                probe = new File( path_root );
+                                if( !probe.isDirectory() )
+                                    path_root = "?";
+                            }
+                        }
+                    }
+                }
+                else {
+                    ContentResolver cr = ctx.getContentResolver();
+                    String[] col = { "_data" };
+                    String   sel = "_id=?";
+                    String[] ids = { volume };
+                    // "content://com.android.externalstorage.documents/"
+                    //Cursor cur = cr.query( u, col, sel, ids, null);
+                    Cursor cur = cr.query( u, col, null, null, null );
+                    if( cur != null && cur.moveToFirst() ) {
+                        int ci = cur.getColumnIndex( col[0] );
+                        path_root = cur.getString( ci );
+                        Log.d( TAG, "Uri " + u + " resolved to " + path_root );
+                    }
+                        
+
+                }
+            }
+            return path_root + "/" + path_part.substring( col_pos+1 );
+        } catch( Exception e ) {
+            Log.e( TAG, "Can't get the real location of " + u, e );
+        }
+        return null;
     }
 
     public static Uri getParent( Uri u ) {
@@ -165,8 +211,10 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
             this.uri = DocumentsContract.buildDocumentUriUsingTree( uri_, 
                        DocumentsContract.getTreeDocumentId( uri_ ));        
         }
-        else
+        else {
             this.uri = uri_;
+            this.primary = isPrimary( uri_ );
+        }
     }
  
     public final ArrayList<SAFItem> getChildren( Uri u ) {
@@ -506,7 +554,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
             commander.startEngine( cbe );
             return true;
         }
-        if( !move ) {
+        if( this.primary && !move ) {
             boolean ok = to.receiveItems( bitsToNames( cis ), move ? MODE_MOVE : MODE_COPY );
             if( !ok ) notify( Commander.OPERATION_FAILED );
             return ok;
@@ -528,7 +576,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                 recipient = to.getReceiver();
             }
             notify( Commander.OPERATION_STARTED );
-            MoveFromEngine mfe = new MoveFromEngine( to_copy, dest, recipient );
+            CopyFromEngine mfe = new CopyFromEngine( to_copy, move, dest, recipient );
             commander.startEngine( mfe );
             return true;
         }
@@ -739,38 +787,40 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
         }
     }
     
-    class MoveFromEngine extends Engine {  
+    class CopyFromEngine extends Engine {  
         private SAFItem[] mList;
         private SAFAdapter owner;
         private ContentResolver cr;
         private File destFolder;
         private byte[] buf = new byte[65536];
+        private boolean move;
 
-        MoveFromEngine( SAFItem[] list, File dest, Engines.IReciever recipient_ ) {
+        CopyFromEngine( SAFItem[] list, boolean move, File dest, Engines.IReciever recipient_ ) {
             super( recipient_ );
-            setName( ".MoveFromEngine" );
+            setName( ".CopyFromEngine" );
             owner = SAFAdapter.this;
             mList = list;
             destFolder = dest;
+            this.move = move;
         }
         @Override
         public void run() {
             try {
                 Init( null );
                 cr = ctx.getContentResolver();
-                int cnt = moveFiles( mList, destFolder );
+                int cnt = copyFiles( mList, destFolder );
                 if( recipient != null ) {
                       sendReceiveReq( destFolder );
                       return;
                 }
-                sendResult( Utils.getOpReport( owner.ctx, cnt, R.string.moved ) );
+                sendResult( Utils.getOpReport( owner.ctx, cnt, move ? R.string.moved : R.string.copied ) );
             }
             catch( Exception e ) {
                 sendProgress( e.getMessage(), Commander.OPERATION_FAILED_REFRESH_REQUIRED );
             }
         }
         
-        private final int moveFiles( Item[] l, File dest ) throws Exception {
+        private final int copyFiles( Item[] l, File dest ) throws Exception {
             if( l == null ) return 0;
             int cnt = 0;
             int num = l.length;
@@ -785,10 +835,12 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                 Uri u = (Uri)item.origin;
                 boolean ok = false;
                 if( item.dir ) {
+                    if( !dest_file.exists() )
+                        dest_file.mkdir();
                     ArrayList<SAFItem> tmp_list = getChildren( u );
                     SAFItem[] sub_items = new SAFItem[tmp_list.size()];
                     tmp_list.toArray( sub_items );
-                    cnt += moveFiles( sub_items, dest_file );
+                    cnt += copyFiles( sub_items, dest_file );
                     if( errMsg != null ) break;
                     ok = true; 
                 } else {
@@ -833,8 +885,11 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                         if( is != null ) is.close();
                         if( os != null ) os.close();
                     }
+                    try {
+                        dest_file.setLastModified( item.date.getTime() );
+                    } catch( Exception e ) {}
                 }
-                if( ok )
+                if( move && ok )
                     DocumentsContract.deleteDocument( cr, u );
                 cnt++;
             }

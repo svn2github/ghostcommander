@@ -7,28 +7,40 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.http.auth.UsernamePasswordCredentials;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Base64;
 import android.util.Log;
 
-public class Credentials extends UsernamePasswordCredentials implements Parcelable {
+public class Credentials implements Parcelable {
     private static String  TAG  = "GC.Credentials";
     private static String  seed = "5hO@%#O7&!H3#R";
     private static byte[] rawKey = null;
     public  static String  pwScreen = "***";
     public  static String  KEY  = "CRD";
+    private String username, password;
 
-    public Credentials( String usernamePassword ) {
-        super( usernamePassword );
+    public Credentials( String usernamePassword ) { // ':' - separated
+        int cp = usernamePassword.indexOf( ':' );
+        if( cp < 0 ) {
+            this.username = usernamePassword;
+            return;
+        }
+        this.username = usernamePassword.substring( 0, cp );
+        this.password = usernamePassword.substring( cp + 1 );
     }
     public Credentials( String userName, String password ) {
-        super( userName, password );
+        this.username = userName;
+        this.password = password;
     }
     public Credentials( Credentials c ) {
-        super( c.getUserName(), c.getPassword() );
+        this( c.getUserName(), c.getPassword() );
+    }
+    public String getUserName() {
+        return this.username;
+    }
+    public String getPassword() {
+        return this.password;
     }
 
      public static final Parcelable.Creator<Credentials> CREATOR = new Parcelable.Creator<Credentials>() {
