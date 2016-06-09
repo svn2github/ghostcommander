@@ -18,6 +18,7 @@
   <string name="F9">Paramètres</string>
   <string name="F10">Quitter</string>
   <string name="oth_sh_this">Cloner panneau d\'affichage</string>
+  <string name="oth_sh_dir">Ouvrir \"%s\" dans l’autre panneau</string>
   <string name="eq">Cloner</string>
   <string name="change">Basculer</string>
   <string name="tgl">Basculer</string>
@@ -52,6 +53,7 @@
   <string name="local_descr">Relancer, organiser et modifier le contenu de système de fichiers primaire</string>
   <string name="external_descr">Accéder aux fichiers sur la carte SD externe. Elle peut être en lecture seule sur certains appareils.</string>
   <string name="media_descr">Apporter des modifications à la carte SD externe avec interface Stockage Multimédia</string>
+  <string name="saf_descr">Modifier la carte SD externe via l’interface de Storage Access Framework</string>
   <string name="ftp_descr">Connecter à un serveur FTP</string>
   <string name="sftp_descr">Connecter à un serveur SSH FTP (sftp)</string>
   <string name="smb_descr">Connecter à des dossiers partagés sur un appareil Windows</string>
@@ -351,6 +353,8 @@
   <string name="summary_busybox_location">Pour une utilisation en mode root, l\'exécutable busybox est nécessaire</string>
   <string name="su_location">Chemin de su</string>
   <string name="summary_su_location">Définir l\'emplacement de la commande su</string>
+  <string name="scan_all">Analyser tous les fichiers</string>
+  <string name="summary_scan_all">Cochez pour analyser fichiers multimédias seulement</string>
   <string name="execute_command">Exécuter une commande</string>
   <string name="nothing_to_open">Pas de fichier à ouvrir</string>
   <string name="remind_to_save">N\'oubliez pas d\'enregistrer les modifications</string>

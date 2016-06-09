@@ -146,7 +146,8 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
             final int size_class = ( getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK );
             if( size_class >= Configuration.SCREENLAYOUT_SIZE_LARGE ||
-                ( !ForwardCompat.hasPermanentMenuKey( this ) &&
+                ( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 &&
+                  !ForwardCompat.hasPermanentMenuKey( this ) &&
                   !ForwardCompat.hasSoftKeys( this ) ) )
                 ab = getWindow().requestFeature( Window.FEATURE_ACTION_BAR );
             if( ab && size_class <= Configuration.SCREENLAYOUT_SIZE_LARGE )
@@ -170,9 +171,10 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
 
         notMan = (NotificationManager)getSystemService( Context.NOTIFICATION_SERVICE );
         bindService( new Intent( this /* ? */, BackgroundWork.class ), this, Context.BIND_AUTO_CREATE );
-
-        ForwardCompat.requestPermission( this, Manifest.permission.READ_EXTERNAL_STORAGE, 111 );
-        ForwardCompat.requestPermission( this, Manifest.permission.WRITE_EXTERNAL_STORAGE, 112 );
+        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ) {
+            ForwardCompat.requestPermission( this, Manifest.permission.READ_EXTERNAL_STORAGE,  111 );
+            ForwardCompat.requestPermission( this, Manifest.permission.WRITE_EXTERNAL_STORAGE, 112 );
+        }
     }
 
     @Override
@@ -399,7 +401,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             // if( resultCode == RESULT_OK ) // FIXME How to know there were changes made in the prefs? 
             {
                 SharedPreferences sharedPref = null;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) 
+                if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) 
                     sharedPref = ForwardCompat.getDefaultSharedPreferences( this );
                 else
                     sharedPref = PreferenceManager.getDefaultSharedPreferences( this );
@@ -471,10 +473,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         case REQUEST_OPEN_DOCUMENT_TREE:
             if( data != null ) {
                 Uri uri = data.getData();
-                SharedPreferences saf_sp = getSharedPreferences( SAFAdapter.ORG_SCHEME, Activity.MODE_PRIVATE );
-                SharedPreferences.Editor editor = saf_sp.edit();
-                editor.putString( "tree_root_uri", uri.toString() );
-                editor.commit();
+                SAFAdapter.saveURI( this, uri );
                 Navigate( uri, null, null );
             }
         default:
@@ -819,7 +818,12 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 ext = Utils.getFileExt( uri.getFragment() );
             String mime = Utils.getMimeByExt( ext );
             if( ContentResolver.SCHEME_CONTENT.equals( scheme ) ) {
-                
+                Intent i = new Intent( Intent.ACTION_VIEW );
+                i.setDataAndType( uri, mime );
+                i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET );
+                // | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
+                Log.d( TAG, "Open uri " + uri.toString() + " intent: " + i.toString() );
+                startActivityForResult( i, REQUEST_CODE_OPEN );
             }
             else if( !Utils.str( scheme ) ) {
                 Intent i = new Intent( Intent.ACTION_VIEW );

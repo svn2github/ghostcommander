@@ -34,7 +34,7 @@
   <string name="remount_b">Прикачи поново /system</string>
   <string name="remount">Прикачи поново</string>
   <string name="hidden">Скривено</string>
-  <string name="rescan">Поново учитај садржај</string>
+  <string name="rescan">Rescan media</string>
   <string name="favs">Омиљено</string>
   <string name="local">Месно складиште</string>
   <string name="external">Спољна картица</string>
@@ -137,7 +137,7 @@
   <string name="mod_before">Пре</string>
   <string name="launch">Покрени</string>
   <string name="operation">Дејства</string>
-  <string name="view_title">Преглед</string>
+  <string name="view_title">Прегледај</string>
   <string name="edit_title">Уреди</string>
   <string name="newf_title">Направи датотеку</string>
   <string name="newf_prompt">Име нове датотеке:</string>
@@ -150,6 +150,7 @@
   <string name="move_title">Премести</string>
   <string name="send_title">Пошаљи на&#8230;</string>
   <string name="open_title">Отвори помоћу&#8230;</string>
+  <string name="to_copy">&#160;</string>
   <string name="copy_err">Нема ничег за умножавање</string>
   <string name="rename_err">Преименовање није могуће</string>
   <string name="edit_err">Не може се уређивати</string>

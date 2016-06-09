@@ -16,13 +16,16 @@ import java.util.Map;
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.adapters.Engines.IReciever;
 import com.ghostsq.commander.R;
+import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.Utils;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -42,13 +45,14 @@ import android.widget.AdapterView;
 public class SAFAdapter extends CommanderAdapterBase implements Engines.IReciever {
     private final static String TAG = "SAFAdapter";
     public  final static String ORG_SCHEME = "saf";
+    public  final static int    OPEN_SAF = 9036;
     private boolean primary = false;
 
     class SAFItem extends CommanderAdapter.Item  implements FSEngines.IFileItem {
         @Override
         public File f() {
             Uri u = (Uri)origin;
-            String path = SAFAdapter.this.getPath( u );
+            String path = SAFAdapter.this.getPath( u, this.dir );
             return new File( path );
         }
     }
@@ -82,7 +86,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
     
     @Override
     public String toString() {
-        return "saf:" + getPath( uri );
+        return "saf:" + getPath( uri, true );
     }
 
     private static boolean isTreeUri( Uri uri ) {
@@ -112,52 +116,40 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
         return volume != null && volume.startsWith( "primary" );
     }
 
-    public final String getPath( Uri u ) {
+    public final String getPath( Uri u, boolean dir ) {
         try {
             final List<String> paths = u.getPathSegments();
             if( paths.size() < 4 ) return null;
             String path_part = paths.get( 3 );
             int col_pos = path_part.lastIndexOf( ':' );
-            String volume, path_root = "";
+            String volume, path_root = null, sub_path, full_path;
             volume = paths.get( 1 );
+            sub_path = path_part.substring( col_pos+1 );
+            
             if( volume.startsWith( "primary" ) )
-                path_root = Environment.getExternalStorageDirectory().getAbsolutePath();
+                return Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + sub_path;
             else {
-                volume = volume.substring( 0, volume.length()-1 );
-                if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ) {
-                    path_root = "/mnt/media_rw/" + volume;
-                    File probe = new File( path_root );
-                    if( !probe.isDirectory() ) {
-                        path_root = "/storage/" + volume;
-                        probe = new File( path_root );
-                        if( !probe.isDirectory() ) {
-                            path_root = Utils.getSecondaryStorage();
-                            if( path_root != null ) {
-                                probe = new File( path_root );
-                                if( !probe.isDirectory() )
-                                    path_root = "?";
-                            }
+                try {
+                    File probe;
+                    volume = volume.substring( 0, volume.length()-1 );
+                    if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ) {
+                        full_path = "/mnt/media_rw/" + volume + "/" + sub_path;
+                        probe = new File( full_path );
+                        if( dir ? probe.isDirectory() : probe.isFile() ) return full_path;  
+                    } else {
+                        path_root = Utils.getSecondaryStorage();
+                        if( path_root != null ) {
+                            full_path = Utils.mbAddSl( path_root ) + sub_path;
+                            probe = new File( full_path );
+                            if( dir ? probe.isDirectory() : probe.isFile() ) return full_path;
                         }
                     }
+                } catch( Exception e ) {
                 }
-                else {
-                    ContentResolver cr = ctx.getContentResolver();
-                    String[] col = { "_data" };
-                    String   sel = "_id=?";
-                    String[] ids = { volume };
-                    // "content://com.android.externalstorage.documents/"
-                    //Cursor cur = cr.query( u, col, sel, ids, null);
-                    Cursor cur = cr.query( u, col, null, null, null );
-                    if( cur != null && cur.moveToFirst() ) {
-                        int ci = cur.getColumnIndex( col[0] );
-                        path_root = cur.getString( ci );
-                        Log.d( TAG, "Uri " + u + " resolved to " + path_root );
-                    }
-                        
-
-                }
+                if( path_root == null )
+                    path_root = volume; // better than nothing
             }
-            return path_root + "/" + path_part.substring( col_pos+1 );
+            return path_root + "/" + sub_path;
         } catch( Exception e ) {
             Log.e( TAG, "Can't get the real location of " + u, e );
         }
@@ -222,8 +214,8 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
         try {
             try {
                 ContentResolver cr = ctx.getContentResolver();
-                Uri children_uri = DocumentsContract.buildChildDocumentsUriUsingTree( u,
-                                   DocumentsContract.getDocumentId( u ) );
+                String document_id = DocumentsContract.getDocumentId( u );
+                Uri   children_uri = DocumentsContract.buildChildDocumentsUriUsingTree( u, document_id );
                 //Log.d( TAG, "Children URI:" + children_uri );
                 final String[] projection = {
                      Document.COLUMN_DOCUMENT_ID,
@@ -282,9 +274,10 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                 Log.e( TAG, "No URI" );
                 return false;
             }
-            
             ArrayList<SAFItem> tmp_list = getChildren( uri );
             if( tmp_list == null ) {
+                SAFAdapter.saveURI( ctx, null );
+                commander.showError( s( R.string.fail ) );
                 commander.Navigate( Uri.parse( HomeAdapter.DEFAULT_LOC ), null, null );
                 return false;
             }
@@ -307,18 +300,20 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
     }
 
     protected void startThumbnailCreation() {
-        if( thumbnail_size_perc > 0 ) {
-            //Log.i( TAG, "thumbnails " + thumbnail_size_perc );
-            if( tht != null )
-                tht.interrupt();
-            
-            Handler h = new Handler() {
-                public void handleMessage( Message msg ) {
-                    notifyDataSetChanged();
-                } };            
-            tht = new ThumbnailsThread( this, h, Utils.mbAddSl( getPath( uri ) ), items );
-            tht.start();
-        }
+        if( thumbnail_size_perc <= 0 ) return;
+        //Log.i( TAG, "thumbnails " + thumbnail_size_perc );
+        String path = getPath( uri, true );
+        if( path == null || path.charAt( 0 ) != '/' ) return;
+        
+        if( tht != null )
+            tht.interrupt();
+        
+        Handler h = new Handler() {
+            public void handleMessage( Message msg ) {
+                notifyDataSetChanged();
+            } };            
+        tht = new ThumbnailsThread( this, h, Utils.mbAddSl( path ), items );
+        tht.start();
     }
     
     @Override
@@ -356,7 +351,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                     uri_to_go = Uri.parse( HomeAdapter.DEFAULT_LOC );
             }
             String pos_to = null;
-            String cur_path = getPath( uri );
+            String cur_path = getPath( uri, true );
             if( cur_path != null )
                 pos_to = cur_path.substring( cur_path.lastIndexOf( '/' ) ); 
             commander.Navigate( uri_to_go, null, pos_to );
@@ -365,8 +360,15 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
             Item item = items[position - 1];
             if( item.dir )
                 commander.Navigate( (Uri)item.origin, null, null );
-            else
-                commander.Open( Uri.parse( Utils.escapePath( getItemName( position, true ) ) ), null );
+            else {
+                Uri to_open;
+                String full_name = getItemName( position, true );
+                if( full_name != null && full_name.charAt( 0 ) == '/' )
+                    to_open = Uri.parse( Utils.escapePath( full_name ) );
+                else
+                    to_open = (Uri)item.origin;
+                commander.Open( to_open, null );
+            }
         }
     }
 
@@ -384,11 +386,12 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
         if( position == 0 ) return parentLink; 
         if( position < 0 || items == null || position > items.length )
             return null;
+        SAFItem item = items[position - 1];
         if( full ) {
-            Uri item_uri = (Uri)items[position - 1].origin;
-            return getPath( item_uri );
+            Uri item_uri = (Uri)item.origin;
+            return getPath( item_uri, item.dir );
         } else
-            return items[position - 1].name;
+            return item.name;
     }
 
     @Override
@@ -692,9 +695,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                             if( res == Commander.SKIP )  continue;
                             if( res == Commander.ABORT ) break;
                             if( res == Commander.REPLACE ) {
-                                File item_file = new File( getPath( item_uri ) );
-                                File dest_file = new File( getPath( dest_uri ) );
-                                if( dest_file.equals( item_file ) ) {
+                                if( item_uri.equals( dest_uri ) ) {
                                     Log.w( TAG, "Not going to copy file to itself" );
                                     continue;
                                 }
@@ -1024,7 +1025,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                             if( res == Commander.SKIP )  continue;
                             if( res == Commander.ABORT ) break;
                             if( res == Commander.REPLACE ) {
-                                File dest_file = new File( getPath( dest_uri ) );
+                                File dest_file = new File( getPath( dest_uri, false ) );
                                 if( dest_file.equals( file ) ) {
                                     Log.w( TAG, "Not going to copy file to itself" );
                                     continue;
@@ -1208,5 +1209,11 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
     @Override
     public IReciever getReceiver() {
         return this;
+    }
+    public static void saveURI( Context ctx, Uri uri ) {
+        SharedPreferences saf_sp = ctx.getSharedPreferences( SAFAdapter.ORG_SCHEME, Activity.MODE_PRIVATE );
+        SharedPreferences.Editor editor = saf_sp.edit();
+        editor.putString( "tree_root_uri", uri != null ? uri.toString() : null );
+        editor.commit();
     }
 }

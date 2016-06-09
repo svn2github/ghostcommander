@@ -14,6 +14,7 @@ import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.root.RootAdapter;
 import com.ghostsq.commander.utils.ForwardCompat;
+import com.ghostsq.commander.utils.Lollipop;
 import com.ghostsq.commander.utils.Utils;
 
 import android.app.Activity;
@@ -40,7 +41,7 @@ import android.widget.AdapterView;
 public class HomeAdapter extends CommanderAdapterBase {
     private final static String TAG = "HomeAdapter";
     public static final String DEFAULT_LOC = "home:";
-    private final static int FORGET_CMD = 4945, PREFS_CMD = 4342;
+    private final static int FORGET_CMD = 4945, PREFS_CMD = 4342, OPEN_SAF = 9036;
     private boolean root = false;
     private final int[] FAVS     = { R.string.favs,    R.string.favs_descr,    R.drawable.favs    };
     private final int[] LOCAL    = { R.string.local,   R.string.local_descr,   R.drawable.fs      }; 
@@ -287,7 +288,7 @@ public class HomeAdapter extends CommanderAdapterBase {
             if( saf_sp != null )
                 uri_s = saf_sp.getString( "tree_root_uri", null );
             if( uri_s == null ) {
-                commander.issue( ForwardCompat.getDocTreeIntent(), Commander.REQUEST_OPEN_DOCUMENT_TREE );
+                commander.issue( Lollipop.getDocTreeIntent(), Commander.REQUEST_OPEN_DOCUMENT_TREE );
                 return;
             }
         } else if( "fs".equals( item.origin ) ) 
@@ -348,6 +349,8 @@ public class HomeAdapter extends CommanderAdapterBase {
             ContentAdapter.populateHomeContextMenu( ctx, menu );
             return;
         }
+        if( SAFAdapter.ORG_SCHEME.startsWith( schema ) )
+            menu.add( 0, OPEN_SAF, 0, ctx.getString( R.string.open ) );
         if( item.dir ) {
             File plugin_prefs_f = getPluginPrefsFile( (String)item.origin ); 
             if( plugin_prefs_f.exists() )
@@ -359,9 +362,8 @@ public class HomeAdapter extends CommanderAdapterBase {
                 menu.add( 0, PREFS_CMD, 0, R.string.prefs );
             return;
         }
-        if( RootAdapter.DEFAULT_LOC.startsWith( schema ) ) {
+        if( RootAdapter.DEFAULT_LOC.startsWith( schema ) )
             RootAdapter.populateHomeContextMenu( ctx, menu );
-        }
     }
 
     private final File getPluginPrefsFile( String schema ) {
@@ -418,6 +420,10 @@ public class HomeAdapter extends CommanderAdapterBase {
                 RootAdapter ra = new RootAdapter( ctx );
                 ra.Init( commander );
                 ra.doIt( command_id, cis );
+            }
+            if( SAFAdapter.ORG_SCHEME.startsWith( schema ) && OPEN_SAF == command_id ) {
+                commander.issue( Lollipop.getDocTreeIntent(), Commander.REQUEST_OPEN_DOCUMENT_TREE );
+                return;
             }
         } catch( Exception e ) {
             Log.e( TAG, "" + command_id, e );

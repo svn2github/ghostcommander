@@ -18,8 +18,11 @@ import com.ghostsq.commander.adapters.FSEngines.DeleteEngine;
 import com.ghostsq.commander.adapters.FSEngines.ListEngine;
 import com.ghostsq.commander.adapters.FileItem;
 import com.ghostsq.commander.R;
+import com.ghostsq.commander.utils.ForwardCompat;
+import com.ghostsq.commander.utils.Lollipop;
 import com.ghostsq.commander.utils.Utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -27,6 +30,8 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.system.ErrnoException;
+import android.system.Os;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ContextMenu;
@@ -156,9 +161,22 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
         FileItem[] items_ = new FileItem[num];
         int j = 0;
         for( int i = 0; i < num_files; i++ ) {
-            if( !hide || !files_[i].isHidden() ) {
-                FileItem file_ex = new FileItem( files_[i] );
-                items_[j++] = file_ex;
+            File f = files_[i];
+            if( !hide || !f.isHidden() ) {
+                String fn = null;
+                if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
+                    String link_target = Lollipop.readlink( f.getAbsolutePath() );
+                    if( link_target != null ) {
+                        fn = f.getName(); 
+                        f = new File( link_target );
+                    }
+                }
+                FileItem f_item = new FileItem( f );
+                if( fn != null ) {
+                    f_item.name = ( f_item.dir ? File.separator : "" ) + fn;
+                    f_item.icon_id = R.drawable.link;
+                }
+                items_[j++] = f_item;
             }
         }
         reSort( items_ );

@@ -121,11 +121,6 @@ public class ForwardCompat
         return ctx.getSharedPreferences( ctx.getPackageName() + "_preferences", Context.MODE_MULTI_PROCESS );
     }    
     
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public static Intent getDocTreeIntent() {
-      return new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-    }
-    
     @TargetApi(Build.VERSION_CODES.ECLAIR)
     public static float getImageFileOrientationDegree( String path ) { 
         try {
