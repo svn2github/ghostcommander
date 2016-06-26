@@ -275,6 +275,7 @@
   <string name="advanced_settings">Paramètres avancés</string>
   <string name="summary_advanced_settings">Paramètres supplémentaires pour utilisateurs avancés</string>
   <string name="send_content">Envoyer via fournisseur de contenu</string>
+  <string name="summary_send_content">Essayez de décocher si votre fichier envoi application n’implémente pas un résolveur de contenu</string>
   <string name="panels_mode">Panneaux côte-à-côte</string>
   <string name="summary_panels_mode">Afficher les panneaux côte-à-côte dans un écran divisé</string>
   <string name="two_lines">Deux lignes par élément affiché</string>
@@ -354,7 +355,7 @@
   <string name="su_location">Chemin de su</string>
   <string name="summary_su_location">Définir l\'emplacement de la commande su</string>
   <string name="scan_all">Analyser tous les fichiers</string>
-  <string name="summary_scan_all">Cochez pour analyser fichiers multimédias seulement</string>
+  <string name="summary_scan_all">Décochez pour analyser fichiers multimédias seulement</string>
   <string name="execute_command">Exécuter une commande</string>
   <string name="nothing_to_open">Pas de fichier à ouvrir</string>
   <string name="remind_to_save">N\'oubliez pas d\'enregistrer les modifications</string>
@@ -369,6 +370,8 @@
   <string name="go_end">Bas</string>
   <string name="go_next">Suivant</string>
   <string name="go_prev">Précédent</string>
+  <string name="rot_right">Rotation (sens horaire)</string>
+  <string name="rot_left">Rotation (sens anti-horaire)</string>
   <string name="encoding">Encodage</string>
   <string name="encoding_set">L\'encodage est «%1$s», rechargez-le. Si vous l\'enregistrez, l\'encodage original sera changé en encodage nouveau.</string>
   <string name="no_such_file">Fichier non trouvé «%1$s»</string>

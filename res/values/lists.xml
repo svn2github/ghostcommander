@@ -56,9 +56,9 @@
         <item>Русский</item>
         <item>Српски</item>
         <item>한국어</item>
-        <item>中文 (简体)</item>
-        <item>文言</item>
-        <item>日本語</item>
+	<item>简体中文</item>
+	<item>繁體中文</item>
+	<item>日本語</item>
         </string-array>
     <string-array name="language_vals">
         <item></item>

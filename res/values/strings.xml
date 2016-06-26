@@ -291,6 +291,8 @@
 <string name="summary_show_icons">Show file and folder icons instead of just text</string>
 <string name="toolbar_settings">Toolbar</string>
 <string name="summary_toolbar_settings">Customize the toolbar at the bottom of the screen</string> 
+<string name="show_actionbar">Enable actionbar</string>
+<string name="summary_show_actionbar">Show the actionbar at the top of the screen</string>
 <string name="show_toolbar">Enable toolbar</string>
 <string name="summary_show_toolbar">Show the toolbar at the bottom of the screen</string>
 <string name="show_hotkeys">Show hot keys</string>

@@ -204,6 +204,8 @@
   <string name="username">Usuario:</string>
   <string name="password">Contraseña:</string>
   <string name="command">Comando:</string>
+  <string name="user">Usuario</string>
+  <string name="group">Grupo</string>
   <string name="connect">Conectar</string>
   <string name="cancel">Cancelar</string>
   <string name="ftp_connected">Conectado a \"%1$s\",\n Identificado como \"%2$s\"</string>
@@ -285,6 +287,7 @@
   <string name="save_as">Guardar como&#8230;</string>
   <string name="revert">Deshacer</string>
   <string name="wrap">Romper líneas largas</string>
+  <string name="go_up">Primario</string>
   <string name="go_next">Siguiente</string>
   <string name="go_prev">Anterior</string>
   <string name="encoding">Codificación</string>

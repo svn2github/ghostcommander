@@ -24,7 +24,7 @@
   <string name="tgl">Alternar</string>
   <string name="sz">Propriedades</string>
   <string name="refresh">Recarregar</string>
-  <string name="swap"><![CDATA[Origem <-> Destino]]></string>
+  <string name="swap">Origem <-> Destino</string>
   <string name="enter">Alterar localização</string>
   <string name="home">Home</string>
   <string name="softkbd">Teclado</string>
@@ -150,6 +150,9 @@
   <string name="move_title">Mover</string>
   <string name="send_title">Enviar para&#8230;</string>
   <string name="open_title">Abrir com&#8230;</string>
+  <string name="to_copy">&#160;</string>
+  <string name="to_move">&#160;</string>
+  <string name="to_rename">&#160;</string>
   <string name="copy_err">Nada a copiar</string>
   <string name="rename_err">Erro ao renomear</string>
   <string name="edit_err">Erro ao editar</string>
@@ -424,5 +427,85 @@ Toque \"OK\" para ser reencaminhado para o sítio PayPal ou\n
 <p>Ao utilizar esta aplicação, você concorda com o seguinte:
 O autor desta aplicação não é responsável por qualquer tipo de estrago, perda de informação, danificações posteriores ou qualquer problema que é ou possa ser causado pela utilização da aplicação.
 Você concorda em utilizar esta aplicação por sua conta e risco. Se não concordar com alguma das informações acima referidas, pare imediatamente de utilizar a aplicação e desinstale-a do seu sistema.</p>
+]]></string>
+  <string name="keys_text"><![CDATA[
+<h3>Selecionar ficheiros</h3>
+<p>
+Para selecionar ficheiros ou pastas, toque no lado <b>direito</b> da linha
+e abra-os tocando no lado <b>esquerdo</b>. Um dos lados ativa os itens
+e o outro lado serve para os selecionar.
+</p>
+<h3>Copiar e mover</h3>
+<p>
+Copie ou mova os ficheiro ou pastas, primeiro escolhendo o seu destino
+num painel e deslize (ou alterne) para o outro painel e selecione
+os itens a copiar ou mover.
+</p>
+<h3>Ficheiros zip</h3>
+<p>
+O Ghost Commander manipula os ficheiros ZIP clássicos como se fossem
+diretórios. Os ficheiros ZIP protegidos por palavra-passe (cifrados) ou ficheiros
+ZIP comprimidos com outros algoritmos de compressão não são suportados.
+</p>
+<h3>Suplementos</h3>
+<p>
+Os suplementos têm que ser instalados separadamente e disponibilizam acesso
+a pastas partilhadas Windows, transferências de ficheiros por SSH e também o
+acesso aos serviços na cloud: Box, Dropbox e Google Drive.
+</p>
+<h3>Modo root</h3>
+<p>
+A utilização do modo root (superuser) e das funcionalidades pontos de montagem
+devem ser utilizados com muita cautela e necessitam de um dispositivo com root
+e a aplicação BusyBox instalada, sendo que o utilizador pode definir o seu
+caminho nas definições.
+</p>
+<h3>Editor de localizações</h3>
+<p>
+Para digitar manualmente uma localização (e para ver uma lista dos seus favoritos)
+clique longo no cabeçalho do painel para abrir a localização para abrir o editor.\n
+Pode digitar os URI diretamente no editor conforma abaixo indicado:
+</p><p>
+<b>ftp://</b><i>host.com</i><b>/</b><i>pasta</i><br/>
+    - FTP no modo anónimo
+</p><p>
+<b>ftp://</b><i>utilizador</i><b>:</b><i>palavra-passe</i><b>@</b><i>ftp_host</i><b>/</b><i>pasta</i><br/>
+    - FTP com autenticação
+</p><p>
+<b>sftp://</b><i>utilizador</i><b>:</b><i>palavra-passe</i><b>@</b><i>sftp_host</i><b>/</b><i>pasta</i><br/>
+    - SSH FTP<br/>
+    Se possui uma chave privada para autenticação, coloque-a no ficheiro
+    <b>/sdcard/.GhostCommander/keys/</b><i>nome_exato_do_servidor</i><br/>
+    Para esta situação, a palavra-passe é a frase-chave do seu ficheiro chave.
+</p><p>
+<b>smb://</b><i>domínio</i><b>;</b><i>utilizador</i><b>:</b><i>palavra-passe</i><b>@</b><i>servidor</i><b>/</b><i>partilha</i><br/>
+    - Partilha Windows
+</p><p>
+<b>root:/</b><i>caminho/para/a/pasta</i><br/>
+    - Modo root
+</p>
+<h3>Teclas de atalho</h3>
+<p>
+<b><i>VolumeUp</i></b> - Seleciona os ficheiros ou pastas<br/>
+<b><i>VolumeDn</i></b> - Alterna entre painéis<br/>
+<b>+</b>, <b>-</b>  - Marca ou desmarca itens da pasta atual<br/>  
+<b>(</b>, <b>)</b>  - Para digitar uma localização e ver os seus favoritos<br/>
+<b>*</b> - Adiciona a pasta atual aos seus favoritos<br/>
+<b>\"</b> - Mostra informação detalhada sobre o item ou itens selecionados<br/>
+<b>=</b> - Mostra a mesma localização em ambos os painéis (sincronizar)<br/>
+<b>1</b> - Mostra a ajuda<br/>
+<b>2</b> - Renomeia o item selecionado<br/>
+<b>4</b> - Edita o item selecionado<br/>
+<b>5</b> - Copia o item ou itens selecionados<br/>
+<b>6</b> - Move o item ou itens selecionados<br/>
+<b>7</b> - Cria uma nova pasta<br/>
+<b>8</b> - Apaga o item ou itens selecionados<br/>
+<b>9</b> - Abre as definições<br/>
+<b>0</b> - Fecha a aplicação<br/>
+<b>[A-z]</b> - Pesquisa rápida<br/>
+</p>
+<p>
+<a href="https://sites.google.com/site/ghostcommander1/info">Mais ajuda na web…</a>
+</p>
 ]]></string>
 </resources>

@@ -10,6 +10,6 @@
   <string-array name="panels_mode">
     <item>Sí</item>
     <item>No</item>
-    <item>Auto</item>
+    <item>Automático</item>
   </string-array>
 </resources>

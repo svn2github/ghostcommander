@@ -166,11 +166,11 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/input_settings">
-        <PreferenceScreen
-                android:key="selection_zone"
-                android:title="@string/selection_zone_setup"
-                android:summary="@string/summary_selection_zone_setup">
-        </PreferenceScreen>
+        <CheckBoxPreference
+                android:key="show_actionbar"
+                android:title="@string/show_actionbar"
+                android:summary="@string/summary_show_actionbar" 
+                />                
         <PreferenceScreen
                 android:key="toolbar_settings"
                 android:title="@string/toolbar_settings"
@@ -190,6 +190,11 @@
                         android:title="@string/toolbar_preference"
                         android:summary="@string/summary_toolbar_preference">
                 </PreferenceScreen>
+        </PreferenceScreen>
+        <PreferenceScreen
+                android:key="selection_zone"
+                android:title="@string/selection_zone_setup"
+                android:summary="@string/summary_selection_zone_setup">
         </PreferenceScreen>
         <CheckBoxPreference
                 android:key="panels_sliding"

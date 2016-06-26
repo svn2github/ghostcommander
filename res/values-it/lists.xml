@@ -7,4 +7,9 @@
     <item>Per dimensione</item>
     <item>Per data</item>
   </string-array>
+  <string-array name="panels_mode">
+    <item>Sì</item>
+    <item>No</item>
+    <item>Automatico</item>
+  </string-array>
 </resources>
