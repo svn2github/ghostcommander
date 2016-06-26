@@ -46,7 +46,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.view.ContextMenu;
@@ -142,13 +144,20 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( this );
 
         if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
             final int size_class = ( getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK );
-            if( size_class >= Configuration.SCREENLAYOUT_SIZE_LARGE ||
-                ( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 &&
-                  !ForwardCompat.hasPermanentMenuKey( this ) &&
-                  !ForwardCompat.hasSoftKeys( this ) ) )
+            String show_actionbar = sharedPref.getString( "show_actionbar", "a" );
+            if( "a".equals( show_actionbar ) ) {
+                if( size_class >= Configuration.SCREENLAYOUT_SIZE_LARGE ||
+                    ( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 &&
+                      !ForwardCompat.hasPermanentMenuKey( this ) &&
+                      !ForwardCompat.hasSoftKeys( this ) ) )
+                    ab = true;
+            } else
+                ab = "y".equals( show_actionbar );
+            if( ab )
                 ab = getWindow().requestFeature( Window.FEATURE_ACTION_BAR );
             if( ab && size_class <= Configuration.SCREENLAYOUT_SIZE_LARGE )
                 ForwardCompat.setupActionBar( this );
@@ -159,12 +168,11 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         // TODO: show progress when there is no title
         // requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         dialogs = new ArrayList<Dialogs>( Dialogs.numDialogTypes );
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( this );
         back_exits = sharedPref.getBoolean( "exit_on_back", false );
         lang = sharedPref.getString( "language", "" );
         Utils.changeLanguage( this );
         String panels_mode = sharedPref.getString( "panels_sxs_mode", "a" );
-        sxs_auto = panels_mode.equals( "a" );
+        sxs_auto = "a".equals( panels_mode );
         boolean sxs = sxs_auto ? getRotMode() : panels_mode.equals( "y" );
         panels = new Panels( this, sxs );
         setConfirmMode( sharedPref );
@@ -209,7 +217,15 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putBoolean( FT, false );
                 editor.commit();
-                showInfo( getString( R.string.keys_text ) );
+                PackageInfo pi = null;
+                try {
+                    pi = getPackageManager().getPackageInfo( getPackageName(), 0 );
+                } catch( NameNotFoundException e ) {
+                    Log.e( TAG, "Package name not found", e );
+                }
+                String about_text = getString(R.string.about_text, pi != null ? pi.versionName : "?", getString(R.string.donate_uri) );
+                
+                showInfo( about_text + getString( R.string.keys_text ) );
             }
 
             // panels.setPanelCurrent( use_panel );
@@ -852,6 +868,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 i.setDataAndType( u, mime );
                 i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET );
                 // | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
+                
                 Log.d( TAG, "Open uri " + u.toString() + " intent: " + i.toString() );
                 startActivityForResult( i, REQUEST_CODE_OPEN );
                 return;

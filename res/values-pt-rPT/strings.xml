@@ -24,7 +24,7 @@
   <string name="tgl">Alternar</string>
   <string name="sz">Propriedades</string>
   <string name="refresh">Recarregar</string>
-  <string name="swap">Origem <-> Destino</string>
+  <string name="swap"><![CDATA[Origem <-> Destino]]></string>
   <string name="enter">Alterar localização</string>
   <string name="home">Home</string>
   <string name="softkbd">Teclado</string>

@@ -288,6 +288,8 @@
   <string name="summary_show_icons">Показывать иконки для файлов</string>
   <string name="toolbar_settings">Инструментальная панель</string>
   <string name="summary_toolbar_settings">Настройка панели с инструментальными кнопками</string>
+  <string name="show_actionbar">Показывать actionbar</string>
+  <string name="summary_show_actionbar">Панель управления вверху экрана с меню и другими элементами</string>
   <string name="show_toolbar">Панель кнопок</string>
   <string name="summary_show_toolbar">Включить панель с инструментальными кнопками</string>
   <string name="show_hotkeys">Быстрые клавиши</string>

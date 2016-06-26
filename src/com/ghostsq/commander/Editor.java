@@ -56,21 +56,29 @@ public class Editor extends Activity implements TextWatcher {
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         try {
+            SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
             SharedPreferences prefs = getPreferences( MODE_PRIVATE );
             if( prefs != null )
                 encoding = prefs.getString( SP_ENC, "" );
-            boolean ct_enabled = false, ab_enabled = false;
+            boolean ct_enabled = false, ab = false;
             //     !ForwardCompat.hasPermanentMenuKey( this )
             if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
                 final int size_class = ( getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK );
-                if( size_class >= Configuration.SCREENLAYOUT_SIZE_LARGE ||
-                    !ForwardCompat.hasPermanentMenuKey( this ) ) {
-                    ab_enabled = getWindow().requestFeature( Window.FEATURE_ACTION_BAR );
-                    if( ab_enabled && size_class <= Configuration.SCREENLAYOUT_SIZE_LARGE )
-                        ForwardCompat.setupActionBar( this );
-                }
+                String show_actionbar = shared_pref.getString( "show_actionbar", "a" );
+                if( "a".equals( show_actionbar ) ) {
+                    if( size_class >= Configuration.SCREENLAYOUT_SIZE_LARGE ||
+                        ( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 &&
+                          !ForwardCompat.hasPermanentMenuKey( this ) &&
+                          !ForwardCompat.hasSoftKeys( this ) ) )
+                        ab = true;
+                } else
+                    ab = "y".equals( show_actionbar );
+                if( ab )
+                    ab = getWindow().requestFeature( Window.FEATURE_ACTION_BAR );
+                if( ab && size_class <= Configuration.SCREENLAYOUT_SIZE_LARGE )
+                    ForwardCompat.setupActionBar( this );
             }
-            if( !ab_enabled )
+            if( !ab )
                 ct_enabled = requestWindowFeature( Window.FEATURE_CUSTOM_TITLE );
             setContentView(R.layout.editor);
             te = (EditText)findViewById( R.id.editor );
@@ -79,7 +87,6 @@ public class Editor extends Activity implements TextWatcher {
             // experimental!
             te.setFilters( new InputFilter[] { new InputFilter.LengthFilter(0x7FFFFFFF) } ); 
             
-            SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
             int fs = Integer.parseInt( shared_pref != null ? shared_pref.getString( "font_size", "12" ) : "12" );
             te.setTextSize( fs );
             

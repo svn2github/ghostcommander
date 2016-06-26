@@ -165,12 +165,16 @@
                 android:defaultValue=""/>                
     </PreferenceCategory>
     <PreferenceCategory
+        android:key="input_settings"
         android:title="@string/input_settings">
-        <CheckBoxPreference
+        <ListPreference
                 android:key="show_actionbar"
                 android:title="@string/show_actionbar"
                 android:summary="@string/summary_show_actionbar" 
-                />                
+                android:entries="@array/panels_mode"
+                android:entryValues="@array/panels_mode_vals"
+                android:dialogTitle="@string/show_actionbar" 
+                android:defaultValue="a"/>                
         <PreferenceScreen
                 android:key="toolbar_settings"
                 android:title="@string/toolbar_settings"

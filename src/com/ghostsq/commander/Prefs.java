@@ -18,9 +18,11 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
@@ -80,6 +82,14 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
             Preference sel_zone_pref = (Preference)findPreference( SEL_ZONE );
             if( sel_zone_pref != null )
                 sel_zone_pref.setOnPreferenceClickListener( this );
+            
+            Preference show_actionbar = findPreference( "show_actionbar" );
+            if( show_actionbar != null ) {
+                if( android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB ) {
+                    PreferenceCategory cat_inps = (PreferenceCategory)findPreference("input_settings");
+                    cat_inps.removePreference( show_actionbar );
+                }
+            }
         }
         catch( Exception e ) {
             Log.e( TAG, null, e );
