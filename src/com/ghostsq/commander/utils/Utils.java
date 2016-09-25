@@ -61,7 +61,7 @@ public final class Utils {
             { ".djvu", "image/vnd.djvu", C_IMAGE },
             { ".doc",  "application/msword", C_OFFICE },
             { ".docx", "application/msword", C_OFFICE },
-            { ".epub", "application/epub", C_BOOK }, 
+            { ".epub", "application/epub+zip", C_BOOK }, 
             { ".fb2",  "application/fb2", C_BOOK },
             { ".flac", "audio/flac", C_AUDIO },            
             { ".flv",  "video/x-flv", C_VIDEO },            
