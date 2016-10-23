@@ -2,12 +2,16 @@ package com.ghostsq.commander.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import com.ghostsq.commander.R;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -20,6 +24,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
 import android.media.ExifInterface;
 import android.media.MediaScannerConnection;
 import android.media.ThumbnailUtils;
@@ -246,9 +252,13 @@ public class ForwardCompat
     public static boolean hasPermanentMenuKey( Context ctx ) {
         return ViewConfiguration.get( ctx ).hasPermanentMenuKey();
     }
+    
+    @SuppressLint("NewApi")
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static void setupActionBar( Activity a ) {
-        a.getActionBar().setDisplayShowTitleEnabled( false );
+        ActionBar ab = a.getActionBar();
+        if( ab == null ) return;
+        ab.setDisplayShowTitleEnabled( false );
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -259,6 +269,26 @@ public class ForwardCompat
                  .setSmallIcon( R.drawable.icon )
                  .setContentIntent( pi )
                  .build();
+    }
+
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    public static String[] getStorageDirs( Context ctx ) {
+        File[] ff = ctx.getExternalFilesDirs( null );
+        if( ff == null ) return null;
+        String [] res = new String[ff.length];
+        for( int i = 0; i < ff.length; i++ ) {
+            if( ff[i] == null ) continue;
+            String path = ff[i].getAbsolutePath();
+            if( path == null ) continue;
+            Log.d( "getStorageDirs", path );
+            int pos = path.indexOf( "Android" );
+            if( pos < 0 ) {
+                Log.e( "getStorageDirs", "Unknown path " + path );
+                continue;
+            }
+            res[i] = path.substring( 0, pos );
+        }
+        return res;
     }
     
     @TargetApi(Build.VERSION_CODES.M)

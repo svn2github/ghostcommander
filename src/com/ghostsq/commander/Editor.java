@@ -60,24 +60,8 @@ public class Editor extends Activity implements TextWatcher {
             SharedPreferences prefs = getPreferences( MODE_PRIVATE );
             if( prefs != null )
                 encoding = prefs.getString( SP_ENC, "" );
-            boolean ct_enabled = false, ab = false;
-            //     !ForwardCompat.hasPermanentMenuKey( this )
-            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
-                final int size_class = ( getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK );
-                String show_actionbar = shared_pref.getString( "show_actionbar", "a" );
-                if( "a".equals( show_actionbar ) ) {
-                    if( size_class >= Configuration.SCREENLAYOUT_SIZE_LARGE ||
-                        ( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 &&
-                          !ForwardCompat.hasPermanentMenuKey( this ) &&
-                          !ForwardCompat.hasSoftKeys( this ) ) )
-                        ab = true;
-                } else
-                    ab = "y".equals( show_actionbar );
-                if( ab )
-                    ab = getWindow().requestFeature( Window.FEATURE_ACTION_BAR );
-                if( ab && size_class <= Configuration.SCREENLAYOUT_SIZE_LARGE )
-                    ForwardCompat.setupActionBar( this );
-            }
+            boolean ct_enabled = false, ab;
+            ab = Utils.setActionBar( this );
             if( !ab )
                 ct_enabled = requestWindowFeature( Window.FEATURE_CUSTOM_TITLE );
             setContentView(R.layout.editor);

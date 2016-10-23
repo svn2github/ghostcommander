@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.lang.reflect.Field;
 
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
@@ -22,7 +23,6 @@ import com.ghostsq.commander.utils.ForwardCompat.PubPathType;
 import com.ghostsq.commander.utils.Utils;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Dialog;
@@ -58,6 +58,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuInflater;
 import android.view.KeyEvent;
+import android.view.ViewConfiguration;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -145,26 +146,10 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( this );
-
-        if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
-            final int size_class = ( getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK );
-            String show_actionbar = sharedPref.getString( "show_actionbar", "a" );
-            if( "a".equals( show_actionbar ) ) {
-                if( size_class >= Configuration.SCREENLAYOUT_SIZE_LARGE ||
-                    ( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 &&
-                      !ForwardCompat.hasPermanentMenuKey( this ) &&
-                      !ForwardCompat.hasSoftKeys( this ) ) )
-                    ab = true;
-            } else
-                ab = "y".equals( show_actionbar );
-            if( ab )
-                ab = getWindow().requestFeature( Window.FEATURE_ACTION_BAR );
-            if( ab && size_class <= Configuration.SCREENLAYOUT_SIZE_LARGE )
-                ForwardCompat.setupActionBar( this );
-        }
-        if( !ab )
+        ab = Utils.setActionBar( this );
+        if( !ab ) {
             requestWindowFeature( Window.FEATURE_NO_TITLE );
-
+        }
         // TODO: show progress when there is no title
         // requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         dialogs = new ArrayList<Dialogs>( Dialogs.numDialogTypes );
@@ -314,6 +299,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
     @Override
     public void onCreateContextMenu( ContextMenu menu, View v, ContextMenuInfo menuInfo ) {
         try {
+            super.onCreateContextMenu(menu, v, menuInfo);
             Utils.changeLanguage( this );
             AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo)menuInfo;
             menu.setHeaderTitle( getString( R.string.operation ) );

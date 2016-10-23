@@ -42,7 +42,10 @@ public class TextViewer extends Activity {
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         try {
-            boolean ct_enabled = requestWindowFeature( Window.FEATURE_CUSTOM_TITLE );
+            boolean ab, ct_enabled = false;
+            ab = Utils.setActionBar( this );
+            if( !ab )
+                ct_enabled = requestWindowFeature( Window.FEATURE_CUSTOM_TITLE );
             setContentView( R.layout.textvw );
             SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
             int fs = Integer.parseInt( shared_pref != null ? shared_pref.getString( "font_size", "12" ) : "12" );

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.FileCommander;
@@ -54,8 +53,6 @@ public class HomeAdapter extends CommanderAdapterBase {
     private final int[] MOUNT    = { R.string.mount,   R.string.mount_descr,   R.drawable.mount   };
     private final int[] APPS     = { R.string.apps,    R.string.apps_descr,    R.drawable.android };
     private final int[] EXIT     = { R.string.exit,    R.string.exit_descr,    R.drawable.exit    };
-
-  
     
     private Item[] items = null;
 
@@ -127,22 +124,24 @@ public class HomeAdapter extends CommanderAdapterBase {
 
             ia.add( makeItem( FAVS, "favs" ) );
             ia.add( makeItem( LOCAL,"fs" ) );
-
-            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
+            
+            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT ) {
+                String fs = Environment.getExternalStorageDirectory().getAbsolutePath();
+                fs = Utils.mbAddSl( fs );
+                String[] dirs = ForwardCompat.getStorageDirs( ctx );
+                if( dirs != null ) {
+                    for( int i = 0; i < dirs.length; i++ ) {
+                        if( !Utils.str( dirs[i] ) ) continue;
+                        if(  fs.equals( dirs[i] ) ) continue;
+                        Item item = makeItem( EXTERNAL, dirs[i] );
+                        ia.add( item ); 
+                    }
+                }
+            } else {
                 String sec_st = Utils.getSecondaryStorage();
-                String expt_ms_path = null;
-                if( Utils.str( sec_st ) ) {
+                if( Utils.str( sec_st ) )
                     ia.add( makeItem( EXTERNAL, sec_st ) );
-                    File ext_fd = new File( sec_st );
-                    String[] dir_list = ext_fd.list();
-                    if( dir_list != null && dir_list.length > 0 )
-                        expt_ms_path = MSAdapter.SCHEME + sec_st;
-                    else
-                        expt_ms_path = MSAdapter.SCHEME + Environment.getExternalStorageDirectory().getAbsolutePath();
-                } else
-                    expt_ms_path = MSAdapter.SCHEME + Environment.getExternalStorageDirectory().getAbsolutePath();
-                    
-                ia.add( makeItem( MEDIA, expt_ms_path ) );
+                
             }
             if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
                 Item item = makeItem( SAF, SAFAdapter.ORG_SCHEME );
@@ -219,6 +218,9 @@ public class HomeAdapter extends CommanderAdapterBase {
             if( root ) {
                 ia.add( makeItem( ROOT, "root" ) );
                 ia.add( makeItem( MOUNT, "mount" ) );
+            }
+            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
+                ia.add( makeItem( MEDIA, MSAdapter.SCHEME ) );
             }
             ia.add( makeItem( APPS, "apps" ) );
             ia.add( makeItem( EXIT, "exit" ) );

@@ -75,7 +75,9 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         try {
-          requestWindowFeature( Window.FEATURE_NO_TITLE );
+          boolean ab = Utils.setActionBar( this );
+          if( !ab )
+              requestWindowFeature( Window.FEATURE_NO_TITLE );
           touch = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.FROYO;
           FrameLayout fl = new FrameLayout( this );
 

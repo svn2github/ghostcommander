@@ -17,6 +17,7 @@ import java.io.OutputStream;
 
 import com.ghostsq.commander.R;
 
+import android.app.Activity;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -33,6 +34,7 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.Window;
 import android.webkit.MimeTypeMap;
 import android.text.format.DateFormat;
 
@@ -763,6 +765,36 @@ public final class Utils {
             return (String)DateFormat.format( fmt, date );
         }
     }
+
+    public final static boolean setActionBar( Activity a ) {
+        /*
+         !ForwardCompat.hasSoftKeys( this ) is not in use anymore.
+         Soft bar won't show the menu dots since 
+         the target SDK in the manifest is raised over 13 
+         to favor the android N's context menu's bug
+         */
+        boolean ab = false;
+        try {
+            if( android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB ) return false;
+            final int size_class = ( a.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK );
+            SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( a );
+            String show_actionbar = shared_pref.getString( "show_actionbar", "a" );
+            if( "a".equals( show_actionbar ) ) {
+                if( size_class >= Configuration.SCREENLAYOUT_SIZE_LARGE ||
+                    ( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 &&
+                      !ForwardCompat.hasPermanentMenuKey( a ) ) )
+                    ab = true;
+            } else
+                ab = "y".equals( show_actionbar );
+            if( ab )
+                ab = a.getWindow().requestFeature( Window.FEATURE_ACTION_BAR );
+            if( ab && size_class <= Configuration.SCREENLAYOUT_SIZE_LARGE )
+                ForwardCompat.setupActionBar( a );
+        } catch( Exception e ) {
+            e.printStackTrace();
+        }
+        return ab;
+    }    
     
     public enum RR {
         busy(R.string.busy), 

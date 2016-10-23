@@ -307,6 +307,7 @@ public final class FTPEngines {
                         }
                         Date ftp_file_date = f.getDate();
                         if( ftp_file_date != null )
+                            // if fails, see https://code.google.com/p/android/issues/detail?id=25460
                             dest.setLastModified( ftp_file_date.getTime() );
                         
                         final int GINGERBREAD = 9;

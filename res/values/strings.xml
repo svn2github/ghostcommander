@@ -53,7 +53,7 @@
 <string name="favs_descr">View and manage your list of favorite folders and sites</string>
 <string name="local_descr">Browse, organize and modify the contents of the primary file system</string>
 <string name="external_descr">Access files on the physically inserted SD card. It may be read-only on some devices</string>
-<string name="media_descr">Make modifications on the external SD card via the MediaStore interface</string>
+<string name="media_descr">Browse your media files as the system sees them.</string>
 <string name="saf_descr">Modify the external SD card via the Storage Access Framework interface</string>
 <string name="ftp_descr">Connect to an FTP server</string>
 <string name="sftp_descr">Connect to an SSH FTP (sftp) server</string>
@@ -292,7 +292,7 @@
 <string name="toolbar_settings">Toolbar</string>
 <string name="summary_toolbar_settings">Customize the toolbar at the bottom of the screen</string> 
 <string name="show_actionbar">Enable actionbar</string>
-<string name="summary_show_actionbar">Show the actionbar at the top of the screen</string>
+<string name="summary_show_actionbar">Show the actionbar at the top of the screen. Need a restart.</string>
 <string name="show_toolbar">Enable toolbar</string>
 <string name="summary_show_toolbar">Show the toolbar at the bottom of the screen</string>
 <string name="show_hotkeys">Show hot keys</string>
