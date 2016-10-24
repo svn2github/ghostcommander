@@ -24,7 +24,7 @@
   <string name="tgl">Alternar</string>
   <string name="sz">Propriedades</string>
   <string name="refresh">Recarregar</string>
-  <string name="swap"><![CDATA[Origem <-> Destino]]></string>
+  <string name="swap">Origem &lt;-&gt; Destino</string>
   <string name="enter">Alterar localização</string>
   <string name="home">Home</string>
   <string name="softkbd">Teclado</string>
@@ -52,7 +52,6 @@
   <string name="favs_descr">Ver e gerir a lista de pastas e sítios web favoritos</string>
   <string name="local_descr">Explorar, organizar e modificar o conteúdo do sistema de ficheiros</string>
   <string name="external_descr">Aceder aos ficheiros guardados no cartão SD. Em alguns dispositivos, pode ser apenas para leitura.</string>
-  <string name="media_descr">Efetuar alterações ao cartão SD através da interface MediaStore</string>
   <string name="saf_descr">Efetuar modificações ao cartão SD através da interface Storage Access Framework</string>
   <string name="ftp_descr">Estabelecer ligação a um servidor FTP</string>
   <string name="sftp_descr">Estabelecer ligação a um servidor SSH FTP (SFTP)</string>
@@ -289,6 +288,8 @@ desempacotado</string>
   <string name="summary_show_icons">Mostrar ícones das pastas e dos ficheiros</string>
   <string name="toolbar_settings">Barra de ferramentas</string>
   <string name="summary_toolbar_settings">Personalizar a barra de ferramentas</string>
+  <string name="show_actionbar">Ativar barra de ações</string>
+  <string name="summary_show_actionbar">Mostrar barra de ações na parte superior do ecrã</string>
   <string name="show_toolbar">Ativar barra de ferramentas</string>
   <string name="summary_show_toolbar">Mostrar barra de ferramentas no fundo do ecrã</string>
   <string name="show_hotkeys">Mostrar aceleradores</string>

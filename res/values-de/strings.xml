@@ -52,7 +52,6 @@
   <string name="favs_descr">Anzeigen und verwalten der Favoriten (Verzeichnisse und Verbindungen)</string>
   <string name="local_descr">Durchsuchen, verwalten und bearbeiten des primären Dateisystems</string>
   <string name="external_descr">Zugriff auf die Dateien der externen SD-Karte. Auf einigen Geräten ist der Inhalt nur lesbar.</string>
-  <string name="media_descr">Zugriff auf die externe SD-Karte über die MediaStore-Schnittstelle</string>
   <string name="saf_descr">Zugriff auf die externe SD-Karte über die Storage-Access-Framework-Schnittstelle</string>
   <string name="ftp_descr">Mit einem FTP-Server verbinden</string>
   <string name="sftp_descr">Mit einem SSH-FTP-Server verbinden</string>
@@ -239,7 +238,7 @@
   <string name="select_some">Es wurde keine Auswahl getroffen</string>
   <string name="select">Auswählen</string>
   <string name="error">Fehler</string>
-  <string name="info">Eigenschaften</string>
+  <string name="info">Informationen</string>
   <string name="confirm">Bestätigen</string>
   <string name="alert">Warnung</string>
   <string name="progress">Fortschritt</string>
@@ -288,6 +287,8 @@
   <string name="summary_show_icons">Datei- und Verzeichnissymbole zusätzlich zum Name anzeigen</string>
   <string name="toolbar_settings">Werkzeugleiste</string>
   <string name="summary_toolbar_settings">Werkzeugleiste am unteren Bildschirmrand anpassen</string>
+  <string name="show_actionbar">Aktionsleiste anzeigen</string>
+  <string name="summary_show_actionbar">Einblenden der Aktionsleiste am oberen Bildschirmrand</string>
   <string name="show_toolbar">Werkzeugleiste anzeigen</string>
   <string name="summary_show_toolbar">Einblenden der Werkzeugleiste am unteren Bildschirmrand</string>
   <string name="show_hotkeys">Tastenkürzel anzeigen</string>
@@ -296,7 +297,7 @@
   <string name="summary_toolbar_preference">Einzelne Schaltflächen der Werkzeugleiste ein-/ausblenden</string>
   <string name="tblist_label">Werkzeugleiste anpassen</string>
   <string name="finger_friendly">Fingerfreundliche Benutzeroberfläche</string>
-  <string name="summary_finger_friendly">Bedienelemente der Benutzeroberfläche vergrößert dargestellen</string>
+  <string name="summary_finger_friendly">Bedienelemente der Benutzeroberfläche vergrößert darstellen</string>
   <string name="prevent_root">Beim Verlassen der Speicherkarte warnen</string>
   <string name="summary_prevent_root">Es wird eine Warnmeldung angezeigt, wenn Sie in das Stammverzeichnis des Gerätes wechseln wollen</string>
   <string name="show_root">Root und Einhängepunkte</string>
@@ -432,7 +433,7 @@ Zum Markieren berühren Sie die <b>rechte</b> Hälfte eines Datei- oder Verzeich
 </p>
 <h3>KOPIEREN, VERSCHIEBEN, LÖSCHEN</h3>
 <p>
-Für das Kopieren oder Verschieben wählen Sie zuerst in einem Fenster das Ziel aus, wechseln ins andere Fenster und markieren die gewünschten Dateien/Verzeichnisse und führen anschießend den entsprechenden Befehl in der Werkzeugleiste aus.<br/><br/>
+Für das Kopieren oder Verschieben wählen Sie zuerst in einem Fenster das Ziel aus, wechseln ins andere Fenster und markieren die gewünschten Dateien/Verzeichnisse und führen anschießend den entsprechenden Befehl in der Werkzeugleiste aus. Der erste Schritt entfällt für das Löschen von Objekten.<br/><br/>
 </p>
 <h3>ZIP-DATEIEN</h3>
 <p>
@@ -440,7 +441,7 @@ Ghost Commander kann mit klassischen ZIP-Dateien umgehen als wären sie Verzeich
 </p>
 <h3>PLUG-INS</h3>
 <p>
-Die zusätzlich installierbaren Plug-ins erlauben den Zugriff auf Windows-Freigaben, FTP-/SFTP-Server, WebDAV-Server und den Cloud-Diensten Box, Dropbox und Google Drive.<br/><br/>
+Die zusätzlich installierbaren Plug-ins erlauben den Zugriff auf Windows-Freigaben, FTP-/SFTP-Servern, WebDAV-Servern und den Cloud-Diensten Box, Dropbox und Google Drive.<br/><br/>
 </p>
 <h3>ROOT-MODUS</h3>
 <p>
@@ -481,7 +482,7 @@ In diesem Fall ist das Passwort das Kennwort zur Schlüsseldatei.<br/><br/>
 <b><i>+</b></i>,<b><i>-</b></i> - Markieren oder Markierung aufheben<br/>
 <b><i>(</b></i> oder <b><i>)</b></i> - Verzeichnis im rechten oder linken Fenster direkt öffnen und Favoriten anzeigen<br/>
 <b><i>*</b></i> - aktuelles Verzeichnis zu den Favoriten hinzufügen<br/>
-<b><i>\</b></i> - Gesamtgröße aller markierten Objekte anzeigen<br/>
+<b><i>\"</b></i> - Detaillierte Informationen aller markierten Objekte anzeigen<br/>
 <b><i>=</b></i> - Fenster angleichen<br/>
 <b><i>1</b></i> - Hilfe<br/>
 <b><i>2</b></i> - Datei/Verzeichnis umbenennen<br/>

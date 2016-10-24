@@ -52,7 +52,6 @@
   <string name="favs_descr">お気に入りフォルダとサイトのリストを表示、管理します</string>
   <string name="local_descr">プライマリファイルシステムの内容を表示、編集、更新します</string>
   <string name="external_descr">挿入された SD カードのファイルにアクセスします. デバイスによっては読み取り専用です.</string>
-  <string name="media_descr">メディアストア・インターフェースを使用して、外部 SD カードの更新を行います</string>
   <string name="saf_descr">ストレージ アクセス フレームワーク インターフェースを使用して、外部 SD カードを更新します</string>
   <string name="ftp_descr">FTP サーバーに接続します</string>
   <string name="sftp_descr">SSH FTP (sftp) サーバーに接続します</string>
@@ -284,6 +283,8 @@
   <string name="summary_show_icons">テキストだけでなくファイルとフォルダーのアイコンを表示します</string>
   <string name="toolbar_settings">ツールバー</string>
   <string name="summary_toolbar_settings">画面の下部のツールバーをカスタマイズします</string>
+  <string name="show_actionbar">アクションバーを有効</string>
+  <string name="summary_show_actionbar">画面の上部にアクションバーを表示します</string>
   <string name="show_toolbar">ツールバーを有効</string>
   <string name="summary_show_toolbar">画面の下部にツールバーを表示します</string>
   <string name="show_hotkeys">ホットキーを表示</string>
