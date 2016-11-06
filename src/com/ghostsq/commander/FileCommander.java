@@ -85,6 +85,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
     private NotificationManager notMan = null;
     private ArrayList<NotificationId> bg_ids = new ArrayList<NotificationId>();
     private final static String PARCEL = "parcel", TASK_ID = "task_id";
+    private Intent last;
 
     private class NotificationId {
         public long id;
@@ -180,22 +181,30 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         else {
             Utils.changeLanguage( this );
             Intent intent = getIntent();
+            if( last != null && last.equals( intent ) )
+                intent = null;
+            else
+                last = intent;
 
             SharedPreferences prefs = getPreferences( MODE_PRIVATE );
             Panels.State s = panels.createEmptyStateObject();
             s.restore( prefs );
-
-            String action = intent.getAction();
-            Log.i( TAG, "Action: " + action );
-
-            if( Intent.ACTION_VIEW.equals( action ) ) {
-                Log.d( TAG, "Not restoring " + s.getCurrent() );
-                panels.setState( s, s.getCurrent() );
-                Log.d( TAG, "VIEW opens in " + panels.getCurrent() );
-                onNewIntent( intent );
-                return;
+            if( intent != null ) {
+                String action = intent.getAction();
+                Log.i( TAG, "Action: " + action );
+    
+                if( Intent.ACTION_VIEW.equals( action ) ) {
+                    Log.d( TAG, "Not restoring " + s.getCurrent() );
+                    panels.setState( s, s.getCurrent() );
+                    Log.d( TAG, "VIEW opens in " + panels.getCurrent() );
+                    onNewIntent( intent );
+                    return;
+                }
+                if( Intent.ACTION_SEARCH_LONG_PRESS.equals( action ) ) {
+                    showSearchDialog();
+                    return;
+                }
             }
-
             panels.setState( s, -1 );
             final String FT = "first_time";
             if( prefs.getBoolean( FT, true ) ) {
@@ -215,10 +224,6 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
 
             // panels.setPanelCurrent( use_panel );
 
-            if( Intent.ACTION_SEARCH_LONG_PRESS.equals( action ) ) {
-                showSearchDialog();
-                return;
-            }
         }
     }
 
@@ -831,18 +836,24 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 Intent i = new Intent( Intent.ACTION_VIEW );
                 Intent op_intent = getIntent();
                 if( op_intent != null ) {
-                    String action = op_intent.getAction();
-                    if( Intent.ACTION_PICK.equals( action ) ) {
-                        i.setData( uri );
-                        setResult( RESULT_OK, i );
-                        finish();
-                        return;
-                    }
-                    if( Intent.ACTION_GET_CONTENT.equals( action ) ) {
-                        i.setData( Uri.parse( FileProvider.URI_PREFIX + path ) );
-                        setResult( RESULT_OK, i );
-                        finish();
-                        return;
+                    if( last != null && last.equals( op_intent ) )
+                        op_intent = null;
+                    else
+                        last = op_intent;
+                    if( op_intent != null ) {
+                        String action = op_intent.getAction();
+                        if( Intent.ACTION_PICK.equals( action ) ) {
+                            i.setData( uri );
+                            setResult( RESULT_OK, i );
+                            finish();
+                            return;
+                        }
+                        if( Intent.ACTION_GET_CONTENT.equals( action ) ) {
+                            i.setData( Uri.parse( FileProvider.URI_PREFIX + path ) );
+                            setResult( RESULT_OK, i );
+                            finish();
+                            return;
+                        }
                     }
                 }
                 if( ext != null && ( ext.compareToIgnoreCase( ".zip" ) == 0 || ext.compareToIgnoreCase( ".jar" ) == 0 ) ) {
@@ -987,7 +998,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             if( uri != null && Intent.ACTION_VIEW.equals( action ) ) {
                 // || "org.openintents.action.VIEW_DIRECTORY".equals( action ) )
                 // { // DiskUsage support
-                Log.d( TAG, "Intent URI: " + uri );
+                Log.d( TAG, "New Intent URI: " + uri );
                 Credentials crd = null;
                 try {
                     crd = (Credentials)intent.getParcelableExtra( Credentials.KEY );

@@ -52,6 +52,7 @@
   <string name="favs_descr">お気に入りフォルダとサイトのリストを表示、管理します</string>
   <string name="local_descr">プライマリファイルシステムの内容を表示、編集、更新します</string>
   <string name="external_descr">挿入された SD カードのファイルにアクセスします. デバイスによっては読み取り専用です.</string>
+  <string name="media_descr">メディア ファイルをシステムが見ているように参照します。</string>
   <string name="saf_descr">ストレージ アクセス フレームワーク インターフェースを使用して、外部 SD カードを更新します</string>
   <string name="ftp_descr">FTP サーバーに接続します</string>
   <string name="sftp_descr">SSH FTP (sftp) サーバーに接続します</string>
