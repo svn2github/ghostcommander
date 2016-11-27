@@ -125,12 +125,13 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
         Uri uri = intent.getData();
         if( uri == null ) return;
         Log.d( TAG, "uri=" + uri );
+        String scheme = uri.getScheme();
         ca_pos = intent.getIntExtra( "position", -1 );
         int mode = intent.getIntExtra( "mode", 0 );
         Log.d( TAG, "orig pos=" + ca_pos );
         ca = CA.CreateAdapterInstance( uri, this );            
         String name_to_show = null; 
-        String scheme = uri.getScheme();
+        
         Uri.Builder ub = uri.buildUpon();
         Uri p_uri = null;
         if( "zip".equals( scheme ) ) {
@@ -142,6 +143,9 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
         }
         else if( ca instanceof SAFAdapter ) {
             p_uri = SAFAdapter.getParent( uri );
+        }
+        if( "gdrive".equals( scheme ) ) {
+            ca_pos = -1; // too complex parent folder calculation
         }
         else {
             ub.path( "/" );
@@ -358,6 +362,10 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                 final int BUF_SIZE = 100*1024; 
                 buf = new byte[BUF_SIZE];
                 String scheme = u.getScheme();
+                if( PictureViewer.this.ca == null ) {
+                    Log.e( TAG, "No adapter instance!" );
+                    return;
+                }
                 if( ca.hasFeature( CommanderAdapter.Feature.LOCAL ) ) {
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inTempStorage = buf;

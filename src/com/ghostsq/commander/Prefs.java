@@ -46,8 +46,8 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
     protected void onCreate( Bundle savedInstanceState ) {
         try {
             Utils.changeLanguage( this );
+            boolean ab = Utils.setActionBar( this );
             super.onCreate( savedInstanceState );
-  
             ck = new ColorsKeeper( this );
             
             // Load the preferences from an XML resource
