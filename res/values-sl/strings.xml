@@ -52,7 +52,7 @@
   <string name="favs_descr">Pokaži in upravljaj s seznamom priljubljenih map in strani</string>
   <string name="local_descr">Brskaj, organiziraj in spremeni vsebino glavnega datotečnega sistema</string>
   <string name="external_descr">Dostop do fizično vstavljene kartice SD.  Na nekaterih napravah je lahko samo za branje</string>
-  <string name="media_descr">Naredi spremembe na zunanji kartici SD preko vmesnika pom. naprave nosilca</string>
+  <string name="media_descr">Brskajte po datotekah predstavnosti, kot jih vidi vaš sistem.</string>
   <string name="saf_descr">Spremeni zunanjo kartico SD preko vmesnika ogrodja za dostop do pomnilniških naprav</string>
   <string name="ftp_descr">Poveži se strežnikom FTP</string>
   <string name="sftp_descr">Poveži se strežnikom SSH FTP (sftp)</string>
@@ -285,6 +285,8 @@
   <string name="summary_show_icons">Prikaži ikone datotek in map namesto samo besedila</string>
   <string name="toolbar_settings">Orodna vrstica</string>
   <string name="summary_toolbar_settings">Prilagodi orodno vrstico na dnu zaslona</string>
+  <string name="show_actionbar">Omogoči vrstico dejanj</string>
+  <string name="summary_show_actionbar">Prikaži vrstic dejanj na vrhu zaslona. Zahteva ponovni zagon.</string>
   <string name="show_toolbar">Omogoči orodno vrstico</string>
   <string name="summary_show_toolbar">Prikaži orodno vrstico na dnu zaslona</string>
   <string name="show_hotkeys">Prikaži hitre tipke</string>

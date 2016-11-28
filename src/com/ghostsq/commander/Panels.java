@@ -1543,6 +1543,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
 
     @Override
     public void onScrollStateChanged( AbsListView view, int scrollState ) {
+        //Log.d( TAG, "onScrollStateChanged()" + scrollState );
         CommanderAdapter ca;
         try {
             ca = (CommanderAdapter)view.getAdapter();

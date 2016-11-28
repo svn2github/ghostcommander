@@ -39,6 +39,7 @@
   <string name="local">Armazenamento</string>
   <string name="external">Cartão externo</string>
   <string name="media">Media Store</string>
+  <string name="media_descr">Explorar os seus ficheiros multimédia tal e qual como o seu sistema os vê.</string>
   <string name="ftp">Sítio FTP</string>
   <string name="sftp">Sítio SFTP</string>
   <string name="smb">Partilha Windows</string>

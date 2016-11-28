@@ -35,6 +35,7 @@ public class ListHelper {
     private String[]   listOfItemsChecked = null;
     private Panels     p;
     private boolean    needRefresh, was_current;
+    private Drawable   selector_drawable; 
     
     ListHelper( int which_, Panels p_ ) {
         needRefresh = false;
@@ -151,9 +152,9 @@ public class ListHelper {
         flv.setBackgroundColor( ck.bgrColor );
         flv.setCacheColorHint( ck.bgrColor );
         if( ck.curColor != 0 ) {
-            Drawable d = Utils.getShadingEx( ck.curColor, 0.9f );
-            if( d != null )
-                flv.setSelector( d );
+            selector_drawable = Utils.getShadingEx( ck.curColor, 0.9f );
+            if( selector_drawable != null )
+                flv.setSelector( selector_drawable );
         }
         final float  pb = Utils.getBrightness( ck.bgrColor );
         final float  sb = pb < 0.2 ? pb + 0.05f : pb - 0.05f;

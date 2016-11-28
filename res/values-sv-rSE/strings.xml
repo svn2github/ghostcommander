@@ -41,7 +41,7 @@
   <string name="media">Mediabutik</string>
   <string name="ftp">FTP</string>
   <string name="sftp">SFTP</string>
-  <string name="smb">Windows utdelning</string>
+  <string name="smb">Windowsutdelning</string>
   <string name="plugins">Bläddra bland tilläggen</string>
   <string name="root">Root-läge</string>
   <string name="mount">Monteringspunkter</string>
