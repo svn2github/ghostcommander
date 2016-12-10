@@ -1298,7 +1298,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         l.setCurPos( position );
         CommanderAdapter ca = (CommanderAdapter)l.flv.getAdapter();
         // hack to let the PictureViewer (if being chosen to handle the intent) be able to traverse other pictures in the dir
-        if( ca instanceof FSAdapter ) {    
+        if( ca instanceof FSAdapter && !c.isPickMode() ) {    
             Uri uri = ca.getItemUri( position );
             if( uri != null ) {
                 String mime = Utils.getMimeByExt( Utils.getFileExt( uri.getPath() ) );

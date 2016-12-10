@@ -85,7 +85,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
     private NotificationManager notMan = null;
     private ArrayList<NotificationId> bg_ids = new ArrayList<NotificationId>();
     private final static String PARCEL = "parcel", TASK_ID = "task_id";
-    private Intent last;
+    private Intent starting_intent;
 
     private class NotificationId {
         public long id;
@@ -181,10 +181,10 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         else {
             Utils.changeLanguage( this );
             Intent intent = getIntent();
-            if( last != null && last.equals( intent ) )
+            if( starting_intent != null && starting_intent.equals( intent ) )
                 intent = null;
             else
-                last = intent;
+                starting_intent = intent;
 
             SharedPreferences prefs = getPreferences( MODE_PRIVATE );
             Panels.State s = panels.createEmptyStateObject();
@@ -833,27 +833,21 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 startActivityForResult( i, REQUEST_CODE_OPEN );
             }
             else if( !Utils.str( scheme ) ) {
-                Intent i = new Intent( Intent.ACTION_VIEW );
-                Intent op_intent = getIntent();
+                Intent i = new Intent();
+                Intent op_intent = starting_intent;
                 if( op_intent != null ) {
-                    if( last != null && last.equals( op_intent ) )
-                        op_intent = null;
-                    else
-                        last = op_intent;
-                    if( op_intent != null ) {
-                        String action = op_intent.getAction();
-                        if( Intent.ACTION_PICK.equals( action ) ) {
-                            i.setData( uri );
-                            setResult( RESULT_OK, i );
-                            finish();
-                            return;
-                        }
-                        if( Intent.ACTION_GET_CONTENT.equals( action ) ) {
-                            i.setData( Uri.parse( FileProvider.URI_PREFIX + path ) );
-                            setResult( RESULT_OK, i );
-                            finish();
-                            return;
-                        }
+                    String action = op_intent.getAction();
+                    if( Intent.ACTION_PICK.equals( action ) ) {
+                        i.setData( uri );
+                        setResult( RESULT_OK, i );
+                        finish();
+                        return;
+                    }
+                    if( Intent.ACTION_GET_CONTENT.equals( action ) ) {
+                        i.setData( Uri.parse( FileProvider.URI_PREFIX + path ) );
+                        setResult( RESULT_OK, i );
+                        finish();
+                        return;
                     }
                 }
                 if( ext != null && ( ext.compareToIgnoreCase( ".zip" ) == 0 || ext.compareToIgnoreCase( ".jar" ) == 0 ) ) {
@@ -1419,6 +1413,11 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         show_confirm = sharedPref.getBoolean( "show_confirm", true );
     }
 
+    public final boolean isPickMode() {
+        if( starting_intent == null ) return false;
+        return Intent.ACTION_GET_CONTENT.equals( starting_intent.getAction() );
+    }
+    
     // ServiceConnection implementation
 
     @Override

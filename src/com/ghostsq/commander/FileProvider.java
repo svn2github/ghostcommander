@@ -16,8 +16,8 @@ import android.util.Log;
 
 public class FileProvider extends ContentProvider {
     private static final String TAG = "FileProvider";
-    public static final String URI_PREFIX = "content://com.ghostsq.commander.FileProvider";
-    public static final String AUTHORITY = "com.ghostsq.commander.FileProvider";
+    public static final String URI_PREFIX = "content://com.ghostsq.commander";
+    public static final String AUTHORITY_ = "com.ghostsq.commander";
 
     @Override
     public boolean onCreate() {
