@@ -13,7 +13,11 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.StateListDrawable;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
@@ -35,7 +39,6 @@ public class ListHelper {
     private String[]   listOfItemsChecked = null;
     private Panels     p;
     private boolean    needRefresh, was_current;
-    private Drawable   selector_drawable; 
     
     ListHelper( int which_, Panels p_ ) {
         needRefresh = false;
@@ -152,9 +155,26 @@ public class ListHelper {
         flv.setBackgroundColor( ck.bgrColor );
         flv.setCacheColorHint( ck.bgrColor );
         if( ck.curColor != 0 ) {
-            selector_drawable = Utils.getShadingEx( ck.curColor, 0.9f );
-            if( selector_drawable != null )
-                flv.setSelector( selector_drawable );
+            Drawable selector_drawable = Utils.getShadingEx( ck.curColor, 0.9f );
+            if( selector_drawable == null )
+                selector_drawable = new ColorDrawable( ck.curColor );
+            StateListDrawable sld = new StateListDrawable();
+            sld.addState( new int[] { -android.R.attr.state_window_focused }, 
+                    new ColorDrawable( Color.TRANSPARENT ) );
+            sld.addState( new int[] { android.R.attr.state_focused, -android.R.attr.state_enabled, 
+                    android.R.attr.state_pressed  }, 
+                    selector_drawable );
+            sld.addState( new int[] { android.R.attr.state_focused, -android.R.attr.state_enabled }, 
+                    selector_drawable );
+            sld.addState( new int[] { android.R.attr.state_focused, android.R.attr.state_pressed  }, 
+                    selector_drawable );
+            sld.addState( new int[] { -android.R.attr.state_focused, android.R.attr.state_pressed  }, 
+                    selector_drawable );
+            sld.addState( new int[] { android.R.attr.state_focused }, 
+                    selector_drawable );
+            // http://alvinalexander.com/java/jwarehouse/android-examples/platforms/android-2/data/res/drawable/list_selector_background_transition.xml.shtml
+            // Drawable d = p.c.getResources().getDrawable( android.R.drawable.list_selector_background );
+            flv.setSelector( sld );
         }
         final float  pb = Utils.getBrightness( ck.bgrColor );
         final float  sb = pb < 0.2 ? pb + 0.05f : pb - 0.05f;
