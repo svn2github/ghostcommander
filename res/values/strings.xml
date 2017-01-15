@@ -382,7 +382,7 @@
 <string name="rot_right">Rotate clockwise</string>
 <string name="rot_left">Rotate counterclockwise</string>
 <string name="encoding">Encoding</string>
-<string name="encoding_set">The encoding is set to \"%1$s\", select reload. If you save it, the original encoding will be changed to the new one.</string>
+<string name="encoding_set">The new encoding is \"%1$s\", please reload the file. If you save it now, the file\'s encoding will be converted.</string>
 <string name="no_such_file">No such file \"%1$s\"</string>
 <string name="too_big_file">The file \"%1$s\" is too big</string>
 <string name="binary_file">The file \"%1$s\" is binary, you could damage it. Edit at your own risk.</string>

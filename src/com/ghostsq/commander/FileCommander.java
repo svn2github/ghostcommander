@@ -856,6 +856,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 }
                 Uri u = uri.buildUpon().scheme( "file" ).authority( "" )
                         .encodedPath( uri.getEncodedPath().replace( " ", "%20" ) ).build();
+                i.setAction( Intent.ACTION_VIEW );
                 i.setDataAndType( u, mime );
                 i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET );
                 // | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
@@ -894,7 +895,15 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 if( ca == null ) return;
                 ca.Init( this );
                 ca.setCredentials( crd );
-                final String       _fn = path.substring( path.lastIndexOf( '/' )+1 );
+                String temp_file = null;
+                if( "zip".equals( scheme ) ) {
+                    temp_file = uri.getFragment();
+                    if( Utils.str( temp_file ) && temp_file.indexOf( '/' ) >= 0 )
+                        temp_file = temp_file.replace( '/', '_' );
+                } else
+                    temp_file = path.substring( path.lastIndexOf( '/' )+1 );
+                
+                final String       _fn = temp_file;
                 final Uri         _uri = uri;
                 final File   _out_file = new File( temp_dir, _fn );
                 final Handler _handler = new Handler(); 

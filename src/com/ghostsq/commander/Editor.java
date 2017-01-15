@@ -150,8 +150,8 @@ public class Editor extends Activity implements TextWatcher {
         menu.add( Menu.NONE, MENU_SVAS, Menu.NONE, getString( R.string.save_as  ) ).setIcon( android.R.drawable.ic_menu_save );
         menu.add( Menu.NONE, MENU_RELD, Menu.NONE, getString( R.string.revert   ) ).setIcon( android.R.drawable.ic_menu_revert );
         menu.add( Menu.NONE, MENU_WRAP, Menu.NONE, getString( R.string.wrap     ) ).setIcon( R.drawable.wrap );
-        menu.add( Menu.NONE, MENU_ENC,  Menu.NONE, Utils.getEncodingDescr( this, encoding, 
-                                                      Utils.ENC_DESC_MODE_BRIEF ) ).setIcon(android.R.drawable.ic_menu_sort_alphabetically );
+        menu.add( Menu.NONE, MENU_ENC,  Menu.NONE, "'" + Utils.getEncodingDescr( this, encoding, Utils.ENC_DESC_MODE_BRIEF ) + "'" 
+                                                                                  ).setIcon(android.R.drawable.ic_menu_sort_alphabetically );
         menu.add( Menu.NONE, MENU_EXIT, Menu.NONE, getString( R.string.exit     ) ).setIcon( android.R.drawable.ic_notification_clear_all );
 	    return true;
     }
@@ -200,9 +200,9 @@ public class Editor extends Activity implements TextWatcher {
                     .setSingleChoiceItems( R.array.encoding, cen, new DialogInterface.OnClickListener() {
                         public void onClick( DialogInterface dialog, int i ) {
                             dialog.dismiss();
-                            encoding = getResources().getStringArray( R.array.encoding_vals )[i];
-                            Log.i( TAG, "Chosen encoding: " + encoding );
-                            Editor.this.showMessage( getString( R.string.encoding_set, encoding ) );
+                            Editor.this.encoding = getResources().getStringArray( R.array.encoding_vals )[i];
+                            Log.i( TAG, "Chosen encoding: " + Editor.this.encoding );
+                            Editor.this.showMessage( getString( R.string.encoding_set, Utils.getEncodingDescr( Editor.this, Editor.this.encoding, Utils.ENC_DESC_MODE_BRIEF ) ) );
                         }
                     }).show();
             }

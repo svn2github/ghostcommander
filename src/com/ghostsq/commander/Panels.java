@@ -624,15 +624,15 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     }
 
     class NavDialog implements OnClickListener {
-        private final Uri sdcard = Uri.parse( DEFAULT_LOC );
         protected int which;
-        protected String posTo;
+        protected String posTo, old_path;
         protected Uri uri;
 
-        NavDialog(Context c, int which_, Uri uri_, String posTo_) {
+        NavDialog(Context c, int which_, Uri uri_, String posTo_, String old_path_ ) {
             which = which_;
             uri = uri_;
             posTo = posTo_;
+            old_path = old_path_;
             LayoutInflater factory = LayoutInflater.from( c );
             new AlertDialog.Builder( c ).setIcon( android.R.drawable.ic_dialog_alert )
                     .setTitle( R.string.confirm )
@@ -651,14 +651,18 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                     uri = uri.buildUpon().scheme( "root" ).build();
                 NavigateInternal( which, uri, null, posTo );
             } else if( whichButton == DialogInterface.BUTTON_NEUTRAL ) {
-                NavigateInternal( which, sdcard, null, null );
-            } else
-                NavigateInternal( which, Uri.parse( HomeAdapter.DEFAULT_LOC ), null, null );
+                uri = Uri.parse( Utils.str( old_path ) ? old_path : DEFAULT_LOC );
+                NavigateInternal( which, uri, null, null );
+            } else {
+                uri = Uri.parse( HomeAdapter.DEFAULT_LOC );
+                NavigateInternal( which, uri, null, null );
+            }
             idialog.dismiss();
         }
     }
 
     protected final boolean isSafeLocation( String path ) {
+        if( rootOnRoot ) return path.length() > 1;
         return path.startsWith( DEFAULT_LOC ) || path.startsWith( "/sdcard" ) || path.startsWith( "/mnt/" );
     }
 
@@ -674,7 +678,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                     String cur_path = ca.toString();
                     if( cur_path != null && isSafeLocation( cur_path ) ) {
                         try {
-                            new NavDialog( c, which, uri, posTo );
+                            new NavDialog( c, which, uri, posTo, cur_path );
                         } catch( Exception e ) {
                             Log.e( TAG, "Navigate()", e );
                         }
