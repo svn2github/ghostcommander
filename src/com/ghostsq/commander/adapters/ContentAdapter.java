@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Stack;
 
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.adapters.Engine;
@@ -32,18 +33,17 @@ public class ContentAdapter extends CommanderAdapterBase implements Engines.IRec
     private final static String TAG    = "ContentAdapter";    // MediaStore
     public  final static String SCHEME = "content:";
 
-    public  final static int FILES = 1; 
-    public  final static int AUDIO = 2; 
-    public  final static int ALBUMS = 3; 
-    public  final static int ARTISTS = 4; 
-    public  final static int GENRES = 5; 
-    public  final static int PLAYLISTS = 6; 
-    public  final static int VIDEO = 7; 
-    public  final static int IMAGES = 8;
+    public  final static int MEDIA     = 0; 
+    public  final static int ALBUMS    = 1; 
+    public  final static int ARTISTS   = 2; 
+    public  final static int GENRES    = 3; 
+    public  final static int PLAYLISTS = 4; 
     private final static int[] parent_types = new int[] { ALBUMS, ARTISTS };
     
     private   int    content_type;
     private   Uri    content_uri;
+    private   Stack<Uri> parents = new Stack<Uri>();
+    private   String name;
     protected Item[] items;
     private   ThumbnailsThread tht = null;
     
@@ -74,6 +74,7 @@ public class ContentAdapter extends CommanderAdapterBase implements Engines.IRec
     
     @Override
     public String toString() {
+        if( Utils.str( name ) ) return name;
         Uri u = getUri();
         return u != null ? u.toString() : null;
     }
@@ -86,7 +87,6 @@ public class ContentAdapter extends CommanderAdapterBase implements Engines.IRec
         return mode;
     }    
     
-    
     @Override
     public Uri getUri() {
         return content_uri;
@@ -96,6 +96,8 @@ public class ContentAdapter extends CommanderAdapterBase implements Engines.IRec
     public void setUri( Uri uri ) {
         content_uri = uri;
         content_type = getType( uri );
+        if( uri != null && uri.equals( getBaseUri( content_type ) ) )
+            parentLink = SLS;
     }
 
     public final static void populateHomeContextMenu( Context ctx, ContextMenu menu ) {
@@ -107,37 +109,43 @@ public class ContentAdapter extends CommanderAdapterBase implements Engines.IRec
         return;
     }
     
+    private Uri getParentUri( Uri uri ) {
+        String a_id = uri.getQueryParameter( getQueryParamName( ALBUMS ) );
+        if( Utils.str( a_id ) ) {
+            return MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI.buildUpon().appendEncodedPath( a_id ).build();            
+        }
+        List<String> ps = uri.getPathSegments();
+        int ub = ps.size()-1;
+        if( "albums".equalsIgnoreCase( ps.get( ub ) ) &&
+           "artists".equalsIgnoreCase( ps.get( ub-2 ) ) )
+            return MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI.buildUpon().appendEncodedPath( ps.get( ub-1 ) ).build();
+        return null;
+    }
+
     public final static int getType( Uri uri ) {
         if( uri == null ) return -1;
-        if( Utils.str( uri.getQuery() ) ) return -1;
+        //if( Utils.str( uri.getQuery() ) ) return -1;
         List<String> ps = uri.getPathSegments();
         for( int i = ps.size()-1; i > 0; i-- ) {
             String s = ps.get( i );
-            if( "members".equalsIgnoreCase( s ) ) return -1;
+            if( "members".equalsIgnoreCase( s ) ) return MEDIA;
             if( "genres".equalsIgnoreCase( s ) ) return GENRES;
             if( "albums".equalsIgnoreCase( s ) ) return ALBUMS;
             if( "artists".equalsIgnoreCase( s ) ) return ARTISTS;
             if( "playlists".equalsIgnoreCase( s ) ) return PLAYLISTS;
         }
-        return -1;
+        return MEDIA;
     }
 
-    public final static Uri getUri( int id ) {
-        if( id == FILES )     return MediaStore.Files.getContentUri( "external" );
-        if( id == AUDIO )     return MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+    public final static Uri getBaseUri( int id ) {
         if( id == ALBUMS )    return MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI;
         if( id == ARTISTS )   return MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI;
         if( id == GENRES )    return MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI;
         if( id == PLAYLISTS ) return MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI;
-        if( id == VIDEO )     return MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-        if( id == IMAGES )    return MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         return null;
     }
 
     public final static int getIconId( int id ) {
-        if( id == AUDIO )     return R.drawable.audio;
-        if( id == VIDEO )     return R.drawable.video;
-        if( id == IMAGES )    return R.drawable.image;
         return R.drawable.unkn;
     }
     
@@ -173,9 +181,7 @@ public class ContentAdapter extends CommanderAdapterBase implements Engines.IRec
 
     private final static String getQueryParamName( int id ) {
         if( id == ALBUMS )    return "album";
-        if( id == GENRES )    return "genre";
         if( id == ARTISTS )   return "artist";
-        if( id == PLAYLISTS ) return "playlist";
         return null;
     }
 
@@ -187,7 +193,7 @@ public class ContentAdapter extends CommanderAdapterBase implements Engines.IRec
         if( id == PLAYLISTS ) return MediaStore.Audio.Playlists.Members.PLAYLIST_ID;
         return null;
     }
-    
+            
     @Override
     public boolean readSource( Uri new_uri, String pass_back_on_done ) {
         try {
@@ -197,10 +203,25 @@ public class ContentAdapter extends CommanderAdapterBase implements Engines.IRec
                 if( content_uri == null )
                     return false;
             }
+            ContentResolver cr = ctx.getContentResolver();
+            name = null;
+            Uri p_uri = getParentUri( content_uri );
+            if( p_uri != null ) {
+                try {
+                    Log.d( TAG, " Parent Uri: " + p_uri );
+                    Cursor cursor = cr.query( p_uri, getProjection( getType( p_uri ) ), null, null, null );
+                    if( cursor != null && cursor.getCount() > 0 ) {
+                        cursor.moveToFirst();
+                        this.name = cursor.getString( 1 );
+                        cursor.close();
+                    }
+                } catch( Throwable e ) {
+                    Log.e( TAG, "inner", e );
+                }
+            }            
             
-             String[] projection = getProjection( content_type );
-    	     ContentResolver cr = ctx.getContentResolver();
-             if( cr == null ) return false;
+            String[] projection = getProjection( content_type );
+            if( cr == null ) return false;
              
              StringBuilder     sb = new StringBuilder();
              ArrayList<String> sp = new ArrayList<String>();
@@ -212,6 +233,7 @@ public class ContentAdapter extends CommanderAdapterBase implements Engines.IRec
                      sp.add( parent_id );
                  }
              }
+             Log.d( TAG, "Quering type: " + content_type + " Uri: " + content_uri );
              Cursor cursor = cr.query( content_uri, projection, sb.length() > 0 ? sb.toString() : null, 
                                       sp.size() > 0 ? sp.toArray( new String[sp.size()] ) : null, null );
              if( cursor != null ) {
@@ -226,6 +248,9 @@ public class ContentAdapter extends CommanderAdapterBase implements Engines.IRec
                       final String qp = getQueryParamName( content_type );
                       do {
                           Item item = new Item();
+                          if( content_type == ARTISTS )
+                              item.origin = MediaStore.Audio.Artists.Albums.getContentUri( "external", cursor.getLong( 0 ) );
+                          else
                           if( content_type == GENRES )
                               item.origin = MediaStore.Audio.Genres.Members.getContentUri( "external", cursor.getLong( 0 ) );
                           else
@@ -297,20 +322,15 @@ public class ContentAdapter extends CommanderAdapterBase implements Engines.IRec
     @Override
     public void openItem( int position ) {
         if( position == 0 ) {
-            if( content_type == GENRES ) {
-                Uri u = null;
-                if( MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI.equals( content_uri ) )
-                    u = Uri.parse( "home:" );
-                else
-                    u = MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI;
-                commander.Navigate( u, null, null );
+            if( !parents.isEmpty() ) {
+                commander.Navigate( parents.pop(), null, name );
                 return;
             }
             
             for( int i = 0; i < parent_types.length; i++ ) {
                  String parent_id = content_uri.getQueryParameter( getQueryParamName( parent_types[i] ) );
                  if( parent_id != null ) {
-                     commander.Navigate( getUri( parent_types[i] ), null, null );
+                     commander.Navigate( getBaseUri( parent_types[i] ), null, null );
                      return;  
                  }
             }
@@ -320,6 +340,8 @@ public class ContentAdapter extends CommanderAdapterBase implements Engines.IRec
         
         Item item = items[position - 1];
         if( item.dir ) {
+            parents.push( content_uri );
+            parentLink = PLS;
             commander.Navigate( (Uri)item.origin, null, null );
             return;
         }

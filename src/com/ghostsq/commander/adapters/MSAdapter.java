@@ -234,12 +234,12 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
     @Override
     public boolean readSource( Uri new_uri, String pass_back_on_done ) {
         final String[] projection = {
-                 MediaStore.MediaColumns._ID,
-                 MediaStore.MediaColumns.DATA,
-                 MediaStore.MediaColumns.DATE_MODIFIED,
-                 MediaStore.MediaColumns.MIME_TYPE,
-                 MediaStore.MediaColumns.SIZE,
-                 MediaStore.MediaColumns.TITLE
+             MediaStore.MediaColumns._ID,
+             MediaStore.MediaColumns.DATA,
+             MediaStore.MediaColumns.DATE_MODIFIED,
+             MediaStore.MediaColumns.MIME_TYPE,
+             MediaStore.MediaColumns.SIZE,
+             MediaStore.MediaColumns.TITLE
         };
         try {
             if( new_uri != null ) {

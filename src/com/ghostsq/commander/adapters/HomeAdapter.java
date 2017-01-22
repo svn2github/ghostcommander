@@ -396,7 +396,7 @@ public class HomeAdapter extends CommanderAdapterBase {
                     commander.Navigate( Uri.parse( schema + "#" + fragment ), null, null );
                     return;
                 }
-                Uri content_uri = ContentAdapter.getUri( command_id );
+                Uri content_uri = ContentAdapter.getBaseUri( command_id );
                 if( content_uri != null ) {
                     commander.Navigate( content_uri, null, null );
                     return;
