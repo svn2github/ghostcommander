@@ -276,7 +276,7 @@
                 android:key="scan_all"
                 android:title="@string/scan_all"
                 android:summary="@string/summary_scan_all"
-                android:defaultValue="false"/>
-            		    </PreferenceScreen>
+                android:defaultValue="true"/>
+        </PreferenceScreen>
     </PreferenceCategory>
 </PreferenceScreen>

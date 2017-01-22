@@ -1,12 +1,8 @@
 package com.ghostsq.commander.adapters;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.channels.ClosedByInterruptException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Arrays;
@@ -16,8 +12,6 @@ import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.adapters.Engine;
 import com.ghostsq.commander.adapters.Engines.IReciever;
 import com.ghostsq.commander.R;
-import com.ghostsq.commander.utils.ForwardCompat;
-import com.ghostsq.commander.utils.MediaFile;
 import com.ghostsq.commander.utils.Utils;
 
 import android.annotation.TargetApi;
@@ -27,44 +21,26 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
-import android.os.PowerManager;
 import android.provider.BaseColumns;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ContextMenu;
-import android.widget.AdapterView;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class ContentAdapter extends CommanderAdapterBase implements Engines.IReciever {
     private final static String TAG    = "ContentAdapter";    // MediaStore
     public  final static String SCHEME = "content:";
 
-    public  final static int FILES; 
-    public  final static int AUDIO; 
-    public  final static int ALBUMS; 
-    public  final static int ARTISTS; 
-    public  final static int GENRES; 
-    public  final static int PLAYLISTS; 
-    public  final static int VIDEO; 
-    public  final static int IMAGES;
-    private final static int[] parent_types;
-
-    static {
-        FILES    = Utils.mbAddSl(   MediaStore.Files.getContentUri( "external" ).getPath() ).hashCode();
-        AUDIO    = Utils.mbAddSl(    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI.getPath() ).hashCode(); 
-        ALBUMS   = Utils.mbAddSl(   MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI.getPath() ).hashCode(); 
-        GENRES   = Utils.mbAddSl(   MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI.getPath() ).hashCode(); 
-        ARTISTS  = Utils.mbAddSl(  MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI.getPath() ).hashCode(); 
-        PLAYLISTS= Utils.mbAddSl(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI.getPath() ).hashCode();
-        IMAGES   = Utils.mbAddSl(   MediaStore.Images.Media.EXTERNAL_CONTENT_URI.getPath() ).hashCode(); 
-        VIDEO    = Utils.mbAddSl(    MediaStore.Video.Media.EXTERNAL_CONTENT_URI.getPath() ).hashCode(); 
-        parent_types = new int[] { ALBUMS, ARTISTS, GENRES, PLAYLISTS };
-    }
-    
+    public  final static int FILES = 1; 
+    public  final static int AUDIO = 2; 
+    public  final static int ALBUMS = 3; 
+    public  final static int ARTISTS = 4; 
+    public  final static int GENRES = 5; 
+    public  final static int PLAYLISTS = 6; 
+    public  final static int VIDEO = 7; 
+    public  final static int IMAGES = 8;
+    private final static int[] parent_types = new int[] { ALBUMS, ARTISTS };
     
     private   int    content_type;
     private   Uri    content_uri;
@@ -133,7 +109,17 @@ public class ContentAdapter extends CommanderAdapterBase implements Engines.IRec
     
     public final static int getType( Uri uri ) {
         if( uri == null ) return -1;
-        return Utils.mbAddSl( uri.getPath() ).hashCode();
+        if( Utils.str( uri.getQuery() ) ) return -1;
+        List<String> ps = uri.getPathSegments();
+        for( int i = ps.size()-1; i > 0; i-- ) {
+            String s = ps.get( i );
+            if( "members".equalsIgnoreCase( s ) ) return -1;
+            if( "genres".equalsIgnoreCase( s ) ) return GENRES;
+            if( "albums".equalsIgnoreCase( s ) ) return ALBUMS;
+            if( "artists".equalsIgnoreCase( s ) ) return ARTISTS;
+            if( "playlists".equalsIgnoreCase( s ) ) return PLAYLISTS;
+        }
+        return -1;
     }
 
     public final static Uri getUri( int id ) {
@@ -232,15 +218,22 @@ public class ContentAdapter extends CommanderAdapterBase implements Engines.IRec
                 try {
                    if( cursor.getCount() > 0 ) {
                       cursor.moveToFirst();
-                      ArrayList<Item>   tmp_list = new ArrayList<Item>();
-                      int icon_id = getIconId( content_type );
-                      int pci = cursor.getColumnIndex( MediaStore.MediaColumns.DATA );
-                      int sci = cursor.getColumnIndex( MediaStore.MediaColumns.SIZE );
-                      int dci = cursor.getColumnIndex( MediaStore.MediaColumns.DATE_MODIFIED );
+                      ArrayList<Item> tmp_list = new ArrayList<Item>();
+                      final int icon_id = getIconId( content_type );
+                      final int pci = cursor.getColumnIndex( MediaStore.MediaColumns.DATA );
+                      final int sci = cursor.getColumnIndex( MediaStore.MediaColumns.SIZE );
+                      final int dci = cursor.getColumnIndex( MediaStore.MediaColumns.DATE_MODIFIED );
+                      final String qp = getQueryParamName( content_type );
                       do {
                           Item item = new Item();
-                          Uri item_uri = content_uri.buildUpon().appendEncodedPath( "" + cursor.getLong( 0 ) ).build();
-                          item.origin = item_uri; 
+                          if( content_type == GENRES )
+                              item.origin = MediaStore.Audio.Genres.Members.getContentUri( "external", cursor.getLong( 0 ) );
+                          else
+                          if( content_type == PLAYLISTS )
+                              item.origin = MediaStore.Audio.Playlists.Members.getContentUri( "external", cursor.getLong( 0 ) );
+                          else
+                              item.origin = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI.buildUpon()
+                                  .encodedQuery( qp + "=" + cursor.getLong( 0 ) ).build();
                           item.name = cursor.getString( 1 );
                           if( item.name == null ) {
                               //Log.e( TAG, "Item " + item_uri + " has no name" );
@@ -304,6 +297,16 @@ public class ContentAdapter extends CommanderAdapterBase implements Engines.IRec
     @Override
     public void openItem( int position ) {
         if( position == 0 ) {
+            if( content_type == GENRES ) {
+                Uri u = null;
+                if( MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI.equals( content_uri ) )
+                    u = Uri.parse( "home:" );
+                else
+                    u = MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI;
+                commander.Navigate( u, null, null );
+                return;
+            }
+            
             for( int i = 0; i < parent_types.length; i++ ) {
                  String parent_id = content_uri.getQueryParameter( getQueryParamName( parent_types[i] ) );
                  if( parent_id != null ) {
@@ -317,16 +320,8 @@ public class ContentAdapter extends CommanderAdapterBase implements Engines.IRec
         
         Item item = items[position - 1];
         if( item.dir ) {
-            String qp = getQueryParamName( content_type );
-            if( qp == null ) return;
-            
-            List<String> ups = ((Uri)item.origin).getPathSegments();
-            if( ups == null || ups.size() == 0 ) return;
-            String ctr_id = ups.get( ups.size()-1 );
-            
-            Uri.Builder bld = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI.buildUpon();
-            bld.encodedQuery( qp + "=" + ctr_id );
-            commander.Navigate( bld.build(), null, null );
+            commander.Navigate( (Uri)item.origin, null, null );
+            return;
         }
         else
             ;//commander.Open( Uri.parse( Utils.escapePath( dirName + item.name ) ), null );

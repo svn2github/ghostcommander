@@ -192,7 +192,7 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
                     menu.add( 0, R.id.open, 0, R.string.open );
                     menu.add( 0, R.id.extract, 0, R.string.extract_zip );
                 }
-                if( item.dir && num == 1 && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO )
+                if( item.dir && num == 1 && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
                     menu.add( 0, R.id.rescan_dir, 0, R.string.rescan );
             }
             super.populateContextMenu( menu, acmi, num );
@@ -208,7 +208,7 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
             if ( list == null || list.length == 0 ) return;
             
             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences( ctx );
-            MediaScanEngine mse = new MediaScanEngine( ctx, list[0].f().getAbsoluteFile(), sp.getBoolean( "scan_all", false ) );
+            MediaScanEngine mse = new MediaScanEngine( ctx, list[0].f().getAbsoluteFile(), sp.getBoolean( "scan_all", true ) );
             mse.setHandler( new SimpleHandler() );
             commander.startEngine( mse );
         }
