@@ -42,7 +42,7 @@ public interface CommanderAdapter {
         public  Date      date = null;
         public  long      size = -1;
         public  boolean   dir = false, sel = false;
-        public  String    attr = "";
+        public  String    attr = "", mime;
         public  Object    origin = null;
         public  int       icon_id = -1;
         private Drawable  thumbnail;

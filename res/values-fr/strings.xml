@@ -52,7 +52,7 @@
   <string name="favs_descr">Administrer la liste de dossiers et sites favorites</string>
   <string name="local_descr">Relancer, organiser et modifier le contenu de système de fichiers primaire</string>
   <string name="external_descr">Accéder aux fichiers sur la carte SD externe. Elle peut être en lecture seule sur certains appareils.</string>
-  <string name="media_descr">Apporter des modifications à la carte SD externe avec interface Stockage Multimédia</string>
+  <string name="media_descr">Parcourir fichiers multimédias comme le système les voit.</string>
   <string name="saf_descr">Modifier la carte SD externe via l’interface de Storage Access Framework</string>
   <string name="ftp_descr">Connecter à un serveur FTP</string>
   <string name="sftp_descr">Connecter à un serveur SSH FTP (sftp)</string>
@@ -284,6 +284,8 @@
   <string name="summary_show_icons">Afficher l\'icône pour chaque fichier</string>
   <string name="toolbar_settings">Barre d\'outils</string>
   <string name="summary_toolbar_settings">Personnaliser la ligne des boutons dans la barre d\'outils</string>
+  <string name="show_actionbar">Activer la barre d\'action</string>
+  <string name="summary_show_actionbar">Afficher la barre d\'action en haut de l\'écran. Il est nécessaire à redémarrer l\'application.</string>
   <string name="show_toolbar">Activer la barre d\'outils</string>
   <string name="summary_show_toolbar">Afficher les boutons en bas de l\'écran</string>
   <string name="show_hotkeys">Afficher raccourci clavier</string>

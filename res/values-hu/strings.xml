@@ -15,7 +15,7 @@
   <string name="F6">Áthelyezés</string>
   <string name="F7">Új mappa</string>
   <string name="F8">Törlés</string>
-  <string name="F9">Beállít</string>
+  <string name="F9">Beállítások</string>
   <string name="F10">Kilépés</string>
   <string name="oth_sh_this">Másik panel ugyanaz</string>
   <string name="oth_sh_dir">\"%s\" megnyitása a másik panelben</string>
@@ -42,7 +42,7 @@
   <string name="ftp">FTP-kiszolgáló</string>
   <string name="sftp">SFTP-kiszolgáló</string>
   <string name="smb">Windows megosztás</string>
-  <string name="plugins">Beépülők böngészése</string>
+  <string name="plugins">Beépülő modulok böngészése</string>
   <string name="root">Root mód</string>
   <string name="mount">Csatolási pontok</string>
   <string name="mount_b">Csatolások</string>
@@ -52,11 +52,12 @@
   <string name="favs_descr">Kedvenc mappák és kiszolgálók megtekintése és kezelése</string>
   <string name="local_descr">A belső SD-kártya és flash memória tartalmának böngészése, rendezése és módosítása</string>
   <string name="external_descr">A behelyezett SD-kártyán lévő fájlok. Egyes eszközökön lehet, hogy csak olvashatók.</string>
+  <string name="media_descr">Média fájlok böngészése úgy, ahogy a rendszer látja őket</string>
   <string name="saf_descr">A külső SD-kártya tartalmának módosítása a Storage Access Framework csatolón keresztül</string>
   <string name="ftp_descr">Csatlakozás FTP-kiszolgálóhoz</string>
   <string name="sftp_descr">Csatlakozás SSH FTP (sftp) -kiszolgálóhoz</string>
   <string name="smb_descr">Csatlakozás Windows-on megosztott mappákhoz</string>
-  <string name="plugins_descr">További Ghost Commander beépülők keresése</string>
+  <string name="plugins_descr">További Ghost Commander beépülő modulok keresése</string>
   <string name="root_descr">Csak rootolt eszközökhöz: rendszerfájlok kezelése. Csak ha tudja, hogy mit csinál!</string>
   <string name="mount_descr">Minden csatolási pont listázása. Újracsatolás „rw” módban, majd a változtatások után „ro” módban. Csak óvatosan!</string>
   <string name="apps_descr">Telepített csomagok megtekintése és kezelése</string>
@@ -284,7 +285,7 @@
   <string name="toolbar_settings">Eszköztár</string>
   <string name="summary_toolbar_settings">A képernyő alján lévő eszköztár testreszabása</string>
   <string name="show_actionbar">Műveletsáv bekapcsolása</string>
-  <string name="summary_show_actionbar">Műveletsáv megjelenítése a képernyő tetején</string>
+  <string name="summary_show_actionbar">Műveletsáv megjelenítése a képernyő tetején. Újraindítás szükséges.</string>
   <string name="show_toolbar">Eszköztár engedélyezése</string>
   <string name="summary_show_toolbar">Mutassa az eszköztárat a képernyő alján</string>
   <string name="show_hotkeys">Gyorsbillentyűk megjelenítése</string>
@@ -401,8 +402,8 @@
   <string name="permissions">Jogosultságok</string>
   <string name="flags">Jelzők</string>
   <string name="not_exported">Az aktivitás nem lett exportálva</string>
-  <string name="smb_missed">Nem tölthető be a Samba adapter: a Ghost Commander SMB-beépülő legyen telepítve.</string>
-  <string name="sftp_missed">Nem tölthető be az SFTP adapter: a Ghost Commander SFTP-beépülő legyen telepítve.</string>
+  <string name="smb_missed">Nem tölthető be a Samba adapter: a Ghost Commander SMB-beépülő modul legyen telepítve</string>
+  <string name="sftp_missed">Nem tölthető be az SFTP adapter: a Ghost Commander SFTP-beépülő modul legyen telepítve</string>
   <string name="donate">Adományozás</string>
   <string name="online_help">Online súgó</string>
   <string name="donation">Bármilyen összegű támogatással a Ghost Commander fejlesztéséhez járul hozzá.\n
@@ -452,23 +453,29 @@ HangerőLe - Váltás másik panelre<br/>
 </p>
 <h3>HALADÓ</h3>
 <p>
-URI-k megadása kézileg különböző forrásokhoz:<br/>
-<br/>
+URI-k megadása kézileg különböző forrásokhoz:
+</p>
+<p>
 ftp://host.com/folder<br/>
-- névtelen FTP<br/>
-<br/>
+- névtelen FTP
+</p>
+<p>
 ftp://user:pass@ftp_host/folder<br/>
-- felhasználós FTP<br/>
-<br/>
+- felhasználós FTP
+</p>
+<p>
 smb://domain;user:pass@server/share<br/>
-- Windows megosztás<br/>
-<br/>
+- Windows megosztás
+</p>
+<p>
 root:/path/to/folder<br/>
-- Root mód<br/>
-<br/>
+- Root mód
+</p>
+<p>
 mount:<br/>
-- Csatolási pontok<br/>
-<br/>
+- Csatolási pontok
+</p>
+<p>
 Megjegyzés:<br/>
 A root módhoz és a csatolási pontokhoz óvatosság, rootolt eszköz és megfelelően beállított BusyBox szükséges.<br/>
 A Windows megosztások eléréséhez szükség van a Ghost Commander SMB beépülőre.
