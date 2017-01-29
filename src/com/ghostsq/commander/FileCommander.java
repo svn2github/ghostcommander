@@ -1317,7 +1317,8 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         if( n_id.last + 1000 > cur_time )
             return;
         n_id.last = cur_time;
-        Notification notification = new Notification( R.drawable.icon, getString( R.string.inprogress ), n_id.started );
+        int ic_id = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? R.drawable.not_icon : R.drawable.icon;
+        Notification notification = new Notification( ic_id, getString( R.string.inprogress ), n_id.started );
         notification.contentIntent = getPendingIntent( id, null );
         notification.flags |= Notification.FLAG_ONGOING_EVENT;
         RemoteViews not_view = new RemoteViews( getPackageName(), R.layout.progress );
@@ -1339,11 +1340,17 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             Log.e( TAG, "", e );
         }
         
+        if( !Utils.str( str ) ) {
+            Log.w( TAG, "No title in notification" );
+            return;
+        }
+        
         Notification notification = null;
-        if( Build.VERSION.SDK_INT >=  Build.VERSION_CODES.JELLY_BEAN )
+        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN )
             notification = ForwardCompat.buildNotification( this, str, getPendingIntent( id, msg ) );
         else {
-            notification = new Notification( R.drawable.icon, str, System.currentTimeMillis() );
+            int ic_id = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? R.drawable.not_icon : R.drawable.icon;  
+            notification = new Notification( ic_id, str, System.currentTimeMillis() );
     //        notification.setLatestEventInfo( this, getString( R.string.app_name ), str, getPendingIntent( id, msg ) );
             notification.flags |= Notification.FLAG_ONLY_ALERT_ONCE | Notification.FLAG_AUTO_CANCEL;
         }

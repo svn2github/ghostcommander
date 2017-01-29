@@ -406,8 +406,7 @@ public final class FTPEngines {
                             ftp.clearLog();
                             String toCreate = f.getAbsolutePath().substring( basePathLen );
                             if( !ftp.makeDir( toCreate ) ) {
-                                error( ctx.getString( R.string.ftp_mkdir_failed, toCreate, ftp.getLog() ) );
-                                break;
+                                Log.w( TAG, ctx.getString( R.string.ftp_mkdir_failed, toCreate, ftp.getLog() ) );
                             }
                             counter += copyFiles( f.listFiles() );
                             if( errMsg != null ) break;

@@ -153,21 +153,12 @@ public class MediaScanEngine extends Engine implements MediaScannerConnection.Me
 
     @Override
     public void onScanCompleted( final String path, final Uri uri ) {
-        String rep_path;
-        int pl = path.length();
-        if( pl < 256 ) {
-            char[] chars = new char[256 - pl];
-            Arrays.fill(chars, '\u00A0');
-            rep_path = path + new String(chars);
-        }
-        else
-            rep_path = path;
         if( uri == null )
             Log.w( TAG, "Uri is null for " + path );
         else {
             //Log.v( TAG, "Scan completed: " + path + " " + uri.toString() );
             
-            sendProgress( rep_path, count * 100 / num );
+            sendProgress( path, count * 100 / num );
             File f = new File( path );
             if( f.isFile() && f.length() == 0 ) {
                 if( cr.delete( uri, null, null ) > 0 ) {
