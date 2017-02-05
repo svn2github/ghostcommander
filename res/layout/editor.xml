@@ -6,4 +6,7 @@
 	android:typeface="monospace"
 	android:textColor="#eee"
 	android:background="#000"
-	android:scrollHorizontally="true"/>
+	android:scrollHorizontally="true"
+    android:scrollbars="vertical"
+    android:scrollbarDefaultDelayBeforeFade="5000"
+  />

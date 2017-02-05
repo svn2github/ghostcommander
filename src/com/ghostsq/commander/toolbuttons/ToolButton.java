@@ -234,8 +234,8 @@ public class ToolButton {
         case  R.id.F9:           return  true;
         case  R.id.F10:          return  true;
         case  R.id.eq:           return  true;
-        case  R.id.tgl:          return  true;
-        case  R.id.sz:           return  true;
+        case  R.id.tgl:          return  false;
+        case  R.id.sz:           return  false;
         case  R.id.by_name:      return  true;
         case  R.id.by_ext:       return  true;
         case  R.id.by_size:      return  true;
@@ -246,6 +246,7 @@ public class ToolButton {
         case  R.id.uns_all:      return  true;
         case  R.id.search:       return  true;        
         case  R.id.swap:         return  true;        
+        case  R.id.menu:         return  true;        
         }
         return false;
     }
@@ -299,7 +300,7 @@ public class ToolButton {
     public final boolean isVisible() {
         return visible;
     }
-    final void setVisible( boolean v ) {
+    public final void setVisible( boolean v ) {
         visible = v;
     }
     public final String getCodeName() {

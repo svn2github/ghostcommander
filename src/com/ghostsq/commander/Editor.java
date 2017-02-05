@@ -9,7 +9,6 @@ import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.favorites.Favorite;
 import com.ghostsq.commander.utils.Credentials;
-import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.Utils;
 
 import android.app.Activity;
@@ -17,29 +16,32 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.GestureDetector.OnGestureListener;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.Scroller;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Editor extends Activity implements TextWatcher {
+public class Editor extends Activity implements TextWatcher, OnTouchListener, OnGestureListener {
     private final static String TAG = "EditorActivity";
-    private final static String SP_ENC = "encoding";
+    private final static String SP_ENC = "encoding", SP_NOWRAP = "no_wrap";
 	final static int MENU_SAVE = 214, MENU_SVAS = 212, MENU_RELD = 439, MENU_WRAP = 241, MENU_ENC = 363, MENU_EXIT = 323;
 //	final static String URI = "URIfileForEdit";
 
@@ -50,6 +52,8 @@ public class Editor extends Activity implements TextWatcher {
 	public  boolean dirty = false;
 	public  String encoding;
 	private DataLoadTask loader = null;
+	private GestureDetector gd = null;
+	private Scroller sc = null;
 	
     /** Called when the activity is first created. */
     @Override
@@ -58,8 +62,10 @@ public class Editor extends Activity implements TextWatcher {
         try {
             SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
             SharedPreferences prefs = getPreferences( MODE_PRIVATE );
-            if( prefs != null )
-                encoding = prefs.getString( SP_ENC, "" );
+            if( prefs != null ) {
+                encoding  = prefs.getString( SP_ENC, "" );
+                horScroll = prefs.getBoolean( SP_NOWRAP, true ); 
+            }
             boolean ct_enabled = false, ab;
             ab = Utils.setActionBar( this );
             if( !ab )
@@ -67,6 +73,11 @@ public class Editor extends Activity implements TextWatcher {
             setContentView(R.layout.editor);
             te = (EditText)findViewById( R.id.editor );
             te.addTextChangedListener( this );
+            te.setOnTouchListener( this );
+            sc = new Scroller( this );
+            te.setScroller( sc );
+            te.setVerticalScrollBarEnabled( true );
+            gd = new GestureDetector( this, this );
             
             // experimental!
             te.setFilters( new InputFilter[] { new InputFilter.LengthFilter(0x7FFFFFFF) } ); 
@@ -109,6 +120,7 @@ public class Editor extends Activity implements TextWatcher {
         super.onPause();
         SharedPreferences.Editor editor = getPreferences( MODE_PRIVATE ).edit();
         editor.putString( SP_ENC, encoding == null ? "" : encoding );
+        editor.putBoolean( SP_NOWRAP, horScroll );
         editor.commit();
     }
 
@@ -142,14 +154,15 @@ public class Editor extends Activity implements TextWatcher {
         }
         return super.onKeyDown(keyCode, event);
     }
-        
+
     @Override
     public boolean onPrepareOptionsMenu( Menu menu ) {
         menu.clear();
         menu.add( Menu.NONE, MENU_SAVE, Menu.NONE, getString( R.string.save     ) ).setIcon( android.R.drawable.ic_menu_save );
         menu.add( Menu.NONE, MENU_SVAS, Menu.NONE, getString( R.string.save_as  ) ).setIcon( android.R.drawable.ic_menu_save );
         menu.add( Menu.NONE, MENU_RELD, Menu.NONE, getString( R.string.revert   ) ).setIcon( android.R.drawable.ic_menu_revert );
-        menu.add( Menu.NONE, MENU_WRAP, Menu.NONE, getString( R.string.wrap     ) ).setIcon( R.drawable.wrap );
+        menu.add( Menu.NONE, MENU_WRAP, Menu.NONE, ( horScroll ? "":"~ " ) + getString( R.string.wrap ) )
+                                                                                   .setIcon( R.drawable.wrap );
         menu.add( Menu.NONE, MENU_ENC,  Menu.NONE, "'" + Utils.getEncodingDescr( this, encoding, Utils.ENC_DESC_MODE_BRIEF ) + "'" 
                                                                                   ).setIcon(android.R.drawable.ic_menu_sort_alphabetically );
         menu.add( Menu.NONE, MENU_EXIT, Menu.NONE, getString( R.string.exit     ) ).setIcon( android.R.drawable.ic_notification_clear_all );
@@ -407,6 +420,8 @@ public class Editor extends Activity implements TextWatcher {
             }
         }
      }
+
+    // --- TextWatcher methods --- 
      
     @Override
     public void afterTextChanged( Editable s ) {
@@ -417,5 +432,54 @@ public class Editor extends Activity implements TextWatcher {
     }
     @Override
     public void onTextChanged( CharSequence s, int start, int before, int count ) {
+    }
+
+    // --- OnTouchListener method ---
+    
+    @Override
+    public boolean onTouch( View view, MotionEvent ev ) {
+        //Log.d( TAG, "onTouch: " + ev.toString() );
+        sc.abortAnimation();
+        return gd.onTouchEvent( ev );
+    }
+    
+    // --- OnGestureListener methods ---
+    
+    @Override
+    public boolean onDown( MotionEvent ev ) {
+        //Log.d( TAG, "onDown: " + ev.toString() );
+        return false;
+    }
+
+    @Override
+    public void onShowPress( MotionEvent ev ) {
+        //Log.d( TAG, "onShowPress: " + ev.toString() );
+    }
+
+    @Override
+    public boolean onSingleTapUp( MotionEvent ev ) {
+        //Log.d( TAG, "onSingleTapUp: " + ev.toString() );
+        return false;
+    }
+
+    @Override
+    public boolean onScroll( MotionEvent ev1, MotionEvent ev2, float distanceX, float distanceY ) {
+        //Log.d( TAG, "onScroll " + distanceY + ": " + ev1.toString() + "\n" + ev1.toString()  );
+        return false;
+    }
+
+    @Override
+    public void onLongPress( MotionEvent ev ) {
+        //Log.d( TAG, "onLongPress: " + ev.toString() );        
+    }
+
+    @Override
+    public boolean onFling( MotionEvent ev1, MotionEvent ev2, float velocityX, float velocityY ) {
+        if( Math.abs( velocityY ) < 1000 ) return false;
+        //Log.d( TAG, "onFling " + velocityY + ": " + ev1.toString() + "\n" + ev1.toString()  );
+        float maxY = te.getLineCount() * te.getLineHeight();
+        //Log.d( TAG, "maxY=" + maxY );
+        sc.fling((int)te.getScrollX(), (int)te.getScrollY(), (int)velocityX, -(int)velocityY, 0, 0, 0, (int)maxY );
+        return true;
     }
 }

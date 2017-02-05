@@ -247,6 +247,11 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
             } else {
                 if( ms_uri == null )
                     setUri( Uri.parse( SCHEME + Environment.getExternalStorageDirectory().getAbsolutePath() ) );
+                else {
+                    MediaScanEngine mse = new MediaScanEngine( ctx, new File(ms_uri.getPath()), true, false );
+                    mse.setHandler( new SimpleHandler() );
+                    commander.startEngine( mse );
+                }
             }
             String dirName = Utils.mbAddSl( ms_uri.getPath() );  
     	    parentLink = !Utils.str( dirName ) || SLS.equals( dirName ) ? SLS : PLS;
@@ -302,6 +307,7 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
                           item.size = cursor.getLong( sci );
                           item.date = new Date( cursor.getLong( dci ) * 1000 );
                           item.attr = cursor.getString( mci );
+                          if( "*/*".equals( item.attr ) ) item.attr = null;
                           if( item.dir ) item.size = -1;
                           tmp_list.add( item );
                       } while( cursor.moveToNext() );

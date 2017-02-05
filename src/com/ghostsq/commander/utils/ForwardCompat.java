@@ -2,6 +2,7 @@ package com.ghostsq.commander.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -292,9 +293,17 @@ public class ForwardCompat
     }
     
     @TargetApi(Build.VERSION_CODES.M)
-    public static void requestPermission( Activity act, String perm, int rpc ) {
-        int cp = act.checkPermission( perm, android.os.Process.myPid(), android.os.Process.myUid() );
-        if( cp != PackageManager.PERMISSION_GRANTED )
-            act.requestPermissions( new String[]{ perm }, rpc );
+    public static boolean requestPermission( Activity act, String[] perms, int rpc ) {
+        ArrayList<String> al = new ArrayList<String>( perms.length ); 
+        for( int i = 0; i < perms.length; i++ ) {
+            int cp = act.checkPermission( perms[i], android.os.Process.myPid(), android.os.Process.myUid() );
+            if( cp != PackageManager.PERMISSION_GRANTED )
+                al.add( perms[i] );
+        }
+        if( al.size() > 0 ) {
+            act.requestPermissions( al.toArray(perms), rpc );
+            return false;
+        }
+        return true;
     }
 }

@@ -76,7 +76,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
 
     private ArrayList<Dialogs> dialogs;
     private ProgressDialog waitPopup;
-    public Panels panels;
+    public  Panels panels;
     private boolean on = false, exit = false, dont_restore = false, sxs_auto = true, show_confirm = true, back_exits = false,
             ab = false;
     private String lang = ""; // just need to issue a warning on change
@@ -165,16 +165,51 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
 
         notMan = (NotificationManager)getSystemService( Context.NOTIFICATION_SERVICE );
         bindService( new Intent( this /* ? */, BackgroundWork.class ), this, Context.BIND_AUTO_CREATE );
-        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ) {
-            ForwardCompat.requestPermission( this, Manifest.permission.READ_EXTERNAL_STORAGE,  111 );
-            ForwardCompat.requestPermission( this, Manifest.permission.WRITE_EXTERNAL_STORAGE, 112 );
-        }
     }
 
     @Override
     protected void onStart() {
         // Log.v( TAG, "Starting\n" );
         super.onStart();
+        
+        SharedPreferences prefs = getPreferences( MODE_PRIVATE );
+        final String FT = "first_time";
+        if( prefs.getBoolean( FT, true ) ) {
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean( FT, false );
+            editor.commit();
+            PackageInfo pi = null;
+            try {
+                pi = getPackageManager().getPackageInfo( getPackageName(), 0 );
+            } catch( NameNotFoundException e ) {
+                Log.e( TAG, "Package name not found", e );
+            }
+            String about_text = getString(R.string.about_text, pi != null ? pi.versionName : "?", getString(R.string.donate_uri) );
+            
+            Dialogs dh = obtainDialogsInstance( Dialogs.INFO_DIALOG );
+            dh.setMessageToBeShown( about_text + getString( R.string.keys_text ), null );
+            dh.showDialog();
+        }
+        
+        if( Build.VERSION.SDK_INT < Build.VERSION_CODES.M ) {
+            doStart();
+            return;
+        }
+        String[] perms = new String[] {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        };
+        if( ForwardCompat.requestPermission( this, perms, 111 ) )
+            doStart();
+    }
+
+    @Override
+    public void onRequestPermissionsResult( int requestCode, String[] permissions, int[] grantResults ) {
+        //Log.d( TAG, "Permissions granted: " + permissions.toString() + " " + grantResults.toString() );
+        doStart();
+    }
+    
+    private void doStart() {
         on = true;
         if( dont_restore )
             dont_restore = false;
@@ -206,22 +241,6 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 }
             }
             panels.setState( s, -1 );
-            final String FT = "first_time";
-            if( prefs.getBoolean( FT, true ) ) {
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putBoolean( FT, false );
-                editor.commit();
-                PackageInfo pi = null;
-                try {
-                    pi = getPackageManager().getPackageInfo( getPackageName(), 0 );
-                } catch( NameNotFoundException e ) {
-                    Log.e( TAG, "Package name not found", e );
-                }
-                String about_text = getString(R.string.about_text, pi != null ? pi.versionName : "?", getString(R.string.donate_uri) );
-                
-                showInfo( about_text + getString( R.string.keys_text ) );
-            }
-
             // panels.setPanelCurrent( use_panel );
 
         }
@@ -232,8 +251,9 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         Log.d( TAG, "Pausing\n" );
         super.onPause();
         on = false;
-        SharedPreferences.Editor editor = getPreferences( MODE_PRIVATE ).edit();
         Panels.State s = panels.getState();
+        if( s == null ) return;
+        SharedPreferences.Editor editor = getPreferences( MODE_PRIVATE ).edit();
         s.store( editor );
         editor.commit();
     }
@@ -271,7 +291,8 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
     protected void onSaveInstanceState( Bundle outState ) {
         Log.i( TAG, "Saving Instance State" );
         Panels.State s = panels.getState();
-        s.store( outState );
+        if( s != null )
+            s.store( outState );
         super.onSaveInstanceState( outState );
     }
 
@@ -752,7 +773,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             case R.id.rescan:
                 if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO ) {
                     SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences( this );
-                    MediaScanEngine mse = new MediaScanEngine( this, new File( Panels.DEFAULT_LOC ), sp.getBoolean( "scan_all", false ) );
+                    MediaScanEngine mse = new MediaScanEngine( this, new File( Panels.DEFAULT_LOC ), sp.getBoolean( "scan_all", false ), true );
                     mse.setHandler( new SimpleHandler() );
                     startEngine( mse );
                 } else

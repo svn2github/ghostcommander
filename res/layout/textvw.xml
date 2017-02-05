@@ -5,7 +5,8 @@
     android:layout_height="fill_parent"
     android:fillViewport="true"
     android:scrollHorizontally="true"
-    android:fastScrollEnabled="true">
+    android:fastScrollEnabled="true"
+    >
       <TextView
           android:id="@+id/text_view" 
           android:layout_width="fill_parent"

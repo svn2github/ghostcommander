@@ -23,6 +23,7 @@ import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.Utils;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -208,7 +209,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
 
                 Utils.changeLanguage( c );
                 ToolButtons tba = new ToolButtons();
-                tba.restore( sharedPref, c );
+                tba.restore( sharedPref, c, c.isActionBar() );
                 int bfs = fnt_sz + ( fingerFriendly ? 2 : 1 );
                 for( int i = 0; i < tba.size(); i++ ) {
                     ToolButton tb = tba.get( i );
@@ -1678,17 +1679,19 @@ public class Panels implements AdapterView.OnItemSelectedListener,
 
     public final State getState() {
         //Log.v( TAG, "getState()" );
+        CommanderAdapter left_adapter = (CommanderAdapter)list[LEFT].getListAdapter();
+        if( left_adapter == null ) return null;
+        CommanderAdapter right_adapter = (CommanderAdapter)list[RIGHT].getListAdapter();
+        if( right_adapter == null ) return null;
         State s = createEmptyStateObject();
         s.current = current;
         try {
-            CommanderAdapter left_adapter = (CommanderAdapter)list[LEFT].getListAdapter();
             s.leftUri  = left_adapter.getUri();
             s.leftCrd  = left_adapter.getCredentials();
             s.leftMode = left_adapter.getMode() & ( CommanderAdapter.MODE_SORTING | CommanderAdapter.MODE_SORT_DIR );
             int pos = list[LEFT].getCurPos();
             s.leftItem = pos >= 0 ? left_adapter.getItemName( pos, false ) : "";
 
-            CommanderAdapter right_adapter = (CommanderAdapter)list[RIGHT].getListAdapter();
             s.rightUri  = right_adapter.getUri();
             s.rightCrd  = right_adapter.getCredentials();
             s.rightMode = right_adapter.getMode() & ( CommanderAdapter.MODE_SORTING | CommanderAdapter.MODE_SORT_DIR );

@@ -96,7 +96,7 @@ public class ToolButtonsProps extends ListActivity
 		setContentView( R.layout.tblist );
 
         SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
-        array.restore( shared_pref, this );	
+        array.restore( shared_pref, this, false );	
 		
 		tlv = (TouchListView)getListView();
 		adapter = new ToolButtonsAdapter();

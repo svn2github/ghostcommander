@@ -26,7 +26,7 @@ public class MediaScanEngine extends Engine implements MediaScannerConnection.Me
     private Context ctx;
     private ContentResolver cr;
     private File    folder;
-    private boolean all = false;
+    private boolean all = false, rec = true;
     private FileItem[] to_scan_a;
     private int     count = 0, num = 0;
 
@@ -38,10 +38,11 @@ public class MediaScanEngine extends Engine implements MediaScannerConnection.Me
         }
     }
     
-    public MediaScanEngine( Context ctx, File folder, boolean all ) {
+    public MediaScanEngine( Context ctx, File folder, boolean all, boolean rec ) {
         this.ctx = ctx;
         this.folder = folder;
         this.all = all;
+        this.rec = rec;
         this.cr = ctx.getContentResolver();
     }
 
@@ -94,18 +95,22 @@ public class MediaScanEngine extends Engine implements MediaScannerConnection.Me
         cursor.moveToFirst();
         do {
             count++;
-            String path = cursor.getString( pci );
-            if( !Utils.str( path ) ) continue;
-            File f = new File( path );
-            if( f.exists() ) continue;
-            Uri e_uri = MediaStore.Files.getContentUri( "external", cursor.getLong( ici ) );
-            if( e_uri == null ) continue;
+            String path = null;
+            Uri e_uri = null;
             try {
+                path = cursor.getString( pci );
+                if( !Utils.str( path ) ) continue;
+                File f = new File( path );
+                if( !this.rec && !f.getParentFile().equals( this.folder ) )
+                    continue;
+                if( f.exists() ) continue;
+                e_uri = MediaStore.Files.getContentUri( "external", cursor.getLong( ici ) );
+                if( e_uri == null ) continue;
                 String rep = ctx.getString( R.string.deleting, f.getName() );
                 sendProgress( rep, count * 100 / num );
                 cr.delete( e_uri, null, null );
             } catch( Exception e ) {
-                Log.e( TAG, "Can't delete content entry " + e_uri + " file " + path );
+                Log.e( TAG, "Can't delete content entry " + e_uri + ", file: " + path );
             }
         } while( cursor.moveToNext() );
         cursor.close();
@@ -121,7 +126,8 @@ public class MediaScanEngine extends Engine implements MediaScannerConnection.Me
             if( f == null ) continue;
             try {
                 if( f.isDirectory() ) {
-                    collectFiles( f, to_scan, lvl+1 );
+                    if( this.rec )
+                        collectFiles( f, to_scan, lvl+1 );
                 }
                 else {
                     String fn = f.getName();

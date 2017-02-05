@@ -124,7 +124,7 @@ public class ListHelper {
                 ca = ca_new;
             }
             //p.applyColors();
-            p.setPanelTitle( p.c.getString( R.string.wait ), which );
+            p.setPanelTitle( "home".equals( ca.getScheme() ) ? "" : p.c.getString( R.string.wait ), which );
           //p.setToolbarButtons( ca );
             if( crd != null )
                 ca.setCredentials( crd );
