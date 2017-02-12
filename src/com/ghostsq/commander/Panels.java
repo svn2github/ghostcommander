@@ -796,7 +796,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             Uri u = Uri.fromFile( f );
             intent.setDataAndType( u, "*/*" );
             Log.d( TAG, "Open uri " + u.toString() + " intent: " + intent.toString() );
-            if (Build.VERSION.SDK_INT == 19) {
+            if( Build.VERSION.SDK_INT == 19 ) {
                 // This will open the "Complete action with" dialog if the user doesn't have a default app set.
                 c.startActivity( intent );
             } else {

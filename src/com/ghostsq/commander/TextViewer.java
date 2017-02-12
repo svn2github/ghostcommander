@@ -3,6 +3,7 @@ package com.ghostsq.commander;
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.utils.Credentials;
+import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.Utils;
 
 import android.app.Activity;
@@ -14,6 +15,7 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -21,7 +23,9 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
+import android.widget.ImageButton;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,6 +51,20 @@ public class TextViewer extends Activity {
             if( !ab )
                 ct_enabled = requestWindowFeature( Window.FEATURE_CUSTOM_TITLE );
             setContentView( R.layout.textvw );
+            if( !ab && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 &&
+              !ForwardCompat.hasPermanentMenuKey( this ) ) {
+                ImageButton mb = (ImageButton)findViewById( R.id.menu );
+                if( mb != null ) {
+                    mb.setVisibility( View.VISIBLE );
+                    mb.setOnClickListener( new OnClickListener() {
+                        @Override
+                        public void onClick( View v ) {
+                            TextViewer.this.openOptionsMenu();
+                        }
+                    });
+                }
+            }
+            
             SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
             int fs = Integer.parseInt( shared_pref != null ? shared_pref.getString( "font_size", "12" ) : "12" );
             text_view = (TextView)findViewById( R.id.text_view );
@@ -143,7 +161,7 @@ public class TextViewer extends Activity {
         menu.add( Menu.NONE, VIEW_BOT, Menu.NONE, getString( R.string.go_end   ) ).setIcon( android.R.drawable.ic_media_next );
         menu.add( Menu.NONE, VIEW_ENC, Menu.NONE, "'" + Utils.getEncodingDescr( this, encoding, 
                                                Utils.ENC_DESC_MODE_BRIEF ) + "'" ).setIcon( android.R.drawable.ic_menu_sort_alphabetically );
-        return true;
+        menu.add( Menu.NONE, R.id.exit, Menu.NONE, getString( R.string.exit    ) ).setIcon( android.R.drawable.ic_notification_clear_all );        return true;
     }
     @Override
     public boolean onMenuItemSelected( int featureId, MenuItem item ) {
@@ -184,6 +202,9 @@ public class TextViewer extends Activity {
                 System.err.println("Exception: " + e );
             } 
             */
+        case R.id.exit:
+            finish();
+            break;
         }
         return false;
     }    

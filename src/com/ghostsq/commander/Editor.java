@@ -9,6 +9,7 @@ import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.favorites.Favorite;
 import com.ghostsq.commander.utils.Credentials;
+import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.Utils;
 
 import android.app.Activity;
@@ -18,6 +19,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
@@ -31,10 +33,12 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Scroller;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -71,6 +75,19 @@ public class Editor extends Activity implements TextWatcher, OnTouchListener, On
             if( !ab )
                 ct_enabled = requestWindowFeature( Window.FEATURE_CUSTOM_TITLE );
             setContentView(R.layout.editor);
+            if( !ab && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 &&
+              !ForwardCompat.hasPermanentMenuKey( this ) ) {
+                ImageButton mb = (ImageButton)findViewById( R.id.menu );
+                if( mb != null ) {
+                    mb.setVisibility( View.VISIBLE );
+                    mb.setOnClickListener( new OnClickListener() {
+                        @Override
+                        public void onClick( View v ) {
+                            Editor.this.openOptionsMenu();
+                        }
+                    });
+                }
+            }
             te = (EditText)findViewById( R.id.editor );
             te.addTextChangedListener( this );
             te.setOnTouchListener( this );

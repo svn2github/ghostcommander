@@ -38,6 +38,7 @@ import android.view.Window;
 import android.view.View;
 import android.view.GestureDetector;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -89,6 +90,27 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
           fl.addView( image_view );
           image_view.setVisibility( View.GONE );
           image_view.setOnTouchListener( this );
+
+          try {
+              if( !ab && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 &&
+                  !ForwardCompat.hasPermanentMenuKey( this ) ) {
+                    LayoutInflater li = (LayoutInflater)this.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+                    View fbv = li.inflate( R.layout.fly_button, fl, true );
+                    ImageButton mb = (ImageButton)fbv.findViewById( R.id.menu );
+                    if( mb != null ) {
+                        mb.setVisibility( View.VISIBLE );
+                        mb.setOnClickListener( new View.OnClickListener() {
+                            @Override
+                            public void onClick( View v ) {
+                                PictureViewer.this.openOptionsMenu();
+                            }
+                        });
+                    }
+               }
+          } catch( Exception e1 ) {
+                Log.e( TAG, "", e1 );
+          }
+          
           
           SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( this );          
             String fnt_sz_s = sharedPref.getString( "font_size", "12" );
@@ -108,7 +130,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
           stub = new CommanderStub();
         }
         catch( Throwable e ) {
-            e.printStackTrace();
+            Log.e( TAG, "", e );
         }
     }
 
