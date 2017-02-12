@@ -632,6 +632,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 break;
             case R.id.menu:
                 openOptionsMenu();
+                break;
             case R.id.oth_sh_this:
             case R.id.eq:
                 panels.makeOtherAsCurrent();
