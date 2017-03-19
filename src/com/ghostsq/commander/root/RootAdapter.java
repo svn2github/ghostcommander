@@ -247,6 +247,8 @@ public class RootAdapter extends CommanderAdapterBase {
     @Override
     public boolean readSource( Uri tmp_uri, String pass_back_on_done ) {
         try {
+            if( uri == null )
+                detectBusyBox();
             if( tmp_uri == null )
                 tmp_uri = uri;
             if( tmp_uri == null )
@@ -279,6 +281,30 @@ public class RootAdapter extends CommanderAdapterBase {
         notify( "Fail", Commander.OPERATION_FAILED );
         return false;
     }
+    
+    private void detectBusyBox() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( ctx );
+        String bbp = sharedPref.getString( "busybox_path", "busybox" );
+        if( !"busybox".equals( bbp ) ) return;
+        
+        String[] boxes = { "busybox", "toybox" };
+        String[] paths = { "/system/bin/", "/system/xbin/" };
+        
+        for( int bi = 0; bi < boxes.length; bi++ ) {
+            for( int pi = 0; pi < paths.length; pi++ ) {
+                String path = paths[pi] + boxes[bi];
+                File bbf = new File( path );
+                if( bbf.exists() ) {
+                    if( bi == 0 ) return;
+                    SharedPreferences.Editor spe = sharedPref.edit();
+                    spe.putString( "busybox_path", path );
+                    spe.commit();
+                    return;
+                }
+            }
+        }
+    }
+    
 	@Override
 	public void reqItemsSize( SparseBooleanArray cis ) {
 	    if( uri == null ) return;
@@ -840,7 +866,7 @@ public class RootAdapter extends CommanderAdapterBase {
 
     public final String getBusyBoxPath() {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( ctx );
-        return sharedPref.getString( "busybox_path", "busybox" ) + " ";            
+        return sharedPref.getString( "busybox_path", "busybox" ) + " ";
     }
     
     public void executeToViewer( String command, boolean bb ) {

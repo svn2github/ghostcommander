@@ -12,6 +12,8 @@ import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.Utils;
 
+import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -21,6 +23,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -75,15 +78,26 @@ public class Editor extends Activity implements TextWatcher, OnTouchListener, On
             if( !ab )
                 ct_enabled = requestWindowFeature( Window.FEATURE_CUSTOM_TITLE );
             setContentView(R.layout.editor);
-            if( !ab && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 &&
+            if( true || !ab && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 &&
               !ForwardCompat.hasPermanentMenuKey( this ) ) {
                 ImageButton mb = (ImageButton)findViewById( R.id.menu );
                 if( mb != null ) {
                     mb.setVisibility( View.VISIBLE );
-                    mb.setOnClickListener( new OnClickListener() {
+                    mb.setOnClickListener( new View.OnClickListener() {
+                        @SuppressLint("NewApi")
                         @Override
                         public void onClick( View v ) {
-                            Editor.this.openOptionsMenu();
+                            try {
+                                Log.d( TAG, "hasFeature(OP) " + Editor.this.getWindow().hasFeature(Window.FEATURE_OPTIONS_PANEL) );
+                                Log.d( TAG, "getActionBar() " + Editor.this.getActionBar() );
+                                new Handler().postDelayed(new Runnable() { 
+                                   public void run() { 
+                                     Editor.this.openOptionsMenu(); 
+                                   } 
+                                }, 100); 
+                            } catch( Exception e ) {
+                                Log.e( TAG, "Exception onclick", e );
+                            }
                         }
                     });
                 }
