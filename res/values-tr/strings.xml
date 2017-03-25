@@ -51,6 +51,8 @@
   <string name="forget">Hesabı Unut (uygulama çıkışları)</string>
   <string name="favs_descr">Görüntüleme ve sık kullanılan klasörler ve siteleri listenizi yönetme</string>
   <string name="exit_descr">Uygulamaları kapat</string>
+  <string name="media_descr">Sistem onları görür gibi medya dosyalarını bulun.</string>
+  <string name="external_descr">Fiziksel olarak takılı SD kart üzerinde dosyalara erişme. Bazı aygıtlarda salt okunur olabilir</string>  
   <string name="shortcut">Kısayol ekle</string>
   <string name="enter_ftp">FTP\'ye Bağlan</string>
   <string name="enter_smb">Windows PC\'ye Bağlan</string>
