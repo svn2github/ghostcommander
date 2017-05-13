@@ -68,11 +68,12 @@ public class Credentials implements Parcelable {
     @Override
     public void writeToParcel( Parcel dest, int f ) {
         byte[] enc_pw = null;
-        try {
-            enc_pw = encrypt( getRawKey( seed ), getPassword().getBytes() );
-        } catch( Exception e ) {
-            Log.e( TAG, "on password encryption", e );
-        }
+        if( password != null )
+            try {
+                enc_pw = encrypt( getRawKey( seed ), getPassword().getBytes() );
+            } catch( Exception e ) {
+                Log.e( TAG, "on password encryption", e );
+            }
         dest.writeString( getUserName() );
         dest.writeByteArray( enc_pw );
     }
