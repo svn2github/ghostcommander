@@ -43,7 +43,7 @@ public class RemountEngine extends ExecEngine {
                 to_remount = mount.getMountPoint();
             else
                 to_remount = mount.getName();
-            cmd = "mount -o remount," + mode + " " + to_remount; 
+            cmd = "mount -o " + mode + ",remount " + to_remount; 
             execute( cmd, false, 500 );
             
         }
