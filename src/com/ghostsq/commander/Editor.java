@@ -78,7 +78,7 @@ public class Editor extends Activity implements TextWatcher, OnTouchListener, On
             if( !ab )
                 ct_enabled = requestWindowFeature( Window.FEATURE_CUSTOM_TITLE );
             setContentView(R.layout.editor);
-            if( true || !ab && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 &&
+            if( !ab && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 &&
               !ForwardCompat.hasPermanentMenuKey( this ) ) {
                 ImageButton mb = (ImageButton)findViewById( R.id.menu );
                 if( mb != null ) {
