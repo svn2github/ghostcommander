@@ -285,7 +285,6 @@ public class StreamServer extends Service {
                     return;
                 }
                 String passed_uri_s = parts[1].substring( 1 );
-//passed_uri_s="/sdcard/Movies/FMA49_.avi";
                 if( !Utils.str( passed_uri_s ) ) {
                     Log.w( TAG, "No URI passed in the request" );
                     SendStatus( osw, 404 );
