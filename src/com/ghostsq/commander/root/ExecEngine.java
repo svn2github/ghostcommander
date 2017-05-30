@@ -182,18 +182,34 @@ public class ExecEngine extends Engine {
     }
 
     protected boolean procError( BufferedReader es ) throws IOException {
+        return procError( es, false, false );
+    }
+
+    protected boolean procError( BufferedReader es, boolean ignore_all, boolean ignore_chown ) throws IOException {
+        boolean err = false;
         while( es.ready() ) {
             String err_str = es.readLine();
-            if( err_str.trim().length() > 0 ) {
-                error( err_str );
-                return true;
+            if( err_str != null  ) {
+                err_str = err_str.trim();
+                if( err_str.length() > 0 ) {
+                    if( ignore_all ) {
+                        Log.w( TAG, "Ignoring error: " + err_str );
+                        continue;
+                    }
+                    if( ignore_chown && err_str.indexOf( "chown" ) >= 0 ) {
+                        Log.w( TAG, "Ignoring chown error: " + err_str );
+                        continue;
+                    }
+                    error( err_str );
+                    err = true;
+                }
             }
         }
         if( isStopReq() ) {
             error( "Canceled" );
             return true;
         }
-        return false;
+        return err;
     }
     
     public synchronized StringBuilder getResult() {

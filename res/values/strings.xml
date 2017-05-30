@@ -363,6 +363,10 @@
 <string name="summary_busybox_location">Specify the location of the BusyBox executable</string>
 <string name="su_location">Path to su</string>
 <string name="summary_su_location">Specify the location of the su executable</string>
+
+<string name="cpmv_err_ign">Ignore permission errors on copy/move</string>
+<string name="summary_cpmv_err_ign">Suppress root mode errors when a file is copied to a file system which does not support permissions.</string>
+
 <string name="scan_all">Scan all files</string>
 <string name="summary_scan_all">Uncheck to scan only media files</string>
 <string name="execute_command">Execute a command</string>

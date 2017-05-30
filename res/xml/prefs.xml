@@ -262,7 +262,12 @@
 		        android:title="@string/busybox_location" 
 		        android:summary="@string/summary_busybox_location" 
 		        android:defaultValue="busybox"/>
-            <EditTextPreference 
+		    <CheckBoxPreference 
+		        android:key="cpmv_err_ign" 
+		        android:title="@string/cpmv_err_ign" 
+		        android:summary="@string/summary_cpmv_err_ign" 
+		        android:defaultValue="false"/>
+		    <EditTextPreference 
 		        android:key="editor_activity" 
 		        android:title="@string/editor_activity" 
 		        android:summary="@string/summary_editor_activity" 

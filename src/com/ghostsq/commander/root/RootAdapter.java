@@ -631,6 +631,7 @@ public class RootAdapter extends CommanderAdapterBase {
         private String   dest;
         private boolean move = false;
         private boolean quiet;
+        private boolean ignChownErrs = false;
         private boolean permByDest = false;
         private int counter = 0;
         
@@ -646,8 +647,15 @@ public class RootAdapter extends CommanderAdapterBase {
             permByDest = true;
         }
         
+        protected final boolean getIgnoreChownError() {
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( RootAdapter.this.ctx );
+            ignChownErrs = sharedPref.getBoolean( "cpmv_err_ign", false );
+            return ignChownErrs; 
+        }     
+        
         @Override
         public void run() {
+            getIgnoreChownError();
             if( !execute() )
                 counter = 0;
             if( quiet ) {
@@ -692,13 +700,15 @@ public class RootAdapter extends CommanderAdapterBase {
                     }                    
                     String to_exec = cmd + " " + esc_src_fn + " " + esc_dest;
                     outCmd( true, to_exec, os );
-                    if( procError( es ) ) return false;
+                    if( procError( es, false, ignChownErrs ) ) return false;
                     if( probe_item != null ) {
                         Permissions src_p = new Permissions( probe_item.getAttr() );
                         String chown_cmd = "chown " + src_p.generateChownString().append(" ").append( esc_dst_fn ).toString();
                         outCmd( false, chown_cmd, os );
+                        procError( es, ignChownErrs, ignChownErrs );
                         String chmod_cmd = "chmod " + src_p.generateChmodString().append(" ").append( esc_dst_fn ).toString();
                         outCmd( true, chmod_cmd, os );
+                        procError( es, ignChownErrs, ignChownErrs );
                     }
                     if( !quiet ) sendProgress( full_name + "   ", (int)(i * conv) );
                     counter++;
@@ -969,7 +979,7 @@ public class RootAdapter extends CommanderAdapterBase {
                 osw.write( "cat " + ExecEngine.prepFileName( file_path ) + "\n" );
                 osw.flush();
                 for( int i = 0; i < 5; i++ ) {
-                    Thread.sleep( 10 );
+                    Thread.sleep( 100 );
                     if( is.available() > 0 ) break;
                     //Log.v( TAG, "Waiting the stream starts " + i );
                 }
@@ -977,8 +987,8 @@ public class RootAdapter extends CommanderAdapterBase {
                 synchronized( this ) {
                     open_done = true;
                 }
-                for( int i = 0; i < 4; i++ ) {
-                    //Log.v( TAG, "Waiting loop " + i );
+                for( int i = 0; i < 40; i++ ) {
+                    Log.v( TAG, "Waiting loop " + i );
                     synchronized( this ) {
                         //Log.v( TAG, "Waiting the stream can be closed " + i );
                         wait( 500 );
@@ -1034,6 +1044,7 @@ public class RootAdapter extends CommanderAdapterBase {
         public synchronized boolean waitUntilOpen() {
             try {
                 for( int i = 0; i < 50; i++ ) {
+                    //Log.v( TAG, "waitUntilOpen() " + i );
                     if( open_done )
                         return true;
                     wait( 100 ); 
