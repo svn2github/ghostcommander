@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -24,6 +25,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore.MediaColumns;
+import android.provider.MediaStore.Images;
 import android.text.Html;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -47,6 +50,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
+import java.util.Date;
 import java.util.List;
 
 import com.ghostsq.commander.adapters.CA;
@@ -166,7 +170,10 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
         else if( ca instanceof SAFAdapter ) {
             p_uri = SAFAdapter.getParent( uri );
         }
-        if( "gdrive".equals( scheme ) ) {
+        else if( "gdrive".equals( scheme ) ) {
+            ca_pos = -1; // too complex parent folder calculation
+        }
+        else if( "content".equals( scheme ) ) {
             ca_pos = -1; // too complex parent folder calculation
         }
         else {
@@ -662,8 +669,76 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                 if( exif_text != null )
                     info_text += exif_text;
             }
-        } else
-            info_text = "No data";
+        } else {
+            Intent in = getIntent();
+            if( in != null ) {
+                Uri uri = in.getData();
+                if( uri != null && "content".equals( uri.getScheme() ) ) {
+                    String[] projection = {
+                        MediaColumns.DATA,
+                        MediaColumns.SIZE,
+                        MediaColumns.TITLE,
+                        MediaColumns.WIDTH,
+                        MediaColumns.HEIGHT,
+                        Images.ImageColumns.DATE_TAKEN,
+                        Images.ImageColumns.ORIENTATION,
+                        Images.ImageColumns.DESCRIPTION
+                    };
+                    Cursor cursor = null;
+                    ContentResolver cr = null;
+                    try {
+                        cr = this.getContentResolver();
+            //            cursor = cr.query( baseContentUri, projection, selection, selectionParams, null );
+                        cursor = cr.query( uri, projection, null, null, null );
+                        if( cursor != null && cursor.getCount() > 0 ) {
+                            cursor.moveToFirst();
+                            String path = cursor.getString( cursor.getColumnIndex( MediaColumns.DATA ) );
+                            if( path != null && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR ) {
+                                String exif_text = ForwardCompat.getImageFileInfoHTML( path );
+                                if( exif_text != null )
+                                    info_text += exif_text;
+                            }
+                            if( info_text == null ) {
+                                StringBuilder sb = new StringBuilder();
+                                for( String col : projection ) {
+                                    String val = cursor.getString( cursor.getColumnIndex( col ) );
+                                    if( val == null ) continue;
+                                    if( col.equals( MediaColumns.DATA ) ) sb.append( "Path" );
+                                    else if( col.equals( MediaColumns.SIZE ) ) sb.append( "Size" );
+                                    else if( col.equals( MediaColumns.TITLE ) ) sb.append( "Title" );
+                                    else if( col.equals( MediaColumns.WIDTH ) ) { 
+                                        sb.append( "Width" );
+                                        val = String.valueOf( Long.parseLong( val ) / 1024. ) + "KB";
+                                    }
+                                    else if( col.equals( MediaColumns.HEIGHT ) ) {
+                                        sb.append( "Height" );
+                                        val = String.valueOf( Long.parseLong( val ) / 1024. ) + "KB";
+                                    }
+                                    else if( col.equals( Images.ImageColumns.ORIENTATION ) ) sb.append( "Orientation" );
+                                    else if( col.equals( Images.ImageColumns.DESCRIPTION ) ) sb.append( "Description" );
+                                    else if( col.equals( Images.ImageColumns.DATE_TAKEN ) ) {
+                                        sb.append( "Date taken" );
+                                        val = (new Date(Long.parseLong( val ) )).toString();
+                                    }
+                                    sb.append( ": " );
+                                    sb.append( val );
+                                    sb.append( "<br/>\n" );
+                                }
+                                info_text = sb.toString();
+                            }
+                        }
+                    } catch( Throwable e ) {
+                        Log.e( TAG, "on query", e );
+                    }
+                    finally {
+                        cursor.close();
+                    }
+                    
+                }
+            }
+            if( info_text == null )
+                info_text = "No data";
+        }
         text_view.setText( Html.fromHtml( info_text ));
         builder.setView(layout);        
         builder.show();

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.ghostsq.commander.Commander;
+import com.ghostsq.commander.FileProvider;
 import com.ghostsq.commander.adapters.Engines.IReciever;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.utils.ForwardCompat;
@@ -32,10 +33,12 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.ParcelFileDescriptor;
 import android.os.PowerManager;
 import android.provider.DocumentsContract;
 import android.provider.DocumentsContract.Document;
 import android.provider.MediaStore;
+import android.system.Os;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ContextMenu;
@@ -116,8 +119,70 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
         return volume != null && volume.startsWith( "primary" );
     }
 
+    public static String getMime( Context ctx, Uri u ) {
+        Cursor c = null;
+        try {
+            final String[] projection = { Document.COLUMN_MIME_TYPE };
+            c = ctx.getContentResolver().query( u, projection, null, null, null );
+            if( c.getCount() > 0 ) {
+                c.moveToFirst();
+                return c.getString( 0 );
+            }
+        } catch( Exception e ) {
+        } finally {
+            if( c != null ) c.close();
+        }
+        return null;
+    }
+    
+    // see https://stackoverflow.com/questions/30546441/android-open-file-with-intent-chooser-from-uri-obtained-by-storage-access-frame/31283751#31283751
+    public static String getFdPath( ParcelFileDescriptor fd ) {
+        final String resolved;
+
+        try {
+            final File procfsFdFile = new File( "/proc/self/fd/" + fd.getFd() );
+
+            if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
+                // Returned name may be empty or "pipe:", "socket:", "(deleted)"
+                // etc.
+                resolved = Os.readlink( procfsFdFile.getAbsolutePath() );
+            } else {
+                // Returned name is usually valid or empty, but may start from
+                // funny prefix if the file does not have a name
+                resolved = procfsFdFile.getCanonicalPath();
+            }
+
+            if( !Utils.str( resolved ) || resolved.charAt( 0 ) != '/' || 
+                    resolved.startsWith( "/proc/" ) || resolved.startsWith( "/fd/" ) )
+                return null;
+        } catch( IOException ioe ) {
+            // This exception means, that given file DID have some name, but it is
+            // too long, some of symlinks in the path were broken or, most
+            // likely, one of it's directories is inaccessible for reading.
+            // Either way, it is almost certainly not a pipe.
+            return "";
+        } catch( Exception errnoe ) {
+            // Actually ErrnoException, but base type avoids VerifyError on old
+            // versions
+            // This exception should be VERY rare and means, that the descriptor
+            // was made unavailable by some Unix magic.
+            return null;
+        }
+
+        return resolved;
+    }
+    
     public final String getPath( Uri u, boolean dir ) {
         try {
+            ContentResolver cr = ctx.getContentResolver();
+            ParcelFileDescriptor pfd = cr.openFileDescriptor( u, "r" );
+            if( pfd != null ) {
+                String path = getFdPath( pfd );
+                Log.d( TAG, "Got path: " + path );
+                if( Utils.str( path ) )
+                    return path;
+            }
+            
             final List<String> paths = u.getPathSegments();
             if( paths.size() < 4 ) return null;
             String path_part = paths.get( 3 );
@@ -217,14 +282,8 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                 String document_id = DocumentsContract.getDocumentId( u );
                 Uri   children_uri = DocumentsContract.buildChildDocumentsUriUsingTree( u, document_id );
                 //Log.d( TAG, "Children URI:" + children_uri );
-                final String[] projection = {
-                     Document.COLUMN_DOCUMENT_ID,
-                     Document.COLUMN_DISPLAY_NAME,
-                     Document.COLUMN_LAST_MODIFIED,
-                     Document.COLUMN_MIME_TYPE,
-                     Document.COLUMN_SIZE
-                };
-              c = cr.query( children_uri, projection, null, null, null);
+                String[] projection = colIds(); 
+                c = cr.query( children_uri, projection, null, null, null);
             } catch( SecurityException e ) {
                 Log.w( TAG, "Security error on " + u.toString(), e );
                 return null;
@@ -234,22 +293,10 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
             if( c != null ) {
               ArrayList<SAFItem>  tmp_list = new ArrayList<SAFItem>();
               if( c.getCount() == 0 ) return tmp_list; 
-              int ici = c.getColumnIndex( Document.COLUMN_DOCUMENT_ID );
-              int nci = c.getColumnIndex( Document.COLUMN_DISPLAY_NAME );
-              int sci = c.getColumnIndex( Document.COLUMN_SIZE );
-              int mci = c.getColumnIndex( Document.COLUMN_MIME_TYPE );
-              int dci = c.getColumnIndex( Document.COLUMN_LAST_MODIFIED );
+              int[] ii = colInds( c );
               c.moveToFirst();
               do {
-                  SAFItem item = new SAFItem();
-                  String id = c.getString( ici );
-                  item.origin = DocumentsContract.buildDocumentUriUsingTree( u, id );
-                  item.attr = c.getString( mci );
-                  item.dir = Document.MIME_TYPE_DIR.equals( item.attr ); 
-                  item.name = ( item.dir ? "/" : "" ) + c.getString( nci );
-                  item.size = c.getLong( sci );
-                  item.date = new Date( c.getLong( dci ) );
-                  if( item.dir ) item.size = -1;
+                  SAFItem item = rowToItem( c, u, ii );
                   tmp_list.add( item );
               } while( c.moveToNext() );
               return tmp_list;
@@ -261,6 +308,47 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
         }
         return null;
     }
+
+    private final String[] colIds() {
+      final String[] projection = {
+         Document.COLUMN_DOCUMENT_ID,
+         Document.COLUMN_DISPLAY_NAME,
+         Document.COLUMN_LAST_MODIFIED,
+         Document.COLUMN_MIME_TYPE,
+         Document.COLUMN_SIZE
+      };
+      return projection;
+   }
+
+    private final int[] colInds( Cursor c ) {
+      int[] ii = new int[5];
+      ii[0] = c.getColumnIndex( Document.COLUMN_DOCUMENT_ID );
+      ii[1] = c.getColumnIndex( Document.COLUMN_DISPLAY_NAME );
+      ii[2] = c.getColumnIndex( Document.COLUMN_SIZE );
+      ii[3] = c.getColumnIndex( Document.COLUMN_MIME_TYPE );
+      ii[4] = c.getColumnIndex( Document.COLUMN_LAST_MODIFIED );
+      return ii;
+    }
+    
+    private final SAFItem rowToItem( Cursor c, Uri u, int[] ii ) {
+      int ici = ii[0];
+      int nci = ii[1]; 
+      int sci = ii[2]; 
+      int mci = ii[3];
+      int dci = ii[4];
+        
+      SAFItem item = new SAFItem();
+      String id = c.getString( ici );
+      item.origin = DocumentsContract.buildDocumentUriUsingTree( u, id );
+      item.mime = c.getString( mci );
+      item.attr = item.mime; 
+      item.dir = Document.MIME_TYPE_DIR.equals( item.attr ); 
+      item.name = ( item.dir ? "/" : "" ) + c.getString( nci );
+      item.size = c.getLong( sci );
+      item.date = new Date( c.getLong( dci ) );
+      if( item.dir ) item.size = -1;
+      return item;
+   }
     
     @Override
     public boolean readSource( Uri tmp_uri, String pass_back_on_done ) {
@@ -363,11 +451,17 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
             else {
                 Uri to_open;
                 String full_name = getItemName( position, true );
-                if( full_name != null && full_name.charAt( 0 ) == '/' )
+                if( full_name != null && full_name.charAt( 0 ) == '/' && full_name.indexOf( "media_rw" ) < 0 ) {
                     to_open = Uri.parse( Utils.escapePath( full_name ) );
-                else
+                    commander.showInfo( "Uri:" + to_open.toString() );
+                    commander.Open( to_open, null );
+                } else {
                     to_open = (Uri)item.origin;
-                commander.Open( to_open, null );
+                    to_open = FileProvider.makeURI( "SAF", to_open );
+                    Intent in = new Intent( Intent.ACTION_VIEW );
+                    in.setDataAndType( to_open, item.mime );
+                    commander.issue( in, 0 );
+                }
             }
         }
     }
@@ -421,6 +515,27 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
 	
     @Override
     public Item getItem( Uri u ) {
+        Cursor c = null;
+        try {
+            final String[] projection = colIds();
+            ContentResolver cr = ctx.getContentResolver();
+            c = cr.query( u, projection, null, null, null );
+            if( c.getCount() == 0 ) {
+                Log.e( TAG, "Can't query uri " + u );
+                return null;
+            }
+            c.moveToFirst();
+            int[] ii = colInds( c );
+            SAFItem item = rowToItem( c, u, ii );
+            return item;
+        } catch( Exception e ) {
+        } finally {
+            if( c != null ) c.close();
+        }
+        return null;
+    }
+    
+    public Item getItem_( Uri u ) {
         try {
             // FIXME: found the cases where this method is called from
             // should it return a real path on the content path?
@@ -629,23 +744,6 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
             }
         }
         
-        private final String getMime( Uri u ) {
-            Cursor c = null;
-            try {
-                final String[] projection = { Document.COLUMN_MIME_TYPE };
-                
-                c = cr.query( u, projection, null, null, null );
-                if( c.getCount() > 0 ) {
-                    c.moveToFirst();
-                    return c.getString( 0 );
-                }
-            } catch( Exception e ) {
-            } finally {
-                if( c != null ) c.close();
-            }
-            return null;
-        }
-        
         private final int copyFiles( SAFItem[] list, Uri dest ) throws InterruptedException {
             SAFItem item = null;
             for( int i = 0; i < list.length; i++ ) {
@@ -665,7 +763,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                     String fn = item.name;
                     String to_append = "%2f" + Utils.escapePath( fn );
                     dest_uri = dest.buildUpon().encodedPath( dest.getEncodedPath() + to_append ).build();
-                    String mime = getMime( dest_uri );
+                    String mime = SAFAdapter.getMime( SAFAdapter.this.ctx, dest_uri );
                     Uri item_uri = (Uri)item.origin;
                     if( item.dir ) {
                         if( depth++ > 40 ) {
@@ -963,23 +1061,6 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
             }
         }
         
-        private final String getMime( Uri u ) {
-            Cursor c = null;
-            try {
-                final String[] projection = { Document.COLUMN_MIME_TYPE };
-                
-                c = cr.query( u, projection, null, null, null );
-                if( c.getCount() > 0 ) {
-                    c.moveToFirst();
-                    return c.getString( 0 );
-                }
-            } catch( Exception e ) {
-            } finally {
-                if( c != null ) c.close();
-            }
-            return null;
-        }
-        
         private final int copyFiles( File[] list, Uri dest ) throws InterruptedException {
             File file = null;
             for( int i = 0; i < list.length; i++ ) {
@@ -999,7 +1080,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                     String fn = file.getName();
                     String to_append = "%2f" + Utils.escapePath( fn );
                     dest_uri = dest.buildUpon().encodedPath( dest.getEncodedPath() + to_append ).build();
-                    String mime = getMime( dest_uri );
+                    String mime = SAFAdapter.getMime( SAFAdapter.this.ctx, dest_uri );
                     if( file.isDirectory() ) {
                         if( depth++ > 40 ) {
                             error( ctx.getString( R.string.too_deep_hierarchy ) );

@@ -93,12 +93,22 @@ public class ForwardCompat
     
     @TargetApi(Build.VERSION_CODES.FROYO)
     public static String toBase64( byte[] in ) {
-        return Base64.encodeToString( in, Base64.DEFAULT );
+        return toBase64( in, Base64.DEFAULT );
+    }
+
+    @TargetApi(Build.VERSION_CODES.FROYO)
+    public static String toBase64( byte[] in, int flags ) {
+        return Base64.encodeToString( in, flags );
     }
 
     @TargetApi(Build.VERSION_CODES.FROYO)
     public static byte[] fromBase64( String in ) {
-        return Base64.decode( in, Base64.DEFAULT );
+        return fromBase64( in, Base64.DEFAULT );
+    }
+
+    @TargetApi(Build.VERSION_CODES.FROYO)
+    public static byte[] fromBase64( String in, int flags ) {
+        return Base64.decode( in, flags );
     }
 
     public enum PubPathType {
