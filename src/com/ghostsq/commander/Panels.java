@@ -11,6 +11,7 @@ import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.adapters.FSAdapter;
 import com.ghostsq.commander.adapters.FavsAdapter;
 import com.ghostsq.commander.adapters.HomeAdapter;
+import com.ghostsq.commander.adapters.SAFAdapter;
 import com.ghostsq.commander.adapters.ZipAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapter.Feature;
 import com.ghostsq.commander.favorites.Favorite;
@@ -775,34 +776,64 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             in.putParcelableArrayListExtra( Intent.EXTRA_STREAM, uris );
             c.startActivity( Intent.createChooser( in, c.getString( R.string.send_title ) ) );
         } else {
-            File f = getCurrentFile();
-            if( f != null ) {
-                Intent in = new Intent( Intent.ACTION_SEND );
-                in.setType( "*/*" );
-                in.putExtra( Intent.EXTRA_SUBJECT, f.getName() );
-
+            Intent in = new Intent( Intent.ACTION_SEND );
+            CommanderAdapter ca = getListAdapter( true );
+            int pos = getSingle( true );
+            if( pos < 0 ) return;
+            String fn = ca.getItemName( pos, false );
+            Uri uri = null;
+            if( ca instanceof SAFAdapter ) {
+                SAFAdapter safa = (SAFAdapter)ca;
+                uri = safa.getItemOpenableUri( pos );
+                in.addFlags( Intent.FLAG_GRANT_READ_URI_PERMISSION );
+            } else {
+                File f = getCurrentFile();
+                if( f == null ) return;
+                fn = f.getName();
                 String esc_fn = Utils.escapePath( f.getAbsolutePath() );
-                Uri uri = Uri.parse( use_content ? FileProvider.URI_PREFIX + esc_fn : "file://" + esc_fn );
-                in.putExtra( Intent.EXTRA_STREAM, uri );
-                c.startActivity( Intent.createChooser( in, c.getString( R.string.send_title ) ) );
+                uri = Uri.parse( use_content ? FileProvider.URI_PREFIX + esc_fn : "file://" + esc_fn );
             }
+            if( uri == null ) {
+                Log.e( TAG, "Can't obtain an URI to send" );
+                return;
+            }
+            String ext = Utils.getFileExt( fn );
+            String mime = Utils.str( ext ) ? Utils.getMimeByExt( ext ) : "*/*";
+            in.setType( mime );
+            in.putExtra( Intent.EXTRA_SUBJECT, fn );
+            in.putExtra( Intent.EXTRA_STREAM, uri );
+            c.startActivity( Intent.createChooser( in, c.getString( R.string.send_title ) ) );
         }
     }
 
     public final void tryToOpen() {
-        File f = getCurrentFile();
-        if( f != null ) {
-            Intent intent = new Intent( Intent.ACTION_VIEW );
-            Uri u = Uri.fromFile( f );
-            intent.setDataAndType( u, "*/*" );
-            Log.d( TAG, "Open uri " + u.toString() + " intent: " + intent.toString() );
-            if( Build.VERSION.SDK_INT == 19 ) {
-                // This will open the "Complete action with" dialog if the user doesn't have a default app set.
-                c.startActivity( intent );
-            } else {
-                c.startActivity( Intent.createChooser( intent, c.getString( R.string.open_title ) ) );
-            }
+        Intent intent = new Intent( Intent.ACTION_VIEW );
+        Uri u = null;
+        CommanderAdapter ca = getListAdapter( true );
+        if( ca instanceof SAFAdapter ) {
+            SAFAdapter safa = (SAFAdapter)ca;
+            int pos = getSingle( true );
+            if( pos < 0 ) return;
+            u = safa.getItemOpenableUri( pos );
+            intent.addFlags( Intent.FLAG_GRANT_READ_URI_PERMISSION );
+        } else {
+            File f = getCurrentFile();
+            if( f == null ) return; 
+            u = Uri.fromFile( f );
         }
+        if( u == null ) {
+            Log.e( TAG, "Can't obtain an URI to open with" );
+            return;
+        }
+        intent.setDataAndType( u, "*/*" );
+        Log.d( TAG, "Open uri " + u.toString() + " intent: " + intent.toString() );
+        if( Build.VERSION.SDK_INT == 19 ) {
+            // This will open the "Complete action with" dialog if the user doesn't have a default app set.
+            c.startActivity( intent );
+        } else {
+            c.startActivity( Intent.createChooser( intent, c.getString( R.string.open_title ) ) );
+        }
+        
     }
 
     public final void copyName() {

@@ -54,7 +54,7 @@
 <string name="local_descr">Browse, organize and modify the contents of the primary file system</string>
 <string name="external_descr">Access files on the physically inserted SD card. It may be read-only on some devices</string>
 <string name="media_descr">Browse your media files as the system sees them.</string>
-<string name="saf_descr">Modify the external SD card via the Storage Access Framework interface</string>
+<string name="saf_descr">Modify the external SD card or USB-OTG via the Storage Access Framework interface</string>
 <string name="ftp_descr">Connect to an FTP server</string>
 <string name="sftp_descr">Connect to an SSH FTP (sftp) server</string>
 <string name="smb_descr">Connect to shared folders on a Windows machine</string>

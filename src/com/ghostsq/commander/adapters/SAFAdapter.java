@@ -92,12 +92,12 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
         return "saf:" + getPath( uri, true );
     }
 
+    private static final String PATH_TREE = "tree";
+    
     private static boolean isTreeUri( Uri uri ) {
-        final String PATH_TREE = "tree";
         final List<String> paths = uri.getPathSegments();
         return paths.size() == 2 && PATH_TREE.equals(paths.get(0));
     }
-    
     
     private static boolean isRootDoc( Uri uri ) {
         final List<String> paths = uri.getPathSegments();
@@ -174,13 +174,14 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
     
     public final String getPath( Uri u, boolean dir ) {
         try {
+            String fd_path = null;
             ContentResolver cr = ctx.getContentResolver();
             ParcelFileDescriptor pfd = cr.openFileDescriptor( u, "r" );
             if( pfd != null ) {
-                String path = getFdPath( pfd );
-                Log.d( TAG, "Got path: " + path );
-                if( Utils.str( path ) )
-                    return path;
+                fd_path = getFdPath( pfd );
+                Log.d( TAG, "Got path: " + fd_path );
+                if( Utils.str( fd_path ) && fd_path.indexOf( "media_rw" ) < 0 )
+                    return fd_path;
             }
             
             final List<String> paths = u.getPathSegments();
@@ -198,6 +199,10 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                     File probe;
                     volume = volume.substring( 0, volume.length()-1 );
                     if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ) {
+                        full_path = "/storage/" + volume + "/" + sub_path;
+                        probe = new File( full_path );
+                        if( dir ? probe.isDirectory() : probe.isFile() ) return full_path;  
+                        
                         full_path = "/mnt/media_rw/" + volume + "/" + sub_path;
                         probe = new File( full_path );
                         if( dir ? probe.isDirectory() : probe.isFile() ) return full_path;  
@@ -210,7 +215,11 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                         }
                     }
                 } catch( Exception e ) {
+                    Log.w( TAG, "Can't resolve uri to a path: " + u );
                 }
+                if( Utils.str( fd_path ) )
+                    return fd_path;
+                
                 if( path_root == null )
                     path_root = volume; // better than nothing
             }
@@ -365,7 +374,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
             ArrayList<SAFItem> tmp_list = getChildren( uri );
             if( tmp_list == null ) {
                 SAFAdapter.saveURI( ctx, null );
-                commander.showError( s( R.string.fail ) );
+                commander.showError( s( R.string.nothing_to_open ) );
                 commander.Navigate( Uri.parse( HomeAdapter.DEFAULT_LOC ), null, null );
                 return false;
             }
@@ -449,23 +458,47 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
             if( item.dir )
                 commander.Navigate( (Uri)item.origin, null, null );
             else {
-                Uri to_open;
-                String full_name = getItemName( position, true );
-                if( full_name != null && full_name.charAt( 0 ) == '/' && full_name.indexOf( "media_rw" ) < 0 ) {
-                    to_open = Uri.parse( Utils.escapePath( full_name ) );
-                    commander.showInfo( "Uri:" + to_open.toString() );
-                    commander.Open( to_open, null );
-                } else {
-                    to_open = (Uri)item.origin;
-                    to_open = FileProvider.makeURI( "SAF", to_open );
+                Uri to_open = getItemOpenableUri( position );
+                if( to_open == null ) {
+                    Log.w( TAG, "No URI to open item " + item );
+                    return;
+                }
+                if( "content".equals( to_open.getScheme() ) ) {
                     Intent in = new Intent( Intent.ACTION_VIEW );
                     in.setDataAndType( to_open, item.mime );
+                    in.addFlags( Intent.FLAG_GRANT_READ_URI_PERMISSION
+                               | Intent.FLAG_GRANT_WRITE_URI_PERMISSION );
                     commander.issue( in, 0 );
+                } else {
+                    Log.v( TAG, "Uri:" + to_open.toString() );
+                    commander.Open( to_open, null );
                 }
             }
         }
     }
 
+    public Uri getItemOpenableUri( int position ) {
+        try {
+            Item item = items[position - 1];
+            String full_name = getItemName( position, true );
+            if( full_name != null && full_name.charAt( 0 ) == '/' && full_name.indexOf( "media_rw" ) < 0 ) {
+                Uri.Builder ub = new Uri.Builder();
+                ub.scheme( "file" ).encodedPath( full_name );
+                return ub.build();
+            } else {
+                Uri u = (Uri)item.origin;
+                if( u == null ) return null;
+                return u;
+                /*
+                    return FileProvider.makeURI( "SAF", (Uri)item.origin );
+                */
+            }
+        } catch( Exception e ) {
+            Log.e( TAG, "pos:" + position, e );
+        }
+        return null;
+    }    
+    
     @Override
     public Uri getItemUri( int position ) {
         try {

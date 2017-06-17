@@ -48,6 +48,7 @@ public interface CommanderAdapter {
         private Drawable  thumbnail;
         private long      thumbnailUsed;
         public  int       colorCache = 0;
+        public  boolean   need_thumb = false, no_thumb = false, thumb_is_icon = false, thumb_pending = false;
         public  Item() {}
         public  Item( String name_ )    { name = name_; }
         public  final boolean  isThumbNail()              { return thumbnail != null; }
@@ -61,7 +62,10 @@ public interface CommanderAdapter {
             }
             return false;
         }
-        public boolean  need_thumb = false, no_thumb = false, thumb_is_icon = false, thumb_pending = false;
+        @Override
+        public String toString() {
+            return name;
+        }
     }
     
     /**

@@ -854,7 +854,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 Log.d( TAG, "Open uri " + uri.toString() + " intent: " + i.toString() );
                 startActivityForResult( i, REQUEST_CODE_OPEN );
             }
-            else if( !Utils.str( scheme ) ) {
+            else if( !Utils.str( scheme ) || "file".equals( scheme ) ) {
                 Intent i = new Intent();
                 Intent op_intent = starting_intent;
                 if( op_intent != null ) {

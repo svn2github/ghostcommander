@@ -78,6 +78,7 @@ public final class Utils {
             { ".jpeg", "image/jpeg", C_IMAGE }, 
             { ".jpg",  "image/jpeg", C_IMAGE },
             { ".js",   "text/javascript", C_TEXT },
+            { ".lst",  "text/plain", C_TEXT },
             { ".lzh",  "application/x-lzh", C_ZIP },
             { ".m3u",  "audio/x-mpegurl", C_AUDIO }, 
             { ".md5",  "application/x-md5", C_APP },
