@@ -52,9 +52,9 @@
 <string name="forget">Forget (app exits)</string>
 <string name="favs_descr">View and manage your list of favorite folders and sites</string>
 <string name="local_descr">Browse, organize and modify the contents of the primary file system</string>
-<string name="external_descr">Access files on the physically inserted SD card. It may be read-only on some devices</string>
+<string name="external_descr">Access files on the physically inserted SD card. It may be read-only on some devices. Use the SAF mode in such a case.</string>
 <string name="media_descr">Browse your media files as the system sees them.</string>
-<string name="saf_descr">Modify the external SD card or USB-OTG via the Storage Access Framework interface</string>
+<string name="saf_descr">Modify the external SD card or USB-OTG via the Storage Access Framework (SAF) interface</string>
 <string name="ftp_descr">Connect to an FTP server</string>
 <string name="sftp_descr">Connect to an SSH FTP (sftp) server</string>
 <string name="smb_descr">Connect to shared folders on a Windows machine</string>
@@ -449,6 +449,16 @@ items and the other side will select them.
 Copy or move files and folders by first choosing the target destination
 in one panel, then swipe (or toggle) back to the other panel and select
 the items you wish to transfer.
+</p>
+<h3>EXTERNAL CARDS AND USB OTG</h3>
+<p>
+Due to the system restrictions, direct writing access to the files on an external drive
+is forbdden. Please use the \"Storage Access Framework\" (SAF) mode to make changes on
+such locations.<br/>
+The SAF mode asks the desired location on the first access and memorizes the choice
+further on. To make a choice again (in a case when a different drive was inserted),
+tap and hold on the SAF item in the \"home:\" screen, then choose \"Open\".
+
 </p>
 <h3>ZIP FILES</h3>
 <p>
