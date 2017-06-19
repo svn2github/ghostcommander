@@ -224,8 +224,10 @@
   <string name="sz_file"><![CDATA[文件： \"%s\"]]></string>
   <string name="sz_files"><![CDATA[数量： %d ]]></string>
   <string name="sz_Nbytes"><![CDATA[\n大小： %1$s]]></string>
+  <string name="sz_bytes">&#160;(%db)</string>
   <string name="sz_lastmod"><![CDATA[\n\n修改时间：\n ]]></string>
   <string name="sz_total"><![CDATA[总计： %1$s\n空闲： %2$s]]></string>
+  <string name="busy">繁忙！</string>
   <string name="cd_title">转到</string>
   <string name="cd_prompt">更改目录至：</string>
   <string name="not_supported">此操作不被允许</string>
@@ -244,6 +246,7 @@
   <string name="username">用户名：</string>
   <string name="password">密码：</string>
   <string name="command">命令：</string>
+  <string name="use_busybox">busybox</string>
   <string name="user">所有者</string>
   <string name="group">用户组</string>
   <string name="other">其他</string>
@@ -280,6 +283,8 @@
   <string name="summary_show_icons">显示项目的图标而不是仅显示文本</string>
   <string name="toolbar_settings">工具栏</string>
   <string name="summary_toolbar_settings">定制屏幕下方的工具栏</string>
+  <string name="show_actionbar">启用操作栏</string>
+  <string name="summary_show_actionbar">在屏幕顶部显示操作栏。需要重启。</string>
   <string name="show_toolbar">启用工具栏</string>
   <string name="summary_show_toolbar">显示屏幕下方的工具栏</string>
   <string name="show_hotkeys">显示热键</string>
