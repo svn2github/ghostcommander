@@ -20,7 +20,9 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.ListPreference;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
@@ -32,7 +34,8 @@ import android.widget.Toast;
 
 public class Prefs extends PreferenceActivity implements Preference.OnPreferenceClickListener,
                                                          RGBPickerDialog.ResultSink,
-                                                         SelZoneDialog.ResultSink
+                                                         SelZoneDialog.ResultSink, 
+                                                         OnPreferenceChangeListener
 {
     private static final String TAG = "GhostCommander.Prefs"; 
     public  static final String COLORS_PREFS = "colors"; 
@@ -45,6 +48,8 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         try {
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences( this );
+            Utils.setTheme( this, sp.getString( "color_themes", "d" ) );
             Utils.changeLanguage( this );
             boolean ab = Utils.setActionBar( this );
             super.onCreate( savedInstanceState );
@@ -75,6 +80,10 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
             if( color_picker_pref != null )
                 color_picker_pref.setOnPreferenceClickListener( this );
 
+            ListPreference l = (ListPreference)findPreference( "color_themes" );
+            if( l != null )
+                l.setOnPreferenceChangeListener( this );
+            
             Preference tool_buttons_pref = (Preference)findPreference( TOOLBUTTONS );
             if( tool_buttons_pref != null )
                 tool_buttons_pref.setOnPreferenceClickListener( this );
@@ -110,6 +119,14 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
         }
     }
 
+    @Override
+    public boolean onPreferenceChange( Preference p, Object v ) {
+        if( !"color_themes".equals( p.getKey() ) ) return true;
+        if( !(v instanceof String) ) return false;
+        ck.setTheme( (String)v );
+        return true;
+    }
+    
     @Override
     public boolean onPreferenceClick( Preference preference ) {
         try {
@@ -159,25 +176,7 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
     }
     
     public int getDefaultColor( String key, boolean alt ) {
-        return getDefaultColor( this, key, alt );
-    }
-    public static int getDefaultColor( Context ctx, String key, boolean alt ) {
-        Resources r = ctx.getResources();
-        if( key.equals( ColorsKeeper.CUR_COLORS ) ) return alt ? r.getColor( R.color.cur_def ) : 0;
-        if( key.equals( ColorsKeeper.BTN_COLORS ) ) {
-            final int GINGERBREAD = 9;
-            if( android.os.Build.VERSION.SDK_INT >= GINGERBREAD )
-                return r.getColor( R.color.btn_def );
-            else
-                return alt ? r.getColor( R.color.btn_odf ) : 0;
-        }
-        if( alt ) return 0;
-        if( key.equals( ColorsKeeper.BGR_COLORS ) ) return r.getColor( R.color.bgr_def );
-        if( key.equals( ColorsKeeper.SEL_COLORS ) ) return r.getColor( R.color.sel_def );
-        if( key.equals( ColorsKeeper.SFG_COLORS ) ) return r.getColor( R.color.fgr_def );
-        if( key.equals( ColorsKeeper.TTL_COLORS ) ) return r.getColor( R.color.ttl_def );
-        if( key.equals( ColorsKeeper.FGR_COLORS ) ) return r.getColor( R.color.fgr_def );
-        return 0;
+        return ColorsKeeper.getDefaultColor( this, key, alt );
     }
 
     @Override

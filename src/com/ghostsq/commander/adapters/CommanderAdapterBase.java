@@ -514,25 +514,27 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
             }
             int fg_color = ck != null ? ( item.sel ? ck.sfgColor : ck.fgrColor ) : ctx.getResources().getColor( R.color.fgr_def );
             int fg_color_m = fg_color;
-            if( name == null || item.colorCache != 0 )
-                fg_color_m = item.colorCache; 
-            else {
-                try {
-                    for( int i = 0; i < typeColors.length; i++ ) {
-                        for( int j = 0; j < filePatterns[i].length; j++ ) {
-                            Pattern fp = filePatterns[i][j];
-                            Matcher m = fp.matcher( name );
-                            if( m != null && m.matches() ) {
-                                 fg_color_m = typeColors[i];
-                                 item.colorCache = fg_color_m;
-                                 break;
+            if( !item.sel ) {
+                if( name == null || item.colorCache != 0 )
+                    fg_color_m = item.colorCache; 
+                else {
+                    try {
+                        for( int i = 0; i < typeColors.length; i++ ) {
+                            for( int j = 0; j < filePatterns[i].length; j++ ) {
+                                Pattern fp = filePatterns[i][j];
+                                Matcher m = fp.matcher( name );
+                                if( m != null && m.matches() ) {
+                                     fg_color_m = typeColors[i];
+                                     item.colorCache = fg_color_m;
+                                     break;
+                                }
                             }
+                            if( fg_color_m != fg_color )
+                                break;
                         }
-                        if( fg_color_m != fg_color )
-                            break;
+                    } catch( Exception e ) {
+                        Log.e( TAG, "file: " + name, e );
                     }
-                } catch( Exception e ) {
-                    Log.e( TAG, "file: " + name, e );
                 }
             }
             if( nameView != null ) {

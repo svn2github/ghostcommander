@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
@@ -17,13 +16,12 @@ import java.io.OutputStream;
 
 import com.ghostsq.commander.R;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
@@ -80,7 +78,7 @@ public final class Utils {
             { ".js",   "text/javascript", C_TEXT },
             { ".lst",  "text/plain", C_TEXT },
             { ".lzh",  "application/x-lzh", C_ZIP },
-            { ".m3u",  "audio/x-mpegurl", C_AUDIO }, 
+            { ".m3u",  "audio/mpegurl", C_AUDIO }, 
             { ".md5",  "application/x-md5", C_APP },
             { ".mid",  "audio/midi", C_AUDIO }, 
             { ".midi", "audio/midi", C_AUDIO }, 
@@ -480,6 +478,21 @@ public final class Utils {
         }
     }
 
+    @SuppressLint("InlinedApi")
+    public static void setTheme( Context ctx, String code ) {
+        int t_id = 0;
+        if( "l".equals( code ) ) {
+            t_id = Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH ?
+                android.R.style.Theme_DeviceDefault_Light :
+                android.R.style.Theme_Light;
+        } else {
+            t_id = Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH ?
+                android.R.style.Theme_DeviceDefault :
+                android.R.style.Theme;
+        }
+        ctx.setTheme( t_id );
+    }
+    
     public final static CharSequence readStreamToBuffer( InputStream is, String encoding ) {
         if( is != null ) {
             try {

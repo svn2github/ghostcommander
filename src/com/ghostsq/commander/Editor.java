@@ -65,9 +65,10 @@ public class Editor extends Activity implements TextWatcher, OnTouchListener, On
     /** Called when the activity is first created. */
     @Override
     public void onCreate( Bundle savedInstanceState ) {
+        SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
+        Utils.setTheme( this, shared_pref.getString( "color_themes", "d" ) );
         super.onCreate( savedInstanceState );
         try {
-            SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
             SharedPreferences prefs = getPreferences( MODE_PRIVATE );
             if( prefs != null ) {
                 encoding  = prefs.getString( SP_ENC, "" );

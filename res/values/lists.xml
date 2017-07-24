@@ -116,4 +116,15 @@
         <item>EUC-JP</item>
         <item>iso-2022-jp</item>
     </string-array>
+
+    <string-array name="color_themes">
+        <item>Dark</item>
+        <item>Light</item>
+        <item>Norton</item>
+    </string-array>
+    <string-array name="color_themes_vals">
+        <item>d</item>
+        <item>l</item>
+        <item>n</item>
+    </string-array>
 </resources>

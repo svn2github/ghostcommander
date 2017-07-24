@@ -5,4 +5,5 @@
 
     <style name="AsDialog" parent="android:style/Theme.Dialog">
     </style>
+    
 </resources>

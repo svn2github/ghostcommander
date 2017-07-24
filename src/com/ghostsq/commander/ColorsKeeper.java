@@ -8,8 +8,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.preference.PreferenceManager;
+import android.util.Log;
 
 public final class ColorsKeeper {
+    private static final String TAG = "ColorsKeeper";
     public  static final String BGR_COLORS = "bgr_color_picker"; 
     public  static final String FGR_COLORS = "fgr_color_picker"; 
     public  static final String SEL_COLORS = "sel_color_picker"; 
@@ -110,22 +114,108 @@ public final class ColorsKeeper {
             }
         }
     }
-    public  ArrayList<FileTypeColor>  ftColors;
     
-    public boolean isButtonsDefault() {
-        return btnColor == 0x00000000;
-    }
+    public  ArrayList<FileTypeColor>  ftColors;
     
     public ColorsKeeper( Context ctx_ ) {
         ctx = ctx_;
         Resources  r = ctx.getResources();
+        
+        
+        
+        
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences( ctx );
+        sp.getString( "color_themes", "d" );
+        
+        
         ttlColor = r.getColor( R.color.ttl_def ); 
         bgrColor = r.getColor( R.color.bgr_def );
         fgrColor = r.getColor( R.color.fgr_def );
         selColor = r.getColor( R.color.sel_def );
         sfgColor = r.getColor( R.color.fgr_def );
-        btnColor = Prefs.getDefaultColor( ctx, BTN_COLORS, false );
+        btnColor = getDefaultColor( ctx, BTN_COLORS, false );
         curColor = 0;
+    }
+
+    public static int getDefaultColor( Context ctx, String key, boolean alt ) {
+        Resources r = ctx.getResources();
+        if( key.equals( ColorsKeeper.CUR_COLORS ) ) return alt ? r.getColor( R.color.cur_def ) : 0;
+        if( key.equals( ColorsKeeper.BTN_COLORS ) ) {
+            final int GINGERBREAD = 9;
+            if( android.os.Build.VERSION.SDK_INT >= GINGERBREAD )
+                return r.getColor( R.color.btn_def );
+            else
+                return alt ? r.getColor( R.color.btn_odf ) : 0;
+        }
+        if( alt ) return 0;
+        if( key.equals( ColorsKeeper.BGR_COLORS ) ) return r.getColor( R.color.bgr_def );
+        if( key.equals( ColorsKeeper.SEL_COLORS ) ) return r.getColor( R.color.sel_def );
+        if( key.equals( ColorsKeeper.SFG_COLORS ) ) return r.getColor( R.color.fgr_def );
+        if( key.equals( ColorsKeeper.TTL_COLORS ) ) return r.getColor( R.color.ttl_def );
+        if( key.equals( ColorsKeeper.FGR_COLORS ) ) return r.getColor( R.color.fgr_def );
+        return 0;
+    }
+    
+    public boolean isButtonsDefault() {
+        return btnColor == 0x00000000;
+    }
+
+    public void setTheme( String t ) {
+        Resources  r = ctx.getResources();
+        if( "d".equals( t ) ) {
+            ttlColor = r.getColor( R.color.ttl_def ); 
+            bgrColor = r.getColor( R.color.bgr_def );
+            fgrColor = r.getColor( R.color.fgr_def );
+            curColor = r.getColor( R.color.cur_def );
+            selColor = r.getColor( R.color.sel_def );
+            sfgColor = r.getColor( R.color.sfg_def );
+            btnColor = r.getColor( R.color.btn_def );
+            if( ftColors == null ) restoreTypeColors();
+            int n = Math.min( ftColors.size(), 6 );
+            for( int i = 0; i < n; i++ ) {
+                FileTypeColor ftc = ftColors.get( i );
+                ftc.setColor( ftc.getDefColor( ctx, i+1 ) );
+            }
+            return;
+        }
+        if( "n".equals( t ) ) {
+            ttlColor = r.getColor( R.color.ttl_nrt ); 
+            bgrColor = r.getColor( R.color.bgr_nrt );
+            fgrColor = r.getColor( R.color.fgr_nrt );
+            curColor = r.getColor( R.color.cur_nrt );
+            selColor = r.getColor( R.color.sel_nrt );
+            sfgColor = r.getColor( R.color.sfg_nrt );
+            btnColor = r.getColor( R.color.btn_nrt );
+            if( ftColors == null ) restoreTypeColors();
+            int n = Math.min( ftColors.size(), 6 );
+            for( int i = 0; i < n; i++ ) {
+                FileTypeColor ftc = ftColors.get( i );
+                ftc.setColor( ftc.getDefColor( ctx, i+1 ) );
+            }
+            return;
+        }
+        if( "l".equals( t ) ) {
+            ttlColor = r.getColor( R.color.ttl_lgt ); 
+            bgrColor = r.getColor( R.color.bgr_lgt );
+            fgrColor = r.getColor( R.color.fgr_lgt );
+            curColor = r.getColor( R.color.cur_lgt );
+            selColor = r.getColor( R.color.sel_lgt );
+            sfgColor = r.getColor( R.color.sfg_lgt );
+            btnColor = r.getColor( R.color.btn_lgt );
+            if( ftColors == null ) restoreTypeColors();
+            int n = Math.min( ftColors.size(), 6 );
+            for( int i = 0; i < n; i++ ) {
+                FileTypeColor ftc = ftColors.get( i );
+                int c = ftc.getDefColor( ctx, i+1 );
+               float[] hsv = new float[3];
+                Color.colorToHSV( c, hsv );
+                hsv[2] = 0.4f;
+                hsv[1] = 1f;
+                c = Color.HSVToColor( hsv );
+                ftc.setColor( c );
+            }
+            return;
+        }
     }
     
     public int getColor( String key ) {
@@ -159,6 +249,8 @@ public final class ColorsKeeper {
         editor.putInt( SFG_COLORS, sfgColor );
         editor.putInt( TTL_COLORS, ttlColor );
         editor.putInt( BTN_COLORS, btnColor );
+        if( ftColors != null )
+            storeTypeColors( editor );
         editor.commit();
     }
 
@@ -176,11 +268,15 @@ public final class ColorsKeeper {
     public final void storeTypeColors() {
         colorPref = ctx.getSharedPreferences( Prefs.COLORS_PREFS, Activity.MODE_PRIVATE );
         SharedPreferences.Editor editor = colorPref.edit();
+        storeTypeColors( editor );
+        editor.commit();
+    }
+    
+    public final void storeTypeColors( SharedPreferences.Editor editor ) {
         for( int i = 1; i <= ftColors.size(); i++ ) {
             FileTypeColor ftc = ftColors.get( i - 1 );
             ftc.store( editor, i );
         }
-        editor.commit();
     }
     public final int restoreTypeColors() {
         try {

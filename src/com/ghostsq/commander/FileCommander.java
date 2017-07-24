@@ -145,8 +145,9 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
     /** Called when the activity is first created. */
     @Override
     public void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( this );
+        Utils.setTheme( this, sharedPref.getString( "color_themes", "d" ) );
+        super.onCreate( savedInstanceState );
         ab = Utils.setActionBar( this );
         if( !ab ) {
             requestWindowFeature( Window.FEATURE_NO_TITLE );

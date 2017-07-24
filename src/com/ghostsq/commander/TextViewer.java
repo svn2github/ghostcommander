@@ -44,6 +44,8 @@ public class TextViewer extends Activity {
     
     @Override
     public void onCreate( Bundle savedInstanceState ) {
+        SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
+        Utils.setTheme( this, shared_pref.getString( "color_themes", "d" ) );
         super.onCreate( savedInstanceState );
         try {
             boolean ab, ct_enabled = false;
@@ -65,7 +67,6 @@ public class TextViewer extends Activity {
                 }
             }
             
-            SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
             int fs = Integer.parseInt( shared_pref != null ? shared_pref.getString( "font_size", "12" ) : "12" );
             text_view = (TextView)findViewById( R.id.text_view );
             if( text_view == null ) {

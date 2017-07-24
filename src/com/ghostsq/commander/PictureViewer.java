@@ -78,6 +78,8 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( this );
+        Utils.setTheme( this, sharedPref.getString( "color_themes", "d" ) );
         super.onCreate( savedInstanceState );
         try {
           boolean ab = Utils.setActionBar( this );
@@ -111,12 +113,9 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                         });
                     }
                }
-          } catch( Exception e1 ) {
+            } catch( Exception e1 ) {
                 Log.e( TAG, "", e1 );
-          }
-          
-          
-          SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( this );          
+            }
             String fnt_sz_s = sharedPref.getString( "font_size", "12" );
             int fnt_sz = 12;
             try {

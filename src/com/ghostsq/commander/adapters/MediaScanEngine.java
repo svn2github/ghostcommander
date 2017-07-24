@@ -135,8 +135,9 @@ public class MediaScanEngine extends Engine implements MediaScannerConnection.Me
                     String ext  = Utils.getFileExt( fn );
                     String mime = Utils.getMimeByExt( ext );
                     if( all || ( mime != null && ( mime.startsWith( "image/" ) || 
-                            mime.startsWith( "audio/" ) || mime.startsWith( "video/" ) ) ) )
+                            mime.startsWith( "audio/" ) || mime.startsWith( "video/" ) ) ) ) {
                         to_scan.add( new FileItem( f.getAbsolutePath(), mime ) );
+                    }
                 }
                 if( lvl == 0 ) sendProgress( f.getName(), fi * 100 / num );
             } catch( Exception e ) {}

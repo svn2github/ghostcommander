@@ -1,7 +1,11 @@
 package com.ghostsq.commander;
 
+import com.ghostsq.commander.utils.Utils;
+
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,8 +27,9 @@ public class FileTypes extends Activity implements OnClickListener,
     @Override
     public void onCreate( Bundle bundle ) {
         try {
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( this );
+            Utils.setTheme( this, sharedPref.getString( "color_themes", "d" ) );
             super.onCreate( bundle );
-
             ck = new ColorsKeeper( this );
             ck.restore();
             int n = ck.restoreTypeColors();

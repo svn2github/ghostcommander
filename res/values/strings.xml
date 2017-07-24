@@ -354,6 +354,8 @@
 <string name="summary_btn_color_picker">Choose a background color for the buttons</string>
 <string name="pick_color">Set color</string>
 <string name="color">Color</string>
+<string name="color_themes">Themes</string>
+<string name="summary_color_themes">Set all application colors to a one chosen theme</string>
 <string name="language">Language</string>
 <string name="summary_language">Override the system language</string>
 <string name="restart_to_apply_lang">Restart the application to apply the new language</string>
