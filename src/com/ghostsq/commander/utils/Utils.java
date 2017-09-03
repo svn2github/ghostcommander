@@ -78,7 +78,7 @@ public final class Utils {
             { ".js",   "text/javascript", C_TEXT },
             { ".lst",  "text/plain", C_TEXT },
             { ".lzh",  "application/x-lzh", C_ZIP },
-            { ".m3u",  "audio/mpegurl", C_AUDIO }, 
+            { ".m3u",  "application/x-mpegurl", C_AUDIO }, 
             { ".md5",  "application/x-md5", C_APP },
             { ".mid",  "audio/midi", C_AUDIO }, 
             { ".midi", "audio/midi", C_AUDIO }, 
@@ -483,6 +483,17 @@ public final class Utils {
         int t_id = 0;
         if( "l".equals( code ) ) {
             t_id = Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH ?
+                R.style.MyDevLight :
+                R.style.MyLight;
+        } else {
+            t_id = Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH ?
+                R.style.MyDevDark :
+                R.style.MyDark;
+        }
+
+/*
+        if( "l".equals( code ) ) {
+            t_id = Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH ?
                 android.R.style.Theme_DeviceDefault_Light :
                 android.R.style.Theme_Light;
         } else {
@@ -490,6 +501,7 @@ public final class Utils {
                 android.R.style.Theme_DeviceDefault :
                 android.R.style.Theme;
         }
+*/
         ctx.setTheme( t_id );
     }
     

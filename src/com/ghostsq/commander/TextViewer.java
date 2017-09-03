@@ -44,8 +44,6 @@ public class TextViewer extends Activity {
     
     @Override
     public void onCreate( Bundle savedInstanceState ) {
-        SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
-        Utils.setTheme( this, shared_pref.getString( "color_themes", "d" ) );
         super.onCreate( savedInstanceState );
         try {
             boolean ab, ct_enabled = false;
@@ -53,6 +51,10 @@ public class TextViewer extends Activity {
             if( !ab )
                 ct_enabled = requestWindowFeature( Window.FEATURE_CUSTOM_TITLE );
             setContentView( R.layout.textvw );
+
+            SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
+            Utils.setTheme( this, shared_pref.getString( "color_themes", "d" ) );
+
             if( !ab && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 &&
               !ForwardCompat.hasPermanentMenuKey( this ) ) {
                 ImageButton mb = (ImageButton)findViewById( R.id.menu );

@@ -946,6 +946,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 fa.editItem( pos );
             return;
         }
+        String full_class_name = "";
         try {
             Uri u;
             long size = 0;
@@ -969,7 +970,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 return;
             u = u.buildUpon().encodedPath( u.getEncodedPath().replace( " ", "%20" ) ).build();
             final String GC_EDITOR = Editor.class.getName();
-            String full_class_name = GC_EDITOR;
+            full_class_name = GC_EDITOR;
             if( ca instanceof FSAdapter ) {
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( c );
                 full_class_name = sharedPref.getString( "editor_activity", GC_EDITOR );
@@ -998,8 +999,11 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 i.putExtra( Credentials.KEY, crd );
             Log.d( TAG, "Open uri " + u.toString() + " intent: " + i.toString() );
             c.startActivity( i );
+        } catch( IllegalArgumentException e ) {
+            c.showMessage( "Make sure that '" + full_class_name + "' is a correct activity name" );
         } catch( ActivityNotFoundException e ) {
-            c.showMessage( "Activity Not Found: " + e );
+            c.showMessage( "Activity Not Found: '" + full_class_name + "'" );
+            Log.e( TAG, full_class_name, e );
         } catch( IndexOutOfBoundsException e ) {
             c.showMessage( "Bad activity class name: " + e );
         }

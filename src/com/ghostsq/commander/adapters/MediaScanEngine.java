@@ -134,8 +134,11 @@ public class MediaScanEngine extends Engine implements MediaScannerConnection.Me
                     if( MediaStore.MEDIA_IGNORE_FILENAME.equals( fn ) ) continue;
                     String ext  = Utils.getFileExt( fn );
                     String mime = Utils.getMimeByExt( ext );
-                    if( all || ( mime != null && ( mime.startsWith( "image/" ) || 
-                            mime.startsWith( "audio/" ) || mime.startsWith( "video/" ) ) ) ) {
+                    if( all || ( mime != null && 
+                          ( mime.startsWith( "image/" ) || 
+                            mime.startsWith( "audio/" ) || 
+                            mime.startsWith( "video/" ) ||
+                            mime.equals( "application/x-mpegurl" ) ) ) ) {
                         to_scan.add( new FileItem( f.getAbsolutePath(), mime ) );
                     }
                 }

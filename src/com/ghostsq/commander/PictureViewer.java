@@ -87,6 +87,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
               requestWindowFeature( Window.FEATURE_NO_TITLE );
           touch = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.FROYO;
           FrameLayout fl = new FrameLayout( this );
+          fl.setBackgroundColor( 0xFF000000 );
 
           if( touch ) {
               image_view = new TouchImageView( this );
@@ -276,7 +277,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
             hideWait();
             if( bmp != null ) {
                 image_view.setVisibility( View.VISIBLE );
-                image_view.setImageBitmap( bmp );
+                image_view.setImageBitmap( mbScaleDownBitmap( bmp ) );
                 
                 if( name != null ) {
                     name_view.setTextColor( Color.WHITE );
@@ -358,6 +359,22 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
         }
         return null;
     }
+
+    public static Bitmap mbScaleDownBitmap( Bitmap old_bmp ) {
+        final int MAX = 4096;
+        final int old_w = old_bmp.getWidth(); 
+        final int old_h = old_bmp.getHeight();
+        
+        if( old_w < MAX && old_h < MAX )
+            return old_bmp;
+        int max_d = Math.max( old_w, old_h );
+        int div = max_d / MAX + 1;        
+        int new_w = old_w / div; 
+        int new_h = old_h / div; 
+        
+        return Bitmap.createScaledBitmap( old_bmp, new_w, new_h, true );
+    }
+    
     
     final public void showWait() {
         if( pd == null )

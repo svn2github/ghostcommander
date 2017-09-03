@@ -41,7 +41,11 @@ public class MediaScanTask extends AsyncTask<Void, Void, Void> {
                 else {
                     String ext  = Utils.getFileExt( f.getName() );
                     String mime = Utils.getMimeByExt( ext );
-                    if( all || ( mime != null && ( mime.startsWith( "image/" ) || mime.startsWith( "audio/" ) || mime.startsWith( "video/" ) ) ) )
+                    if( all || ( mime != null && ( 
+                        mime.startsWith( "image/" ) || 
+                        mime.startsWith( "audio/" ) || 
+                        mime.startsWith( "video/" ) ||
+                        mime.equals( "application/x-mpegurl" ) ) ) )
                         to_scan.add( f.getAbsolutePath() );
                 }
             } catch( Exception e ) {}

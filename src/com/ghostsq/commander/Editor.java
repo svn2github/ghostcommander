@@ -65,8 +65,6 @@ public class Editor extends Activity implements TextWatcher, OnTouchListener, On
     /** Called when the activity is first created. */
     @Override
     public void onCreate( Bundle savedInstanceState ) {
-        SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
-        Utils.setTheme( this, shared_pref.getString( "color_themes", "d" ) );
         super.onCreate( savedInstanceState );
         try {
             SharedPreferences prefs = getPreferences( MODE_PRIVATE );
@@ -79,6 +77,8 @@ public class Editor extends Activity implements TextWatcher, OnTouchListener, On
             if( !ab )
                 ct_enabled = requestWindowFeature( Window.FEATURE_CUSTOM_TITLE );
             setContentView(R.layout.editor);
+            SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
+            Utils.setTheme( this, shared_pref.getString( "color_themes", "d" ) );
             if( !ab && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 &&
               !ForwardCompat.hasPermanentMenuKey( this ) ) {
                 ImageButton mb = (ImageButton)findViewById( R.id.menu );
