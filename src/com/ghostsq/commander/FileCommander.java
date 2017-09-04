@@ -917,6 +917,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 final CommanderAdapter ca = CA.CreateAdapterInstance( uri, this );            
                 if( ca == null ) return;
                 ca.Init( this );
+                ca.setUri( uri );
                 ca.setCredentials( crd );
                 String temp_file = null;
                 if( "zip".equals( scheme ) ) {
@@ -941,7 +942,11 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                                 Log.e( TAG, "No item for: " + _uri.toString() );
                                 return;
                             }
-                            if( item.size > 5000000 ) {
+                            //
+                            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences( FileCommander.this );
+                            long ros = Long.parseLong( sp.getString( "remote_open_size", "5000000" ) );
+                            
+                            if( item.size > ros ) {
                                 _handler.post( new Runnable() {
                                       @Override
                                       public void run() {

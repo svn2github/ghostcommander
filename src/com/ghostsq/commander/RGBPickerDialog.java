@@ -5,15 +5,21 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
-public class RGBPickerDialog extends AlertDialog implements DialogInterface.OnClickListener,
-        OnCheckedChangeListener, SeekBar.OnSeekBarChangeListener {
+public class RGBPickerDialog extends AlertDialog 
+    implements DialogInterface.OnClickListener,
+               OnCheckedChangeListener, 
+               SeekBar.OnSeekBarChangeListener,
+               android.view.View.OnKeyListener {
 
     public interface ResultSink {
         void colorChanged(int color);
@@ -23,10 +29,11 @@ public class RGBPickerDialog extends AlertDialog implements DialogInterface.OnCl
     private ResultSink colorChangeSink;
     private int curColor, defColor;
     private CheckBox dccb;
-    private View    sliders;
-    private SeekBar r_seek;
-    private SeekBar g_seek;
-    private SeekBar b_seek;
+    private View     sliders;
+    private SeekBar  r_seek;
+    private SeekBar  g_seek;
+    private SeekBar  b_seek;
+    private EditText edit_rgb;
     private View preview;
 
     RGBPickerDialog( Context context, ResultSink sink, int color, int def_color ) {
@@ -50,6 +57,7 @@ public class RGBPickerDialog extends AlertDialog implements DialogInterface.OnCl
         r_seek = (SeekBar)findViewById( R.id.r_seek );
         g_seek = (SeekBar)findViewById( R.id.g_seek );
         b_seek = (SeekBar)findViewById( R.id.b_seek );
+        edit_rgb = (EditText)findViewById( R.id.edit_rgb );
         if( r_seek != null ) {
             r_seek.setOnSeekBarChangeListener( this );
             r_seek.setProgress( Color.red( curColor ) );
@@ -62,6 +70,10 @@ public class RGBPickerDialog extends AlertDialog implements DialogInterface.OnCl
             b_seek.setOnSeekBarChangeListener( this );
             b_seek.setProgress( Color.blue( curColor ) );
         }
+        
+        edit_rgb.setOnKeyListener( this );
+        
+        setEditorValue();
         preview = findViewById(R.id.preview);
         if( preview != null )
             preview.setBackgroundColor( curColor );
@@ -85,9 +97,7 @@ public class RGBPickerDialog extends AlertDialog implements DialogInterface.OnCl
         } else {
             if( curColor == 0 ) {
                 curColor = defColor;
-                r_seek.setProgress( Color.red( curColor ) );
-                g_seek.setProgress( Color.green( curColor ) );
-                b_seek.setProgress( Color.blue( curColor ) );
+                setSeekBars();
             }
             preview.setBackgroundColor( curColor );
             sliders.setVisibility( View.VISIBLE );
@@ -110,6 +120,7 @@ public class RGBPickerDialog extends AlertDialog implements DialogInterface.OnCl
             curColor = Color.rgb( Color.red( curColor ), Color.green( curColor ), progress );
             break;
         }
+        setEditorValue();
         preview.setBackgroundColor( curColor );
     }
 
@@ -129,4 +140,31 @@ public class RGBPickerDialog extends AlertDialog implements DialogInterface.OnCl
             colorChangeSink.colorChanged( curColor );
         dismiss();
     }
+
+    // --- android.view.View.OnKeyListener ---
+    
+    @Override
+    public boolean onKey( View v, int keyCode, KeyEvent event ) {
+        if( edit_rgb == null ) return false;
+        String s = edit_rgb.getText().toString();
+        try {
+            curColor = Color.parseColor( s );
+            setSeekBars();
+            preview.setBackgroundColor( curColor );
+            return true;
+        } catch( IllegalArgumentException e ) {
+        }
+        return false;
+    }
+
+    void setSeekBars() {
+        r_seek.setProgress( Color.red( curColor ) );
+        g_seek.setProgress( Color.green( curColor ) );
+        b_seek.setProgress( Color.blue( curColor ) );
+    }
+  
+    void setEditorValue() {
+        edit_rgb.setText( "#" + String.format( "%02X%02X%02X", Color.red( curColor ), Color.green( curColor ), Color.blue( curColor ) ) );
+    }
+
 }

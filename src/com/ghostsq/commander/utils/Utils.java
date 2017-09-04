@@ -490,18 +490,6 @@ public final class Utils {
                 R.style.MyDevDark :
                 R.style.MyDark;
         }
-
-/*
-        if( "l".equals( code ) ) {
-            t_id = Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH ?
-                android.R.style.Theme_DeviceDefault_Light :
-                android.R.style.Theme_Light;
-        } else {
-            t_id = Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH ?
-                android.R.style.Theme_DeviceDefault :
-                android.R.style.Theme;
-        }
-*/
         ctx.setTheme( t_id );
     }
     

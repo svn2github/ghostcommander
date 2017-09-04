@@ -281,6 +281,10 @@
 <string name="advanced">Advanced</string>
 <string name="advanced_settings">Miscellaneous</string>
 <string name="summary_advanced_settings">Extra settings for advanced users</string>
+
+<string name="remote_open_size">File size threshold</string>
+<string name="summary_remote_open_size">Maximum remote file size allowed to be opened locally</string>
+
 <string name="send_content">Send using content provider</string>
 <string name="summary_send_content">Try to uncheck if your file sending application does not implement a content resolver</string>
 <string name="panels_mode">Side-by-side panels</string>

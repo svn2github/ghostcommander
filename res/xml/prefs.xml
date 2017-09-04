@@ -289,7 +289,12 @@
                 android:title="@string/send_content"
                 android:summary="@string/summary_send_content"
                 android:defaultValue="true"/>
-            <CheckBoxPreference
+		    <EditTextPreference 
+		        android:key="remote_open_size" 
+		        android:title="@string/remote_open_size" 
+		        android:summary="@string/summary_remote_open_size" 
+		        android:defaultValue="5000000"/>
+		    <CheckBoxPreference
                 android:key="scan_all"
                 android:title="@string/scan_all"
                 android:summary="@string/summary_scan_all"

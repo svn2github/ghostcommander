@@ -22,6 +22,7 @@ android:orientation="vertical">
 	        android:id="@+id/r_box" 
 	        android:layout_width="fill_parent" 
 	        android:layout_height="wrap_content"
+            android:layout_marginRight="20dip"
 	        android:orientation="horizontal">
 	        <TextView 
 	            android:text="@string/r_title" 
@@ -44,6 +45,7 @@ android:orientation="vertical">
 	        android:id="@+id/g_box" 
 	        android:layout_width="fill_parent" 
 	        android:layout_height="wrap_content"
+            android:layout_marginRight="20dip"
 	        android:orientation="horizontal">
 	        <TextView 
 	            android:text="@string/g_title" 
@@ -66,6 +68,7 @@ android:orientation="vertical">
 	        android:id="@+id/b_box" 
 	        android:layout_width="fill_parent" 
 	        android:layout_height="wrap_content"
+            android:layout_marginRight="20dip"
 	        android:orientation="horizontal">
 	        <TextView 
 	            android:text="@string/b_title" 
@@ -83,11 +86,32 @@ android:orientation="vertical">
 	            android:padding="8dip"
 	            android:max="255"/>
 	    </LinearLayout>
-	
+	    <LinearLayout 
+	        android:layout_width="fill_parent" 
+	        android:layout_height="wrap_content"
+            android:layout_marginRight="20dip"
+	        android:orientation="horizontal">
+	        <TextView 
+	            android:text="#RRGGBB" 
+	            android:padding="8dip"
+	            android:gravity="fill_vertical"
+	            android:layout_width="wrap_content" 
+	            android:layout_height="fill_parent"/>
+    	    <EditText
+              android:id="@+id/edit_rgb"
+              android:layout_height="wrap_content"
+              android:layout_width="fill_parent"
+              android:layout_marginLeft="10dip"
+              android:scrollHorizontally="true"
+              android:inputType="textNoSuggestions"
+              android:gravity="fill_horizontal"/>
+	    </LinearLayout>
+        	
 	    <View
 			android:layout_width="fill_parent"
 			android:layout_height="16dip"
 			android:layout_margin="8dip"
+            android:layout_marginRight="20dip"
 			android:id="@+id/preview"/>
     </LinearLayout>
 </LinearLayout>
