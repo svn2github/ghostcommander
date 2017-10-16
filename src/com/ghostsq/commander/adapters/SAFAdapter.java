@@ -794,6 +794,8 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                         break;
                     }
                     String fn = item.name;
+                    if( !Utils.str( fn ) ) continue;
+                    if( fn.charAt( 0 ) == '/' ) fn = fn.substring( 1 );
                     String to_append = "%2f" + Utils.escapePath( fn );
                     dest_uri = dest.buildUpon().encodedPath( dest.getEncodedPath() + to_append ).build();
                     String mime = SAFAdapter.getMime( SAFAdapter.this.ctx, dest_uri );
