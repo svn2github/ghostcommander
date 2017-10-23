@@ -575,7 +575,7 @@ public final class Utils {
         File parent_dir = null;
         if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO )
              parent_dir = ForwardCompat.getExternalFilesDir( ctx );
-        else
+        if( parent_dir == null )
              parent_dir = new File( Environment.getExternalStorageDirectory().getAbsolutePath() );
         File temp_dir = new File( parent_dir, "/temp/gc_" + d.getHours() + d.getMinutes() + d.getSeconds() + "/" );
         temp_dir.mkdirs();
