@@ -768,16 +768,20 @@ public class AppsAdapter extends CommanderAdapterBase {
                 }
             } else 
             if( intFilters != null ) {
+                List<String> paths = uri.getPathSegments();
+                if( paths == null )
+                    commander.Navigate( uri.buildUpon().path( null ).build(), null, null );
+                String ctr_name = paths.size() > 1 ? paths.get( paths.size()-2 ) : null; 
+                String act_name = paths.get( paths.size()-1 );
                 if( position == 0 ) {
-                    List<String> paths = uri.getPathSegments();
-                    if( paths == null )
-                        commander.Navigate( uri.buildUpon().path( null ).build(), null, null );
-                    String p = paths.size() > 1 ? paths.get( paths.size()-2 ) : null; 
-                    String n = paths.get( paths.size()-1 );
-                    commander.Navigate( uri.buildUpon().path( p ).build(), null, n );
+                    commander.Navigate( uri.buildUpon().path( ctr_name ).build(), null, act_name );
                 }
                 else {
-                    // ???
+                    IntentFilter inf = intFilters[position - 1];
+                    String action = inf.getAction( 0 );
+                    Intent in = new Intent( action );
+                    in.setClassName( uri.getAuthority(), act_name );
+                    commander.issue( in, 0 );
                 }
             } else {
                 if( position == 0 ) {

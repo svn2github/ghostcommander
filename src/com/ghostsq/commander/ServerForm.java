@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -57,6 +58,9 @@ public class ServerForm extends Activity
     public void onCreate( Bundle savedInstanceState ) {
         try {
             super.onCreate( savedInstanceState );
+            SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
+            Utils.setTheme( this, shared_pref.getString( "color_themes", "d" ) );
+            
             schema = getIntent().getStringExtra( "schema" );
             if( !Utils.str( schema ) ) {
                 Log.e( TAG, "No schema given" );

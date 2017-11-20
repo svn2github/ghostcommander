@@ -27,10 +27,6 @@ import android.widget.AdapterView;
  * which is routed to the {@link Commander#notifyMe Commander.notifyMe( Message m )}
  * 
  */
-/**
- * @author zc2
- *
- */
 public interface CommanderAdapter {
 
     /**

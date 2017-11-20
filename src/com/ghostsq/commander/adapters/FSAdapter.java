@@ -240,7 +240,7 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
             String item_name = getItemName( position, true );
             return Uri.parse( Utils.escapePath( item_name ) );
         } catch( Exception e ) {
-            Log.e( TAG, "No item in the position " + position );
+            Log.e( TAG, "No item in the position " + position, e );
         }
         return null;
     }

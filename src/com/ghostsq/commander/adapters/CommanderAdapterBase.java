@@ -264,6 +264,13 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         return false;
     }
 
+//!!!!!!! USE this to wrap!!!!!!!
+    protected Bundle wrap( String str ) {
+        Bundle b = new Bundle( 1 );
+        b.putString( Commander.MESSAGE_STRING, str );
+        return b;
+    }
+    
     protected void notify( String s, String cookie ) {
         if( readerHandler == null ) return;
         Message msg = readerHandler.obtainMessage( s != null ? Commander.OPERATION_FAILED :

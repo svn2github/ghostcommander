@@ -253,6 +253,7 @@
 <string name="domain">Domain:</string>
 <string name="username">Username:</string>
 <string name="password">Password:</string>
+<string name="encrypted">Encrypted</string>
 <string name="command">Command:</string>
 <string name="use_busybox">busybox</string>
 <string name="user">User</string>
@@ -391,7 +392,7 @@
 <string name="go_prev">Previous</string>
 <string name="rot_right">Rotate clockwise</string>
 <string name="rot_left">Rotate counterclockwise</string>
-<string name="encoding">Encoding</string>
+<string name="encoding">Encoding:</string>
 <string name="encoding_set">The new encoding is \"%1$s\", please reload the file. If you save it now, the file\'s encoding will be converted.</string>
 <string name="no_such_file">No such file \"%1$s\"</string>
 <string name="too_big_file">The file \"%1$s\" is too big</string>
@@ -468,9 +469,8 @@ tap and hold on the SAF item in the \"home:\" screen, then choose \"Open\".
 </p>
 <h3>ZIP FILES</h3>
 <p>
-Ghost Commander can work with classic ZIP files as if they were
-directories. Password-protected (encrypted) ZIP files and ZIP files
-using other compression algorithms are not supported.
+Ghost Commander can work with ZIP archives as if they were
+directories. Other archive types are not supported.
 </p>
 <h3>PLUGINS</h3>
 <p>

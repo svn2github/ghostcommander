@@ -245,6 +245,7 @@ public class TextViewer extends Activity {
                         is.close();
                     return cs;
                 }
+                publishProgress( getString( R.string.cant_open ) );
             } catch( OutOfMemoryError e ) {
                 Log.e( TAG, uri.toString(), e );
                 publishProgress( getString( R.string.too_big_file, uri.getPath() ) );

@@ -67,9 +67,7 @@ public class Engine extends Thread {
         b.putString( Commander.MESSAGE_STRING, str );
         return b;
     }
-    
 
-    
     protected final void sendProgress( String s, int p ) {
         sendProgress( s, p, -1, -1 );
     }
@@ -118,6 +116,9 @@ public class Engine extends Thread {
         sendLoginReq( s, crd, null );
     }
     protected final void sendLoginReq( String s, Credentials crd, String cookie ) {
+        sendLoginReq( s, crd, cookie, false );
+    }
+    protected final void sendLoginReq( String s, Credentials crd, String cookie, boolean pw_only ) {
         if( thread_handler == null ) return;
         
         Message msg = thread_handler.obtainMessage( Commander.OPERATION_FAILED_LOGIN_REQUIRED, -1, -1, wrap( s ) );
@@ -126,6 +127,8 @@ public class Engine extends Thread {
         b.putParcelable( Commander.NOTIFY_CRD, crd );
         if( cookie != null )
             b.putString( Commander.NOTIFY_COOKIE, cookie );
+        if( pw_only )
+            b.putBoolean( "PW_ONLY", true );
         thread_handler.sendMessage( msg );
     }
     

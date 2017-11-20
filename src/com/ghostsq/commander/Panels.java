@@ -1240,7 +1240,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         list[current].setSelection( new_name );
     }
 
-    public final void createZip( String new_zip_name, boolean touch ) {
+    public final void createZip( String new_zip_name, boolean touch, String pw, String enc ) {
         if( new_zip_name == null || new_zip_name.length() == 0 ) return;
         CommanderAdapter ca = getListAdapter( true );
         if( ca instanceof FSAdapter ) {
@@ -1256,7 +1256,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             File[] files = fsa.bitsToFiles( cis );
             String full_name = new_zip_name.charAt( 0 ) == '/' ? new_zip_name : 
                                 Utils.mbAddSl( ca.toString() ) + new_zip_name; 
-            z.createZip( files, full_name );
+            z.createZip( files, full_name, pw, enc );
         } else
             c.showError( c.getString( R.string.not_supported ) );
     }

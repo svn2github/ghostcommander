@@ -621,6 +621,7 @@ public final class Utils {
             return s;
         return s.replaceAll( "%", "%25" )
                 .replaceAll( "#", "%23" )
+                .replaceAll( "\\?", "%3F" )
                 .replaceAll( ":", "%3A" );
     }
 
@@ -638,7 +639,7 @@ public final class Utils {
 
     public final static String unEscape( String s ) {
         UrlQuerySanitizer urlqs = new UrlQuerySanitizer();
-        return urlqs.unescape( s.replaceAll( "\\+", "_pLuS_" ) ).replaceAll( "_pLuS_", "+" );
+        return urlqs.unescape( s.replaceAll( "\\+", "`2B`" ) ).replaceAll( "`2B`", "+" );
     }
 
     public final static boolean isHTML( String s ) {

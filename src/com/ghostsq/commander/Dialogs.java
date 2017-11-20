@@ -27,11 +27,13 @@ import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 public class Dialogs implements DialogInterface.OnClickListener {
@@ -44,13 +46,14 @@ public class Dialogs implements DialogInterface.OnClickListener {
     protected String toShowInAlertDialog = null, cookie = null;
     private int dialogId; 
     private long  taskId = 0;
-    private Dialog dialogObj;
+    public  Dialog dialogObj;
     private FileCommander owner;
     private boolean valid = true;
     private int  progressCounter = 0;
     private long progressAcSpeed = 0;
     private Credentials   crd = null;
     private int which_panel = -1;
+    private boolean pw_only = false;
 
     Dialogs( FileCommander owner_, int id ) {
         owner = owner_;
@@ -80,13 +83,28 @@ public class Dialogs implements DialogInterface.OnClickListener {
         progressAcSpeed = 0;
         taskId = 0L;
     }
+    private final AlertDialog build( View inner_view, String title ) {
+        return new AlertDialog.Builder( owner )
+            .setView( inner_view )
+            .setTitle( title )
+            .setPositiveButton( R.string.dialog_ok, this )
+            .setNegativeButton( R.string.dialog_cancel, this )
+            .create();
+    }
+    
     protected final Dialog createDialog( int id ) {
         try {
             Utils.changeLanguage( owner );
+            LayoutInflater factory = LayoutInflater.from( owner );
             switch( id ) {
             case INPUT_DIALOG:
             case R.id.new_zip:
             case R.id.new_zipt:
+            {
+                final View newArchiveView = factory.inflate( R.layout.new_archive, null );
+                dialogObj = build( newArchiveView, "New ZIP" ); 
+                return dialogObj; 
+            }
             case R.id.F2:
             case R.id.F2t:
             case R.id.new_file:
@@ -97,43 +115,26 @@ public class Dialogs implements DialogInterface.OnClickListener {
             case R.id.F6t:
             case R.id.F7:
             {
-                LayoutInflater factory = LayoutInflater.from( owner );
                 final View textEntryView = factory.inflate( R.layout.input, null );
-                dialogObj = new AlertDialog.Builder( owner )
-                    .setView( textEntryView )
-                    .setTitle( " " )
-                    .setPositiveButton( R.string.dialog_ok, this )
-                    .setNegativeButton( R.string.dialog_cancel, this )
-                    .create();
+                dialogObj = build( textEntryView, " " ); 
                 return dialogObj; 
             }
             case FileCommander.FIND_ACT:
             case SELECT_DIALOG:
             case UNSELECT_DIALOG: {
-                LayoutInflater factory = LayoutInflater.from( owner );
                 final View searchView = factory.inflate( R.layout.search, null );
                 if( id == FileCommander.FIND_ACT ) {
                     View search_params = searchView.findViewById( R.id.search_params );
                     if( search_params != null )
                         search_params.setVisibility( View.VISIBLE );
                 }
-                dialogObj = new AlertDialog.Builder( owner )
-                    .setView( searchView )
-                    .setTitle( " " )
-                    .setPositiveButton( R.string.dialog_ok, this )
-                    .setNegativeButton( R.string.dialog_cancel, this )
-                    .create();
+                dialogObj = build( searchView, " " ); 
                 return dialogObj; 
             }
             case LOGIN_DIALOG: {
-                    LayoutInflater factory = LayoutInflater.from( owner );
                     final View textEntryView = factory.inflate( R.layout.login, null );
-                    return dialogObj = new AlertDialog.Builder( owner )
-                            .setView( textEntryView )
-                            .setTitle( "Login" )
-                            .setPositiveButton( R.string.dialog_ok, this )
-                            .setNegativeButton( R.string.dialog_cancel, this )
-                            .create();
+                    dialogObj = build( textEntryView, "Login" ); 
+                    return dialogObj;
                 }
             case FILE_EXIST_DIALOG: {
                     return dialogObj = new AlertDialog.Builder( owner )
@@ -161,7 +162,6 @@ public class Dialogs implements DialogInterface.OnClickListener {
                         .create();
                 }
             case PROGRESS_DIALOG: {
-                    LayoutInflater factory = LayoutInflater.from( owner );
                     final View progressView = factory.inflate( R.layout.progress, null );
                     return dialogObj = new AlertDialog.Builder( owner )
                         .setView( progressView )
@@ -185,7 +185,6 @@ public class Dialogs implements DialogInterface.OnClickListener {
                         .setIcon( android.R.drawable.ic_dialog_info )
                         .setTitle( R.string.info )
                         .setPositiveButton( R.string.dialog_ok, this );
-                    LayoutInflater factory = LayoutInflater.from( owner );
                     View tvs = factory.inflate( R.layout.textvw, null );
                     if( tvs != null ) {
                         //TextView tv = (TextView)tvs.findViewById( R.id.text_view );                     
@@ -343,7 +342,8 @@ public class Dialogs implements DialogInterface.OnClickListener {
                         summ = owner.getString( R.string.no_items );
                         owner.showMessage( owner.getString( R.string.op_not_alwd, op ) );
                     }
-                    prompt.setText( owner.getString( R.string.oper_item_to, op + ", ", summ ) );
+                    prompt.setText( owner.getString( R.string.oper_item_to, 
+                            owner.getString( R.string.copy_title ), summ ) );
                 }
                 if( edit != null ) {
                     edit.setWidth( owner.getWidth() - 70 );
@@ -352,6 +352,25 @@ public class Dialogs implements DialogInterface.OnClickListener {
                     edit.setText( path );
                     edit.setSelection( path.length() - 4 );
                 }
+                
+                CheckBox encrypr_cb = (CheckBox)dialog.findViewById( R.id.encrypt );
+                encrypr_cb.setOnClickListener( new View.OnClickListener() {
+                    @Override
+                    public void onClick( View v ) {
+                        CheckBox encrypr_cb = (CheckBox)v;
+                        View pwb = Dialogs.this.dialogObj.findViewById( R.id.password_block );
+                        pwb.setVisibility( encrypr_cb.isChecked() ? View.VISIBLE : View.GONE );
+                    }
+                } );
+                
+                ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource( owner,
+                        R.array.encoding, android.R.layout.simple_spinner_item );
+                // Specify the layout to use when the list of choices appears
+                adapter.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item );
+                Spinner encoding_spin = (Spinner)dialog.findViewById( R.id.encoding );
+                encoding_spin.setAdapter( adapter );            
+                
+                
                 break;
             }
             case R.id.F7: 
@@ -393,14 +412,17 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 break;
             }
             case LOGIN_DIALOG: {
+                EditText n_v = (EditText)dialog.findViewById( R.id.username_edit );
+                EditText p_v = (EditText)dialog.findViewById( R.id.password_edit );
                 if( crd != null ) {
-                    EditText n_v = (EditText)dialog.findViewById( R.id.username_edit );
-                    EditText p_v = (EditText)dialog.findViewById( R.id.password_edit );
-                    if( n_v != null )
-                        n_v.setText( crd.getUserName() != null ? crd.getUserName() : "" );
-                    if( p_v != null )
-                        p_v.setText( crd.getPassword() != null ? crd.getPassword() : "" );
+                    String un = crd.getUserName();
+                    n_v.setText( un );
+                    p_v.setText( crd.getPassword() != null ? crd.getPassword() : "" );
                     crd = null;
+                }
+                if( pw_only ) {
+                    dialog.findViewById( R.id.username_prompt ).setVisibility( View.GONE );
+                    n_v.setVisibility( View.GONE );
                 }
                 AlertDialog ad = (AlertDialog)dialog;
                 String title = Utils.str( toShowInAlertDialog ) ? toShowInAlertDialog : owner.getString( R.string.login_title ); 
@@ -535,9 +557,10 @@ public class Dialogs implements DialogInterface.OnClickListener {
     public void setCookie( String cookie_ ) {
         cookie = cookie_;
     }
-    public void setCredentials( Credentials crd_, int which_panel_ ) {
-        crd = crd_;
-        which_panel = which_panel_;
+    public void setCredentials( Credentials crd_, int which_panel_, boolean pw_only ) {
+        this.crd = crd_;
+        this.which_panel = which_panel_;
+        this.pw_only = pw_only; 
     }
     @Override
     public void onClick( DialogInterface idialog, int whichButton ) {
@@ -588,7 +611,30 @@ public class Dialogs implements DialogInterface.OnClickListener {
                             break;
                         case R.id.new_zip:
                         case R.id.new_zipt:
-                            owner.panels.createZip( file_name.trim(), R.id.new_zipt == dialogId );
+                            {
+                                String password = null;
+                                CheckBox encrypr_cb = (CheckBox)dialogObj.findViewById( R.id.encrypt );
+                                if( encrypr_cb.isChecked() ) {
+                                    EditText pw_edit = (EditText)dialogObj.findViewById( R.id.password_edit );
+                                    password = pw_edit.getText().toString();
+                                }
+                                String encoding = null;
+                                Spinner encoding_spin = (Spinner)dialogObj.findViewById( R.id.encoding );
+                                int i = encoding_spin.getSelectedItemPosition();
+                                if( i > 0 )
+                                    encoding = owner.getResources().getStringArray( R.array.encoding_vals )[i];
+                                /*
+                                Object esio = encoding_spin.getSelectedItem();
+                                if( esio instanceof String ) {
+                                    String enc_s = (String)esio; 
+                                    if( Utils.str( enc_s ) && !"Default".equals( enc_s ) ) {
+                                        enc_s = enc_s.substring( 0, enc_s.indexOf( "\n" ) );
+                                        uri_b.appendQueryParameter( "e", enc_s );
+                                    }
+                                }
+                                */
+                                owner.panels.createZip( file_name.trim(), R.id.new_zipt == dialogId, password, encoding );
+                            }
                             break;
                         case FileCommander.FIND_ACT: 
                             if( file_name.length() > 0 ) {

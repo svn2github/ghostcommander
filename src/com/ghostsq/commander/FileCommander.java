@@ -967,7 +967,8 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                                   @Override
                                   public void run() {
                                       _pd.cancel();
-                                      FileCommander.this.Open( Uri.parse( _out_file.toString() ), null );
+                                      String encoded = Utils.escapePath( _out_file.toString() );
+                                      FileCommander.this.Open( Uri.parse( encoded ), null );
                                   }
                               });  
                             return;
@@ -1268,9 +1269,11 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 if( string != null ) {
                     dh = obtainDialogsInstance( Dialogs.LOGIN_DIALOG );
                     if( b != null ) {
-                        Parcelable crd_p = b.getParcelable( NOTIFY_CRD );
-                        if( crd_p != null && crd_p instanceof Credentials )
-                            dh.setCredentials( (Credentials)crd_p, Utils.str( cookie ) ? cookie.charAt( 0 ) == '1' ? 1 : 0 : -1 );
+                        boolean pw_only = b.getBoolean( "PW_ONLY" );
+                        Parcelable  crd_p = b.getParcelable( NOTIFY_CRD );
+                        Credentials crd = crd_p != null && crd_p instanceof Credentials ? (Credentials)crd_p : null; 
+                        int panel_idx = Utils.str( cookie ) ? cookie.charAt( 0 ) == '1' ? 1 : 0 : -1;
+                        dh.setCredentials( crd, panel_idx, pw_only );
                     }
                     dh.setMessageToBeShown( string, cookie );
                     showDialog( Dialogs.LOGIN_DIALOG );

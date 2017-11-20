@@ -523,7 +523,8 @@ public class ListHelper {
                     String item_name = ca.getItemName( i, true );
                     boolean set = false;
                     for( int j = 0; j < listOfItemsChecked.length; j++ ) {
-                        if( listOfItemsChecked[j].compareTo( item_name ) == 0 ) {
+                        String ci = listOfItemsChecked[j];
+                        if( ci != null && ci.compareTo( item_name ) == 0 ) {
                             set = true;
                             break;
                         }

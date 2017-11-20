@@ -1113,8 +1113,8 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                         break;
                     }
                     String fn = file.getName();
-                    String to_append = "%2f" + Utils.escapePath( fn );
-                    dest_uri = dest.buildUpon().encodedPath( dest.getEncodedPath() + to_append ).build();
+                    String escaped_name = Utils.escapePath( fn );
+                    dest_uri = dest.buildUpon().encodedPath( dest.getEncodedPath() + "%2f" + escaped_name ).build();
                     String mime = SAFAdapter.getMime( SAFAdapter.this.ctx, dest_uri );
                     if( file.isDirectory() ) {
                         if( depth++ > 40 ) {
@@ -1127,7 +1127,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                             break;
                           }
                         } else {
-                            DocumentsContract.createDocument( cr, dest, Document.MIME_TYPE_DIR, fn );                            
+                            DocumentsContract.createDocument( cr, dest, Document.MIME_TYPE_DIR, escaped_name );                            
                         }
                         copyFiles( file.listFiles(), dest_uri );
                         if( errMsg != null )
@@ -1151,13 +1151,13 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                             }
                         } else
                             mime = Utils.getMimeByExt( Utils.getFileExt( fn ) );
-                        dest_uri = DocumentsContract.createDocument( cr, dest, mime, fn );
+                        dest_uri = DocumentsContract.createDocument( cr, dest, mime, escaped_name );
                         if( dest_uri == null ) {
                             error( ctx.getString( R.string.cant_create, fn, "" ) );
                             break;
                         }
                         String dest_path = dest_uri.getPath();
-                        if( dest_path.indexOf( fn, dest_path.length() - fn.length() - 1 ) < 0 )  // SAF suxx
+                        if( dest_path.indexOf( fn ) < 0 )  // SAF suxx
                             dest_uri = DocumentsContract.renameDocument( cr, dest_uri, fn );
                         
                         is = new FileInputStream( file );
