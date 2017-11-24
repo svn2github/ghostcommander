@@ -75,9 +75,9 @@ public class ZipAdapter extends CommanderAdapterBase {
     @Override
     public void setCredentials( Credentials crd ) {
         try {
-            password = crd.getPassword();
-            if( password != null && zip != null )
-                zip.setPassword( password.toCharArray() );
+            password = crd == null ? null : crd.getPassword();
+            if( zip != null )
+                zip.setPassword( password != null ? password.toCharArray() : null );
         } catch( Exception e ) {
             Log.e( TAG, "", e );
         }
@@ -93,7 +93,13 @@ public class ZipAdapter extends CommanderAdapterBase {
             String zip_path = u.getPath();
             if( zip_path == null ) return null;
             ZipFile zip_file = new ZipFile( zip_path );
-            zip_file.setFileNameCharset( encoding == null ? "UTF-8" : encoding );  // TODO: let the user decide
+
+            String enc = encoding;
+            if( enc == null )
+                enc = u.getQueryParameter( "e" );
+            if( enc == null )
+                enc = "UTF-8";
+            zip_file.setFileNameCharset( enc );
             if( password != null && Zip4jUtil.checkFileExists( zip_path ) )
                 zip_file.setPassword( password );
             return zip_file;
@@ -555,8 +561,39 @@ public class ZipAdapter extends CommanderAdapterBase {
     }
 
     @Override
-    public void createFolder( String string ) {
-        notify( "Not supported", Commander.OPERATION_FAILED );
+    public void createFolder( String fld_name ) {
+        try {
+            ArrayList<File> f_list = new ArrayList<File>( 1 );
+            File tmp_ctr = Utils.getTempDir( ctx );
+            File tmp_fld = new File( tmp_ctr, fld_name );
+            tmp_fld.mkdir();
+            f_list.add( tmp_fld );
+            ZipParameters parameters = new ZipParameters();
+            parameters.setCompressionMethod( Zip4jConstants.COMP_DEFLATE );
+            parameters.setCompressionLevel( Zip4jConstants.DEFLATE_LEVEL_MAXIMUM );
+            parameters.setDefaultFolderPath( tmp_ctr.getAbsolutePath() );
+            String dest_path = uri.getFragment();
+            if( Utils.str( dest_path ) && !"/".equals( dest_path ) )
+                parameters.setRootFolderInZip( dest_path );
+            if( ZipAdapter.this.password != null ) {
+                parameters.setEncryptFiles( true );
+                parameters.setEncryptionMethod( Zip4jConstants.ENC_METHOD_AES );
+                parameters.setAesKeyStrength( Zip4jConstants.AES_STRENGTH_256 );
+                parameters.setPassword( password.toCharArray() );
+            }
+            if( ZipAdapter.this.encoding != null ) {
+            
+            }
+            if( ZipAdapter.this.zip == null )
+                ZipAdapter.this.zip = createZipFileInstance( ZipAdapter.this.uri );
+            zip.addFiles( f_list, parameters );
+            tmp_fld.deleteOnExit();
+            notifyRefr( fld_name );
+            return;
+        } catch( ZipException e ) {
+            Log.e( TAG, "Creating folder " + fld_name, e );
+        }
+        notify( ctx.getString( R.string.cant_md, fld_name ), Commander.OPERATION_FAILED );
     }
 
     @Override

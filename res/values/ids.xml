@@ -41,6 +41,7 @@
   <item type="id" name="open" />
   <item type="id" name="extract" />
   <item type="id" name="new_zipt" />  
+  <item type="id" name="open_zip" />  
   <item type="id" name="rescan_dir" />  
 </resources>
 

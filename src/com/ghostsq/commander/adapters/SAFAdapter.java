@@ -420,7 +420,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                 Item item = (Item)getItem( acmi.position );
                 if( !item.dir && ".zip".equals( Utils.getFileExt( item.name ) ) ) {
                     menu.add( 0, R.id.open, 0, R.string.open );
-                    menu.add( 0, R.id.extract, 0, R.string.extract_zip );
+// FIXME                    menu.add( 0, R.id.extract, 0, R.string.extract_zip );
                 }
                 if( item.dir && num == 1 && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO )
                     menu.add( 0, R.id.rescan_dir, 0, R.string.rescan );

@@ -42,8 +42,8 @@ public class Dialogs implements DialogInterface.OnClickListener {
             INFO_DIALOG = 864, LOGIN_DIALOG = 995, SELECT_DIALOG = 239, UNSELECT_DIALOG = 762,
             FILE_EXIST_DIALOG = 328, SMB_PLG_DIALOG = 275, SFTP_PLG_DIALOG = 245;
     
-    public final static int numDialogTypes = 5;
-    protected String toShowInAlertDialog = null, cookie = null;
+    public final static int numDialogTypes = 7;
+    protected String toShowInAlertDialog = null, cookie = null, activeFileName;
     private int dialogId; 
     private long  taskId = 0;
     public  Dialog dialogObj;
@@ -98,11 +98,17 @@ public class Dialogs implements DialogInterface.OnClickListener {
             LayoutInflater factory = LayoutInflater.from( owner );
             switch( id ) {
             case INPUT_DIALOG:
+            case R.id.open_zip:
+            {
+                final View openArchiveView = factory.inflate( R.layout.open_archive, null );
+                dialogObj = build( openArchiveView, " " ); 
+                return dialogObj; 
+            }
             case R.id.new_zip:
             case R.id.new_zipt:
             {
                 final View newArchiveView = factory.inflate( R.layout.new_archive, null );
-                dialogObj = build( newArchiveView, "New ZIP" ); 
+                dialogObj = build( newArchiveView, " " ); 
                 return dialogObj; 
             }
             case R.id.F2:
@@ -330,6 +336,34 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 }
                 break;
             }
+
+            case R.id.open_zip: 
+            {
+                final String op = owner.getString( R.string.open );
+                dialog.setTitle( op );
+                prompt.setText( owner.getString( R.string.file_name ) );
+                TextView file_path = (TextView)dialog.findViewById( R.id.file_path );
+                file_path.setText( this.activeFileName );
+                ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource( owner,
+                        R.array.encoding, android.R.layout.simple_spinner_item );
+                // Specify the layout to use when the list of choices appears
+                adapter.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item );
+                Spinner encoding_spin = (Spinner)dialog.findViewById( R.id.encoding );
+                encoding_spin.setAdapter( adapter );            
+                
+                CheckBox encrypr_cb = (CheckBox)dialog.findViewById( R.id.encrypt );
+                encrypr_cb.setOnClickListener( new View.OnClickListener() {
+                    @Override
+                    public void onClick( View v ) {
+                        CheckBox encrypr_cb = (CheckBox)v;
+                        View pwb = Dialogs.this.dialogObj.findViewById( R.id.password_block );
+                        pwb.setVisibility( encrypr_cb.isChecked() ? View.VISIBLE : View.GONE );
+                    }
+                } );
+                
+                break;
+            }
+            
             case R.id.new_zip: 
             case R.id.new_zipt: 
             {
@@ -550,6 +584,9 @@ public class Dialogs implements DialogInterface.OnClickListener {
         }
     }
 
+    public void setActiveFile( String fn ) {
+        this.activeFileName = fn;
+    }
     public void setMessageToBeShown( String string, String cookie_ ) {
         toShowInAlertDialog = string;
         cookie = cookie_;
@@ -623,16 +660,6 @@ public class Dialogs implements DialogInterface.OnClickListener {
                                 int i = encoding_spin.getSelectedItemPosition();
                                 if( i > 0 )
                                     encoding = owner.getResources().getStringArray( R.array.encoding_vals )[i];
-                                /*
-                                Object esio = encoding_spin.getSelectedItem();
-                                if( esio instanceof String ) {
-                                    String enc_s = (String)esio; 
-                                    if( Utils.str( enc_s ) && !"Default".equals( enc_s ) ) {
-                                        enc_s = enc_s.substring( 0, enc_s.indexOf( "\n" ) );
-                                        uri_b.appendQueryParameter( "e", enc_s );
-                                    }
-                                }
-                                */
                                 owner.panels.createZip( file_name.trim(), R.id.new_zipt == dialogId, password, encoding );
                             }
                             break;
@@ -690,6 +717,22 @@ public class Dialogs implements DialogInterface.OnClickListener {
                                 break;
                             }
                         }
+                    }
+                    break;
+                case R.id.open_zip:
+                    {
+                        Uri.Builder ub = Uri.parse( this.activeFileName ).buildUpon().scheme( "zip" );
+                        Credentials crd = null;
+                        CheckBox encrypr_cb = (CheckBox)dialogObj.findViewById( R.id.encrypt );
+                        if( encrypr_cb.isChecked() ) {
+                            EditText pw_edit = (EditText)dialogObj.findViewById( R.id.password_edit );
+                            crd = new Credentials( null, pw_edit.getText().toString() );
+                        }
+                        Spinner encoding_spin = (Spinner)dialogObj.findViewById( R.id.encoding );
+                        int i = encoding_spin.getSelectedItemPosition();
+                        if( i > 0 )
+                            ub.encodedQuery( "e=" + owner.getResources().getStringArray( R.array.encoding_vals )[i] );
+                        owner.Navigate( ub.build(), crd, null );
                     }
                     break;
                 case R.id.F8:

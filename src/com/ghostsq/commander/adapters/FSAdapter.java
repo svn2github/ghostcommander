@@ -185,8 +185,9 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
             if( acmi.position != 0 ) {
                 Item item = (Item)getItem( acmi.position );
                 if( !item.dir && ".zip".equals( Utils.getFileExt( item.name ) ) ) {
-                    menu.add( 0, R.id.open, 0, R.string.open );
-                    menu.add( 0, R.id.extract, 0, R.string.extract_zip );
+                    menu.add( 0, R.id.open_zip, 0, R.string.open );
+// FIXME: unzip to the oppozite panel may be?
+//                    menu.add( 0, R.id.extract, 0, R.string.extract_zip );
                 }
                 if( item.dir && num == 1 && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
                     menu.add( 0, R.id.rescan_dir, 0, R.string.rescan );

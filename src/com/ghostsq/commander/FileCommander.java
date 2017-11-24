@@ -714,6 +714,11 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 if( ".zip".equalsIgnoreCase( ext ) )
                     Navigate( Uri.parse( path ).buildUpon().scheme( "zip" ).build(), null, null );
                 break;
+            case R.id.open_zip:
+                Dialogs di = obtainDialogsInstance( R.id.open_zip );
+                di.setActiveFile( panels.getSelectedItemName( true, true ) );
+                di.showDialog();
+                break;
             case R.id.extract:
                 panels.unpackZip();
                 break;
