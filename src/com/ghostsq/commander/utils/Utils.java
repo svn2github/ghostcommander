@@ -276,6 +276,32 @@ public final class Utils {
         }
         return null;
     }
+
+    public enum PubPathType {
+        DOWNLOADS,
+        DCIM,
+        PICTURES,
+        MUSIC,
+        MOVIES          
+    }
+    
+    public static String getPath( PubPathType ppt ) {
+        String pps = null;
+        switch( ppt ) {
+        case DOWNLOADS: pps =  Environment.DIRECTORY_DOWNLOADS; break;
+        case DCIM:      pps =  Environment.DIRECTORY_DCIM; break;
+        case PICTURES:  pps =  Environment.DIRECTORY_PICTURES; break;
+        case MUSIC:     pps =  Environment.DIRECTORY_MUSIC; break;
+        case MOVIES:    pps =  Environment.DIRECTORY_MOVIES;
+        }
+        
+        return Environment.getExternalStoragePublicDirectory( pps ).getAbsolutePath();
+    }
+
+    public static void setFullPermissions( File file ) {
+        file.setWritable( true, false );
+        file.setReadable( true, false );
+    }
     
     public final static String getOpReport_( Context ctx, int total, int verb_id ) {
         String items = null;
@@ -482,13 +508,9 @@ public final class Utils {
     public static void setTheme( Context ctx, String code ) {
         int t_id = 0;
         if( "l".equals( code ) ) {
-            t_id = Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH ?
-                R.style.MyDevLight :
-                R.style.MyLight;
+            t_id = R.style.GCLight;
         } else {
-            t_id = Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH ?
-                R.style.MyDevDark :
-                R.style.MyDark;
+            t_id = R.style.GCDark;
         }
         ctx.setTheme( t_id );
     }
@@ -560,11 +582,9 @@ public final class Utils {
     }
 
     public final static File getTempDir( Context ctx ) {
-        File parent_dir = null;
-        if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO )
-             parent_dir = ForwardCompat.getExternalFilesDir( ctx );
-        else
-             parent_dir = new File( Environment.getExternalStorageDirectory().getAbsolutePath() );
+        File parent_dir = ctx.getExternalFilesDir( null );
+        if( parent_dir == null )
+            parent_dir = new File( Environment.getExternalStorageDirectory().getAbsolutePath() );
         File temp_dir = new File( parent_dir, "/temp/" );
         temp_dir.mkdirs();
         return temp_dir;
@@ -573,8 +593,7 @@ public final class Utils {
     public final static File createTempDir( Context ctx ) {
         Date d = new Date();
         File parent_dir = null;
-        if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO )
-             parent_dir = ForwardCompat.getExternalFilesDir( ctx );
+        parent_dir = ctx.getExternalFilesDir( null );
         if( parent_dir == null )
              parent_dir = new File( Environment.getExternalStorageDirectory().getAbsolutePath() );
         File temp_dir = new File( parent_dir, "/temp/gc_" + d.getHours() + d.getMinutes() + d.getSeconds() + "/" );
@@ -781,9 +800,46 @@ public final class Utils {
         }
     }
 
+    /*
+     hasSoftKeys() is not in use anymore.
+     Soft bar won't show the menu dots since 
+     the target SDK in the manifest is raised over 13 
+     to favor the android N's context menu's bug
+     */
+    // http://stackoverflow.com/questions/14853039/how-to-tell-whether-an-android-device-has-hard-keys
+    /*
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    public static boolean hasSoftKeys( Activity c ) {
+        boolean hasSoftwareKeys = true;
+    
+        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 ){
+            Display d = c.getWindowManager().getDefaultDisplay();
+    
+            DisplayMetrics realDisplayMetrics = new DisplayMetrics();
+            d.getRealMetrics( realDisplayMetrics );
+    
+            int realHeight = realDisplayMetrics.heightPixels;
+            int realWidth = realDisplayMetrics.widthPixels;
+    
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            d.getMetrics(displayMetrics);
+    
+            int displayHeight = displayMetrics.heightPixels;
+            int displayWidth  = displayMetrics.widthPixels;
+    
+            hasSoftwareKeys = (realWidth - displayWidth) > 0 || (realHeight - displayHeight) > 0;
+        } else {
+            boolean hasMenuKey = ViewConfiguration.get(c).hasPermanentMenuKey();
+            boolean hasBackKey = KeyCharacterMap.deviceHasKey( KeyEvent.KEYCODE_BACK );
+            hasSoftwareKeys = !hasMenuKey && !hasBackKey;
+        }
+        return hasSoftwareKeys;
+    }    
+*/
+    
     public final static boolean setActionBar( Activity a ) {
         /*
-         !ForwardCompat.hasSoftKeys( this ) is not in use anymore.
+         hasSoftKeys( this ) is not in use anymore.
          Soft bar won't show the menu dots since 
          the target SDK in the manifest is raised over 13 
          to favor the android N's context menu's bug

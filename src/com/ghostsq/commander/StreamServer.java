@@ -104,7 +104,7 @@ public class StreamServer extends Service {
         int hash = ( crd.getUserName() + uri.getHost() ).hashCode();
         SharedPreferences ssp = ctx.getSharedPreferences( StreamServer.class.getSimpleName(), MODE_PRIVATE );
         SharedPreferences.Editor edt = ssp.edit();
-        edt.putString( "" + hash, crd.exportToEncriptedString( seed ) );
+        edt.putString( "" + hash, crd.toEncriptedString( seed ) );
         edt.commit();
     }
 
@@ -114,7 +114,7 @@ public class StreamServer extends Service {
         String crd_enc_s = ssp.getString( "" + hash, null );
         if( crd_enc_s == null ) return null;
         String seed = StreamServer.getEncKey( ctx );                    
-        return Credentials.createFromEncriptedString( crd_enc_s, seed );
+        return Credentials.fromEncriptedString( crd_enc_s, seed );
     }
     
     private class ListenThread extends Thread {

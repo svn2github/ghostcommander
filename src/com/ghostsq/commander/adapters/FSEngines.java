@@ -15,6 +15,8 @@ import com.ghostsq.commander.adapters.CommanderAdapter.Item;
 import com.ghostsq.commander.adapters.Engine;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.utils.ForwardCompat;
+import com.ghostsq.commander.utils.ImageInfo;
+import com.ghostsq.commander.utils.MediaScanTask;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.ContentResolver;
@@ -136,7 +138,7 @@ public final class FSEngines {
                             if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR &&
                                 Utils.getCategoryByExt( Utils.getFileExt( item.name ) ) == Utils.C_IMAGE ) { 
                                     result.append( "\n\n<hr/>" );
-                                    result.append( ForwardCompat.getImageFileInfoHTML( f.getAbsolutePath() ) );
+                                    result.append( ImageInfo.getImageFileInfoHTML( f.getAbsolutePath() ) );
                             }
                         }
                     }
@@ -350,7 +352,7 @@ public final class FSEngines {
                 if( to_scan != null && to_scan.size() > 0 ) {
                     String[] to_scan_a = new String[to_scan.size()];
                     to_scan.toArray( to_scan_a );
-                    ForwardCompat.scanMedia( cab.ctx, to_scan_a );
+                    MediaScanTask.scanMedia( cab.ctx, to_scan_a );
                 }
 
 			} catch( Exception e ) {
@@ -488,10 +490,8 @@ public final class FSEngines {
                     if( move )
                         file.delete();
                     outFile.setLastModified( last_modified );
-                    
-                    final int GINGERBREAD = 9;
-                    if( android.os.Build.VERSION.SDK_INT >= GINGERBREAD )
-                        ForwardCompat.setFullPermissions( outFile );
+                    outFile.setWritable( true, false );
+                    outFile.setReadable( true, false );
                 }
                 catch( SecurityException e ) {
                     Log.e( TAG, "", e );

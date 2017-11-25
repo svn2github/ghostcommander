@@ -2,10 +2,14 @@ package com.ghostsq.commander.favorites;
 
 import java.util.regex.Pattern;
 
+import com.ghostsq.commander.R;
 import com.ghostsq.commander.utils.Credentials;
+import com.ghostsq.commander.utils.Crypt;
 import com.ghostsq.commander.utils.Utils;
 
+import android.content.Context;
 import android.net.Uri;
+import android.provider.Settings;
 import android.util.Log;
 
 public class Favorite {
@@ -23,24 +27,25 @@ public class Favorite {
         init( u );
     }
     public Favorite( Uri u, Credentials c ) {
+        this( u, c, null );
+    }
+    public Favorite( Uri u, Credentials c, String comment_ ) {
         if( c == null )
             init( u );
         else {
             uri = Utils.updateUserInfo( u, null );
             credentials = c;
         }
+        this.comment = comment_;
     }
     public Favorite( String uri_str, String comment_ ) {
         try {
             init( Uri.parse( uri_str ) );
-            comment = comment_;
+            this.comment = comment_;
         }
         catch( Exception e ) {
             e.printStackTrace();
         }
-    }
-    public Favorite( String raw ) {
-        fromString( raw );
     }
 
     public void init( Uri u ) {
@@ -60,49 +65,53 @@ public class Favorite {
         }
     }    
     
-    public boolean fromString( String raw ) {
-        if( raw == null ) return false;
+    public static Favorite fromString( String raw, Context ctx ) {
+        if( raw == null ) return null;
         try {
             String[] flds = sep_re.split( raw );
-            if( flds == null ) return false;
-            comment = null;
-            credentials = null;
+            if( flds == null ) return null;
+            Uri uri = null;
+            String comment = null;
+            Credentials credentials = null;
             String username = null, pass_enc = null;
             for( int i = 0; i < flds.length; i++ ) {
                 String s = flds[i];
                 if( s == null || s.length() == 0 ) continue;
-                if( s.startsWith( "URI=" ) ) uri = Uri.parse( unescape( s.substring( 4 ) ) ); else 
-                if( s.startsWith( "CMT=" ) ) comment = unescape( s.substring( 4 ) ); else
-                if( s.startsWith( "CRD=" ) ) credentials = Credentials.createFromEncriptedString( unescape( s.substring( 4 ) ) ); else
-                if( s.startsWith( "USER=" ) ) username = unescape( s.substring( 5 ) ); else
-                if( s.startsWith( "PASS=" ) ) pass_enc = unescape( s.substring( 5 ) );                
-                //Log.v( TAG, "Restored to: cmt=" + comment + ", uri=" + uri + ", user=" + username + ", pass=" + ( password != null ? new String( password.getPassword() ) : "" ) );
+                
+                String sv = unescape( s.substring( 4 ) );
+                if( s.startsWith( "URI=" ) ) uri = Uri.parse( sv ); 
+                else 
+                if( s.startsWith( "CMT=" ) ) comment = sv;
+                else
+                if( s.startsWith( "CRD=" ) )  credentials = Credentials.fromEncriptedString( sv ); 
+                else
+                if( s.startsWith( "CRS=" ) ) {
+                    credentials = Credentials.fromEncriptedString( sv, Crypt.makeSeed( ctx ) );
+                }
             }
-            if( username != null && pass_enc != null ) {
-                credentials = new Credentials( username, Credentials.decrypt( pass_enc ) );
-            }
+            return new Favorite( uri, credentials, comment );
         }
         catch( Exception e ) {
             Log.e( TAG, "can't restore " + raw, e );
         }
-        return true;
+        return null;
     }
     
-    public String toString() {
+    public static String toString( Favorite fv, Context ctx ) {
         try {
-            if( uri == null ) return "";
+            if( fv.uri == null ) return "";
             StringBuffer buf = new StringBuffer( 128 );
             buf.append( "URI=" );
-            buf.append( escape( uri.toString() ) );
-            if( comment != null ) {
+            buf.append( escape( fv.uri.toString() ) );
+            if( fv.comment != null ) {
                 buf.append( sep );
                 buf.append( "CMT=" );
-                buf.append( escape( comment ) );
+                buf.append( escape( fv.comment ) );
             }
-            if( credentials != null ) {
+            if( fv.credentials != null ) {
                 buf.append( sep );
-                buf.append( "CRD=" );
-                buf.append( escape( credentials.exportToEncriptedString() ) );
+                buf.append( "CRS=" );
+                buf.append( escape( fv.credentials.toEncriptedString( Crypt.makeSeed( ctx ) ) ) );
             }
             return buf.toString();
         }
@@ -111,6 +120,7 @@ public class Favorite {
         }
         return null;
     }
+    
     public String getComment() {
         return comment;
     }
@@ -170,10 +180,10 @@ public class Favorite {
         credentials = new Credentials( un, pw );
     }
     
-    private String unescape( String s ) {
+    private static String unescape( String s ) {
         return s.replace( "%2C", sep );
     }
-    private String escape( String s ) {
+    private static String escape( String s ) {
         return s.replace( sep, "%2C" );
     }
 
@@ -232,9 +242,5 @@ public class Favorite {
         }
         return null;
     }    
-        
-
-    // ---------------------------
-    
 }
 

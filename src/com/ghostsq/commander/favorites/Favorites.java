@@ -7,8 +7,6 @@ import com.ghostsq.commander.Panels;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.adapters.HomeAdapter;
 import com.ghostsq.commander.utils.Credentials;
-import com.ghostsq.commander.utils.ForwardCompat;
-import com.ghostsq.commander.utils.ForwardCompat.PubPathType;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
@@ -117,7 +115,7 @@ public class Favorites extends ArrayList<Favorite>
         int sz = size();
         String[] a = new String[sz]; 
         for( int i = 0; i < sz; i++ ) {
-            String fav_str = get( i ).toString();
+            String fav_str = Favorite.toString( get( i ), c );
             if( fav_str == null ) continue;
             a[i] = escape( fav_str );
         }
@@ -126,27 +124,16 @@ public class Favorites extends ArrayList<Favorite>
         return s;
     }
     
-    public final void setFromOldString( String stored ) {
+    public final void setDefaults() {
         try {
-            if( stored != null && stored.length() != 0 ) { 
-                clear();
-                String use_sep = old_sep;
-                String[] favs = stored.split( use_sep );
-                for( int i = 0; i < favs.length; i++ ) {
-                    if( favs[i] != null && favs[i].length() > 0 )
-                        add( new Favorite( favs[i], null ) );
-                }
-            }
-            if( isEmpty() ) {
-                add( new Favorite( HomeAdapter.DEFAULT_LOC, c.getString( R.string.home ) ) );
-                add( new Favorite( Panels.DEFAULT_LOC, c.getString( R.string.default_uri_cmnt ) ) );
-                if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO ) {
-                    add( new Favorite( ForwardCompat.getPath( PubPathType.DOWNLOADS ),"Downloads" ) );
-                    add( new Favorite( ForwardCompat.getPath( PubPathType.DCIM ),     "Camera" ) );
-                    add( new Favorite( ForwardCompat.getPath( PubPathType.PICTURES ), "Pictures" ) );
-                    add( new Favorite( ForwardCompat.getPath( PubPathType.MUSIC ),    "Music" ) );
-                    add( new Favorite( ForwardCompat.getPath( PubPathType.MOVIES ),   "Movies" ) );
-                }
+            add( new Favorite( HomeAdapter.DEFAULT_LOC, c.getString( R.string.home ) ) );
+            add( new Favorite( Panels.DEFAULT_LOC, c.getString( R.string.default_uri_cmnt ) ) );
+            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO ) {
+                add( new Favorite( Utils.getPath( Utils.PubPathType.DOWNLOADS ),c.getString( R.string.df_dnl ) ) );
+                add( new Favorite( Utils.getPath( Utils.PubPathType.DCIM ),     c.getString( R.string.df_cam ) ) );
+                add( new Favorite( Utils.getPath( Utils.PubPathType.PICTURES ), c.getString( R.string.df_pic ) ) );
+                add( new Favorite( Utils.getPath( Utils.PubPathType.MUSIC ),    c.getString( R.string.df_mus ) ) );
+                add( new Favorite( Utils.getPath( Utils.PubPathType.MOVIES ),   c.getString( R.string.df_mov ) ) );
             }
         } catch( Throwable e ) {
             Log.e( TAG, null, e );
@@ -162,7 +149,7 @@ public class Favorites extends ArrayList<Favorite>
             for( int i = 0; i < favs.length; i++ ) {
                 String stored_fav = unescape( favs[i] );
                 //Log.v( TAG, "fav: " + stored_fav );
-                add( new Favorite( stored_fav ) );
+                add( Favorite.fromString( stored_fav, c ) );
             }
         } catch( NoSuchElementException e ) {
             Log.e( TAG, null, e );

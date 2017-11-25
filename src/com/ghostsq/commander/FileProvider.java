@@ -26,14 +26,14 @@ public class FileProvider extends ContentProvider {
     public final static Uri makeURI( String type, Uri u ) {
         Uri.Builder builder = Uri.parse( URI_PREFIX ).buildUpon();
         String us = u.toString();
-        builder.appendQueryParameter( type, ForwardCompat.toBase64( us.getBytes(), Base64.URL_SAFE ) );
+        builder.appendQueryParameter( type, Base64.encodeToString( us.getBytes(), Base64.URL_SAFE ) );
         return builder.build(); 
     }
     
     private final static Uri getEnclosedUri( Uri uri, String type ) {
         String bs = uri.getQueryParameter( type );
         if( !Utils.str( bs ) ) return null;
-        byte[] ub = ForwardCompat.fromBase64( bs, Base64.URL_SAFE );
+        byte[] ub = Base64.decode( bs, Base64.URL_SAFE );
         if( ub == null ) {
             Log.e( TAG, "Bad base64 input string" );
             return null;

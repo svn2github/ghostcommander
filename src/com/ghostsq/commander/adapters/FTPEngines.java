@@ -309,11 +309,8 @@ public final class FTPEngines {
                         if( ftp_file_date != null )
                             // if fails, see https://code.google.com/p/android/issues/detail?id=25460
                             dest.setLastModified( ftp_file_date.getTime() );
-                        
-                        final int GINGERBREAD = 9;
-                        if( android.os.Build.VERSION.SDK_INT >= GINGERBREAD )
-                            ForwardCompat.setFullPermissions( dest );
-                        
+                        dest.setWritable( true, false );
+                        dest.setReadable( true, false );
                         counter++;
                     }
                 }

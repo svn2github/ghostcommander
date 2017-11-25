@@ -532,9 +532,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                             sendProgress( pm.getFileName(), pm.getPercentDone(), 0 );
                         }
                     }
-                    final int GINGERBREAD = 9;
-                    if( android.os.Build.VERSION.SDK_INT >= GINGERBREAD )
-                        ForwardCompat.setFullPermissions( dest_file );
+                    Utils.setFullPermissions( dest_file );
                     long entry_time = entry.getLastModFileTime();
                     if( entry_time > 0 )
                         dest_file.setLastModified( entry_time );

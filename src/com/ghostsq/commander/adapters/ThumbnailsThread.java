@@ -10,6 +10,7 @@ import java.lang.ref.SoftReference;
 import com.ghostsq.commander.PictureViewer;
 import com.ghostsq.commander.adapters.CommanderAdapter.Item;
 import com.ghostsq.commander.utils.ForwardCompat;
+import com.ghostsq.commander.utils.ImageInfo;
 import com.ghostsq.commander.utils.MnfUtils;
 import com.ghostsq.commander.utils.Utils;
 
@@ -317,7 +318,7 @@ class ThumbnailsThread extends Thread {
                             Bitmap bitmap = BitmapFactory.decodeStream( in, null, options );
                             if( bitmap != null ) {
                                 if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR ) {
-                                    float degrees = ForwardCompat.getImageFileOrientationDegree( fn );
+                                    float degrees = ImageInfo.getImageFileOrientationDegree( fn );
                                     Log.d( TAG, "Rotating " + degrees );
                                     if( degrees > 0 ) {
                                         Bitmap rbmp = PictureViewer.rotateBitmap( bitmap, degrees );
@@ -362,7 +363,7 @@ class ThumbnailsThread extends Thread {
                 if( bitmap != null ) {
                     //Log.d( TAG, "Height: " + bitmap.getHeight() + " Width: " + bitmap.getWidth() );
                     if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR ) {
-                        float degrees = ForwardCompat.getImageFileOrientationDegree( fn );
+                        float degrees = ImageInfo.getImageFileOrientationDegree( fn );
                         if( degrees > 0 ) {
                             //Log.d( TAG, "Rotating " + degrees );
                             Bitmap rbmp = PictureViewer.rotateBitmap( bitmap, degrees );
@@ -425,7 +426,7 @@ class ThumbnailsThread extends Thread {
             }
             if( orig_id >= 0 ) {
                 int ss = getSampleSize( 512 );  // is this width of Thumbnails.MINI_KIND ?
-                Bitmap vtb = ForwardCompat.getVideoThumbnail( this.cr, orig_id, ss );
+                Bitmap vtb = ImageInfo.getVideoThumbnail( this.cr, orig_id, ss );
                 BitmapDrawable drawable = new BitmapDrawable( res, vtb );
                 Thumbnail thb = new Thumbnail( drawable, 0, 0 );
                 f.setThumbNail( drawable );
@@ -440,7 +441,7 @@ class ThumbnailsThread extends Thread {
         }
         if( Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO ) return null;
         try {
-            Bitmap vtb = ForwardCompat.createVideoThumbnail( fn );
+            Bitmap vtb = ImageInfo.createVideoThumbnail( fn );
             int scale = getSampleSize( 512 );
             if( scale > 1 )
                 vtb = scaleBitmap( vtb, 1f/scale );

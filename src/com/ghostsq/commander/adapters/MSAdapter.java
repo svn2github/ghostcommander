@@ -17,6 +17,7 @@ import com.ghostsq.commander.adapters.Engines.IReciever;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.MediaFile;
+import com.ghostsq.commander.utils.MediaScanTask;
 import com.ghostsq.commander.utils.Utils;
 
 import android.annotation.TargetApi;
@@ -783,7 +784,7 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
 
                 String[] to_scan_a = new String[to_scan.size()];
                 to_scan.toArray( to_scan_a );
-                ForwardCompat.scanMedia( ctx, to_scan_a );
+                MediaScanTask.scanMedia( ctx, to_scan_a );
                 wakeLock.release();
                 // XXX: assume (move && !del_src_dir)==true when copy from app: to the FS
                 if( delerr_counter == counter ) move = false;  // report as copy

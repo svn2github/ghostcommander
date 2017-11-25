@@ -21,6 +21,7 @@ import com.ghostsq.commander.root.RootAdapter;
 import com.ghostsq.commander.toolbuttons.ToolButton;
 import com.ghostsq.commander.toolbuttons.ToolButtons;
 import com.ghostsq.commander.utils.Credentials;
+import com.ghostsq.commander.utils.Crypt;
 import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.Utils;
 
@@ -109,8 +110,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         hsv.setHorizontalScrollBarEnabled( false );
         hsv.setSmoothScrollingEnabled( true );
         hsv.setOnTouchListener( this );
-        if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD )
-            ForwardCompat.disableOverScroll( hsv );
+        hsv.setOverScrollMode( View.OVER_SCROLL_NEVER );
 
         panelsView = ( (PanelsView)c.findViewById( R.id.panels ) );
         panelsView.init( c.getWindowManager() );
@@ -174,14 +174,14 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             GradientDrawable bpd = Utils.getShadingEx( ck.btnColor, 1f );
             bpd.setStroke( 1, sc );
             bpd.setCornerRadius( 2 );
-            GradientDrawable bnd = Utils.getShadingEx( ck.btnColor, bbb < 0.4f ? 0f : 0.6f );
+            GradientDrawable bnd = Utils.getShadingEx( ck.btnColor, bbb < 0.4f ? 0.6f : 0.8f );
             bnd.setStroke( 1, sc );
             bnd.setCornerRadius( 2 );
             states.addState( new int[] { android.R.attr.state_pressed }, bpd );
             states.addState( new int[] {}, bnd );
             return states;
         } catch( Exception e ) {
-            e.printStackTrace();
+            Log.e( TAG, "", e );
         }
         return null;
     }
@@ -1359,19 +1359,13 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     }
 
     public void goTop() {
-        if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO )
-            ForwardCompat.smoothScrollToPosition( list[current].flv, 0 );
-        else
-            list[current].flv.setSelectionAfterHeaderView();
+        list[current].flv.smoothScrollToPosition( 0 );
     }
 
     public void goBot() {
         ListView flv = list[current].flv;
         int pos = flv.getCount() - 1;
-        if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO )
-            ForwardCompat.smoothScrollToPosition( flv, pos );
-        else
-            flv.setSelection( pos );
+        flv.smoothScrollToPosition( pos );
     }
 
     /**
@@ -1623,14 +1617,18 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         private final static String LI = "LEFT_ITEM", RI = "RIGHT_ITEM";
         private final static String LM = "LEFT_MODE", RM = "RIGHT_MODE";
         private final static String CP = "LAST_PANEL";
-        private final static String FU = "FAV_URIS";
         private final static String FV = "FAVS";
         private int current = -1;
+        private Context ctx;
         private Credentials leftCrd, rightCrd;
         private Uri         leftUri, rightUri;
         private String      leftItem,rightItem;
         private int         leftMode,rightMode;
-        private String favs, fav_uris;
+        private String favs;
+        
+        State( Context c ) {
+            this.ctx = c;
+        }
         
         public final int getCurrent() {
             return current;
@@ -1660,16 +1658,14 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             leftMode  = b.getInt( LM );
             rightMode = b.getInt( RM );
             favs = b.getString( FV );
-            if( favs == null || favs.length() == 0 )
-                fav_uris = b.getString( FU );
         }
 
         public final void store( SharedPreferences.Editor e ) {
             e.putInt( CP, current );
             e.putString( LU,  leftUri != null ?  leftUri.toString() : "" );
             e.putString( RU, rightUri != null ? rightUri.toString() : "" );
-            e.putString( LC,  leftCrd != null ?  leftCrd.exportToEncriptedString() : "" );
-            e.putString( RC, rightCrd != null ? rightCrd.exportToEncriptedString() : "" );
+            e.putString( LC,  leftCrd != null ?  leftCrd.toEncriptedString( Crypt.makeSeed( ctx ) ) : "" );
+            e.putString( RC, rightCrd != null ? rightCrd.toEncriptedString( Crypt.makeSeed( ctx ) ) : "" );
             e.putString( LI,  leftItem );
             e.putString( RI, rightItem );
             e.putInt( LM,     leftMode );
@@ -1683,22 +1679,20 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 leftUri = Uri.parse( left_uri_s );
             String right_uri_s = p.getString( RU, null );
             if( Utils.str( right_uri_s ) )
-                rightUri = Uri.parse( right_uri_s );
+               rightUri = Uri.parse( right_uri_s );
 
             String left_crd_s = p.getString( LC, null );
             if( Utils.str( left_crd_s ) )
-                leftCrd = Credentials.createFromEncriptedString( left_crd_s );
+                leftCrd = Credentials.fromEncriptedString( left_crd_s, Crypt.makeSeed( ctx ) );
             String right_crd_s = p.getString( RC, null );
             if( Utils.str( right_crd_s ) )
-                rightCrd = Credentials.createFromEncriptedString( right_crd_s );
+               rightCrd = Credentials.fromEncriptedString( right_crd_s, Crypt.makeSeed( ctx ) );
             leftItem  = p.getString( LI, null );
             rightItem = p.getString( RI, null );
             leftMode  = p.getInt( LM, 0 );
             rightMode = p.getInt( RM, 0 );
-            current = p.getInt( CP, LEFT );
-            favs = p.getString( FV, "" );
-            if( favs == null || favs.length() == 0 )
-                fav_uris = p.getString( FU, "" );
+            current   = p.getInt( CP, LEFT );
+            favs      = p.getString( FV, "" );
         }
         public final static void storeFaves( SharedPreferences.Editor e, String fas ) {
             e.putString( FV, fas );        
@@ -1706,19 +1700,19 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         public final static String restoreFaves( SharedPreferences p ) {
             return p.getString( FV, "" );        
         }
+    }   // State
+
+    public final State createEmptyStateObject( Context ctx ) {
+        return new State( ctx );
     }
 
-    public final State createEmptyStateObject() {
-        return new State();
-    }
-
-    public final State getState() {
+    public final State getState( Context ctx ) {
         //Log.v( TAG, "getState()" );
         CommanderAdapter left_adapter = (CommanderAdapter)list[LEFT].getListAdapter();
         if( left_adapter == null ) return null;
         CommanderAdapter right_adapter = (CommanderAdapter)list[RIGHT].getListAdapter();
         if( right_adapter == null ) return null;
-        State s = createEmptyStateObject();
+        State s = createEmptyStateObject( ctx );
         s.current = current;
         try {
             s.leftUri  = left_adapter.getUri();
@@ -1747,8 +1741,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         resetQuickSearch();
         if( s.favs != null && s.favs.length() > 0 )
             favorites.setFromString( s.favs );
-        else if( s.fav_uris != null )
-            favorites.setFromOldString( s.fav_uris );
+        else 
+            favorites.setDefaults();
         current = s.current;
         if( dont_restore != LEFT ) {
             ListHelper list_h = list[LEFT];

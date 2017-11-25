@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.lang.reflect.Field;
 
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
@@ -19,7 +18,6 @@ import com.ghostsq.commander.root.MountAdapter;
 import com.ghostsq.commander.root.RootAdapter;
 import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.ForwardCompat;
-import com.ghostsq.commander.utils.ForwardCompat.PubPathType;
 import com.ghostsq.commander.utils.Utils;
 
 import android.Manifest;
@@ -223,7 +221,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 starting_intent = intent;
 
             SharedPreferences prefs = getPreferences( MODE_PRIVATE );
-            Panels.State s = panels.createEmptyStateObject();
+            Panels.State s = panels.createEmptyStateObject( this );
             s.restore( prefs );
             if( intent != null ) {
                 String action = intent.getAction();
@@ -252,7 +250,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         Log.d( TAG, "Pausing\n" );
         super.onPause();
         on = false;
-        Panels.State s = panels.getState();
+        Panels.State s = panels.getState( this );
         if( s == null ) return;
         SharedPreferences.Editor editor = getPreferences( MODE_PRIVATE ).edit();
         s.store( editor );
@@ -291,7 +289,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
     @Override
     protected void onSaveInstanceState( Bundle outState ) {
         Log.i( TAG, "Saving Instance State" );
-        Panels.State s = panels.getState();
+        Panels.State s = panels.getState( this );
         if( s != null )
             s.store( outState );
         super.onSaveInstanceState( outState );
@@ -301,7 +299,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
     protected void onRestoreInstanceState( Bundle savedInstanceState ) {
         Log.i( TAG, "Restoring Instance State" );
         if( savedInstanceState != null ) {
-            Panels.State s = panels.createEmptyStateObject();
+            Panels.State s = panels.createEmptyStateObject( this );
             s.restore( savedInstanceState );
             panels.setState( s, -1 );
         }
@@ -1115,12 +1113,10 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             Long   fs = c.getLong( sci );
             if( !Utils.str( fn ) ) fn = "temp.zip";
             if( uri.toString().contains( "downloads" ) ) {
-                if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO ) {
-                    String dn_dir = ForwardCompat.getPath( PubPathType.DOWNLOADS );
-                    File dn_file = new File( dn_dir, fn );
-                    if( dn_file.exists() && dn_file.length() == fs )
-                        return Uri.parse( "zip:" + dn_file.getAbsolutePath() );
-                }
+                String dn_dir = Utils.getPath( Utils.PubPathType.DOWNLOADS );
+                File dn_file = new File( dn_dir, fn );
+                if( dn_file.exists() && dn_file.length() == fs )
+                    return Uri.parse( "zip:" + dn_file.getAbsolutePath() );
             }
             InputStream is = cr.openInputStream( uri );
             if( is == null ) throw new Exception("No input stream");

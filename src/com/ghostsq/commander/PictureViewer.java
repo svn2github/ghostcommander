@@ -59,6 +59,7 @@ import com.ghostsq.commander.adapters.Engine;
 import com.ghostsq.commander.adapters.SAFAdapter;
 import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.ForwardCompat;
+import com.ghostsq.commander.utils.ImageInfo;
 import com.ghostsq.commander.utils.Utils;
 import com.ortiz.touch.TouchImageView;
 
@@ -433,7 +434,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                             if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR && 
                                     ( !Utils.str( scheme ) || "file".equals( scheme ) ) ) {
                                 file_path = u.getPath();
-                                float degrees = ForwardCompat.getImageFileOrientationDegree( file_path );
+                                float degrees = ImageInfo.getImageFileOrientationDegree( file_path );
                                 if( degrees > 0 ) {
                                     Log.d( TAG, "Rotating " + degrees );
                                     Bitmap rbmp = PictureViewer.rotateBitmap( bmp, degrees );
@@ -512,9 +513,9 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                                 bmp = BitmapFactory.decodeFile( f.getAbsolutePath(), options );
                             } catch( Throwable e ) {}
                             if( bmp == null ) continue;
-                            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR ) {
+                            {
                                 file_path = u.getPath();
-                                float degrees = ForwardCompat.getImageFileOrientationDegree( file_path );
+                                float degrees = ImageInfo.getImageFileOrientationDegree( file_path );
                                 Log.d( TAG, "Rotating " + degrees );
                                 if( degrees > 0 ) {
                                     Bitmap rbmp = PictureViewer.rotateBitmap( bmp, degrees );
@@ -680,8 +681,8 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
         String info_text = null;
         if( file_path != null ) {
             info_text = "<b>File:</b> <small>" + file_path + "</small><br/>";
-            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR ) {
-                String exif_text = ForwardCompat.getImageFileInfoHTML( file_path );
+            {
+                String exif_text = ImageInfo.getImageFileInfoHTML( file_path );
                 if( exif_text != null )
                     info_text += exif_text;
             }
@@ -709,8 +710,8 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                         if( cursor != null && cursor.getCount() > 0 ) {
                             cursor.moveToFirst();
                             String path = cursor.getString( cursor.getColumnIndex( MediaColumns.DATA ) );
-                            if( path != null && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR ) {
-                                String exif_text = ForwardCompat.getImageFileInfoHTML( path );
+                            if( path != null ) {
+                                String exif_text = ImageInfo.getImageFileInfoHTML( path );
                                 if( exif_text != null )
                                     info_text += exif_text;
                             }

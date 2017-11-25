@@ -1,11 +1,5 @@
 package com.ghostsq.commander.utils;
 
-import java.security.SecureRandom;
-
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -14,8 +8,6 @@ import android.util.Log;
 
 public class Credentials implements Parcelable {
     private static String  TAG  = "GC.Credentials";
-    private static String  seed = "5hO@%#O7&!H3#R";
-    private static byte[] rawKey = null;
     public  static String  pwScreen = "***";
     public  static String  KEY  = "CRD";
     private String username, password;
@@ -48,7 +40,7 @@ public class Credentials implements Parcelable {
              String un = in.readString();
              String pw = "";
              try {
-                 pw = new String( decrypt( getRawKey( seed ), in.createByteArray() ) );
+                 pw = new String( Crypt.decrypt( Crypt.getRawKey(), in.createByteArray() ) );
              } catch( Exception e ) {
                  Log.e( TAG, "on password decryption", e );
              }
@@ -70,7 +62,7 @@ public class Credentials implements Parcelable {
         byte[] enc_pw = null;
         if( password != null )
             try {
-                enc_pw = encrypt( getRawKey( seed ), getPassword().getBytes() );
+                enc_pw = Crypt.encrypt( Crypt.getRawKey(), getPassword().getBytes() );
             } catch( Exception e ) {
                 Log.e( TAG, "on password encryption", e );
             }
@@ -78,87 +70,33 @@ public class Credentials implements Parcelable {
         dest.writeByteArray( enc_pw );
     }
 
-    private static byte[] getRawKey( String seed ) throws Exception {
-        boolean primary = Credentials.seed.equals( seed );
-        if( primary && Credentials.rawKey != null ) return Credentials.rawKey;
-        KeyGenerator kgen = KeyGenerator.getInstance( "AES" );
-        SecureRandom sr = SecureRandom.getInstance( "SHA1PRNG", "Crypto" );
-        sr.setSeed( seed.getBytes() );
-        kgen.init( 128, sr ); // 192 and 256 bits may not be available
-        SecretKey skey = kgen.generateKey();
-        byte[] raw = skey.getEncoded();
-        if( primary )
-            Credentials.rawKey = raw;
-        return raw;
+    //public
+
+    public static Credentials fromEncriptedString( String s ) {
+        return fromEncriptedString( s, null );
     }
 
-    public static Credentials createFromEncriptedString( String s ) {
-        return createFromEncriptedString( s, null );
-    }
-
-    public static Credentials createFromEncriptedString( String s, String seed_ ) {
+    public static Credentials fromEncriptedString( String s, String seed_ ) {
         try {
-            boolean base64 = true;
-            if( seed_ == null ) {
-                seed_ = Credentials.seed;
-                base64 = false;
-            }
-            return new Credentials( decrypt( seed_, s, base64 ) );
+            return new Credentials( Crypt.decrypt( seed_, s, false ) );
         } catch( Exception e ) {
             Log.e( TAG, "on creating from an encrypted string", e );
         }
         return null;
     }
-    public String exportToEncriptedString() {
-        return exportToEncriptedString( null );
+    public String toEncriptedString() {
+        return toEncriptedString( null );
     }
-    public String exportToEncriptedString( String seed_ ) {
+    public String toEncriptedString( String seed_ ) {
         try {
-            boolean base64 = true;
-            if( seed_ == null ) {
-                seed_ = this.seed;
-                base64 = false;
-            }
-            return encrypt( seed_, getUserName() + ":" + getPassword(), base64 );
+            return Crypt.encrypt( seed_, getUserName() + ":" + getPassword(), false );
         } catch( Exception e ) {
             e.printStackTrace();
         }
         return null;
     }
     
-    public static String decrypt( String encrypted ) throws Exception {
-        return decrypt( seed, encrypted, false );
-    }
-    
-    public static String encrypt( String seed, String cleartext, boolean base64out ) throws Exception {
-        byte[] rawKey = getRawKey( seed );
-        byte[] result = encrypt( rawKey, cleartext.getBytes() );
-        if( base64out )
-            return ForwardCompat.toBase64( result );
-        else
-            return Utils.toHexString( result, null );
-    }
-
-    public static String decrypt( String seed, String encrypted, boolean base64in ) throws Exception {
-        byte[] rawKey  = getRawKey( seed );
-        byte[] enc = base64in ? ForwardCompat.fromBase64( encrypted ) : Utils.hexStringToBytes( encrypted );
-        byte[] result = decrypt( rawKey, enc );
-        return new String( result );
-    }
-
-    private static byte[] encrypt( byte[] raw, byte[] clear ) throws Exception {
-        SecretKeySpec skeySpec = new SecretKeySpec( raw, "AES" );
-        Cipher cipher = Cipher.getInstance( "AES" );
-        cipher.init( Cipher.ENCRYPT_MODE, skeySpec );
-        byte[] encrypted = cipher.doFinal( clear );
-        return encrypted;
-    }
-
-    private static byte[] decrypt( byte[] raw, byte[] encrypted ) throws Exception {
-        SecretKeySpec skeySpec = new SecretKeySpec( raw, "AES" );
-        Cipher cipher = Cipher.getInstance( "AES" );
-        cipher.init( Cipher.DECRYPT_MODE, skeySpec );
-        byte[] decrypted = cipher.doFinal( encrypted );
-        return decrypted;
+    public static String decryptDef( String encrypted ) throws Exception {
+        return Crypt.decrypt( encrypted, false );
     }
 }

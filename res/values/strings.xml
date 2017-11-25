@@ -36,6 +36,11 @@
 <string name="hidden">Hidden</string>
 <string name="rescan">Rescan media</string>
 <string name="favs">Favorites</string>
+<string name="df_dnl">Downloads</string>
+<string name="df_cam">Camera</string>
+<string name="df_pic">Pictures</string>
+<string name="df_mus">Music</string>
+<string name="df_mov">Movies</string>
 <string name="local">Local storage</string>
 <string name="external">External card</string>
 <string name="media">Media Store</string>
@@ -310,8 +315,8 @@
 <string name="summary_finger_friendly">Enlarge the user interface elements</string>
 <string name="prevent_root">Warn on leaving /sdcard</string>
 <string name="summary_prevent_root">Issue a warning when going to a device\'s root folder</string>
-<string name="show_root">Show root and mounts</string>
-<string name="summary_show_root">Home view will display \"Root mode\" and \"Mount points\"</string>
+<string name="show_root">Show advanced home items</string>
+<string name="summary_show_root">Home view will include \"Root mode\", \"Mount points\" and \"Media Store\"</string>
 <string name="root_root">Automatic root mode</string>
 <string name="summary_root_root">Switch to root mode when going to a device\'s root folder</string>
 <string name="thumbnails">Enable thumbnails</string>
@@ -456,7 +461,7 @@ items and the other side will select them.
 <p>
 Copy or move files and folders by first choosing the target destination
 in one panel, then swipe (or toggle) back to the other panel and select
-the items you wish to transfer.
+the items you wish to transfer. Then commit the desired operation.
 </p>
 <h3>EXTERNAL CARDS AND USB OTG</h3>
 <p>
@@ -481,9 +486,9 @@ cloud storage services: Box, Dropbox and Google Drive.
 </p>
 <h3>ROOT MODE</h3>
 <p>
-Using the root mode (superuser) and mount point features of Ghost
-Commander requires caution, a rooted device and BusyBox installed with
-its path defined in the settings.
+Using the root mode (superuser) features of Ghost
+Commander requires caution, only work on a rooted device. 
+BusyBox should be installed with its path defined in the settings.
 </p>
 <h3>LOCATION EDITOR</h3>
 <p>
@@ -538,7 +543,7 @@ follows:
 <string name="license_text"><![CDATA[
 <h3>Ghost Manager</h3>
 <p>A file manager</p>
-<p>Copyright © 2009-2014 Ghost Squared</p>
+<p>Copyright © 2009-2017 Ghost Squared</p>
 <p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
 <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>
 <p>You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/></p>

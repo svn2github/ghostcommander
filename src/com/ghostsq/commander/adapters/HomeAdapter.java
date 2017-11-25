@@ -205,9 +205,7 @@ public class HomeAdapter extends CommanderAdapterBase {
                         }
                         if( !Utils.str( item.name ) )
                             item.name = pre.getString( pai.labelRes );
-                        Drawable logo = null;
-                        if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD )
-                            logo = ForwardCompat.getLogo( pm, pai );
+                        Drawable logo = getLogo( pm, pai );
                         item.setIcon( logo != null ?  logo  :  pm.getApplicationIcon( pai ) );
                         item.dir = true;    // to be used in the "forget" feature
                     }
@@ -218,9 +216,9 @@ public class HomeAdapter extends CommanderAdapterBase {
             if( root ) {
                 ia.add( makeItem( ROOT, "root" ) );
                 ia.add( makeItem( MOUNT, "mount" ) );
-            }
-            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
-                ia.add( makeItem( MEDIA, MSAdapter.SCHEME ) );
+                if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
+                    ia.add( makeItem( MEDIA, MSAdapter.SCHEME ) );
+                }
             }
             ia.add( makeItem( APPS, "apps" ) );
             ia.add( makeItem( EXIT, "exit" ) );
@@ -235,6 +233,11 @@ public class HomeAdapter extends CommanderAdapterBase {
         notify( pbod );
         return true;
     }
+
+    public static Drawable getLogo( PackageManager pm, ApplicationInfo pai ) {
+        return pai.logo == 0 ? null : pm.getApplicationLogo( pai );
+    }
+    
     @Override
     public void reqItemsSize( SparseBooleanArray cis ) {
         notErr();
