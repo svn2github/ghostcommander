@@ -1,6 +1,8 @@
 package com.ghostsq.commander.utils;
 
 
+import android.content.Context;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Base64;
@@ -70,33 +72,47 @@ public class Credentials implements Parcelable {
         dest.writeByteArray( enc_pw );
     }
 
-    //public
-
-    public static Credentials fromEncriptedString( String s ) {
-        return fromEncriptedString( s, null );
-    }
-
-    public static Credentials fromEncriptedString( String s, String seed_ ) {
+    public String toOldEncriptedString() {
         try {
-            return new Credentials( Crypt.decrypt( seed_, s, false ) );
+            return Crypt.encrypt( getUserName() + ":" + getPassword(), false );
         } catch( Exception e ) {
-            Log.e( TAG, "on creating from an encrypted string", e );
+            Log.e( TAG, "", e );
         }
         return null;
     }
-    public String toEncriptedString() {
-        return toEncriptedString( null );
-    }
-    public String toEncriptedString( String seed_ ) {
+    public static Credentials fromOldEncriptedString( String s ) {
         try {
-            return Crypt.encrypt( seed_, getUserName() + ":" + getPassword(), false );
+            return new Credentials( Crypt.decrypt( s, false ) );
         } catch( Exception e ) {
-            e.printStackTrace();
+            Log.e( TAG, "", e );
         }
         return null;
     }
     
-    public static String decryptDef( String encrypted ) throws Exception {
-        return Crypt.decrypt( encrypted, false );
+    public String toEncriptedString( Context ctx ) {
+        try {
+            String toc = getUserName() + ":" + getPassword();
+            if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 )
+                return Crypt.encrypt( ctx, toc, false );
+            else
+                return Crypt.encrypt( toc, false );
+        } catch( Exception e ) {
+            Log.e( TAG, "", e );
+        }
+        return null;
     }
+    public static Credentials fromEncriptedString( String s, Context ctx ) {
+        try {
+            String up = null;
+            if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 )
+                up = Crypt.decrypt( ctx, s, false );
+            else
+                up = Crypt.decrypt( s, false );
+            return new Credentials( up );
+        } catch( Exception e ) {
+            Log.e( TAG, "", e );
+        }
+        return null;
+    }
+    
 }

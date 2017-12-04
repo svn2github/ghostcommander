@@ -287,7 +287,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         }
     }
 
-    public ArrayList<Favorite> getFavorites() {
+    public Favorites getFavorites() {
         return favorites;
     }
 
@@ -768,8 +768,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             in.setType( "*/*" );
             for( int i = 0; i < num; i++ ) {
                 if( cis.valueAt( i ) ) {
-                    String esc_fn = Utils.escapePath( ca.getItemName( cis.keyAt( i ), true ) );
-                    Uri uri = Uri.parse( use_content ? FileProvider.URI_PREFIX + esc_fn : "file://" + esc_fn );
+                    String fn = ca.getItemName( cis.keyAt( i ), true );
+                    Uri uri = use_content ? FileProvider.makeURI( fn ) : Uri.parse( "file://" + Utils.escapePath( fn ) );
                     uris.add( uri );
                 }
             }
@@ -790,8 +790,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 File f = getCurrentFile();
                 if( f == null ) return;
                 fn = f.getName();
-                String esc_fn = Utils.escapePath( f.getAbsolutePath() );
-                uri = Uri.parse( use_content ? FileProvider.URI_PREFIX + esc_fn : "file://" + esc_fn );
+                uri = use_content ? FileProvider.makeURI( f.getAbsolutePath() ) : 
+                 Uri.parse( "file://" + Utils.escapePath( f.getAbsolutePath() ) );
             }
             if( uri == null ) {
                 Log.e( TAG, "Can't obtain an URI to send" );
@@ -815,11 +815,17 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             int pos = getSingle( true );
             if( pos < 0 ) return;
             u = safa.getItemOpenableUri( pos );
-            intent.addFlags( Intent.FLAG_GRANT_READ_URI_PERMISSION );
+            intent.addFlags( Intent.FLAG_GRANT_READ_URI_PERMISSION 
+                           | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         } else {
             File f = getCurrentFile();
-            if( f == null ) return; 
-            u = Uri.fromFile( f );
+            if( f == null ) return;
+            SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( c );
+            if( shared_pref.getBoolean( "open_content", true ) ) {
+                u = FileProvider.makeURI( f.getAbsolutePath() );
+            } else {
+                u = Uri.fromFile( f );
+            }
         }
         if( u == null ) {
             Log.e( TAG, "Can't obtain an URI to open with" );
@@ -1617,14 +1623,12 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         private final static String LI = "LEFT_ITEM", RI = "RIGHT_ITEM";
         private final static String LM = "LEFT_MODE", RM = "RIGHT_MODE";
         private final static String CP = "LAST_PANEL";
-        private final static String FV = "FAVS";
         private int current = -1;
         private Context ctx;
         private Credentials leftCrd, rightCrd;
         private Uri         leftUri, rightUri;
         private String      leftItem,rightItem;
         private int         leftMode,rightMode;
-        private String favs;
         
         State( Context c ) {
             this.ctx = c;
@@ -1644,7 +1648,6 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             b.putString( RI, rightItem );
             b.putInt( LM, leftMode );
             b.putInt( RM, rightMode );
-            b.putString( FV, favs );
         }
 
         public final void restore( Bundle b ) {
@@ -1657,20 +1660,19 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             rightItem = b.getString( RI );
             leftMode  = b.getInt( LM );
             rightMode = b.getInt( RM );
-            favs = b.getString( FV );
         }
 
         public final void store( SharedPreferences.Editor e ) {
             e.putInt( CP, current );
             e.putString( LU,  leftUri != null ?  leftUri.toString() : "" );
             e.putString( RU, rightUri != null ? rightUri.toString() : "" );
-            e.putString( LC,  leftCrd != null ?  leftCrd.toEncriptedString( Crypt.makeSeed( ctx ) ) : "" );
-            e.putString( RC, rightCrd != null ? rightCrd.toEncriptedString( Crypt.makeSeed( ctx ) ) : "" );
+            e.putString( LC,  leftCrd != null ?  leftCrd.toEncriptedString( ctx ) : "" );
+            e.putString( RC, rightCrd != null ? rightCrd.toEncriptedString( ctx ) : "" );
             e.putString( LI,  leftItem );
             e.putString( RI, rightItem );
             e.putInt( LM,     leftMode );
             e.putInt( RM,    rightMode );
-            e.putString( FV, favs );
+            e.remove( "FAVS" );
         }
 
         public final void restore( SharedPreferences p ) {
@@ -1683,22 +1685,15 @@ public class Panels implements AdapterView.OnItemSelectedListener,
 
             String left_crd_s = p.getString( LC, null );
             if( Utils.str( left_crd_s ) )
-                leftCrd = Credentials.fromEncriptedString( left_crd_s, Crypt.makeSeed( ctx ) );
+                leftCrd = Credentials.fromEncriptedString( left_crd_s, ctx );
             String right_crd_s = p.getString( RC, null );
             if( Utils.str( right_crd_s ) )
-               rightCrd = Credentials.fromEncriptedString( right_crd_s, Crypt.makeSeed( ctx ) );
+               rightCrd = Credentials.fromEncriptedString( right_crd_s, ctx );
             leftItem  = p.getString( LI, null );
             rightItem = p.getString( RI, null );
             leftMode  = p.getInt( LM, 0 );
             rightMode = p.getInt( RM, 0 );
             current   = p.getInt( CP, LEFT );
-            favs      = p.getString( FV, "" );
-        }
-        public final static void storeFaves( SharedPreferences.Editor e, String fas ) {
-            e.putString( FV, fas );        
-        }
-        public final static String restoreFaves( SharedPreferences p ) {
-            return p.getString( FV, "" );        
         }
     }   // State
 
@@ -1726,8 +1721,6 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             s.rightMode = right_adapter.getMode() & ( CommanderAdapter.MODE_SORTING | CommanderAdapter.MODE_SORT_DIR );
             pos = list[RIGHT].getCurPos();
             s.rightItem = pos >= 0 ? right_adapter.getItemName( pos, false ) : "";
-
-            s.favs = favorites.getAsString();
         } catch( Exception e ) {
             Log.e( TAG, "getState()", e );
         }
@@ -1739,10 +1732,6 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         if( s == null )
             return;
         resetQuickSearch();
-        if( s.favs != null && s.favs.length() > 0 )
-            favorites.setFromString( s.favs );
-        else 
-            favorites.setDefaults();
         current = s.current;
         if( dont_restore != LEFT ) {
             ListHelper list_h = list[LEFT];
@@ -1770,8 +1759,18 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         applyColors();
     }
     
-    final void restoreFaves() {
-        SharedPreferences prefs = c.getPreferences( Context.MODE_MULTI_PROCESS );
-        favorites.setFromString( State.restoreFaves( prefs ) );
+    public final void storeFaves() {
+        favorites.store();
+    }
+    
+    public final void restoreFaves() {
+        favorites.restore();
+        if( !favorites.isEmpty() ) return;
+        SharedPreferences p = c.getPreferences( Context.MODE_PRIVATE | Context.MODE_MULTI_PROCESS );
+        String favs = p.getString( "FAVS", "" );
+        if( favs != null && favs.length() > 0 )
+            favorites.setFromString( favs );
+        else 
+            favorites.setDefaults();
     }
 }

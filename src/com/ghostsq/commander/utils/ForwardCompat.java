@@ -3,6 +3,7 @@ package com.ghostsq.commander.utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Set;
 
 import com.ghostsq.commander.R;
 
@@ -39,6 +40,16 @@ public class ForwardCompat
         file.setWritable( true, false );
         file.setReadable( true, false );
     }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public static void putStringSet( SharedPreferences.Editor ed, String key, Set<String> vs ) {
+        ed.putStringSet( key, vs );
+    }
+    
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public static Set<String> getStringSet( SharedPreferences sp, String key ) {
+        return sp.getStringSet( key, null );
+    }
     
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static SharedPreferences getDefaultSharedPreferences( Context ctx ) {
@@ -57,11 +68,6 @@ public class ForwardCompat
         if( is != null ) sb.append( "<br/><b>ISO level:</b> " ).append( is );
     }
 
-    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    public static boolean hasPermanentMenuKey( Context ctx ) {
-        return ViewConfiguration.get( ctx ).hasPermanentMenuKey();
-    }
-    
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static void setupActionBar( Activity a ) {
         ActionBar ab = a.getActionBar();
@@ -69,6 +75,11 @@ public class ForwardCompat
         ab.setDisplayShowTitleEnabled( false );
     }
 
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+    public static boolean hasPermanentMenuKey( Context ctx ) {
+        return ViewConfiguration.get( ctx ).hasPermanentMenuKey();
+    }
+    
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public static Notification buildNotification( Context ctx, String str, PendingIntent pi ) {
          return new Notification.Builder( ctx )

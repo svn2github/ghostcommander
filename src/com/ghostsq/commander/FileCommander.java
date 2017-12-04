@@ -189,7 +189,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             dh.setMessageToBeShown( about_text + getString( R.string.keys_text ), null );
             dh.showDialog();
         }
-        
+
         if( Build.VERSION.SDK_INT < Build.VERSION_CODES.M ) {
             doStart();
             return;
@@ -210,6 +210,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
     
     private void doStart() {
         on = true;
+        
         if( dont_restore )
             dont_restore = false;
         else {
@@ -223,6 +224,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             SharedPreferences prefs = getPreferences( MODE_PRIVATE );
             Panels.State s = panels.createEmptyStateObject( this );
             s.restore( prefs );
+            panels.restoreFaves();
             if( intent != null ) {
                 String action = intent.getAction();
                 Log.i( TAG, "Action: " + action );
@@ -255,6 +257,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         SharedPreferences.Editor editor = getPreferences( MODE_PRIVATE ).edit();
         s.store( editor );
         editor.commit();
+        panels.storeFaves();
     }
 
     @Override
@@ -448,8 +451,10 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 panels.setLayoutMode( sxs );
                 panels.showToolbar( sharedPref.getBoolean( "show_toolbar", true ) );
                 setConfirmMode( sharedPref );
-                if( data != null && PREF_RESTORE_ACTION.equals( data.getAction() ) )
+                if( data != null && PREF_RESTORE_ACTION.equals( data.getAction() ) ) {
+                    SharedPreferences prefs = getPreferences( MODE_PRIVATE | MODE_MULTI_PROCESS );
                     panels.restoreFaves();
+                }
             }
             break;
         case REQUEST_CODE_SRV_FORM: {
@@ -870,7 +875,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                         return;
                     }
                     if( Intent.ACTION_GET_CONTENT.equals( action ) ) {
-                        i.setData( Uri.parse( FileProvider.URI_PREFIX + path ) );
+                        i.setData( FileProvider.makeURI( path ) );
                         setResult( RESULT_OK, i );
                         finish();
                         return;
@@ -880,118 +885,130 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                     Navigate( uri.buildUpon().scheme( "zip" ).build(), null, null );
                     return;
                 }
-                Uri u = uri.buildUpon().scheme( "file" ).authority( "" )
-                        .encodedPath( uri.getEncodedPath().replace( " ", "%20" ) ).build();
+                
                 i.setAction( Intent.ACTION_VIEW );
+                SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
+                boolean use_content = shared_pref.getBoolean( "open_content", true );
+                Uri u = null;
+                if( use_content ) {
+                    u = FileProvider.makeURI( path );
+                } else {
+                    u = uri.buildUpon().scheme( "file" ).authority( "" )
+                            .encodedPath( uri.getEncodedPath().replace( " ", "%20" ) ).build();
+                }
                 i.setDataAndType( u, mime );
                 i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET );
                 // | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
-                
                 Log.d( TAG, "Open uri " + u.toString() + " intent: " + i.toString() );
                 startActivityForResult( i, REQUEST_CODE_OPEN );
-                return;
-            } 
-            else if( mime != null && ( mime.startsWith( "audio" ) || mime.startsWith( "video" ) ) ) {
-                startService( new Intent( this, StreamServer.class ) );
-                Intent i = new Intent( Intent.ACTION_VIEW );
-
-                if( crd != null ) {
-                    String username = crd.getUserName();
-                    StreamServer.storeCredentials( this, crd, uri );
-                    uri = Utils.updateUserInfo( uri, username );
-                }
-                String http_url = "http://127.0.0.1:" + StreamServer.server_port + "/" + Uri.encode( uri.toString() );
-                // Log.d( TAG, "Stream " + mime + " from: " + http_url );
-                i.setDataAndType( Uri.parse( http_url ), mime );
-                i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET );
-                Log.d( TAG, "Issuing an intent: " + i.toString() );
-                startActivity( i );
-                return;
             }
-            else {
-                File temp_file_dir = Utils.getTempDir( this );
-                if( temp_file_dir == null ) return;
-                File temp_dir = new File( temp_file_dir, "to_open" );
-                if( !temp_dir.exists() ) {
-                    if( !temp_dir.mkdirs() )
-                        return;
-                } else if( !temp_dir.isDirectory() )
-                    return;
-                final CommanderAdapter ca = CA.CreateAdapterInstance( uri, this );            
-                if( ca == null ) return;
-                ca.Init( this );
-                ca.setUri( uri );
-                ca.setCredentials( crd );
-                String temp_file = null;
-                if( "zip".equals( scheme ) ) {
-                    temp_file = uri.getFragment();
-                    if( Utils.str( temp_file ) && temp_file.indexOf( '/' ) >= 0 )
-                        temp_file = temp_file.replace( '/', '_' );
-                } else
-                    temp_file = path.substring( path.lastIndexOf( '/' )+1 );
-                
-                final String       _fn = temp_file;
-                final Uri         _uri = uri;
-                final File   _out_file = new File( temp_dir, _fn );
-                final Handler _handler = new Handler(); 
-                final ProgressDialog _pd = ProgressDialog.show( this, "", getString( R.string.loading ), true, true );                
-                new Thread( new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Item item = ca.getItem( _uri );
-                            if( item == null ) {
-                                _pd.cancel();
-                                Log.e( TAG, "No item for: " + _uri.toString() );
-                                return;
-                            }
-                            //
-                            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences( FileCommander.this );
-                            long ros = Long.parseLong( sp.getString( "remote_open_size", "5000000" ) );
-                            
-                            if( item.size > ros ) {
-                                _handler.post( new Runnable() {
-                                      @Override
-                                      public void run() {
-                                          _pd.cancel();
-                                          FileCommander.this.showError( getString( R.string.too_big_file, _fn ) );
-                                      }
-                                  });                
-                                return;
-                            }
-                            FileOutputStream fos;
-                            fos = new FileOutputStream( _out_file );
-                            InputStream is = ca.getContent( _uri );
-                            Utils.copyBytes( is, fos );
-                            fos.close();
-                            ca.closeStream( is );
-                            ca.prepareToDestroy();
-                            _handler.post( new Runnable() {
-                                  @Override
-                                  public void run() {
-                                      _pd.cancel();
-                                      String encoded = Utils.escapePath( _out_file.toString() );
-                                      FileCommander.this.Open( Uri.parse( encoded ), null );
-                                  }
-                              });  
-                            return;
-                        } catch( Exception e ) {
-                            Log.e( TAG, _uri.toString(), e );
-                        }
-                        _handler.post( new Runnable() {
-                              @Override
-                              public void run() {
-                                  _pd.cancel();
-                                  FileCommander.this.showError( getString( R.string.error, _fn ) );
-                              }
-                          });                
-                    }
-                }).start();
-            }
+            else
+                OpenRemoteFile( uri, crd, scheme, path, mime );
         } catch( ActivityNotFoundException e ) {
             showMessage( "Application for open '" + uri.toString() + "' is not available, " );
         } catch( Exception e ) {
             Log.e( TAG, uri.toString(), e );
+        }
+    }            
+            
+    private final void OpenRemoteFile( Uri uri, Credentials crd, String scheme, String path, String mime ) 
+        throws Exception {
+        if( mime != null && ( mime.startsWith( "audio" ) || mime.startsWith( "video" ) ) ) {
+            startService( new Intent( this, StreamServer.class ) );
+            Intent i = new Intent( Intent.ACTION_VIEW );
+
+            if( crd != null ) {
+                String username = crd.getUserName();
+                StreamServer.storeCredentials( this, crd, uri );
+                uri = Utils.updateUserInfo( uri, username );
+            }
+            String http_url = "http://127.0.0.1:" + StreamServer.server_port + "/" + Uri.encode( uri.toString() );
+            // Log.d( TAG, "Stream " + mime + " from: " + http_url );
+            i.setDataAndType( Uri.parse( http_url ), mime );
+            i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET );
+            Log.d( TAG, "Issuing an intent: " + i.toString() );
+            startActivity( i );
+            return;
+        }
+        else {
+            File temp_file_dir = Utils.getTempDir( this );
+            if( temp_file_dir == null ) return;
+            File temp_dir = new File( temp_file_dir, "to_open" );
+            if( !temp_dir.exists() ) {
+                if( !temp_dir.mkdirs() )
+                    return;
+            } else if( !temp_dir.isDirectory() )
+                return;
+            final CommanderAdapter ca = CA.CreateAdapterInstance( uri, this );            
+            if( ca == null ) return;
+            ca.Init( this );
+            ca.setUri( uri );
+            ca.setCredentials( crd );
+            String temp_file = null;
+            if( "zip".equals( scheme ) ) {
+                temp_file = uri.getFragment();
+                if( Utils.str( temp_file ) && temp_file.indexOf( '/' ) >= 0 )
+                    temp_file = temp_file.replace( '/', '_' );
+            } else
+                temp_file = path.substring( path.lastIndexOf( '/' )+1 );
+            
+            final String       _fn = temp_file;
+            final Uri         _uri = uri;
+            final File   _out_file = new File( temp_dir, _fn );
+            final Handler _handler = new Handler(); 
+            final ProgressDialog _pd = ProgressDialog.show( this, "", getString( R.string.loading ), true, true );                
+            new Thread( new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Item item = ca.getItem( _uri );
+                        if( item == null ) {
+                            _pd.cancel();
+                            Log.e( TAG, "No item for: " + _uri.toString() );
+                            return;
+                        }
+                        //
+                        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences( FileCommander.this );
+                        long ros = Long.parseLong( sp.getString( "remote_open_size", "5000000" ) );
+                        
+                        if( item.size > ros ) {
+                            _handler.post( new Runnable() {
+                                  @Override
+                                  public void run() {
+                                      _pd.cancel();
+                                      FileCommander.this.showError( getString( R.string.too_big_file, _fn ) );
+                                  }
+                              });                
+                            return;
+                        }
+                        FileOutputStream fos;
+                        fos = new FileOutputStream( _out_file );
+                        InputStream is = ca.getContent( _uri );
+                        Utils.copyBytes( is, fos );
+                        fos.close();
+                        ca.closeStream( is );
+                        ca.prepareToDestroy();
+                        _handler.post( new Runnable() {
+                              @Override
+                              public void run() {
+                                  _pd.cancel();
+                                  String encoded = Utils.escapePath( _out_file.toString() );
+                                  FileCommander.this.Open( Uri.parse( encoded ), null );
+                              }
+                          });  
+                        return;
+                    } catch( Exception e ) {
+                        Log.e( TAG, _uri.toString(), e );
+                    }
+                    _handler.post( new Runnable() {
+                          @Override
+                          public void run() {
+                              _pd.cancel();
+                              FileCommander.this.showError( getString( R.string.error, _fn ) );
+                          }
+                      });                
+                }
+            }).start();
         }
     }
 

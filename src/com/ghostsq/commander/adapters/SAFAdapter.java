@@ -463,7 +463,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                     Log.w( TAG, "No URI to open item " + item );
                     return;
                 }
-                if( "content".equals( to_open.getScheme() ) ) {
+                if( ContentResolver.SCHEME_CONTENT.equals( to_open.getScheme() ) ) {
                     Intent in = new Intent( Intent.ACTION_VIEW );
                     in.setDataAndType( to_open, item.mime );
                     in.addFlags( Intent.FLAG_GRANT_READ_URI_PERMISSION

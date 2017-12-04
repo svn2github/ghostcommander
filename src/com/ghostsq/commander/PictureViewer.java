@@ -772,8 +772,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
         in.setType( "*/*" );
         in.putExtra( Intent.EXTRA_SUBJECT, new File( file_path ).getName() );
 
-        String esc_fn = Utils.escapePath( file_path );
-        Uri uri = Uri.parse( use_content ? FileProvider.URI_PREFIX + esc_fn : "file://" + esc_fn );
+        Uri uri = use_content ? FileProvider.makeURI( file_path ) : Uri.parse( "file://" + Utils.escapePath( file_path ) );
         in.putExtra( Intent.EXTRA_STREAM, uri );
         this.startActivity( Intent.createChooser( in, this.getString( R.string.send_title ) ) );
     }

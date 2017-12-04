@@ -285,7 +285,10 @@
   <string name="remote_open_size">File size threshold</string>
   <string name="summary_remote_open_size">Maximum remote file size allowed to be opened locally</string>
   <string name="send_content">Посылать файлы через content:</string>
-  <string name="summary_send_content">Только если приложение, выбираемое для посылки файлов, умеeт работать с content:</string>
+  <string name="summary_send_content">Когда приложения, выбираемые для посылки файлов, умеют работать с content:</string>
+  <string name="open_content">Открывать файлы через content:</string>
+  <string name="summary_open_content">Когда приложения, выбираемые для открытия файлов, умеют работать с content:</string>
+  
   <string name="panels_mode">Две панели рядом</string>
   <string name="summary_panels_mode">Показывать обе панели разом на одном экране</string>
   <string name="two_lines">Вывод в две строки</string>

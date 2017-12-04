@@ -20,14 +20,20 @@ import android.util.Log;
 
 public class FileProvider extends ContentProvider {
     private static final String TAG = "FileProvider";
-    public static final String URI_PREFIX = "content://com.ghostsq.commander";
-    public static final String AUTHORITY_ = "com.ghostsq.commander";
+//    public static final String URI_PREFIX = "content://com.ghostsq.commander";
+    public static final String AUTHORITY = "com.ghostsq.commander";
 
+    public final static Uri makeURI( String path ) {
+        Uri.Builder ub = new Uri.Builder();
+        ub.scheme( "content" ).authority( AUTHORITY ).path( path );
+        return ub.build(); 
+    }
     public final static Uri makeURI( String type, Uri u ) {
-        Uri.Builder builder = Uri.parse( URI_PREFIX ).buildUpon();
+        Uri.Builder ub = new Uri.Builder();
+        ub.scheme( "content" ).authority( AUTHORITY );
         String us = u.toString();
-        builder.appendQueryParameter( type, Base64.encodeToString( us.getBytes(), Base64.URL_SAFE ) );
-        return builder.build(); 
+        ub.appendQueryParameter( type, Base64.encodeToString( us.getBytes(), Base64.URL_SAFE ) );
+        return ub.build(); 
     }
     
     private final static Uri getEnclosedUri( Uri uri, String type ) {
@@ -60,42 +66,47 @@ public class FileProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query( Uri uri, String[] as, String s, String[] sa, String so ) {
-        Log.v( TAG, "query( " + uri + " )" );
-        if( !uri.toString().startsWith( URI_PREFIX ) )
-            throw new RuntimeException( "Unsupported URI" );
-        Uri saf_u = getEnclosedUri( uri, "SAF" );
-        if( saf_u != null ) {
-            return getContext().getContentResolver().query( saf_u, as, s, sa, so );
-        }
-        if( as == null || as.length == 0) {
-            as = new String [] {
-                MediaStore.MediaColumns.DATA,
-                MediaStore.MediaColumns.MIME_TYPE,
-                MediaStore.MediaColumns.DISPLAY_NAME,
-                MediaStore.MediaColumns.SIZE };
-        } 
-        MatrixCursor c = new MatrixCursor( as );
-        MatrixCursor.RowBuilder row = c.newRow();
-        File f = new File( uri.getPath() );
-        if( !f.exists() || !f.isFile() )
-            throw new RuntimeException( "No file name specified: " + uri );
-        
-        for( String col : as ) {
-            if( MediaStore.MediaColumns.DATA.equals( col ) ) {
-                row.add( f.getAbsolutePath() );
-            } else if( MediaStore.MediaColumns.MIME_TYPE.equals( col ) ) {
-                row.add( getType( uri ) );
-            } else if( MediaStore.MediaColumns.DISPLAY_NAME.equals( col ) ) {
-                row.add( f.getName() );
-            } else if( MediaStore.MediaColumns.SIZE.equals( col ) ) {
-                row.add( f.length() );
-            } else {
-                // Unsupported or unknown columns are filled up with null
-                row.add(null);
+    public Cursor query( Uri uri, String[] fields, String sel, String[] sel_args, String sort ) {
+        try {
+            Log.v( TAG, "query( " + uri + " )" );
+            if( !AUTHORITY.equals( uri.getAuthority() ) )
+                throw new RuntimeException( "Unsupported URI" );
+            Uri saf_u = getEnclosedUri( uri, "SAF" );
+            if( saf_u != null ) {
+                return getContext().getContentResolver().query( saf_u, fields, sel, sel_args, sort );
             }
-        }            
-        return c;
+            if( fields == null || fields.length == 0) {
+                fields = new String [] {
+                    MediaStore.MediaColumns.DATA,
+                    MediaStore.MediaColumns.MIME_TYPE,
+                    MediaStore.MediaColumns.DISPLAY_NAME,
+                    MediaStore.MediaColumns.SIZE };
+            } 
+            MatrixCursor c = new MatrixCursor( fields );
+            MatrixCursor.RowBuilder row = c.newRow();
+            File f = new File( uri.getPath() );
+            if( !f.exists() || !f.isFile() )
+                throw new RuntimeException( "No file name specified: " + uri );
+            
+            for( String col : fields ) {
+                if( MediaStore.MediaColumns.DATA.equals( col ) ) {
+                    row.add( f.getAbsolutePath() );
+                } else if( MediaStore.MediaColumns.MIME_TYPE.equals( col ) ) {
+                    row.add( getType( uri ) );
+                } else if( MediaStore.MediaColumns.DISPLAY_NAME.equals( col ) ) {
+                    row.add( f.getName() );
+                } else if( MediaStore.MediaColumns.SIZE.equals( col ) ) {
+                    row.add( f.length() );
+                } else {
+                    // Unsupported or unknown columns are filled up with null
+                    row.add(null);
+                }
+            }            
+            return c;
+        } catch( Exception e ) {
+            Log.e( TAG, "Can't provide for query " + uri, e );
+        }
+        return null;
     }
     
     @Override

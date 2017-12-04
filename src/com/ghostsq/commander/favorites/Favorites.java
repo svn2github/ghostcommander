@@ -1,18 +1,22 @@
 package com.ghostsq.commander.favorites;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import com.ghostsq.commander.Panels;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.adapters.HomeAdapter;
 import com.ghostsq.commander.utils.Credentials;
+import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.Utils;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.util.Log;
 
 public class Favorites extends ArrayList<Favorite> 
@@ -21,6 +25,7 @@ public class Favorites extends ArrayList<Favorite>
     private final static String old_sep = ",", sep = ";";
     private final String TAG = getClass().getSimpleName();
     private final Context c;
+    private ArrayList<String> idsToRemove = new ArrayList<String>(); 
 
     public Favorites( Context c_ ) {
         c = c_;
@@ -43,6 +48,21 @@ public class Favorites extends ArrayList<Favorite>
             Log.w( TAG, "Can't find in the list of favs:" + u );
     }
 
+    @Override
+    public Favorite remove( int i ) {
+        Favorite f = get( i );
+        idsToRemove.add( f.getID() );
+        return super.remove( i );
+    }
+    
+    @Override
+    public boolean remove( Object o ) {
+        if( !(o instanceof Favorite) ) return false; 
+        Favorite f = (Favorite)o;
+        idsToRemove.add( f.getID() );
+        return super.remove( f );
+    }
+    
     public final int findIgnoreAuth( Uri u ) {
         try {
             if( u != null ) {
@@ -110,20 +130,7 @@ public class Favorites extends ArrayList<Favorite>
         Log.w( TAG, "Faild to find a suitable Favorite with password!!!" );
         return null;
     }
-       
-    public final String getAsString() {
-        int sz = size();
-        String[] a = new String[sz]; 
-        for( int i = 0; i < sz; i++ ) {
-            String fav_str = Favorite.toString( get( i ), c );
-            if( fav_str == null ) continue;
-            a[i] = escape( fav_str );
-        }
-        String s = Utils.join( a, sep );
-        //Log.v( TAG, "Joined favs: " + s );
-        return s;
-    }
-    
+
     public final void setDefaults() {
         try {
             add( new Favorite( HomeAdapter.DEFAULT_LOC, c.getString( R.string.home ) ) );
@@ -139,7 +146,7 @@ public class Favorites extends ArrayList<Favorite>
             Log.e( TAG, null, e );
         }
     }
-
+       
     public final void setFromString( String stored ) {
         if( stored == null ) return;
         clear();
@@ -155,7 +162,7 @@ public class Favorites extends ArrayList<Favorite>
             Log.e( TAG, null, e );
         }
         if( isEmpty() )
-            add( new Favorite( "home:", c.getString( R.string.home ) ) );
+            add( new Favorite( HomeAdapter.DEFAULT_LOC, c.getString( R.string.home ) ) );
     }
 
     private final String unescape( String s ) {
@@ -163,5 +170,64 @@ public class Favorites extends ArrayList<Favorite>
     }
     private final String escape( String s ) {
         return s.replace( sep, "%3B" );
+    }
+
+    public final void store() {
+        SharedPreferences sp = c.getSharedPreferences( "Favorites", Context.MODE_PRIVATE | Context.MODE_MULTI_PROCESS );
+        SharedPreferences.Editor ed = sp.edit();
+        HashSet<String> ids = new HashSet<String>(); 
+        for( int i = 0; i < size(); i++ ) {
+            get( i ).store( c, ed );
+            ids.add( get( i ).getID() );
+        }
+        if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
+             ForwardCompat.putStringSet( ed, "IDS", ids );
+         else {
+            StringBuffer buf = new StringBuffer( 256 );
+            for( String id : ids ) {
+                if( buf.length() > 0 ) buf.append( "," );
+                buf.append( id );
+            }
+            ed.putString( "IDScsv", buf.toString() );
+        }
+        for( String id : this.idsToRemove )
+            Favorite.erasePrefs( id, ed );
+        this.idsToRemove.clear();
+        ed.commit();
+    }
+
+    public final void restore() {
+        try {
+            clear();
+            SharedPreferences sp = c.getSharedPreferences( "Favorites", Context.MODE_PRIVATE | Context.MODE_MULTI_PROCESS );
+            if( sp == null ) return;
+            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
+                Set<String> ids = ForwardCompat.getStringSet( sp, "IDS" );
+                if( ids == null ) return;
+                for( String id : ids )
+                    restoreFav( id, sp );
+            } else {
+                String idcs = sp.getString( "IDScsv", null );
+                if( idcs == null ) return;
+                String[] ida = idcs.split( "," );
+                for( String id : ida )
+                    restoreFav( id, sp );
+            }
+        } catch( Exception e ) {
+            Log.e( TAG, "", e );
+        }
+    }
+
+    private final void restoreFav( String id, SharedPreferences sp ) {
+        Favorite fav = Favorite.restore( c, id, sp );
+        if( fav != null )
+            add( fav );
+    }
+    
+    public static void clearPrefs( Context c ) {
+        SharedPreferences sp = c.getSharedPreferences( "Favorites", Context.MODE_PRIVATE | Context.MODE_MULTI_PROCESS );        
+        SharedPreferences.Editor ed = sp.edit();    
+        ed.clear();
+        ed.commit();
     }
 }

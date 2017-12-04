@@ -9,6 +9,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import com.ghostsq.commander.favorites.Favorites;
 import com.ghostsq.commander.toolbuttons.ToolButtonsProps;
 import com.ghostsq.commander.utils.Utils;
 
@@ -249,6 +250,7 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
         "com.ghostsq.commander_preferences.xml",                                                                                                                    
         "colors.xml",
         "ServerForm.xml",
+        "Favorites.xml",
         "Editor.xml",
         "TextViewer.xml"
     };    
@@ -277,6 +279,10 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
     }
     private final void restPrefs( File f, File sp_dir ) {
         try {
+            //Favorites.clearPrefs( this );
+            File[] ff = sp_dir.listFiles();
+            for( File of : ff )
+                of.delete();
             ZipFile zf = new ZipFile( f );
             for( int i = 0; i < prefFileNames.length; i++ ) {
                 ZipEntry ze = zf.getEntry( prefFileNames[i] );

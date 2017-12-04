@@ -284,12 +284,17 @@
 		        android:title="@string/editor_activity" 
 		        android:summary="@string/summary_editor_activity" 
 		        android:defaultValue="@string/value_editor_activity"/>
-		    <CheckBoxPreference
+            <CheckBoxPreference
+                android:key="open_content"
+                android:title="@string/open_content"
+                android:summary="@string/summary_open_content"
+                android:defaultValue="true"/>
+        		    <CheckBoxPreference
                 android:key="send_content"
                 android:title="@string/send_content"
                 android:summary="@string/summary_send_content"
                 android:defaultValue="true"/>
-		    <EditTextPreference 
+    	    <EditTextPreference 
 		        android:key="remote_open_size" 
 		        android:title="@string/remote_open_size" 
 		        android:summary="@string/summary_remote_open_size" 

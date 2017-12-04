@@ -12,6 +12,7 @@ import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.adapters.Engines.IReciever;
 import com.ghostsq.commander.favorites.Favorite;
 import com.ghostsq.commander.favorites.FavDialog;
+import com.ghostsq.commander.favorites.Favorites;
 import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.Utils;
 
@@ -29,7 +30,7 @@ import android.widget.AdapterView;
 public class FavsAdapter extends CommanderAdapterBase {
     private final static String TAG = "FavsAdapter";
     private final static int CREATE_FAVE_SHORTCUT = 3423; 
-    private ArrayList<Favorite> favs;
+    private Favorites favs;
     
     public FavsAdapter( Context ctx_ ) {
         super( ctx_, DETAILED_MODE | NARROW_MODE | SHOW_ATTR | ATTR_ONLY );
@@ -42,8 +43,8 @@ public class FavsAdapter extends CommanderAdapterBase {
         return "favs";
     }
 
-    public void setFavorites( ArrayList<Favorite> favs_ ) {
-        favs = favs_;
+    public void setFavorites( Favorites favs_ ) {
+        this.favs = favs_;
         numItems = favs.size() + 1; 
     }
     
@@ -137,7 +138,7 @@ public class FavsAdapter extends CommanderAdapterBase {
             }
         
         for( int i = 0; i < favs_to_remove.size(); i++ )
-            favs.remove( favs_to_remove.get(  i ) );
+            favs.remove( favs_to_remove.get( i ) );
         numItems = favs.size() + 1;
         notifyDataSetChanged();
         notify( Commander.OPERATION_COMPLETED );

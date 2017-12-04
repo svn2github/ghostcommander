@@ -294,6 +294,8 @@
 
 <string name="send_content">Send using content provider</string>
 <string name="summary_send_content">Try to uncheck if your file sending application does not implement a content resolver</string>
+<string name="open_content">Open using content provider</string>
+<string name="summary_open_content">Try to uncheck if your file opening application does not implement a content resolver</string>
 <string name="panels_mode">Side-by-side panels</string>
 <string name="summary_panels_mode">Show both panels side-by-side in a split screen view</string>
 <string name="two_lines">Two lines in a row</string>

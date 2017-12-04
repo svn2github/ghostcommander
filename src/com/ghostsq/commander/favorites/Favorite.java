@@ -7,8 +7,11 @@ import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.Crypt;
 import com.ghostsq.commander.utils.Utils;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
 
@@ -19,36 +22,33 @@ public class Favorite {
     private static Pattern sep_re = Pattern.compile( sep );
     
     // fields
+    private String      id;
     private Uri         uri;
     private String      comment;
     private Credentials credentials;
 
     public Favorite( Uri u ) {
-        init( u );
+        this( u, null, null );
     }
     public Favorite( Uri u, Credentials c ) {
         this( u, c, null );
     }
+    public Favorite( String uri_str, String comment_ ) {
+        this( Uri.parse( uri_str ), null, comment_ );
+    }
     public Favorite( Uri u, Credentials c, String comment_ ) {
+        if( u == null ) u = (new Uri.Builder()).build();
         if( c == null )
-            init( u );
+            extractCredentialsFromUri( u );
         else {
             uri = Utils.updateUserInfo( u, null );
             credentials = c;
         }
         this.comment = comment_;
-    }
-    public Favorite( String uri_str, String comment_ ) {
-        try {
-            init( Uri.parse( uri_str ) );
-            this.comment = comment_;
-        }
-        catch( Exception e ) {
-            e.printStackTrace();
-        }
+        this.setID( Integer.toHexString( u.hashCode() ) );
     }
 
-    public void init( Uri u ) {
+    public final void extractCredentialsFromUri( Uri u ) {
         try {
             uri = u;
             String user_info = uri.getUserInfo();
@@ -64,6 +64,14 @@ public class Favorite {
             e.printStackTrace();
         }
     }    
+
+    public final String getID() {
+        return id;
+    }
+    
+    private final void setID( String id ) {
+        this.id = id;
+    }
     
     public static Favorite fromString( String raw, Context ctx ) {
         if( raw == null ) return null;
@@ -73,7 +81,6 @@ public class Favorite {
             Uri uri = null;
             String comment = null;
             Credentials credentials = null;
-            String username = null, pass_enc = null;
             for( int i = 0; i < flds.length; i++ ) {
                 String s = flds[i];
                 if( s == null || s.length() == 0 ) continue;
@@ -83,11 +90,9 @@ public class Favorite {
                 else 
                 if( s.startsWith( "CMT=" ) ) comment = sv;
                 else
-                if( s.startsWith( "CRD=" ) )  credentials = Credentials.fromEncriptedString( sv ); 
+                if( s.startsWith( "CRD=" ) ) credentials = Credentials.fromOldEncriptedString( sv ); 
                 else
-                if( s.startsWith( "CRS=" ) ) {
-                    credentials = Credentials.fromEncriptedString( sv, Crypt.makeSeed( ctx ) );
-                }
+                if( s.startsWith( "CRS=" ) ) credentials = Credentials.fromEncriptedString( sv, ctx );
             }
             return new Favorite( uri, credentials, comment );
         }
@@ -97,47 +102,65 @@ public class Favorite {
         return null;
     }
     
-    public static String toString( Favorite fv, Context ctx ) {
-        try {
-            if( fv.uri == null ) return "";
-            StringBuffer buf = new StringBuffer( 128 );
-            buf.append( "URI=" );
-            buf.append( escape( fv.uri.toString() ) );
-            if( fv.comment != null ) {
-                buf.append( sep );
-                buf.append( "CMT=" );
-                buf.append( escape( fv.comment ) );
-            }
-            if( fv.credentials != null ) {
-                buf.append( sep );
-                buf.append( "CRS=" );
-                buf.append( escape( fv.credentials.toEncriptedString( Crypt.makeSeed( ctx ) ) ) );
-            }
-            return buf.toString();
+    public final void store( Context ctx, SharedPreferences.Editor ed ) {
+        ed.putString( "URI_" + id, uri.toString() );
+        if( comment != null )
+            ed.putString( "CMT_" + id, comment );
+        if( credentials != null ) {
+            if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 )
+                ed.putString( "CRS_" + id, credentials.toEncriptedString( ctx ) );
+            else
+                ed.putString( "CRD_" + id, credentials.toOldEncriptedString() );
         }
-        catch( Exception e ) {
-            e.printStackTrace();
-        }
-        return null;
+    }
+
+    public final static void erasePrefs( String id, SharedPreferences.Editor ed ) {
+        ed.remove( "URI_" + id );
+        ed.remove( "CMT_" + id );
+        ed.remove( "CRS_" + id );
+        ed.remove( "CRD_" + id );
     }
     
-    public String getComment() {
+    public final static Favorite restore( Context ctx, String id, SharedPreferences sp ) {
+        String sv = sp.getString( "URI_" + id, null );
+        if( sv == null ) return null;
+        Uri uri = null;
+        String comment = null;
+        Credentials credentials = null;
+        uri = Uri.parse( sv );
+        comment = sp.getString( "CMT_" + id, null );
+        String crs = null;
+        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 )
+            crs = sp.getString( "CRS_" + id, null );
+        if( crs != null )
+            credentials = Credentials.fromEncriptedString( crs, ctx );
+        else {
+            crs = sp.getString( "CRD_" + id, null );
+            if( crs != null )
+               credentials = Credentials.fromOldEncriptedString( crs ); 
+        }
+        Favorite f = new Favorite( uri, credentials, comment );
+        f.setID( id );
+        return f;
+    }
+    
+    public final String getComment() {
         return comment;
     }
-    public void setComment( String s ) {
+    public final void setComment( String s ) {
         comment = s;
     }
-    public void setUri( Uri u ) {
+    public final void setUri( Uri u ) {
         uri = u;
     }
-    public Uri getUri() {
+    public final Uri getUri() {
         return uri;
     }
-    public Uri getUriWithAuth() {
+    public final Uri getUriWithAuth() {
         if( credentials == null ) return uri; 
         return Utils.getUriWithAuth( uri, credentials.getUserName(), credentials.getPassword() );
     }
-    public String getUriString( boolean screen_pw ) {
+    public final String getUriString( boolean screen_pw ) {
         try {
             if( uri == null ) return null;
             if( credentials == null ) return uri.toString();
@@ -154,7 +177,7 @@ public class Favorite {
         return credentials;
     }
 
-    public boolean equals( String test ) {
+    public final boolean equals( String test ) {
         String item = getUriString( false );
         if( item != null ) {
             String strip_item = item.trim();
@@ -166,13 +189,13 @@ public class Favorite {
         return false;
     }
     
-    public String getUserName() {
+    public final String getUserName() {
         return credentials == null ? null : credentials.getUserName();
     }
-    public String getPassword() {
+    public final String getPassword() {
         return credentials == null ? "" : credentials.getPassword();
     }
-    public void setCredentials( String un, String pw ) {
+    public final void setCredentials( String un, String pw ) {
         if( un == null || un.length() == 0 ) {
             credentials = null;
             return;

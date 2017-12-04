@@ -24,13 +24,13 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
 public class StreamServer extends Service {
     private final static String TAG = "StreamServer";
     private final static String CRLF = "\r\n";
-    private final static String SALT = "GCSS";
     public  final static int server_port = 5322; 
     public  final static boolean verbose_log = false;
     private Context ctx;
@@ -81,30 +81,11 @@ public class StreamServer extends Service {
         }
     }
 
-    public static String getEncKey( Context ctx ) {
-        String seed = null;
-        SharedPreferences ssp = ctx.getSharedPreferences( StreamServer.class.getSimpleName(), MODE_PRIVATE );
-        if( ssp != null ) {
-            final String pk = "enc_key";
-            seed = ssp.getString( pk, null );
-            if( seed == null ) {
-                SecureRandom rnd = new SecureRandom();
-                seed = "" + Math.abs( rnd.nextLong() );
-                seed = seed.substring( 0, 16 );
-                SharedPreferences.Editor edt = ssp.edit();
-                edt.putString( pk, seed );
-                edt.commit();
-            }
-        }
-        return seed + SALT;
-    }
-
     public static void storeCredentials( Context ctx, Credentials crd, Uri uri ) {
-        String seed = StreamServer.getEncKey( ctx );                    
         int hash = ( crd.getUserName() + uri.getHost() ).hashCode();
         SharedPreferences ssp = ctx.getSharedPreferences( StreamServer.class.getSimpleName(), MODE_PRIVATE );
         SharedPreferences.Editor edt = ssp.edit();
-        edt.putString( "" + hash, crd.toEncriptedString( seed ) );
+        edt.putString( "" + hash, crd.toEncriptedString( ctx ) );
         edt.commit();
     }
 
@@ -113,8 +94,7 @@ public class StreamServer extends Service {
         SharedPreferences ssp = ctx.getSharedPreferences( StreamServer.class.getSimpleName(), MODE_PRIVATE );
         String crd_enc_s = ssp.getString( "" + hash, null );
         if( crd_enc_s == null ) return null;
-        String seed = StreamServer.getEncKey( ctx );                    
-        return Credentials.fromEncriptedString( crd_enc_s, seed );
+        return Credentials.fromEncriptedString( crd_enc_s, ctx );
     }
     
     private class ListenThread extends Thread {
