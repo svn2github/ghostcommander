@@ -459,7 +459,12 @@ public class Dialogs implements DialogInterface.OnClickListener {
                     n_v.setVisibility( View.GONE );
                 }
                 AlertDialog ad = (AlertDialog)dialog;
-                String title = Utils.str( toShowInAlertDialog ) ? toShowInAlertDialog : owner.getString( R.string.login_title ); 
+                String title = Utils.str( toShowInAlertDialog ) ? toShowInAlertDialog : owner.getString( R.string.login_title );
+                int nl_pos = title.indexOf( '\n' );
+                if( nl_pos > 0 && prompt != null ) {
+                    prompt.setText( title.substring( nl_pos+1 ) );
+                    title = title.substring( 0, nl_pos );
+                }
                 ad.setTitle( title );
                 toShowInAlertDialog = null;
                 break;
