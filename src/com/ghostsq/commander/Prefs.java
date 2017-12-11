@@ -9,7 +9,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import com.ghostsq.commander.favorites.Favorites;
 import com.ghostsq.commander.toolbuttons.ToolButtonsProps;
 import com.ghostsq.commander.utils.Utils;
 
@@ -18,11 +17,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
+import android.preference.PreferenceGroup;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
@@ -55,7 +55,18 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
             boolean ab = Utils.setActionBar( this );
             super.onCreate( savedInstanceState );
             ck = new ColorsKeeper( this );
-            
+
+            if( !sp.getBoolean( PreferenceManager.KEY_HAS_SET_DEFAULT_VALUES, false ) ) {
+                SharedPreferences.Editor ed = sp.edit();
+                ed.putBoolean( "open_content", android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M );
+                ed.putBoolean( PreferenceManager.KEY_HAS_SET_DEFAULT_VALUES, true );
+                try {
+                    ed.apply();
+                } catch( AbstractMethodError unused ) {
+                    ed.commit();
+                }
+            }                
+                
             // Load the preferences from an XML resource
             addPreferencesFromResource( R.xml.prefs );
             Preference color_picker_pref;
@@ -82,8 +93,16 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
                 color_picker_pref.setOnPreferenceClickListener( this );
 
             ListPreference l = (ListPreference)findPreference( "color_themes" );
-            if( l != null )
-                l.setOnPreferenceChangeListener( this );
+            if( l != null ) {
+                if( android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB ) {
+                    Preference color_pref = findPreference( "colors" );
+                    if( color_pref instanceof PreferenceGroup ) {
+                        PreferenceGroup colors_grp = (PreferenceGroup)color_pref;
+                        colors_grp.removePreference( l );
+                    }
+                } else
+                    l.setOnPreferenceChangeListener( this );
+            }
             
             Preference tool_buttons_pref = (Preference)findPreference( TOOLBUTTONS );
             if( tool_buttons_pref != null )
@@ -105,6 +124,7 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
             Log.e( TAG, null, e );
         }
     }
+    
     @Override
     protected void onStart() {
         super.onStart();

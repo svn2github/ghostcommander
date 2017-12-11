@@ -888,7 +888,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 
                 i.setAction( Intent.ACTION_VIEW );
                 SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
-                boolean use_content = shared_pref.getBoolean( "open_content", true );
+                boolean use_content = shared_pref.getBoolean( "open_content", android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M );
                 Uri u = null;
                 if( use_content ) {
                     u = FileProvider.makeURI( path );

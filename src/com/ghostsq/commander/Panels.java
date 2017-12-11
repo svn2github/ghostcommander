@@ -821,7 +821,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             File f = getCurrentFile();
             if( f == null ) return;
             SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( c );
-            if( shared_pref.getBoolean( "open_content", true ) ) {
+            if( shared_pref.getBoolean( "open_content", android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M ) ) {
                 u = FileProvider.makeURI( f.getAbsolutePath() );
             } else {
                 u = Uri.fromFile( f );

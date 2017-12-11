@@ -505,6 +505,10 @@ class ThumbnailsThread extends Thread {
     }
 
     private static Bitmap scaleBitmap( Bitmap old_bmp, float scale ) {
+        if( old_bmp == null ) {
+            Log.e( TAG, "old_bmp is null" );
+            return null;
+        }
         Matrix m = new Matrix();
         m.postScale( scale, scale );
         try {

@@ -287,9 +287,8 @@
             <CheckBoxPreference
                 android:key="open_content"
                 android:title="@string/open_content"
-                android:summary="@string/summary_open_content"
-                android:defaultValue="true"/>
-        		    <CheckBoxPreference
+                android:summary="@string/summary_open_content"/>
+            <CheckBoxPreference
                 android:key="send_content"
                 android:title="@string/send_content"
                 android:summary="@string/summary_send_content"

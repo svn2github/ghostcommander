@@ -101,7 +101,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
             case R.id.open_zip:
             {
                 final View openArchiveView = factory.inflate( R.layout.open_archive, null );
-                dialogObj = build( openArchiveView, " " ); 
+                dialogObj = build( openArchiveView, " " );
                 return dialogObj; 
             }
             case R.id.new_zip:

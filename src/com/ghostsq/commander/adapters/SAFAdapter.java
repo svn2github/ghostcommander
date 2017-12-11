@@ -35,6 +35,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.ParcelFileDescriptor;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 import android.provider.DocumentsContract;
 import android.provider.DocumentsContract.Document;
 import android.provider.MediaStore;
@@ -477,22 +478,21 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
         }
     }
 
-    public Uri getItemOpenableUri( int position ) {
+    public final Uri getItemOpenableUri( int position ) {
         try {
             Item item = items[position - 1];
-            String full_name = getItemName( position, true );
-            if( full_name != null && full_name.charAt( 0 ) == '/' && full_name.indexOf( "media_rw" ) < 0 ) {
-                Uri.Builder ub = new Uri.Builder();
-                ub.scheme( "file" ).encodedPath( full_name );
-                return ub.build();
-            } else {
-                Uri u = (Uri)item.origin;
-                if( u == null ) return null;
-                return u;
-                /*
-                    return FileProvider.makeURI( "SAF", (Uri)item.origin );
-                */
+            SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( ctx );
+            if( !shared_pref.getBoolean( "open_content", android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M ) ) {
+                String full_name = getItemName( position, true );
+                if( full_name != null && full_name.charAt( 0 ) == '/' && full_name.indexOf( "media_rw" ) < 0 ) {
+                    Uri.Builder ub = new Uri.Builder();
+                    ub.scheme( "file" ).encodedPath( full_name );
+                    return ub.build();
+                }
             }
+            Uri u = (Uri)item.origin;
+            if( u == null ) return null;
+            return u;
         } catch( Exception e ) {
             Log.e( TAG, "pos:" + position, e );
         }
