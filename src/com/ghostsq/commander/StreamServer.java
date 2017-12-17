@@ -425,8 +425,8 @@ public class StreamServer extends Service {
         private final static String TAG = "GCSS.RT";
         private InputStream is;
         private long roller = 0;
-        private final int MAX = 163840;
-        private int chunk = 4340;
+        private final int MAX = 8388608;
+        private int chunk = 32768;
         private byte[][] bufs = null;
         private byte[]   out_buf = null;
         private int      data_size = 0;

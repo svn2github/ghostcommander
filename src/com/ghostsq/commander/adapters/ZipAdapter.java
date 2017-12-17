@@ -148,19 +148,26 @@ public class ZipAdapter extends CommanderAdapterBase {
     }
 
     class ZipEngine extends Engine {
-        protected synchronized boolean waitCompletion( boolean can_cancel ) {
+        protected synchronized boolean waitCompletion() {
+            return waitCompletion( 0 );
+        }
+        protected synchronized boolean waitCompletion( int op_res_id ) {
             try {
                 ProgressMonitor pm = ZipAdapter.this.zip.getProgressMonitor();
                 while( pm.getState() == ProgressMonitor.STATE_BUSY ) {
                     if( isStopReq() ) {
-                        if( can_cancel )
-                            pm.cancelAllTasks();
+                        pm.cancelAllTasks();
+                        error( ctx.getString( R.string.canceled ) );
                         return false;
                     }
                     //Log.v( TAG, "Waiting " + pm.getFileName() + " %" + pm.getPercentDone() );
-                    sendProgress( pm.getFileName(), pm.getPercentDone(), 0 );
+                    String rep_str;
+                    if( op_res_id != 0 )
+                        rep_str = ctx.getString( op_res_id, pm.getFileName() );
+                    else
+                        rep_str = pm.getFileName();
+                    sendProgress( rep_str, pm.getPercentDone(), 0 );
                     wait( 500 );
-                    
                 }
                 int res = pm.getResult();
                 if( res == ProgressMonitor.RESULT_SUCCESS )
@@ -340,7 +347,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                 }
             } catch( Exception e ) {
                 Log.e( TAG, uri.toString(), e );
-                sendProgress( e.getLocalizedMessage(), Commander.OPERATION_FAILED, pass_back_on_done );
+                sendProgress( ctx.getString( R.string.error ), Commander.OPERATION_FAILED, pass_back_on_done );
                 return;
             } finally {
                 super.run();
@@ -542,10 +549,8 @@ public class ZipAdapter extends CommanderAdapterBase {
                         int n = 0;
                         int so_far = (int)( byte_count * conv );
                         int fnl = rel_name.length();
-                        String unp_msg = ctx.getString( R.string.unpacking,
-                                fnl > CUT_LEN ? "\u2026" + rel_name.substring( fnl - CUT_LEN ) : rel_name );
-                        zip.extractFile( entry, dest_folder.getAbsolutePath() );
-                        if( !waitCompletion( true ) ) {
+                        zip.extractFile( entry, dest_folder.getAbsolutePath(), null, rel_name );
+                        if( !waitCompletion( R.string.unpacking ) ) {
                             File dest_f = new File( dest_folder.getAbsolutePath(), entry.getFileName() );
                             if( dest_f.exists() )
                                 dest_f.delete();
@@ -636,13 +641,8 @@ public class ZipAdapter extends CommanderAdapterBase {
         private String[] flat_names_to_delete = null;
         private FileHeader[] list;
 
-        DelEngine(FileHeader[] list) {
+        DelEngine( FileHeader[] list ) {
             this.list = list;
-            /*
-             * flat_names_to_delete = new String[list.length]; for( int i=0; i <
-             * list.length; i++ ) { FileHeader z = list[i];
-             * flat_names_to_delete[i] = z.getFileName().replace( "/", "" ); }
-             */
         }
 
         @Override
@@ -653,32 +653,20 @@ public class ZipAdapter extends CommanderAdapterBase {
             synchronized( ZipAdapter.this ) {
                 Init( null );
                 try {
+                    zip.setRunInThread( true );
                     int num_deleted = deleteFiles( list );
-                    ProgressMonitor pm = zip.getProgressMonitor();
-                    while( pm.getState() == ProgressMonitor.STATE_BUSY ) {
-                        sendProgress( pm.getFileName(), pm.getPercentDone(), 0 );
-                    }
-                    int res = pm.getResult();
-                    if( res == ProgressMonitor.RESULT_SUCCESS )
-                        sendResult( Utils.getOpReport( ctx, num_deleted, R.string.deleted ) );
-                    else if( res == ProgressMonitor.RESULT_ERROR ) {
-                        if( pm.getException() != null )
-                            pm.getException().printStackTrace();
-                        else
-                            Log.e( TAG, "Deletion error" );
-                    }
+                    zip.setRunInThread( false );
                     zip = null;
+                    sendResult( Utils.getOpReport( ctx, num_deleted, R.string.deleted ) );
                     return;
                 } catch( Exception e ) {
                     error( e.getMessage() );
                 }
-                sendResult( Utils.getOpReport( ctx, 0, R.string.deleted ) );
                 super.run();
             }
         }
 
         int tot_pp = 0;
-
         private int deleteFiles( FileHeader[] to_delete ) throws ZipException {
             int e_i = 0, tot_i = 0;
             for( FileHeader h : to_delete ) {
@@ -689,9 +677,15 @@ public class ZipAdapter extends CommanderAdapterBase {
                 String fn = h.getFileName();
                 if( !h.isDirectory() || zip.getFileHeader( fn ) != null ) {
                     zip.removeFile( h );
+                    if( !waitCompletion( R.string.deleting ) ) {
+                        Log.e( TAG, "Breaking on file " + fn );
+                        break;
+                    }
                     tot_i++;
                 } else {
                     tot_i += deleteFiles( GetFolderList( fn ) );
+                    if( !noErrors() )
+                        break;
                 }
             }
             return tot_i;
@@ -750,12 +744,6 @@ public class ZipAdapter extends CommanderAdapterBase {
         FileHeader item = items[position - 1];
 
         if( item.isDirectory() ) {
-            /*
-             * String cur = null; try { cur = uri.getFragment(); } catch(
-             * NullPointerException e ) {} if( cur == null ) cur = ""; else if(
-             * cur.length() == 0 || cur.charAt( cur.length()-1 ) != SLC ) cur +=
-             * SLS;
-             */
             commander.Navigate( uri.buildUpon().fragment( fixName( item ) ).build(), null, null );
         } else {
             commander.Open( uri.buildUpon().fragment( fixName( item ) ).build(), null );
@@ -872,7 +860,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                         ZipAdapter.this.zip = createZipFileInstance( ZipAdapter.this.uri );
                     zip.setRunInThread( true );
                     zip.addFiles( full_list, parameters );
-                    if( !waitCompletion( false ) ) {
+                    if( !waitCompletion( R.string.packing ) ) {
                         sendResult( ctx.getString( R.string.failed ) );
                         return;
                     }
@@ -976,7 +964,7 @@ public class ZipAdapter extends CommanderAdapterBase {
                     }
                     zip.addStream( zis, parameters );
                     zip.removeFile( ren_entry );
-                    if( waitCompletion( false ) ) {
+                    if( waitCompletion() ) {
                         sendResult( ctx.getString( R.string.done ) );
                         return;
                     }
@@ -1116,12 +1104,8 @@ public class ZipAdapter extends CommanderAdapterBase {
             String zip_path = u.getPath();
             if( zip_path == null )
                 return null;
-            String opened_zip_path = uri != null ? uri.getPath() : null;
-            if( opened_zip_path == null )
+            if( zip == null )
                 zip = createZipFileInstance( u );
-            else if( !zip_path.equalsIgnoreCase( opened_zip_path ) )
-                return null; // do not want to reopen the current zip to
-                             // something else!
             String entry_name = u.getFragment();
             if( entry_name != null ) {
                 FileHeader zip_entry = zip.getFileHeader( entry_name );

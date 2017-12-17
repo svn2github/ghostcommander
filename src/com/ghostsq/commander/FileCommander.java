@@ -922,8 +922,14 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 StreamServer.storeCredentials( this, crd, uri );
                 uri = Utils.updateUserInfo( uri, username );
             }
-            String http_url = "http://127.0.0.1:" + StreamServer.server_port + "/" + Uri.encode( uri.toString() );
-            // Log.d( TAG, "Stream " + mime + " from: " + http_url );
+/*
+            Uri.Builder ub = new Uri.Builder();
+            ub.scheme( "http" )
+              .authority( "localhost:" + StreamServer.server_port )
+              .encodedPath( Utils.escapeName( uri.toString() ) );
+*/            
+            String http_url = "http://localhost:" + StreamServer.server_port + "/" + Utils.escapeName( uri.toString() );
+            Log.d( TAG, "URI:" + http_url );
             i.setDataAndType( Uri.parse( http_url ), mime );
             i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET );
             Log.d( TAG, "Issuing an intent: " + i.toString() );
