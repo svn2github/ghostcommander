@@ -881,7 +881,7 @@ public final class Utils {
         not_supported(R.string.not_supported), 
         file_exist(R.string.file_exist), 
         cant_md(R.string.cant_md),
-
+        rename_err(R.string.rename_err),
         sz_folder( R.string.sz_folder),
         sz_dirnum( R.string.sz_dirnum),
         sz_dirsfx_p( R.string.sz_dirsfx_p),

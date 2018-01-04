@@ -45,7 +45,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -56,7 +55,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuInflater;
 import android.view.KeyEvent;
-import android.view.ViewConfiguration;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -66,7 +64,11 @@ import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class FileCommander extends Activity implements Commander, ServiceConnection, View.OnClickListener {
+    private static final Logger log = LoggerFactory.getLogger("FileCommander");    
     private final static String TAG = "GhostCommanderActivity";
     public final static int REQUEST_CODE_PREFERENCES = 1, REQUEST_CODE_SRV_FORM = 2, REQUEST_CODE_OPEN = 3;
     public final static int FIND_ACT = 1017, SMB_ACT = 2751, FTP_ACT = 4501, SFTP_ACT = 2450;
@@ -922,15 +924,21 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 StreamServer.storeCredentials( this, crd, uri );
                 uri = Utils.updateUserInfo( uri, username );
             }
-/*
+
             Uri.Builder ub = new Uri.Builder();
             ub.scheme( "http" )
-              .authority( "localhost:" + StreamServer.server_port )
-              .encodedPath( Utils.escapeName( uri.toString() ) );
-*/            
-            String http_url = "http://localhost:" + StreamServer.server_port + "/" + Utils.escapeName( uri.toString() );
+              .encodedAuthority( "localhost:" + StreamServer.server_port )
+              .encodedPath( Uri.encode( uri.toString() ) );
+            i.setDataAndType( ub.build(), mime );
+/*
+            String http_url = "http://127.0.0.1:" + StreamServer.server_port + "/";;
+            if( true )
+                http_url += Uri.encode( uri.toString() );
+            else
+                http_url += Base64.encodeToString( uri.toString().getBytes(), Base64.URL_SAFE | Base64.NO_WRAP );
             Log.d( TAG, "URI:" + http_url );
             i.setDataAndType( Uri.parse( http_url ), mime );
+*/
             i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET );
             Log.d( TAG, "Issuing an intent: " + i.toString() );
             startActivity( i );

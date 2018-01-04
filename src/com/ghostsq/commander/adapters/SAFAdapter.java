@@ -615,14 +615,12 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
     }
     
 	@Override
-	public boolean createFile( String fileURI ) {
+	public boolean createFile( String new_name ) {
 		try {
-			File f = new File( fileURI );
-			boolean ok = f.createNewFile();
-			notify( null, ok ? Commander.OPERATION_COMPLETED_REFRESH_REQUIRED : Commander.OPERATION_FAILED );
-			return ok;     
+		    Uri new_doc_uri = DocumentsContract.createDocument( ctx.getContentResolver(), uri, "text/plain", new_name );
+			return new_doc_uri != null;     
 		} catch( Exception e ) {
-		    commander.showError( ctx.getString( R.string.cant_create, fileURI, e.getMessage() ) );
+		    commander.showError( ctx.getString( R.string.cant_create, new_name, e.getMessage() ) );
 		}
 		return false;
 	}

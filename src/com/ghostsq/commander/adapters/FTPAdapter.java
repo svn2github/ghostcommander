@@ -287,14 +287,12 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
             if( !checkReadyness() ) return false;
             Engines.IReciever recipient = null;
             File dest = null;
-            if( move && to instanceof FTPAdapter && subItems.length == 1 && !subItems[0].isDirectory() ) {
+            if( move && to instanceof FTPAdapter ) {
                 Uri to_uri = to.getUri();
                 if( to_uri.getHost().equalsIgnoreCase( uri.getHost() ) ) {
                     notify( Commander.OPERATION_STARTED );
-                    String loc_name = subItems[0].getName();
-                    String old_name = Utils.mbAddSl( uri.getPath() ) + loc_name;  
-                    String new_name = Utils.mbAddSl( to_uri.getPath() ) + loc_name;
-                    RenEngine re = new RenEngine( ctx, theUserPass, uri, old_name, new_name, ftp.getActiveMode(), ftp.getCharset() );
+                    String new_name = Utils.mbAddSl( to_uri.getPath() );
+                    RenEngine re = new RenEngine( ctx, theUserPass, uri, subItems, new_name, ftp.getActiveMode(), ftp.getCharset() );
                     commander.startEngine( re );
                     return true;
                 }
@@ -465,7 +463,9 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
             String old_name = getItemName( position, false );
             if( old_name != null ) {
                 notify( Commander.OPERATION_STARTED );
-                RenEngine re = new RenEngine( ctx, theUserPass, uri, old_name, new_name, ftp.getActiveMode(), ftp.getCharset() );
+                LsItem[] list = new LsItem[1];
+                list[0] = items[position-1];
+                RenEngine re = new RenEngine( ctx, theUserPass, uri, list, new_name, ftp.getActiveMode(), ftp.getCharset() );
                 commander.startEngine( re );
             }
         } catch( Exception e ) {
@@ -604,7 +604,9 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
                     prt_path += "/" + segs.get( i );
                 }
                 LsItem[] subItems = ftp.getDirList( prt_path, true );
-                if( subItems != null ) {
+                if( subItems == null ) {
+                    Log.e( TAG, "No items in the directory " + prt_path );
+                } else {
                     String fn = segs.get( segs.size() - 1 );
                     for( int i = 0; i < subItems.length; i++ ) {
                         LsItem ls_item = subItems[i];
@@ -617,6 +619,7 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
                             return item;
                         }
                     }
+                    Log.e( TAG, "File " + fn + " was not found in the directory " + prt_path );
                 }
             }
         } catch( Throwable e ) {
@@ -630,13 +633,19 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
         try {
             if( uri != null && !uri.getHost().equals( u.getHost() ) )
                 return null;
-            if( theUserPass == null || theUserPass.isNotSet() )
-                theUserPass = new FTPCredentials( u.getUserInfo() );
-            setFTPMode( u );
-            if( ftp.connectAndLogin( u, theUserPass.getUserName(), theUserPass.getPassword(), false ) > 0 ) {
+            if( !ftp.isLoggedIn() ) {
+                Log.d( TAG, "Connecting..." );
+                if( theUserPass == null || theUserPass.isNotSet() )
+                    theUserPass = new FTPCredentials( u.getUserInfo() );
+                setFTPMode( u );
+                if( ftp.connectAndLogin( u, theUserPass.getUserName(), theUserPass.getPassword(), false ) < 0 ) {
+                    Log.e( TAG, "Cannot connect to " + u.toString() );
+                    return null;
+                }
                 noHeartBeats = true;
-                return ftp.prepRetr( u.getPath(), skip );
             }
+            if( ftp.isLoggedIn() )
+                return ftp.prepRetr( u.getPath(), skip );
         } catch( Exception e ) {
             Log.e( TAG, u.getPath(), e );
         }
@@ -665,7 +674,7 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
             noHeartBeats = false;
             if( s != null )
                 s.close();
-            ftp.doneWithData();
+            ftp.doneWithData( s.hashCode() );
         } catch( IOException e ) {
             e.printStackTrace();
         }

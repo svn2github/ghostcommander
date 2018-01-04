@@ -24,6 +24,7 @@ import net.lingala.zip4j.util.Zip4jUtil;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
+import android.text.format.Formatter;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 
@@ -63,9 +64,9 @@ public class ZipAdapter extends CommanderAdapterBase {
     public boolean hasFeature( Feature feature ) {
         switch( feature ) {
         case REAL:
+        case SZ:
             return true;
         case F4:
-        case SZ:
             return false;
         default:
             return super.hasFeature( feature );
@@ -175,8 +176,10 @@ public class ZipAdapter extends CommanderAdapterBase {
                 else if( res == ProgressMonitor.RESULT_ERROR ) {
                     Throwable e = pm.getException();
                     if( e != null ) {
-                        error( e.getMessage() );
-                        e.printStackTrace();
+                        String msg = e.getMessage();
+                        if( msg != null )
+                            error( msg.replaceAll("^.+:", "") );
+                        Log.e( TAG, pm.getFileName(), e );
                     }
                     else
                         Log.e( TAG, "zip error" );
@@ -398,22 +401,102 @@ public class ZipAdapter extends CommanderAdapterBase {
 
     @Override
     public void reqItemsSize( SparseBooleanArray cis ) {
-        notify( "Not supported.", Commander.OPERATION_FAILED );
+        FileHeader[] fhs = bitsToItems( cis );
+        if( fhs == null ) return;
+        notify( Commander.OPERATION_STARTED );
+        commander.startEngine( new CalcSizesEngine( fhs ) );
     }
 
+    class CalcSizesEngine extends EnumEngine {
+        private FileHeader[] mList = null;
+        private long totalSize = 0, totalCompressed = 0;
+        private int  dirs = 0;
+        
+        CalcSizesEngine( FileHeader[] list ) {
+            mList = list;
+        }
+
+        @Override
+        public void run() {
+            Context c = ZipAdapter.this.ctx;
+            sendProgress( c.getString( R.string.wait ), 0, 0 );
+            int num = calcSizes( mList );
+            StringBuilder result = new StringBuilder( 128 ); 
+            if( mList.length == 1 ) {
+                FileHeader f = mList[0];
+                String name_fixed = fixName( f );
+                if( f.isDirectory() ) {
+                    result.append( c.getString( R.string.sz_folder, name_fixed, num ) );
+                    if( dirs > 0 )
+                        result.append( c.getString( R.string.sz_dirnum, dirs, ( dirs > 1 ? c.getString( R.string.sz_dirsfx_p ) : c.getString( R.string.sz_dirsfx_s ) ) ) );
+                }
+                else
+                    result.append( c.getString( R.string.sz_file, name_fixed ) );
+            } else
+                result.append( c.getString( R.string.sz_files, num ) );
+            if( totalSize > 0 )
+                result.append( c.getString( R.string.sz_Nbytes, Formatter.formatFileSize( c, totalSize ).trim() ) );
+            if( totalSize > 1024 )
+                result.append( c.getString( R.string.sz_bytes, totalSize ) );
+            result.append( "\n<b>Compressed: </b>" );
+            result.append( Formatter.formatFileSize( c, totalCompressed ).trim() );
+            if( mList.length == 1 ) {
+                FileHeader f = mList[0];
+                String name_fixed = fixName( f );
+                result.append( c.getString( R.string.sz_lastmod ) );
+                result.append( "&#xA0;" );
+                String date_s = Utils.formatDate( new Date( Zip4jUtil.dosToJavaTme( f.getLastModFileTime() ) ), c );
+                result.append( date_s );
+                if( !f.isDirectory() ) {
+                    String ext  = Utils.getFileExt( name_fixed );
+                    String mime = Utils.getMimeByExt( ext );
+                    if( mime != null && !"*/*".equals( mime ) ) {
+                        result.append( "\n<b>MIME:</b>&#xA0;" );
+                        result.append( mime );
+                    }
+                    result.append( "\n<b>CRC32:</b> " );
+                    result.append( Long.toHexString( f.getCrc32() ) );
+                    result.append( "\n" );
+                    result.append( f.getFileComment() );
+                }
+            }
+            sendReport( result.toString() );
+        }
+
+        private final int calcSizes( FileHeader[] list ) {
+            int  counter = 0;
+            try {
+                for( int i = 0; i < list.length; i++ ) {
+                    FileHeader f = list[i];
+                    String name_fixed = fixName( f );
+                    if( f.isDirectory() ) {
+                        dirs++;
+                        FileHeader[] subItems = GetFolderList( name_fixed );
+                        if( subItems == null ) {
+                            error( "Failed to get the file list of the subfolder '" + name_fixed + "'.\n" );
+                            break;
+                        }
+                        counter += calcSizes( subItems );
+                    } else {
+                        totalSize += f.getUncompressedSize();
+                        totalCompressed += f.getCompressedSize();
+                        counter++;
+                    }
+                }
+            } catch( Exception e ) {
+                Log.e( TAG, "", e );
+                error( e.getMessage() );
+            }
+            return counter;
+        }
+    }
+    
     public boolean unpackZip( File zip_file ) { // to the same folder
         try {
             if( !checkReadyness() )
                 return false;
-            zip = new ZipFile( zip_file );
             notify( Commander.OPERATION_STARTED );
-            zip.setRunInThread( true );
-            zip.extractAll( zip_file.getParentFile().getAbsolutePath() );
-            ProgressMonitor pm = ZipAdapter.this.zip.getProgressMonitor();
-            while( pm.getState() == ProgressMonitor.STATE_BUSY ) {
-                Log.v( TAG, "Waiting " + pm.getFileName() + " %" + pm.getPercentDone() );
-                notify( pm.getFileName(), Commander.OPERATION_IN_PROGRESS, pm.getPercentDone() );
-            }
+            commander.startEngine( new ExtractAllEngine( zip_file, zip_file.getParentFile() ) );
             return true;
         } catch( Exception e ) {
             notify( "Exception: " + e.getMessage(), Commander.OPERATION_FAILED );
@@ -421,6 +504,38 @@ public class ZipAdapter extends CommanderAdapterBase {
         return false;
     }
 
+    class ExtractAllEngine extends ZipEngine {
+        private File zipFile, destFolder;
+
+        ExtractAllEngine( File zip_f, File dest ) {
+            zipFile = zip_f;
+            destFolder = dest;
+        }
+
+        @Override
+        public void run() {
+            try {
+                sendProgress( ZipAdapter.this.ctx.getString( R.string.wait ), 0, 0 );
+                synchronized( ZipAdapter.this ) {
+                    if( ZipAdapter.this.zip == null )
+                        ZipAdapter.this.zip = new ZipFile( zipFile.getAbsolutePath() );
+                    zip.setRunInThread( true );
+                    zip.extractAll( destFolder.getAbsolutePath() );
+                    waitCompletion( R.string.unpacking ); 
+                    zip.setRunInThread( false );
+                }
+                if( !noErrors() ) {
+                    sendResult( ctx.getString( R.string.failed ) );
+                    return;
+                }
+                sendResult( ctx.getString( R.string.unpacked, zipFile.getName() ) );
+            } catch( ZipException e ) {
+                Log.e( TAG, "Can't extract " + zipFile.getAbsolutePath() );
+            }
+            super.run();
+        }
+    }    
+    
     @Override
     public boolean copyItems( SparseBooleanArray cis, CommanderAdapter to, boolean move ) {
         try {
@@ -470,10 +585,6 @@ public class ZipAdapter extends CommanderAdapterBase {
             } catch( NullPointerException e ) {
                 Log.e( TAG, "", e );
             }
-        }
-
-        CopyFromEngine(File dest) {
-            dest_folder = dest;
         }
 
         @Override
@@ -1044,12 +1155,11 @@ public class ZipAdapter extends CommanderAdapterBase {
     }
 
     private final boolean checkReadyness() {
-        // FIXME check that the zip file is processed by some other
-        // engine!!!!!!!!!!!!
-        /*
-         * if( ??? ) { notify( ctx.getString( R.string.busy ),
-         * Commander.OPERATION_FAILED ); return false; }
-         */
+        // FIXME check that the zip file is processed by some other engine!!!!!!!!!!!!
+        if( false /*How?*/ ) { 
+            notify( ctx.getString( R.string.busy ), Commander.OPERATION_FAILED ); 
+            return false; 
+        }
         return true;
     }
 

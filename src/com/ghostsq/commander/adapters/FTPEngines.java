@@ -492,12 +492,13 @@ public final class FTPEngines {
     // --- RenEngine  ---
     
     static class RenEngine extends FTPEngine {
-        private String oldName, newName;
+        private LsItem[] origList;
+        private String   newName;
         
-        RenEngine( Context ctx_, FTPCredentials crd_, Uri uri_, String oldName_, String newName_, boolean active, Charset cs ) {
+        RenEngine( Context ctx_, FTPCredentials crd_, Uri uri_, LsItem[] list, String new_name_or_path, boolean active, Charset cs ) {
             super( ctx_, crd_, uri_, active, cs );
-            oldName = oldName_; 
-            newName = newName_;
+            origList = list;
+            newName  = new_name_or_path; 
         }
         @Override
         public void run() {
@@ -507,8 +508,14 @@ public final class FTPEngines {
                     sendResult( "" );
                     return;
                 }
-                if( !ftp.rename( oldName, newName ) )
-                    error( ctx.getString( R.string.failed ) + ftp.getLog() );
+                String  base_path = Utils.mbAddSl( uri.getPath() );
+                boolean dest_is_dir = newName.indexOf( '/' ) >= 0;
+                for( int i = 0; i < origList.length; i++ ) {
+                    String old_name = origList[i].getName();
+                    String old_path = base_path + old_name;
+                    if( !ftp.rename( old_path, dest_is_dir ? newName + old_name : newName ) )
+                        error( ctx.getString( R.string.failed ) + ftp.getLog() );
+                }
                 sendResult( "" );
                 super.run();
             } catch( Exception e ) {
