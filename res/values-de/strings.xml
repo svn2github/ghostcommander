@@ -51,8 +51,9 @@
   <string name="forget">Account entfernen (App wird beendet)</string>
   <string name="favs_descr">Anzeigen und verwalten der Favoriten (Verzeichnisse und Verbindungen)</string>
   <string name="local_descr">Durchsuchen, verwalten und bearbeiten des primären Dateisystems</string>
-  <string name="external_descr">Zugriff auf die Dateien der externen SD-Karte. Auf einigen Geräten ist der Inhalt nur lesbar.</string>
-  <string name="saf_descr">Zugriff auf die externe SD-Karte über die Storage-Access-Framework-Schnittstelle</string>
+  <string name="external_descr">Greifen Sie auf die Dateien der physisch eingefügten SD karte. Es könnte sein dass sie auf manchen Geräten gelesen werden. Benutzen Sie den SAF Modus in einem solchen Fall.</string>
+  <string name="media_descr">Durschsuchen Sie Ihre Dateien während dass System sie sieht.</string>
+  <string name="saf_descr">Modifieren Sie die externe SD Karte oder USB-OTG durch die Storage Access Framework (SAF) interface</string>
   <string name="ftp_descr">Mit einem FTP-Server verbinden</string>
   <string name="sftp_descr">Mit einem SSH-FTP-Server verbinden</string>
   <string name="smb_descr">Mit freigegebenen Verzeichnissen eines Windows-PC verbinden</string>
@@ -249,6 +250,7 @@
   <string name="domain">Domäne:</string>
   <string name="username">Benutzername:</string>
   <string name="password">Kennwort:</string>
+  <string name="encrypted">Verschlüsselt</string>
   <string name="command">Befehl:</string>
   <string name="use_busybox">Busybox</string>
   <string name="user">Benutzer</string>
@@ -277,6 +279,8 @@
   <string name="advanced">Erweitert</string>
   <string name="advanced_settings">Erweiterte Einstellungen</string>
   <string name="summary_advanced_settings">Einstellungen für fortgeschrittene Benutzer</string>
+  <string name="remote_open_size">Datei Größenschwelle</string>
+  <string name="summary_remote_open_size">Maximale remote Dateigröße erlaubt lokal geöffnet zu werden</string>
   <string name="send_content">Senden mittels ContentProvider</string>
   <string name="summary_send_content">Deaktivieren, wenn die Sende-Anwendung keinen ContentResolver implementiert hat</string>
   <string name="panels_mode">Zweifenstermodus</string>
@@ -350,6 +354,8 @@
   <string name="summary_btn_color_picker">Hintergrundfarbe der Werkzeugleiste einstellen</string>
   <string name="pick_color">Farbe einstellen</string>
   <string name="color">Farbe</string>
+  <string name="color_themes">Themen</string>
+  <string name="summary_color_themes">Legen Sie alle Anwendungsfarben zu einem gewähltem Thema zu</string>
   <string name="language">Sprache</string>
   <string name="summary_language">Andere Sprache als die Systemsprache einstellen</string>
   <string name="restart_to_apply_lang">Bitte Ghost Commander neu starten, um die neue Spracheinstellung zu übernehmen.</string>
@@ -359,6 +365,8 @@
   <string name="summary_busybox_location">Zur Nutzung der Root-Funktionen wird BusyBox benötigt</string>
   <string name="su_location">su-Pfad</string>
   <string name="summary_su_location">Pfad zum su-Befehl einstellen</string>
+  <string name="cpmv_err_ign">Ignorieren Sie Berechtigungsfehler auf kopieren/verschieben</string>
+  <string name="summary_cpmv_err_ign">Unterdrücken Sie Root Modus Fehlern wenn eine Datei zu einem Dateisystem kopiert wurde welche Berechtigungen nicht unterstützt.</string>
   <string name="scan_all">Alle Dateien durchsuchen</string>
   <string name="summary_scan_all">Deaktivieren, um nur Medien-Dateien zu durchsuchen</string>
   <string name="execute_command">Einen Befehl ausführen</string>
@@ -377,7 +385,7 @@
   <string name="go_prev">Vorheriges Bild</string>
   <string name="rot_right">Rechtsherum drehen</string>
   <string name="rot_left">Linksherum drehen</string>
-  <string name="encoding">Kodierung</string>
+  <string name="encoding">Codierung:</string>
   <string name="encoding_set">Die Kodierung ist eingestellt auf \"%1$s\", bitte \"Neu laden\" aufrufen. Beim Speichern wird die neue Kodierung verwendet.</string>
   <string name="no_such_file">Die Datei \"%1$s\" wurde nicht gefunden.</string>
   <string name="too_big_file">Die Datei \"%1$s\" ist zu groß.</string>

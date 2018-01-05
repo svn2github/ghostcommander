@@ -250,6 +250,7 @@
   <string name="domain">Domän:</string>
   <string name="username">Användarnamn:</string>
   <string name="password">Lösenord:</string>
+  <string name="encrypted">Krypterad</string>
   <string name="command">Kommando:</string>
   <string name="use_busybox">busybox</string>
   <string name="user">Användare</string>
@@ -351,6 +352,8 @@
   <string name="summary_btn_color_picker">Välja en bakgrundsfärg för knapparna</string>
   <string name="pick_color">Ange färg</string>
   <string name="color">Färg</string>
+  <string name="color_themes">Teman</string>
+  <string name="summary_color_themes">Set all application colors to a one chosen theme</string>
   <string name="language">Språk</string>
   <string name="summary_language">Åsidosätt systemets språk</string>
   <string name="restart_to_apply_lang">Starta om applikationen för att tillämpa det nya språket</string>
@@ -360,6 +363,8 @@
   <string name="summary_busybox_location">Ange var du har de körbara filerna för BusyBox</string>
   <string name="su_location">Sökvägen till su</string>
   <string name="summary_su_location">Ange var den körbara filen för su finns</string>
+  <string name="cpmv_err_ign">Ignorera behörighetsfel vid kopiering/flytta</string>
+  <string name="summary_cpmv_err_ign">Visa inte root-lägesfel när en fil kopieras till ett filsystem som inte stöder behörigheter.</string>
   <string name="scan_all">Sök igenom alla filer</string>
   <string name="summary_scan_all">Avmarkera för att endast söka efter mediafiler</string>
   <string name="execute_command">Kör ett kommando</string>
@@ -378,7 +383,7 @@
   <string name="go_prev">Föregående</string>
   <string name="rot_right">Rotera medsols</string>
   <string name="rot_left">Rotera moturs</string>
-  <string name="encoding">Kodning</string>
+  <string name="encoding">Kodning:</string>
   <string name="encoding_set">Kodningen är satt till \"%1$s\", välj uppdatera. Om du sparar det, kommer originalkodningen att ändras till den nya.</string>
   <string name="no_such_file">Ingen sådan fil \"%1$s\"</string>
   <string name="too_big_file">Filen \"%1$s\" är för stor</string>

@@ -38,6 +38,11 @@
   <string name="hidden">Caché</string>
   <string name="rescan">Relancer média</string>
   <string name="favs">Favoris</string>
+  <string name="df_dnl">Téléchargements</string>
+  <string name="df_cam">Camera</string>
+  <string name="df_pic">Images</string>
+  <string name="df_mus">Musique</string>
+  <string name="df_mov">Films</string>
   <string name="local">Stockage local</string>
   <string name="external">Carte externe</string>
   <string name="media">Stockage multimédia</string>
@@ -54,9 +59,9 @@
   <string name="forget">Oublier le compte (l\'application quitte)</string>
   <string name="favs_descr">Voir et gérer la liste des répertoires et sites favoris</string>
   <string name="local_descr">Relancer, organiser et modifier le contenu de système de fichiers primaire</string>
-  <string name="external_descr">Accéder aux fichiers sur la carte SD externe. Elle peut être en lecture seule sur certains appareils.</string>
+  <string name="external_descr">Accédez aux fichiers de la carte SD insérée. Celle-ci peut être en lecture seule sur certains appareils. Utilisez dans ce cas-là le mode SAF.</string>
   <string name="media_descr">Parcourir vos fichiers multimédias comme le système les voit.</string>
-  <string name="saf_descr">Modifier la carte SD externe via l’interface de Storage Access Framework</string>
+  <string name="saf_descr">Modifiez la carte SD externe ou USB-OTG via l’interface de Storage Access Framework (SAF)</string>
   <string name="ftp_descr">Connecter à un serveur FTP</string>
   <string name="sftp_descr">Connecter à un serveur SSH FTP (sftp)</string>
   <string name="smb_descr">Connecter à des dossiers partagés sur un appareil Windows</string>
@@ -104,6 +109,7 @@
   <string name="create_zip">Créer un nouveau fichier ZIP</string>
   <string name="create_zip_title">Créer fichier ZIP</string>
   <string name="extract_zip">Extraire ZIP</string>
+  <string name="file_name">Fichier</string>
   <string name="wait"> attendez&#8230; </string>
   <string name="fail">ÉCHEC</string>
   <string name="failed">Erreur :\n</string>
@@ -253,6 +259,7 @@
   <string name="domain">Domaine :</string>
   <string name="username">Nom d\'utilisateur :</string>
   <string name="password">Mot de passe :</string>
+  <string name="encrypted">Crypté</string>
   <string name="command">Commande:</string>
   <string name="use_busybox">busybox</string>
   <string name="user">Utilisateur</string>
@@ -281,8 +288,12 @@
   <string name="advanced">Avancés</string>
   <string name="advanced_settings">Paramètres avancés</string>
   <string name="summary_advanced_settings">Paramètres supplémentaires pour utilisateurs avancés</string>
+  <string name="remote_open_size">Limite de taille du fichier</string>
+  <string name="summary_remote_open_size">Taille maximale du fichier distant pouvant être ouvert localement</string>
   <string name="send_content">Envoyer via fournisseur de contenu</string>
   <string name="summary_send_content">Essayez de décocher si votre fichier envoi application n’implémente pas un résolveur de contenu</string>
+  <string name="open_content">Open using content provider</string>
+  <string name="summary_open_content">Try to uncheck if your file opening application does not implement a content resolver</string>
   <string name="panels_mode">Panneaux côte-à-côte</string>
   <string name="summary_panels_mode">Afficher les panneaux côte-à-côte dans un écran divisé</string>
   <string name="two_lines">Deux lignes par élément affiché</string>
@@ -304,8 +315,8 @@
   <string name="summary_finger_friendly">Agrandir les éléments de l\'interface utilisateur</string>
   <string name="prevent_root">Avertissement en quittant la carte SD</string>
   <string name="summary_prevent_root">Afficher un avertissement lorsque l\'on va dans le répertoire racine de l\'appareil</string>
-  <string name="show_root">Afficher «Mode root» et «Points de montage»</string>
-  <string name="summary_show_root">Page de démarrage affiche «Mode root» et «Points de montage»</string>
+  <string name="show_root">Show advanced home items</string>
+  <string name="summary_show_root">Home view will include \"Root mode\", \"Mount points\" and \"Media Store\"</string>
   <string name="root_root">Mode root en quittant la carte SD</string>
   <string name="summary_root_root">Bascule automatique en mode root en allant vers le répertoire racine (pas /sdcard) de l\'appareil</string>
   <string name="thumbnails">Activer les miniatures</string>
@@ -354,6 +365,8 @@
   <string name="summary_btn_color_picker">Choisir la couleur d\'arrière-plan pour les boutons</string>
   <string name="pick_color">Choisir les couleurs</string>
   <string name="color">Couleur</string>
+  <string name="color_themes">Thèmes</string>
+  <string name="summary_color_themes">Définissez la couleur de toutes les applications sur un thème choisi</string>
   <string name="language">Langue</string>
   <string name="summary_language">Remplacer la langue du système</string>
   <string name="restart_to_apply_lang">Veuillez redémarrer l\'application pour activer la langue choisie</string>
@@ -364,7 +377,7 @@
   <string name="su_location">Chemin de su</string>
   <string name="summary_su_location">Définir l\'emplacement de la commande su</string>
   <string name="cpmv_err_ign">Ignorer les erreurs de permission pour copier/déplacer</string>
-  <string name="summary_cpmv_err_ign">Suppress root mode errors when a file is copied to a file system which does not support permissions.</string>
+  <string name="summary_cpmv_err_ign">Supprimez les erreurs de mode root lorsqu’un fichier est copié vers un système de fichiers qui ne supporte pas les autorisations.</string>
   <string name="scan_all">Analyser tous les fichiers</string>
   <string name="summary_scan_all">Décochez pour analyser fichiers multimédias seulement</string>
   <string name="execute_command">Exécuter une commande</string>
@@ -383,7 +396,7 @@
   <string name="go_prev">Précédent</string>
   <string name="rot_right">Rotation (sens horaire)</string>
   <string name="rot_left">Rotation (sens anti-horaire)</string>
-  <string name="encoding">Encodage</string>
+  <string name="encoding">Encodage :</string>
   <string name="encoding_set">L\'encodage est «%1$s», rechargez-le. Si vous l\'enregistrez, l\'encodage original sera changé en encodage nouveau.</string>
   <string name="no_such_file">Fichier non trouvé «%1$s»</string>
   <string name="too_big_file">Le fichier «%1$s» est trop gros</string>
@@ -437,49 +450,99 @@ Vous acceptez d\'utiliser ce logiciel à vos propres risques.
 Si vous n\'êtes pas d\'accord, cessez d\'utiliser ce logiciel immédiatement et désinstallez le.</p>
 ]]></string>
   <string name="keys_text"><![CDATA[
-<h3>MODE D\'EMPLOI</h3>
+<h3>SELECTING FILES</h3>
 <p>
-Pour sélectionner plus d\'un fichier, appuyez sur la moitié droite de la ligne. Pour saisir manuellement le chemin (et voir les favoris), appuyez longuement sur le titre du panneau.
+To select files and folders, tap on the <b>right</b> side of their rows and
+open them by tapping on the <b>left</b>. That\'s right, one side will activate
+items and the other side will select them.
 </p>
-<h3>TOUCHES DE RACCOURCI</h3>
+<h3>COPYING AND MOVING</h3>
 <p>
-VolumeHaut - Sélectionner l\'élément courant (fichier)<br/>
-VolumeBas - Permuter les panneaux<br/>
-+, -  - Sélectionner ou désélectionner les éléments dans le répertoire courant<br/> 
-(, )  - Saisir l\'emplacement pour les panneaux gauche/droite et les favoris<br/>
-* - Ajouter le répertoire courant aux favoris<br/>
-" - Afficher la taille totale des fichiers sélectionnés<br/>
-= - Afficher dans l\'autre panneau le même contenu que celui en cours<br/>
-1 - Aide<br/>
-2 - Renommer le fichier courant<br/>
-4 - Éditer le fichier courant<br/>
-5 - Copier les fichiers sélectionnés<br/>
-6 - Déplacer les fichiers sélectionnés<br/>
-7 - Créer un nouveau répertoire<br/>
-8 - Supprimer les fichiers ou répertoires<br/>
-9 - Paramètres<br/>
-0 - Quitter le programme<br/>
-[A-z] - Recherche rapide    
+Copy or move files and folders by first choosing the target destination
+in one panel, then swipe (or toggle) back to the other panel and select
+the items you wish to transfer. Then commit the desired operation.
 </p>
-<p>   
-Pour établir une connexion FTP anonyme sur un répertoire, saisissez le chemin tel que :<br/>
-ftp://serveur.com/repertoire<br/>
-<br/>
-Ou, si des identifiants sont nécessaires :<br/>
-ftp://nom_utilisateur:mot_de_passe@serveur.com/repertoire<br/>
-<br/>
-Pour accéder comme root (su), rentrez l\'emplacement comme :<br/>
-«root:/data»<br/>
-<br/>
-Assurez-vous que "busybox" est installé, et/ou que son emplacement est spécifié dans les paramètres.<br/>
-Pour lister les disques montés, tapez «mount:»<br/>
-Cliquez sur un élément pour le rendre «rw» (lecture/écriture) ou «ro» (lecture seule).
+<h3>EXTERNAL CARDS AND USB OTG</h3>
+<p>
+Due to the system restrictions, direct writing access to the files on an external drive
+is forbidden. Please use the \"Storage Access Framework\" (SAF) mode to make changes on
+such locations.<br/>
+The SAF mode asks the desired location on the first access and memorizes the choice
+further on. To make a choice again (in a case when a different drive was inserted),
+tap and hold on the SAF item in the \"home:\" screen, then choose \"Open\".
+
+</p>
+<h3>ZIP FILES</h3>
+<p>
+Ghost Commander can work with ZIP archives as if they were
+directories. Other archive types are not supported.
+</p>
+<h3>PLUGINS</h3>
+<p>
+Plugins, which have to be installed separately, provide access to
+Windows shared folders, SSH File Transfer Protocol and also access to
+cloud storage services: Box, Dropbox and Google Drive.
+</p>
+<h3>ROOT MODE</h3>
+<p>
+Using the root mode (superuser) features of Ghost
+Commander requires caution, only work on a rooted device. 
+BusyBox should be installed with its path defined in the settings.
+</p>
+<h3>LOCATION EDITOR</h3>
+<p>
+To enter a location manually (and to see a drop-down list of your
+favorites) long-press on the panel\'s header to open the location
+editor.\n
+You can enter resource URIs into the location editor manually as
+follows:
+</p><p>
+<b>ftp://</b><i>host.com</i><b>/</b><i>folder</i><br/>
+    - Anonymous FTP
+</p><p>
+<b>ftp://</b><i>user</i><b>:</b><i>pass</i><b>@</b><i>ftp_host</i><b>/</b><i>folder</i><br/>
+    - Authenticated FTP
+</p><p>
+<b>sftp://</b><i>user</i><b>:</b><i>pass</i><b>@</b><i>sftp_host</i><b>/</b><i>folder</i><br/>
+    - SSH FTP<br/>
+    If you have a private key to authenticate, put it to the file
+    <b>/sdcard/.GhostCommander/keys/</b><i>exact_host_name</i><br/>
+    In this case the password is the passphrase to your keyfile.
+</p><p>
+<b>smb://</b><i>domain</i><b>;</b><i>user</i><b>:</b><i>pass</i><b>@</b><i>server</i><b>/</b><i>share</i><br/>
+    - Windows share
+</p><p>
+<b>root:/</b><i>path/to/folder</i><br/>
+    - Root mode
+</p>
+<h3>HOT KEYS</h3>
+<p>
+<b><i>VolumeUp</i></b> - Select files and folders<br/>
+<b><i>VolumeDn</i></b> - Toggle between the panels<br/>
+<b>+</b>, <b>-</b>  - Select or unselect items in the current folder<br/>  
+<b>(</b>, <b>)</b>  - Enter a location manually and view your favorites<br/>
+<b>*</b> - Add the current folder to your favorites<br/>
+<b>\"</b> - Show detailed information for the selected item(s)<br/>
+<b>=</b> - Display the same location in the other panel (synchronize)<br/>
+<b>1</b> - Help<br/>
+<b>2</b> - Rename selected item<br/>
+<b>4</b> - Edit selected item<br/>
+<b>5</b> - Copy selected item(s)<br/>
+<b>6</b> - Move selected item(s)<br/>
+<b>7</b> - Create a new folder<br/>
+<b>8</b> - Delete selected item(s)<br/>
+<b>9</b> - Open preferences/settings<br/>
+<b>0</b> - Close the application<br/>
+<b>[A-z]</b> - Quick search<br/>
+</p>
+<p>
+<a href="https://sites.google.com/site/ghostcommander1/info">More help online…</a>
 </p>
 ]]></string>
   <string name="license_text"><![CDATA[
 <h3>Ghost Manager</h3>
 <p>A file manager</p>
-<p>Copyright © 2009-2014 Ghost Squared</p>
+<p>Copyright © 2009-2017 Ghost Squared</p>
 <p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
 <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>
 <p>You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/></p>
