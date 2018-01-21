@@ -38,9 +38,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.view.ViewParent;
 import android.view.Window;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Scroller;
 import android.widget.TextView;
@@ -73,12 +75,14 @@ public class Editor extends Activity implements TextWatcher, OnTouchListener, On
                 horScroll = prefs.getBoolean( SP_NOWRAP, true ); 
             }
             boolean ct_enabled = false, ab;
-            ab = Utils.setActionBar( this );
-            if( !ab )
-                ct_enabled = requestWindowFeature( Window.FEATURE_CUSTOM_TITLE );
-            setContentView(R.layout.editor);
+            ab = Utils.needActionBar( this );
             SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
             Utils.setTheme( this, shared_pref.getString( "color_themes", "d" ) );
+            if( ab )
+                ab = Utils.setActionBar( this );
+            else
+                ct_enabled = requestWindowFeature( Window.FEATURE_CUSTOM_TITLE );
+            setContentView(R.layout.editor);
             if( !ab && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 &&
               !ForwardCompat.hasPermanentMenuKey( this ) ) {
                 ImageButton mb = (ImageButton)findViewById( R.id.menu );
@@ -124,9 +128,21 @@ public class Editor extends Activity implements TextWatcher, OnTouchListener, On
             
             if( ct_enabled ) {
                 getWindow().setFeatureInt( Window.FEATURE_CUSTOM_TITLE, R.layout.atitle );
+                View at = findViewById( R.id.act_title );
+                if( at != null ) {
+                    ViewParent vp = at.getParent();
+                    if( vp instanceof FrameLayout ) {
+                        FrameLayout flp = (FrameLayout)vp;
+                        flp.setBackgroundColor( ck.ttlColor );
+                        flp.setPadding( 0, 0, 0, 0 );
+                    }
+                    at.setBackgroundColor( ck.ttlColor );
+                }
+                
                 TextView act_name_tv = (TextView)findViewById( R.id.act_name );
-                if( act_name_tv != null )
+                if( act_name_tv != null ) {
                     act_name_tv.setText( R.string.editor_label );
+                }
             }
             uri = getIntent().getData();
             loader = new DataLoadTask();
@@ -195,7 +211,7 @@ public class Editor extends Activity implements TextWatcher, OnTouchListener, On
         menu.add( Menu.NONE, MENU_RELD, Menu.NONE, getString( R.string.revert   ) ).setIcon( android.R.drawable.ic_menu_revert );
         menu.add( Menu.NONE, MENU_WRAP, Menu.NONE, ( horScroll ? "":"~ " ) + getString( R.string.wrap ) )
                                                                                    .setIcon( R.drawable.wrap );
-        menu.add( Menu.NONE, MENU_ENC,  Menu.NONE, "'" + Utils.getEncodingDescr( this, encoding, Utils.ENC_DESC_MODE_BRIEF ) + "'" 
+        menu.add( Menu.NONE, MENU_ENC,  Menu.NONE, getString( R.string.encoding ) + " '" + Utils.getEncodingDescr( this, encoding, Utils.ENC_DESC_MODE_BRIEF ) + "'" 
                                                                                   ).setIcon(android.R.drawable.ic_menu_sort_alphabetically );
         menu.add( Menu.NONE, MENU_EXIT, Menu.NONE, getString( R.string.exit     ) ).setIcon( android.R.drawable.ic_notification_clear_all );
 	    return true;

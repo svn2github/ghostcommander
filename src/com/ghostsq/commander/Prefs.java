@@ -145,6 +145,7 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
         if( !"color_themes".equals( p.getKey() ) ) return true;
         if( !(v instanceof String) ) return false;
         ck.setTheme( (String)v );
+        Utils.setTheme( this, (String)v );
         return true;
     }
     
@@ -162,7 +163,7 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences( this );
                 new SelZoneDialog( this, this, sp.getBoolean( SEL_ZONE + "_right", true ), 
                                                sp.getInt( SEL_ZONE + "_width", 50 ),
-                                               ck.selColor ).show();
+                                               ck.selColor, ck.bgrColor ).show();
             }
             else
             if( ColorsKeeper.FGR_COLORS.equals( pref_key ) ) {
@@ -171,7 +172,9 @@ public class Prefs extends PreferenceActivity implements Preference.OnPreference
                 startActivity( intent );
             }
             else {
-                new RGBPickerDialog( this, this, ck.getColor( pref_key ), getDefaultColor( pref_key, true ) ).show();
+                String title = preference.getTitle().toString();
+                new RGBPickerDialog( this, this, ck.getColor( pref_key ), 
+                                             getDefaultColor( pref_key, true ), title ).show();
             }
             return true;
         } catch( Exception e ) {

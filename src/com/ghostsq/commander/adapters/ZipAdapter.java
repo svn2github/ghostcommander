@@ -33,11 +33,12 @@ import com.ghostsq.commander.Panels;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
+import com.ghostsq.commander.adapters.Engines.IReciever;
 import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.Utils;
 
-public class ZipAdapter extends CommanderAdapterBase {
+public class ZipAdapter extends CommanderAdapterBase implements Engines.IReciever {
     public static final String TAG = "ZipAdapter";
     protected static final int BLOCK_SIZE = 100000;
     // Java compiler creates a thunk function to access to the private owner
@@ -689,23 +690,41 @@ public class ZipAdapter extends CommanderAdapterBase {
     }
 
     @Override
-    public boolean createFile( String fileURI ) {
-        notify( "Operation not supported", Commander.OPERATION_FAILED );
+    public boolean createFile( String name ) {
+        try {
+            File tmp_ctr = Utils.getTempDir( ctx );
+            File tmp_file = new File( tmp_ctr, name );
+            tmp_file.createNewFile();
+            if( createItem( tmp_file, tmp_ctr.getAbsolutePath() ) ) {
+                notifyRefr( name );
+                tmp_file.deleteOnExit();
+                return true;
+            }
+        } catch( IOException e ) {
+            Log.e( TAG, "Can't create " + name, e );
+        }
+        notify( ctx.getString( R.string.cant_create, name ), Commander.OPERATION_FAILED );
         return false;
     }
 
     @Override
     public void createFolder( String fld_name ) {
+        File tmp_ctr = Utils.getTempDir( ctx );
+        File tmp_fld = new File( tmp_ctr, fld_name );
+        tmp_fld.mkdir();
+        if( createItem( tmp_fld, tmp_ctr.getAbsolutePath() ) )
+            notifyRefr( fld_name );
+        else
+            notify( ctx.getString( R.string.cant_md, fld_name ), Commander.OPERATION_FAILED );
+        tmp_fld.deleteOnExit();
+    }
+
+    public boolean createItem( File item, String folder_path ) {
         try {
-            ArrayList<File> f_list = new ArrayList<File>( 1 );
-            File tmp_ctr = Utils.getTempDir( ctx );
-            File tmp_fld = new File( tmp_ctr, fld_name );
-            tmp_fld.mkdir();
-            f_list.add( tmp_fld );
             ZipParameters parameters = new ZipParameters();
             parameters.setCompressionMethod( Zip4jConstants.COMP_DEFLATE );
             parameters.setCompressionLevel( Zip4jConstants.DEFLATE_LEVEL_MAXIMUM );
-            parameters.setDefaultFolderPath( tmp_ctr.getAbsolutePath() );
+            parameters.setDefaultFolderPath( folder_path );
             String dest_path = uri.getFragment();
             if( Utils.str( dest_path ) && !"/".equals( dest_path ) )
                 parameters.setRootFolderInZip( dest_path );
@@ -720,16 +739,16 @@ public class ZipAdapter extends CommanderAdapterBase {
             }
             if( ZipAdapter.this.zip == null )
                 ZipAdapter.this.zip = createZipFileInstance( ZipAdapter.this.uri );
+            ArrayList<File> f_list = new ArrayList<File>( 1 );
+            f_list.add( item );
             zip.addFiles( f_list, parameters );
-            tmp_fld.deleteOnExit();
-            notifyRefr( fld_name );
-            return;
+            return true;
         } catch( ZipException e ) {
-            Log.e( TAG, "Creating folder " + fld_name, e );
+            Log.e( TAG, "Creating folder " + item.getName(), e );
         }
-        notify( ctx.getString( R.string.cant_md, fld_name ), Commander.OPERATION_FAILED );
-    }
-
+        return false;
+    }    
+    
     @Override
     public boolean deleteItems( SparseBooleanArray cis ) {
         try {
@@ -887,6 +906,11 @@ public class ZipAdapter extends CommanderAdapterBase {
         return false;
     }
 
+    @Override
+    public IReciever getReceiver() {
+        return this;
+    }
+    
     public boolean createZip( File[] list, String zip_fn, String pw, String enc ) {
         try {
             if( !checkReadyness() )

@@ -102,6 +102,7 @@
 <string name="send_to">Send to…</string>
 <string name="open_with">Open with…</string>
 <string name="open">Open</string>
+<string name="open_as">Open as…</string>
 <string name="copy_name">Copy name to clipboard</string>
 <string name="fav_fld">Add \"%s\" to favorites</string>
 <string name="create_zip">Create a new ZIP file</string>

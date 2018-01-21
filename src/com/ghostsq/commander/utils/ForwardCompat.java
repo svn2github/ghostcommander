@@ -14,6 +14,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.util.Log;
 import android.view.ViewConfiguration;
@@ -58,7 +60,9 @@ public class ForwardCompat
     public static void setupActionBar( Activity a ) {
         ActionBar ab = a.getActionBar();
         if( ab == null ) return;
-        ab.setDisplayShowTitleEnabled( false );
+        final int size_class = ( a.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK );
+        if( size_class <= Configuration.SCREENLAYOUT_SIZE_LARGE )
+            ab.setDisplayShowTitleEnabled( false );
     }
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)

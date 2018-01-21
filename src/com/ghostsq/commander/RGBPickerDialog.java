@@ -1,5 +1,7 @@
 package com.ghostsq.commander;
 
+import com.ghostsq.commander.utils.Utils;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -36,13 +38,16 @@ public class RGBPickerDialog extends AlertDialog
     private EditText edit_rgb;
     private View preview;
 
-    RGBPickerDialog( Context context, ResultSink sink, int color, int def_color ) {
+    RGBPickerDialog( Context context, ResultSink sink, int color, int def_color, String title ) {
         super(context);
         colorChangeSink = sink;
         curColor = color;
         defColor = def_color;
         Context c = getContext();
-        setTitle( c.getString( R.string.pick_color ) );
+        String dlg_title = c.getString( R.string.pick_color ); 
+        if( Utils.str( title ) ) 
+            dlg_title += ": " + title;
+        setTitle( dlg_title );
         LayoutInflater factory = LayoutInflater.from( c );
         setView( factory.inflate( R.layout.rgb, null ) );
         setButton( BUTTON_POSITIVE, c.getString( R.string.dialog_ok ), this);

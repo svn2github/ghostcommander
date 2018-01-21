@@ -339,7 +339,7 @@ public interface CommanderAdapter {
     
 
     /**
-     * @param path - the location of the file to create  
+     * @param name - file name to create  
      */
     public boolean createFile( String name );
 

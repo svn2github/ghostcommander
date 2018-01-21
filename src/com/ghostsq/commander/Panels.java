@@ -956,7 +956,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         try {
             Uri u;
             long size = 0;
-            if( file_name == null || file_name.length() == 0 ) {
+            if( !Utils.str( file_name ) ) {
                 int pos = getSingle( touched );
                 CommanderAdapter.Item item = (CommanderAdapter.Item)( (ListAdapter)ca ).getItem( pos );
                 if( item == null ) {
@@ -1228,16 +1228,21 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     }
 
     public void createNewFile( String fileName ) {
-        String local_name = fileName;
         CommanderAdapter ca = getListAdapter( true );
-        if( fileName.charAt( 0 ) != '/' ) {
-            String dirName = ca.toString();
-            fileName = dirName + ( dirName.charAt( dirName.length() - 1 ) == '/' ? "" : "/" ) + fileName;
-        }
-        if( ca.createFile( fileName ) ) {
-            refreshLists( fileName );
-            setSelection( current, local_name );
-            openForEdit( fileName, false );
+        if( !ca.createFile( fileName ) ) return;
+        boolean just_name = fileName.indexOf( '/' ) < 0;
+        String file_name = just_name ? fileName :
+               fileName.substring( fileName.lastIndexOf( '/' ) + 1 );
+        refreshLists( file_name );
+        setSelection( current, file_name );
+        if( ca instanceof FSAdapter ) {
+            String file_path;
+            if( just_name ) {
+                String dirName = ca.toString();
+                file_path = Utils.mbAddSl( dirName ) + fileName;                
+            } else
+                file_path = fileName;
+            openForEdit( file_path, false );
         }
     }
 

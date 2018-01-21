@@ -36,7 +36,7 @@ import android.widget.AdapterView;
 public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever {
     private   final static String TAG = "FSAdapter";
 
-    private String     dirName;
+    private   String     dirName;
     protected FileItem[] items;
     
     ThumbnailsThread tht = null;
@@ -185,8 +185,8 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
             if( acmi.position != 0 ) {
                 Item item = (Item)getItem( acmi.position );
                 if( !item.dir && ".zip".equals( Utils.getFileExt( item.name ) ) ) {
-                    menu.add( 0, R.id.open_zip, 0, R.string.open );
-                    menu.add( 0, R.id.extract, 0, R.string.extract_zip );
+                    menu.add( 0, R.id.open_zip, 0, R.string.open_as );
+                    menu.add( 0, R.id.extract,  0, R.string.extract_zip );
                 }
                 if( item.dir && num == 1 && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
                     menu.add( 0, R.id.rescan_dir, 0, R.string.rescan );
@@ -376,14 +376,19 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
     }
     
 	@Override
-	public boolean createFile( String fileURI ) {
+	public boolean createFile( String name ) {
 		try {
-			File f = new File( fileURI );
+		    String file_path;
+            if( name.charAt( 0 ) != '/' )
+                file_path = Utils.mbAddSl(dirName ) + name;
+            else
+                file_path = name;
+			File f = new File( file_path );
 			boolean ok = f.createNewFile();
 			notify( null, ok ? Commander.OPERATION_COMPLETED_REFRESH_REQUIRED : Commander.OPERATION_FAILED );
 			return ok;     
 		} catch( Exception e ) {
-		    commander.showError( ctx.getString( R.string.cant_create, fileURI, e.getMessage() ) );
+		    commander.showError( ctx.getString( R.string.cant_create, name, e.getMessage() ) );
 		}
 		return false;
 	}

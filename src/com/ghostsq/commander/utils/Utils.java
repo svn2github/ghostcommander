@@ -17,12 +17,14 @@ import java.io.OutputStream;
 import com.ghostsq.commander.R;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.net.UrlQuerySanitizer;
@@ -514,6 +516,16 @@ public final class Utils {
         }
         ctx.setTheme( t_id );
     }
+
+    public static void setDialogTheme( Context ctx, String code ) {
+        int t_id = 0;
+        if( "l".equals( code ) ) {
+            t_id = R.style.AsDialogLight;
+        } else {
+            t_id = R.style.AsDialog;
+        }
+        ctx.setTheme( t_id );
+    }
     
     public final static CharSequence readStreamToBuffer( InputStream is, String encoding ) {
         if( is != null ) {
@@ -617,7 +629,7 @@ public final class Utils {
             for( int i = 0; i < enc_nms_arr.length; i++ ) {
                 if( enc_name.equals( enc_nms_arr[i] ) ) {
                     if( mode == ENC_DESC_MODE_NUMB )
-                        return "" + i;
+                        return String.valueOf( i );
                     String enc_desc = enc_dsc_arr[i];
                     if( mode == ENC_DESC_MODE_FULL )
                         return enc_desc;
@@ -837,7 +849,7 @@ public final class Utils {
     }    
 */
     
-    public final static boolean setActionBar( Activity a ) {
+    public final static boolean needActionBar( Activity a ) {
         /*
          hasSoftKeys( this ) is not in use anymore.
          Soft bar won't show the menu dots since 
@@ -852,15 +864,25 @@ public final class Utils {
             String show_actionbar = shared_pref.getString( "show_actionbar", "a" );
             if( "a".equals( show_actionbar ) ) {
                 if( size_class >= Configuration.SCREENLAYOUT_SIZE_LARGE ||
-                    ( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 &&
+                    ( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH &&
                       !ForwardCompat.hasPermanentMenuKey( a ) ) )
                     ab = true;
             } else
                 ab = "y".equals( show_actionbar );
-            if( ab )
+        } catch( Exception e ) {
+            e.printStackTrace();
+        }
+        return ab;
+    }    
+    
+    public final static boolean setActionBar( Activity a ) {
+        boolean ab = false;
+        try {
+            ab = needActionBar( a );
+            if( ab ) {
                 ab = a.getWindow().requestFeature( Window.FEATURE_ACTION_BAR );
-            if( ab && size_class <= Configuration.SCREENLAYOUT_SIZE_LARGE )
                 ForwardCompat.setupActionBar( a );
+            }
         } catch( Exception e ) {
             e.printStackTrace();
         }

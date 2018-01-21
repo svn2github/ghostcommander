@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AsDialog" parent="@android:style/Theme.Holo.Dialog">
+    </style>
+
+    <style name="AsDialogLight" parent="@android:style/Theme.Holo.Light.Dialog">
+    </style>
+    
+</resources>

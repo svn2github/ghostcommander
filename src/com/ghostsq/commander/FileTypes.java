@@ -86,7 +86,7 @@ public class FileTypes extends Activity implements OnClickListener,
             clicked = (Integer)b.getTag();
             if( clicked != null ) {
                 int color = clicked == 0 ? ck.fgrColor : ck.ftColors.get( clicked - 1 ).color;
-                new RGBPickerDialog( this, this, color, 0 ).show();
+                new RGBPickerDialog( this, this, color, 0, "" ).show();
             }
         } catch( Exception e ) {
             Log.e( TAG, null, e );

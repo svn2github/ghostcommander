@@ -6,8 +6,6 @@
         <PreferenceScreen
                 android:key="left_panel_settings"
                 android:title="@string/left_panel_settings">
-		    <PreferenceCategory
-		            android:title="@string/left_panel_settings">
 		        <CheckBoxPreference
 		                android:key="left_detailed_SbS"
 		                android:title="@string/detailed_view_SbS"
@@ -31,13 +29,10 @@
 		                android:title="@string/show_hidden"
 		                android:summary="@string/summary_show_hidden" 
 		                android:defaultValue="true"/>
-		    </PreferenceCategory>
 		</PreferenceScreen>
         <PreferenceScreen
                 android:key="right_panel_settings"
                 android:title="@string/right_panel_settings">
-    	     <PreferenceCategory
-    	            android:title="@string/right_panel_settings">
     	        <CheckBoxPreference
     	                android:key="right_detailed_SbS"
     	                android:title="@string/detailed_view_SbS"
@@ -61,7 +56,6 @@
     	                android:title="@string/show_hidden"
     	                android:summary="@string/summary_show_hidden" 
     	                android:defaultValue="true"/>
-    	    </PreferenceCategory>
       </PreferenceScreen>
       <CheckBoxPreference
                 android:key="case_ignore"
@@ -105,7 +99,7 @@
         <EditTextPreference 
             android:key="thumbnails_size" 
             android:title="@string/thumbnails_size" 
-            android:summary="@string/summary_thumbnails_size" 
+            android:summary="@string/summary_thumbnails_size"
             android:defaultValue="200"/>
         <ListPreference
                 android:key="font_size"
@@ -119,7 +113,7 @@
 	                android:key="colors"
 	                android:title="@string/colors"
                     android:summary="@string/summary_colors">
-            <ListPreference
+           <ListPreference
                     android:key="color_themes"
                     android:title="@string/color_themes"
                     android:summary="@string/summary_color_themes"
@@ -130,7 +124,7 @@
                     />
            <PreferenceCategory
                android:title="@string/colors">
-             <PreferenceScreen
+              <PreferenceScreen
                       android:key="bgr_color_picker"
                       android:title="@string/bgr_color_picker"
                       android:summary="@string/summary_bgr_color_picker">

@@ -6,6 +6,7 @@ import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.Utils;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
@@ -24,11 +25,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewParent;
 import android.view.Window;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
+
 import java.io.InputStream;
 
 public class TextViewer extends Activity {
@@ -44,16 +49,16 @@ public class TextViewer extends Activity {
     
     @Override
     public void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
         try {
             boolean ab, ct_enabled = false;
-            ab = Utils.setActionBar( this );
-            if( !ab )
-                ct_enabled = requestWindowFeature( Window.FEATURE_CUSTOM_TITLE );
-            setContentView( R.layout.textvw );
-
+            ab = Utils.needActionBar( this );
             SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
             Utils.setTheme( this, shared_pref.getString( "color_themes", "d" ) );
+            if( ab )
+                Utils.setActionBar( this );
+            else
+                ct_enabled = requestWindowFeature( Window.FEATURE_CUSTOM_TITLE );
+            setContentView( R.layout.textvw );
 
             if( !ab && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 &&
               !ForwardCompat.hasPermanentMenuKey( this ) ) {
@@ -85,15 +90,28 @@ public class TextViewer extends Activity {
             text_view.setTextColor( ck.fgrColor );
             
             if( ct_enabled ) {
-                getWindow().setFeatureInt( Window.FEATURE_CUSTOM_TITLE, R.layout.atitle );
+                Window w = getWindow();
+                w.setFeatureInt( Window.FEATURE_CUSTOM_TITLE, R.layout.atitle );
+                View at = findViewById( R.id.act_title );
+                if( at != null ) {
+                    ViewParent vp = at.getParent();
+                    if( vp instanceof FrameLayout ) {
+                        FrameLayout flp = (FrameLayout)vp;
+                        flp.setBackgroundColor( ck.ttlColor );
+                        flp.setPadding( 0, 0, 0, 0 );
+                    }
+                    at.setBackgroundColor( ck.ttlColor );
+                }
                 TextView act_name_tv = (TextView)findViewById( R.id.act_name );
                 if( act_name_tv != null )
                     act_name_tv.setText( R.string.textvw_label );
             }
             scrollView = (ScrollView)findViewById( R.id.scroll_view );
+            super.onCreate( savedInstanceState );
         }
         catch( Exception e ) {
-            e.printStackTrace();
+            Toast.makeText( TextViewer.this, getString( R.string.unkn_err ), Toast.LENGTH_LONG ).show();
+            Log.e( TAG, "", e );
         }
     }
 
@@ -162,7 +180,7 @@ public class TextViewer extends Activity {
         menu.clear();
         menu.add( Menu.NONE, VIEW_TOP, Menu.NONE, getString( R.string.go_top   ) ).setIcon( android.R.drawable.ic_media_previous );
         menu.add( Menu.NONE, VIEW_BOT, Menu.NONE, getString( R.string.go_end   ) ).setIcon( android.R.drawable.ic_media_next );
-        menu.add( Menu.NONE, VIEW_ENC, Menu.NONE, "'" + Utils.getEncodingDescr( this, encoding, 
+        menu.add( Menu.NONE, VIEW_ENC, Menu.NONE, getString( R.string.encoding ) + " '" + Utils.getEncodingDescr( this, encoding, 
                                                Utils.ENC_DESC_MODE_BRIEF ) + "'" ).setIcon( android.R.drawable.ic_menu_sort_alphabetically );
         menu.add( Menu.NONE, R.id.exit, Menu.NONE, getString( R.string.exit    ) ).setIcon( android.R.drawable.ic_notification_clear_all );        return true;
     }
@@ -263,7 +281,8 @@ public class TextViewer extends Activity {
         @Override
         protected void onPostExecute( CharSequence cs ) {
             try {
-                TextViewer.this.text_view.setText( cs );
+                if( TextViewer.this.text_view != null )
+                    TextViewer.this.text_view.setText( cs );
             } catch( Throwable e ) {
                 onProgressUpdate( getString( R.string.failed ) + e.getLocalizedMessage() );
                 e.printStackTrace();

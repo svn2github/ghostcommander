@@ -99,6 +99,7 @@
   <string name="send_to">Отправить&#8230;</string>
   <string name="open_with">Открыть с помощью&#8230;</string>
   <string name="open">Открыть</string>
+  <string name="open_as">Открыть как…</string>  
   <string name="copy_name">Копировать имя в буфер</string>
   <string name="fav_fld">Добавить «%s» в закладки</string>
   <string name="create_zip">Создать ZIP файл</string>

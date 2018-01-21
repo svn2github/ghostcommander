@@ -319,10 +319,11 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
     }
 	    
 	@Override
-	public boolean createFile( String fileURI ) {
-		notify( "Operation not supported on a FTP folder.", Commander.OPERATION_FAILED );
-		return false;
+	public boolean createFile( String name ) {
+	    Engine e = new FTPEngines.CreateFileEngine( name, ctx, theUserPass, uri, ftp );
+	    return commander.startEngine( e );
 	}
+	
     @Override
     public void createFolder( String name ) {
         notify( Commander.OPERATION_STARTED );

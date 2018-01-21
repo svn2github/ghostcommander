@@ -6,10 +6,12 @@ import com.ghostsq.commander.adapters.CommanderAdapterBase;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -27,7 +29,10 @@ public abstract class EditPermissions extends Activity implements View.OnClickLi
     
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
+        SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
+        Utils.setDialogTheme( this, shared_pref.getString( "color_themes", "d" ) );
         super.onCreate( savedInstanceState );
+        
         requestWindowFeature( Window.FEATURE_LEFT_ICON );
         setContentView( R.layout.perms );
         getWindow().setFeatureDrawableResource( Window.FEATURE_LEFT_ICON, android.R.drawable.ic_dialog_dialer );

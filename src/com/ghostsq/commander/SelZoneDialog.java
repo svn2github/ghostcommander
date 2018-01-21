@@ -32,16 +32,17 @@ public class SelZoneDialog extends AlertDialog implements DialogInterface.OnClic
     private LinearLayout layout;
     private CheckBox r_cb;
     private SeekBar  width_seek;
-    private int width, sel_color;
+    private int width, sel_color, bg_color;
     private boolean atRight;
 
-    SelZoneDialog( Context c, ResultSink sink_, boolean atRight_, int width_, int sel_color_ ) {
+    SelZoneDialog( Context c, ResultSink sink_, boolean atRight_, int width_, int sel_color_, int bg_color_ ) {
         super( c );
         context = c;
         sink = sink_;
         width = width_;
         atRight = atRight_;
         sel_color = sel_color_;
+        bg_color = bg_color_;
         setTitle( c.getString( R.string.selection_zone_setup ) );
         LayoutInflater factory = LayoutInflater.from( c );
         setView( factory.inflate( R.layout.selzone, null ) );
@@ -72,7 +73,6 @@ public class SelZoneDialog extends AlertDialog implements DialogInterface.OnClic
         LayerDrawable ld = null;
         try {
             Drawable[] list = new Drawable[2];
-            final int bg_color = 0xff9d9e9d;
             GradientDrawable bg = Utils.getShadingEx( atRight ? fg_color : bg_color, 0.6f );
             bg.setCornerRadius( 5 );
             list[0] = bg;

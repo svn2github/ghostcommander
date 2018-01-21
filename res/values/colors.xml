@@ -21,10 +21,10 @@
 
     <color name="bgr_lgt">#FFFFFFFF</color>    
     <color name="fgr_lgt">#FF000000</color>    
-    <color name="sel_lgt">#FFB2B0AD</color>    
+    <color name="sel_lgt">#FFB2B0E5</color>    
     <color name="sfg_lgt">#FF000000</color>    
     <color name="cur_lgt">#FF5EAAFF</color>    
-    <color name="ttl_lgt">#FFFFFFFF</color>    
+    <color name="ttl_lgt">#FFEEEEEE</color>    
     <color name="btn_lgt">#FFF4F2F4</color>    
 
     <color name="bgr_nrt">#FF1818B2</color>    
@@ -35,4 +35,5 @@
     <color name="ttl_nrt">#FF204E51</color>    
     <color name="btn_nrt">#FF18B2B2</color>    
     
+    <color name="actionBar">#000</color>    
 </resources>

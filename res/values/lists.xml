@@ -96,10 +96,15 @@
         <item>UTF-16\n\t  16bit Unicode</item>
         <item>KOI8-R\n\t  Russian UNIX</item>
         <item>Cp866\n\t  Russian DOS</item>
-        <item>shift_jis\n\t  Japanese shift_jis</item>
+        <item>Shift_JIS\n\t  Japanese Shift_JIS</item>
         <item>EUC-JP\n\t  Japanese EUC-JP</item>
-        <item>iso-2022-jp\n\t  Japanese iso-2022-jp</item>
-    </string-array>
+        <item>EUC-KR\n\t  Korean EUC-KR</item>
+        <item>ISO-2022-JP\n\t  Japanese iso-2022</item>
+        <item>ISO-2022-KR\n\t  Korean iso-2022</item>
+        <item>ISO-2022-CN\n\t  Chinese iso-2022</item>
+        <item>GB18030\n\t  Chinese 国家标准</item>
+        <item>HZ-GB-2312\n\t  Chinese 汉字</item>
+        </string-array>
     <string-array name="encoding_vals">
         <item></item>
         <item>Cp1250</item>
@@ -112,10 +117,15 @@
         <item>UnicodeLittleUnmarked</item>
         <item>KOI8_R</item>
         <item>Cp866</item>
-        <item>shift_jis</item>
+        <item>Shift_JIS</item>
         <item>EUC-JP</item>
+        <item>EUC-KR</item>
         <item>iso-2022-jp</item>
-    </string-array>
+        <item>iso-2022-kr</item>
+        <item>iso-2022-cn</item>
+        <item>GB18030</item>
+        <item>HZ-GB-2312</item>
+        </string-array>
 
     <string-array name="color_themes">
         <item>Dark</item>

@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.commonsware.cwac.tlv.TouchListView;
 import com.ghostsq.commander.R;
+import com.ghostsq.commander.utils.Utils;
 
 public class ToolButtonsProps extends ListActivity
 {
@@ -92,11 +93,12 @@ public class ToolButtonsProps extends ListActivity
 
 	@Override
 	public void onCreate( Bundle bundle ) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences( this );
+        Utils.setTheme( this, sp.getString( "color_themes", "d" ) );
 		super.onCreate( bundle );
 		setContentView( R.layout.tblist );
 
-        SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
-        array.restore( shared_pref, this, false );	
+        array.restore( sp, this, false );	
 		
 		tlv = (TouchListView)getListView();
 		adapter = new ToolButtonsAdapter();

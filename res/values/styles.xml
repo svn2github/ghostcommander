@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="FullScreen" parent="android:style/Theme">
-    </style>
-
     <style name="AsDialog" parent="android:style/Theme.Dialog">
+    </style>
+    
+    <style name="AsDialogLight" parent="android:style/Theme.Dialog">
     </style>
     
     <style name="GCLight" parent="android:style/Theme.Light">
@@ -13,6 +13,4 @@
     <style name="GCDark" parent="android:style/Theme">
         <item name="android:windowNoTitle">false</item>
     </style>
-    
-    
 </resources>

@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.SecureRandom;
@@ -269,7 +271,7 @@ public class StreamServer extends Service {
     };
 
     private class StreamingThread extends Thread {
-        private final static String TAG = "GCSS.WT";
+        private final static String TAG = "GCSS.ST";
         private final static String CRLF = "\r\n";
         private Socket data_socket;
         private int num_id;
@@ -304,17 +306,14 @@ public class StreamServer extends Service {
                     Log.e( TAG, "Can't get the output stream" );
                     return;
                 }
-                  
                 OutputStreamWriter osw = new OutputStreamWriter( os );
                 yield();
-                
                 is = data_socket.getInputStream();
                 if( is == null ) {
                     Log.e( TAG, "Can't get the input stream" );
                     SendStatus( osw, 500 );
                     return;
                 }
-                
                 InputStreamReader isr = new InputStreamReader( is );
                 BufferedReader br = new BufferedReader( isr );
                 String cmd = br.readLine();
@@ -470,12 +469,13 @@ public class StreamServer extends Service {
                     content_range  += offset + "-" + (full_size-1) + "/" + full_size;
                 }
                 osw.write( content_range + CRLF );
+// When Accept-Ranges is not sent VLC does not allow seeking
 //                osw.write( "Accept-Ranges: bytes" + CRLF );
                 osw.write( content_length + CRLF );
                 if( l ) Log( content_length );
                 if( l ) Log( content_range );
                 // VLC fails when this is returned?
-                //osw.write( "Connection: close" + CRLF );
+                osw.write( "Connection: close" + CRLF );
                 osw.write( CRLF );
                 osw.flush();
                 return true;
@@ -485,172 +485,46 @@ public class StreamServer extends Service {
             return false;
         }                
 
-        private void pumpData( InputStream cs, OutputStream os ) {
-            long count = 0;
-            ReaderThread rt = null;
-            try {
-                rt = new ReaderThread( cs, num_id );
-                rt.start();
-                setPriority( Thread.MAX_PRIORITY );
-                while( true ) {
-                    try {
-                        if( !rt.isAlive() ) {
-                            Log( "Reading thread is gone!" );
-                            break;
-                        }
-/*                        
-                        if( isr.ready() ) {
-                            char[] isb = new char[32]; 
-                            if( isr.read( isb ) > 0 ) {
-                                Log.d( TAG, "" + isb.toString() );
-                                if( l ) Log( "Some additional HTTP line has arrived!!! " );
-                            }
-                        }
-*/
-                        thread.touch();
-                        byte[] out_buf = rt.getOutputBuffer();
-                        if( out_buf == null ) {
-                            Log( "R did not yield the buffer!" );
-                            break;
-                        }
-                        int n = rt.GetDataSize();
-                        if( n < 0 ) {
-                            Log( "R did not yield any bytes!" );
-                            break;
-                        }
-                        if( rt.l ) Log( "      Writing " + n );
-                        os.write( out_buf, 0, n );
-                        count += n;
-                        if( rt.l ) Log( "      Wrote " + n + "/" + count );
-                        rt.doneOutput( false );
-                    }
-                    catch( Exception e ) {
-                        Log.e( TAG, "" + num_id + ": write exception: " + e.getMessage() );
-                        rt.doneOutput( true );
-                        break;
-                    }
-                }
-                //rt.interrupt();
-                Log( "Done writing, bytes: " + count );
-                return;
-            }
-            catch( Exception e ) {
-                Log.e( TAG, "" + num_id + ": Exception in thread ", e );
-            }
-            rt.doneOutput( true );
-        }
-    };
-
-    class ReaderThread extends Thread {
-        private final static String TAG = "GCSS.RT";
-        private InputStream is;
-        private long roller = 0;
-        private final int MAX = 262144;
-        private int chunk = 2048;
-        private byte[][] bufs = null;
-        private byte[] out_buf = null;
-        private int data_size = 0;
-        private int num_id;
-        private boolean stop = false;
-        public boolean l = StreamServer.verbose_log;
-
-        public ReaderThread(InputStream is_, int num_id_) {
-            is = is_;
-            setName( TAG );
-            num_id = num_id_;
-            bufs = new byte[][] { new byte[MAX], new byte[MAX] };
-            Log.d( TAG, "Buffers size: " + MAX );
-        }
-
-        private final void Log( String s ) {
-            Log.v( TAG, "" + num_id + ": " + s );
-        }
-
-        @Override
-        public void run() {
-            long count = 0;
-            try {
-                setPriority( Thread.MAX_PRIORITY );
-                while( true ) {
-                    byte[] inp_buf = bufs[(int)( roller++ % 2 )];
-                    if( l ) Log( "Reading " + chunk );
-                    int has_read = 0;
-                    has_read = is.read( inp_buf, 0, chunk );
-                    if( stop ) {
-                        Log("Stop was requested 1");
-                        break;
-                    }
+        private void pumpData( InputStream is, OutputStream os ) {
+            final int MAX = 262144*8;
+            int chunk = 4096;
+            byte[] buf = new byte[MAX];
+            int count = 0;
+            while( true ) {
+                try {
+                    if( l ) Log( "Reading... " );
+                    long before_r = System.currentTimeMillis();
+                    int has_read = is.read( buf, 0, chunk );
+                    long r_took = System.currentTimeMillis() - before_r;
                     if( has_read < 0 ) {
                         Log.e( TAG, "" + num_id + ": Failed to read" );
                         break;
                     }
                     count += has_read;
-                    if( l ) Log( "Read " + has_read + "/" + count );
+                    if( l ) Log( "Was read: " + has_read + "/" + count + " took " + r_took + "ms" );
+                    
                     if( has_read == chunk && chunk < MAX ) {
                         chunk <<= 1;
-                        Log( "inc chunk size: " + chunk );
-/*                        
-                    } else if( has_read < chunk >> 1 && has_read > 128 ) {
-                        chunk >>= 1;
-                        Log( "dec chunk size: " + chunk );
-*/
-                    } else if( chunk > MAX )
+                        Log( "Inc chunk to: " + chunk );
+                    } else if( has_read < chunk && has_read > 128 ) {
+                        chunk = has_read;
+                        Log( "Dec chunk to: " + chunk );
+                    }
+                    if( chunk > MAX )
                         chunk = MAX;
-
-                    synchronized( this ) {
-                        int wcount = 0;
-                        if( l ) Log( "is W ready?.." );
-                        while( out_buf != null ) {
-                            wait( 10 );
-                            wcount += 10;
-                        }
-                        if( l ) Log( "W is ready! (" + wcount + "ms)" );
-                        out_buf = inp_buf;
-                        data_size = has_read;
-                        if( l ) Log( "Passing R buf to W" );
-                        notify();
-                    }
-                    if( stop ) {
-                        Log("Stop was requested 2");
-                        break;
-                    }
+                    long before_w = System.currentTimeMillis();
+                    os.write( buf, 0, has_read );
+                    long w_took = System.currentTimeMillis() - before_w;
+                    if( l ) Log( "Writing took " + w_took + "ms" );
                 }
-            } catch( Throwable e ) {
-                Log.e( TAG, "" + num_id + ": " );
+                catch( Exception e ) {
+                    Log.e( TAG, "" + num_id + ": exception: " + e.getMessage(), e );
+                    break;
+                }
             }
-            Log( "The read thread is done! Total read bytes: " + count );
-        }
-
-        public synchronized byte[] getOutputBuffer() throws InterruptedException {
-            int wcount = 0;
-            if( l ) Log( "       Is R ready?.." );
-            while( out_buf == null && this.isAlive() ) {
-                wait( 10 );
-                wcount += 10;
-            }
-
-            if( out_buf != null ) {
-                if( l ) Log( "      R is ready! (" + wcount + "ms)" );
-            } else {
-                if( l ) Log( "X" );
-            }
-            return out_buf;
-        }
-
-        public int GetDataSize() {
-            int ds = data_size;
-            data_size = 0;
-            return ds;
-        }
-
-        public synchronized void doneOutput( boolean stop_ ) {
-            stop = stop_;
-            out_buf = null;
-            if( l || stop ) Log( "     W is done" + ( stop ? ". stop" : "" ) );
-            notify();
-        }
-    };
-
+        }                
+    }
+    
     @Override
     public IBinder onBind( Intent intent ) {
         return null;

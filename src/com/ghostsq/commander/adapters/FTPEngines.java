@@ -1,5 +1,6 @@
 package com.ghostsq.commander.adapters;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -648,5 +649,32 @@ public final class FTPEngines {
             return total;
         }
     }
-    
+
+    public static class CreateFileEngine extends FTPEngine {
+        String newFileName;
+        
+        CreateFileEngine( String name, Context ctx_, FTPCredentials crd_, Uri uri_, FTP ftp_ ) {
+            super( ctx_, crd_, uri_, ftp_ );
+            newFileName = name;
+        }
+
+        @Override
+        public void run() {
+            try {
+                if( ftp.connectAndLogin( uri, crd.getUserName(), crd.getPassword(), true ) < 0 ) {
+                    error( ctx.getString( R.string.ftp_nologin ) );
+                    return;
+                }
+                byte[] bb = new byte[0];
+                ByteArrayInputStream in = new ByteArrayInputStream( bb );
+                ftp.store( newFileName, in, null );
+            } catch( Exception e ) {
+                error( e.getLocalizedMessage() );
+            }
+            if( !noErrors() )
+                sendResult( "" );
+            else
+                sendRefrReq( newFileName );
+        }
+    }
 }

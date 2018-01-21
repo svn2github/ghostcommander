@@ -38,6 +38,11 @@
   <string name="hidden">非表示</string>
   <string name="rescan">メディアの再スキャン</string>
   <string name="favs">お気に入り</string>
+  <string name="df_dnl">ダウンロード</string>
+  <string name="df_cam">カメラ</string>
+  <string name="df_pic">写真</string>
+  <string name="df_mus">音楽</string>
+  <string name="df_mov">映画</string>
   <string name="local">ローカルストレージ</string>
   <string name="external">外部カード</string>
   <string name="media">メディアストア</string>
@@ -104,6 +109,7 @@
   <string name="create_zip">新規 ZIP ファイルを作成</string>
   <string name="create_zip_title">ZIP ファイルを作成</string>
   <string name="extract_zip">ZIP を抽出</string>
+  <string name="file_name">ファイル</string>
   <string name="wait"> お待ちください&#8230; </string>
   <string name="fail"> 失敗しました </string>
   <string name="failed">エラー:\n</string>
@@ -286,6 +292,8 @@
   <string name="summary_remote_open_size">ローカルで開くことができるリモートファイルの最大サイズ</string>
   <string name="send_content">コンテンツ・プロバイダーを使用して送信</string>
   <string name="summary_send_content">ファイルを送信するアプリケーションがコンテンツ・リゾルバーを実装していない場合は、チェックをはずしてみてください</string>
+  <string name="open_content">コンテンツ プロバイダーを使用して開く</string>
+  <string name="summary_open_content">ファイルを開くアプリケーションがコンテンツ・リゾルバーを実装していない場合は、チェックをはずしてみてください</string>
   <string name="panels_mode">サイド・バイ・サイド・パネル</string>
   <string name="summary_panels_mode">分割画面表示で、両方のパネルをサイド・バイ・サイド表示します</string>
   <string name="two_lines">2行で表示</string>
@@ -307,8 +315,8 @@
   <string name="summary_finger_friendly">ユーザーインターフェースの要素を拡大します</string>
   <string name="prevent_root">/sdcard から離れると警告</string>
   <string name="summary_prevent_root">デバイスのルート・フォルダーに移動する時に警告を発行します</string>
-  <string name="show_root">root とマウントを表示</string>
-  <string name="summary_show_root">ホーム画面で \"Root モード\" and \"マウントポイント\" を表示します</string>
+  <string name="show_root">ホームアイテムの詳細を表示</string>
+  <string name="summary_show_root">ホームビューは、「ルートモード」、「マウントポイント」「メディアストア」があります</string>
   <string name="root_root">自動 root モード</string>
   <string name="summary_root_root">デバイスのルート・フォルダーに移動する時に root モードに切り替えます</string>
   <string name="thumbnails">サムネイルを有効</string>
@@ -443,80 +451,78 @@
   <string name="keys_text"><![CDATA[
 <h3>ファイルの選択</h3>
 <p>
-ファイルとフォルダーを選択するには、その行の <b>右側</b> をタップし、<b>左側</b> をタップして開きます。 つまり、片側で項目をアクティブにて、反対側でそれらを選択します。
+ファイルとフォルダーを選択するはその行の <b>右</b> 側をタップし、<b>左</b> をタップして開きます。そうです、一方で項目をアクティブにし、反対側でそれらを選択します。
 </p>
 <h3>コピーと移動</h3>
 <p>
-ファイルやフォルダーのコピーまたは移動は、最初に 1 つのパネルで送り先を選択して、スワイプ (または切り替えて) 他のパネルに戻り、転送したい項目を選択します。</p>
+フォルダーやファイルの移動またはコピーは、最初に片方のパネルで対象の宛先を選択して、別のパネルにスワイプ (または切り替え) して戻り、転送したい項目を選択し、その後、目的の操作をコミットします。
+</p>
 <h3>外部カードと USB OTG</h3>
 <p>
-システムの制限のため、外部ドライブ上のファイルへの直接書き込みアクセスはできません。そのような場合は \"ストレージアクセスフレームワーク\" (SAF) モードを使用して、場所を変更してください。<br/>
-SAF モードは最初のアクセス時に対象の場所を尋ねえ、選択を記憶します。もう一度選択するには (別のドライブが挿入されたとき) 選択をするには、\"ホーム:\" 画面で SAF アイテムを長押しして、その後 \"開く\" を選択します。
-
+システムの制限のため、外部ドライブ上のファイルへの直接書き込みアクセスは禁止されています。\"ストレージアクセスフレームワーク\" (SAF) モードを使用して、場所を変更してください。<br/>
+最初のアクセス時に SAF モードは目的の場所を確認して、選択を記憶します。もう一度選択し直すには (別のドライブが挿入された場合) 、\"ホーム:\" 画面で SAF の項目を長押しして、その後 \"開く\" を選択します。
 </p>
 <h3>ZIP ファイル</h3>
 <p>
-Ghost Commander は ZIP アーカイブをディレクトリのように扱うことができます。他のアーカイブ形式はサポートされていません。
+Ghost Commander は ZIP アーカイブをディレクトリーのように扱うことができます。他のアーカイブ形式はサポートされていません。
 </p>
 <h3>プラグイン</h3>
 <p>
-プラグインは、個別にインストールする必要があります、Windows 共有フォルダーへのアクセス、SSH ファイル転送プロトコル、クラウド ストレージ サービス: Box、Dropbox、Google ドライブ、へのアクセスが提供されます。
+プラグインは、個別にインストールする必要があります。Windows 共有フォルダーへのアクセス、SSH ファイル転送プロトコル、そしてクラウドストレージ サービスへのアクセス: Box、Dropbox、Google ドライブ
 </p>
 <h3>root モード</h3>
 <p>
-Ghost Commander の root モード (スーパーユーザー) およびマウントポイント機能のご利用は注意と、root 化したデバイス、設定で定義される BusyBox パスのインストールが必要です。
+Ghost Commander のルートモード (スーパーユーザー) 機能を使用するには注意が必要です。ルート化したデバイスでのみ動作します。 BusyBox をインストールして、設定でパスを定義する必要があります。
 </p>
 <h3>場所エディター</h3>
 <p>
-場所を手動で入力する (およびお気に入りのドロップダウンリストを参照する) には、パネルのヘッダーを長押しして、場所エディターを開きます。\n
-リソース URL は、場所エディターに次のように手動で入力できます:
+場所を手動で入力 (およびお気に入りのドロップダウンリストに表示) するには、パネルのヘッダーを長押しして、場所エディターを開きます。\n
+次のように場所エディターにリソース URI を手動で入力します:
 </p><p>
-<b>ftp://</b><i>host.com</i><b>/</b><i>folder</i><br/>
- - Anonymous FTP
+<b>ftp://</b><i>host.com</i><b>/</b><i>フォルダー</i><br/>
+ - 匿名 FTP
 </p><p>
-<b>ftp://</b><i>user</i><b>:</b><i>pass</i><b>@</b><i>ftp_host</i><b>/</b><i>folder</i><br/>
+<b>ftp://</b><i>ユーザー</i><b>:</b><i>パスワード</i><b>@</b><i>ftp_ホスト</i><b>/</b><i>フォルダー</i><br/>
  - 認証 FTP
-</p><p>
-<b>sftp://</b><i>user</i><b>:</b><i>pass</i><b>@</b><i>sftp_host</i><b>/</b><i>folder</i><br/>
+</p><p><b>sftp://</b><i>ユーザー</i><b>:</b><i>パスワード</i><b>@</b><i>sftp_ホスト</i><b>/</b><i>フォルダー</i><br/>
  - SSH FTP<br/>
- 認証用の秘密鍵がある場合は、ファイルを以下に入れます
- <b>/sdcard/.GhostCommander/keys/</b><i>exact_host_name</i><br/>
- この場合、パスワードは、鍵ファイルのパスフレーズです。
+  認証するための秘密鍵がある場合、ファイル <b>/sdcard/.GhostCommander/keys/</b><i>exact_host_name</i><br/> に置きます
+ この場合、パスワードは鍵ファイルのパスフレーズです。
 </p><p>
-<b>smb://</b><i>domain</i><b>;</b><i>user</i><b>:</b><i>pass</i><b>@</b><i>server</i><b>/</b><i>share</i><br/>
+<b>smb://</b><i>ドメイン</i><b>;</b><i>ユーザー</i><b>:</b><i>パスワード</i><b>@</b><i>サーバー</i><b>/</b><i>共有</i><br/>
  - Windows 共有
 </p><p>
-<b>root:/</b><i>path/to/folder</i><br/>
+<b>ルート:/</b><i></i>フォルダー/への/パス<br/>
  - ルートモード
 </p>
-<h3>ホット キー</h3>
+<h3>ホットキー</h3>
 <p>
-<b><i>音量アップ</i></b> - ファイルとフォルダーの選択<br/>
-<b><i>音量ダウン</i></b> - パネルを切り替える<br/>
+<b><i>音量+</i></b> - ファイルとフォルダーの選択<br/>
+<b><i>音量-</i></b> - パネルの切り替え<br/>
 <b>+</b>, <b>-</b> - 現在のフォルダー内のアイテムを選択または選択解除<br/>
 <b>(</b>, <b>)</b> - 場所を手動で入力して、お気に入りを表示<br/>
 <b>*</b> - 現在のフォルダーをお気に入りに追加<br/>
-<b>\"</b> - 選択したアイテムの詳細情報を表示<br/>
-<b>=</b> - 同じ場所を他のパネルに表示 (同期)<br/>
+<b>\"</b> - 選択した項目の詳細情報を表示<br/>
+<b>=</b> - 他のパネルの同じ場所を表示 (同期)<br/>
 <b>1</b> - ヘルプ<br/>
-<b>2</b> - 選択したアイテムの名前を変更<br/>
-<b>4</b> - 選択したアイテムを編集<br/>
-<b>5</b> - 選択したアイテムをコピー<br/>
-<b>6</b> - 選択したアイテムを移動<br/>
+<b>2</b> - 選択した項目の名前を変更<br/>
+<b>4</b> - 選択した項目の編集<br/>
+<b>5</b> - 選択した項目のコピー<br/>
+<b>6</b> - 選択した項目の移動<br/>
 <b>7</b> - 新しいフォルダーを作成<br/>
-<b>8</b> - 選択したアイテムを削除<br/>
-<b>9</b> - プリファレンス/設定を開く<br/>
+<b>8</b> - 選択した項目を削除<br/>
+<b>9</b> - 設定/プリファレンスを開く<br/>
 <b>0</b> - アプリケーションを閉じる<br/>
 <b>[A-z]</b> - クイック検索<br/>
 </p>
 <p>
-<a href="https://sites.google.com/site/ghostcommander1/info">追加のオンラインヘルプ…</a>
+<a href="https://sites.google.com/site/ghostcommander1/info">オンラインヘルプ…</a>
 </p>
 ]]></string>
   <string name="license_text"><![CDATA[
 <h3>Ghost Manager</h3>
-<p>A file manager</p>
-<p>Copyright © 2009-2014 Ghost Squared</p>
+<p>ファイルマネージャー</p>
+<p>Copyright © 2009-2017 Ghost Squared</p>
 <p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
 <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>
 <p>You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/></p>

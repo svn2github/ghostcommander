@@ -6,6 +6,7 @@ import com.ghostsq.commander.utils.Utils;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -57,9 +58,9 @@ public class ServerForm extends Activity
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         try {
-            super.onCreate( savedInstanceState );
             SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
-            Utils.setTheme( this, shared_pref.getString( "color_themes", "d" ) );
+            Utils.setDialogTheme( this, shared_pref.getString( "color_themes", "d" ) );
+            super.onCreate( savedInstanceState );
             
             schema = getIntent().getStringExtra( "schema" );
             if( !Utils.str( schema ) ) {
@@ -68,13 +69,13 @@ public class ServerForm extends Activity
                 return;
             }
             type = Type.getInstance( schema );            
-            String title = type != null ? type.title : getIntent().getStringExtra( "title" );
-            setTitle( getString( R.string.connect ) + " " + title );
             requestWindowFeature( Window.FEATURE_LEFT_ICON );
             setContentView( R.layout.server );
-            getWindow().setLayout(LayoutParams.FILL_PARENT /* width */, LayoutParams.WRAP_CONTENT /* height */);            
+            getWindow().setLayout(LayoutParams.FILL_PARENT /* width */, LayoutParams.WRAP_CONTENT /* height */);
             getWindow().setFeatureDrawableResource( Window.FEATURE_LEFT_ICON, 
-             type == Type.SMB ? R.drawable.smb : R.drawable.server );
+                    type == Type.SMB ? R.drawable.smb : R.drawable.server );
+            String title = type != null ? type.title : getIntent().getStringExtra( "title" );
+            setTitle( getString( R.string.connect ) + " " + title );
             
             server_edit = (EditText)findViewById( R.id.server_edit );
             path_edit = (EditText)findViewById( R.id.path_edit );
