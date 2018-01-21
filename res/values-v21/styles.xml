@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <style name="FullScreen" parent="@android:style/Theme.Material">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:actionBarSize">39dp</item>
+        <item name="android:colorPrimary">@color/black</item>
+        <item name="android:colorPrimaryDark">@color/black</item>
+    </style>
+    
+    
+    <style name="AsDialog" parent="@android:style/Theme.Material.Dialog">
+    </style>
+    
+    <style name="AsDialogLight" parent="@android:style/Theme.Material.Light.Dialog">
+    </style>
+    
+    <style name="GCLight" parent="android:style/Theme.DeviceDefault.Light">
+        <item name="android:windowNoTitle">false</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:actionBarSize">39dp</item>
+        <item name="android:colorPrimaryDark">#555555</item>
+    </style>
+   
+    <!-- Do not use "Theme.DeviceDefault" because Samsung makes a mess 
+      ( it uses the colorPrimaryDark for some summaries in the properties )
+    -->
+    <style name="GCDark" parent="android:style/Theme.Material">
+        <item name="android:windowNoTitle">false</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:actionBarSize">39dp</item>
+        <item name="android:colorPrimaryDark">#111</item>
+    </style>
+    
+</resources>

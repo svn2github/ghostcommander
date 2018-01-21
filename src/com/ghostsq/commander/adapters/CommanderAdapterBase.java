@@ -471,7 +471,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 if( icoWidth > 0 ) {
                     imgView.setVisibility( View.VISIBLE );
                     boolean th_ok = false;
-                    if( item.isThumbNail() && thumbnail_size_perc > 0 ) {
+                    if( item.isThumbNail() && ( item.thumb_is_icon || thumbnail_size_perc > 0 ) ) {
                         Drawable th = item.getThumbNail();
                         if( th != null ) {
                             if( !item.thumb_is_icon )

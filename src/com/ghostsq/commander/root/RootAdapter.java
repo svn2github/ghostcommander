@@ -603,7 +603,8 @@ public class RootAdapter extends CommanderAdapterBase {
             else
             	if( cur.charAt( cur.length()-1 ) != SLC )
             		cur += SLS;
-            commander.Navigate( uri.buildUpon().appendEncodedPath( item.getName() ).build(), null, null );
+            String enc_name = Utils.escapePath( item.getName() );
+            commander.Navigate( uri.buildUpon().appendEncodedPath( enc_name ).build(), null, null );
         }
         else
             new CmdDialog( ctx, item, this );

@@ -75,7 +75,6 @@ public class RGBPickerDialog extends AlertDialog
             b_seek.setOnSeekBarChangeListener( this );
             b_seek.setProgress( Color.blue( curColor ) );
         }
-        
         edit_rgb.setOnKeyListener( this );
         
         setEditorValue();
@@ -156,7 +155,6 @@ public class RGBPickerDialog extends AlertDialog
             curColor = Color.parseColor( s );
             setSeekBars();
             preview.setBackgroundColor( curColor );
-            return true;
         } catch( IllegalArgumentException e ) {
         }
         return false;

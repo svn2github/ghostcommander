@@ -102,8 +102,7 @@ android:orientation="vertical">
               android:layout_height="wrap_content"
               android:layout_width="fill_parent"
               android:layout_marginLeft="10dip"
-              android:scrollHorizontally="true"
-              android:inputType="textNoSuggestions"
+              android:inputType="textCapCharacters|textNoSuggestions"
               android:gravity="fill_horizontal"/>
 	    </LinearLayout>
         	
