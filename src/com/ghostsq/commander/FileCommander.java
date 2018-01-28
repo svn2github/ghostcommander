@@ -67,11 +67,8 @@ import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class FileCommander extends Activity implements Commander, ServiceConnection, View.OnClickListener {
-    private static final Logger log = LoggerFactory.getLogger("FileCommander");    
+//    private static final Logger log = LoggerFactory.getLogger("FileCommander");    
     private final static String TAG = "GhostCommanderActivity";
     public final static int REQUEST_CODE_PREFERENCES = 1, REQUEST_CODE_SRV_FORM = 2, REQUEST_CODE_OPEN = 3;
     public final static int FIND_ACT = 1017, SMB_ACT = 2751, FTP_ACT = 4501, SFTP_ACT = 2450;
