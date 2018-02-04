@@ -195,7 +195,8 @@ public interface CommanderAdapter {
         MENU,
         SEND,
         CHKBL,
-        SCROLL
+        SCROLL,
+        MULT_RENAME
     }
     
     /**
@@ -262,17 +263,25 @@ public interface CommanderAdapter {
 	 *         will call Commander.NotifyMe( "requested size info", Commander.OPERATION_COMPLETED ) when done  
 	 */
 	public void reqItemsSize( SparseBooleanArray cis );
-	
-	/**
-	 * @param position in the list
+    
+    /**
+     * @param position in the list
      * @param newName for the item
      * @param copy file (preserve old name)
-	 * @return true if success
-	 */
-	public boolean renameItem( int position, String newName, boolean copy );
+     * @return true if success
+     */
+    public boolean renameItem( int position, String newName, boolean copy );
+    
+    /**
+     * @param cis   items to rename
+     * @param pattern regular expression pattern
+     * @param replace_to mask of new names
+     * @return true if success
+     */
+    public boolean renameItems( SparseBooleanArray cis, String pattern, String replace_to );
 	
 	/**
-	 * @param cis	booleans which internal items to copy
+	 * @param cis	items to copy
 	 * @param to    an adapter, which method receiveItems() to be called
 	 * @param move  move instead of copy
 	 * @return      true if succeeded
@@ -289,6 +298,7 @@ public interface CommanderAdapter {
     public final static int MODE_MOVE = 1;
     public final static int MODE_DEL_SRC_DIR = 2;
     public final static int MODE_MOVE_DEL_SRC_DIR = 3;
+    public final static int MODE_REPORT_AS_MOVE = 4;
 	/**
 	 * This method receives the files from another adapter 
 	 * 

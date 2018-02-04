@@ -1227,6 +1227,26 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         }
     }
 
+    public final void renameItems( String pattern, String replace_to ) {
+        SparseBooleanArray items = getMultiple( false );
+        CommanderAdapter cur_adapter = getListAdapter( true );
+        cur_adapter.renameItems( items, pattern, replace_to );
+    }
+
+    public final Intent prepareMultRenameIntent( Intent intent ) {
+        CommanderAdapter ca = getListAdapter( true );
+        SparseBooleanArray cis = getMultiple( false );
+        int num = cis.size();
+        ArrayList<String> names = new ArrayList<String>();
+        for( int i = 0; i < num; i++ ) {
+            if( cis.valueAt( i ) ) {
+                names.add( ca.getItemName( cis.keyAt( i ), false ) );
+            }
+        }
+        intent.putStringArrayListExtra( c.getPackageName() + ".TO_RENAME_LIST", names );
+        return intent;
+    }
+    
     public void createNewFile( String fileName ) {
         CommanderAdapter ca = getListAdapter( true );
         if( !ca.createFile( fileName ) ) return;
@@ -1288,7 +1308,6 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     }
     
     public final void deleteItems( boolean touch ) {
-        // c.showDialog( Dialogs.PROGRESS_DIALOG );
         if( getListAdapter( true ).deleteItems( getMultiple( touch ) ) )
             list[current].flv.clearChoices();
     }

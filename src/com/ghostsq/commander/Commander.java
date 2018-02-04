@@ -50,13 +50,14 @@ public interface Commander {
     public final static int  OPEN = 903, OPEN_WITH = 902, SEND_TO = 236, COPY_NAME = 390, FAV_FLD = 414, SHRCT_CMD = 269;
     
     public final static String NOTIFY_COOKIE = "cookie", NOTIFY_SPEED = "speed", NOTIFY_TASK = "task", NOTIFY_CRD = "crd", 
-            NOTIFY_POSTO = "posto", NOTIFY_URI = "uri";
+            NOTIFY_POSTO = "posto", NOTIFY_URI = "uri", NOTIFY_MOVE = "move";
 
     public final static String MESSAGE_STRING  = "STRING";
     
     public final static String NAVIGATE_ACTION = "com.ghostsq.commander.NAVIGATE";
     public final static String NOTIFY_ACTION   = "com.ghostsq.commander.NOTIFY";
     public final static String MESSAGE_EXTRA   = "com.ghostsq.commander.MESSAGE";
+    public final static String RENAME_ACTION   = "com.ghostsq.commander.RENAME";
 
     public final static int  ACTIVITY_REQUEST_FOR_NOTIFY_RESULT = 695; 
     public final static int  REQUEST_OPEN_DOCUMENT_TREE  = 935; 

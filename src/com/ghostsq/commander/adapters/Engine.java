@@ -133,6 +133,10 @@ public class Engine extends Thread {
     }
     
     protected final void sendReceiveReq( String[] items ) {
+        sendReceiveReq( items, false );
+    }
+    
+    protected final void sendReceiveReq( String[] items, boolean move ) {
         if( thread_handler == null ) return;
         if( items == null || items.length == 0 ) {
             sendProgress( "???", Commander.OPERATION_FAILED );
@@ -141,15 +145,19 @@ public class Engine extends Thread {
         Message msg = thread_handler.obtainMessage( Commander.OPERATION_COMPLETED );
         Bundle b = msg.getData();
         b.putLong( Commander.NOTIFY_TASK, getId() );
+        b.putBoolean( Commander.NOTIFY_MOVE, move );
         b.putStringArray( Engines.IReciever.NOTIFY_ITEMS_TO_RECEIVE, items );
         thread_handler.sendMessage( msg );
     }
     protected final void sendReceiveReq( File dest_folder ) {
+        sendReceiveReq( dest_folder, false );
+    }
+    protected final void sendReceiveReq( File dest_folder, boolean move ) {
         File[] temp_content = dest_folder.listFiles();
         String[] paths = new String[temp_content.length];
         for( int i = 0; i < temp_content.length; i++ )
             paths[i] = temp_content[i].getAbsolutePath();
-        sendReceiveReq( paths );
+        sendReceiveReq( paths, move );
     }    
     protected final void error( String err ) {
         Log.e( getClass().getSimpleName(), err == null ? "Unknown error" : err );

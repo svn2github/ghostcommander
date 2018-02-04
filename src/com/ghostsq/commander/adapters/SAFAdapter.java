@@ -942,7 +942,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                 cr = ctx.getContentResolver();
                 int cnt = copyFiles( mList, destFolder );
                 if( recipient != null ) {
-                      sendReceiveReq( destFolder );
+                      sendReceiveReq( destFolder, move );
                       return;
                 }
                 sendResult( Utils.getOpReport( owner.ctx, cnt, move ? R.string.moved : R.string.copied ) );
@@ -1053,7 +1053,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
         private long    totalBytes = 0;
         private double  conv;
         private File[]  fList = null;
-        private boolean move, del_src_dir;
+        private boolean move, del_src_dir, report_copy;
         private byte[]  buf;
         private static final int BUFSZ = 524288;
         private PowerManager.WakeLock wakeLock;
@@ -1066,6 +1066,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
             cr = SAFAdapter.this.ctx.getContentResolver();
             move = ( move_mode & MODE_MOVE ) != 0;
             del_src_dir = ( move_mode & MODE_DEL_SRC_DIR ) != 0;
+            report_copy = ( move_mode & MODE_REPORT_AS_MOVE ) == 0;
             buf = new byte[BUFSZ];
             PowerManager pm = (PowerManager)ctx.getSystemService( Context.POWER_SERVICE );
             wakeLock = pm.newWakeLock( PowerManager.PARTIAL_WAKE_LOCK, TAG );
@@ -1086,7 +1087,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                 wakeLock.release();
                 // XXX: assume (move && !del_src_dir)==true when copy from app: to the FS
                 if( delerr_counter == counter ) move = false;  // report as copy
-                String report = Utils.getOpReport( ctx, num, move && !del_src_dir ? R.string.moved : R.string.copied );
+                String report = Utils.getOpReport( ctx, num, move && !report_copy ? R.string.moved : R.string.copied );
                 sendResult( report );
             } catch( Exception e ) {
                 sendProgress( e.getMessage(), Commander.OPERATION_FAILED_REFRESH_REQUIRED );

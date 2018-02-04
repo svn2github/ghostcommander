@@ -35,8 +35,8 @@
   <string name="hidden">Скрыт.</string>
   <string name="rescan">Пересканировать медиа-файлы</string>
   <string name="favs">Закладки</string>
-  <string name="df_dnl">Скаченые файлы</string>
-  <string name="df_cam">Отснятые фото</string>
+  <string name="df_dnl">Загрузки</string>
+  <string name="df_cam">Камера</string>
   <string name="df_pic">Изображения</string>
   <string name="df_mus">Музыка</string>
   <string name="df_mov">Видео</string>
@@ -283,10 +283,10 @@
   <string name="advanced">Дополнительнo</string>
   <string name="advanced_settings">Дополнительные настройки</string>
   <string name="summary_advanced_settings">Для опытных пользователей</string>
-  <string name="remote_open_size">File size threshold</string>
-  <string name="summary_remote_open_size">Maximum remote file size allowed to be opened locally</string>
+  <string name="remote_open_size">Открывать файл не больше чем&#8230;</string>
+  <string name="summary_remote_open_size">Максимальный размер файла удалённой локации разрешаемый к открытию локально</string>
   <string name="send_content">Посылать файлы через content:</string>
-  <string name="summary_send_content">Когда приложения, выбираемые для посылки файлов, умеют работать с content:</string>
+  <string name="summary_send_content">Только если приложение, выбираемое для посылки файлов, умеeт работать с content:</string>
   <string name="open_content">Открывать файлы через content:</string>
   <string name="summary_open_content">Когда приложения, выбираемые для открытия файлов, умеют работать с content:</string>
   
@@ -311,8 +311,8 @@
   <string name="summary_finger_friendly">Увеличить элементы интерфейса для управления пальцем</string>
   <string name="prevent_root">Предупреждать на системных каталогах</string>
   <string name="summary_prevent_root">Выдавать предупреждающее сообщение на попытку перейти в системный каталог</string>
-  <string name="show_root">Показывать рутовые режимы</string>
-  <string name="summary_show_root">Включить root: и mount: режимы на домашнем экране</string>
+  <string name="show_root">Показывать дополнительные режимы</string>
+  <string name="summary_show_root">Включить \"root:\", \"mount:\" и медиа режимы в список \"home:\" </string>
   <string name="root_root">Root режим при покидании /sdcard</string>
   <string name="summary_root_root">Автоматически переключаться в \"root:\" режим в случае обращения к каталогу не на /sdcard.</string>
   <string name="thumbnails">Миниатюры</string>

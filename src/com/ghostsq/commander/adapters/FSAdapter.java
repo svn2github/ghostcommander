@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.Arrays;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.adapters.Engines.IReciever;
@@ -61,6 +63,7 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
         case SF4:
         case SEARCH:
         case SEND:
+        case MULT_RENAME:
             return true;
         default: return super.hasFeature( feature );
         }
@@ -326,6 +329,32 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
             commander.showError( ctx.getString( R.string.sec_err, e.getMessage() ) );
             return false;
         }
+    }
+	
+    @Override
+    public boolean renameItems( SparseBooleanArray cis, String pattern_str, String replace_to ) {
+        Pattern pattern = null; 
+        try {
+            pattern = Pattern.compile( pattern_str );
+        } catch( PatternSyntaxException e ) {}
+        File[] ff = bitsToFiles( cis );
+        String last_file_name = null;
+        for( File f : ff ) {
+            String replaced = null;
+            if( pattern != null ) {
+                try {
+                    replaced = pattern.matcher( f.getName() ).replaceAll( replace_to );
+                } catch( Exception e ) {}
+            }
+            if( replaced == null )
+                replaced = f.getName().replace( pattern_str, replace_to );
+            File new_file = new File( dirName, replaced );
+            if( !new_file.exists() )
+                f.renameTo( new_file );
+            last_file_name = new_file.getName();
+        }
+        notifyRefr( last_file_name );
+        return false;
     }
 	
     @Override

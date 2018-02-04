@@ -148,28 +148,27 @@ public final class Utils {
         return "*/*";
     }
     public final static String getCategoryByExt( String ext ) {
-        if( str( ext ) ) {
-            String[] descr = getTypeDescrByExt( ext );
-            if( descr != null ) return descr[2];
-            // ask the system
-            MimeTypeMap mime_map = MimeTypeMap.getSingleton();
-            if( mime_map != null ) {
-                String mime = mime_map.getMimeTypeFromExtension( ext.substring( 1 ) );
-                if( str( mime ) ) {
-                    String type = mime.substring( 0, mime.indexOf( '/' ) );
-                    if( type.compareTo( "text" ) == 0 )
-                        return C_TEXT;
-                    if( type.compareTo( "image" ) == 0 )
-                        return C_IMAGE;
-                    if( type.compareTo( "audio" ) == 0 )
-                        return C_AUDIO;
-                    if( type.compareTo( "video" ) == 0 )
-                        return C_VIDEO;
-                    if( type.compareTo( "application" ) == 0 )
-                        return C_APP;
-                }                
-            }
-        }
+        if( !str( ext ) ) return C_UNKNOWN;
+        String[] descr = getTypeDescrByExt( ext );
+        if( descr != null ) return descr[2];
+        // ask the system
+        MimeTypeMap mime_map = MimeTypeMap.getSingleton();
+        if( mime_map == null ) return C_UNKNOWN;
+        String mime = mime_map.getMimeTypeFromExtension( ext.substring( 1 ) );
+        if( !str( mime ) ) return C_UNKNOWN;
+        int sl_pos = mime.indexOf( '/' );
+        if( sl_pos <= 0 ) return C_UNKNOWN;
+        String type = mime.substring( 0, sl_pos );
+        if( type.compareTo( "text" ) == 0 )
+            return C_TEXT;
+        if( type.compareTo( "image" ) == 0 )
+            return C_IMAGE;
+        if( type.compareTo( "audio" ) == 0 )
+            return C_AUDIO;
+        if( type.compareTo( "video" ) == 0 )
+            return C_VIDEO;
+        if( type.compareTo( "application" ) == 0 )
+            return C_APP;
         return C_UNKNOWN;
     }
 

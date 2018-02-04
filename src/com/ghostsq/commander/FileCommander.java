@@ -4,10 +4,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.SortedMap;
 
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
@@ -70,13 +67,13 @@ import android.widget.Toast;
 public class FileCommander extends Activity implements Commander, ServiceConnection, View.OnClickListener {
 //    private static final Logger log = LoggerFactory.getLogger("FileCommander");    
     private final static String TAG = "GhostCommanderActivity";
-    public final static int REQUEST_CODE_PREFERENCES = 1, REQUEST_CODE_SRV_FORM = 2, REQUEST_CODE_OPEN = 3;
+    public final static int REQUEST_CODE_PREFERENCES = 1, REQUEST_CODE_SRV_FORM = 2, REQUEST_CODE_OPEN = 3, REQUEST_CODE_MULT_RENAME = 4;
     public final static int FIND_ACT = 1017, SMB_ACT = 2751, FTP_ACT = 4501, SFTP_ACT = 2450;
     public final static String PREF_RESTORE_ACTION = "com.ghostsq.commander.PREF_RESTORE";
 
     private ArrayList<Dialogs> dialogs;
     private ProgressDialog waitPopup;
-    public  Panels panels;
+    public Panels panels;
     private boolean on = false, exit = false, dont_restore = false, sxs_auto = true, show_confirm = true, back_exits = false,
             ab = false;
     private String lang = ""; // just need to issue a warning on change
@@ -172,7 +169,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
     protected void onStart() {
         // Log.v( TAG, "Starting\n" );
         super.onStart();
-        
+
         SharedPreferences prefs = getPreferences( MODE_PRIVATE );
         final String FT = "first_time";
         if( prefs.getBoolean( FT, true ) ) {
@@ -185,8 +182,8 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             } catch( NameNotFoundException e ) {
                 Log.e( TAG, "Package name not found", e );
             }
-            String about_text = getString(R.string.about_text, pi != null ? pi.versionName : "?", getString(R.string.donate_uri) );
-            
+            String about_text = getString( R.string.about_text, pi != null ? pi.versionName : "?", getString( R.string.donate_uri ) );
+
             Dialogs dh = obtainDialogsInstance( Dialogs.INFO_DIALOG );
             dh.setMessageToBeShown( about_text + getString( R.string.keys_text ), null );
             dh.showDialog();
@@ -196,10 +193,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             doStart();
             return;
         }
-        String[] perms = new String[] {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        };
+        String[] perms = new String[] { Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE };
         if( ForwardCompat.requestPermission( this, perms, 111 ) )
             doStart();
     }
@@ -209,10 +203,10 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         //Log.d( TAG, "Permissions granted: " + permissions.toString() + " " + grantResults.toString() );
         doStart();
     }
-    
+
     private void doStart() {
         on = true;
-        
+
         if( dont_restore )
             dont_restore = false;
         else {
@@ -230,7 +224,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             if( intent != null ) {
                 String action = intent.getAction();
                 Log.i( TAG, "Action: " + action );
-    
+
                 if( Intent.ACTION_VIEW.equals( action ) ) {
                     Log.d( TAG, "Not restoring " + s.getCurrent() );
                     panels.setState( s, s.getCurrent() );
@@ -255,7 +249,8 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         super.onPause();
         on = false;
         Panels.State s = panels.getState( this );
-        if( s == null ) return;
+        if( s == null )
+            return;
         SharedPreferences.Editor editor = getPreferences( MODE_PRIVATE ).edit();
         s.store( editor );
         editor.commit();
@@ -329,7 +324,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
     @Override
     public void onCreateContextMenu( ContextMenu menu, View v, ContextMenuInfo menuInfo ) {
         try {
-            super.onCreateContextMenu(menu, v, menuInfo);
+            super.onCreateContextMenu( menu, v, menuInfo );
             Utils.changeLanguage( this );
             AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo)menuInfo;
             menu.setHeaderTitle( getString( R.string.operation ) );
@@ -429,35 +424,36 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         super.onActivityResult( requestCode, resultCode, data );
         Log.d( TAG, "onActivityResult( " + requestCode + ", " + data + " )" );
         switch( requestCode ) {
-        case REQUEST_CODE_PREFERENCES: 
-            // if( resultCode == RESULT_OK ) // FIXME How to know there were changes made in the prefs? 
-            {
-                SharedPreferences sharedPref = null;
-                if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) 
-                    sharedPref = ForwardCompat.getDefaultSharedPreferences( this );
-                else
-                    sharedPref = PreferenceManager.getDefaultSharedPreferences( this );
-                if( sharedPref == null ) return;
-                back_exits = sharedPref.getBoolean( "exit_on_back", false );
-                String lang_ = sharedPref.getString( "language", "" );
-                if( !lang.equalsIgnoreCase( lang_ ) ) {
-                    lang = lang_;
-                    Utils.changeLanguage( this );
-                    showMessage( getString( R.string.restart_to_apply_lang ) );
-                    exit = true;
-                }
-                panels.applySettings( sharedPref, false );
-                String panels_mode = sharedPref.getString( "panels_sxs_mode", "a" );
-                sxs_auto = panels_mode.equals( "a" );
-                boolean sxs = sxs_auto ? getRotMode() : panels_mode.equals( "y" );
-                panels.setLayoutMode( sxs );
-                panels.showToolbar( sharedPref.getBoolean( "show_toolbar", true ) );
-                setConfirmMode( sharedPref );
-                if( data != null && PREF_RESTORE_ACTION.equals( data.getAction() ) ) {
-                    SharedPreferences prefs = getPreferences( MODE_PRIVATE | MODE_MULTI_PROCESS );
-                    panels.restoreFaves();
-                }
+        case REQUEST_CODE_PREFERENCES:
+        // if( resultCode == RESULT_OK ) // FIXME How to know there were changes made in the prefs? 
+        {
+            SharedPreferences sharedPref = null;
+            if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
+                sharedPref = ForwardCompat.getDefaultSharedPreferences( this );
+            else
+                sharedPref = PreferenceManager.getDefaultSharedPreferences( this );
+            if( sharedPref == null )
+                return;
+            back_exits = sharedPref.getBoolean( "exit_on_back", false );
+            String lang_ = sharedPref.getString( "language", "" );
+            if( !lang.equalsIgnoreCase( lang_ ) ) {
+                lang = lang_;
+                Utils.changeLanguage( this );
+                showMessage( getString( R.string.restart_to_apply_lang ) );
+                exit = true;
             }
+            panels.applySettings( sharedPref, false );
+            String panels_mode = sharedPref.getString( "panels_sxs_mode", "a" );
+            sxs_auto = panels_mode.equals( "a" );
+            boolean sxs = sxs_auto ? getRotMode() : panels_mode.equals( "y" );
+            panels.setLayoutMode( sxs );
+            panels.showToolbar( sharedPref.getBoolean( "show_toolbar", true ) );
+            setConfirmMode( sharedPref );
+            if( data != null && PREF_RESTORE_ACTION.equals( data.getAction() ) ) {
+                SharedPreferences prefs = getPreferences( MODE_PRIVATE | MODE_MULTI_PROCESS );
+                panels.restoreFaves();
+            }
+        }
             break;
         case REQUEST_CODE_SRV_FORM: {
             if( resultCode == RESULT_OK ) {
@@ -468,7 +464,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                     try {
                         crd = (Credentials)data.getParcelableExtra( Credentials.KEY );
                         boolean aff_fave = data.getBooleanExtra( ServerForm.ADD_FAVE_KEY, false );
-                        String  comment  = data.getStringExtra( ServerForm.COMMENT_KEY );
+                        String comment = data.getStringExtra( ServerForm.COMMENT_KEY );
                         if( aff_fave )
                             panels.addToFavorites( uri, crd, comment );
                     } catch( Exception e ) {
@@ -500,16 +496,21 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 File temp_file_dir = Utils.getTempDir( this );
                 File temp_dir = new File( temp_file_dir, "to_open" );
                 File[] temp_files = temp_dir.listFiles();
-                for( File f : temp_files ) 
+                for( File f : temp_files )
                     f.deleteOnExit();
             } catch( Exception e ) {
             }
+            break;
         case REQUEST_OPEN_DOCUMENT_TREE:
             if( data != null ) {
                 Uri uri = data.getData();
                 SAFAdapter.saveURI( this, uri );
                 Navigate( uri, null, null );
             }
+        case REQUEST_CODE_MULT_RENAME:
+            if( data != null )
+                panels.renameItems( data.getStringExtra( "PATTERN" ), data.getStringExtra( "REPLACE" ) );
+            break;
         default:
             handleActivityResult( requestCode, resultCode, data );
         }
@@ -613,9 +614,18 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             case R.id.F6t:
             case R.id.F8t:
                 boolean touch = R.id.F2t == id || R.id.F5t == id || R.id.F6t == id || R.id.F8t == id || R.id.new_zipt == id;
-                if( Utils.getCount( panels.getMultiple( touch ) ) > 0 )
+                int count = Utils.getCount( panels.getMultiple( touch ) );
+                if( count > 0 ) {
+                    if( R.id.F2 == id && count > 1 ) {
+                        if( panels.getListAdapter( true ).hasFeature( CommanderAdapter.Feature.MULT_RENAME ) ) {
+                            Intent i = new Intent( this, MultRename.class );
+                            panels.prepareMultRenameIntent( i );
+                            startActivityForResult( i, REQUEST_CODE_MULT_RENAME );
+                            break;
+                        }
+                    }
                     showDialog( id );
-                else
+                } else
                     showMessage( getString( R.string.no_items ) );
                 break;
             case R.id.new_file:
@@ -785,7 +795,8 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             case R.id.rescan:
                 if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO ) {
                     SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences( this );
-                    MediaScanEngine mse = new MediaScanEngine( this, new File( Panels.DEFAULT_LOC ), sp.getBoolean( "scan_all", false ), true );
+                    MediaScanEngine mse = new MediaScanEngine( this, new File( Panels.DEFAULT_LOC ), sp.getBoolean( "scan_all",
+                            false ), true );
                     mse.setHandler( new SimpleHandler() );
                     startEngine( mse );
                 } else
@@ -864,8 +875,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 // | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
                 Log.d( TAG, "Open uri " + uri.toString() + " intent: " + i.toString() );
                 startActivityForResult( i, REQUEST_CODE_OPEN );
-            }
-            else if( !Utils.str( scheme ) || "file".equals( scheme ) ) {
+            } else if( !Utils.str( scheme ) || "file".equals( scheme ) ) {
                 Intent i = new Intent();
                 Intent op_intent = starting_intent;
                 if( op_intent != null ) {
@@ -887,34 +897,33 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                     Navigate( uri.buildUpon().scheme( "zip" ).build(), null, null );
                     return;
                 }
-                
+
                 i.setAction( Intent.ACTION_VIEW );
                 SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
-                boolean use_content = shared_pref.getBoolean( "open_content", android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M );
+                boolean use_content = shared_pref.getBoolean( "open_content",
+                        android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M );
                 Uri u = null;
                 if( use_content ) {
                     u = FileProvider.makeURI( path );
                 } else {
-                    u = uri.buildUpon().scheme( "file" ).authority( "" )
-                            .encodedPath( uri.getEncodedPath().replace( " ", "%20" ) ).build();
+                    u = uri.buildUpon().scheme( "file" ).authority( "" ).encodedPath( uri.getEncodedPath().replace( " ", "%20" ) )
+                            .build();
                 }
                 i.setDataAndType( u, mime );
                 i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET );
                 // | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
                 Log.d( TAG, "Open uri " + u.toString() + " intent: " + i.toString() );
                 startActivityForResult( i, REQUEST_CODE_OPEN );
-            }
-            else
+            } else
                 OpenRemoteFile( uri, crd, scheme, path, mime );
         } catch( ActivityNotFoundException e ) {
             showMessage( "Application for open '" + uri.toString() + "' is not available, " );
         } catch( Exception e ) {
             Log.e( TAG, uri.toString(), e );
         }
-    }            
-            
-    private final void OpenRemoteFile( Uri uri, Credentials crd, String scheme, String path, String mime ) 
-        throws Exception {
+    }
+
+    private final void OpenRemoteFile( Uri uri, Credentials crd, String scheme, String path, String mime ) throws Exception {
         if( mime != null && ( mime.startsWith( "audio" ) || mime.startsWith( "video" ) ) ) {
             startService( new Intent( this, StreamServer.class ) );
             Intent i = new Intent( Intent.ACTION_VIEW );
@@ -926,9 +935,8 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             }
 
             Uri.Builder ub = new Uri.Builder();
-            ub.scheme( "http" )
-              .encodedAuthority( "localhost:" + StreamServer.server_port )
-              .encodedPath( Uri.encode( uri.toString() ) );
+            ub.scheme( "http" ).encodedAuthority( "localhost:" + StreamServer.server_port )
+                    .encodedPath( Uri.encode( uri.toString() ) );
             i.setDataAndType( ub.build(), mime );
 /*
             String http_url = "http://127.0.0.1:" + StreamServer.server_port + "/";;
@@ -943,18 +951,19 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             Log.d( TAG, "Issuing an intent: " + i.toString() );
             startActivity( i );
             return;
-        }
-        else {
+        } else {
             File temp_file_dir = Utils.getTempDir( this );
-            if( temp_file_dir == null ) return;
+            if( temp_file_dir == null )
+                return;
             File temp_dir = new File( temp_file_dir, "to_open" );
             if( !temp_dir.exists() ) {
                 if( !temp_dir.mkdirs() )
                     return;
             } else if( !temp_dir.isDirectory() )
                 return;
-            final CommanderAdapter ca = CA.CreateAdapterInstance( uri, this );            
-            if( ca == null ) return;
+            final CommanderAdapter ca = CA.CreateAdapterInstance( uri, this );
+            if( ca == null )
+                return;
             ca.Init( this );
             ca.setUri( uri );
             ca.setCredentials( crd );
@@ -964,13 +973,13 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 if( Utils.str( temp_file ) && temp_file.indexOf( '/' ) >= 0 )
                     temp_file = temp_file.replace( '/', '_' );
             } else
-                temp_file = path.substring( path.lastIndexOf( '/' )+1 );
-            
-            final String       _fn = temp_file;
-            final Uri         _uri = uri;
-            final File   _out_file = new File( temp_dir, _fn );
-            final Handler _handler = new Handler(); 
-            final ProgressDialog _pd = ProgressDialog.show( this, "", getString( R.string.loading ), true, true );                
+                temp_file = path.substring( path.lastIndexOf( '/' ) + 1 );
+
+            final String _fn = temp_file;
+            final Uri _uri = uri;
+            final File _out_file = new File( temp_dir, _fn );
+            final Handler _handler = new Handler();
+            final ProgressDialog _pd = ProgressDialog.show( this, "", getString( R.string.loading ), true, true );
             new Thread( new Runnable() {
                 @Override
                 public void run() {
@@ -984,15 +993,15 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                         //
                         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences( FileCommander.this );
                         long ros = Long.parseLong( sp.getString( "remote_open_size", "5000000" ) );
-                        
+
                         if( item.size > ros ) {
                             _handler.post( new Runnable() {
-                                  @Override
-                                  public void run() {
-                                      _pd.cancel();
-                                      FileCommander.this.showError( getString( R.string.too_big_file, _fn ) );
-                                  }
-                              });                
+                                @Override
+                                public void run() {
+                                    _pd.cancel();
+                                    FileCommander.this.showError( getString( R.string.too_big_file, _fn ) );
+                                }
+                            } );
                             return;
                         }
                         FileOutputStream fos;
@@ -1003,26 +1012,26 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                         ca.closeStream( is );
                         ca.prepareToDestroy();
                         _handler.post( new Runnable() {
-                              @Override
-                              public void run() {
-                                  _pd.cancel();
-                                  String encoded = Utils.escapePath( _out_file.toString() );
-                                  FileCommander.this.Open( Uri.parse( encoded ), null );
-                              }
-                          });  
+                            @Override
+                            public void run() {
+                                _pd.cancel();
+                                String encoded = Utils.escapePath( _out_file.toString() );
+                                FileCommander.this.Open( Uri.parse( encoded ), null );
+                            }
+                        } );
                         return;
                     } catch( Exception e ) {
                         Log.e( TAG, _uri.toString(), e );
                     }
                     _handler.post( new Runnable() {
-                          @Override
-                          public void run() {
-                              _pd.cancel();
-                              FileCommander.this.showError( getString( R.string.error, _fn ) );
-                          }
-                      });                
+                        @Override
+                        public void run() {
+                            _pd.cancel();
+                            FileCommander.this.showError( getString( R.string.error, _fn ) );
+                        }
+                    } );
                 }
-            }).start();
+            } ).start();
         }
     }
 
@@ -1080,10 +1089,10 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                         uri = uri.buildUpon().scheme( "zip" ).build();
                     else if( ContentResolver.SCHEME_CONTENT.equals( scheme ) ) {
                         uri = fileUriFromcontentUri( uri );
-                        if( uri == null ) return;
+                        if( uri == null )
+                            return;
                     }
-                }
-                else if( ContentResolver.SCHEME_CONTENT.equals( uri.getScheme() ) ) {
+                } else if( ContentResolver.SCHEME_CONTENT.equals( uri.getScheme() ) ) {
                     // unknown content is being passed. Let's just save it
                     try {
                         InputStream is = getContentResolver().openInputStream( uri );
@@ -1132,17 +1141,15 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
     private final Uri fileUriFromcontentUri( Uri uri ) {
         try {
             ContentResolver cr = getContentResolver();
-            final String[] projection = {
-                 OpenableColumns.DISPLAY_NAME,
-                 OpenableColumns.SIZE
-            };
+            final String[] projection = { OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE };
             Cursor c = cr.query( uri, projection, null, null, null );
             int nci = c.getColumnIndex( OpenableColumns.DISPLAY_NAME );
             int sci = c.getColumnIndex( OpenableColumns.SIZE );
             c.moveToFirst();
             String fn = c.getString( nci );
-            Long   fs = c.getLong( sci );
-            if( !Utils.str( fn ) ) fn = "temp.zip";
+            Long fs = c.getLong( sci );
+            if( !Utils.str( fn ) )
+                fn = "temp.zip";
             if( uri.toString().contains( "downloads" ) ) {
                 String dn_dir = Utils.getPath( Utils.PubPathType.DOWNLOADS );
                 File dn_file = new File( dn_dir, fn );
@@ -1150,22 +1157,25 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                     return Uri.parse( "zip:" + dn_file.getAbsolutePath() );
             }
             InputStream is = cr.openInputStream( uri );
-            if( is == null ) throw new Exception("No input stream");
+            if( is == null )
+                throw new Exception( "No input stream" );
             File temp_dir = Utils.createTempDir( this );
             File dest = new File( temp_dir, fn );
-            if( dest.exists() ) dest.delete();
-            FileOutputStream fos = new FileOutputStream( dest ); 
-            if( !Utils.copyBytes( is, fos ) ) throw new Exception("Copy failed");
+            if( dest.exists() )
+                dest.delete();
+            FileOutputStream fos = new FileOutputStream( dest );
+            if( !Utils.copyBytes( is, fos ) )
+                throw new Exception( "Copy failed" );
             is.close();
             fos.close();
-            return Uri.parse( "zip:" + dest.getAbsolutePath() );            
+            return Uri.parse( "zip:" + dest.getAbsolutePath() );
         } catch( Throwable e ) {
             Log.e( TAG, uri.toString(), e );
             showError( getString( R.string.cant_open ) );
             return null;
         }
     }
-    
+
     private final void handleActivityResult( int requestCode, int resultCode, Intent data ) {
         CommanderAdapter ca = panels.getListAdapter( true );
         if( ca != null && ca.handleActivityResult( requestCode, resultCode, data ) )
@@ -1302,8 +1312,8 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                     dh = obtainDialogsInstance( Dialogs.LOGIN_DIALOG );
                     if( b != null ) {
                         boolean pw_only = b.getBoolean( "PW_ONLY" );
-                        Parcelable  crd_p = b.getParcelable( NOTIFY_CRD );
-                        Credentials crd = crd_p != null && crd_p instanceof Credentials ? (Credentials)crd_p : null; 
+                        Parcelable crd_p = b.getParcelable( NOTIFY_CRD );
+                        Credentials crd = crd_p != null && crd_p instanceof Credentials ? (Credentials)crd_p : null;
                         int panel_idx = Utils.str( cookie ) ? cookie.charAt( 0 ) == '1' ? 1 : 0 : -1;
                         dh.setCredentials( crd, panel_idx, pw_only );
                     }
@@ -1402,19 +1412,19 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         } catch( Exception e ) {
             Log.e( TAG, "", e );
         }
-        
+
         if( !Utils.str( str ) ) {
             Log.w( TAG, "No title in notification" );
             return;
         }
-        
+
         Notification notification = null;
         if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN )
             notification = ForwardCompat.buildNotification( this, str, getPendingIntent( id, msg ) );
         else {
-            int ic_id = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? R.drawable.not_icon : R.drawable.icon;  
+            int ic_id = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? R.drawable.not_icon : R.drawable.icon;
             notification = new Notification( ic_id, str, System.currentTimeMillis() );
-    //        notification.setLatestEventInfo( this, getString( R.string.app_name ), str, getPendingIntent( id, msg ) );
+            //        notification.setLatestEventInfo( this, getString( R.string.app_name ), str, getPendingIntent( id, msg ) );
             notification.flags |= Notification.FLAG_ONLY_ALERT_ONCE | Notification.FLAG_AUTO_CANCEL;
         }
 
@@ -1493,10 +1503,11 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
     }
 
     public final boolean isPickMode() {
-        if( starting_intent == null ) return false;
+        if( starting_intent == null )
+            return false;
         return Intent.ACTION_GET_CONTENT.equals( starting_intent.getAction() );
     }
-    
+
     // ServiceConnection implementation
 
     @Override

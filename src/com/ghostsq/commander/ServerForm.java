@@ -97,7 +97,7 @@ public class ServerForm extends Activity
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 encoding_spin.setAdapter( adapter );            
             }
-            Button connect_button = (Button)findViewById( R.id.connect );
+            Button connect_button = (Button)findViewById( R.id.ok );
             connect_button.setOnClickListener( this );
             Button browse_button = (Button)findViewById( R.id.browse );
             browse_button.setOnClickListener( this );
@@ -187,7 +187,7 @@ public class ServerForm extends Activity
                 if( type == Type.SMB )
                     setResult( RESULT_OK, new Intent( Commander.NAVIGATE_ACTION, Uri.parse( "smb://" ) ) );
             }
-            else if( v.getId() == R.id.connect ) {
+            else if( v.getId() == R.id.ok ) {
                 EditText pass_edit = (EditText)findViewById( R.id.password_edit );
                 String user = name_edit.getText().toString().trim();
                 String pass = pass_edit.getText().toString().trim();

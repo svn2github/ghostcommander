@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical|center_horizontal"
+    android:orientation="vertical"
+    android:paddingTop="5dp"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
+    tools:context=".MultRename" >
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:text="Search (regex):" />
+
+    <EditText
+        android:id="@+id/pattern"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textNoSuggestions"
+        android:gravity="fill_horizontal"
+        android:scrollHorizontally="true"
+        android:text="(.+)" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:text="Replace to (use \\$ for the $ sign):" />
+
+    <EditText
+        android:id="@+id/replace_to"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textNoSuggestions"
+        android:gravity="fill_horizontal"
+        android:scrollHorizontally="true"
+        android:text="$1" />
+
+    <ScrollView 
+        android:layout_width="fill_parent"
+        android:layout_height="100dp"
+        android:paddingTop="10dp"
+        android:paddingLeft="10dp"
+        >
+      <TextView
+          android:id="@+id/preview"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:gravity="left"
+      />
+    </ScrollView>
+    
+    <include layout="@layout/ok_cancel" />
+
+</LinearLayout>

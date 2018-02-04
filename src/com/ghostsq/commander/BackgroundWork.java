@@ -64,8 +64,12 @@ public class BackgroundWork extends Service implements IBackgroundWork {
                     Engine eng = engines.get( id ); 
                     if( eng != null ) {
                         Engines.IReciever recipient = eng.getReciever();
-                        if( recipient != null )
-                            recipient.receiveItems( items, CommanderAdapter.MODE_MOVE_DEL_SRC_DIR );
+                        if( recipient != null ) {
+                            int mode = CommanderAdapter.MODE_MOVE_DEL_SRC_DIR;
+                            if( b.getBoolean( Commander.NOTIFY_MOVE ) )
+                                mode |= CommanderAdapter.MODE_REPORT_AS_MOVE;
+                            recipient.receiveItems( items, mode );
+                        }
                     }
                 }
             } catch( Exception e ) {

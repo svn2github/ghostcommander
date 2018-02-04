@@ -43,6 +43,7 @@ import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.adapters.Engines;
+import com.ghostsq.commander.adapters.Engines.IReciever;
 import com.ghostsq.commander.adapters.FSAdapter;
 import com.ghostsq.commander.utils.LsItem;
 import com.ghostsq.commander.utils.Permissions;
@@ -51,9 +52,7 @@ import com.ghostsq.commander.utils.LsItem.LsItemPropComparator;
 import com.ghostsq.commander.root.MountsListEngine;
 import com.ghostsq.commander.root.MountsListEngine.MountItem;
 
-public class RootAdapter extends CommanderAdapterBase {
-    // Java compiler creates a thunk function to access to the private owner class member from a subclass
-    // to avoid that all the member accessible from the subclasses are public
+public class RootAdapter extends CommanderAdapterBase implements IReciever {
     private final static String TAG = "RootAdapter";
     public static final String DEFAULT_LOC = "root:";
     private final static int CHMOD_CMD = 36793, CMD_CMD = 39716, REBOOT = 43599, RECOVERY = 43394;
@@ -410,7 +409,7 @@ public class RootAdapter extends CommanderAdapterBase {
                     String[] paths = new String[temp_content.length];
                     for( int i = 0; i < temp_content.length; i++ )
                         paths[i] = temp_content[i].getAbsolutePath();
-                    sendReceiveReq( paths );
+                    sendReceiveReq( paths, move );
                     return;
                 }
                 if( !ok )
@@ -619,7 +618,7 @@ public class RootAdapter extends CommanderAdapterBase {
             }
             notify( Commander.OPERATION_STARTED );
             commander.startEngine( new CopyToEngine( commander.getContext(), full_names, 
-                                     ( move_mode & MODE_MOVE ) != 0, uri.getPath(), false ) );
+                                   uri.getPath(), move_mode ) );
             return true;
 		} catch( Exception e ) {
 			notify( "Exception: " + e, Commander.OPERATION_FAILED );
@@ -630,14 +629,18 @@ public class RootAdapter extends CommanderAdapterBase {
     class CopyToEngine extends ExecEngine {
         private String[] src_full_names;
         private String   dest;
-        private boolean move = false;
+        private boolean move = false, report_as_copy = false;
         private boolean quiet;
         private boolean ignChownErrs = false;
         private boolean permByDest = false;
         private int counter = 0;
         
+        CopyToEngine( Context ctx, String[] list, String dest_, int move_mode ) {
+            this( ctx, list, ( move_mode & MODE_MOVE ) != 0, dest_, false );
+            report_as_copy = ( move_mode & (MODE_MOVE_DEL_SRC_DIR | MODE_REPORT_AS_MOVE) ) == MODE_MOVE_DEL_SRC_DIR;
+        }
         CopyToEngine( Context ctx, String[] list, boolean move_, String dest_, boolean quiet_ ) {
-        	super( ctx );
+            super( ctx );
         	src_full_names = list;
         	dest = dest_;
             move = move_;
@@ -668,7 +671,8 @@ public class RootAdapter extends CommanderAdapterBase {
                     sendResult( null );
             }
             else
-                sendResult( counter > 0 ? Utils.getOpReport( commander.getContext(), counter, move ? R.string.moved : R.string.copied ) : "" );
+                sendResult( counter > 0 ? Utils.getOpReport( commander.getContext(), counter, 
+                        move && !report_as_copy ? R.string.moved : R.string.copied ) : "" );
         }
        
         @Override
@@ -1139,5 +1143,10 @@ public class RootAdapter extends CommanderAdapterBase {
             contentEngine.close();
             contentEngine = null;
         }
+    }
+
+    @Override
+    public IReciever getReceiver() {
+        return this;
     }
 }

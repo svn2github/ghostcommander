@@ -25,6 +25,7 @@ import android.text.Html;
 import android.text.format.DateFormat;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -268,6 +269,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 if( op == null || op.length() <= 1 )
                     op = op_title;
                 dialog.setTitle( op_title );
+                
                 String item_name = owner.panels.getSelectedItemName( R.id.F2t == id );
                 if( item_name == null ) {
                     owner.showMessage( owner.getString( R.string.rename_err ) );

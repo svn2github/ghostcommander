@@ -445,7 +445,8 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
             notify( Commander.OPERATION_STARTED );
             boolean move = ( move_mode & MODE_MOVE ) != 0;
             boolean del_src_dir = ( move_mode & CommanderAdapter.MODE_DEL_SRC_DIR ) != 0;
-            commander.startEngine( new FTPEngines.CopyToEngine( ctx, theUserPass, uri, list, move, del_src_dir, ftp.getActiveMode(), ftp.getCharset() ) );
+            FTPEngines.CopyToEngine cte = new FTPEngines.CopyToEngine( ctx, theUserPass, uri, list, move, del_src_dir, ftp.getActiveMode(), ftp.getCharset() );
+            commander.startEngine( cte );
             return true;
 		} catch( Exception e ) {
 			notify( e.getLocalizedMessage(), Commander.OPERATION_FAILED );

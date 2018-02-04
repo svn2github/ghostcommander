@@ -793,6 +793,11 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     }
 
     @Override
+    public boolean renameItems( SparseBooleanArray cis, String pattern, String replace_to ) {
+        return false;
+    }
+    
+    @Override
     public Item getItem( Uri u ) {
         return null;
     }

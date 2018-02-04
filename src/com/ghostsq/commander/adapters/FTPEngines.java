@@ -230,7 +230,7 @@ public final class FTPEngines {
                 wifiLock.release();
                 
                 if( recipient != null ) {
-                      sendReceiveReq( dest_folder );
+                      sendReceiveReq( dest_folder, move );
                       return;
                 }
                 sendResult( Utils.getOpReport( ctx, total, R.string.downloaded ) );
