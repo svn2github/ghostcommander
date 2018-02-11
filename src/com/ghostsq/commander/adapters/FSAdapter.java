@@ -241,6 +241,7 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
     public Uri getItemUri( int position ) {
         try {
             String item_name = getItemName( position, true );
+            if( item_name == null ) return null;
             return Uri.parse( Utils.escapePath( item_name ) );
         } catch( Exception e ) {
             Log.e( TAG, "No item in the position " + position, e );
@@ -251,9 +252,14 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
     public String getItemName( int position, boolean full ) {
         if( position < 0 || items == null || position > items.length )
             return position == 0 ? parentLink : null;
-        if( full )
-            return position == 0 ? ( new File( dirName ) ).getParent() : items[position - 1].f().getAbsolutePath();
-        else {
+        if( full ) {
+            if( position == 0 ) {
+                return dirName != null ? ( new File( dirName ) ).getParent() : null;
+            } else {
+                File f = items[position - 1].f();
+                return f != null ? f.getAbsolutePath() : null;
+            }
+        } else {
             if( position == 0 ) return parentLink;
             FileItem item = items[position - 1];
             String name = item.name;

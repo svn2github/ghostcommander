@@ -6,16 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.SecureRandom;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
@@ -30,32 +24,33 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
-import android.os.Build;
 import android.os.IBinder;
-import android.util.Base64;
 import android.util.Log;
 
 public class StreamServer extends Service {
     private final static String TAG = "StreamServer";
-    public  final static int server_port = 5322;
+    private final static String CRLF = "\r\n";
+    private final static String SALT = "GCSS";
+    public  final static int server_port = 5322; 
     public  final static boolean verbose_log = false;
+    private Context ctx;
+    public  ListenThread  thread = null;
     public  WifiLock wifiLock = null;
-    private ListenThread thread = null;
-    private CommanderAdapter ca = null;
-    private Uri  prev_uri = null;
-    private long prev_size = -1;
-
+    public  String last_host = null;
+    public  CommanderAdapter ca = null;
+    
     @Override
     public void onCreate() {
         super.onCreate();
-        WifiManager manager = (WifiManager)getSystemService( Context.WIFI_SERVICE );
+        ctx = this;  //getApplicationContext();
+        WifiManager manager = (WifiManager) getSystemService( Context.WIFI_SERVICE );
         wifiLock = manager.createWifiLock( TAG );
         wifiLock.setReferenceCounted( false );
     }
-
+    
     @Override
-    public int onStartCommand( Intent intent, int flags, int start_id ) {
-        super.onStartCommand( intent, flags, start_id );
+    public void onStart( Intent intent, int start_id ) {
+        super.onStart( intent, start_id );
         Log.d( TAG, "onStart" );
         if( thread == null ) {
             Log.d( TAG, "Starting the server thread" );
@@ -63,8 +58,6 @@ public class StreamServer extends Service {
             thread.start();
             getBaseContext();
         }
-        return START_STICKY;
-
     }
 
     @Override
@@ -74,15 +67,33 @@ public class StreamServer extends Service {
         if( thread != null && thread.isAlive() ) {
             thread.close();
             thread.interrupt();
-            setCA( null );
             try {
                 thread.join( 10000 );
-            } catch( InterruptedException e ) {
+            }
+            catch( InterruptedException e ) {
                 e.printStackTrace();
             }
             if( thread.isAlive() )
                 Log.e( TAG, "Listen tread has ignored the interruption" );
         }
+    }
+
+    public static String getEncKey( Context ctx ) {
+        String seed = null;
+        SharedPreferences ssp = ctx.getSharedPreferences( StreamServer.class.getSimpleName(), MODE_PRIVATE );
+        if( ssp != null ) {
+            final String pk = "enc_key";
+            seed = ssp.getString( pk, null );
+            if( seed == null ) {
+                SecureRandom rnd = new SecureRandom();
+                seed = "" + Math.abs( rnd.nextLong() );
+                seed = seed.substring( 0, 16 );
+                SharedPreferences.Editor edt = ssp.edit();
+                edt.putString( pk, seed );
+                edt.commit();
+            }
+        }
+        return seed + SALT;
     }
 
     public static void storeCredentials( Context ctx, Credentials crd, Uri uri ) {
@@ -101,75 +112,12 @@ public class StreamServer extends Service {
             return null;
         return Credentials.fromEncriptedString( crd_enc_s, ctx );
     }
-
-    public synchronized void setCA( CommanderAdapter new_ca ) {
-        if( ca != null )
-            ca.prepareToDestroy();
-        ca = new_ca;
-    }
-
-    public synchronized CommanderAdapter createCA( Uri uri ) {
-        try {
-            String scheme = uri.getScheme();
-            if( scheme == null ) scheme = "";
-            String host = uri.getHost();
-            if( ca != null ) {
-                Log.d( TAG, "Adapter was created before" );
-                if( !scheme.equals( ca.getScheme() ) ) {
-                    ca.prepareToDestroy();
-                    ca = null; 
-                }
-                else {
-                    prev_uri = ca.getUri();
-                    if( prev_uri == null || (host != null && !host.equals( prev_uri.getHost() ) ) ) {
-                        Log.d( TAG, "Requested a new resource");
-                        ca.prepareToDestroy();
-                        ca = null;
-                    }
-                }
-            }
-            if( ca == null ) {
-                prev_size = -1;
-                Log.d( TAG, "Creating new adapter instance" );
-                ca = CA.CreateAdapterInstance( uri, this );
-                if( ca == null ) {
-                    return null;
-                }
-                ca.Init( null );
-                String ui = uri.getUserInfo();
-                if( ui != null ) {
-                    Credentials credentials = StreamServer.restoreCredentials( this, uri );
-                    if( credentials != null ) {
-                        Log.d( TAG, "Found credentials for " + ui );
-                        ca.setCredentials( credentials );
-                        uri = Utils.updateUserInfo( uri, null );
-                    } else
-                        Log.w( TAG, "No credentials" );
-                }
-                Log.d( TAG, "Adapter is created" );
-            } 
-            ca.setUri( uri );
-            prev_uri = uri;
-            return ca;
-        } catch( Exception e ) {
-            Log.e( TAG, "Creating CA for URI " + uri.toString(), e );
-        }
-        return null;
-    }
-
-    public synchronized long getPrevSize() {
-        return prev_size;
-    }
-    
-    public synchronized void setPrevSize( long sz ) {
-        prev_size = sz;
-    }
     
     private class ListenThread extends Thread {
         private final static String TAG = "GCSS.ListenThread";
-        private ArrayList<Thread> streamThreads = new ArrayList<Thread>();
+        private Thread stream_thread;
         public  ServerSocket ss = null;
-        public long lastUsed = System.currentTimeMillis();
+        public  long lastUsed = System.currentTimeMillis();      
 
         public void run() {
             try {
@@ -182,10 +130,9 @@ public class StreamServer extends Service {
                         while( true ) {
                             try {
                                 synchronized( ListenThread.this ) {
-                                    final int max_idle = 1000000;
+                                    final int max_idle = 100000;
                                     ListenThread.this.wait( max_idle );
-                                    Log.d( TAG, "Checking the idle time... last used: " + ( System.currentTimeMillis() - lastUsed )
-                                            + "ms ago " );
+                                    Log.d( TAG, "Checking the idle time... last used: " + (System.currentTimeMillis()-lastUsed) + "ms ago " );
                                     if( System.currentTimeMillis() - max_idle > lastUsed ) {
                                         Log.d( TAG, "Time to closer the listen thread" );
                                         ListenThread.this.close();
@@ -199,7 +146,7 @@ public class StreamServer extends Service {
                         Log.d( TAG, "Closer thread stopped" );
                     }
                 }, "Closer" ).start();
-
+                
                 StreamServer.this.wifiLock.acquire();
                 Log.d( TAG, "WiFi lock" );
                 synchronized( this ) {
@@ -212,84 +159,84 @@ public class StreamServer extends Service {
                     Log.d( TAG, "Connection accepted" );
                     if( data_socket != null && data_socket.isConnected() ) {
                         int tn = count++;//
-                        Thread stream_thread = new StreamingThread( data_socket, tn );
+                        stream_thread = new StreamingThread( data_socket, tn );
                         stream_thread.start();
-                        streamThreads.add( stream_thread );
                     }
                     touch();
-                    removeDeadThreads();
                 }
-            } catch( Exception e ) {
+            }
+            catch( Exception e ) {
                 Log.w( TAG, "Exception", e );
-            } finally {
+            }
+            finally {
                 StreamServer.this.wifiLock.release();
                 Log.d( TAG, "WiFi lock release" );
                 this.close();
             }
             StreamServer.this.stopSelf();
         }
-        
+
         public synchronized void touch() {
             lastUsed = System.currentTimeMillis();
-        }
-
-        public synchronized void removeDeadThreads() {
-            try {
-                List<Integer> to_rem = new ArrayList<Integer>(); 
-                for( int i = 0; i < streamThreads.size(); i++ ) {
-                    StreamingThread stream_thread = (StreamingThread)streamThreads.get( i );
-                    if( !stream_thread.isAlive() ) {
-                        Log.d( TAG, "Removing dead streaming thread object " + stream_thread.getNum() );
-                        to_rem.add( i );
-                    }
-                    if( !stream_thread.isConnected() ) {
-                        Log.d( TAG, "Interrupting disconnected thread " + stream_thread.getNum() );
-                        stream_thread.interrupt();
-                    }
-                }
-                for( Integer i : to_rem )
-                    streamThreads.remove( i.intValue() );
-            } catch( Exception e ) {
-                Log.e( TAG, "Threads count: " + streamThreads.size(), e );
-            }
-        }
-
+        }        
+        
         public synchronized void close() {
             try {
                 if( ss != null ) {
                     ss.close();
                     ss = null;
                 }
-                for( Thread stream_thread : streamThreads ) {
-                    if( stream_thread.isAlive() )
-                        stream_thread.interrupt();
+                if( stream_thread != null && stream_thread.isAlive() ) {
+                    stream_thread.interrupt();
+                    stream_thread = null;
                 }
-            } catch( IOException e ) {
+                if( ca != null ) {
+                    ca.prepareToDestroy();
+                    ca = null;
+                }
+            }
+            catch( IOException e ) {
                 e.printStackTrace();
             }
         }
-    };
+    };    
 
     private class StreamingThread extends Thread {
-        private final static String TAG = "GCSS.ST";
-        private final static String CRLF = "\r\n";
+        private final static String TAG = "GCSS.WT";
         private Socket data_socket;
         private int num_id;
-        private boolean l = true;//StreamServer.verbose_log;
+        private boolean  l = StreamServer.verbose_log;
 
-        public StreamingThread(Socket data_socket_, int num_id_) {
+        public StreamingThread( Socket data_socket_, int num_id_ ) {
             data_socket = data_socket_;
             num_id = num_id_;
         }
-
-        public boolean isConnected() {
-            return data_socket != null && data_socket.isConnected();
-        }
         
-        public int getNum() {
-            return num_id;
+        private final void Log( String s ) {
+            if( l ) Log.d( TAG, "" + num_id + ": " + s );
         }
 
+        private final void SendStatus( OutputStreamWriter osw, int code ) throws IOException {
+            final String http = "HTTP/1.0 ";
+            String descr;
+            switch( code ) {
+            case 200: descr = "OK";                     break;
+            case 206: descr = "Partial Content";        break;
+            case 400: descr = "Invalid";                break;
+            case 404: descr = "Not found";              break;
+            case 416: descr = "Bad Requested Range";    break;
+            case 500: descr = "Server error";           break;
+            default:  descr = "";  
+            }
+            String resp = http + code + " " + descr; 
+            osw.write( resp + CRLF );
+            if( l ) Log( resp );
+            Date date = new Date();
+            osw.write( "Date: " + date + CRLF );
+            if( l ) Log( "Date: " + date + CRLF );
+            
+        }        
+        
         @Override
         public void run() {
             InputStream  is = null;
@@ -297,7 +244,7 @@ public class StreamServer extends Service {
             try {
                 if( l ) Log( "Thread started" );
                 setName( TAG );
-                if( !isConnected() ) {
+                if( data_socket == null || !data_socket.isConnected() ) {
                     Log.e( TAG, "Invalid data socked" );
                     return;
                 }
@@ -306,14 +253,17 @@ public class StreamServer extends Service {
                     Log.e( TAG, "Can't get the output stream" );
                     return;
                 }
+                  
                 OutputStreamWriter osw = new OutputStreamWriter( os );
                 yield();
+                
                 is = data_socket.getInputStream();
                 if( is == null ) {
                     Log.e( TAG, "Can't get the input stream" );
                     SendStatus( osw, 500 );
                     return;
                 }
+                
                 InputStreamReader isr = new InputStreamReader( is );
                 BufferedReader br = new BufferedReader( isr );
                 String cmd = br.readLine();
@@ -331,8 +281,6 @@ public class StreamServer extends Service {
                     return;
                 }
                 String passed_uri_s = parts[1].substring( 1 );
-                if( passed_uri_s.indexOf( "%2F" ) < 0 )
-                    passed_uri_s = new String( Base64.decode( passed_uri_s, Base64.URL_SAFE ) );
                 if( !Utils.str( passed_uri_s ) ) {
                     Log.w( TAG, "No URI passed in the request" );
                     SendStatus( osw, 404 );
@@ -359,43 +307,122 @@ public class StreamServer extends Service {
                         } catch( NumberFormatException nfe ) {}
                     }
                 }
-
-                CommanderAdapter c_a = StreamServer.this.createCA( uri );
-                if( c_a == null ) {
-                    Log.e( TAG, "Can't get the CA for " + uri );
-                    SendStatus( osw, 500 );
-                    return;
+                                
+                String scheme = uri.getScheme();
+                if( scheme == null ) scheme = "";
+                String host = uri.getHost();
+                if( ca != null ) {
+                    if( !scheme.equals( ca.getScheme() ) ) 
+                        ca = null; 
+                    else {
+                        Uri prev_uri = ca.getUri();
+                        if( host != null && !host.equals( prev_uri.getHost() ) ) 
+                            ca = null;
+                    }
                 }
-                long item_size = StreamServer.this.getPrevSize(); 
-                if( item_size <= 0 ) {
-                    Item item = c_a.getItem( uri );
-                    if( item == null ) {
-                        Log.e( TAG, "Can't get the item for " + uri );
-                        SendStatus( osw, 404 );
+
+                if( ca == null ) {
+                    ca = CA.CreateAdapterInstance( uri, ctx );
+                    if( ca == null ) {
+                        Log.e( TAG, "Can't create the adapter for: " + scheme );
+                        SendStatus( osw, 500 );
                         return;
                     }
-                    item_size = item.size;
-                    StreamServer.this.setPrevSize( item_size );
+                    ca.Init( null );
+                    if( l ) Log( "Adapter is created" );
                 }
+                last_host = host;
                 
-                InputStream cs = c_a.getContent( uri, offset );
-                if( cs == null ) {
-                    Log.e( TAG, "Can't get the content for " + uri );
+                String ui = uri.getUserInfo();
+                if( ui != null ) {
+                    Credentials credentials = StreamServer.restoreCredentials( StreamServer.this, uri );
+                    if( credentials != null ) {
+                        ca.setCredentials( credentials );
+                        uri = Utils.updateUserInfo( uri, null );
+                    }
+                }
+                ca.setUri( uri );
+                Item item = ca.getItem( uri );
+                if( item == null ) {
+                    Log.e( TAG, "Can't get the item for " + uri );
                     SendStatus( osw, 404 );
                     return;
                 } 
-                if( offset > 0 ) {
+                InputStream cs = ca.getContent( uri, offset );
+                if( cs == null ) {
+                    Log.e( TAG, "Can't get the content for " + uri );
+                    SendStatus( osw, 500 );
+                    return;
+                } 
+                if( offset > 0 && item != null ) {
                     SendStatus( osw, 206 );
                 } else {
                     SendStatus( osw, 200 );
                 }
-                String fn = "zip".equals( uri.getScheme() ) ? uri.getFragment() : uri.getLastPathSegment();
-                if( !writeHeader( osw, item_size, offset, fn ) ) return;
-                pumpData( cs, os );
-                c_a.closeStream( cs );
+                String fn = "zip".equals( scheme ) ? uri.getFragment() : uri.getLastPathSegment();
+                if( fn != null ) {
+                    String ext = Utils.getFileExt( fn );
+                    String mime = Utils.getMimeByExt( ext );
+                    if( l ) Log( "Content-Type: " + mime );
+                    osw.write( "Content-Type: " + mime + CRLF );
+                }
+                else
+                    osw.write( "Content-Type: application/octet-stream" + CRLF );
+                String content_range  = "Content-Range: bytes "; 
+                String content_length = "Content-Length: ";
+                if( offset == 0 ) {
+                    content_length += item.size;
+                    content_range  += "0-" + (item.size-1) + "/" + item.size;
+                }
+                else {
+                    content_length += (item.size - offset);
+                    content_range  += offset + "-" + (item.size-1) + "/" + item.size;
+                }
+                osw.write( content_length + CRLF );
+                osw.write( content_range + CRLF );
+                if( l ) Log( content_length );
+                if( l ) Log( content_range );
+                // VLC fails when this is returned?
+                //osw.write( "Connection: close" + CRLF );
+                osw.write( CRLF );
+                osw.flush();                
+                ReaderThread rt = new ReaderThread( cs, num_id );
+                rt.start();
+                setPriority( Thread.MAX_PRIORITY );
+                int count = 0;
+                while( rt.isAlive() ) {
+                    try {
+                        if( isr.ready() ) {
+                            char[] isb = new char[32]; 
+                            if( isr.read( isb ) > 0 ) {
+                                Log.d( TAG, "" + isb.toString() );
+                                if( l ) Log( "Some additional HTTP line has arrived!!! " /*+ BLOCKS!br.readLine()*/ );
+                            }
+                        }
+                        thread.touch();
+                        byte[] out_buf = rt.getOutputBuffer();
+                        if( out_buf == null ) break;
+                        int n = rt.GetDataSize();
+                        if( n < 0 )
+                            break;
+                        if( l ) Log( "      W..." );
+                        os.write( out_buf, 0, n );
+                        if( l ) Log( "      ...W " + n + "/" + ( count += n ) );
+                        rt.doneOutput( false );
+                    }
+                    catch( Exception e ) {
+                        if( l ) Log( "write exception: " + e.getMessage() );
+                        rt.doneOutput( true );
+                        break;
+                    }
+                }
+                if( ca != null )
+                    ca.closeStream( cs );
+                //rt.interrupt();
+                if( l ) Log( "----------- done -------------" );
             }
             catch( Exception e ) {
-                Log.e( TAG, "Exception in thread " + num_id, e );
+                Log.e( TAG, "Exception", e );
             }
             finally {
                 if( l ) Log( "Thread exits" );
@@ -407,123 +434,102 @@ public class StreamServer extends Service {
                     Log.e( TAG, "Exception on Closing", e );
                 }
             }
-        }                
+        }
+    };
+    
+    class ReaderThread extends Thread {
+        private final static String TAG = "GCSS.RT";
+        private InputStream is;
+        private long roller = 0;
+        private final int MAX = 163840;
+        private int chunk = 4340;
+        private byte[][] bufs = null;
+        private byte[]   out_buf = null;
+        private int      data_size = 0;
+        private int      num_id;
+        private boolean  stop = false;
+        private boolean  l = StreamServer.verbose_log;
+        
+        public ReaderThread( InputStream is_, int num_id_ ) {
+            is = is_;
+            setName( TAG );
+            num_id = num_id_;
+            bufs = new byte[][] { new byte[MAX], new byte[MAX] };
+            Log.d( TAG, "Buffers size: " + MAX );
+        }
         
         private final void Log( String s ) {
-            Log.v( TAG, "" + num_id + ": " + s );
+            if( l ) Log.d( TAG, "" + num_id + ": " + s );
         }
 
-        private final void SendStatus( OutputStreamWriter osw, int code ) throws IOException {
-            final String http = "HTTP/1.0 ";
-            String descr;
-            switch( code ) {
-            case 200:
-                descr = "OK";
-                break;
-            case 206:
-                descr = "Partial Content";
-                break;
-            case 400:
-                descr = "Invalid";
-                break;
-            case 404:
-                descr = "Not found";
-                break;
-            case 416:
-                descr = "Bad Requested Range";
-                break;
-            case 500:
-                descr = "Server error";
-                break;
-            default:
-                descr = "";
-            }
-            String resp = http + code + " " + descr;
-            osw.write( resp + CRLF );
-            if( l )
-                Log( resp );
-        }
-
-        private boolean writeHeader( OutputStreamWriter osw, long full_size, long offset, String fn ) {
+        @Override
+        public void run() {
             try {
-                if( fn != null ) {
-                    String ext = Utils.getFileExt( fn );
-                    String mime = Utils.getMimeByExt( ext );
-                    if( l ) Log( "Content-Type: " + mime );
-                    osw.write( "Content-Type: " + mime + CRLF );
-                }
-                else
-                    osw.write( "Content-Type: application/octet-stream" + CRLF );
-                
-                String ds = new SimpleDateFormat( "EEE, d MMM yyyy HH:mm:ss Z", Locale.US ).format( new Date() );
-                osw.write( "Date: " + ds + CRLF );
-                
-                String content_range  = "Content-Range: bytes "; 
-                String content_length = "Content-Length: ";
-                if( offset == 0 ) {
-                    content_length += full_size;
-                    content_range  += "0-" + (full_size-1) + "/" + full_size;
-                }
-                else {
-                    content_length += (full_size - offset);
-                    content_range  += offset + "-" + (full_size-1) + "/" + full_size;
-                }
-                osw.write( content_range + CRLF );
-// When Accept-Ranges is not sent VLC does not allow seeking
-//                osw.write( "Accept-Ranges: bytes" + CRLF );
-                osw.write( content_length + CRLF );
-                if( l ) Log( content_length );
-                if( l ) Log( content_range );
-                // VLC fails when this is returned?
-                osw.write( "Connection: close" + CRLF );
-                osw.write( CRLF );
-                osw.flush();
-                return true;
-            } catch( Exception e ) {
-                Log.e( TAG, "Exception in thread " + num_id, e );
-            }
-            return false;
-        }                
-
-        private void pumpData( InputStream is, OutputStream os ) {
-            final int MAX = 262144*8;
-            int chunk = 4096;
-            byte[] buf = new byte[MAX];
-            int count = 0;
-            while( true ) {
-                try {
-                    if( l ) Log( "Reading... " );
-                    long before_r = System.currentTimeMillis();
-                    int has_read = is.read( buf, 0, chunk );
-                    long r_took = System.currentTimeMillis() - before_r;
-                    if( has_read < 0 ) {
-                        Log.e( TAG, "" + num_id + ": Failed to read" );
+                setPriority( Thread.MAX_PRIORITY );
+                int count = 0;
+                while( !stop ) {
+                    byte[] inp_buf = bufs[(int)( roller++ % 2 )];
+                    if( l ) Log( "R..." );
+                    int has_read = 0;
+                    has_read = is.read( inp_buf, 0, chunk );
+                    if( stop || has_read < 0 )
                         break;
-                    }
-                    count += has_read;
-                    if( l ) Log( "Was read: " + has_read + "/" + count + " took " + r_took + "ms" );
-                    
+
                     if( has_read == chunk && chunk < MAX ) {
                         chunk <<= 1;
-                        Log( "Inc chunk to: " + chunk );
-                    } else if( has_read < chunk && has_read > 128 ) {
-                        chunk = has_read;
-                        Log( "Dec chunk to: " + chunk );
+                        Log.d( TAG, "chunk size: " + chunk );
                     }
                     if( chunk > MAX )
                         chunk = MAX;
-                    long before_w = System.currentTimeMillis();
-                    os.write( buf, 0, has_read );
-                    long w_took = System.currentTimeMillis() - before_w;
-                    if( l ) Log( "Writing took " + w_took + "ms" );
+
+                    if( l ) Log( "...R " + has_read + "/" + ( count += has_read ) );
+                    synchronized( this ) {
+                        int wcount = 0; 
+                        if( l ) Log( "?.." );
+                        while( out_buf != null ) {
+                            wait( 10 );
+                            wcount += 10;
+                        }
+                        if( l ) Log( "...! (" + wcount + "ms)" );
+                        out_buf = inp_buf;
+                        data_size = has_read; 
+                        if( l ) Log( "O=I ->" );
+                        notify();
+                    }
                 }
-                catch( Exception e ) {
-                    Log.e( TAG, "" + num_id + ": exception: " + e.getMessage(), e );
-                    break;
-                }
+            } catch( Throwable e ) {
+                Log.e( TAG, "" + num_id + ": ", e );
             }
-        }                
-    }
+            if( l ) Log( "The read thread is done!" );
+        }
+        public synchronized byte[] getOutputBuffer() throws InterruptedException {
+            int wcount = 0;
+            if( l ) Log( "       ?.." );
+            while( out_buf == null && this.isAlive() ) {
+                wait( 10 );
+                wcount += 10;
+            }
+            
+            if( out_buf != null ) {
+                if( l ) Log( "      ..! (" + wcount + "ms)" );
+            } else {
+                if( l ) Log( "X" );
+            }
+            return out_buf;
+        }
+        public int GetDataSize() {
+            int ds = data_size;
+            data_size = 0;
+            return ds;
+        }
+        public synchronized void doneOutput( boolean stop_ ) {
+            stop = stop_;
+            out_buf = null;
+            if( l ) Log( "    <- O done" + ( stop ? ". stop" : "" ) );
+            notify();
+        }
+    };
+    
     
     @Override
     public IBinder onBind( Intent intent ) {

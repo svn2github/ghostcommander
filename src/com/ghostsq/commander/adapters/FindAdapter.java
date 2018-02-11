@@ -1,10 +1,15 @@
 package com.ghostsq.commander.adapters;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Scanner;
 
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.R;
@@ -219,6 +224,7 @@ public class FindAdapter extends FSAdapter {
         @Override
         public void run() {
             try {
+                setEngineName(null);
                 Init( null );
                 result = new ArrayList<File>();
                 searchInFolder( new File( path ) );
@@ -231,20 +237,21 @@ public class FindAdapter extends FSAdapter {
         protected final void searchInFolder( File dir ) throws Exception {
             try {
                 String dir_path = dir.getAbsolutePath();
+                sendProgress( dir_path, progress = 0 );
                 if( dir_path.compareTo( "/sys" ) == 0 ) return;
                 if( dir_path.compareTo( "/dev" ) == 0 ) return;
                 if( dir_path.compareTo( "/proc" ) == 0 ) return;
                 File[] subfiles = dir.listFiles();
                 if( subfiles == null || subfiles.length == 0 )
                     return;
-                double conv = 100./subfiles.length;
+                final double conv = 100. / subfiles.length;
                 for( int i = 0; i < subfiles.length; i++ ) {
                     sleep( 1 );
                     if( stop || isInterrupted() ) 
                         throw new Exception( ctx.getString( R.string.interrupted ) );
                     File f = subfiles[i];
                     int np = (int)(i * conv);
-                    if( np == 0 || np - 1 > progress )
+                    if( np - conv + 1 > progress )
                         sendProgress( f.getAbsolutePath(), progress = np );
                     //Log.v( TAG, "Looking at file " + f.getAbsolutePath() );
                     addIfMatched( f );
@@ -254,6 +261,7 @@ public class FindAdapter extends FSAdapter {
                         searchInFolder( f );
                         depth--;
                     }
+                    if( isStopReq() ) return;
                 }
             } catch( Exception e ) {
                 Log.e( TAG, "Exception on search: ", e );
@@ -291,37 +299,49 @@ public class FindAdapter extends FSAdapter {
         }
 
         private final boolean searchInsideFile( File f, String s ) {
+            long start_time = System.currentTimeMillis();
+            FileInputStream fis = null;
             try {
-                BufferedReader br = new BufferedReader( new FileReader( f ) ); 
+                byte[] bb = s.getBytes();
                 final  int  l = s.length();
-                int    ch = 0;
+                final  long fl = f.length();
+                final  double conv = 100. / fl;
+                fis = new FileInputStream( f );
+                BufferedInputStream bis = new BufferedInputStream( fis/*, Math.min( (int)fl, 1048576 )*/ );
                 int    cnt = 0, p = 0;
-                double conv = 100./f.length();
                 while( true ) {
-                    for( int i = 0; i < l; i++ ) {
-                        ch = br.read();
-                        if( ch == -1 )
-                            return false;
-                        if( ch != s.charAt( i ) ) {
-                            if( i > 0 )
-                                br.reset();
-                            break;
+                    int ch = bis.read();
+                    if( ch == -1 )
+                        return false;
+                    if( ch == bb[0] ) {
+                        bis.mark( l );
+                        for( int i = 1; i < l; i++ ) {
+                            ch = bis.read();
+                            if( ch == -1 )
+                                return false;
+                            if( ch != bb[i] ) {
+                                bis.reset();
+                                break;
+                            }
+                            if( i >= l-1 )
+                                return true;
                         }
-                        if( i == 0 )
-                            br.mark( l );
-                        if( i >= l-1 )
-                            return true;
                     }
                     int np = (int)(cnt++ * conv);
                     if( np - 10 > p )
                         sendProgress( f.getAbsolutePath(), progress, p = np );
-                    sleep( 1 );
+                    if( isStopReq() ) return false;
                 }
-            }
-            catch( InterruptedException e ) {
             }
             catch( Exception e ) {
                 Log.e( TAG, "File: " + f.getName() + ", str=" + s, e );
+            }
+            finally {
+                try {
+                    fis.close();
+                } catch( IOException e ) {
+                }
+                Log.d( TAG, "Elapsed time: " + (System.currentTimeMillis() - start_time ) + "ms" );
             }
             return false;
         }
