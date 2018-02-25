@@ -57,6 +57,7 @@ public class ToolButton {
         if( cn.equals( "tobot"   ) ) return        R.id.tobot;
         if( cn.equals( "go_up"   ) ) return        R.id.action_back;
         if( cn.equals( "swap"    ) ) return        R.id.swap;
+        if( cn.equals( "compare" ) ) return        R.id.compare;
         return 0;
     }
 
@@ -99,6 +100,7 @@ public class ToolButton {
         case  R.id.totop:        
         case  R.id.tobot:      
         case  R.id.action_back:  return  Feature.SCROLL;
+        case  R.id.compare:      return  Feature.REAL;
         }
         return null;
     }
@@ -142,6 +144,7 @@ public class ToolButton {
         case  R.id.tobot:        return  "tobot";
         case  R.id.action_back:  return  "go_up";
         case  R.id.swap:         return  "swap";
+        case  R.id.compare:      return  "compare";
         }
         return null;
     }
@@ -172,7 +175,8 @@ public class ToolButton {
         case  R.id.add_fav:      return  '*';
         case  R.id.remount:      return  0;
         case  R.id.search:       return  '/';        
-        case  R.id.swap:         return  '~';        
+        case  R.id.swap:         return  '~';
+        case  R.id.compare:      return  '%';
         }
         return 0;
     }
@@ -216,6 +220,7 @@ public class ToolButton {
         case  R.id.tobot:        return  R.string.go_end;
         case  R.id.action_back:  return  R.string.go_up;
         case  R.id.swap:         return  R.string.swap;
+        case  R.id.compare:      return  R.string.compare;
         }
         return 0;
     }
@@ -247,6 +252,7 @@ public class ToolButton {
         case  R.id.search:       return  true;        
         case  R.id.swap:         return  true;        
         case  R.id.menu:         return  true;        
+        case  R.id.compare:      return  true;        
         }
         return false;
     }

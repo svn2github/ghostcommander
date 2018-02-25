@@ -189,6 +189,7 @@ public class FindAdapter extends FSAdapter {
         private boolean dirs = true, files = true; 
         private ArrayList<File> result;
         private int     progress = 0;
+        private long    progress_last_sent = System.currentTimeMillis();
         
         SearchEngine( Handler h, String match_, String path_, String pass_back_on_done_ ) {
             super.setHandler( h );
@@ -237,7 +238,11 @@ public class FindAdapter extends FSAdapter {
         protected final void searchInFolder( File dir ) throws Exception {
             try {
                 String dir_path = dir.getAbsolutePath();
-                sendProgress( dir_path, progress = 0 );
+                long cur_time = System.currentTimeMillis();
+                if( cur_time - progress_last_sent > 500 ) {
+                    progress_last_sent = cur_time;
+                    sendProgress( dir_path, progress = 0 );
+                }
                 if( dir_path.compareTo( "/sys" ) == 0 ) return;
                 if( dir_path.compareTo( "/dev" ) == 0 ) return;
                 if( dir_path.compareTo( "/proc" ) == 0 ) return;
@@ -251,8 +256,13 @@ public class FindAdapter extends FSAdapter {
                         throw new Exception( ctx.getString( R.string.interrupted ) );
                     File f = subfiles[i];
                     int np = (int)(i * conv);
-                    if( np - conv + 1 > progress )
-                        sendProgress( f.getAbsolutePath(), progress = np );
+                    if( np - conv + 1 > progress ) {
+                        cur_time = System.currentTimeMillis();
+                        if( cur_time - progress_last_sent > 1000 ) {
+                            progress_last_sent = cur_time;
+                            sendProgress( f.getAbsolutePath(), progress = np );
+                        }
+                    }
                     //Log.v( TAG, "Looking at file " + f.getAbsolutePath() );
                     addIfMatched( f );
                     if( !olo && f.isDirectory() ) {
@@ -328,8 +338,13 @@ public class FindAdapter extends FSAdapter {
                         }
                     }
                     int np = (int)(cnt++ * conv);
-                    if( np - 10 > p )
-                        sendProgress( f.getAbsolutePath(), progress, p = np );
+                    if( np - 10 > p ) {
+                        final long cur_time = System.currentTimeMillis();
+                        if( cur_time - progress_last_sent > 1000 ) {
+                            progress_last_sent = cur_time;
+                            sendProgress( f.getAbsolutePath(), progress, p = np );
+                        }
+                    }
                     if( isStopReq() ) return false;
                 }
             }

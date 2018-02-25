@@ -11,6 +11,7 @@ import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.adapters.FSAdapter;
 import com.ghostsq.commander.adapters.FavsAdapter;
 import com.ghostsq.commander.adapters.HomeAdapter;
+import com.ghostsq.commander.adapters.ItemComparator;
 import com.ghostsq.commander.adapters.SAFAdapter;
 import com.ghostsq.commander.adapters.ZipAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapter.Feature;
@@ -533,6 +534,37 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         list[RIGHT].refreshList( !left_cur, null );
     }
 
+    public final void compareItems() {
+        CommanderAdapter ca_left, ca_right;
+        ca_left  = list[0].getListAdapter(); 
+        ca_right = list[1].getListAdapter();
+        if(  !ca_left.hasFeature( Feature.REAL ) ) return;
+        if( !ca_right.hasFeature( Feature.REAL ) ) return;
+        ListAdapter la_left, la_right;
+        la_left  = (ListAdapter)ca_left;  
+        la_right = (ListAdapter)ca_right;
+        
+        boolean[] right_matched_cache = new boolean[la_right.getCount()]; 
+        for( int li = 1; li < la_left.getCount(); li++ ) {
+            CommanderAdapter.Item item_left = (CommanderAdapter.Item)la_left.getItem( li );
+            boolean found = false;
+            for( int ri = 1; ri < la_right.getCount(); ri++ ) {
+                CommanderAdapter.Item item_right = (CommanderAdapter.Item)la_right.getItem( ri );
+                if( ItemComparator.compare( item_left, item_right, ItemComparator.CMP_NOT_DATE ) == 0 ) {
+                    right_matched_cache[ri] = true;
+                    found = true;
+                    break;
+                }
+            }
+            if( !found )
+                list[0].flv.setItemChecked( li, true );
+        }
+        for( int ri = 1; ri < la_right.getCount(); ri++ ) {
+            if( !right_matched_cache[ri] )
+                list[1].flv.setItemChecked( ri, true );
+        }
+    }
+    
     public final void redrawLists() {
         list[current].askRedrawList();
         if( sxs )
@@ -1487,6 +1519,9 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                     return true;
                 case '~':
                     swapPanels();
+                    return true;
+                case '%':
+                    compareItems();
                     return true;
                 case '+':
                 case '-':

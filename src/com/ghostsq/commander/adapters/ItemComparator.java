@@ -29,7 +29,7 @@ public class ItemComparator implements Comparator<Item> {
                     Utils.getFileExt( f1.name ).compareTo( Utils.getFileExt( f2.name ) );
             break;
         case CommanderAdapter.SORT_SIZE:
-            ext_cmp = f1.size - f2.size < 0 ? -1 : 1;
+            ext_cmp = f1.size == f2.size ? 0 : ( f1.size - f2.size < 0 ? -1 : 1 );
             break;
         case CommanderAdapter.SORT_DATE:
         	if( f1.date != null && f2.date != null )
@@ -39,5 +39,33 @@ public class ItemComparator implements Comparator<Item> {
         if( ext_cmp == 0 )
             ext_cmp = case_ignore ? f1.name.compareToIgnoreCase( f2.name ) : f1.name.compareTo( f2.name );
         return ascending ? ext_cmp : -ext_cmp;
+    }
+    
+    
+    public final static int CMP_NAME = 1, CMP_EXT = 2, CMP_SIZE = 4, CMP_DATE = 8, CMP_NOT_DATE = 7;
+    
+    public final static int compare( Item f1, Item f2, int type_mask ) {
+        ItemComparator ic = new ItemComparator( 0, false, false );
+        int r = 0;
+        if( (type_mask & CMP_NAME) != 0 ) {
+            ic.type = CommanderAdapter.SORT_NAME;
+            r = ic.compare( f1, f2 );
+            if( r != 0 ) return r;
+        }
+        if( (type_mask & CMP_EXT) != 0 ) {
+            ic.type = CommanderAdapter.SORT_EXT;
+            r = ic.compare( f1, f2 );
+            if( r != 0 ) return r;
+        }
+        if( (type_mask & CMP_SIZE) != 0 ) {
+            ic.type = CommanderAdapter.SORT_SIZE;
+            r = ic.compare( f1, f2 );
+            if( r != 0 ) return r;
+        }
+        if( (type_mask & CMP_DATE) != 0 ) {
+            ic.type = CommanderAdapter.SORT_DATE;
+            r = ic.compare( f1, f2 );
+        }
+        return r;
     }
 }

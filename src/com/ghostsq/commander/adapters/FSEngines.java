@@ -421,6 +421,7 @@ public final class FSEngines {
                                 totalBytes += len;
                                 int  so_far = (int)(totalBytes * conv);
                                 sendProgress( outFile.getName() + " " + cab.ctx.getString( R.string.moved ), so_far, 0 );
+                                outFile.setLastModified( last_modified );
                                 continue;
                             }
                         }

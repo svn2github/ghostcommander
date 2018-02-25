@@ -23,6 +23,7 @@ public class ToolButtons extends ArrayList<ToolButton>
             if( bcns.indexOf( "tobot" ) < 0 ) bcns += ",tobot";
             if( bcns.indexOf( "go_up" ) < 0 ) bcns += ",go_up";
             if( bcns.indexOf( "swap"  ) < 0 ) bcns += ",swap";
+            if( bcns.indexOf( "compare")< 0 ) bcns += ",compare";
             String[] bcna = bcns.split( "," );
             for( String bcn : bcna ) {
                 int bi = ToolButton.getId( bcn );

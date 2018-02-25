@@ -9,6 +9,8 @@ import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.R;
@@ -495,12 +497,18 @@ public final class FTPEngines {
     static class RenEngine extends FTPEngine {
         private LsItem[] origList;
         private String   newName;
+        private String   pattern_str;
         
         RenEngine( Context ctx_, FTPCredentials crd_, Uri uri_, LsItem[] list, String new_name_or_path, boolean active, Charset cs ) {
             super( ctx_, crd_, uri_, active, cs );
             origList = list;
             newName  = new_name_or_path; 
         }
+        RenEngine( Context ctx_, FTPCredentials crd_, Uri uri_, LsItem[] list, String pattern_str, String replace_to, boolean active, Charset cs ) {
+            this( ctx_, crd_, uri_, list, replace_to, active, cs );
+            this.pattern_str = pattern_str;
+        }
+        
         @Override
         public void run() {
             try {
@@ -510,12 +518,36 @@ public final class FTPEngines {
                     return;
                 }
                 String  base_path = Utils.mbAddSl( uri.getPath() );
-                boolean dest_is_dir = newName.indexOf( '/' ) >= 0;
-                for( int i = 0; i < origList.length; i++ ) {
-                    String old_name = origList[i].getName();
-                    String old_path = base_path + old_name;
-                    if( !ftp.rename( old_path, dest_is_dir ? newName + old_name : newName ) )
-                        error( ctx.getString( R.string.failed ) + ftp.getLog() );
+                
+                if( pattern_str == null ) {
+                    boolean dest_is_dir = newName.indexOf( '/' ) >= 0;
+                    for( int i = 0; i < origList.length; i++ ) {
+                        String old_name = origList[i].getName();
+                        String old_path = base_path + old_name;
+                        if( !ftp.rename( old_path, dest_is_dir ? newName + old_name : newName ) )
+                            error( ctx.getString( R.string.failed ) + ftp.getLog() );
+                    }
+                } else {
+                    Pattern pattern = null; 
+                    try {
+                        pattern = Pattern.compile( pattern_str );
+                    } catch( PatternSyntaxException e ) {}
+                    for( LsItem item : origList ) {
+                        String replaced = null;
+                        String name = item.getName();
+                        if( pattern != null ) {
+                            try {
+                                replaced = pattern.matcher( name ).replaceAll( newName );
+                            } catch( Exception e ) {}
+                        }
+                        if( replaced == null )
+                            replaced = name.replace( pattern_str, newName );
+                        if( name.equals( replaced ) )
+                            continue;
+                        String old_path = base_path + name;
+                        if( !ftp.rename( old_path, replaced ) )
+                            error( ctx.getString( R.string.failed ) + ftp.getLog() );
+                    }
                 }
                 sendResult( "" );
                 super.run();

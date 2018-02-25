@@ -10,6 +10,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.R;
@@ -63,6 +65,7 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
     public boolean hasFeature( Feature feature ) {
         switch( feature ) {
         case REAL:
+        case MULT_RENAME:
             return true;
         default: return super.hasFeature( feature );
         }
@@ -471,10 +474,27 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
                 commander.startEngine( re );
             }
         } catch( Exception e ) {
-            e.printStackTrace();
+            Log.e( TAG, "Can't rename to " + new_name, e );
         }
         return false;
     }
+
+    @Override
+    public boolean renameItems( SparseBooleanArray cis, String pattern_str, String replace_to ) {
+        Pattern pattern = null; 
+        try {
+            pattern = Pattern.compile( pattern_str );
+        } catch( PatternSyntaxException e ) {}
+        LsItem[] list = bitsToItems( cis );
+        try {
+            RenEngine re = new RenEngine( ctx, theUserPass, uri, list, pattern_str, replace_to, ftp.getActiveMode(), ftp.getCharset() );
+            commander.startEngine( re );
+        } catch( Exception e ) {
+            Log.e( TAG, "Can't rename to " + replace_to + " with pattern " + pattern_str, e );
+        }
+        return false;
+    }
+    
     
 	@Override
 	public void prepareToDestroy() {

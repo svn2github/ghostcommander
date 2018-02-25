@@ -280,7 +280,6 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
 		}
 	}
 
-	
 	@Override
     public boolean renameItem( int position, String newName, boolean copy ) {
         if( position <= 0 || position > items.length )
@@ -346,14 +345,17 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
         File[] ff = bitsToFiles( cis );
         String last_file_name = null;
         for( File f : ff ) {
+            String name = f.getName();
             String replaced = null;
             if( pattern != null ) {
                 try {
-                    replaced = pattern.matcher( f.getName() ).replaceAll( replace_to );
+                    replaced = pattern.matcher( name ).replaceAll( replace_to );
                 } catch( Exception e ) {}
             }
             if( replaced == null )
-                replaced = f.getName().replace( pattern_str, replace_to );
+                replaced = name.replace( pattern_str, replace_to );
+            if( name.equals( replaced ) )
+                continue;
             File new_file = new File( dirName, replaced );
             if( !new_file.exists() )
                 f.renameTo( new_file );

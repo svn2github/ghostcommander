@@ -74,7 +74,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
 
     private ArrayList<Dialogs> dialogs;
     private ProgressDialog waitPopup;
-    public Panels panels;
+    public  Panels panels;
     private boolean on = false, exit = false, dont_restore = false, sxs_auto = true, show_confirm = true, back_exits = false,
             ab = false;
     private String lang = ""; // just need to issue a warning on change
@@ -802,6 +802,9 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                     startEngine( mse );
                 } else
                     sendBroadcast( new Intent( Intent.ACTION_MEDIA_MOUNTED, Uri.parse( "file://" + Panels.DEFAULT_LOC ) ) );
+                break;
+            case R.id.compare:
+                panels.compareItems();
                 break;
             default:
                 CommanderAdapter ca = panels.getListAdapter( true );

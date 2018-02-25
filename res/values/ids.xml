@@ -43,6 +43,7 @@
   <item type="id" name="new_zipt" />  
   <item type="id" name="open_zip" />  
   <item type="id" name="rescan_dir" />  
+  <item type="id" name="compare" />  
 </resources>
 
 

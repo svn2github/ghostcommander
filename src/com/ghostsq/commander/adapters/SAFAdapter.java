@@ -12,6 +12,8 @@ import java.util.Date;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.FileProvider;
@@ -83,6 +85,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
         case REAL:
         case SF4:
         case SEND:
+        case MULT_RENAME:
             return true;
         default: return super.hasFeature( feature );
         }
@@ -533,17 +536,53 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
         catch(Exception e) {
 		}
 	}
-	
+
+    private final boolean renameItem( Item item, ContentResolver cr, String new_name ) {
+        try {
+            Uri new_uri = DocumentsContract.renameDocument( cr, (Uri)item.origin, new_name );
+            if( new_uri == null ) return false;
+            item.origin = new_uri;
+            return true;
+        } catch( Exception e ) {
+            Log.e( TAG, "Item: " + item.name, e );
+        }
+        return false;
+   }    
+    
 	@Override
-    public boolean renameItem( int position, String newName, boolean copy ) {
+    public boolean renameItem( int position, String new_name, boolean copy ) {
 	    //FIXME: in what cases the copy==true?
-	    ContentResolver cr = ctx.getContentResolver();
-	    Item item = items[position - 1];
-	    Uri new_uri = DocumentsContract.renameDocument( cr, (Uri)item.origin, newName );
-	    if( new_uri == null ) return false;
-	    item.origin = new_uri;
-	    notifyRefr( newName );
+	    if( !renameItem( items[position - 1], ctx.getContentResolver(), new_name ) )
+	        return false;
+	    notifyRefr( new_name );
 	    return true;
+    }
+
+    @Override
+    public boolean renameItems( SparseBooleanArray cis, String pattern_str, String replace_to ) {
+        Pattern pattern = null; 
+        try {
+            pattern = Pattern.compile( pattern_str );
+        } catch( PatternSyntaxException e ) {}
+        Item[] list = bitsToItems( cis );
+        String last_file_name = null;
+        ContentResolver cr = ctx.getContentResolver();
+        for( Item item : list ) {
+            String replaced = null;
+            if( pattern != null ) {
+                try {
+                    replaced = pattern.matcher( item.name ).replaceAll( replace_to );
+                } catch( Exception e ) {}
+            }
+            if( replaced == null )
+                replaced = item.name.replace( pattern_str, replace_to );
+            if( item.name.equals( replaced ) )
+                continue;
+            renameItem( item, cr, replaced );
+            last_file_name = replaced;
+        }
+        notifyRefr( last_file_name );
+        return false;
     }
 	
     @Override

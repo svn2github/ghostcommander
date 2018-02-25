@@ -1,6 +1,7 @@
 package com.ghostsq.commander;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -106,7 +108,8 @@ public class MultRename extends Activity implements View.OnClickListener, TextWa
         try {
             pattern = Pattern.compile( pattern_str );
         } catch( PatternSyntaxException e ) {}
-        for( String name : names ) {
+        for( int i = 0; i < names.size(); i++ ) {
+            String name = names.get( i );
             sb.append( name );
             sb.append( "\t->\t" );
             String replaced = null;
@@ -115,10 +118,20 @@ public class MultRename extends Activity implements View.OnClickListener, TextWa
                     replaced = pattern.matcher( name ).replaceAll( replace_to );
                 } catch( Exception e ) {}
             }
-            if( replaced != null )
-                sb.append( replaced );
-            else
-                sb.append( name.replace( pattern_str, replace_to ) );
+            if( replaced == null )
+                replaced = name.replace( pattern_str, replace_to );
+            /*
+            if( replaced != null ) {
+                Date d = new Date();
+                replaced = replaced.replace( "$#", String.valueOf( i ) );
+                String[] ff = { 
+                   "yyyy", "yy", "MMM", "MM", "M", "dd", "d", "a", "hh", "h", "HH", "H", "mm", "ss" 
+                };
+                for( String f : ff )
+                    replaced = replaced.replace( "$(" + f + ")", DateFormat.format( f, d ) );
+            }
+            */
+            sb.append( replaced );
             sb.append( "\n" );
         }
         return sb.toString();
