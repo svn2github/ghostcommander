@@ -251,7 +251,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                 sb.append( "/" );
                 sb.append( last.substring( 0, col_pos+1 ) );
                 String subpath = last.substring( col_pos+1 );
-                subpath = Uri.decode( subpath );
+                //subpath = Uri.decode( subpath );
                 int sl_pos = subpath.lastIndexOf( SLC );
                 if( sl_pos > 0 ) {
                     subpath = subpath.substring( 0, sl_pos );
@@ -521,7 +521,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
             Uri item_uri = (Uri)item.origin;
             return getPath( item_uri, item.dir );
         } else
-            return item.name;
+            return item.name != null ? item.name.replace( "/", "" ) : null;
     }
 
     @Override
@@ -1050,7 +1050,10 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                         }
                         ok = true;
                     } catch( Exception e ) {
-                        e.printStackTrace();
+                        Log.e( TAG, "Can't copy to file: " + dest_file.getAbsolutePath(), e );
+                        String msg = e.getMessage();
+                        error( owner.ctx.getString( R.string.acc_err, dest_file.getAbsolutePath(), "" ) );
+                        break;
                     }
                     finally {
                         if( is != null ) is.close();

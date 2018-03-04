@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
@@ -16,7 +16,7 @@
         android:gravity="left"
         android:text="Search (regex):" />
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/pattern"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -31,7 +31,7 @@
         android:gravity="left"
         android:text="Replace to (use \\$ for the $ sign):" />
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/replace_to"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -51,6 +51,7 @@
           android:layout_width="fill_parent"
           android:layout_height="wrap_content"
           android:gravity="left"
+          android:textSize="8sp"
       />
     </ScrollView>
     

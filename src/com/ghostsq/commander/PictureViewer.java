@@ -182,7 +182,8 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
             List<String> ps = uri.getPathSegments();
             int n = ps.size();
             if( n > 0 ) n--;
-            for( int i = 0; i < n; i++ ) ub.appendEncodedPath( ps.get( i ) );
+            for( int i = 0; i < n; i++ ) 
+                ub.appendPath( ps.get( i ) );
             p_uri = ub.build();
             name_to_show = ps.get( ps.size()-1 );
         }
@@ -665,6 +666,8 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                 new LoaderThread( pos_uri, name ).start();
                 return;
             }
+            if( dir == 0 )
+                return;
         }
     }
 

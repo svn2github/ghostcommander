@@ -2,6 +2,8 @@ package com.ghostsq.commander;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -20,6 +22,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -27,7 +31,7 @@ import android.widget.TextView;
 public class MultRename extends Activity implements View.OnClickListener, TextWatcher {
     private static final String TAG = "MultRename";
     private ArrayList<String> names;
-    private EditText pattern, replace;
+    private AutoCompleteTextView pattern, replace;
     private TextView preview;
 
     @Override
@@ -39,8 +43,12 @@ public class MultRename extends Activity implements View.OnClickListener, TextWa
             setContentView( R.layout.mult_rename );
             Intent intent = getIntent();
             names = intent.getStringArrayListExtra( getPackageName() + ".TO_RENAME_LIST" );
-            pattern = (EditText)findViewById( R.id.pattern );
-            replace = (EditText)findViewById( R.id.replace_to );
+            pattern = (AutoCompleteTextView)findViewById( R.id.pattern );
+            replace = (AutoCompleteTextView)findViewById( R.id.replace_to );
+            ArrayAdapter<String> pattern_history_adapter= new ArrayAdapter<String>( this, android.R.layout.simple_list_item_1 );
+            pattern.setAdapter( pattern_history_adapter );
+            ArrayAdapter<String> replace_history_adapter= new ArrayAdapter<String>( this, android.R.layout.simple_list_item_1 );
+            replace.setAdapter( replace_history_adapter );
             preview = (TextView)findViewById( R.id.preview );
             pattern.addTextChangedListener( this );
             replace.addTextChangedListener( this );
@@ -48,12 +56,69 @@ public class MultRename extends Activity implements View.OnClickListener, TextWa
             connect_button.setOnClickListener( this );
             Button cancel_button = (Button)findViewById( R.id.cancel );
             cancel_button.setOnClickListener( this );
+
+            SharedPreferences prefs = getPreferences( MODE_PRIVATE );
+            pattern.setText( prefs.getString( "PATTERN", "(.+)" ) );
+            replace.setText( prefs.getString( "REPLACE", "$1" ) );
+
+            Set<String> hist_set = getHistory( prefs,"PATTERN_HIST" );
+            for( String s : hist_set )
+                pattern_history_adapter.add( s );
+            hist_set = getHistory( prefs,"REPLACE_HIST" );
+            for( String s : hist_set )
+                replace_history_adapter.add( s );
         }
         catch( Exception e ) {
             Log.e( TAG, "onCreate() Exception: ", e );
-        }       
+        }
     }
-    
+
+    private Set<String> getHistory( SharedPreferences prefs, String key ) {
+        Set<String> hist_set = prefs.getStringSet( key, null );
+        if( hist_set == null ) {
+            hist_set = new HashSet<String>();
+            if( "PATTERN_HIST".equals( key ) ) {
+                hist_set.add( "(.+)" );
+                hist_set.add( ".+" );
+                hist_set.add( "[^.]+" );
+            } else
+            if( "REPLACE_HIST".equals( key ) ) {
+                hist_set.add( "$1" );
+                hist_set.add( "$2" );
+                hist_set.add( "$3" );
+            }
+        }
+        hist_set.add( pattern.getText().toString() );
+        return hist_set;
+    }
+
+    private void saveStrings() {
+        try {
+            SharedPreferences prefs = getPreferences( MODE_PRIVATE );
+            SharedPreferences.Editor editor = prefs.edit();
+
+            Set<String> hist_set = prefs.getStringSet( "PATTERN_HIST", null );
+            if( hist_set == null )
+                hist_set = new HashSet<String>();
+            String pattern_s = pattern.getText().toString();
+            hist_set.add( pattern_s );
+            editor.putString( "PATTERN", pattern_s );
+            editor.putStringSet( "PATTERN_HIST", hist_set );
+
+            hist_set = prefs.getStringSet( "REPLACE_HIST", null );
+            if( hist_set == null )
+                hist_set = new HashSet<String>();
+            String replace_s = replace.getText().toString();
+            hist_set.add( replace_s );
+            editor.putString( "REPLACE", replace_s );
+            editor.putStringSet( "REPLACE_HIST", hist_set );
+            editor.commit();
+        }
+        catch( Exception e ) {
+            Log.e( TAG, "onPause() Exception: ", e );
+        }
+    }
+
     @Override
     protected void onStart() {
         try {
@@ -163,6 +228,7 @@ public class MultRename extends Activity implements View.OnClickListener, TextWa
                 in.putExtra( "PATTERN", pattern.getText().toString() );
                 in.putExtra( "REPLACE", replace.getText().toString() );
                 setResult( RESULT_OK, in );
+                saveStrings();
             }
             else
                 setResult( RESULT_CANCELED );

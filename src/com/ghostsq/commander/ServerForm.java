@@ -10,10 +10,12 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.ArraySet;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.AutoCompleteTextView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -21,6 +23,9 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.Spinner;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class ServerForm extends Activity 
         implements View.OnClickListener, OnCheckedChangeListener {
@@ -47,8 +52,8 @@ public class ServerForm extends Activity
     private Type     type;
     private String   schema;
     
-    
-    private EditText server_edit;
+    private ArrayAdapter<String> server_history_adapter;
+    private AutoCompleteTextView server_edit;
     private EditText path_edit;
     private EditText domain_edit;
     private EditText name_edit;
@@ -76,8 +81,12 @@ public class ServerForm extends Activity
                     type == Type.SMB ? R.drawable.smb : R.drawable.server );
             String title = type != null ? type.title : getIntent().getStringExtra( "title" );
             setTitle( getString( R.string.connect ) + " " + title );
-            
-            server_edit = (EditText)findViewById( R.id.server_edit );
+
+            server_edit = (AutoCompleteTextView)findViewById( R.id.server_edit );
+
+            server_history_adapter= new ArrayAdapter<String>( this, android.R.layout.simple_list_item_1 );
+            server_edit.setAdapter( server_history_adapter );
+
             path_edit = (EditText)findViewById( R.id.path_edit );
             domain_edit = (EditText)findViewById( R.id.domain_edit );
             domain_block = findViewById( R.id.domainbrowse_block );
@@ -123,7 +132,13 @@ public class ServerForm extends Activity
             domain_edit.setText(        prefs.getString( schema + "_DOMAIN", "" ) );            
             name_edit.setText(          prefs.getString( schema + "_USER", "" ) );            
             active_ftp_cb.setChecked(   prefs.getBoolean(schema + "_ACTIVE", false ) );            
-            encoding_spin.setSelection( prefs.getInt(    schema + "_ENCODING", 0 ) );            
+            encoding_spin.setSelection( prefs.getInt(    schema + "_ENCODING", 0 ) );
+
+            Set<String> hist_set = prefs.getStringSet( schema + "_SERV_HIST", null );
+            if( hist_set != null ) {
+                for( String s : hist_set )
+                    server_history_adapter.add( s );
+            }
         }
         catch( Exception e ) {
             Log.e( TAG, "onStart() Exception: ", e );
@@ -140,14 +155,32 @@ public class ServerForm extends Activity
             editor.putString( schema + "_DOMAIN", domain_edit.getText().toString() );            
             editor.putString( schema + "_USER", name_edit.getText().toString() );            
             editor.putBoolean(schema + "_ACTIVE", active_ftp_cb.isChecked() );            
-            editor.putInt(    schema + "_ENCODING", encoding_spin.getSelectedItemPosition() );            
+            editor.putInt(    schema + "_ENCODING", encoding_spin.getSelectedItemPosition() );
             editor.commit();
         }
         catch( Exception e ) {
             Log.e( TAG, "onPause() Exception: ", e );
         }
     }
-        
+
+    protected void storeHistory() {
+        try {
+            SharedPreferences prefs = getPreferences( MODE_PRIVATE );
+            SharedPreferences.Editor editor = prefs.edit();
+
+            Set<String> hist_set = prefs.getStringSet( schema + "_SERV_HIST", null );
+            if( hist_set == null )
+                hist_set = new HashSet<String>();
+            hist_set.add( server_edit.getText().toString() );
+            editor.putStringSet( schema + "_SERV_HIST", hist_set );
+
+            editor.commit();
+        }
+        catch( Exception e ) {
+            Log.e( TAG, "onPause() Exception: ", e );
+        }
+    }
+
     @Override
     protected void onSaveInstanceState( Bundle outState ) {
         try {
@@ -230,6 +263,7 @@ public class ServerForm extends Activity
                 if( current_panel >= 0 )
                     in.putExtra( "current_panel", current_panel );
                 setResult( RESULT_OK, in );
+                storeHistory();
             }
             else
                 setResult( RESULT_CANCELED );

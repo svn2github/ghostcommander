@@ -508,6 +508,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 SAFAdapter.saveURI( this, uri );
                 Navigate( uri, null, null );
             }
+            break;
         case REQUEST_CODE_MULT_RENAME:
             if( data != null )
                 panels.renameItems( data.getStringExtra( "PATTERN" ), data.getStringExtra( "REPLACE" ) );
