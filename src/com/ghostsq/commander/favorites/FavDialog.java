@@ -37,7 +37,10 @@ public class FavDialog implements OnClickListener {
             View fdv = factory.inflate( R.layout.server, null );
             if( fdv == null ) return;
             View bb = fdv.findViewById( R.id.buttons_block );
-            bb.setVisibility( View.GONE );
+            if( bb != null )
+                bb.setVisibility( View.GONE );
+            fdv.findViewById( R.id.browse ).setVisibility( View.GONE );            
+            
             View cb = fdv.findViewById( R.id.comment_block );
             cb.setVisibility( View.VISIBLE );
             ce = (EditText)cb.findViewById( R.id.comment_edit );
@@ -82,8 +85,8 @@ public class FavDialog implements OnClickListener {
                     int sep = username.indexOf( '\\' );
                     if( sep < 0 )
                         sep = username.indexOf( ';' );
-                    de = (EditText)ib.findViewById( R.id.domain_edit );
-                    if( sep >= 0 ) {
+                    de = (EditText)db.findViewById( R.id.domain_edit );
+                    if( de != null && sep >= 0 ) {
                         de.setText( username.substring( 0, sep ) );
                         username = username.substring( sep+1 );
                     }

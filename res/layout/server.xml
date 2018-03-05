@@ -283,7 +283,9 @@
       
     <!-- seventh row: buttons -->      
     	        
-    <include layout="@layout/ok_cancel"/>
+    <include
+        android:id="@+id/buttons_block" 
+        layout="@layout/ok_cancel"/>
   </LinearLayout>
 </ScrollView>
 		
