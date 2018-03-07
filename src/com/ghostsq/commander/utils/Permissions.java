@@ -12,16 +12,16 @@ public class Permissions {
         if( a == null ) return;
         Init( a );
         String[] aa = a.substring( 10 ).split( "\\s+" );
-        if( aa != null ) {
-            if( aa.length >= 3 ) {
-                user = aa[1];
-                group = aa[2];
-            } else {
-                user = aa[0];
-                if( aa.length > 1 )
-                    group = aa[1];
-            }
-        }       
+        if( aa == null ) return;
+        int l = aa.length;
+        if( l >= 3 ) {
+            user = aa[l-2];
+            group= aa[l-1];
+        } else {
+            user = aa[0];
+            if( l > 1 )
+                group = aa[1];
+        }
     }
 
     private final void Init( String a ) {
