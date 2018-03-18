@@ -931,6 +931,11 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             dr_id = CommanderAdapterBase.getIconId( name );
         }
         shortcutIntent.setDataAndType( uri, mime );
+        
+        if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ) {
+            ForwardCompat.makeShortcut( c, shortcutIntent, name, dr_id );
+            return;
+        } 
 
         Intent intent = new Intent();
         intent.putExtra( Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent );

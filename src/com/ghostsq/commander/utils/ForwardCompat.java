@@ -12,10 +12,15 @@ import android.app.Activity;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Icon;
+import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 import android.view.ViewConfiguration;
@@ -114,4 +119,23 @@ public class ForwardCompat
         }
         return true;
     }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    public static boolean makeShortcut( Context ctx, Intent shortcut_intent, String label, int icon_res_id ) {
+        try {
+            ShortcutManager sm = ctx.getSystemService( ShortcutManager.class );
+            if( !sm.isRequestPinShortcutSupported() ) return false;
+            Icon icon = Icon.createWithResource( ctx, icon_res_id );
+            ShortcutInfo si = new ShortcutInfo.Builder( ctx, "GCshortcut" )
+                .setIntent( shortcut_intent )
+                .setShortLabel( label )
+                .setIcon( icon )
+                .build();
+            return sm.requestPinShortcut( si, null );
+        } catch( Exception e ) {
+            Log.e( "GC.ForwardCompat", shortcut_intent.getDataString(), e );
+        }
+        return false;
+    }
+
 }
