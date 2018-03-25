@@ -286,6 +286,9 @@
   <string name="summary_advanced_settings">Для опытных пользователей</string>
   <string name="remote_open_size">Открывать файл не больше чем&#8230;</string>
   <string name="summary_remote_open_size">Максимальный размер файла удалённой локации разрешаемый к открытию локально</string>
+  <string name="compare_content">Сравнивать содержимое</string>
+  <string name="summary_compare_content">Сравнивать также и содержимое фаилов с одинаковым именем и размером</string>
+  
   <string name="send_content">Посылать файлы через content:</string>
   <string name="summary_send_content">Только если приложение, выбираемое для посылки файлов, умеeт работать с content:</string>
   <string name="open_content">Открывать файлы через content:</string>

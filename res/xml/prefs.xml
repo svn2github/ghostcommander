@@ -293,10 +293,15 @@
 		        android:summary="@string/summary_remote_open_size" 
 		        android:defaultValue="5000000"/>
 		    <CheckBoxPreference
+                android:key="compare_content"
+                android:title="@string/compare_content"
+                android:summary="@string/summary_compare_content"
+                android:defaultValue="false"/>
+		    <CheckBoxPreference
                 android:key="scan_all"
                 android:title="@string/scan_all"
                 android:summary="@string/summary_scan_all"
                 android:defaultValue="true"/>
-        </PreferenceScreen>
+		    </PreferenceScreen>
     </PreferenceCategory>
 </PreferenceScreen>

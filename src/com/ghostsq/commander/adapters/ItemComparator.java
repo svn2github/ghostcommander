@@ -42,10 +42,15 @@ public class ItemComparator implements Comparator<Item> {
     }
     
     
-    public final static int CMP_NAME = 1, CMP_EXT = 2, CMP_SIZE = 4, CMP_DATE = 8, CMP_NOT_DATE = 7;
+    public final static int CMP_NAME = 0x01, 
+                            CMP_EXT  = 0x02, 
+                            CMP_SIZE = 0x04, 
+                            CMP_DATE = 0x08, 
+                            CMP_NOT_DATE = 0x07, 
+                            CMP_IGNORE_CASE = 0x10;
     
     public final static int compare( Item f1, Item f2, int type_mask ) {
-        ItemComparator ic = new ItemComparator( 0, false, false );
+        ItemComparator ic = new ItemComparator( 0, (type_mask & CMP_IGNORE_CASE) != 0, false );
         int r = 0;
         if( (type_mask & CMP_NAME) != 0 ) {
             ic.type = CommanderAdapter.SORT_NAME;
@@ -57,7 +62,7 @@ public class ItemComparator implements Comparator<Item> {
             r = ic.compare( f1, f2 );
             if( r != 0 ) return r;
         }
-        if( (type_mask & CMP_SIZE) != 0 ) {
+        if( !f1.dir && (type_mask & CMP_SIZE) != 0 ) {
             ic.type = CommanderAdapter.SORT_SIZE;
             r = ic.compare( f1, f2 );
             if( r != 0 ) return r;

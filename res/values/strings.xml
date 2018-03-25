@@ -293,6 +293,8 @@
 
 <string name="remote_open_size">File size threshold</string>
 <string name="summary_remote_open_size">Maximum remote file size allowed to be opened locally</string>
+<string name="compare_content">Compare content</string>
+<string name="summary_compare_content">Compare the files content for the files with equal names and sizes</string>
 
 <string name="send_content">Send using content provider</string>
 <string name="summary_send_content">Try to uncheck if your file sending application does not implement a content resolver</string>

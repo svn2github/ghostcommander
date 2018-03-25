@@ -40,6 +40,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -535,34 +536,19 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     }
 
     public final void compareItems() {
-        CommanderAdapter ca_left, ca_right;
-        ca_left  = list[0].getListAdapter(); 
-        ca_right = list[1].getListAdapter();
-        if(  !ca_left.hasFeature( Feature.REAL ) ) return;
-        if( !ca_right.hasFeature( Feature.REAL ) ) return;
-        ListAdapter la_left, la_right;
-        la_left  = (ListAdapter)ca_left;  
-        la_right = (ListAdapter)ca_right;
+        CommanderAdapter ca_cur, ca_ops;
+        ca_cur = list[current].getListAdapter(); 
+        ca_ops = list[opposite()].getListAdapter();
+        if( !ca_cur.hasFeature( Feature.REAL ) ) return;
+        if( !ca_ops.hasFeature( Feature.REAL ) ) return;
         
-        boolean[] right_matched_cache = new boolean[la_right.getCount()]; 
-        for( int li = 1; li < la_left.getCount(); li++ ) {
-            CommanderAdapter.Item item_left = (CommanderAdapter.Item)la_left.getItem( li );
-            boolean found = false;
-            for( int ri = 1; ri < la_right.getCount(); ri++ ) {
-                CommanderAdapter.Item item_right = (CommanderAdapter.Item)la_right.getItem( ri );
-                if( ItemComparator.compare( item_left, item_right, ItemComparator.CMP_NOT_DATE ) == 0 ) {
-                    right_matched_cache[ri] = true;
-                    found = true;
-                    break;
-                }
-            }
-            if( !found )
-                list[0].flv.setItemChecked( li, true );
-        }
-        for( int ri = 1; ri < la_right.getCount(); ri++ ) {
-            if( !right_matched_cache[ri] )
-                list[1].flv.setItemChecked( ri, true );
-        }
+        SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( c );
+        boolean compare_content = shared_pref.getBoolean( "compare_content", false );
+        boolean case_ignore     = shared_pref.getBoolean( "case_ignore", false );
+        
+        FileComparer fc = new FileComparer( list[current].flv, list[opposite()].flv );
+        fc.setOptions( compare_content, case_ignore );
+        fc.execute( ca_cur, ca_ops );
     }
     
     public final void redrawLists() {

@@ -69,6 +69,7 @@ public class ToolButtons extends ArrayList<ToolButton>
                  R.id.menu,   
                  R.id.softkbd,   
                  R.id.search,
+                 R.id.compare,
                  R.id.totop,
                  R.id.tobot,
                  R.id.action_back                 
