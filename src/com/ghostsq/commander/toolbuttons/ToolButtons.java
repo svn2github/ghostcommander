@@ -24,6 +24,7 @@ public class ToolButtons extends ArrayList<ToolButton>
             if( bcns.indexOf( "go_up" ) < 0 ) bcns += ",go_up";
             if( bcns.indexOf( "swap"  ) < 0 ) bcns += ",swap";
             if( bcns.indexOf( "compare")< 0 ) bcns += ",compare";
+            if( bcns.indexOf( "filter") < 0 ) bcns += ",filter";
             String[] bcna = bcns.split( "," );
             for( String bcn : bcna ) {
                 int bi = ToolButton.getId( bcn );
@@ -69,6 +70,7 @@ public class ToolButtons extends ArrayList<ToolButton>
                  R.id.menu,   
                  R.id.softkbd,   
                  R.id.search,
+                 R.id.filter,
                  R.id.compare,
                  R.id.totop,
                  R.id.tobot,

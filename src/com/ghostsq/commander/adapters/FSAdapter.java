@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Arrays;
 import java.util.regex.Pattern;
@@ -64,6 +65,7 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
         case SEARCH:
         case SEND:
         case MULT_RENAME:
+        case FILTER:
             return true;
         default: return super.hasFeature( feature );
         }
@@ -151,33 +153,29 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
         int num_files = files_.length;
         int num = num_files;
         boolean hide = ( mode & MODE_HIDDEN ) == HIDE_MODE;
-        if( hide ) {
-            int cnt = 0;
-            for( int i = 0; i < num_files; i++ )
-                if( !files_[i].isHidden() ) cnt++;
-            num = cnt;
-        }
-        FileItem[] items_ = new FileItem[num];
-        int j = 0;
+        ArrayList<FileItem> al = new ArrayList<FileItem>( num_files );
         for( int i = 0; i < num_files; i++ ) {
             File f = files_[i];
-            if( !hide || !f.isHidden() ) {
-                String fn = null;
-                if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
-                    String link_target = Lollipop.readlink( f.getAbsolutePath() );
-                    if( link_target != null ) {
-                        fn = f.getName(); 
-                        f = new File( link_target );
-                    }
+            if( hide && f.isHidden() ) continue;
+            
+            String fn = null;
+            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
+                String link_target = Lollipop.readlink( f.getAbsolutePath() );
+                if( link_target != null ) {
+                    fn = f.getName(); 
+                    f = new File( link_target );
                 }
-                FileItem f_item = new FileItem( f );
-                if( fn != null ) {
-                    f_item.name = ( f_item.dir ? File.separator : "" ) + fn;
-                    f_item.icon_id = R.drawable.link;
-                }
-                items_[j++] = f_item;
             }
+            FileItem f_item = new FileItem( f );
+            if( filter != null && !filter.isMatched( f_item ) ) continue; 
+            if( fn != null ) {
+                f_item.name = ( f_item.dir ? File.separator : "" ) + fn;
+                f_item.icon_id = R.drawable.link;
+            }
+            al.add( f_item );
         }
+        FileItem[] items_ = new FileItem[al.size()];
+        al.toArray( items_ );
         reSort( items_ );
         return items_;
     }

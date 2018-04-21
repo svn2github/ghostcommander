@@ -224,6 +224,7 @@ public final class Utils {
     }
 
     public final static String[] prepareWildcard( String wc ) {
+        if( !str(wc) ) wc = "*";
         return ( "\02" + wc.toLowerCase() + "\03" ).split( "\\*" );
     }
 

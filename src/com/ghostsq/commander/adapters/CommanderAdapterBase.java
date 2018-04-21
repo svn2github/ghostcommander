@@ -13,6 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.ghostsq.commander.ColorsKeeper;
+import com.ghostsq.commander.FilterProps;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.root.RootAdapter;
@@ -68,11 +69,14 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
     protected boolean ascending = true;
     protected String parentLink = SLS;
     protected int numItems = 0;
+    protected FilterProps filter;
+
     public  int shownFrom = 0, shownNum = 3;
     
     private static ColorsKeeper ck;
     private static int[]        typeColors   = new int[0];
     private static Pattern[][]  filePatterns = new Pattern[0][];
+
 
     public static void setTypeMaskColors( ColorsKeeper ck_ ) {
         try {
@@ -641,6 +645,21 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
         return row_view;
     }
 
+    @Override
+    public FilterProps getFilter() {
+        return filter;
+    }
+    
+    @Override
+    public void cancelFilter() {
+        filter = null;
+    }
+
+    @Override
+    public void setFilter( FilterProps filter ) {
+        this.filter = filter; 
+    }
+    
     public final static int getIconId( String file ) {
         String cat = Utils.getCategoryByExt( Utils.getFileExt( file ) );
         if( Utils.C_UNKNOWN.equals( cat ) )return R.drawable.unkn;

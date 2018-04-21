@@ -361,11 +361,18 @@ public class ListHelper {
             }
         }
     }
-
-    // --- new methods
     
     public final String getActiveItemsSummary( boolean touched ) {
         CommanderAdapter adapter = (CommanderAdapter)flv.getAdapter();
+        String filter_info = null;
+        FilterProps filter = adapter.getFilter();
+        if( filter != null )
+            filter_info = filter.getString( p.c );
+        if( filter_info == null )
+            filter_info = "";
+        else
+            filter_info += "  /  ";
+        
         SparseBooleanArray cis = getMultiple( touched );
         int counter = Utils.getCount( cis );
         long total_size = 0;
@@ -376,7 +383,7 @@ public class ListHelper {
                     String item_name = adapter.getItemName( pos, false );
                     if( !Utils.str( item_name ) )
                         item_name = adapter.getItemName( pos, true );   // when that works?
-                    return item_name;
+                    return filter_info + item_name;
                 }
                 if( adapter instanceof FSAdapter ) {
                     Item item = adapter.getItem( adapter.getItemUri( pos ) );
@@ -393,7 +400,7 @@ public class ListHelper {
         String res = "" + counter + " " + items;
         if( total_size > 0 )
             res += " (" + Utils.getHumanSize( total_size ) + "b)";
-        return res;
+        return filter_info + res;
     }
 
     /**

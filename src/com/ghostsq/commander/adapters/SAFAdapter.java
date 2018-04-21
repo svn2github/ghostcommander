@@ -86,6 +86,7 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
         case SF4:
         case SEND:
         case MULT_RENAME:
+        case FILTER:
             return true;
         default: return super.hasFeature( feature );
         }
@@ -304,12 +305,20 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                 Log.e( TAG, u.toString(), e);
             }
             if( c != null ) {
+              boolean hide = ( mode & MODE_HIDDEN ) == HIDE_MODE;
               ArrayList<SAFItem>  tmp_list = new ArrayList<SAFItem>();
               if( c.getCount() == 0 ) return tmp_list; 
               int[] ii = colInds( c );
               c.moveToFirst();
               do {
                   SAFItem item = rowToItem( c, u, ii );
+                  if( hide ) {
+                      String fc = item.name.substring( 0, 1 );
+                      if( ".".equals( fc ) ) continue;
+                      if( "/".equals( fc ) && ".".equals( item.name.substring( 1, 2 ) ) )
+                          continue;
+                  }
+                  if( filter != null && !filter.isMatched( item ) ) continue; 
                   tmp_list.add( item );
               } while( c.moveToNext() );
               return tmp_list;

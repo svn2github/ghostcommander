@@ -2,6 +2,7 @@ package com.ghostsq.commander;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 
 import com.ghostsq.commander.R;
 
@@ -1268,6 +1269,23 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         }
         intent.putStringArrayListExtra( c.getPackageName() + ".TO_RENAME_LIST", names );
         return intent;
+    }
+
+    public boolean cancelFilter() {
+        CommanderAdapter ca = getListAdapter( true );
+        if( ca.getFilter() != null ) {
+            ca.cancelFilter();
+            list[current].refreshList( true, null );
+            c.showInfo( c.getString( R.string.filter_canceled ) );
+            return true; 
+        }
+        return false;
+    }
+    
+    public void setFilter( FilterProps filter ) {
+        CommanderAdapter ca = getListAdapter( true );
+        ca.setFilter( filter );
+        list[current].refreshList( true, null );
     }
     
     public void createNewFile( String fileName ) {

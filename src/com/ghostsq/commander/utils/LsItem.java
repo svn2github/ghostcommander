@@ -201,4 +201,47 @@ public class LsItem {
     public static LsItem[] createArray( int n ) {
         return new LsItem[n];
     }
+
+    static public class FilterProps extends com.ghostsq.commander.FilterProps {
+        public FilterProps( com.ghostsq.commander.FilterProps from ) {
+            this.file_mask = from.file_mask;
+            this.dirs = from.dirs; 
+            this.files = from.files; 
+            this.include_matched = from.include_matched; 
+            this.larger_than = from.larger_than; 
+            this.smaller_than = from.smaller_than;  
+            this.mod_after = from.mod_after; 
+            this.mod_before = from.mod_before;
+        }
+        
+        private boolean isItMatched( LsItem item ) {
+            String item_name = item.name;
+            if( item.directory ) {
+                if( !dirs )
+                    return false;
+                item_name = item.name.replace( "/", "" );
+            } else {
+                if( !files )
+                    return false;
+                if( item.size < larger_than || item.size > smaller_than ) 
+                    return false;
+            }
+            if( Utils.str( file_mask ) ) {
+                if( cards == null )
+                    cards = Utils.prepareWildcard( file_mask );
+                if( !Utils.match( item_name, cards ) )
+                    return false;
+            }
+            long modified = item.date.getTime();
+            if( mod_after  != null && modified <  mod_after.getTime() ) 
+                return false;  
+            if( mod_before != null && modified > mod_before.getTime() ) 
+                return false;  
+            return true;
+        }
+        
+        public boolean isMatched( LsItem item ) {
+            return !(isItMatched( item ) ^ include_matched);
+        }
+    }
 }

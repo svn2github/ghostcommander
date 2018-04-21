@@ -34,6 +34,7 @@ import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -126,16 +127,21 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 dialogObj = build( textEntryView, " " ); 
                 return dialogObj; 
             }
-            case FileCommander.FIND_ACT:
+            case R.id.find:
             case SELECT_DIALOG:
             case UNSELECT_DIALOG: {
                 final View searchView = factory.inflate( R.layout.search, null );
-                if( id == FileCommander.FIND_ACT ) {
+                if( id == R.id.find ) {
                     View search_params = searchView.findViewById( R.id.search_params );
                     if( search_params != null )
                         search_params.setVisibility( View.VISIBLE );
                 }
                 dialogObj = build( searchView, " " ); 
+                return dialogObj; 
+            }
+            case R.id.filter: {
+                final View filterView = factory.inflate( R.layout.filter, null );
+                dialogObj = build( filterView, " " ); 
                 return dialogObj; 
             }
             case LOGIN_DIALOG: {
@@ -418,11 +424,14 @@ public class Dialogs implements DialogInterface.OnClickListener {
                     edit.setWidth( owner.getWidth() - 90 );
                 break;
             }
-            case FileCommander.FIND_ACT: {
-                dialog.setTitle( R.string.search_title );
-                if( prompt != null )
-                    prompt.setText( R.string.search_prompt );
-                
+            case R.id.filter:
+                dialog.setTitle( R.string.filter );
+            case R.id.find: {
+                if( id == R.id.find ) {
+                    dialog.setTitle( R.string.search_title );
+                    if( prompt != null )
+                        prompt.setText( R.string.search_prompt );
+                }                
                 if( edit != null ) {
                     Editable edit_text = edit.getText();
                     if( edit_text.length() == 0 )
@@ -622,9 +631,10 @@ public class Dialogs implements DialogInterface.OnClickListener {
                 case R.id.F5t:
                 case R.id.F6t:
                 case R.id.F7:
-                case FileCommander.FIND_ACT:
+                case R.id.find:
                 case R.id.new_zip:
                 case R.id.new_zipt:
+                case R.id.filter: 
                 case UNSELECT_DIALOG:
                 case SELECT_DIALOG:
                     EditText edit = (EditText)dialogObj.findViewById( R.id.edit_field );
@@ -670,7 +680,41 @@ public class Dialogs implements DialogInterface.OnClickListener {
                                 owner.panels.createZip( file_name.trim(), R.id.new_zipt == dialogId, password, encoding );
                             }
                             break;
-                        case FileCommander.FIND_ACT: 
+                        case R.id.filter: 
+                            if( file_name.length() == 0 ) break;
+                            try {
+                                FilterProps filter = new FilterProps();
+                                filter.file_mask = file_name;
+                                filter.dirs  = ((CheckBox)dialogObj.findViewById( R.id.for_dirs  )).isChecked();
+                                filter.files = ((CheckBox)dialogObj.findViewById( R.id.for_files )).isChecked();
+
+                                String bts = ((EditText)dialogObj.findViewById( R.id.edit_bigger  )).getText().toString();
+                                if( bts.length() > 0 )
+                                    filter.larger_than  = Long.parseLong( bts );
+                                String sts = ((EditText)dialogObj.findViewById( R.id.edit_smaller )).getText().toString();
+                                if( sts.length() > 0 )
+                                    filter.smaller_than = Long.parseLong( sts );
+
+                                java.text.DateFormat df = DateFormat.getDateFormat( owner );
+                                if( ((CheckBox)dialogObj.findViewById( R.id.mod_after )).isChecked() ) {
+                                    CharSequence macs = ((Button)dialogObj.findViewById( R.id.mod_after_date )).getText();
+                                    if( macs.length() > 0 )
+                                        filter.mod_after = df.parse( macs.toString() ); 
+                                }
+                                if( ((CheckBox)dialogObj.findViewById( R.id.mod_before )).isChecked() ) {
+                                    CharSequence mbcs = ((Button)dialogObj.findViewById( R.id.mod_before_date )).getText();
+                                    if( mbcs.length() > 0 )
+                                        filter.mod_before = df.parse( mbcs.toString() );
+                                }
+                                RadioButton rb = (RadioButton)dialogObj.findViewById( R.id.show_matched );
+                                filter.include_matched = rb.isChecked();
+                                
+                                owner.panels.setFilter( filter );
+                            } catch( Exception e ) {
+                                Log.e( TAG, file_name, e );
+                            }
+                            break;
+                        case R.id.find: 
                             if( file_name.length() > 0 ) {
                                 StringBuilder sb = new StringBuilder( 128 );
                                 sb.append( "q=" ).append( Utils.escapeRest( file_name ) );

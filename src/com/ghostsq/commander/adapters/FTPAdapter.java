@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
@@ -14,6 +15,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import com.ghostsq.commander.Commander;
+import com.ghostsq.commander.FilterProps;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
@@ -66,6 +68,7 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
         switch( feature ) {
         case REAL:
         case MULT_RENAME:
+        case FILTER:
             return true;
         default: return super.hasFeature( feature );
         }
@@ -99,7 +102,13 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
             return null;
         return theUserPass;
     }
-        
+
+    
+    @Override
+    public void setFilter( FilterProps filter ) {
+        this.filter = new LsItem.FilterProps( filter );
+    }
+    
     @Override
     public boolean readSource( Uri tmp_uri, String pass_back_on_done ) {
         try {
@@ -166,18 +175,20 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
             ListEngine list_engine = (ListEngine)reader;
             items = null;
             parentLink = !Utils.str( list_engine.path ) || list_engine.path.equals( SLS ) ? SLS : PLS;
-            if( ( mode & MODE_HIDDEN ) == HIDE_MODE ) {
+            boolean hide = ( mode & MODE_HIDDEN ) == HIDE_MODE;
+            if( hide || filter != null ) {
                 LsItem[] tmp_items = list_engine.getItems();
                 if( tmp_items != null ) {
-                    int cnt = 0;
-                    for( int i = 0; i < tmp_items.length; i++ )
-                        if( tmp_items[i].getName().charAt( 0 ) != '.' )
-                            cnt++;
-                    items = new LsItem[cnt];
-                    int j = 0;
-                    for( int i = 0; i < tmp_items.length; i++ )
-                        if( tmp_items[i].getName().charAt( 0 ) != '.' )
-                            items[j++] = tmp_items[i];
+                    ArrayList<LsItem> al = new ArrayList<LsItem>( tmp_items.length );
+                    for( int i = 0; i < tmp_items.length; i++ ) {
+                        LsItem lsi = tmp_items[i];
+                        if( hide && lsi.getName().charAt( 0 ) == '.' )
+                            continue;
+                        if( filter != null && !((LsItem.FilterProps)filter).isMatched( lsi ) ) continue; 
+                        al.add( lsi );    
+                    }
+                    items = new LsItem[al.size()];
+                    al.toArray( items );
                 }
             }
             else

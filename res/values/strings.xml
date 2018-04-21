@@ -25,6 +25,8 @@
 <string name="refresh">Refresh</string>
 <string name="swap">Swap</string>
 <string name="compare">Compare</string>
+<string name="filter">Filter</string>
+<string name="filter_canceled">Filter canceled</string>
 <string name="enter">Change location</string>
 <string name="home">Home</string>
 <string name="sdcard">/sdcard</string>
@@ -144,6 +146,8 @@
 <string name="smaller_than">Smaller\nthan:</string>
 <string name="mod_after">After</string>
 <string name="mod_before">Before</string>
+<string name="show_matched">Show matched</string>
+<string name="hide_matched">Hide Matched</string>
 <string name="launch">Launch</string>
 <string name="operation">Operations</string>
 <string name="view_title">View</string>

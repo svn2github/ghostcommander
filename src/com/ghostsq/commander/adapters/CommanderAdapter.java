@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.util.Date;
 
 import com.ghostsq.commander.Commander;
+import com.ghostsq.commander.FilterProps;
 import com.ghostsq.commander.utils.Credentials;
 
 import android.content.Intent;
@@ -196,7 +197,8 @@ public interface CommanderAdapter {
         SEND,
         CHKBL,
         SCROLL,
-        MULT_RENAME
+        MULT_RENAME,
+        FILTER
     }
     
     /**
@@ -380,4 +382,12 @@ public interface CommanderAdapter {
      */
 	public void terminateOperation();
 	public void prepareToDestroy();
+	
+	/*
+	 * If an adapter supports items filtering (Feature.FILTER), 
+	 * the filter could be controlled through the following methods
+	 */
+    public FilterProps getFilter();
+    public void cancelFilter();
+    public void setFilter( FilterProps filter );
 }

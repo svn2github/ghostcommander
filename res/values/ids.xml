@@ -44,6 +44,8 @@
   <item type="id" name="open_zip" />  
   <item type="id" name="rescan_dir" />  
   <item type="id" name="compare" />  
+  <item type="id" name="find" />  
+  <item type="id" name="filter" />  
 </resources>
 
 

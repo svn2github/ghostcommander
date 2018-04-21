@@ -69,7 +69,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
 //    private static final Logger log = LoggerFactory.getLogger("FileCommander");    
     private final static String TAG = "GhostCommanderActivity";
     public final static int REQUEST_CODE_PREFERENCES = 1, REQUEST_CODE_SRV_FORM = 2, REQUEST_CODE_OPEN = 3, REQUEST_CODE_MULT_RENAME = 4;
-    public final static int FIND_ACT = 1017, SMB_ACT = 2751, FTP_ACT = 4501, SFTP_ACT = 2450;
+    public final static int SMB_ACT = 2751, FTP_ACT = 4501, SFTP_ACT = 2450;
     public final static String PREF_RESTORE_ACTION = "com.ghostsq.commander.PREF_RESTORE";
 
     private ArrayList<Dialogs> dialogs;
@@ -728,8 +728,11 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             case R.id.open:
                 String path = panels.getSelectedItemName( true, true );
                 String ext = Utils.getFileExt( path );
-                if( ".zip".equalsIgnoreCase( ext ) )
-                    Navigate( Uri.parse( path ).buildUpon().scheme( "zip" ).build(), null, null );
+                if( ".zip".equalsIgnoreCase( ext ) ) {
+                    int pl = path.length();
+                    if( pl < 9 || !".fb2.zip".equals( path.substring( pl-8 ) ) )
+                        Navigate( Uri.parse( path ).buildUpon().scheme( "zip" ).build(), null, null );
+                }
                 break;
             case R.id.open_zip:
                 Dialogs di = obtainDialogsInstance( R.id.open_zip );
@@ -765,6 +768,10 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 break;
             case R.id.uns_all:
                 showDialog( Dialogs.UNSELECT_DIALOG );
+                break;
+            case R.id.filter:
+                if( !panels.cancelFilter() )
+                    showDialog( R.id.filter );
                 break;
             case R.id.online: {
                 Intent intent = new Intent( Intent.ACTION_VIEW );
@@ -842,9 +849,9 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 if( cur_uri != null ) {
                     String cur_path = cur_uri.getPath();
                     if( cur_path != null ) {
-                        Dialogs dh = obtainDialogsInstance( FIND_ACT );
+                        Dialogs dh = obtainDialogsInstance( R.id.find );
                         dh.setCookie( cur_path );
-                        showDialog( FIND_ACT );
+                        showDialog( R.id.find );
                         return;
                     }
                 }
@@ -899,8 +906,11 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                     }
                 }
                 if( ext != null && ( ext.compareToIgnoreCase( ".zip" ) == 0 || ext.compareToIgnoreCase( ".jar" ) == 0 ) ) {
-                    Navigate( uri.buildUpon().scheme( "zip" ).build(), null, null );
-                    return;
+                    int pl = path.length();
+                    if( pl < 9 || !".fb2.zip".equals( path.substring( pl-8 ) ) ) {
+                        Navigate( uri.buildUpon().scheme( "zip" ).build(), null, null );
+                        return;
+                    }
                 }
 
                 i.setAction( Intent.ACTION_VIEW );
