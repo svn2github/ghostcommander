@@ -1129,12 +1129,6 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
                 int l = fList.length;
                 wakeLock.acquire();
                 int num = copyFiles( fList, mDest );
-
-                if( del_src_dir ) {
-                    File src_dir = fList[0].getParentFile();
-                    if( src_dir != null )
-                        src_dir.delete();
-                }
                 wakeLock.release();
                 // XXX: assume (move && !del_src_dir)==true when copy from app: to the FS
                 if( delerr_counter == counter ) move = false;  // report as copy
@@ -1143,7 +1137,12 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
             } catch( Exception e ) {
                 sendProgress( e.getMessage(), Commander.OPERATION_FAILED_REFRESH_REQUIRED );
                 return;
+            } finally {
+                if( del_src_dir )
+                    deleteDir( fList[0].getParentFile() );
+                
             }
+            
         }
         
         private final int copyFiles( File[] list, Uri dest ) throws InterruptedException {

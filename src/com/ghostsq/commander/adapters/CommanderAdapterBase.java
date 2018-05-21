@@ -34,6 +34,7 @@ import android.os.Message;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -549,7 +550,7 @@ public abstract class CommanderAdapterBase extends BaseAdapter implements Comman
                 }
             }
             if( nameView != null ) {
-                nameView.setTextSize( font_size );
+                nameView.setTextSize( TypedValue.COMPLEX_UNIT_DIP, font_size );
                 if( wm ) {
                     nameWidth = parent_width - img_width - dateWidth - sizeWidth - attrWidth - LEFT_P - RIGHT_P;
                     if( nameWidth < 280 ) {

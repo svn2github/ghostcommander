@@ -231,4 +231,24 @@ public class Engine extends Thread {
     public final Engines.IReciever getReciever() {
         return recipient; 
     }
+
+    protected final void deleteDir( File dir ) {
+        if( dir == null )
+            return;
+        File[] children = dir.listFiles();
+        for( File f : children ) {
+            if( f.isDirectory() )
+                deleteDir( f );
+            try {
+                f.delete();
+            } catch( Exception e ) {
+                Log.e( TAG, f.getAbsolutePath(), e );
+            }
+        }
+        try {
+            dir.delete();
+        } catch( Exception e ) {
+            Log.e( TAG, dir.getAbsolutePath(), e );
+        }
+    }
 }

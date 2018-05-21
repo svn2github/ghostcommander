@@ -359,17 +359,14 @@ public final class FTPEngines {
                 wifiLock.acquire();
                 int total = copyFiles( mList );
                 wifiLock.release();
-                if( del_src_dir ) {
-                    File src_dir = mList[0].getParentFile();
-                    if( src_dir != null )
-                        src_dir.delete();
-                }
                 sendResult( Utils.getOpReport( ctx, total, R.string.uploaded ) );
                 return;
             } catch( Exception e ) {
                 error( e.getLocalizedMessage() );
             }
             finally {            
+                if( del_src_dir )
+                    deleteDir( mList[0].getParentFile() );
                 super.run();
             }
             sendResult( "" );
