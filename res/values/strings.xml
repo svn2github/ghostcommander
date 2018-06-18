@@ -476,8 +476,8 @@ the items you wish to transfer. Then commit the desired operation.
 <h3>EXTERNAL CARDS AND USB OTG</h3>
 <p>
 Due to the system restrictions, direct writing access to the files on an external drive
-is forbidden. Please use the \"Storage Access Framework\" (SAF) mode to make changes on
-such locations.<br/>
+is forbidden. If your device\'s OS version is 5 or higher, please use the \"Storage Access Framework\" 
+(SAF) mode to make changes on such locations.<br/>
 The SAF mode asks the desired location on the first access and memorizes the choice
 further on. To make a choice again (in a case when a different drive was inserted),
 tap and hold on the SAF item in the \"home:\" screen, then choose \"Open\".

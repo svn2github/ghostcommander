@@ -7,12 +7,16 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import com.ghostsq.commander.utils.ForwardCompat;
+import com.ghostsq.commander.utils.Replacer;
 import com.ghostsq.commander.utils.Utils;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
@@ -74,7 +78,7 @@ public class MultRename extends Activity implements View.OnClickListener, TextWa
     }
 
     private Set<String> getHistory( SharedPreferences prefs, String key ) {
-        Set<String> hist_set = prefs.getStringSet( key, null );
+        Set<String> hist_set = ForwardCompat.getStringSet( prefs, key );
         if( hist_set == null ) {
             hist_set = new HashSet<String>();
             if( "PATTERN_HIST".equals( key ) ) {
@@ -97,21 +101,20 @@ public class MultRename extends Activity implements View.OnClickListener, TextWa
             SharedPreferences prefs = getPreferences( MODE_PRIVATE );
             SharedPreferences.Editor editor = prefs.edit();
 
-            Set<String> hist_set = prefs.getStringSet( "PATTERN_HIST", null );
+            Set<String> hist_set = ForwardCompat.getStringSet( prefs, "PATTERN_HIST" );
             if( hist_set == null )
                 hist_set = new HashSet<String>();
             String pattern_s = pattern.getText().toString();
             hist_set.add( pattern_s );
             editor.putString( "PATTERN", pattern_s );
-            editor.putStringSet( "PATTERN_HIST", hist_set );
-
-            hist_set = prefs.getStringSet( "REPLACE_HIST", null );
+            ForwardCompat.putStringSet( editor, "PATTERN_HIST", hist_set );
+            hist_set = ForwardCompat.getStringSet( prefs, "REPLACE_HIST" );
             if( hist_set == null )
                 hist_set = new HashSet<String>();
             String replace_s = replace.getText().toString();
             hist_set.add( replace_s );
             editor.putString( "REPLACE", replace_s );
-            editor.putStringSet( "REPLACE_HIST", hist_set );
+            ForwardCompat.putStringSet( editor, "REPLACE_HIST", hist_set );
             editor.commit();
         }
         catch( Exception e ) {
@@ -168,37 +171,23 @@ public class MultRename extends Activity implements View.OnClickListener, TextWa
     }
 
     private String getPreview( String pattern_str, String replace_to ) {
-        StringBuilder sb = new StringBuilder();
-        Pattern pattern = null; 
-        try {
-            pattern = Pattern.compile( pattern_str );
-        } catch( PatternSyntaxException e ) {}
-        for( int i = 0; i < names.size(); i++ ) {
-            String name = names.get( i );
-            sb.append( name );
-            sb.append( "\t->\t" );
-            String replaced = null;
-            if( pattern != null ) {
-                try {
-                    replaced = pattern.matcher( name ).replaceAll( replace_to );
-                } catch( Exception e ) {}
+        final StringBuilder sb = new StringBuilder();
+        Replacer r = new Replacer() {
+            protected int getNumberOfOriginalStrings() {
+                return names.size();
             }
-            if( replaced == null )
-                replaced = name.replace( pattern_str, replace_to );
-            /*
-            if( replaced != null ) {
-                Date d = new Date();
-                replaced = replaced.replace( "$#", String.valueOf( i ) );
-                String[] ff = { 
-                   "yyyy", "yy", "MMM", "MM", "M", "dd", "d", "a", "hh", "h", "HH", "H", "mm", "ss" 
-                };
-                for( String f : ff )
-                    replaced = replaced.replace( "$(" + f + ")", DateFormat.format( f, d ) );
+            protected String getOriginalString( int i ) {
+                String name = names.get( i );
+                sb.append( name );
+                sb.append( "\t->\t" );
+                return name;
             }
-            */
-            sb.append( replaced );
-            sb.append( "\n" );
-        }
+            protected void setReplacedString( int i, String replaced ) {
+                sb.append( replaced );
+                sb.append( "\n" );
+            }
+        };
+        r.replace( pattern_str, replace_to );
         return sb.toString();
     }
 

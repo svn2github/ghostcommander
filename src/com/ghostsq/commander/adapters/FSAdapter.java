@@ -22,6 +22,7 @@ import com.ghostsq.commander.adapters.FSEngines.ListEngine;
 import com.ghostsq.commander.adapters.FileItem;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.utils.Lollipop;
+import com.ghostsq.commander.utils.Replacer;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
@@ -333,9 +334,38 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
             return false;
         }
     }
+
+	class FSReplacer extends Replacer {
+        public  String last_file_name = null;
+        private File[] ff;
+        FSReplacer( File[] ff ) {
+            this.ff = ff;
+        }
+        protected int getNumberOfOriginalStrings() {
+            return ff.length;
+        }
+        protected String getOriginalString( int i ) {
+            return ff[i].getName();
+        }
+        protected void setReplacedString( int i, String replaced ) {
+            File f = ff[i];
+            if( f.getName().equals( replaced ) )
+                return;
+            File new_file = new File( dirName, replaced );
+            if( !new_file.exists() )
+                f.renameTo( new_file );
+            last_file_name = new_file.getName();
+        }
+    }	
 	
     @Override
     public boolean renameItems( SparseBooleanArray cis, String pattern_str, String replace_to ) {
+        FSReplacer r = new FSReplacer( bitsToFiles( cis ) );
+        r.replace( pattern_str, replace_to );
+        notifyRefr( r.last_file_name );
+        
+        
+        /*
         Pattern pattern = null; 
         try {
             pattern = Pattern.compile( pattern_str );
@@ -360,6 +390,7 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
             last_file_name = new_file.getName();
         }
         notifyRefr( last_file_name );
+        */
         return false;
     }
 	

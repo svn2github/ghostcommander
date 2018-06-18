@@ -1,6 +1,7 @@
 package com.ghostsq.commander;
 
 import com.ghostsq.commander.utils.Credentials;
+import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.Utils;
 
 import android.app.Activity;
@@ -133,8 +134,7 @@ public class ServerForm extends Activity
             name_edit.setText(          prefs.getString( schema + "_USER", "" ) );            
             active_ftp_cb.setChecked(   prefs.getBoolean(schema + "_ACTIVE", false ) );            
             encoding_spin.setSelection( prefs.getInt(    schema + "_ENCODING", 0 ) );
-
-            Set<String> hist_set = prefs.getStringSet( schema + "_SERV_HIST", null );
+            Set<String> hist_set = ForwardCompat.getStringSet( prefs, schema + "_SERV_HIST" );
             if( hist_set != null ) {
                 for( String s : hist_set )
                     server_history_adapter.add( s );
@@ -168,12 +168,11 @@ public class ServerForm extends Activity
             SharedPreferences prefs = getPreferences( MODE_PRIVATE );
             SharedPreferences.Editor editor = prefs.edit();
 
-            Set<String> hist_set = prefs.getStringSet( schema + "_SERV_HIST", null );
+            Set<String> hist_set = ForwardCompat.getStringSet( prefs, schema + "_SERV_HIST" );
             if( hist_set == null )
                 hist_set = new HashSet<String>();
             hist_set.add( server_edit.getText().toString() );
-            editor.putStringSet( schema + "_SERV_HIST", hist_set );
-
+            ForwardCompat.putStringSet( editor, schema + "_SERV_HIST", hist_set );
             editor.commit();
         }
         catch( Exception e ) {
