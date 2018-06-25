@@ -14,7 +14,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="left"
-        android:text="Search (regex):" />
+        android:text="@string/search" />
 
     <AutoCompleteTextView
         android:id="@+id/pattern"
@@ -29,7 +29,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="left"
-        android:text="Replace to (use \\$ for the $ sign):" />
+        android:text="@string/replace_to" />
 
     <AutoCompleteTextView
         android:id="@+id/replace_to"
@@ -40,6 +40,23 @@
         android:scrollHorizontally="true"
         android:text="$1" />
 
+    <RadioGroup
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <RadioButton android:id="@+id/radio_preview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/preview"
+            android:onClick="onRadioButtonClicked"/>
+        <RadioButton android:id="@+id/radio_help"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/help"
+            android:onClick="onRadioButtonClicked"/>
+    </RadioGroup>    
+    
     <ScrollView 
         android:layout_width="fill_parent"
         android:layout_height="100dp"

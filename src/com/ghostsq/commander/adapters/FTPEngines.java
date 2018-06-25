@@ -18,6 +18,7 @@ import com.ghostsq.commander.adapters.FTPAdapter.FTPCredentials;
 import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.LsItem;
 import com.ghostsq.commander.utils.FTP;
+import com.ghostsq.commander.utils.Replacer;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.Context;
@@ -495,7 +496,7 @@ public final class FTPEngines {
         private LsItem[] origList;
         private String   newName;
         private String   pattern_str;
-        
+
         RenEngine( Context ctx_, FTPCredentials crd_, Uri uri_, LsItem[] list, String new_name_or_path, boolean active, Charset cs ) {
             super( ctx_, crd_, uri_, active, cs );
             origList = list;
@@ -514,7 +515,7 @@ public final class FTPEngines {
                     sendResult( "" );
                     return;
                 }
-                String  base_path = Utils.mbAddSl( uri.getPath() );
+                String base_path = Utils.mbAddSl( uri.getPath() );
                 
                 if( pattern_str == null ) {
                     boolean dest_is_dir = newName.indexOf( '/' ) >= 0;
@@ -525,26 +526,8 @@ public final class FTPEngines {
                             error( ctx.getString( R.string.failed ) + ftp.getLog() );
                     }
                 } else {
-                    Pattern pattern = null; 
-                    try {
-                        pattern = Pattern.compile( pattern_str );
-                    } catch( PatternSyntaxException e ) {}
-                    for( LsItem item : origList ) {
-                        String replaced = null;
-                        String name = item.getName();
-                        if( pattern != null ) {
-                            try {
-                                replaced = pattern.matcher( name ).replaceAll( newName );
-                            } catch( Exception e ) {}
-                        }
-                        if( replaced == null )
-                            replaced = name.replace( pattern_str, newName );
-                        if( name.equals( replaced ) )
-                            continue;
-                        String old_path = base_path + name;
-                        if( !ftp.rename( old_path, replaced ) )
-                            error( ctx.getString( R.string.failed ) + ftp.getLog() );
-                    }
+                    FTPReplacer r = new FTPReplacer( origList, base_path );
+                    r.replace( pattern_str, newName );
                 }
                 sendResult( "" );
                 super.run();
@@ -552,6 +535,32 @@ public final class FTPEngines {
                 Log.e( TAG, "", e );
             }
         }
+        
+        class FTPReplacer extends Replacer {
+            public  String last_file_name = null;
+            private LsItem[] origList;
+            private String base_path;
+            FTPReplacer( LsItem[] origList, String base_path ) {
+                this.origList = origList;
+                this.base_path = base_path;
+            }
+            protected int getNumberOfOriginalStrings() {
+                return origList.length;
+            }
+            protected String getOriginalString( int i ) {
+                return origList[i].getName();
+            }
+            protected void setReplacedString( int i, String replaced ) {
+                String name = getOriginalString( i );
+                String old_path = base_path + name;
+                try {
+                    if( !ftp.rename( old_path, replaced ) )
+                        error( ctx.getString( R.string.failed ) + ftp.getLog() );
+                } catch( InterruptedException e ) {
+                    Log.e( TAG, "Can't rename " + old_path + " to " + replaced );
+                }
+            }
+        }   
     }
 
     static class ChmodEngine extends FTPEngine {

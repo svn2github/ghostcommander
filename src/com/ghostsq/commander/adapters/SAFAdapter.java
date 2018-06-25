@@ -20,6 +20,7 @@ import com.ghostsq.commander.FileProvider;
 import com.ghostsq.commander.adapters.Engines.IReciever;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.utils.ForwardCompat;
+import com.ghostsq.commander.utils.Replacer;
 import com.ghostsq.commander.utils.Utils;
 
 import android.annotation.SuppressLint;
@@ -567,30 +568,32 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
 	    return true;
     }
 
-    @Override
-    public boolean renameItems( SparseBooleanArray cis, String pattern_str, String replace_to ) {
-        Pattern pattern = null; 
-        try {
-            pattern = Pattern.compile( pattern_str );
-        } catch( PatternSyntaxException e ) {}
-        Item[] list = bitsToItems( cis );
-        String last_file_name = null;
-        ContentResolver cr = ctx.getContentResolver();
-        for( Item item : list ) {
-            String replaced = null;
-            if( pattern != null ) {
-                try {
-                    replaced = pattern.matcher( item.name ).replaceAll( replace_to );
-                } catch( Exception e ) {}
-            }
-            if( replaced == null )
-                replaced = item.name.replace( pattern_str, replace_to );
-            if( item.name.equals( replaced ) )
-                continue;
+    class SAFReplacer extends Replacer {
+        public  String last_file_name = null;
+        private Item[] list;
+        private ContentResolver cr;
+        SAFReplacer( Item[] list, ContentResolver cr ) {
+            this.list = list;
+            this.cr = cr;
+        }
+        protected int getNumberOfOriginalStrings() {
+            return list.length;
+        }
+        protected String getOriginalString( int i ) {
+            return list[i].name;
+        }
+        protected void setReplacedString( int i, String replaced ) {
+            Item item = list[i];
             renameItem( item, cr, replaced );
             last_file_name = replaced;
         }
-        notifyRefr( last_file_name );
+    }   
+	
+    @Override
+    public boolean renameItems( SparseBooleanArray cis, String pattern_str, String replace_to ) {
+        SAFReplacer r = new SAFReplacer( bitsToItems( cis ), ctx.getContentResolver() );
+        r.replace( pattern_str, replace_to );
+        notifyRefr( r.last_file_name );
         return false;
     }
 	

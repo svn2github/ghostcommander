@@ -30,6 +30,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 public class MultRename extends Activity implements View.OnClickListener, TextWatcher {
@@ -37,6 +38,7 @@ public class MultRename extends Activity implements View.OnClickListener, TextWa
     private ArrayList<String> names;
     private AutoCompleteTextView pattern, replace;
     private TextView preview;
+    private RadioButton preview_b;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -54,6 +56,7 @@ public class MultRename extends Activity implements View.OnClickListener, TextWa
             ArrayAdapter<String> replace_history_adapter= new ArrayAdapter<String>( this, android.R.layout.simple_list_item_1 );
             replace.setAdapter( replace_history_adapter );
             preview = (TextView)findViewById( R.id.preview );
+            preview_b = (RadioButton)findViewById( R.id.radio_preview );
             pattern.addTextChangedListener( this );
             replace.addTextChangedListener( this );
             Button connect_button = (Button)findViewById( R.id.ok );
@@ -165,7 +168,13 @@ public class MultRename extends Activity implements View.OnClickListener, TextWa
         }
     }
 
+    private void setHelp() {
+        if( preview_b.isChecked() ) return;
+        preview.setText( getString( R.string.mult_rename_help ) );
+    }
+
     private void setPreview() {
+        if( !preview_b.isChecked() ) return;
         if( names == null ) return;
         preview.setText( getPreview( pattern.getText().toString(), replace.getText().toString() ) );
     }
@@ -227,4 +236,12 @@ public class MultRename extends Activity implements View.OnClickListener, TextWa
             Log.e( TAG, "onClick() Exception: ", e );
         }       
     }
+    
+    public void onRadioButtonClicked( View v ) {
+        if( v.getId() == R.id.radio_preview )
+            setPreview();
+        else
+            setHelp();
+    }
+    
 }

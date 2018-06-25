@@ -363,34 +363,6 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
         FSReplacer r = new FSReplacer( bitsToFiles( cis ) );
         r.replace( pattern_str, replace_to );
         notifyRefr( r.last_file_name );
-        
-        
-        /*
-        Pattern pattern = null; 
-        try {
-            pattern = Pattern.compile( pattern_str );
-        } catch( PatternSyntaxException e ) {}
-        File[] ff = bitsToFiles( cis );
-        String last_file_name = null;
-        for( File f : ff ) {
-            String name = f.getName();
-            String replaced = null;
-            if( pattern != null ) {
-                try {
-                    replaced = pattern.matcher( name ).replaceAll( replace_to );
-                } catch( Exception e ) {}
-            }
-            if( replaced == null )
-                replaced = name.replace( pattern_str, replace_to );
-            if( name.equals( replaced ) )
-                continue;
-            File new_file = new File( dirName, replaced );
-            if( !new_file.exists() )
-                f.renameTo( new_file );
-            last_file_name = new_file.getName();
-        }
-        notifyRefr( last_file_name );
-        */
         return false;
     }
 	

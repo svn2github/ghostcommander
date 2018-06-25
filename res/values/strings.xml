@@ -159,6 +159,7 @@
 <string name="search_title">Search</string>
 <string name="search_prompt">Search criteria:</string>
 <string name="rename_title">Rename</string>
+<string name="mult_rename_title">Rename multiple</string>
 <string name="copy_title">Copy</string>
 <string name="move_title">Move</string>
 <string name="send_title">Send to…</string>
@@ -166,6 +167,16 @@
 <string name="to_copy">&#xA0;</string>
 <string name="to_move">&#xA0;</string>
 <string name="to_rename">&#xA0;</string>
+
+<string name="search">Search (regex):</string>
+<string name="replace_to">Replace with:</string>
+<string name="preview">Preview</string>
+<string name="mult_rename_help">Use standard regular expressions to search string patterns in file names and replace what found.\n
+In the replace string use back-reference like $1 to refer to a search group marked with parenthesis.\n
+Use \\$ for the $ sign.\n
+Use %# for file counter, %## with 2 digits and so on.       
+</string>
+
 <string name="copy_err">Nothing to copy</string>
 <string name="rename_err">Cannot rename</string>
 <string name="edit_err">Not editable</string>
