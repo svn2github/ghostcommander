@@ -158,6 +158,19 @@
   <string name="to_copy">Копировать</string>
   <string name="to_move">Перенести</string>
   <string name="to_rename">Переименовать</string>
+
+  <string name="search">Искать (regex):</string>
+  <string name="replace_to">Заменить на:</string>
+  <string name="preview">Результат</string>
+  <string name="mult_rename_help" formatted="false">Используйте стандартные регулярные выражения
+для поиска подстроки в именах файлов и её замены.\n
+Подстановки:\n
+$1 - группа символов в оригинальном имени файла.
+(Группа символов маркируется круглыми скобками в строке поиска)\n
+\\$ - знак $.\n
+%# - счётчик файлов\n
+%## - счётчик файлов с ведущим нулём\n
+</string>
   <string name="copy_err">Нечего копировать</string>
   <string name="rename_err">Нельзя переименовать</string>
   <string name="edit_err">Не редактируемо.</string>
