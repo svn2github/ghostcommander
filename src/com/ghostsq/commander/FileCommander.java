@@ -918,17 +918,20 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 boolean use_content = shared_pref.getBoolean( "open_content",
                         android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M );
                 Uri u = null;
-                if( use_content ) {
-                    u = FileProvider.makeURI( path );
-                } else {
-                    u = uri.buildUpon().scheme( "file" ).authority( "" ).encodedPath( uri.getEncodedPath().replace( " ", "%20" ) )
-                            .build();
+                for( int att = 0; att < 2; att++ ) {
+                    if( use_content ) {
+                        u = FileProvider.makeURI( path );
+                    } else {
+                        if( Utils.str( scheme ) )
+                            u = uri;
+                        else
+                            u = uri.buildUpon().scheme( "file" ).authority( "" ).encodedPath( uri.getEncodedPath().replace( " ", "%20" ) )
+                                .build();
+                    }
+                    if( tryOpen( i, u, mime ) ) return;
+                    use_content = !use_content;
                 }
-                i.setDataAndType( u, mime );
-                i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET );
-                // | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
-                Log.d( TAG, "Open uri " + u.toString() + " intent: " + i.toString() );
-                startActivityForResult( i, REQUEST_CODE_OPEN );
+                showError( getString( R.string.cant_open ) );
             } else
                 OpenRemoteFile( uri, crd, scheme, path, mime );
         } catch( ActivityNotFoundException e ) {
@@ -938,6 +941,20 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         }
     }
 
+    private boolean tryOpen( Intent i, Uri u, String mime ) {
+        try {
+            i.setDataAndType( u, mime );
+            i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET );
+            // | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
+            Log.d( TAG, "Open uri " + u.toString() + " intent: " + i.toString() );
+            startActivityForResult( i, REQUEST_CODE_OPEN );
+            return true;
+        } catch( Exception e ) {
+            Log.w( TAG, "Can't open URI " + u, e );
+        }
+        return false;
+    }
+    
     private final void OpenRemoteFile( Uri uri, Credentials crd, String scheme, String path, String mime ) throws Exception {
         if( mime != null && ( mime.startsWith( "audio" ) || mime.startsWith( "video" ) ) ) {
             startService( new Intent( this, StreamServer.class ) );

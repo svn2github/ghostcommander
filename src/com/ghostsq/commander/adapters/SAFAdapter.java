@@ -472,30 +472,41 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
             if( item.dir )
                 commander.Navigate( (Uri)item.origin, null, null );
             else {
-                Uri to_open = getItemOpenableUri( position );
-                if( to_open == null ) {
-                    Log.w( TAG, "No URI to open item " + item );
-                    return;
+                SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( ctx );
+                boolean try_as_file = !shared_pref.getBoolean( "open_content", android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M ); 
+                for( int att = 0; att < 2; att++ ) {
+                    Uri to_open = getItemOpenableUri( position, try_as_file );
+                    if( to_open == null ) {
+                        Log.w( TAG, "No URI to open item " + item );
+                        return;
+                    }
+                    if( ContentResolver.SCHEME_CONTENT.equals( to_open.getScheme() ) ) {
+                        try {
+                            Intent in = new Intent( Intent.ACTION_VIEW );
+                            in.setDataAndType( to_open, item.mime );
+                            in.addFlags( Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                       | Intent.FLAG_GRANT_WRITE_URI_PERMISSION );
+                            ctx.startActivity( in );
+                            return;
+                        } catch( Exception e ) {
+                            Log.w( TAG, "Failed to open " + to_open, e );
+                        }
+                    } else {
+                        Log.v( TAG, "Uri:" + to_open.toString() );
+                        commander.Open( to_open, null );
+                        return;
+                    }
+                    try_as_file = !try_as_file;
                 }
-                if( ContentResolver.SCHEME_CONTENT.equals( to_open.getScheme() ) ) {
-                    Intent in = new Intent( Intent.ACTION_VIEW );
-                    in.setDataAndType( to_open, item.mime );
-                    in.addFlags( Intent.FLAG_GRANT_READ_URI_PERMISSION
-                               | Intent.FLAG_GRANT_WRITE_URI_PERMISSION );
-                    commander.issue( in, 0 );
-                } else {
-                    Log.v( TAG, "Uri:" + to_open.toString() );
-                    commander.Open( to_open, null );
-                }
+                commander.showError( s( R.string.cant_open ) );
             }
         }
     }
 
-    public final Uri getItemOpenableUri( int position ) {
+    public final Uri getItemOpenableUri( int position, boolean try_as_file ) {
         try {
             Item item = items[position - 1];
-            SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( ctx );
-            if( !shared_pref.getBoolean( "open_content", android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M ) ) {
+            if( try_as_file ) {
                 String full_name = getItemName( position, true );
                 if( full_name != null && full_name.charAt( 0 ) == '/' && full_name.indexOf( "media_rw" ) < 0 ) {
                     Uri.Builder ub = new Uri.Builder();

@@ -803,7 +803,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             Uri uri = null;
             if( ca instanceof SAFAdapter ) {
                 SAFAdapter safa = (SAFAdapter)ca;
-                uri = safa.getItemOpenableUri( pos );
+                uri = safa.getItemOpenableUri( pos, !use_content );
                 in.addFlags( Intent.FLAG_GRANT_READ_URI_PERMISSION );
             } else {
                 File f = getCurrentFile();
@@ -826,6 +826,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     }
 
     public final void tryToOpen() {
+        SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( c );
+        boolean use_content = shared_pref.getBoolean( "open_content", android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M );
         Intent intent = new Intent( Intent.ACTION_VIEW );
         Uri u = null;
         CommanderAdapter ca = getListAdapter( true );
@@ -833,14 +835,13 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             SAFAdapter safa = (SAFAdapter)ca;
             int pos = getSingle( true );
             if( pos < 0 ) return;
-            u = safa.getItemOpenableUri( pos );
+            u = safa.getItemOpenableUri( pos, !use_content );
             intent.addFlags( Intent.FLAG_GRANT_READ_URI_PERMISSION 
                            | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         } else {
             File f = getCurrentFile();
             if( f == null ) return;
-            SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( c );
-            if( shared_pref.getBoolean( "open_content", android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M ) ) {
+            if( use_content ) {
                 u = FileProvider.makeURI( f.getAbsolutePath() );
             } else {
                 u = Uri.fromFile( f );

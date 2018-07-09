@@ -36,10 +36,15 @@
   <string name="hidden">Ocultos</string>
   <string name="rescan">Reanalisar dados</string>
   <string name="favs">Favoritos</string>
+  <string name="df_dnl">Descargas</string>
+  <string name="df_cam">Câmara</string>
+  <string name="df_pic">Imagens</string>
+  <string name="df_mus">Músicas</string>
+  <string name="df_mov">Filmes</string>
   <string name="local">Armazenamento</string>
   <string name="external">Cartão externo</string>
   <string name="media">Media Store</string>
-  <string name="media_descr">Explorar os seus ficheiros multimédia tal e qual como o seu sistema os vê.</string>
+  <string name="saf">Storage Access Framework</string>
   <string name="ftp">Sítio FTP</string>
   <string name="sftp">Sítio SFTP</string>
   <string name="smb">Partilha Windows</string>
@@ -52,8 +57,9 @@
   <string name="forget">Esquecer conta (fechar aplicação)</string>
   <string name="favs_descr">Ver e gerir a lista de pastas e sítios web favoritos</string>
   <string name="local_descr">Explorar, organizar e modificar o conteúdo do sistema de ficheiros</string>
-  <string name="external_descr">Aceder aos ficheiros guardados no cartão SD. Em alguns dispositivos, pode ser apenas para leitura.</string>
-  <string name="saf_descr">Efetuar modificações ao cartão SD através da interface Storage Access Framework</string>
+  <string name="external_descr">Aceder aos ficheiros existentes no cartão SD. Em alguns dispositivos pode ser apenas para leitura. Utilize o modo SAF para contornar.</string>
+  <string name="media_descr">Explorar os seus ficheiros multimédia tal e qual como o seu sistema os vê.</string>
+  <string name="saf_descr">Modificar os dados do cartão SD ou USB-OTG através da interface SAF (Storage Access Framework)</string>
   <string name="ftp_descr">Estabelecer ligação a um servidor FTP</string>
   <string name="sftp_descr">Estabelecer ligação a um servidor SSH FTP (SFTP)</string>
   <string name="smb_descr">Estabelecer ligação às pastas de um sistema Windows</string>
@@ -101,6 +107,7 @@
   <string name="create_zip">Criar um novo ficheiro ZIP</string>
   <string name="create_zip_title">Criar ficheiro ZIP</string>
   <string name="extract_zip">Extrair ZIP</string>
+  <string name="file_name">Ficheiro</string>
   <string name="wait">aguarde&#8230;</string>
   <string name="fail">Falha</string>
   <string name="failed">Erro:\n</string>
@@ -251,6 +258,7 @@ desempacotado</string>
   <string name="domain">Domínio:</string>
   <string name="username">Utilizador:</string>
   <string name="password">Palavra-passe:</string>
+  <string name="encrypted">Encriptado</string>
   <string name="command">Comando:</string>
   <string name="use_busybox">busybox</string>
   <string name="user">Utilizador</string>
@@ -279,8 +287,14 @@ desempacotado</string>
   <string name="advanced">Avançado</string>
   <string name="advanced_settings">Diversos</string>
   <string name="summary_advanced_settings">Definições para utilizadores avançados</string>
+  <string name="remote_open_size">Tamanho dos ficheiros</string>
+  <string name="summary_remote_open_size">Limite máximo permitido para os ficheiros remotos a abrir localmente</string>
+  <string name="compare_content">Compare content</string>
+  <string name="summary_compare_content">Compare the files content for the files with equal names and sizes</string>
   <string name="send_content">Enviar através do fornecedor de conteúdo</string>
   <string name="summary_send_content">Desative esta opção se a sua aplicação de envio de ficheiros não implementar um \'resolver\' de conteúdo</string>
+  <string name="open_content">Abrir através do fornecedor de conteúdo</string>
+  <string name="summary_open_content">Desmarque esta opção se a aplicação que abrir o ficheiro não implementar a resolução de conteúdo</string>
   <string name="panels_mode">Painéis lado a lado</string>
   <string name="summary_panels_mode">Mostrar ambos os painéis na janela principal</string>
   <string name="two_lines">Duas linhas por coluna</string>
@@ -302,8 +316,8 @@ desempacotado</string>
   <string name="summary_finger_friendly">Ampliar os itens da interface de utilizador</string>
   <string name="prevent_root">Avisar ao sair de /sdcard</string>
   <string name="summary_prevent_root">Avisar ao aceder à pasta raiz do dispositivo</string>
-  <string name="show_root">Mostrar \'root\' e pontos de montagem</string>
-  <string name="summary_show_root">Mostrar as opções \"Modo root\" e \"Pontos de montagem\"</string>
+  <string name="show_root">Mostrar itens avançados</string>
+  <string name="summary_show_root">A vista normal inclui o modo root, os pontos de montagem e a media store</string>
   <string name="root_root">Modo \'root\' automático</string>
   <string name="summary_root_root">Ativar o modo \'root\' ao aceder à pasta /root do dispositivo</string>
   <string name="thumbnails">Ativar miniaturas</string>
@@ -352,6 +366,8 @@ desempacotado</string>
   <string name="summary_btn_color_picker">Escolha a cor de fundo para os botões</string>
   <string name="pick_color">Definir cor</string>
   <string name="color">Cor</string>
+  <string name="color_themes">Temas</string>
+  <string name="summary_color_themes">Definir a cor de todas as aplicações para um tema escolhido</string>
   <string name="language">Idioma</string>
   <string name="summary_language">Sobrepor o idioma do sistema</string>
   <string name="restart_to_apply_lang">Reinicie a aplicação para aplicar o novo idioma</string>
@@ -361,6 +377,8 @@ desempacotado</string>
   <string name="summary_busybox_location">Especifique a localização do executável BusyBox</string>
   <string name="su_location">Caminho para su</string>
   <string name="summary_su_location">Especifique a localização do executável su</string>
+  <string name="cpmv_err_ign">Ignorar erros de permissões ao copiar/mover</string>
+  <string name="summary_cpmv_err_ign">Ignorar erros de root ao copiar um ficheiro para um sistema de ficheiros que não tenha suporte a permissões.</string>
   <string name="scan_all">Analisar todos os ficheiros</string>
   <string name="summary_scan_all">Desmarque para analisar apenas os ficheiros multimédia</string>
   <string name="execute_command">Executar um comando</string>
@@ -379,7 +397,7 @@ desempacotado</string>
   <string name="go_prev">Anterior</string>
   <string name="rot_right">Rodar à direita</string>
   <string name="rot_left">Rodar à esquerda</string>
-  <string name="encoding">Codificação</string>
+  <string name="encoding">Codificação:</string>
   <string name="encoding_set">A codificação está definida para \"%1$s\", selecione Recarregar. Se guardar, a codificação orginal será alterada para a atual.</string>
   <string name="no_such_file">Ficheiro \"%1$s\" inexistente</string>
   <string name="too_big_file">O ficheiro \"%1$s\" é muito grande</string>
