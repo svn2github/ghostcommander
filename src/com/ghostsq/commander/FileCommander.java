@@ -915,21 +915,24 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
 
                 i.setAction( Intent.ACTION_VIEW );
                 SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
-                boolean use_content = shared_pref.getBoolean( "open_content",
-                        android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M );
-                Uri u = null;
-                for( int att = 0; att < 2; att++ ) {
-                    if( use_content ) {
-                        u = FileProvider.makeURI( path );
-                    } else {
-                        if( Utils.str( scheme ) )
-                            u = uri;
-                        else
-                            u = uri.buildUpon().scheme( "file" ).authority( "" ).encodedPath( uri.getEncodedPath().replace( " ", "%20" ) )
-                                .build();
+                for( int att1 = 0; att1 < 2; att1++ ) {
+                    boolean use_content = shared_pref.getBoolean( "open_content",
+                            android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M );
+                    Uri u = null;
+                    for( int att2 = 0; att2 < 2; att2++ ) {
+                        if( use_content ) {
+                            u = FileProvider.makeURI( path );
+                        } else {
+                            if( Utils.str( scheme ) )
+                                u = uri;
+                            else
+                                u = uri.buildUpon().scheme( "file" ).authority( "" ).encodedPath( uri.getEncodedPath().replace( " ", "%20" ) )
+                                    .build();
+                        }
+                        if( tryOpen( i, u, mime ) ) return;
+                        use_content = !use_content;
                     }
-                    if( tryOpen( i, u, mime ) ) return;
-                    use_content = !use_content;
+                    mime = mime.substring( 0, mime.indexOf( '/' ) + 1 ) + "*";
                 }
                 showError( getString( R.string.cant_open ) );
             } else
