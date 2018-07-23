@@ -15,6 +15,7 @@ import com.ghostsq.commander.R;
 import com.ghostsq.commander.TextViewer;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
+import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.MnfUtils;
 import com.ghostsq.commander.utils.Utils;
 
@@ -33,7 +34,9 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ContextMenu;
@@ -704,16 +707,8 @@ public class AppsAdapter extends CommanderAdapterBase {
                         return;
                     for( int i = 0; i < rl.size(); i++ ) {
                         ActivityInfo ai = rl.get( i ).activityInfo;
-                        if( ai != null ) {
-                            Bitmap ico = null;
-                            Drawable drawable = ai.loadIcon( pm );
-                            if( drawable instanceof BitmapDrawable ) {
-                                BitmapDrawable bd = (BitmapDrawable)drawable;
-                                ico = bd.getBitmap();
-                            }
-                            createDesktopShortcut( new ComponentName( ai.applicationInfo.packageName, ai.name ), ai.loadLabel( pm )
-                                    .toString(), ico );
-                        }
+                        if( ai != null )
+                            createDesktopShortcut( ai );
                     }
                     return;
                 }
@@ -768,16 +763,6 @@ public class AppsAdapter extends CommanderAdapterBase {
                         Intent in = new Intent( Intent.ACTION_MAIN );
                         in.setComponent( new ComponentName( ai.packageName, ai.name ) );
                         commander.issue( in, 0 );
-                        /*
-                        Bitmap ico = null;
-                        Drawable drawable = ai.loadIcon( pm );
-                        if( drawable instanceof BitmapDrawable ) {
-                            BitmapDrawable bd = (BitmapDrawable)drawable;
-                            ico = bd.getBitmap();
-                        }
-                        createDesktopShortcut( new ComponentName( ai.packageName, ai.name ), 
-                                ai.loadLabel( pm ).toString(), ico );
-                        */
                     }
                 }
             } else if( intFilters != null ) {
@@ -1078,10 +1063,19 @@ public class AppsAdapter extends CommanderAdapterBase {
         }
     }
 
-    private final void createDesktopShortcut( ComponentName cn, String name, Bitmap ico ) {
-        Intent shortcutIntent = new Intent();
+    private final void createDesktopShortcut( ActivityInfo ai ) {
+        if( ai == null ) return;
+        Bitmap ico = ForwardCompat.getBitmap( ai.loadIcon( pm ) );
+        ComponentName cn = new ComponentName( ai.applicationInfo.packageName, ai.name );
+        String name = (String)ai.loadLabel( pm );
+        Intent shortcutIntent = new Intent( Intent.ACTION_MAIN );
         shortcutIntent.setComponent( cn );
         shortcutIntent.setData( uri );
+        if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ) {
+            Parcelable ip = ForwardCompat.createIcon( ico );
+            ForwardCompat.makeShortcut( ctx, shortcutIntent, name, ip );
+            return;
+        } 
         Intent intent = new Intent();
         intent.putExtra( Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent );
         intent.putExtra( Intent.EXTRA_SHORTCUT_NAME, name );

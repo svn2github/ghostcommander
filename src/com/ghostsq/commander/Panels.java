@@ -904,7 +904,11 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         if( f == null )
             return;
         String esc_fn = Utils.escapePath( f.getAbsolutePath() );
-        Uri uri = Uri.parse( "file://" + esc_fn );
+        Uri uri;
+        if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O )
+            uri = FileProvider.makeURI( esc_fn );
+        else
+            uri = Uri.parse( "file://" + esc_fn );
         Intent shortcutIntent = new Intent( Intent.ACTION_VIEW );
         shortcutIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         String name = f.getName();
@@ -921,7 +925,8 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         shortcutIntent.setDataAndType( uri, mime );
         
         if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ) {
-            ForwardCompat.makeShortcut( c, shortcutIntent, name, dr_id );
+            Parcelable ip = ForwardCompat.createIcon( c, dr_id );
+            ForwardCompat.makeShortcut( c, shortcutIntent, name, ip );
             return;
         } 
 
@@ -1410,7 +1415,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         l.setCurPos( position );
         CommanderAdapter ca = (CommanderAdapter)l.flv.getAdapter();
         // hack to let the PictureViewer (if being chosen to handle the intent) be able to traverse other pictures in the dir
-        if( ca instanceof FSAdapter && !c.isPickMode() ) {    
+        if( ca instanceof FSAdapter && !c.isPickMode() && android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O ) {    
             Uri uri = ca.getItemUri( position );
             if( uri != null ) {
                 String mime = Utils.getMimeByExt( Utils.getFileExt( uri.getPath() ) );

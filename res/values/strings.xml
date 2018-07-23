@@ -71,7 +71,7 @@
 <string name="mount_descr">Display a list of all mount points. Remount them to \"rw\" mode, then back to \"ro\" mode after changes. Proceed with caution.</string>
 <string name="apps_descr">View and manage installed packages</string>
 <string name="exit_descr">Close the application</string>
-<string name="shortcut">Add shortcut</string>
+<string name="shortcut">Add shortcut to Home screen</string>
 <string name="enter_ftp">Connect to FTP</string>
 <string name="enter_smb">Connect to Windows PC</string>
 <string name="search_file">Search</string>

@@ -18,10 +18,18 @@ import android.content.pm.PackageManager;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.AdaptiveIconDrawable;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.VectorDrawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.ViewConfiguration;
 import android.media.ExifInterface;
@@ -120,16 +128,57 @@ public class ForwardCompat
         return true;
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
+    public static Parcelable createIcon( Context ctx, int icon_res_id ) {
+        return Icon.createWithResource( ctx, icon_res_id );
+    }
+    
+    @TargetApi(Build.VERSION_CODES.M)
+    public static Parcelable createIcon( Bitmap bmp ) {
+        return Icon.createWithBitmap( bmp );
+    }
+
     @TargetApi(Build.VERSION_CODES.O)
-    public static boolean makeShortcut( Context ctx, Intent shortcut_intent, String label, int icon_res_id ) {
+    public static Bitmap getBitmap( Drawable drawable ) {
+        try {
+            Drawable d2b = null;
+            if( drawable instanceof BitmapDrawable ) {
+                return ( (BitmapDrawable)drawable ).getBitmap();
+            } else if( drawable instanceof VectorDrawable ) {
+                d2b = drawable;
+            } else if( drawable instanceof AdaptiveIconDrawable ) {
+                Drawable backgroundDr = ( (AdaptiveIconDrawable)drawable ).getBackground();
+                Drawable foregroundDr = ( (AdaptiveIconDrawable)drawable ).getForeground();
+                Drawable[] drr = new Drawable[2];
+                drr[0] = backgroundDr;
+                drr[1] = foregroundDr;
+                d2b = new LayerDrawable( drr );
+            }
+            int width  = d2b.getIntrinsicWidth();
+            int height = d2b.getIntrinsicHeight();
+            Bitmap bitmap = Bitmap.createBitmap( width, height, Bitmap.Config.ARGB_8888 );
+            Canvas canvas = new Canvas( bitmap );
+            d2b.setBounds( 0, 0, canvas.getWidth(), canvas.getHeight() );
+            d2b.draw( canvas );
+            return bitmap;
+        } catch( Exception e ) {
+            Log.e( "getAppIcon()", "", e );
+        }
+        return null;
+    }
+    
+    @TargetApi(Build.VERSION_CODES.O)
+    public static boolean makeShortcut( Context ctx, Intent shortcut_intent, String label, Parcelable icon_p ) {
         try {
             ShortcutManager sm = ctx.getSystemService( ShortcutManager.class );
-            if( !sm.isRequestPinShortcutSupported() ) return false;
-            Icon icon = Icon.createWithResource( ctx, icon_res_id );
-            ShortcutInfo si = new ShortcutInfo.Builder( ctx, "GCshortcut" )
+            if( !sm.isRequestPinShortcutSupported() ) 
+                Log.w( "makeShortcut()", "ShortcutManager.isRequestPinShortcutSupported() returned false" );
+            Icon icon = (Icon)icon_p;
+            ShortcutInfo si = new ShortcutInfo.Builder( ctx, label )
                 .setIntent( shortcut_intent )
                 .setShortLabel( label )
                 .setIcon( icon )
+                .setRank( label.hashCode() )
                 .build();
             return sm.requestPinShortcut( si, null );
         } catch( Exception e ) {

@@ -25,9 +25,9 @@ import android.text.Html;
 import android.text.format.DateFormat;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -86,12 +86,14 @@ public class Dialogs implements DialogInterface.OnClickListener {
         taskId = 0L;
     }
     private final AlertDialog build( View inner_view, String title ) {
-        return new AlertDialog.Builder( owner )
+        AlertDialog ad = new AlertDialog.Builder( owner )
             .setView( inner_view )
             .setTitle( title )
             .setPositiveButton( R.string.dialog_ok, this )
             .setNegativeButton( R.string.dialog_cancel, this )
             .create();
+        ad.getWindow().setSoftInputMode( WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN );
+        return ad;
     }
     
     protected final Dialog createDialog( int id ) {
@@ -243,9 +245,9 @@ public class Dialogs implements DialogInterface.OnClickListener {
                         Calendar cda = new GregorianCalendar( y, m, d );
                         button.setText( df.format( cda.getTime() ) );
                     }
-              }, cal.get(  Calendar.YEAR ) , 
-                 cal.get(  Calendar.MONTH ), 
-                 cal.get(  Calendar.DAY_OF_MONTH ) ).show();
+              }, cal.get( Calendar.YEAR ) , 
+                 cal.get( Calendar.MONTH ), 
+                 cal.get( Calendar.DAY_OF_MONTH ) ).show();
         }
     }
     
