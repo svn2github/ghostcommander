@@ -7,7 +7,7 @@
 	android:layout_width="fill_parent" 
 	android:layout_height="fill_parent"
 	android:gravity="top"
-  android:inputType="textMultiLine|textAutoCorrect|textAutoComplete"
+    android:inputType="textMultiLine|textAutoCorrect"
 	android:typeface="monospace"
 	android:textColor="#eee"
 	android:background="#000"

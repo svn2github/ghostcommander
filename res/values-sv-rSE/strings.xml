@@ -25,6 +25,9 @@
   <string name="sz">Info</string>
   <string name="refresh">Uppdatera</string>
   <string name="swap">Byt plats</string>
+  <string name="compare">Jämför</string>
+  <string name="filter">Filtrera</string>
+  <string name="filter_canceled">Filtrering avbtuten</string>
   <string name="enter">Ändra plats</string>
   <string name="home">Hem</string>
   <string name="softkbd">Tangentbord</string>
@@ -36,6 +39,11 @@
   <string name="hidden">Dold</string>
   <string name="rescan">Uppdatera media</string>
   <string name="favs">Favoriter</string>
+  <string name="df_dnl">Nerladdningar</string>
+  <string name="df_cam">Kamera</string>
+  <string name="df_pic">Bilder</string>
+  <string name="df_mus">Musik</string>
+  <string name="df_mov">Filmer</string>
   <string name="local">Lokal lagring</string>
   <string name="external">Externt kort</string>
   <string name="media">Mediabutik</string>
@@ -53,7 +61,7 @@
   <string name="local_descr">Bläddra, organisera och modifiera innehållet i det primära filsystemet</string>
   <string name="external_descr">Komma åt filer på det fysiskt införas SD-kortet. På en del enheter kan det vara skrivskyddat</string>
   <string name="media_descr">Bläddra bland dina mediafiler så som systemet ser dem.</string>
-  <string name="saf_descr">Modifiera det externa SD-kortet via gränssnittet storage access framework</string>
+  <string name="saf_descr">Modifiera det externa SD-kortet eller USB-OTG via gränssnittet Storage Access Framework (SAF)</string>
   <string name="ftp_descr">Ansluta till en FTP-server</string>
   <string name="sftp_descr">Ansluta till en server med SSH FTP-server (sftp)</string>
   <string name="smb_descr">Ansluta till utdelade mappar på en dator med Windows</string>
@@ -96,11 +104,13 @@
   <string name="send_to">Skicka till&#8230;</string>
   <string name="open_with">Öppna med&#8230;</string>
   <string name="open">Öppna</string>
+  <string name="open_as">Öppna som&#8230;</string>
   <string name="copy_name">Kopiera till urklipp</string>
   <string name="fav_fld">Lägg \"%s\" som favorit</string>
   <string name="create_zip">Skapa en ny ZIP-fil</string>
   <string name="create_zip_title">Skapa ZIP-fil</string>
   <string name="extract_zip">Extrahera ZIP</string>
+  <string name="file_name">Fil</string>
   <string name="wait">vänta&#8230;</string>
   <string name="fail">MISSLYCKADES</string>
   <string name="failed">Fel:\n</string>
@@ -135,6 +145,8 @@
   <string name="smaller_than">Mindre\nän:</string>
   <string name="mod_after">Efter</string>
   <string name="mod_before">Före</string>
+  <string name="show_matched">Visa matchade</string>
+  <string name="hide_matched">Dölj matchade</string>
   <string name="launch">Kör</string>
   <string name="operation">Åtgärder</string>
   <string name="view_title">Visa</string>
@@ -146,6 +158,7 @@
   <string name="search_title">Sök</string>
   <string name="search_prompt">Sökkriterier:</string>
   <string name="rename_title">Döp om</string>
+  <string name="mult_rename_title">Döp om flera</string>
   <string name="copy_title">Kopiera</string>
   <string name="move_title">Flytta</string>
   <string name="send_title">Skicka till&#8230;</string>
@@ -153,6 +166,14 @@
   <string name="to_copy">&#160;</string>
   <string name="to_move">&#160;</string>
   <string name="to_rename">&#160;</string>
+  <string name="search">Sök (regex):</string>
+  <string name="replace_to">Ersätt med:</string>
+  <string name="preview">Förhandsgranska</string>
+  <string name="mult_rename_help">Använd standard reguljärt uttryck för att leta upp strängmönster i filnamn och ersätt det som hittas.\n
+I ersättningssträngen använder du backreferens som $1 för att referera till en sökgrupp markerad med parentes.\n
+Använd \\$ för $-tecken.\n
+Använd %# för filräknare, %## med 2 siffror osv.       
+</string>
   <string name="copy_err">Inget att kopiera</string>
   <string name="rename_err">Kan inte döpa om</string>
   <string name="edit_err">Inte redigerbar</string>
@@ -279,8 +300,14 @@
   <string name="advanced">Avancerat</string>
   <string name="advanced_settings">Diverse</string>
   <string name="summary_advanced_settings">Extra inställningar för avancerade användare</string>
+  <string name="remote_open_size">Filstorleksgräns</string>
+  <string name="summary_remote_open_size">Maximal fjärrfilstorlek som får öppnas lokalt</string>
+  <string name="compare_content">Jämför innehåll</string>
+  <string name="summary_compare_content">Jämför innehållet i de filer som har samma namn och storlek</string>
   <string name="send_content">Skickas med innehållsleverantören</string>
   <string name="summary_send_content">Prova att inaktivera om din filsändarapplikation inte har en innehållsresolver</string>
+  <string name="open_content">Open using content provider</string>
+  <string name="summary_open_content">Try to open a file via content provider rather than as a regular file.</string>
   <string name="panels_mode">Paneler sida vid sida</string>
   <string name="summary_panels_mode">Visa båda panelerna sida vid sida i en delad skärmvy</string>
   <string name="two_lines">Två linjer i rad</string>
@@ -290,7 +317,7 @@
   <string name="toolbar_settings">Verktygsfält</string>
   <string name="summary_toolbar_settings">Anpassa verktygsraden som är ner till på skärmen</string>
   <string name="show_actionbar">Aktivera åtgärdsrad</string>
-  <string name="summary_show_actionbar">Visa åtgärdsraden överst på skärmen</string>
+  <string name="summary_show_actionbar">Visa åtgärdsraden överst på skärmen. Omstart krävs.</string>
   <string name="show_toolbar">Aktivera verktygsfältet</string>
   <string name="summary_show_toolbar">Visa verktygsraden nertill på skärmen</string>
   <string name="show_hotkeys">Visa snabbknappar</string>
@@ -353,7 +380,7 @@
   <string name="pick_color">Ange färg</string>
   <string name="color">Färg</string>
   <string name="color_themes">Teman</string>
-  <string name="summary_color_themes">Set all application colors to a one chosen theme</string>
+  <string name="summary_color_themes">Ställ in alla applikationsfärger på ett valt tema</string>
   <string name="language">Språk</string>
   <string name="summary_language">Åsidosätt systemets språk</string>
   <string name="restart_to_apply_lang">Starta om applikationen för att tillämpa det nya språket</string>
@@ -428,7 +455,7 @@ Tryck \"OK\" för att bli vidarebefordrad till PayPal.\n
 <a href="https://crowdin.com/project/ghost-commander">Översättningar</a>
 </p>
 <p>Skicka e-post om fel/förslag till:<br/><a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a></p>
-<p>Gillar du appen? <a href="%2$s">Gör en donation via PayPal</a> för att stöda framtida utveckling.</p>
+<p>Gillar du appen? <a href="%2$s">Gör en donation</a> för att stöda framtida utveckling.</p>
 <h3>DISCLAIMER:</h3>
 <p>Genom att använda detta program, godkänner du följande:
 Författaren till detta program är inte ansvarig för någon form av skada eller förlust av information, 
