@@ -492,10 +492,6 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
 
     @Override
     public boolean renameItems( SparseBooleanArray cis, String pattern_str, String replace_to ) {
-        Pattern pattern = null; 
-        try {
-            pattern = Pattern.compile( pattern_str );
-        } catch( PatternSyntaxException e ) {}
         LsItem[] list = bitsToItems( cis );
         try {
             RenEngine re = new RenEngine( ctx, theUserPass, uri, list, pattern_str, replace_to, ftp.getActiveMode(), ftp.getCharset() );
@@ -505,8 +501,7 @@ public class FTPAdapter extends CommanderAdapterBase implements Engines.IRecieve
         }
         return false;
     }
-    
-    
+        
 	@Override
 	public void prepareToDestroy() {
 	    if( heartBeat != null ) {

@@ -29,6 +29,7 @@ import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.VectorDrawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.ParcelFileDescriptor;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.ViewConfiguration;
@@ -112,6 +113,11 @@ public class ForwardCompat
         }
         return res;
     }
+
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    public static int parseFileDescriptorMode( String mode ) {
+        return ParcelFileDescriptor.parseMode( mode );
+    }    
     
     @TargetApi(Build.VERSION_CODES.M)
     public static boolean requestPermission( Activity act, String[] perms, int rpc ) {

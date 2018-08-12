@@ -162,6 +162,7 @@
   <string name="search">Искать (regex):</string>
   <string name="replace_to">Заменить на:</string>
   <string name="preview">Результат</string>
+<string name="mult_rename_title">Переименование нескольких</string>  
   <string name="mult_rename_help" formatted="false">Используйте стандартные регулярные выражения
 для поиска подстроки в именах файлов и её замены.\n
 Подстановки:\n

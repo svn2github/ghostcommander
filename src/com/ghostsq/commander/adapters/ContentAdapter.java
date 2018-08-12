@@ -439,6 +439,12 @@ public class ContentAdapter extends CommanderAdapterBase implements Engines.IRec
     
     @Override
     public OutputStream saveContent( Uri u ) {
+        try {
+            ContentResolver cr = ctx.getContentResolver();
+            return cr.openOutputStream( u );
+        } catch( Exception e ) {
+            Log.e( TAG, u.getPath(), e );
+        }
         return null;
     }
     

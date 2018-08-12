@@ -352,8 +352,12 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
             if( f.getName().equals( replaced ) )
                 return;
             File new_file = new File( dirName, replaced );
-            if( !new_file.exists() )
-                f.renameTo( new_file );
+            if( !new_file.exists() ) {
+                if( !f.renameTo( new_file ) ) {
+                    String err_msg = FSAdapter.this.s( R.string.rename_err ) + " " + f.getName();
+                    FSAdapter.this.notify( err_msg, Commander.OPERATION_FAILED );
+                }
+            }
             last_file_name = new_file.getName();
         }
     }	

@@ -13,6 +13,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.util.Base64;
@@ -111,14 +112,17 @@ public class FileProvider extends ContentProvider {
     
     @Override
     public ParcelFileDescriptor openFile( Uri uri, String mode ) throws FileNotFoundException {
-        Log.v( TAG, "openFile( " + uri + " )" );
+        Log.v( TAG, "openFile( " + uri + " ) " + mode );
         Uri saf_u = getEnclosedUri( uri, "SAF" );
         if( saf_u != null ) {
             return getContext().getContentResolver().openFileDescriptor( saf_u, mode );
         }
         File file = new File( uri.getPath() );
         if( !file.exists() ) throw new FileNotFoundException();
-        ParcelFileDescriptor parcel = ParcelFileDescriptor.open( file, ParcelFileDescriptor.MODE_READ_ONLY );
+        int pfd_mode = 0;
+        if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT )
+            pfd_mode = ForwardCompat.parseFileDescriptorMode( mode );
+        ParcelFileDescriptor parcel = ParcelFileDescriptor.open( file, pfd_mode );
         return parcel;
     }
 

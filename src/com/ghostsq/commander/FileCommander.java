@@ -888,9 +888,9 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 Log.d( TAG, "Open uri " + uri.toString() + " intent: " + i.toString() );
                 startActivityForResult( i, REQUEST_CODE_OPEN );
             } else if( !Utils.str( scheme ) || "file".equals( scheme ) ) {
-                Intent i = new Intent();
                 Intent op_intent = starting_intent;
                 if( op_intent != null ) {
+                    Intent i = new Intent();
                     String action = op_intent.getAction();
                     if( Intent.ACTION_PICK.equals( action ) ) {
                         i.setData( uri );
@@ -912,29 +912,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                         return;
                     }
                 }
-
-                i.setAction( Intent.ACTION_VIEW );
-                SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
-                for( int att1 = 0; att1 < 2; att1++ ) {
-                    boolean use_content = shared_pref.getBoolean( "open_content",
-                            android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M );
-                    Uri u = null;
-                    for( int att2 = 0; att2 < 2; att2++ ) {
-                        if( use_content ) {
-                            u = FileProvider.makeURI( path );
-                        } else {
-                            if( Utils.str( scheme ) )
-                                u = uri;
-                            else
-                                u = uri.buildUpon().scheme( "file" ).authority( "" ).encodedPath( uri.getEncodedPath().replace( " ", "%20" ) )
-                                    .build();
-                        }
-                        if( tryOpen( i, u, mime ) ) return;
-                        use_content = !use_content;
-                    }
-                    mime = mime.substring( 0, mime.indexOf( '/' ) + 1 ) + "*";
-                }
-                showError( getString( R.string.cant_open ) );
+                tryOpen( uri, mime );
             } else
                 OpenRemoteFile( uri, crd, scheme, path, mime );
         } catch( ActivityNotFoundException e ) {
@@ -942,6 +920,35 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         } catch( Exception e ) {
             Log.e( TAG, uri.toString(), e );
         }
+    }
+
+    private boolean tryOpen( Uri uri, String mime ) {
+        String scheme = uri.getScheme();
+        String path = uri.getPath();
+        Intent i = new Intent();
+        i.setAction( Intent.ACTION_VIEW );
+        SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
+        for( int att1 = 0; att1 < 2; att1++ ) {
+            boolean use_content = shared_pref.getBoolean( "open_content",
+                    android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M );
+            Uri u = null;
+            for( int att2 = 0; att2 < 2; att2++ ) {
+                if( use_content ) {
+                    u = FileProvider.makeURI( path );
+                } else {
+                    if( Utils.str( scheme ) )
+                        u = uri;
+                    else
+                        u = uri.buildUpon().scheme( "file" ).authority( "" ).encodedPath( uri.getEncodedPath().replace( " ", "%20" ) )
+                            .build();
+                }
+                if( tryOpen( i, u, mime ) ) return true;
+                use_content = !use_content;
+            }
+            mime = mime.substring( 0, mime.indexOf( '/' ) + 1 ) + "*";
+        }
+        showError( getString( R.string.cant_open ) );
+        return false;
     }
 
     private boolean tryOpen( Intent i, Uri u, String mime ) {
@@ -997,7 +1004,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                     return;
             } else if( !temp_dir.isDirectory() )
                 return;
-            final CommanderAdapter ca = CA.CreateAdapterInstance( uri, this );
+            CommanderAdapter ca = CA.CreateAdapterInstance( uri, this );
             if( ca == null )
                 return;
             ca.Init( this );
@@ -1010,67 +1017,78 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                     temp_file = temp_file.replace( '/', '_' );
             } else
                 temp_file = path.substring( path.lastIndexOf( '/' ) + 1 );
-
-            final String _fn = temp_file;
-            final Uri _uri = uri;
-            final File _out_file = new File( temp_dir, _fn );
-            final Handler _handler = new Handler();
-            final ProgressDialog _pd = ProgressDialog.show( this, "", getString( R.string.loading ), true, true );
-            new Thread( new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Item item = ca.getItem( _uri );
-                        if( item == null ) {
-                            _pd.cancel();
-                            Log.e( TAG, "No item for: " + _uri.toString() );
-                            return;
-                        }
-                        //
-                        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences( FileCommander.this );
-                        long ros = Long.parseLong( sp.getString( "remote_open_size", "5000000" ) );
-
-                        if( item.size > ros ) {
-                            _handler.post( new Runnable() {
-                                @Override
-                                public void run() {
-                                    _pd.cancel();
-                                    FileCommander.this.showError( getString( R.string.too_big_file, _fn ) );
-                                }
-                            } );
-                            return;
-                        }
-                        FileOutputStream fos;
-                        fos = new FileOutputStream( _out_file );
-                        InputStream is = ca.getContent( _uri );
-                        Utils.copyBytes( is, fos );
-                        fos.close();
-                        ca.closeStream( is );
-                        ca.prepareToDestroy();
-                        _handler.post( new Runnable() {
-                            @Override
-                            public void run() {
-                                _pd.cancel();
-                                String encoded = Utils.escapePath( _out_file.toString() );
-                                FileCommander.this.Open( Uri.parse( encoded ), null );
-                            }
-                        } );
-                        return;
-                    } catch( Exception e ) {
-                        Log.e( TAG, _uri.toString(), e );
-                    }
-                    _handler.post( new Runnable() {
-                        @Override
-                        public void run() {
-                            _pd.cancel();
-                            FileCommander.this.showError( getString( R.string.error, _fn ) );
-                        }
-                    } );
-                }
-            } ).start();
+            new RemoteContentOpener( this, ca, uri, new File( temp_dir, temp_file ) ).start();
         }
     }
 
+    class RemoteContentOpener extends Thread {
+        Handler handler = new Handler();
+        Context ctx;
+        CommanderAdapter ca;
+        Uri u;
+        Item item;
+        File temp_file;
+        ProgressDialog pd;
+        
+        RemoteContentOpener( Context ctx, CommanderAdapter ca, Uri u, File temp_file ) {
+            this.ctx = ctx;
+            this.ca = ca;
+            this.u = u;
+            this.temp_file = temp_file;
+            pd = ProgressDialog.show( ctx, "", ctx.getString( R.string.loading ), true, true );
+        }
+        
+        @Override
+        public void run() {
+            try {
+                item = ca.getItem( u );
+                if( item == null ) {
+                    pd.cancel();
+                    Log.e( TAG, "No item for: " + u.toString() );
+                    return;
+                }
+                //
+                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences( FileCommander.this );
+                long ros = Long.parseLong( sp.getString( "remote_open_size", "5000000" ) );
+                if( item.size > ros ) {
+                    handler.post( new Runnable() {
+                        @Override
+                        public void run() {
+                            pd.cancel();
+                            FileCommander.this.showError( getString( R.string.too_big_file, temp_file.getName() ) );
+                        }
+                    } );
+                    return;
+                }
+                FileOutputStream fos;
+                fos = new FileOutputStream( temp_file );
+                InputStream is = ca.getContent( u );
+                Utils.copyBytes( is, fos );
+                fos.close();
+                ca.closeStream( is );
+                ca.prepareToDestroy();
+                handler.post( new Runnable() {
+                    @Override
+                    public void run() {
+                        pd.cancel();
+                        String encoded = Utils.escapePath( temp_file.toString() );
+                        FileCommander.this.tryOpen( Uri.parse( encoded ), item.mime );
+                    }
+                } );
+                return;
+            } catch( Exception e ) {
+                Log.e( TAG, u.toString(), e );
+            }
+            handler.post( new Runnable() {
+                @Override
+                public void run() {
+                    pd.cancel();
+                    FileCommander.this.showError( getString( R.string.error, temp_file.getName() ) );
+                }
+            } );
+        }
+    }
+    
     @Override
     public Context getContext() {
         return this;

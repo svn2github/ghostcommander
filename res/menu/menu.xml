@@ -94,8 +94,8 @@
             android:title="@string/online_help"/>
         <item android:id="@+id/about"
             android:title="@string/about"/>
-        <item android:id="@+id/donate"
-            android:title="@string/donate"/>
+        <!-- item android:id="@+id/donate"
+            android:title="@string/donate"/-->
         </menu>
     </item>
 </menu>

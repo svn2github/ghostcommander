@@ -464,7 +464,7 @@ Tap \"OK\" to be redirected to the PayPal site.\n
 <a href="https://crowdin.com/project/ghost-commander">Translations</a>
 </p>
 <p>Please email bugs/suggestions to:<br/><a href="mailto:ghost.sq2@gmail.com">ghost.sq2@gmail.com</a></p>
-<p>Like this app? <a href="%2$s">Make a PayPal Donation</a> to support further development.</p>
+<p>Like this app? <!--a href="%2$s"></a-->Make a donation to support further development.</p>
 <h3>DISCLAIMER:</h3>
 <p>By using this software, you agree with the following:
 The author of this software is not responsible for any kind of damage, loss of information, 
@@ -564,7 +564,7 @@ follows:
 <string name="license_text"><![CDATA[
 <h3>Ghost Manager</h3>
 <p>A file manager</p>
-<p>Copyright © 2009-2017 Ghost Squared</p>
+<p>Copyright © 2009-2018 Ghost Squared</p>
 <p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
 <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>
 <p>You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/></p>
