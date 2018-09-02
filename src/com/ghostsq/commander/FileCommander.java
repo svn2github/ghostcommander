@@ -172,19 +172,19 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         super.onStart();
 
         SharedPreferences prefs = getPreferences( MODE_PRIVATE );
+        PackageInfo pi = null;
+        try {
+            pi = getPackageManager().getPackageInfo( getPackageName(), 0 );
+            Log.d( TAG, "Started " + pi.versionName );
+        } catch( NameNotFoundException e ) {
+            Log.e( TAG, "Package name not found", e );
+        }
         final String FT = "first_time";
         if( prefs.getBoolean( FT, true ) ) {
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean( FT, false );
             editor.commit();
-            PackageInfo pi = null;
-            try {
-                pi = getPackageManager().getPackageInfo( getPackageName(), 0 );
-            } catch( NameNotFoundException e ) {
-                Log.e( TAG, "Package name not found", e );
-            }
             String about_text = getString( R.string.about_text, pi != null ? pi.versionName : "?", getString( R.string.donate_uri ) );
-
             Dialogs dh = obtainDialogsInstance( Dialogs.INFO_DIALOG );
             dh.setMessageToBeShown( about_text + getString( R.string.keys_text ), null );
             dh.showDialog();
