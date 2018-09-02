@@ -566,6 +566,7 @@ public class FTP {
         	}
         	if( report_to != null ) report_to.completed( last_n, true );
         	out.close();
+        	waitForPositiveResponse();
         	return true;
         }
         catch( Exception e ) {
