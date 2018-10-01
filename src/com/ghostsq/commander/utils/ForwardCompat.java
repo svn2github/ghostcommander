@@ -33,6 +33,7 @@ import android.os.ParcelFileDescriptor;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.ViewConfiguration;
+import android.widget.Toast;
 import android.media.ExifInterface;
 
 public class ForwardCompat
@@ -177,14 +178,15 @@ public class ForwardCompat
     public static boolean makeShortcut( Context ctx, Intent shortcut_intent, String label, Parcelable icon_p ) {
         try {
             ShortcutManager sm = ctx.getSystemService( ShortcutManager.class );
-            if( !sm.isRequestPinShortcutSupported() ) 
+            if( !sm.isRequestPinShortcutSupported() ) {
+                Toast.makeText( ctx, "Your home screen application does not support the Pin Shortcut feature.", Toast.LENGTH_LONG ).show();
                 Log.w( "makeShortcut()", "ShortcutManager.isRequestPinShortcutSupported() returned false" );
+            }
             Icon icon = (Icon)icon_p;
             ShortcutInfo si = new ShortcutInfo.Builder( ctx, label )
                 .setIntent( shortcut_intent )
                 .setShortLabel( label )
                 .setIcon( icon )
-                .setRank( label.hashCode() )
                 .build();
             return sm.requestPinShortcut( si, null );
         } catch( Exception e ) {
