@@ -174,6 +174,9 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
         else if( "gdrive".equals( scheme ) ) {
             ca_pos = -1; // too complex parent folder calculation
         }
+        else if( "box".equals( scheme ) ) {
+            ca_pos = -1; // too complex parent folder calculation
+        }
         else if( "content".equals( scheme ) ) {
             ca_pos = -1; // too complex parent folder calculation
         }
