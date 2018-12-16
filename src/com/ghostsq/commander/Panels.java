@@ -1415,8 +1415,14 @@ public class Panels implements AdapterView.OnItemSelectedListener,
         l.setCurPos( position );
         CommanderAdapter ca = (CommanderAdapter)l.flv.getAdapter();
         // hack to let the PictureViewer (if being chosen to handle the intent) be able to traverse other pictures in the dir
-        if( ca instanceof FSAdapter && !c.isPickMode() && android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O ) {
+        if( ca instanceof FSAdapter && !c.isPickMode()  ) {
+            SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( c );
+            boolean use_content = shared_pref.getBoolean( "open_content",
+                    android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M );
             Uri uri = ca.getItemUri( position );
+            if( use_content )
+                uri = FileProvider.makeURI( uri.getPath() );
+            
             if( uri != null ) {
                 String mime = Utils.getMimeByExt( Utils.getFileExt( uri.getPath() ) );
                 if( mime != null && mime.startsWith( "image" ) ) {
@@ -1424,10 +1430,10 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                         uri = uri.buildUpon().scheme( "file" ).authority( "" ).build();
                     Intent i = createImageViewIntent( uri, mime, ca, position );
                     try {
-                        c.startActivity( Intent.createChooser( i, c.getString( R.string.open_title ) ) );
+                        c.startActivity( i );
                         return;
                     } catch( Exception e ) {
-                        Log.e( TAG, "Can't start actiwity with intent: " + i );
+                        Log.e( TAG, "Can't start activity with intent: " + i );
                     }
                 }
             }

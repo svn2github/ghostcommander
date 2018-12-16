@@ -14,9 +14,7 @@ import com.ghostsq.commander.Commander;
 import com.ghostsq.commander.adapters.CommanderAdapter.Item;
 import com.ghostsq.commander.adapters.Engine;
 import com.ghostsq.commander.R;
-import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.ImageInfo;
-import com.ghostsq.commander.utils.MediaScanTask;
 import com.ghostsq.commander.utils.Utils;
 
 import android.content.ContentResolver;
@@ -209,8 +207,13 @@ public final class FSEngines {
             try {
                 int resolution = askOnFileExist( msg, fsa.commander );
                 if( ( resolution & Commander.REPLACE ) != 0 ) {
-                    if( to.delete() && from.renameTo( to ) )
+                    if( to.delete() && from.renameTo( to ) ) {
                         sendResult( "ok" );
+                        if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
+                            String[] to_scan = new String[] { from.getAbsolutePath(), to.getAbsolutePath() };
+                            MediaScanEngine.scanMedia( fsa.ctx, to_scan );
+                        }
+                    }
                 }
             } catch( InterruptedException e ) {
                 e.printStackTrace();
@@ -267,8 +270,7 @@ public final class FSEngines {
                     error( cab.ctx.getString( R.string.cant_del, f.getName() ) );
                     break;
                 }
-                
-                String ext = Utils.getFileExt( f.getName() );
+                String ext  = Utils.getFileExt( f.getName() );
                 String mime = Utils.getMimeByExt( ext );
                 if( mime != null ) {
                     Uri content_uri = null;
@@ -312,7 +314,7 @@ public final class FSEngines {
             PowerManager pm = (PowerManager)cab.ctx.getSystemService( Context.POWER_SERVICE );
             wakeLock = pm.newWakeLock( PowerManager.PARTIAL_WAKE_LOCK, TAG );
             
-            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO )
+            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
                 to_scan = new ArrayList<String>(); 
         }
         @Override
@@ -352,7 +354,7 @@ public final class FSEngines {
                 if( to_scan != null && to_scan.size() > 0 ) {
                     String[] to_scan_a = new String[to_scan.size()];
                     to_scan.toArray( to_scan_a );
-                    MediaScanTask.scanMedia( cab.ctx, to_scan_a );
+                    MediaScanEngine.scanMedia( cab.ctx, to_scan_a );
                 }
 
 			} catch( Exception e ) {
@@ -416,6 +418,10 @@ public final class FSEngines {
                         }
                         if( move ) {    // first try to move by renaming
                             long len = file.length();
+                            if( to_scan != null ) {
+                                to_scan.add(    file.getAbsolutePath() );
+                                to_scan.add( outFile.getAbsolutePath() );
+                            }
                             if( file.renameTo( outFile ) ) {
                                 counter++;
                                 totalBytes += len;
@@ -484,8 +490,6 @@ public final class FSEngines {
                                 if( mime != null && ( mime.startsWith( "image/" ) || mime.startsWith( "audio/" ) || mime.startsWith( "video/" ) ) )
                                 to_scan.add( outFile.getAbsolutePath() );
                         }
-// debug only, to remove!
-//Log.v( TAG, c.getString( R.string.copied_f, fn ) );
                         counter++;
                     }
                     if( move )

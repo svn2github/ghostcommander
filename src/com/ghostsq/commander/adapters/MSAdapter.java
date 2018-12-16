@@ -17,7 +17,6 @@ import com.ghostsq.commander.adapters.Engines.IReciever;
 import com.ghostsq.commander.R;
 import com.ghostsq.commander.utils.ForwardCompat;
 import com.ghostsq.commander.utils.MediaFile;
-import com.ghostsq.commander.utils.MediaScanTask;
 import com.ghostsq.commander.utils.Utils;
 
 import android.annotation.TargetApi;
@@ -249,9 +248,11 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
                 if( ms_uri == null )
                     setUri( Uri.parse( SCHEME + Environment.getExternalStorageDirectory().getAbsolutePath() ) );
                 else {
+                    /*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!temp!!!!!!!!!!!!!!!
                     MediaScanEngine mse = new MediaScanEngine( ctx, new File(ms_uri.getPath()), true, false );
                     mse.setHandler( new SimpleHandler() );
                     commander.startEngine( mse );
+                    */
                 }
             }
             String dirName = Utils.mbAddSl( ms_uri.getPath() );  
@@ -784,7 +785,7 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
 
                 String[] to_scan_a = new String[to_scan.size()];
                 to_scan.toArray( to_scan_a );
-                MediaScanTask.scanMedia( ctx, to_scan_a );
+                MediaScanEngine.scanMedia( ctx, to_scan_a );
                 wakeLock.release();
                 // XXX: assume (move && !del_src_dir)==true when copy from app: to the FS
                 if( delerr_counter == counter ) move = false;  // report as copy

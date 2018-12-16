@@ -22,8 +22,11 @@ import net.lingala.zip4j.util.Zip4jConstants;
 import net.lingala.zip4j.util.Zip4jUtil;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -530,6 +533,12 @@ public class ZipAdapter extends CommanderAdapterBase implements Engines.IRecieve
                     return;
                 }
                 sendResult( ctx.getString( R.string.unpacked, zipFile.getName() ) );
+                if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
+                    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences( ctx );
+                    MediaScanEngine mse = new MediaScanEngine( ctx, destFolder, sp.getBoolean( "scan_all", true ), true );
+                    mse.setHandler( thread_handler );
+                    mse.run();
+                }
             } catch( ZipException e ) {
                 Log.e( TAG, "Can't extract " + zipFile.getAbsolutePath() );
             }
@@ -573,6 +582,7 @@ public class ZipAdapter extends CommanderAdapterBase implements Engines.IRecieve
         private FileHeader[] mList = null;
         private String base_pfx;
         private int base_len;
+        private ArrayList<String> to_scan;
 
         CopyFromEngine(FileHeader[] list, File dest, Engines.IReciever recipient_) {
             recipient = recipient_; // member of a superclass
@@ -583,6 +593,8 @@ public class ZipAdapter extends CommanderAdapterBase implements Engines.IRecieve
                 if( base_pfx == null )
                     base_pfx = "";
                 base_len = base_pfx.length();
+                if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
+                    to_scan = new ArrayList<String>(); 
             } catch( NullPointerException e ) {
                 Log.e( TAG, "", e );
             }
@@ -604,6 +616,11 @@ public class ZipAdapter extends CommanderAdapterBase implements Engines.IRecieve
                     return;
                 }
                 sendResult( Utils.getOpReport( ctx, total, R.string.unpacked ) );
+                if( to_scan != null && to_scan.size() > 0 ) {
+                    String[] to_scan_a = new String[to_scan.size()];
+                    to_scan.toArray( to_scan_a );
+                    MediaScanEngine.scanMedia( ctx, to_scan_a );
+                }
             }
             super.run();
         }
@@ -625,8 +642,8 @@ public class ZipAdapter extends CommanderAdapterBase implements Engines.IRecieve
                     String entry_name_fixed = fixName( entry );
                     if( entry_name_fixed == null )
                         continue;
-                    String file_name = new File( entry_name_fixed ).getName();
-                    File dest_file = new File( dest_folder, path + file_name );
+                    String file_path = path + new File( entry_name_fixed ).getName();
+                    File dest_file = new File( dest_folder, file_path );
                     String rel_name = entry_name_fixed.substring( base_len );
 
                     if( entry.isDirectory() ) {
@@ -668,6 +685,8 @@ public class ZipAdapter extends CommanderAdapterBase implements Engines.IRecieve
                                 dest_f.delete();
                             return counter;
                         }
+                        if( to_scan != null )
+                            to_scan.add( dest_file.getAbsolutePath() );
                     }
                     Utils.setFullPermissions( dest_file );
                     long entry_time = entry.getLastModFileTime();

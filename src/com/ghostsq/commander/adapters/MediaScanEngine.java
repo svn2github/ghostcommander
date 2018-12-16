@@ -2,7 +2,6 @@ package com.ghostsq.commander.adapters;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.ghostsq.commander.Commander;
@@ -186,5 +185,22 @@ public class MediaScanEngine extends Engine implements MediaScannerConnection.Me
             return;
         }
     }
+    
+    public static void scanMedia( final Context ctx, String[] to_scan_a ) {
+        MediaScannerConnection.scanFile( ctx, to_scan_a, null, 
+             new MediaScannerConnection.OnScanCompletedListener() {
+                @Override
+                public void onScanCompleted( String path, final Uri uri ) {
+                    File f = new File( path );
+                    if( f.isFile() && f.length() == 0 ) {
+                        if( ctx.getContentResolver().delete( uri, null, null ) > 0 ) {
+                            Log.w( "scanMedia()", "Deleteing " + path );
+                            f.delete();
+                        }
+                    }
+                }
+             } );                    
+    }
+    
 }
 

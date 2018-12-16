@@ -321,11 +321,21 @@ public class FSAdapter extends CommanderAdapterBase implements Engines.IReciever
                     return true;
                 }
             }
-            else
+            else 
                 ok = f.renameTo( new_file );
-            if( ok )
+            if( ok ) {
                 notifyRefr( newName );
-            else
+                if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
+                    if( new_file.isDirectory() ) {
+                        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences( ctx );
+                        MediaScanEngine mse = new MediaScanEngine( ctx, new_file, sp.getBoolean( "scan_all", true ), true );
+                        mse.start();
+                    } else {
+                        String[] to_scan = new String[] { f.getAbsolutePath(), new_file.getAbsolutePath() };
+                        MediaScanEngine.scanMedia( ctx, to_scan );
+                    }
+                }
+            } else
                 notify( s( R.string.error ), Commander.OPERATION_FAILED );
             return ok;
         }

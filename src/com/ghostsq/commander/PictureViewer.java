@@ -153,6 +153,12 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
         if( uri == null ) return;
         Log.d( TAG, "uri=" + uri );
         String scheme = uri.getScheme();
+        if( "content".equals( scheme ) && FileProvider.AUTHORITY.equals( uri.getHost() ) ) {
+            Log.d( TAG, "Converting content to file" );
+            scheme = "file";
+            uri = new Uri.Builder().scheme( scheme ).path( uri.getPath() ).build();
+        }        
+        
         ca_pos = intent.getIntExtra( "position", -1 );
         int mode = intent.getIntExtra( "mode", 0 );
         Log.d( TAG, "orig pos=" + ca_pos );

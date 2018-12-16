@@ -9,10 +9,10 @@
               android:icon="@drawable/ic_menu_back"/>
         <item android:id="@+id/totop"
               android:title="@string/go_top"
-              android:icon="@android:drawable/arrow_up_float"/>
+              android:icon="@drawable/top"/><!-- @android:drawable/arrow_up_float -->
         <item android:id="@+id/tobot"
               android:title="@string/go_end"
-              android:icon="@android:drawable/arrow_down_float"/>
+              android:icon="@drawable/bottom"/> <!-- @android:drawable/arrow_down_float -->
         <item android:id="@+id/home"
            android:title="@string/home"
            android:icon="@drawable/ic_menu_home"/>
