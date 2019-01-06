@@ -1,6 +1,8 @@
 package com.ghostsq.commander.utils;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -22,12 +24,10 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.VectorDrawable;
-import android.net.Uri;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.os.Parcelable;
@@ -71,6 +71,16 @@ public class ForwardCompat
         if( is != null ) sb.append( "<br/><b>ISO level:</b> " ).append( is );
     }
 
+    @TargetApi(Build.VERSION_CODES.N)
+    public static ExifInterface getExifInterfaceFromStream( InputStream is ) {
+        try {
+            return new ExifInterface( is );
+        } catch( IOException e ) {
+            Log.e( "getExifInterfaceFromStream()", "", e );
+        }
+        return null;
+    }
+   
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static void setupActionBar( Activity a ) {
         ActionBar ab = a.getActionBar();

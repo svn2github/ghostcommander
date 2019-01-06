@@ -2,6 +2,8 @@ package com.ghostsq.commander.utils;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -113,6 +115,23 @@ public class Credentials implements Parcelable {
             Log.e( TAG, "", e );
         }
         return null;
+    }
+
+    public void storeCredentials( Context ctx, String storage, Uri uri ) {
+        int hash = ( getUserName() + uri.getHost() ).hashCode();
+        SharedPreferences ssp = ctx.getSharedPreferences( storage, Context.MODE_PRIVATE );
+        SharedPreferences.Editor edt = ssp.edit();
+        edt.putString( "" + hash, toEncriptedString( ctx ) );
+        edt.commit();
+    }
+
+    public static Credentials restoreCredentials( Context ctx, String storage, Uri uri ) {
+        int hash = ( uri.getUserInfo() + uri.getHost() ).hashCode();
+        SharedPreferences ssp = ctx.getSharedPreferences( storage, Context.MODE_PRIVATE );
+        String crd_enc_s = ssp.getString( "" + hash, null );
+        if( crd_enc_s == null )
+            return null;
+        return fromEncriptedString( crd_enc_s, ctx );
     }
     
 }

@@ -11,8 +11,10 @@ import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapterBase;
 import com.ghostsq.commander.adapters.FSAdapter;
 import com.ghostsq.commander.adapters.FavsAdapter;
+import com.ghostsq.commander.adapters.FindAdapter;
 import com.ghostsq.commander.adapters.HomeAdapter;
 import com.ghostsq.commander.adapters.ItemComparator;
+import com.ghostsq.commander.adapters.MSAdapter;
 import com.ghostsq.commander.adapters.SAFAdapter;
 import com.ghostsq.commander.adapters.ZipAdapter;
 import com.ghostsq.commander.adapters.CommanderAdapter.Feature;
@@ -47,6 +49,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.text.ClipboardManager;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -810,7 +813,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
                 if( f == null ) return;
                 fn = f.getName();
                 uri = use_content ? FileProvider.makeURI( f.getAbsolutePath() ) : 
-                 Uri.parse( "file://" + Utils.escapePath( f.getAbsolutePath() ) );
+                Uri.parse( "file://" + Utils.escapePath( f.getAbsolutePath() ) );
             }
             if( uri == null ) {
                 Log.e( TAG, "Can't obtain an URI to send" );
@@ -1063,6 +1066,7 @@ public class Panels implements AdapterView.OnItemSelectedListener,
             String mime = Utils.getMimeByExt( Utils.getFileExt( item.name ) );
             if( mime == null )
                 mime = "application/octet-stream";
+            if( ca instanceof FindAdapter ) pos = -1;
             Intent i = createImageViewIntent( uri, mime, ca, pos );
             i.setClass( c, mime.startsWith( "image/" ) ? PictureViewer.class : TextViewer.class );
             c.startActivity( i );
@@ -1413,22 +1417,25 @@ public class Panels implements AdapterView.OnItemSelectedListener,
     public void openItem( int position ) {
         ListHelper l = list[current];
         l.setCurPos( position );
-        CommanderAdapter ca = (CommanderAdapter)l.flv.getAdapter();
+        CommanderAdapter ca = l.getListAdapter(); 
         // hack to let the PictureViewer (if being chosen to handle the intent) be able to traverse other pictures in the dir
         if( ca instanceof FSAdapter && !c.isPickMode()  ) {
             SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( c );
             boolean use_content = shared_pref.getBoolean( "open_content",
                     android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M );
             Uri uri = ca.getItemUri( position );
-            if( use_content )
-                uri = FileProvider.makeURI( uri.getPath() );
-            
             if( uri != null ) {
                 String mime = Utils.getMimeByExt( Utils.getFileExt( uri.getPath() ) );
                 if( mime != null && mime.startsWith( "image" ) ) {
+                    if( use_content ) {
+                         uri = FileProvider.makeURI( uri.getPath() );
+                    }
                     if( !Utils.str( uri.getScheme() ) )
                         uri = uri.buildUpon().scheme( "file" ).authority( "" ).build();
+                    if( ca instanceof FindAdapter ) position = -1;
                     Intent i = createImageViewIntent( uri, mime, ca, position );
+                    i.addFlags( Intent.FLAG_GRANT_READ_URI_PERMISSION | 
+                                Intent.FLAG_GRANT_WRITE_URI_PERMISSION );
                     try {
                         c.startActivity( i );
                         return;

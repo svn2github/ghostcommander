@@ -35,7 +35,9 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Parcelable;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
@@ -140,12 +142,21 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         dialogs.add( dh );
     }
 
-    /** Called when the activity is first created. */
     @Override
     public void onCreate( Bundle savedInstanceState ) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences( this );
-        Utils.setTheme( this, sharedPref.getString( "color_themes", "d" ) );
+        //Log.v( TAG, "Creating...\n" );
+        SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
+        Utils.setTheme( this, shared_pref.getString( "color_themes", "d" ) );
         super.onCreate( savedInstanceState );
+
+        // a hack to let the file path be exposed
+        if( android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M &&
+               ( !shared_pref.getBoolean( "open_content", true ) || 
+                 !shared_pref.getBoolean( "send_content", true ) ) ) {
+            StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+            StrictMode.setVmPolicy( builder.build() );
+        }
+        
         ab = Utils.setActionBar( this );
         if( !ab ) {
             requestWindowFeature( Window.FEATURE_NO_TITLE );
@@ -153,22 +164,23 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         // TODO: show progress when there is no title
         // requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         dialogs = new ArrayList<Dialogs>( Dialogs.numDialogTypes );
-        back_exits = sharedPref.getBoolean( "exit_on_back", false );
-        lang = sharedPref.getString( "language", "" );
+        back_exits = shared_pref.getBoolean( "exit_on_back", false );
+        lang = shared_pref.getString( "language", "" );
         Utils.changeLanguage( this );
-        String panels_mode = sharedPref.getString( "panels_sxs_mode", "a" );
+        String panels_mode = shared_pref.getString( "panels_sxs_mode", "a" );
         sxs_auto = "a".equals( panels_mode );
         boolean sxs = sxs_auto ? getRotMode() : panels_mode.equals( "y" );
         panels = new Panels( this, sxs );
-        setConfirmMode( sharedPref );
+        setConfirmMode( shared_pref );
 
         notMan = (NotificationManager)getSystemService( Context.NOTIFICATION_SERVICE );
         bindService( new Intent( this /* ? */, BackgroundWork.class ), this, Context.BIND_AUTO_CREATE );
+        //Log.v( TAG, "Create is done\n" );
     }
 
     @Override
     protected void onStart() {
-        // Log.v( TAG, "Starting\n" );
+        //Log.v( TAG, "Starting\n" );
         super.onStart();
 
         SharedPreferences prefs = getPreferences( MODE_PRIVATE );
@@ -197,6 +209,7 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
         String[] perms = new String[] { Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE };
         if( ForwardCompat.requestPermission( this, perms, 111 ) )
             doStart();
+        //Log.v( TAG, "Start is done\n" );
     }
 
     @Override
@@ -239,8 +252,6 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 }
             }
             panels.setState( s, -1 );
-            // panels.setPanelCurrent( use_panel );
-
         }
     }
 
@@ -913,8 +924,9 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                     }
                 }
                 tryOpen( uri, mime );
-            } else
+            } else {
                 OpenRemoteFile( uri, crd, scheme, path, mime );
+            }
         } catch( ActivityNotFoundException e ) {
             showMessage( "Application for open '" + uri.toString() + "' is not available, " );
         } catch( Exception e ) {
@@ -961,10 +973,11 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             return true;
         } catch( Exception e ) {
             Log.w( TAG, "Can't open URI " + u, e );
+            showError( e.getMessage() );
         }
         return false;
     }
-    
+
     private final void OpenRemoteFile( Uri uri, Credentials crd, String scheme, String path, String mime ) throws Exception {
         if( mime != null && ( mime.startsWith( "audio" ) || mime.startsWith( "video" ) ) ) {
             startService( new Intent( this, StreamServer.class ) );
@@ -995,6 +1008,19 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
             startActivity( i );
             return;
         } else {
+            /*
+            Uri ca_uri = uri;
+            if( crd != null ) {
+                String username = crd.getUserName();
+                FileProvider.storeCredentials( this, crd, uri );
+                ca_uri = Utils.updateUserInfo( uri, username );
+            }
+            Uri cu = FileProvider.makeURI( ca_uri, mime );
+            Intent in = new Intent( Intent.ACTION_VIEW );
+            in.addFlags( Intent.FLAG_GRANT_READ_URI_PERMISSION );
+            if( tryOpen( in, cu, mime ) )
+                return;
+            */
             File temp_file_dir = Utils.getTempDir( this );
             if( temp_file_dir == null )
                 return;
@@ -1067,6 +1093,10 @@ public class FileCommander extends Activity implements Commander, ServiceConnect
                 fos.close();
                 ca.closeStream( is );
                 ca.prepareToDestroy();
+                
+                if( item.mime == null )
+                    item.mime = Utils.getMimeByExt( Utils.getFileExt( item.name ) );
+                
                 handler.post( new Runnable() {
                     @Override
                     public void run() {

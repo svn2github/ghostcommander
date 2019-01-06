@@ -270,7 +270,6 @@ public class TextViewer extends Activity {
             } catch( Throwable e ) {
                 Log.e( TAG, uri.toString(), e );
                 publishProgress( getString( R.string.failed ) + e.getLocalizedMessage() );
-                
             }
             return null;
         }
@@ -281,6 +280,11 @@ public class TextViewer extends Activity {
         @Override
         protected void onPostExecute( CharSequence cs ) {
             try {
+                if( cs == null ) {
+                    Log.e( TAG, "Nothing loaded!" );
+                    return;
+                }
+                Log.d( TAG, "Loaded charactes: " + cs.length() );
                 if( TextViewer.this.text_view != null )
                     TextViewer.this.text_view.setText( cs );
             } catch( Throwable e ) {

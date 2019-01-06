@@ -84,9 +84,9 @@ public class ServerForm extends Activity
             setTitle( getString( R.string.connect ) + " " + title );
 
             server_edit = (AutoCompleteTextView)findViewById( R.id.server_edit );
-
             server_history_adapter= new ArrayAdapter<String>( this, android.R.layout.simple_list_item_1 );
             server_edit.setAdapter( server_history_adapter );
+            server_edit.requestFocus();
 
             path_edit = (EditText)findViewById( R.id.path_edit );
             domain_edit = (EditText)findViewById( R.id.domain_edit );

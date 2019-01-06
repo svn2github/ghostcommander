@@ -138,14 +138,14 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
         if( id == IMAGES )    return "Images";
         return null;
     }
-    
-   private Uri getContentUri( String fullname ) {
-        final String[] projection = {
-             MediaStore.MediaColumns._ID,
-             MediaStore.MediaColumns.DATA
-        };
-        Cursor cursor=null;
-        ContentResolver cr = null;
+
+    public static Uri getContentUri( String fullname, Context ctx, Uri base_content_uri ) {
+      final String[] projection = {
+         MediaStore.MediaColumns._ID,
+         MediaStore.MediaColumns.DATA
+      };
+      Cursor cursor = null;
+      ContentResolver cr = null;
       try {
          cr = ctx.getContentResolver();
          if( cr == null) return null;
@@ -153,8 +153,8 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
          final String selection = MediaStore.MediaColumns.DATA + " = ? ";
          String[] selectionParams = new String[1];
          selectionParams[0] = fullname;
-         cursor = cr.query( baseContentUri, projection, selection, selectionParams, null );
-         if( cursor!=null ) {
+         cursor = cr.query( base_content_uri, projection, selection, selectionParams, null );
+         if( cursor != null ) {
             try {
                if( cursor.getCount() > 0 ) {
                   cursor.moveToFirst();
@@ -177,8 +177,13 @@ public class MSAdapter extends CommanderAdapterBase implements Engines.IReciever
          Log.e( TAG, "on query", e );
       }
       return null;
-   }     
-
+    }     
+    
+    
+    private final Uri getContentUri( String fullname ) {
+        return getContentUri( fullname, ctx, baseContentUri );
+    }     
+   
     private void enumAudio() {
         Cursor cursor = null;
         try {

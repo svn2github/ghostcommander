@@ -202,8 +202,7 @@ public class Dialogs implements DialogInterface.OnClickListener {
                         .setPositiveButton( R.string.dialog_ok, this );
                     View tvs = factory.inflate( R.layout.textvw, null );
                     if( tvs != null ) {
-                        //TextView tv = (TextView)tvs.findViewById( R.id.text_view );                     
-                        //tv.setPadding( 10, 10, 10, 10 );
+                        tvs.setPadding( 0, 20, 0, 0 );
                         adb.setView( tvs );
                     } else
                         adb.setMessage( "" );

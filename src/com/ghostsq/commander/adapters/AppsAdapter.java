@@ -420,6 +420,17 @@ public class AppsAdapter extends CommanderAdapterBase {
 
     @Override
     public void reqItemsSize( SparseBooleanArray cis ) {
+        StringBuffer sb = new StringBuffer( 1024 );
+        if( actInfos != null ) {
+            ArrayList<ActivityInfo> al = bitsToItems( cis, actInfos );
+            for( int i = 0; i < al.size(); i++ ) {
+                ActivityInfo ai = al.get( i );
+                sb.append( ai.name );
+                sb.append( "\n" );
+            }
+            notify( sb.toString(), Commander.OPERATION_COMPLETED, Commander.OPERATION_REPORT_IMPORTANT );
+            return;
+        }
         ArrayList<PackageInfo> pl = null;
         if( pkgInfos == null ) {
             pl = new ArrayList<PackageInfo>( 1 );
@@ -434,8 +445,8 @@ public class AppsAdapter extends CommanderAdapterBase {
             notErr();
             return;
         }
+        
         final String cs = ": ";
-        StringBuffer sb = new StringBuffer( 1024 );
         for( int i = 0; i < pl.size(); i++ ) {
             try {
                 PackageInfo pi = pm.getPackageInfo( pl.get( i ).packageName, PackageManager.GET_GIDS

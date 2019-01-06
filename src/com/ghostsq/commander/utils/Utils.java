@@ -81,6 +81,7 @@ public final class Utils {
             { ".js",   "text/javascript", C_TEXT },
             { ".kml",  "application/vnd.google-earth.kml+xml", C_MARKUP },
             { ".kmz",  "application/vnd.google-earth.kmz", C_MARKUP },
+            { ".log",  "text/plain", C_TEXT },
             { ".lst",  "text/plain", C_TEXT },
             { ".lzh",  "application/x-lzh", C_ZIP },
             { ".m3u",  "application/x-mpegurl", C_AUDIO }, 

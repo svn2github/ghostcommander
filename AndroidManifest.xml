@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.ghostsq.commander"
-      android:versionName="1.56.3b3m"
-      android:versionCode="365"
+      android:versionName="1.56.4"
+      android:versionCode="369"
       android:label="@string/app_name"
       android:sharedUserId="com.ghostsq.commander.userId"
       android:installLocation="auto">
@@ -42,7 +42,8 @@
             android:label="@string/app_name"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTop"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

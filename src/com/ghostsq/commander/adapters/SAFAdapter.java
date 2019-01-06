@@ -179,6 +179,10 @@ public class SAFAdapter extends CommanderAdapterBase implements Engines.IRecieve
     }
     
     public final String getPath( Uri u, boolean dir ) {
+        return getPath( ctx, u, dir );
+    }
+    
+    public final static String getPath( Context ctx, Uri u, boolean dir ) {
         try {
             String fd_path = null;
             ContentResolver cr = ctx.getContentResolver();

@@ -25,8 +25,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.provider.MediaStore.MediaColumns;
 import android.provider.MediaStore.Images;
+import android.provider.OpenableColumns;
 import android.text.Html;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -56,6 +58,7 @@ import java.util.List;
 import com.ghostsq.commander.adapters.CA;
 import com.ghostsq.commander.adapters.CommanderAdapter;
 import com.ghostsq.commander.adapters.Engine;
+import com.ghostsq.commander.adapters.MSAdapter;
 import com.ghostsq.commander.adapters.SAFAdapter;
 import com.ghostsq.commander.utils.Credentials;
 import com.ghostsq.commander.utils.ForwardCompat;
@@ -71,11 +74,12 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
     public  boolean   touch = false;
     public  CommanderAdapter  ca;
     private CommanderStub     stub;
+    private Uri       uri = null;
     public  int       ca_pos = -1;
     public  Handler   h = new Handler();
     public  ProgressDialog pd; 
     private PointF    last;
-    private String    file_path;
+    private String    temp_file_path, file_name;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -149,33 +153,34 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
     protected void onStart() {
         super.onStart();
         Intent intent = getIntent();
-        Uri uri = intent.getData();
+        uri = intent.getData();
         if( uri == null ) return;
         Log.d( TAG, "uri=" + uri );
         String scheme = uri.getScheme();
-        if( "content".equals( scheme ) && FileProvider.AUTHORITY.equals( uri.getHost() ) ) {
-            Log.d( TAG, "Converting content to file" );
-            scheme = "file";
-            uri = new Uri.Builder().scheme( scheme ).path( uri.getPath() ).build();
+        if( ContentResolver.SCHEME_CONTENT.equals( scheme ) && FileProvider.AUTHORITY.equals( uri.getHost() ) ) {
+            if( !Utils.str( uri.getQuery() ) ) {
+                Log.d( TAG, "Converting content to file" );
+                scheme = "file";
+                uri = new Uri.Builder().scheme( scheme ).path( uri.getPath() ).build();
+            }
         }        
-        
         ca_pos = intent.getIntExtra( "position", -1 );
         int mode = intent.getIntExtra( "mode", 0 );
         Log.d( TAG, "orig pos=" + ca_pos );
         ca = CA.CreateAdapterInstance( uri, this );            
-        String name_to_show = null; 
+        file_name = null; 
         
         Uri.Builder ub = uri.buildUpon();
-        Uri p_uri = null;
+        Uri parent_uri = null;
         if( "zip".equals( scheme ) ) {
             String cur = uri.getFragment();
             File cur_f = new File( cur );
-            name_to_show = cur_f.getName();
+            file_name = cur_f.getName();
             String parent_dir = cur_f.getParent();
-            p_uri = uri.buildUpon().fragment( parent_dir != null ? parent_dir : "" ).build();
+            parent_uri = uri.buildUpon().fragment( parent_dir != null ? parent_dir : "" ).build();
         }
         else if( ca instanceof SAFAdapter ) {
-            p_uri = SAFAdapter.getParent( uri );
+            parent_uri = SAFAdapter.getParent( uri );
         }
         else if( "gdrive".equals( scheme ) ) {
             ca_pos = -1; // too complex parent folder calculation
@@ -193,10 +198,10 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
             if( n > 0 ) n--;
             for( int i = 0; i < n; i++ ) 
                 ub.appendPath( ps.get( i ) );
-            p_uri = ub.build();
-            name_to_show = ps.get( ps.size()-1 );
+            parent_uri = ub.build();
+            file_name = ps.get( ps.size()-1 );
         }
-        Log.d( TAG, "Parent dir: " + p_uri );
+        Log.d( TAG, "Parent dir: " + parent_uri );
         if( ca == null ) return;
         ca.Init( stub );
         ca.setMode( CommanderAdapter.MODE_SORTING | CommanderAdapter.MODE_SORT_DIR, mode );
@@ -210,14 +215,14 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
         }
 
         image_view.invalidate();
-        if( p_uri != null && ca_pos > 0 ) {
-            ca.setUri( p_uri );
+        if( parent_uri != null && ca_pos > 0 ) {
+            ca.setUri( parent_uri );
             Log.d( TAG, "do read list" );
             stub.reload_after_dir_read_done = true;
             ca.readSource( null, null );
         }
         else
-            new LoaderThread( uri, name_to_show ).start();
+            new LoaderThread( uri, file_name ).start();
     }
     
     @Override
@@ -293,6 +298,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                 if( name != null ) {
                     name_view.setTextColor( Color.WHITE );
                     name_view.setText( name );
+                    if( name != null ) file_name = name;
                 }
                 return;
             }
@@ -408,7 +414,6 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
             ctx = PictureViewer.this;
             u = u_;
             name_to_show = name_;
-            file_path = null;
             setName( "PictureLoader" );
         }
         
@@ -441,9 +446,8 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                             }
                             bmp = BitmapFactory.decodeStream( is, null, options );
                             if( bmp == null ) continue;
-                            if( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR && 
-                                    ( !Utils.str( scheme ) || "file".equals( scheme ) ) ) {
-                                file_path = u.getPath();
+                            if( !Utils.str( scheme ) || "file".equals( scheme ) ) {
+                                String file_path = u.getPath();
                                 float degrees = ImageInfo.getImageFileOrientationDegree( file_path );
                                 if( degrees > 0 ) {
                                     Log.d( TAG, "Rotating " + degrees );
@@ -485,8 +489,12 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                             // output - temporary file
                             File pictvw_f = ctx.getDir( "pictvw", Context.MODE_PRIVATE );
                             if( pictvw_f == null ) return;
-                            f = new File( pictvw_f, "file.tmp" );
-                            file_path = f.getAbsolutePath();
+                            
+                            String fn = u.getLastPathSegment();
+                            if( !Utils.str( fn ) )
+                                fn = getIntent().getType().replace( '/', '_' );
+                            f = new File( pictvw_f, fn );
+                            PictureViewer.this.temp_file_path = f.getAbsolutePath();
                             fos = new FileOutputStream( f );
                             // input - the content from adapter
                             is = PictureViewer.this.ca.getContent( u );
@@ -524,8 +532,7 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                             } catch( Throwable e ) {}
                             if( bmp == null ) continue;
                             {
-                                file_path = u.getPath();
-                                float degrees = ImageInfo.getImageFileOrientationDegree( file_path );
+                                float degrees = ImageInfo.getImageFileOrientationDegree( f.getAbsolutePath() );
                                 Log.d( TAG, "Rotating " + degrees );
                                 if( degrees > 0 ) {
                                     Bitmap rbmp = PictureViewer.rotateBitmap( bmp, degrees );
@@ -653,13 +660,14 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
                 ca_pos = orig_pos;
                 if( exit_at_end ) this.finish();
                 return;
-            } 
+            }
             Uri pos_uri = ca.getItemUri( ca_pos );
             if( pos_uri == null ) {
                 ca_pos = orig_pos;
                 if( exit_at_end ) this.finish();
                 return;
-            } 
+            }
+            this.uri = pos_uri;
             Log.d( TAG, "Next uri: " + pos_uri ); 
             String name = ca.getItemName( ca_pos, false );
             if( name == null ) {
@@ -680,132 +688,192 @@ public class PictureViewer extends Activity implements View.OnTouchListener,
         }
     }
 
+    private final static String getFilePath( Uri uri, String temp_file_path ) {
+        String file_path = null;
+        if( temp_file_path != null )
+            file_path = temp_file_path;
+        else {
+            String scheme = uri.getScheme();
+            if( CA.isLocal( scheme ) || "ms".equals( scheme ) ||
+              ( ContentResolver.SCHEME_CONTENT.equals( scheme ) && FileProvider.AUTHORITY.equals( uri.getHost() ) ) )
+                file_path = uri.getPath();
+        }
+        return file_path;
+    }
+    
     @SuppressLint("InflateParams")
     private final void showInfo() {
-        AlertDialog.Builder builder = new AlertDialog.Builder( this );
-        builder.setTitle( getString( R.string.info ) );
-        builder.setIcon( android.R.drawable.ic_dialog_info );
-        
+        AlertDialog.Builder builder = new AlertDialog.Builder( this )
+        .setTitle( getString( R.string.info ) )
+        .setIcon( android.R.drawable.ic_dialog_info )
+        .setPositiveButton( R.string.dialog_ok, null );
         LayoutInflater inflater = (LayoutInflater)this.getSystemService( LAYOUT_INFLATER_SERVICE );
         View layout = inflater.inflate( R.layout.textvw, null );
         TextView text_view = (TextView)layout.findViewById( R.id.text_view );
-        
-        String info_text = null;
-        if( file_path != null ) {
-            info_text = "<b>File:</b> <small>" + file_path + "</small><br/>";
-            {
-                String exif_text = ImageInfo.getImageFileInfoHTML( file_path );
-                if( exif_text != null )
-                    info_text += exif_text;
-            }
-        } else {
-            Intent in = getIntent();
-            if( in != null ) {
-                Uri uri = in.getData();
-                if( uri != null && "content".equals( uri.getScheme() ) ) {
-                    String[] projection = {
-                        MediaColumns.DATA,
-                        MediaColumns.SIZE,
-                        MediaColumns.TITLE,
-                        MediaColumns.WIDTH,
-                        MediaColumns.HEIGHT,
-                        Images.ImageColumns.DATE_TAKEN,
-                        Images.ImageColumns.ORIENTATION,
-                        Images.ImageColumns.DESCRIPTION
-                    };
-                    Cursor cursor = null;
-                    ContentResolver cr = null;
-                    try {
-                        cr = this.getContentResolver();
-            //            cursor = cr.query( baseContentUri, projection, selection, selectionParams, null );
-                        cursor = cr.query( uri, projection, null, null, null );
-                        if( cursor != null && cursor.getCount() > 0 ) {
-                            cursor.moveToFirst();
-                            String path = cursor.getString( cursor.getColumnIndex( MediaColumns.DATA ) );
-                            if( path != null ) {
-                                String exif_text = ImageInfo.getImageFileInfoHTML( path );
-                                if( exif_text != null )
-                                    info_text += exif_text;
-                            }
-                            if( info_text == null ) {
-                                StringBuilder sb = new StringBuilder();
-                                for( String col : projection ) {
-                                    String val = cursor.getString( cursor.getColumnIndex( col ) );
-                                    if( val == null ) continue;
-                                    if( col.equals( MediaColumns.DATA ) ) sb.append( "Path" );
-                                    else if( col.equals( MediaColumns.SIZE ) ) sb.append( "Size" );
-                                    else if( col.equals( MediaColumns.TITLE ) ) sb.append( "Title" );
-                                    else if( col.equals( MediaColumns.WIDTH ) ) { 
-                                        sb.append( "Width" );
-                                        val = String.valueOf( Long.parseLong( val ) / 1024. ) + "KB";
-                                    }
-                                    else if( col.equals( MediaColumns.HEIGHT ) ) {
-                                        sb.append( "Height" );
-                                        val = String.valueOf( Long.parseLong( val ) / 1024. ) + "KB";
-                                    }
-                                    else if( col.equals( Images.ImageColumns.ORIENTATION ) ) sb.append( "Orientation" );
-                                    else if( col.equals( Images.ImageColumns.DESCRIPTION ) ) sb.append( "Description" );
-                                    else if( col.equals( Images.ImageColumns.DATE_TAKEN ) ) {
-                                        sb.append( "Date taken" );
-                                        val = (new Date(Long.parseLong( val ) )).toString();
-                                    }
-                                    sb.append( ": " );
-                                    sb.append( val );
-                                    sb.append( "<br/>\n" );
-                                }
-                                info_text = sb.toString();
-                            }
-                        }
-                    } catch( Throwable e ) {
-                        Log.e( TAG, "on query", e );
-                    }
-                    finally {
-                        cursor.close();
-                    }
-                    
-                }
-            }
-            if( info_text == null )
-                info_text = "No data";
-        }
+        String info_text = getInfo();
+        if( info_text == null )
+            info_text = getString( R.string.nothing );
         text_view.setText( Html.fromHtml( info_text ));
         builder.setView(layout);        
         builder.show();
+    }
+
+    private final String getInfo() {
+        String info_text = null;
+        String file_path = getFilePath( uri, temp_file_path );
+        if( file_path != null ) {
+            String path_to_show = temp_file_path != null ? uri.toString() : file_path;
+            info_text = "<b>File:</b> <small>" + path_to_show + "</small><br/>";
+            String exif_text = ImageInfo.getImageFileInfoHTML( file_path );
+            if( exif_text != null )
+                info_text += exif_text;
+            return info_text;
+        }
+        if( uri != null && ContentResolver.SCHEME_CONTENT.equals( uri.getScheme() ) ) {
+            String[] projection = {
+                MediaColumns.DATA,
+                MediaColumns.SIZE,
+                MediaColumns.TITLE,
+                MediaColumns.WIDTH,
+                MediaColumns.HEIGHT,
+                Images.ImageColumns.DATE_TAKEN,
+                Images.ImageColumns.ORIENTATION,
+                Images.ImageColumns.DESCRIPTION,
+                OpenableColumns.DISPLAY_NAME
+            };
+            Cursor cursor = null;
+            ContentResolver cr = null;
+            try {
+                cr = this.getContentResolver();
+                cursor = cr.query( uri, projection, null, null, null );
+                if( cursor != null && cursor.getCount() > 0 ) {
+                    cursor.moveToFirst();
+                    boolean no_m = false;
+                    String exif_text = null;
+                    String path = cursor.getString( cursor.getColumnIndex( MediaColumns.DATA ) );
+                    String path_to_show = path != null ? path : file_name;
+                    if( path_to_show == null ) {
+                        path_to_show = cursor.getString( cursor.getColumnIndex( OpenableColumns.DISPLAY_NAME ) );
+                    }
+                    info_text = path_to_show != null ? "<b>File:</b> <small>" + path_to_show + "</small><br/>" : "";
+                    if( path != null ) {
+                        exif_text = ImageInfo.getImageFileInfoHTML( path );
+                    } else {
+                        InputStream is = ca.getContent( uri );
+                        if( is != null )
+                            exif_text = ImageInfo.getImageStreamInfoHTML( is );
+                    }
+                    if( exif_text != null ) {
+                        info_text += exif_text;
+                        no_m = true;
+                    }
+                    StringBuilder sb = new StringBuilder();
+                    for( String col : projection ) {
+                        String val = cursor.getString( cursor.getColumnIndex( col ) );
+                        if( val == null ) continue;
+                        if( col.equals( MediaColumns.DATA ) ) continue;
+                        if( col.equals( OpenableColumns.DISPLAY_NAME ) ) continue;
+                        sb.append( "<br/>" );
+                        if( col.equals( MediaColumns.SIZE ) ) {
+                            sb.append( "<b>Size" );
+                            val = Utils.getHumanSize( Long.parseLong( val ), false ) + "B";
+                        }
+                        else if( col.equals( MediaColumns.TITLE ) ) 
+                            sb.append( "<b>Title" );
+                        else if( col.equals( MediaColumns.WIDTH ) ) {
+                            if( no_m ) continue;
+                            sb.append( "<b>Width" );
+                        }
+                        else if( col.equals( MediaColumns.HEIGHT) ) {
+                            if( no_m ) continue;
+                            sb.append( "<b>Height" );
+                        }
+                        else if( col.equals( Images.ImageColumns.ORIENTATION ) ) {
+                            if( no_m ) continue;
+                            sb.append( "<b>Orientation" );
+                        }
+                        else if( col.equals( Images.ImageColumns.DESCRIPTION ) ) 
+                            sb.append( "<b>Description" );
+                        else if( col.equals( Images.ImageColumns.DATE_TAKEN ) ) {
+                            if( no_m ) continue;
+                            sb.append( "<b>Date taken" );
+                            val = (new Date(Long.parseLong( val ) )).toString();
+                        }
+                        sb.append( ":</b> " );
+                        sb.append( val );
+                    }
+                    info_text += sb.toString();
+                }
+            } catch( Throwable e ) {
+                Log.e( TAG, "on query", e );
+            }
+            finally {
+                cursor.close();
+            }
+        }
+        return info_text;
     }
     
     private final void sendTo() {
         SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
         boolean use_content = shared_pref.getBoolean( "send_content", true );
-        if( file_path == null ) {
-            Log.e( TAG, "No file path" );
-            return;
-        }
-        Intent in = new Intent( Intent.ACTION_SEND );
-        in.setType( "*/*" );
-        in.putExtra( Intent.EXTRA_SUBJECT, new File( file_path ).getName() );
-
-        Uri uri = use_content ? FileProvider.makeURI( file_path ) : Uri.parse( "file://" + Utils.escapePath( file_path ) );
-        in.putExtra( Intent.EXTRA_STREAM, uri );
-        this.startActivity( Intent.createChooser( in, this.getString( R.string.send_title ) ) );
+        Uri mod_uri = changeUri( uri, use_content );
+        if( mod_uri == null ) return;
+        Intent out = new Intent( Intent.ACTION_SEND );
+        out.setType( getIntent().getType() );
+        out.putExtra( Intent.EXTRA_SUBJECT, file_name );
+        out.putExtra( Intent.EXTRA_STREAM, mod_uri );
+        out.addFlags( Intent.FLAG_GRANT_READ_URI_PERMISSION );
+        Log.d( TAG, "Intent to send: " + out.toString() );
+        this.startActivity( Intent.createChooser( out, this.getString( R.string.send_title ) ) );
     }
 
     public final void openWith() {
-        if( file_path == null ) {
-            Log.e( TAG, "No file path" );
-            return;
-        }
-        Intent intent = new Intent( Intent.ACTION_VIEW );
-        Uri u = Uri.fromFile( new File( file_path ) );
-        intent.setDataAndType( u, "image/*" );
-        Log.d( TAG, "Open uri " + u.toString() + " intent: " + intent.toString() );
-        if (Build.VERSION.SDK_INT == 19) {
+        SharedPreferences shared_pref = PreferenceManager.getDefaultSharedPreferences( this );
+        boolean use_content = shared_pref.getBoolean( "open_content", true );
+        Intent in = getIntent(), out = new Intent( Intent.ACTION_VIEW );
+        Log.d( TAG, "Opening intent: " + in.toString() );
+        Uri mod_uri = changeUri( uri, use_content );
+        if( mod_uri == null ) return;
+        out.setDataAndType( mod_uri, "image/*" );
+        out.addFlags( Intent.FLAG_GRANT_READ_URI_PERMISSION | 
+                      Intent.FLAG_GRANT_WRITE_URI_PERMISSION );
+        Log.d( TAG, "Intent to open: " + out.toString() );
+        if( Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT ) {
             // This will open the "Complete action with" dialog if the user doesn't have a default app set.
-            this.startActivity( intent );
+            this.startActivity( out );
         } else {
-            this.startActivity( Intent.createChooser( intent, this.getString( R.string.open_title ) ) );
+            this.startActivity( Intent.createChooser( out, this.getString( R.string.open_title ) ) );
         }
     }
-    
+
+    private final Uri changeUri( Uri u, boolean use_content ) {
+        if( u == null ) return null;
+        if( use_content ) {
+            if( !ContentResolver.SCHEME_CONTENT.equals( u.getScheme() ) ) {
+                String file_path = getFilePath( u, temp_file_path );
+                if( file_path == null ) {
+                    Log.e( TAG, "No file path" );
+                    return null;
+                }
+                Uri ms_uri = MSAdapter.getContentUri( u.getPath(), this, MediaStore.Images.Media.EXTERNAL_CONTENT_URI );
+                if( ms_uri != null )
+                    return ms_uri;
+                else
+                    return FileProvider.makeURI( file_path );
+            }
+            return u;
+        } else {
+            String file_path = getFilePath( u, temp_file_path );
+            if( file_path == null ) {
+                if( ca instanceof SAFAdapter )
+                    file_path = SAFAdapter.getPath( this, u, true );
+            }
+            if( file_path != null )
+                return Uri.parse( "file://" + Utils.escapePath( file_path ) );
+        }
+        return null;
+    }
     
     private class CommanderStub implements Commander {
         boolean reload_after_dir_read_done = false;

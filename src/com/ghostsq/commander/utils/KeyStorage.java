@@ -96,6 +96,7 @@ public class KeyStorage {
         return null;
     }
 
+    @SuppressWarnings("deprecation")
     private static boolean generateRSAKey( Context ctx, String alias ) {
         try {
             Calendar start = new GregorianCalendar();

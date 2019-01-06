@@ -97,20 +97,11 @@ public class StreamServer extends Service {
     }
 
     public static void storeCredentials( Context ctx, Credentials crd, Uri uri ) {
-        int hash = ( crd.getUserName() + uri.getHost() ).hashCode();
-        SharedPreferences ssp = ctx.getSharedPreferences( StreamServer.class.getSimpleName(), MODE_PRIVATE );
-        SharedPreferences.Editor edt = ssp.edit();
-        edt.putString( "" + hash, crd.toEncriptedString( ctx ) );
-        edt.commit();
+        crd.storeCredentials( ctx, StreamServer.class.getSimpleName(), uri );
     }
 
     public static Credentials restoreCredentials( Context ctx, Uri uri ) {
-        int hash = ( uri.getUserInfo() + uri.getHost() ).hashCode();
-        SharedPreferences ssp = ctx.getSharedPreferences( StreamServer.class.getSimpleName(), MODE_PRIVATE );
-        String crd_enc_s = ssp.getString( "" + hash, null );
-        if( crd_enc_s == null )
-            return null;
-        return Credentials.fromEncriptedString( crd_enc_s, ctx );
+        return Credentials.restoreCredentials( ctx, StreamServer.class.getSimpleName(), uri );
     }
     
     private class ListenThread extends Thread {
